@@ -1,0 +1,2554 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>CodeCombat 装备机制与物品图鉴</title>
+<style>
+*,*::before,*::after{margin:0;padding:0;box-sizing:border-box}
+:root{
+  --bg:#f8fafc;--surface:#ffffff;--surface-hover:#f8faff;
+  --border:#e2e8f0;--text:#1e293b;--text-dim:#64748b;
+  --accent:#6366f1;--accent-dim:#818cf8;--ai-tag:#b45309;
+}
+html{font-size:15px}
+body{
+  font-family:-apple-system,BlinkMacSystemFont,"Segoe UI","PingFang SC","Hiragino Sans GB","Microsoft YaHei",sans-serif;
+  background:var(--bg);color:var(--text);min-height:100vh;-webkit-font-smoothing:antialiased;
+}
+a{color:inherit;text-decoration:none}
+
+/* Header */
+.header{
+  background:rgba(255,255,255,.96);
+  border-bottom:1px solid var(--border);
+  padding:20px 24px 22px;text-align:center;
+  position:relative;z-index:10;
+  backdrop-filter:blur(12px);
+}
+.topbar{max-width:1200px;margin:0 auto 20px;display:flex;justify-content:space-between;align-items:center;text-align:left}
+.brand{font-size:16px;font-weight:800;color:#334155;display:flex;align-items:center;gap:10px}.brand img{height:32px;width:auto;display:block}
+.toplinks{display:flex;gap:10px;flex-wrap:wrap}
+.toplinks a{padding:7px 11px;border:1px solid var(--border);border-radius:8px;font-size:13px;color:var(--text-dim);background:#fff}
+.toplinks a:hover{color:var(--accent);border-color:#c7d2fe}
+.header h1{
+  font-size:26px;font-weight:700;
+  color:var(--text);
+  margin-bottom:6px;
+}
+.header .sub{max-width:760px;margin:0 auto;font-size:14px;line-height:1.8;color:var(--text-dim)}
+
+.controls{
+  max-width:1200px;margin:16px auto 0;
+  display:flex;gap:10px;justify-content:center;flex-wrap:wrap;
+}
+.controls input{
+  padding:9px 18px;border-radius:8px;border:1px solid var(--border);
+  background:#fff;color:var(--text);font-size:13px;
+  outline:none;width:min(520px,100%);
+}
+.controls input:focus{border-color:var(--accent)}
+
+/* Grid */
+.container{max-width:1280px;margin:0 auto;padding:24px 20px 56px}
+.grid{
+  display:grid;
+  grid-template-columns:repeat(auto-fill,minmax(280px,1fr));
+  gap:12px;
+}
+
+/* Card */
+.card{
+  background:var(--surface);border:1px solid var(--border);
+  border-radius:12px;overflow:hidden;
+  transition:all .2s;display:grid;grid-template-columns:92px 1fr;align-items:center;
+}
+.card:hover{
+  background:var(--surface-hover);border-color:var(--accent-dim);
+  transform:translateY(-2px);box-shadow:0 8px 24px rgba(15,23,42,.08);
+}
+.card-img{
+  width:76px;height:76px;margin:10px 0 10px 10px;
+  background:#f1f5f9;border-radius:10px;
+  display:flex;align-items:center;justify-content:center;
+  overflow:hidden;
+}
+.card-img img{
+  width:68px;height:68px;object-fit:contain;
+  padding:4px;transition:transform .3s;
+}
+.card:hover .card-img img{transform:scale(1.06)}
+.card-img.no-img{min-height:76px}
+.no-img-icon{font-size:28px;opacity:.3}
+
+.card-body{padding:13px 14px;min-width:0}
+.card-zh{font-size:15px;font-weight:700;color:var(--text);line-height:1.3;margin-bottom:2px}
+.card-en{font-size:11px;color:var(--accent-dim);font-family:"SF Mono","Fira Code",Consolas,monospace;margin-bottom:8px}
+.card-desc{font-size:12px;color:var(--text-dim);line-height:1.55;flex:1}
+.card.ai .card-zh{color:var(--ai-tag)}
+.card.ai{border-color:#fde68a}
+
+/* scrollbar */
+::-webkit-scrollbar{width:6px}
+::-webkit-scrollbar-track{background:#f8fafc}
+::-webkit-scrollbar-thumb{background:#cbd5e1;border-radius:3px}
+
+/* no result */
+.no-result{display:none;text-align:center;padding:80px 20px;color:var(--text-dim);font-size:16px}
+
+@media(max-width:600px){
+  .grid{grid-template-columns:1fr;gap:8px}
+  .card-body{padding:10px}
+  .card-zh{font-size:13px}
+  .card-desc{font-size:11px}
+  .header{padding:20px 16px 16px}
+  .topbar{align-items:flex-start;gap:12px}
+  .toplinks{justify-content:flex-end}
+}
+
+.footer{
+  text-align:center;padding:32px 20px;border-top:1px solid var(--border);
+  color:var(--text-dim);font-size:12px;
+}
+</style>
+</head>
+<body>
+
+<header class="header">
+  <div class="topbar">
+    <a class="brand" href="../index.html"><img src="https://codecombat.cn/images/pages/base/logo.webp" alt="CodeCombat Logo"><span>信息百科</span></a>
+    <div class="toplinks">
+      <a href="index.html">文档中心</a>
+      <a href="api.html">关卡指令</a>
+      <a href="../heros/index.html">英雄图鉴</a>
+    </div>
+  </div>
+  <h1>装备机制与物品图鉴</h1>
+  <p class="sub">装备不仅会改变英雄的生命、攻击和移动等属性，也可能解锁新的方法与能力。不同关卡和装备可用的功能可能不同，请同时以游戏代码编辑器中的关卡文档为准。</p>
+  <div class="controls">
+    <input type="text" id="search" placeholder="🔍 搜索中文名 / 英文名 / 描述..." oninput="filter()">
+  </div>
+</header>
+
+<div class="container">
+  <div class="grid" id="grid">
+<div class="card has-img">
+    <div class="card-img"><img src="src/白色鹿皮手套.png" alt="白色鹿皮手套" loading="lazy" onerror="this.parentElement.innerHTML='<span class=no-img-icon>🎮</span>'"></div>
+    <div class="card-body">
+      <div class="card-zh">白色鹿皮手套</div>
+      <div class="card-en">White Deerhide Gloves</div>
+      <div class="card-desc"> </div>
+    </div>
+  </div>
+<div class="card has-img">
+    <div class="card-img"><img src="src/薄粗麻长袍.png" alt="薄粗麻长袍" loading="lazy" onerror="this.parentElement.innerHTML='<span class=no-img-icon>🎮</span>'"></div>
+    <div class="card-body">
+      <div class="card-zh">薄粗麻长袍</div>
+      <div class="card-en">Thin Burlap Robe</div>
+      <div class="card-desc">它太薄了，以至于都不能保暖，但至少可以提供一点防御。</div>
+    </div>
+  </div>
+<div class="card has-img">
+    <div class="card-img"><img src="src/宝藏.png" alt="宝藏" loading="lazy" onerror="this.parentElement.innerHTML='<span class=no-img-icon>🎮</span>'"></div>
+    <div class="card-body">
+      <div class="card-zh">宝藏</div>
+      <div class="card-en">The Precious</div>
+      <div class="card-desc">这铭刻着符文的金戒指向你意识中最阴暗的角落低语着令人疯狂的秘密，哦，是的。</div>
+    </div>
+  </div>
+<div class="card has-img">
+    <div class="card-img"><img src="src/步兵盾.png" alt="步兵盾" loading="lazy" onerror="this.parentElement.innerHTML='<span class=no-img-icon>🎮</span>'"></div>
+    <div class="card-body">
+      <div class="card-zh">步兵盾</div>
+      <div class="card-en">Infantry Shield</div>
+      <div class="card-desc">给英雄大量的额外生命和防御值，但是移动缓慢且没有盾击。</div>
+    </div>
+  </div>
+<div class="card has-img">
+    <div class="card-img"><img src="src/颤抖.png" alt="颤抖" loading="lazy" onerror="this.parentElement.innerHTML='<span class=no-img-icon>🎮</span>'"></div>
+    <div class="card-body">
+      <div class="card-zh">颤抖</div>
+      <div class="card-en">Shiver</div>
+      <div class="card-desc">这种武器，在一个有经验的护林员手中，会给所有智者带来寒意。</div>
+    </div>
+  </div>
+<div class="card has-img">
+    <div class="card-img"><img src="src/晨之刃.png" alt="晨之刃" loading="lazy" onerror="this.parentElement.innerHTML='<span class=no-img-icon>🎮</span>'"></div>
+    <div class="card-body">
+      <div class="card-zh">晨之刃</div>
+      <div class="card-en">Morning's Edge</div>
+      <div class="card-desc">佩戴这把镶嵌宝石的刀刃可以独自一人拿下食人魔斗士。</div>
+    </div>
+  </div>
+<div class="card has-img">
+    <div class="card-img"><img src="src/穿刺.png" alt="穿刺" loading="lazy" onerror="this.parentElement.innerHTML='<span class=no-img-icon>🎮</span>'"></div>
+    <div class="card-body">
+      <div class="card-zh">穿刺</div>
+      <div class="card-en">Thornprick</div>
+      <div class="card-desc">多刺木丝编织成的戒指。</div>
+    </div>
+  </div>
+<div class="card has-img">
+    <div class="card-img"><img src="src/瓷釉龙甲.png" alt="瓷釉龙甲" loading="lazy" onerror="this.parentElement.innerHTML='<span class=no-img-icon>🎮</span>'"></div>
+    <div class="card-body">
+      <div class="card-zh">瓷釉龙甲</div>
+      <div class="card-en">Enameled Dragonplate</div>
+      <div class="card-desc">将你标为品味独具慧眼之人。</div>
+    </div>
+  </div>
+<div class="card has-img">
+    <div class="card-img"><img src="src/瓷釉龙甲盾.png" alt="瓷釉龙甲盾" loading="lazy" onerror="this.parentElement.innerHTML='<span class=no-img-icon>🎮</span>'"></div>
+    <div class="card-body">
+      <div class="card-zh">瓷釉龙甲盾</div>
+      <div class="card-en">Enameled Dragonshield</div>
+<div class="card-desc">用极品盾牌来保护自己。</div>
+    </div>
+  </div>
+<div class="card has-img">
+    <div class="card-img"><img src="src/瓷釉龙甲头盔.png" alt="瓷釉龙甲头盔" loading="lazy" onerror="this.parentElement.innerHTML='<span class=no-img-icon>🎮</span>'"></div>
+    <div class="card-body">
+      <div class="card-zh">瓷釉龙甲头盔</div>
+      <div class="card-en">Enameled Dragonplate Helmet</div>
+      <div class="card-desc">终极头部护具。你可能会好奇，这是怎么从龙上弄下来的。</div>
+    </div>
+  </div>
+<div class="card has-img">
+    <div class="card-img"><img src="src/刺绣狮鹫羊毛帽.png" alt="刺绣狮鹫羊毛帽" loading="lazy" onerror="this.parentElement.innerHTML='<span class=no-img-icon>🎮</span>'"></div>
+    <div class="card-body">
+      <div class="card-zh">刺绣狮鹫羊毛帽</div>
+      <div class="card-en">Embroidered Griffin Wool Hat</div>
+      <div class="card-desc">一个狮鹫羊毛帽，但有刺绣，所以就好太多了。</div>
+    </div>
+  </div>
+<div class="card has-img">
+    <div class="card-img"><img src="src/狮鹫羊毛长袍.png" alt="刺绣狮鹫羊毛长袍" loading="lazy" onerror="this.parentElement.innerHTML='<span class=no-img-icon>🎮</span>'"></div>
+    <div class="card-body">
+      <div class="card-zh">刺绣狮鹫羊毛长袍</div>
+      <div class="card-en">Embroidered Griffin Wool Robe</div>
+      <div class="card-desc">此长袍里衬的神秘符文，散发出不可思议的力量。</div>
+    </div>
+  </div>
+<div class="card has-img">
+    <div class="card-img"><img src="src/粗糙匕首.png" alt="粗糙匕首" loading="lazy" onerror="this.parentElement.innerHTML='<span class=no-img-icon>🎮</span>'"></div>
+    <div class="card-body">
+      <div class="card-zh">粗糙匕首</div>
+      <div class="card-en">Crude Dagger</div>
+      <div class="card-desc">中等射程，快速，低伤害的投掷匕首。冷却时间1秒。</div>
+    </div>
+  </div>
+<div class="card has-img">
+    <div class="card-img"><img src="src/粗糙钉刺.png" alt="粗糙钉刺" loading="lazy" onerror="this.parentElement.innerHTML='<span class=no-img-icon>🎮</span>'"></div>
+    <div class="card-body">
+      <div class="card-zh">粗糙钉刺</div>
+      <div class="card-en">Crude Spike</div>
+      <div class="card-desc">高击退、盾击伤害和防御力，但比防御步兵盾速度慢。</div>
+    </div>
+  </div>
+<div class="card has-img">
+    <div class="card-img"><img src="src/粗糙灵石.png" alt="粗糙灵石" loading="lazy" onerror="this.parentElement.innerHTML='<span class=no-img-icon>🎮</span>'"></div>
+    <div class="card-body">
+      <div class="card-zh">粗糙灵石</div>
+      <div class="card-en">Rough Sense Stone</div>
+      <div class="card-desc">让你在代码中可以获得你自己的位置。</div>
+    </div>
+  </div>
+<div class="card has-img">
+    <div class="card-img"><img src="src/粗糙十字弩.png" alt="粗糙十字弩" loading="lazy" onerror="this.parentElement.innerHTML='<span class=no-img-icon>🎮</span>'"></div>
+    <div class="card-body">
+      <div class="card-zh">粗糙十字弩</div>
+      <div class="card-en">Crude Crossbow</div>
+      <div class="card-desc">适中的射程和伤害；它是初学者级别的弩。但是伙计，它很便宜！</div>
+    </div>
+  </div>
+<div class="card has-img">
+    <div class="card-img"><img src="src/粗糙望远镜.png" alt="粗糙望远镜" loading="lazy" onerror="this.parentElement.innerHTML='<span class=no-img-icon>🎮</span>'"></div>
+    <div class="card-body">
+      <div class="card-zh">粗糙望远镜</div>
+      <div class="card-en">Crude Telephoto Glasses</div>
+      <div class="card-desc">用这个精巧装置能比以往任何时候都看得远！它还添加了 findHazards 方法，可以检测障碍物和陷阱。</div>
+    </div>
+  </div>
+<div class="card has-img">
+    <div class="card-img"><img src="src/大地之戒.png" alt="大地之戒" loading="lazy" onerror="this.parentElement.innerHTML='<span class=no-img-icon>🎮</span>'"></div>
+    <div class="card-body">
+      <div class="card-zh">大地之戒</div>
+      <div class="card-en">Ring of Earth</div>
+      <div class="card-desc">自然之母亲自用边地森林最深的根打造了这枚戒指。</div>
+    </div>
+  </div>
+<div class="card has-img">
+    <div class="card-img"><img src="src/大剑.png" alt="大剑" loading="lazy" onerror="this.parentElement.innerHTML='<span class=no-img-icon>🎮</span>'"></div>
+    <div class="card-body">
+      <div class="card-zh">大剑</div>
+      <div class="card-en">Great Sword</div>
+      <div class="card-desc">高伤害，快速冷却，powerUp能力提供重击退效果，12倍伤害，每12秒一次。</div>
+    </div>
+  </div>
+<div class="card has-img">
+    <div class="card-img"><img src="src/大十字弩.png" alt="大十字弩" loading="lazy" onerror="this.parentElement.innerHTML='<span class=no-img-icon>🎮</span>'"></div>
+    <div class="card-body">
+      <div class="card-zh">大十字弩</div>
+      <div class="card-en">Large Bolt Crossbow</div>
+      <div class="card-desc">别被十字弩搞糊涂了：这个发射速度要比粗糙十字弩更快，而且每秒伤害更高</div>
+    </div>
+  </div>
+<div class="card has-img">
+    <div class="card-img"><img src="src/弹射筒.png" alt="弹射筒" loading="lazy" onerror="this.parentElement.innerHTML='<span class=no-img-icon>🎮</span>'"></div>
+    <div class="card-body">
+      <div class="card-zh">弹射筒</div>
+      <div class="card-en">Powder Charge</div>
+      <div class="card-desc">中度攻击范围，高伤害，中度冷却时间。弹射筒是一种重型远程投掷武器。每次装弹时间需要耗时16秒。</div>
+    </div>
+  </div>
+<div class="card has-img">
+    <div class="card-img"><img src="src/帝王手套.png" alt="帝王手套" loading="lazy" onerror="this.parentElement.innerHTML='<span class=no-img-icon>🎮</span>'"></div>
+    <div class="card-body">
+      <div class="card-zh">帝王手套</div>
+      <div class="card-en">Emperor's Gloves</div>
+      <div class="card-desc">这些由电流编织的天鹅绒手套，指端能够射出闪电链。</div>
+    </div>
+  </div>
+<div class="card has-img">
+    <div class="card-img"><img src="src/雕花钢戒指.png" alt="雕花钢戒指" loading="lazy" onerror="this.parentElement.innerHTML='<span class=no-img-icon>🎮</span>'"></div>
+    <div class="card-body">
+      <div class="card-zh">雕花钢戒指</div>
+      <div class="card-en">Carved Steel Ring</div>
+      <div class="card-desc"> </div>
+    </div>
+  </div>
+<div class="card has-img">
+    <div class="card-img"><img src="src/雕花黑曜岩盾牌.png" alt="雕花黑曜岩盾牌" loading="lazy" onerror="this.parentElement.innerHTML='<span class=no-img-icon>🎮</span>'"></div>
+    <div class="card-body">
+      <div class="card-zh">雕花黑曜岩盾牌</div>
+      <div class="card-en">Engraved Obsidian Shield</div>
+      <div class="card-desc">这盾上刻着可怕黑色龙龟唤起的图案。</div>
+    </div>
+  </div>
+<div class="card has-img">
+    <div class="card-img"><img src="src/雕花黑曜岩头盔.png" alt="雕花黑曜岩头盔" loading="lazy" onerror="this.parentElement.innerHTML='<span class=no-img-icon>🎮</span>'"></div>
+    <div class="card-body">
+      <div class="card-zh">雕花黑曜岩头盔</div>
+      <div class="card-en">Engraved Obsidian Helmet</div>
+      <div class="card-desc">它是雕刻的黑曜石头盔。雕刻能够给你提供少许额外防护。</div>
+    </div>
+  </div>
+<div class="card has-img">
+    <div class="card-img"><img src="src/雕花黑曜岩胸甲.png" alt="雕花黑曜岩胸甲" loading="lazy" onerror="this.parentElement.innerHTML='<span class=no-img-icon>🎮</span>'"></div>
+    <div class="card-body">
+      <div class="card-zh">雕花黑曜岩胸甲</div>
+      <div class="card-en">Engraved Obsidian Breastplate</div>
+      <div class="card-desc">黑曜岩盔甲在多人战斗等高难关卡中提供很多优势。</div>
+    </div>
+  </div>
+<div class="card has-img">
+    <div class="card-img"><img src="src/雕花腕表.png" alt="雕花腕表" loading="lazy" onerror="this.parentElement.innerHTML='<span class=no-img-icon>🎮</span>'"></div>
+    <div class="card-body">
+      <div class="card-zh">雕花腕表</div>
+      <div class="card-en">Engraved Wristwatch</div>
+      <div class="card-desc">添加 wait 方法，它能让你的英雄停在一个位置待机。</div>
+    </div>
+  </div>
+<div class="card has-img">
+    <div class="card-img"><img src="src/定制亚麻长袍.png" alt="定制亚麻长袍" loading="lazy" onerror="this.parentElement.innerHTML='<span class=no-img-icon>🎮</span>'"></div>
+    <div class="card-body">
+      <div class="card-zh">定制亚麻长袍</div>
+      <div class="card-en">Tailored Linen Robe</div>
+      <div class="card-desc">你会认为巫师会适合他们自己的长袍，但我们在这里。</div>
+    </div>
+  </div>
+<div class="card has-img">
+    <div class="card-img"><img src="src/镀金腕表.png" alt="镀金腕表" loading="lazy" onerror="this.parentElement.innerHTML='<span class=no-img-icon>🎮</span>'"></div>
+    <div class="card-body">
+      <div class="card-zh">镀金腕表</div>
+      <div class="card-en">Gilt Wristwatch</div>
+      <div class="card-desc">赋予 getCooldown 方法，让你的英雄知道，还有多少时间各种技能才能冷却，对于时机策略很有帮助。</div>
+    </div>
+  </div>
+<div class="card has-img">
+    <div class="card-img"><img src="src/短剑.png" alt="短剑" loading="lazy" onerror="this.parentElement.innerHTML='<span class=no-img-icon>🎮</span>'"></div>
+    <div class="card-body">
+      <div class="card-zh">短剑</div>
+      <div class="card-en">Short Sword</div>
+      <div class="card-desc">非常快但低伤害的剑。刺杀矮人的理想工具。</div>
+    </div>
+  </div>
+<div class="card has-img">
+    <div class="card-img"><img src="src/钝刀.png" alt="钝刀" loading="lazy" onerror="this.parentElement.innerHTML='<span class=no-img-icon>🎮</span>'"></div>
+    <div class="card-body">
+      <div class="card-zh">钝刀</div>
+      <div class="card-en">Roughedge</div>
+      <div class="card-desc">比普通剑造成更多伤害。</div>
+    </div>
+  </div>
+<div class="card has-img">
+    <div class="card-img"><img src="src/发霉亚麻长袍.png" alt="发霉亚麻长袍" loading="lazy" onerror="this.parentElement.innerHTML='<span class=no-img-icon>🎮</span>'"></div>
+    <div class="card-body">
+      <div class="card-zh">发霉亚麻长袍</div>
+      <div class="card-en">Musty Linen Robe</div>
+      <div class="card-desc">闻起来像Narnia的老霉味柜子</div>
+    </div>
+  </div>
+<div class="card has-img">
+    <div class="card-img"><img src="src/防御步兵盾.png" alt="防御步兵盾" loading="lazy" onerror="this.parentElement.innerHTML='<span class=no-img-icon>🎮</span>'"></div>
+    <div class="card-body">
+      <div class="card-zh">防御步兵盾</div>
+      <div class="card-en">Defensive Infantry Shield</div>
+<div class="card-desc">在青铜盾的基础上进行了大幅度升级：更快速的冷却时间，更高的防御参数，更多的生命附加值，还激活了盾击的方法。</div>
+    </div>
+  </div>
+<div class="card has-img">
+    <div class="card-img"><img src="src/防御靴子.png" alt="防御靴子" loading="lazy" onerror="this.parentElement.innerHTML='<span class=no-img-icon>🎮</span>'"></div>
+    <div class="card-body">
+      <div class="card-zh">防御靴子</div>
+      <div class="card-en">Defensive Boots</div>
+      <div class="card-desc">增加很多生命值，但是每秒移动降低2米。</div>
+    </div>
+  </div>
+<div class="card has-img">
+    <div class="card-img"><img src="src/飞行靴子.png" alt="飞行靴子" loading="lazy" onerror="this.parentElement.innerHTML='<span class=no-img-icon>🎮</span>'"></div>
+    <div class="card-body">
+      <div class="card-zh">飞行靴子</div>
+      <div class="card-en">Winged Boots</div>
+      <div class="card-desc">这种靴子让你的英雄能够短距离飞行，如赫耳墨斯一般。</div>
+    </div>
+  </div>
+<div class="card has-img">
+    <div class="card-img"><img src="src/飞跃之靴.png" alt="飞跃之靴" loading="lazy" onerror="this.parentElement.innerHTML='<span class=no-img-icon>🎮</span>'"></div>
+    <div class="card-body">
+      <div class="card-zh">飞跃之靴</div>
+      <div class="card-en">Boots of Leaping</div>
+      <div class="card-desc">相比跳跃之靴，这能让你跳得更远、更快。</div>
+    </div>
+  </div>
+<div class="card has-img">
+    <div class="card-img"><img src="src/符文剑.png" alt="符文剑" loading="lazy" onerror="this.parentElement.innerHTML='<span class=no-img-icon>🎮</span>'"></div>
+    <div class="card-body">
+      <div class="card-zh">符文剑</div>
+      <div class="card-en">Runesword</div>
+      <div class="card-desc">只有最强大的战士才可以举起这柄巨大的符文剑。</div>
+    </div>
+  </div>
+<div class="card has-img">
+    <div class="card-img"><img src="src/附魔法杖.png" alt="附魔法杖" loading="lazy" onerror="this.parentElement.innerHTML='<span class=no-img-icon>🎮</span>'"></div>
+    <div class="card-body">
+      <div class="card-zh">附魔法杖</div>
+      <div class="card-en">Enchanted Stick</div>
+      <div class="card-desc">初学者魔杖。不弄坏的话，你可以有个更好的魔杖。</div>
+    </div>
+  </div>
+<div class="card has-img">
+    <div class="card-img"><img src="src/附魔透镜.png" alt="附魔透镜" loading="lazy" onerror="this.parentElement.innerHTML='<span class=no-img-icon>🎮</span>'"></div>
+    <div class="card-body">
+      <div class="card-zh">附魔透镜</div>
+      <div class="card-en">Enchanted Lenses</div>
+      <div class="card-desc">用这双神奇的眼睛看到无限远！</div>
+    </div>
+  </div>
+<div class="card has-img">
+    <div class="card-img"><img src="src/附魔羊毛斗篷.png" alt="附魔羊毛斗篷" loading="lazy" onerror="this.parentElement.innerHTML='<span class=no-img-icon>🎮</span>'"></div>
+    <div class="card-body">
+      <div class="card-zh">附魔羊毛斗篷</div>
+      <div class="card-en">Enchanted Lambswool Cloak</div>
+      <div class="card-desc">有人说这些符文隐藏了独角兽的秘密。</div>
+    </div>
+  </div>
+<div class="card has-img">
+    <div class="card-img"><img src="src/复合靴子.png" alt="复合靴子" loading="lazy" onerror="this.parentElement.innerHTML='<span class=no-img-icon>🎮</span>'"></div>
+    <div class="card-body">
+      <div class="card-zh">复合靴子</div>
+      <div class="card-en">Compound Boots</div>
+      <div class="card-desc">赋予你的英雄 move 方法，替代 moveXY 方法</div>
+    </div>
+  </div>
+<div class="card has-img">
+    <div class="card-img"><img src="src/钢锤.png" alt="钢锤" loading="lazy" onerror="this.parentElement.innerHTML='<span class=no-img-icon>🎮</span>'"></div>
+    <div class="card-body">
+      <div class="card-zh">钢锤</div>
+      <div class="card-en">Steel Striker</div>
+      <div class="card-desc">速度快、致命。大量提升生命和防御值，且用起来很快。它可以产生盾击伤害，但击退效果不如刷漆钢盾。</div>
+    </div>
+  </div>
+<div class="card has-img">
+    <div class="card-img"><img src="src/钢盾.png" alt="钢盾" loading="lazy" onerror="this.parentElement.innerHTML='<span class=no-img-icon>🎮</span>'"></div>
+    <div class="card-body">
+      <div class="card-zh">钢盾</div>
+      <div class="card-en">Steel Shield</div>
+      <div class="card-desc">显著提升生命值和防御，但是它很笨重。允许带有更大击退和更多伤害的重击。</div>
+    </div>
+  </div>
+<div class="card has-img">
+    <div class="card-img"><img src="src/钢戒指.png" alt="钢戒指" loading="lazy" onerror="this.parentElement.innerHTML='<span class=no-img-icon>🎮</span>'"></div>
+    <div class="card-body">
+      <div class="card-zh">钢戒指</div>
+      <div class="card-en">Steel Ring</div>
+      <div class="card-desc">增加一个微弱的电击能力，暂时减缓目标的速度。</div>
+    </div>
+  </div>
+<div class="card has-img">
+    <div class="card-img"><img src="src/钢盔.png" alt="钢盔" loading="lazy" onerror="this.parentElement.innerHTML='<span class=no-img-icon>🎮</span>'"></div>
+    <div class="card-body">
+      <div class="card-zh">钢盔</div>
+      <div class="card-en">Steel Helmet</div>
+      <div class="card-desc">对于发育中的战士，这帽子有点大。</div>
+    </div>
+  </div>
+<div class="card has-img">
+    <div class="card-img"><img src="src/钢鳞手套.png" alt="钢鳞手套" loading="lazy" onerror="this.parentElement.innerHTML='<span class=no-img-icon>🎮</span>'"></div>
+    <div class="card-body">
+      <div class="card-zh">钢鳞手套</div>
+      <div class="card-en">Scaled Gloves</div>
+      <div class="card-desc"> </div>
+    </div>
+  </div>
+<div class="card has-img">
+    <div class="card-img"><img src="src/钢质魔杖.png" alt="钢质魔杖" loading="lazy" onerror="this.parentElement.innerHTML='<span class=no-img-icon>🎮</span>'"></div>
+    <div class="card-body">
+      <div class="card-zh">钢质魔杖</div>
+      <div class="card-en">Steel Wand</div>
+      <div class="card-desc">提供一种魔法飞弹法术，伤害130，每9秒一次。</div>
+    </div>
+  </div>
+<div class="card has-img">
+    <div class="card-img"><img src="src/钢质胸甲.png" alt="钢质胸甲" loading="lazy" onerror="this.parentElement.innerHTML='<span class=no-img-icon>🎮</span>'"></div>
+    <div class="card-body">
+      <div class="card-zh">钢质胸甲</div>
+      <div class="card-en">Steel Breastplate</div>
+      <div class="card-desc">看起来好英勇。</div>
+    </div>
+  </div>
+<div class="card has-img">
+    <div class="card-img"><img src="src/高速步枪.png" alt="高速步枪" loading="lazy" onerror="this.parentElement.innerHTML='<span class=no-img-icon>🎮</span>'"></div>
+    <div class="card-body">
+      <div class="card-zh">高速步枪</div>
+      <div class="card-en">Rapidfire Rifle</div>
+      <div class="card-desc">它没问题，它是蒸汽驱动的。</div>
+    </div>
+  </div>
+<div class="card has-img">
+    <div class="card-img"><img src="src/工人手套.png" alt="工人手套" loading="lazy" onerror="this.parentElement.innerHTML='<span class=no-img-icon>🎮</span>'"></div>
+    <div class="card-body">
+      <div class="card-zh">工人手套</div>
+      <div class="card-en">Worker's Gloves</div>
+      <div class="card-desc">他们不舒服，但是可以帮你搞定工作。</div>
+    </div>
+  </div>
+<div class="card has-img">
+    <div class="card-img"><img src="src/骨质匕首.png" alt="骨质匕首" loading="lazy" onerror="this.parentElement.innerHTML='<span class=no-img-icon>🎮</span>'"></div>
+    <div class="card-body">
+      <div class="card-zh">骨质匕首</div>
+      <div class="card-en">Bone Dagger</div>
+      <div class="card-desc">这鬼骨碎片的背刺，据传能够穿透金属、 皮革、 肉、甚至其目标的灵魂。</div>
+    </div>
+  </div>
+<div class="card has-img">
+    <div class="card-img"><img src="src/黑暗边缘.png" alt="黑暗边缘" loading="lazy" onerror="this.parentElement.innerHTML='<span class=no-img-icon>🎮</span>'"></div>
+    <div class="card-body">
+      <div class="card-zh">黑暗边缘</div>
+      <div class="card-en">Edge of Darkness</div>
+      <div class="card-desc">一个英雄必须踏过光与暗的利刃边缘。</div>
+    </div>
+  </div>
+<div class="card has-img">
+    <div class="card-img"><img src="src/黑曜岩盾牌.png" alt="黑曜岩盾牌" loading="lazy" onerror="this.parentElement.innerHTML='<span class=no-img-icon>🎮</span>'"></div>
+    <div class="card-body">
+      <div class="card-zh">黑曜岩盾牌</div>
+      <div class="card-en">Obsidian Shield</div>
+      <div class="card-desc">这些被用来做盾牌的黑曜石是从恐惧火山收获来的。</div>
+    </div>
+  </div>
+<div class="card has-img">
+    <div class="card-img"><img src="src/黑曜岩法杖.png" alt="黑曜岩法杖" loading="lazy" onerror="this.parentElement.innerHTML='<span class=no-img-icon>🎮</span>'"></div>
+    <div class="card-body">
+      <div class="card-zh">黑曜岩法杖</div>
+      <div class="card-en">Obsidian Staff</div>
+      <div class="card-desc">此秘法之杖可以施放奇特的反重力法术。</div>
+    </div>
+  </div>
+<div class="card has-img">
+    <div class="card-img"><img src="src/黑曜岩头盔.png" alt="黑曜岩头盔" loading="lazy" onerror="this.parentElement.innerHTML='<span class=no-img-icon>🎮</span>'"></div>
+    <div class="card-body">
+      <div class="card-zh">黑曜岩头盔</div>
+      <div class="card-en">Obsidian Helmet</div>
+      <div class="card-desc">这让你像巨蟒剧团的黑骑士，很值得。</div>
+    </div>
+  </div>
+<div class="card has-img">
+    <div class="card-img"><img src="src/黑曜岩胸甲.png" alt="黑曜岩胸甲" loading="lazy" onerror="this.parentElement.innerHTML='<span class=no-img-icon>🎮</span>'"></div>
+    <div class="card-body">
+      <div class="card-zh">黑曜岩胸甲</div>
+      <div class="card-en">Obsidian Breastplate</div>
+      <div class="card-desc">自然而然，新手的关卡总会相当简单</div>
+    </div>
+  </div>
+<div class="card has-img">
+    <div class="card-img"><img src="src/红木法杖.png" alt="红木法杖" loading="lazy" onerror="this.parentElement.innerHTML='<span class=no-img-icon>🎮</span>'"></div>
+    <div class="card-body">
+      <div class="card-zh">红木法杖</div>
+      <div class="card-en">Mahogany Staff</div>
+      <div class="card-desc">提供力栓法术，能攻击一条线上的敌人，造成40伤害。每7.5秒一次。</div>
+    </div>
+  </div>
+<div class="card has-img">
+    <div class="card-img"><img src="src/红木眼镜.png" alt="红木眼镜" loading="lazy" onerror="this.parentElement.innerHTML='<span class=no-img-icon>🎮</span>'"></div>
+    <div class="card-body">
+      <div class="card-zh">红木眼镜</div>
+      <div class="card-en">Mahogany Glasses</div>
+      <div class="card-desc">用 findNearest 替换 findNearestEnemy 和 findNearestItem ，添加 findEnemies 和 findFriends 方法。这些新方法都能让英雄通过数组更聪明地执行策略。</div>
+    </div>
+  </div>
+<div class="card has-img">
+    <div class="card-img"><img src="src/厚粗麻长袍.png" alt="厚粗麻长袍" loading="lazy" onerror="this.parentElement.innerHTML='<span class=no-img-icon>🎮</span>'"></div>
+    <div class="card-body">
+      <div class="card-zh">厚粗麻长袍</div>
+      <div class="card-en">Thick Burlap Robe</div>
+      <div class="card-desc">或许连Hagrid本人都在冬日用这件外套保暖。</div>
+    </div>
+  </div>
+<div class="card has-img">
+    <div class="card-img"><img src="src/火蛋白石灵石.png" alt="火蛋白石灵石" loading="lazy" onerror="this.parentElement.innerHTML='<span class=no-img-icon>🎮</span>'"></div>
+    <div class="card-body">
+      <div class="card-zh">火蛋白石灵石</div>
+      <div class="card-en">Fire Opal Sense Stone</div>
+      <div class="card-desc">增加了功能：检查英雄当前目标</div>
+    </div>
+  </div>
+<div class="card has-img">
+    <div class="card-img"><img src="src/蒺藜腰带.png" alt="蒺藜腰带" loading="lazy" onerror="this.parentElement.innerHTML='<span class=no-img-icon>🎮</span>'"></div>
+    <div class="card-body">
+      <div class="card-zh">蒺藜腰带</div>
+      <div class="card-en">Caltrop Belt</div>
+      <div class="card-desc">添加铁蒺藜到可建造物。铁蒺藜是阻止一大群食人魔的有效陷阱。</div>
+    </div>
+  </div>
+<div class="card has-img">
+    <div class="card-img"><img src="src/简易魔杖.png" alt="简易魔杖" loading="lazy" onerror="this.parentElement.innerHTML='<span class=no-img-icon>🎮</span>'"></div>
+    <div class="card-body">
+      <div class="card-zh">简易魔杖</div>
+      <div class="card-en">Simple Wand</div>
+      <div class="card-desc">比附魔法杖的伤害力要小些，但是发射速度更快。</div>
+    </div>
+  </div>
+<div class="card has-img">
+    <div class="card-img"><img src="src/简易腕表.png" alt="简易腕表" loading="lazy" onerror="this.parentElement.innerHTML='<span class=no-img-icon>🎮</span>'"></div>
+    <div class="card-body">
+      <div class="card-zh">简易腕表</div>
+      <div class="card-en">Simple Wristwatch</div>
+<div class="card-desc">赋予 time 属性，可以让你的英雄获得当前时间，在需要选择时机的动作上非常有帮助。</div>
+    </div>
+  </div>
+<div class="card has-img">
+    <div class="card-img"><img src="src/简易武士刀.png" alt="简易武士刀" loading="lazy" onerror="this.parentElement.innerHTML='<span class=no-img-icon>🎮</span>'"></div>
+    <div class="card-body">
+      <div class="card-zh">简易武士刀</div>
+      <div class="card-en">Simple Katana</div>
+      <div class="card-desc">中等伤害，很短的冷却时间，每五秒有一个3倍伤害的击退增强效果。</div>
+    </div>
+  </div>
+<div class="card has-img">
+    <div class="card-img"><img src="src/箭发射者.png" alt="箭发射者" loading="lazy" onerror="this.parentElement.innerHTML='<span class=no-img-icon>🎮</span>'"></div>
+    <div class="card-body">
+      <div class="card-zh">箭发射者</div>
+      <div class="card-en">Bolt Spitter</div>
+      <div class="card-desc">非常快的具有击退效果的攻击。散射每四次攻击发射三弹。</div>
+    </div>
+  </div>
+<div class="card has-img">
+    <div class="card-img"><img src="src/结实的青铜盾.png" alt="结实的青铜盾" loading="lazy" onerror="this.parentElement.innerHTML='<span class=no-img-icon>🎮</span>'"></div>
+    <div class="card-body">
+      <div class="card-zh">结实的青铜盾</div>
+      <div class="card-en">Sturdy Bronze Shield</div>
+      <div class="card-desc">与抛光的青铜盾很像，给那些讨厌绿色的人。</div>
+    </div>
+  </div>
+<div class="card has-img">
+    <div class="card-img"><img src="src/金纺丝质帽.png" alt="金纺丝质帽" loading="lazy" onerror="this.parentElement.innerHTML='<span class=no-img-icon>🎮</span>'"></div>
+    <div class="card-body">
+      <div class="card-zh">金纺丝质帽</div>
+      <div class="card-en">Goldspun Silk Hat</div>
+      <div class="card-desc">旋转着金子。 这真的不难理解。</div>
+    </div>
+  </div>
+<div class="card has-img">
+    <div class="card-img"><img src="src/金纺丝质披风.png" alt="金纺丝质披风" loading="lazy" onerror="this.parentElement.innerHTML='<span class=no-img-icon>🎮</span>'"></div>
+    <div class="card-body">
+      <div class="card-zh">金纺丝质披风</div>
+      <div class="card-en">Goldspun Silk Cloak</div>
+      <div class="card-desc">没有人知道神秘的金色徽章代表着什么...</div>
+    </div>
+  </div>
+<div class="card has-img">
+    <div class="card-img"><img src="src/金魔杖.png" alt="金魔杖" loading="lazy" onerror="this.parentElement.innerHTML='<span class=no-img-icon>🎮</span>'"></div>
+    <div class="card-body">
+      <div class="card-zh">金魔杖</div>
+      <div class="card-en">Golden Wand</div>
+      <div class="card-desc">用这把金魔杖召唤金币风暴。</div>
+    </div>
+  </div>
+<div class="card has-img">
+    <div class="card-img"><img src="src/精良望远镜.png" alt="精良望远镜" loading="lazy" onerror="this.parentElement.innerHTML='<span class=no-img-icon>🎮</span>'"></div>
+    <div class="card-body">
+      <div class="card-zh">精良望远镜</div>
+      <div class="card-en">Fine Telephoto Glasses</div>
+      <div class="card-desc">添加findEnemyMissiles和findFriendlyMissiles方法，增加更多visualRange。更像黑客帝国里的 Neo 了。</div>
+    </div>
+  </div>
+<div class="card has-img">
+    <div class="card-img"><img src="src/精致的靴子.png" alt="精致的靴子" loading="lazy" onerror="this.parentElement.innerHTML='<span class=no-img-icon>🎮</span>'"></div>
+    <div class="card-body">
+      <div class="card-zh">精致的靴子</div>
+      <div class="card-en">Fine Boots</div>
+      <div class="card-desc">给予你的英雄移动和猛冲的能力。</div>
+    </div>
+  </div>
+<div class="card has-img">
+    <div class="card-img"><img src="src/精致木质眼镜.png" alt="精致木质眼镜" loading="lazy" onerror="this.parentElement.innerHTML='<span class=no-img-icon>🎮</span>'"></div>
+    <div class="card-body">
+      <div class="card-zh">精致木质眼镜</div>
+      <div class="card-en">Fine Wooden Glasses</div>
+      <div class="card-desc">让你找到一系列物品，并单独找到最近物品。</div>
+    </div>
+  </div>
+<div class="card has-img">
+    <div class="card-img"><img src="src/精致皮制链甲束腰.png" alt="精致皮制链甲束腰" loading="lazy" onerror="this.parentElement.innerHTML='<span class=no-img-icon>🎮</span>'"></div>
+    <div class="card-body">
+      <div class="card-zh">精致皮制链甲束腰</div>
+      <div class="card-en">Fine Leather Chainmail Tunic</div>
+      <div class="card-desc">它不仅仅是皮革，它是精细的皮革。</div>
+    </div>
+  </div>
+<div class="card has-img">
+    <div class="card-img"><img src="src/精致皮制链甲头巾.png" alt="精致皮制链甲头巾" loading="lazy" onerror="this.parentElement.innerHTML='<span class=no-img-icon>🎮</span>'"></div>
+    <div class="card-body">
+      <div class="card-zh">精致皮制链甲头巾</div>
+      <div class="card-en">Fine Leather Chainmail Coif</div>
+      <div class="card-desc">虽然它不在完美状态，但它可以撑到你到达Backwoods森林。</div>
+    </div>
+  </div>
+<div class="card has-img">
+    <div class="card-img"><img src="src/旧龙甲.png" alt="旧龙甲" loading="lazy" onerror="this.parentElement.innerHTML='<span class=no-img-icon>🎮</span>'"></div>
+    <div class="card-body">
+      <div class="card-zh">旧龙甲</div>
+      <div class="card-en">Worn Dragonplate</div>
+      <div class="card-desc">这幅铠甲是用龙皮做的，几乎坚不可摧。</div>
+    </div>
+  </div>
+<div class="card has-img">
+    <div class="card-img"><img src="src/旧龙甲盾牌.png" alt="旧龙甲盾牌" loading="lazy" onerror="this.parentElement.innerHTML='<span class=no-img-icon>🎮</span>'"></div>
+    <div class="card-body">
+      <div class="card-zh">旧龙甲盾牌</div>
+      <div class="card-en">Worn Dragonshield</div>
+      <div class="card-desc">这个盾牌足够结实，甚至可以帮你抵抗龙息。</div>
+    </div>
+  </div>
+<div class="card has-img">
+    <div class="card-img"><img src="src/旧龙甲头盔.png" alt="旧龙甲头盔" loading="lazy" onerror="this.parentElement.innerHTML='<span class=no-img-icon>🎮</span>'"></div>
+    <div class="card-body">
+      <div class="card-zh">旧龙甲头盔</div>
+      <div class="card-en">Worn Dragonplate Helmet</div>
+      <div class="card-desc">此头盔由龙皮制成，几乎坚不可摧。</div>
+    </div>
+  </div>
+<div class="card has-img">
+    <div class="card-img"><img src="src/旧青铜头盔.png" alt="旧青铜头盔" loading="lazy" onerror="this.parentElement.innerHTML='<span class=no-img-icon>🎮</span>'"></div>
+    <div class="card-body">
+      <div class="card-zh">旧青铜头盔</div>
+      <div class="card-en">Tarnished Bronze Helmet</div>
+      <div class="card-desc">一个旧的青铜头盔，上面满是绿色的铜锈。</div>
+    </div>
+  </div>
+<div class="card has-img">
+    <div class="card-img"><img src="src/旧青铜胸甲.png" alt="旧青铜胸甲" loading="lazy" onerror="this.parentElement.innerHTML='<span class=no-img-icon>🎮</span>'"></div>
+    <div class="card-body">
+      <div class="card-zh">旧青铜胸甲</div>
+      <div class="card-en">Tarnished Bronze Breastplate</div>
+      <div class="card-desc">可以很好地保护你的内脏。</div>
+    </div>
+  </div>
+<div class="card has-img">
+    <div class="card-img"><img src="src/旧铜圈.png" alt="旧铜圈" loading="lazy" onerror="this.parentElement.innerHTML='<span class=no-img-icon>🎮</span>'"></div>
+    <div class="card-body">
+      <div class="card-zh">旧铜圈</div>
+      <div class="card-en">Tarnished Copper Band</div>
+      <div class="card-desc">此带显示的磨损能够让你变得坚韧一些。</div>
+    </div>
+  </div>
+<div class="card has-img">
+    <div class="card-img"><img src="src/狙击步枪.png" alt="狙击步枪" loading="lazy" onerror="this.parentElement.innerHTML='<span class=no-img-icon>🎮</span>'"></div>
+    <div class="card-body">
+      <div class="card-zh">狙击步枪</div>
+      <div class="card-en">Precision Rifle</div>
+      <div class="card-desc">传说中，漫游者大师用这把步枪射瞎了死神的左眼。</div>
+    </div>
+  </div>
+<div class="card has-img">
+    <div class="card-img"><img src="src/巨石盾牌.png" alt="巨石盾牌" loading="lazy" onerror="this.parentElement.innerHTML='<span class=no-img-icon>🎮</span>'"></div>
+    <div class="card-body">
+      <div class="card-zh">巨石盾牌</div>
+      <div class="card-en">The Monolith</div>
+      <div class="card-desc">此盾牌具有暴力的盾击击退效果，可以很快从哪怕最重装的敌人那里杀出血路。</div>
+    </div>
+  </div>
+<div class="card has-img">
+    <div class="card-img"><img src="src/蓝宝石灵石.png" alt="蓝宝石灵石" loading="lazy" onerror="this.parentElement.innerHTML='<span class=no-img-icon>🎮</span>'"></div>
+    <div class="card-body">
+      <div class="card-zh">蓝宝石灵石</div>
+      <div class="card-en">Sapphire Sense Stone</div>
+      <div class="card-desc">增加方法可以获知英雄目标的位置和速度。</div>
+    </div>
+  </div>
+<div class="card has-img">
+    <div class="card-img"><img src="src/猎枪.png" alt="猎枪" loading="lazy" onerror="this.parentElement.innerHTML='<span class=no-img-icon>🎮</span>'"></div>
+    <div class="card-body">
+      <div class="card-zh">猎枪</div>
+      <div class="card-en">Hunting Rifle</div>
+      <div class="card-desc">比弩射程近、伤害高。powerUp能提升到3倍伤害射击，每10秒一次。</div>
+    </div>
+  </div>
+<div class="card has-img">
+    <div class="card-img"><img src="src/林下匕首.png" alt="林下匕首" loading="lazy" onerror="this.parentElement.innerHTML='<span class=no-img-icon>🎮</span>'"></div>
+    <div class="card-body">
+      <div class="card-zh">林下匕首</div>
+      <div class="card-en">Undergrowth Dagger</div>
+      <div class="card-desc">林下匕首是一种很好的狙击武器。它有很大的范围，高伤害。它还可以击退目标。好是好，但要25秒冷却时间。</div>
+    </div>
+  </div>
+<div class="card has-img">
+    <div class="card-img"><img src="src/硫磺法杖.png" alt="硫磺法杖" loading="lazy" onerror="this.parentElement.innerHTML='<span class=no-img-icon>🎮</span>'"></div>
+    <div class="card-body">
+      <div class="card-zh">硫磺法杖</div>
+      <div class="card-en">Sulphur Staff</div>
+      <div class="card-desc">就是现在，是你开始训练自己成为魔法师的时候了：火球法术！只是，注意别炸到自己，好吗？</div>
+    </div>
+  </div>
+<div class="card has-img">
+    <div class="card-img"><img src="src/龙鳞链甲束腰.png" alt="龙鳞链甲束腰" loading="lazy" onerror="this.parentElement.innerHTML='<span class=no-img-icon>🎮</span>'"></div>
+    <div class="card-body">
+      <div class="card-zh">龙鳞链甲束腰</div>
+      <div class="card-en">Dragonscale Chainmail Tunic</div>
+<div class="card-desc">龙鳞做的肯定结实！</div>
+    </div>
+  </div>
+<div class="card has-img">
+    <div class="card-img"><img src="src/龙鳞链甲头巾.png" alt="龙鳞链甲头巾" loading="lazy" onerror="this.parentElement.innerHTML='<span class=no-img-icon>🎮</span>'"></div>
+    <div class="card-body">
+      <div class="card-zh">龙鳞链甲头巾</div>
+      <div class="card-en">Dragonscale Chainmail Coif</div>
+      <div class="card-desc">极其昂贵，但能让你比钻石还坚硬。</div>
+    </div>
+  </div>
+<div class="card has-img">
+    <div class="card-img"><img src="src/龙牙.png" alt="龙牙" loading="lazy" onerror="this.parentElement.innerHTML='<span class=no-img-icon>🎮</span>'"></div>
+    <div class="card-body">
+      <div class="card-zh">龙牙</div>
+      <div class="card-en">Dragontooth</div>
+      <div class="card-desc">这颗牙来自上古之龙，在千年的征程中，它毁灭了诸多的灵魂。</div>
+    </div>
+  </div>
+<div class="card has-img">
+    <div class="card-img"><img src="src/绿宝石链甲束腰.png" alt="绿宝石链甲束腰" loading="lazy" onerror="this.parentElement.innerHTML='<span class=no-img-icon>🎮</span>'"></div>
+    <div class="card-body">
+      <div class="card-zh">绿宝石链甲束腰</div>
+      <div class="card-en">Emerald Chainmail Tunic</div>
+      <div class="card-desc">足够绿，足够坚硬，非常贵。</div>
+    </div>
+  </div>
+<div class="card has-img">
+    <div class="card-img"><img src="src/绿宝石链甲头巾.png" alt="绿宝石链甲头巾" loading="lazy" onerror="this.parentElement.innerHTML='<span class=no-img-icon>🎮</span>'"></div>
+    <div class="card-body">
+      <div class="card-zh">绿宝石链甲头巾</div>
+      <div class="card-en">Emerald Chainmail Coif</div>
+      <div class="card-desc">让你变得更强大，而且酷炫得多。</div>
+    </div>
+  </div>
+<div class="card has-img">
+    <div class="card-img"><img src="src/铆钉龙鳞链甲束腰.png" alt="铆钉龙鳞链甲束腰" loading="lazy" onerror="this.parentElement.innerHTML='<span class=no-img-icon>🎮</span>'"></div>
+    <div class="card-body">
+      <div class="card-zh">铆钉龙鳞链甲束腰</div>
+      <div class="card-en">Riveted Dragonscale Chainmail Tunic</div>
+      <div class="card-desc">此束腰辐射着强大的力量，它必然经过多年的打造。</div>
+    </div>
+  </div>
+<div class="card has-img">
+    <div class="card-img"><img src="src/铆钉龙鳞链甲头巾.png" alt="铆钉龙鳞链甲头巾" loading="lazy" onerror="this.parentElement.innerHTML='<span class=no-img-icon>🎮</span>'"></div>
+    <div class="card-body">
+      <div class="card-zh">铆钉龙鳞链甲头巾</div>
+      <div class="card-en">Riveted Dragonscale Chainmail Coif</div>
+      <div class="card-desc">最锐利的剑现在也没法刺穿你！</div>
+    </div>
+  </div>
+<div class="card has-img">
+    <div class="card-img"><img src="src/磨砺之剑.png" alt="磨砺之剑" loading="lazy" onerror="this.parentElement.innerHTML='<span class=no-img-icon>🎮</span>'"></div>
+    <div class="card-body">
+      <div class="card-zh">磨砺之剑</div>
+      <div class="card-en">Sharpened Sword</div>
+      <div class="card-desc">比钝刀速度更快，每秒伤害更高。</div>
+    </div>
+  </div>
+<div class="card has-img">
+    <div class="card-img"><img src="src/木制建造者之锤.png" alt="木制建造者之锤" loading="lazy" onerror="this.parentElement.innerHTML='<span class=no-img-icon>🎮</span>'"></div>
+    <div class="card-body">
+      <div class="card-zh">木制建造者之锤</div>
+      <div class="card-en">Wooden Builder's Hammer</div>
+      <div class="card-desc">添加能力，用25金币建造诱饵陷阱</div>
+    </div>
+  </div>
+<div class="card has-img">
+    <div class="card-img"><img src="src/木制绳绞.png" alt="木制绳绞" loading="lazy" onerror="this.parentElement.innerHTML='<span class=no-img-icon>🎮</span>'"></div>
+    <div class="card-body">
+      <div class="card-zh">木制绳绞</div>
+      <div class="card-en">Wooden Strand</div>
+      <div class="card-desc">将葡萄藤编织成一枚戒指。</div>
+    </div>
+  </div>
+<div class="card has-img">
+    <div class="card-img"><img src="src/墓地之戒.png" alt="墓地之戒" loading="lazy" onerror="this.parentElement.innerHTML='<span class=no-img-icon>🎮</span>'"></div>
+    <div class="card-body">
+      <div class="card-zh">墓地之戒</div>
+      <div class="card-en">Tomb Ring</div>
+      <div class="card-desc">使用这枚戒指，骷髅同伴会听从你的命令。</div>
+    </div>
+  </div>
+<div class="card has-img">
+    <div class="card-img"><img src="src/暮光眼镜.png" alt="暮光眼镜" loading="lazy" onerror="this.parentElement.innerHTML='<span class=no-img-icon>🎮</span>'"></div>
+    <div class="card-body">
+      <div class="card-zh">暮光眼镜</div>
+      <div class="card-en">Twilight Glasses</div>
+      <div class="card-desc">终极冒险眼镜，这眼镜可以让你看穿墙。</div>
+    </div>
+  </div>
+<div class="card has-img">
+    <div class="card-img"><img src="src/扭松魔杖.png" alt="扭松魔杖" loading="lazy" onerror="this.parentElement.innerHTML='<span class=no-img-icon>🎮</span>'"></div>
+    <div class="card-body">
+      <div class="card-zh">扭松魔杖</div>
+      <div class="card-en">Twisted Pine Wand</div>
+      <div class="card-desc">比起低级的魔杖，它有更高的伤害和更大的攻击范围。</div>
+    </div>
+  </div>
+<div class="card has-img">
+    <div class="card-img"><img src="src/增强弩.png" alt="弩" loading="lazy" onerror="this.parentElement.innerHTML='<span class=no-img-icon>🎮</span>'"></div>
+    <div class="card-body">
+      <div class="card-zh">弩</div>
+      <div class="card-en">Crossbow</div>
+      
+    </div>
+  </div>
+<div class="card has-img">
+    <div class="card-img"><img src="src/弩锯.png" alt="弩锯" loading="lazy" onerror="this.parentElement.innerHTML='<span class=no-img-icon>🎮</span>'"></div>
+    <div class="card-body">
+      <div class="card-zh">弩锯</div>
+      <div class="card-en">Boltsaw</div>
+      <div class="card-desc">低伤害，但是极高的攻速。powerUp让它可以每2秒攻击3次。</div>
+    </div>
+  </div>
+<div class="card has-img">
+    <div class="card-img"><img src="src/抛光的钢质链甲束腰.png" alt="抛光的钢质链甲束腰" loading="lazy" onerror="this.parentElement.innerHTML='<span class=no-img-icon>🎮</span>'"></div>
+    <div class="card-body">
+      <div class="card-zh">抛光的钢质链甲束腰</div>
+      <div class="card-en">Polished Steel Scale Chainmail Tunic</div>
+      <div class="card-desc"> </div>
+    </div>
+  </div>
+<div class="card has-img">
+    <div class="card-img"><img src="src/抛光的钢质链甲头巾.png" alt="抛光的钢质链甲头巾" loading="lazy" onerror="this.parentElement.innerHTML='<span class=no-img-icon>🎮</span>'"></div>
+    <div class="card-body">
+      <div class="card-zh">抛光的钢质链甲头巾</div>
+      <div class="card-en">Polished Steel Scale Chainmail Coif</div>
+      <div class="card-desc"> </div>
+    </div>
+  </div>
+<div class="card has-img">
+    <div class="card-img"><img src="src/抛光的灵石.png" alt="抛光的灵石" loading="lazy" onerror="this.parentElement.innerHTML='<span class=no-img-icon>🎮</span>'"></div>
+    <div class="card-body">
+      <div class="card-zh">抛光的灵石</div>
+      <div class="card-en">Polished Sense Stone</div>
+      <div class="card-desc">提供英雄生命值和最大生命值的查询功能</div>
+    </div>
+  </div>
+<div class="card has-img">
+    <div class="card-img"><img src="src/抛光的玛瑙灵石.png" alt="抛光的玛瑙灵石" loading="lazy" onerror="this.parentElement.innerHTML='<span class=no-img-icon>🎮</span>'"></div>
+    <div class="card-body">
+      <div class="card-zh">抛光的玛瑙灵石</div>
+      <div class="card-en">Polished Agate Sense Stone</div>
+      <div class="card-desc">增加 hasEffect 方法，允许你在程序中判断你的英雄是否受到某法术或能力有影响。</div>
+    </div>
+  </div>
+<div class="card has-img">
+    <div class="card-img"><img src="src/抛光的青铜盾牌.png" alt="抛光的青铜盾牌" loading="lazy" onerror="this.parentElement.innerHTML='<span class=no-img-icon>🎮</span>'"></div>
+    <div class="card-body">
+      <div class="card-zh">抛光的青铜盾牌</div>
+      <div class="card-en">Polished Bronze Shield</div>
+      <div class="card-desc">比青铜盾牌提供更多的生命值。</div>
+    </div>
+  </div>
+<div class="card has-img">
+    <div class="card-img"><img src="src/抛光的青铜头盔.png" alt="抛光的青铜头盔" loading="lazy" onerror="this.parentElement.innerHTML='<span class=no-img-icon>🎮</span>'"></div>
+    <div class="card-body">
+      <div class="card-zh">抛光的青铜头盔</div>
+      <div class="card-en">Polished Bronze Helmet</div>
+      <div class="card-desc">以正确角度巧妙抛光打磨，让你看起来像一名旧时的战士。</div>
+    </div>
+  </div>
+<div class="card has-img">
+    <div class="card-img"><img src="src/抛光的青铜胸甲.png" alt="抛光的青铜胸甲" loading="lazy" onerror="this.parentElement.innerHTML='<span class=no-img-icon>🎮</span>'"></div>
+    <div class="card-body">
+      <div class="card-zh">抛光的青铜胸甲</div>
+      <div class="card-en">Polished Bronze Breastplate</div>
+      <div class="card-desc">赋予更多的保护，看上去就很值得拥有。</div>
+    </div>
+  </div>
+<div class="card has-img">
+    <div class="card-img"><img src="src/皮制链甲束腰.png" alt="皮制链甲束腰" loading="lazy" onerror="this.parentElement.innerHTML='<span class=no-img-icon>🎮</span>'"></div>
+    <div class="card-body">
+      <div class="card-zh">皮制链甲束腰</div>
+      <div class="card-en">Leather Chainmail Tunic</div>
+      <div class="card-desc">虽然皮革让你看起来时尚，它几乎不提供任何保护。
+</div>
+    </div>
+  </div>
+<div class="card has-img">
+    <div class="card-img"><img src="src/皮制链甲头巾.png" alt="皮制链甲头巾" loading="lazy" onerror="this.parentElement.innerHTML='<span class=no-img-icon>🎮</span>'"></div>
+    <div class="card-body">
+      <div class="card-zh">皮制链甲头巾</div>
+      <div class="card-en">Leather Chainmail Coif</div>
+      <div class="card-desc">塞尼克的第一个头罩在平原树林的一个棚子里找到。</div>
+    </div>
+  </div>
+<div class="card has-img">
+    <div class="card-img"><img src="src/偏转盾.png" alt="偏转盾" loading="lazy" onerror="this.parentElement.innerHTML='<span class=no-img-icon>🎮</span>'"></div>
+    <div class="card-body">
+      <div class="card-zh">偏转盾</div>
+      <div class="card-en">Deflector</div>
+      <div class="card-desc">貌似来自冰龙的指关节骨，命名为偏离者，这个盾在违抗命运和死亡！</div>
+    </div>
+  </div>
+<div class="card has-img">
+    <div class="card-img"><img src="src/破旧的麻布魔法师帽子.png" alt="破旧的麻布魔法师帽子" loading="lazy" onerror="this.parentElement.innerHTML='<span class=no-img-icon>🎮</span>'"></div>
+    <div class="card-body">
+      <div class="card-zh">破旧的麻布魔法师帽子</div>
+      <div class="card-en">Threadbare Burlap Wizards Hat</div>
+      <div class="card-desc">这顶帽子虽然破旧，但它能为你的脑袋提供保护。</div>
+    </div>
+  </div>
+<div class="card has-img">
+    <div class="card-img"><img src="src/破旧的丝质披风.png" alt="破旧的丝质披风" loading="lazy" onerror="this.parentElement.innerHTML='<span class=no-img-icon>🎮</span>'"></div>
+    <div class="card-body">
+      <div class="card-zh">破旧的丝质披风</div>
+      <div class="card-en">Torn Silk Cloak</div>
+      <div class="card-desc">这个斗篷可能破了，但它的防御力依然不错。过去的东西确实做得更好。</div>
+    </div>
+  </div>
+<div class="card has-img">
+    <div class="card-img"><img src="src/破烂的丝质帽.png" alt="破烂的丝质帽" loading="lazy" onerror="this.parentElement.innerHTML='<span class=no-img-icon>🎮</span>'"></div>
+    <div class="card-body">
+      <div class="card-zh">破烂的丝质帽</div>
+      <div class="card-en">Ragged Silk Hat</div>
+      <div class="card-desc"> </div>
+    </div>
+  </div>
+<div class="card has-img">
+    <div class="card-img"><img src="src/普通步枪.png" alt="普通步枪" loading="lazy" onerror="this.parentElement.innerHTML='<span class=no-img-icon>🎮</span>'"></div>
+    <div class="card-body">
+      <div class="card-zh">普通步枪</div>
+      <div class="card-en">Simple Rifle</div>
+      <div class="card-desc">比猎枪快，但是没有特殊攻击。</div>
+    </div>
+  </div>
+<div class="card has-img">
+    <div class="card-img"><img src="src/普通靴子.png" alt="普通靴子" loading="lazy" onerror="this.parentElement.innerHTML='<span class=no-img-icon>🎮</span>'"></div>
+    <div class="card-body">
+      <div class="card-zh">普通靴子</div>
+      <div class="card-en">Simple Boots</div>
+      <div class="card-desc">允许你通过上（Up）右（Right）下（Down）左（Left）命令让英雄做出不同的行动。</div>
+    </div>
+  </div>
+<div class="card has-img">
+    <div class="card-img"><img src="src/骑士火焰装弹.png" alt="骑士火焰装弹" loading="lazy" onerror="this.parentElement.innerHTML='<span class=no-img-icon>🎮</span>'"></div>
+    <div class="card-body">
+      <div class="card-zh">骑士火焰装弹</div>
+      <div class="card-en">Knightfire Charge</div>
+<div class="card-desc">近距离、快速、高伤害的燃烧弹装弹。比重型投掷飞刀伤害更大。小心别把自己炸到。每次准备需耗时 10 秒。</div>
+    </div>
+  </div>
+<div class="card has-img">
+    <div class="card-img"><img src="src/抛光的青铜盾牌.png" alt="青铜盾牌" loading="lazy" onerror="this.parentElement.innerHTML='<span class=no-img-icon>🎮</span>'"></div>
+    <div class="card-body">
+      <div class="card-zh">青铜盾牌</div>
+      <div class="card-en">Bronze Shield</div>
+      <div class="card-desc">盾防抵挡38%的伤害——最好开始为升级攒钱。</div>
+    </div>
+  </div>
+<div class="card has-img">
+    <div class="card-img"><img src="src/轻木法杖.png" alt="轻木法杖" loading="lazy" onerror="this.parentElement.innerHTML='<span class=no-img-icon>🎮</span>'"></div>
+    <div class="card-body">
+      <div class="card-zh">轻木法杖</div>
+      <div class="card-en">Balsa Staff</div>
+      <div class="card-desc">提供一个能将目标猛抛出去的摔投法术，每7.5秒一次。</div>
+    </div>
+  </div>
+<div class="card has-img">
+    <div class="card-img"><img src="src/柔软皮质靴子.png" alt="柔软皮质靴子" loading="lazy" onerror="this.parentElement.innerHTML='<span class=no-img-icon>🎮</span>'"></div>
+    <div class="card-body">
+      <div class="card-zh">柔软皮质靴子</div>
+      <div class="card-en">Softened Leather Boots</div>
+      <div class="card-desc">比皮靴要快一点，也更时尚。</div>
+    </div>
+  </div>
+<div class="card has-img">
+    <div class="card-img"><img src="src/软质皮革手套.png" alt="软质皮革手套" loading="lazy" onerror="this.parentElement.innerHTML='<span class=no-img-icon>🎮</span>'"></div>
+    <div class="card-body">
+      <div class="card-zh">软质皮革手套</div>
+      <div class="card-en">Soft Leather Gloves</div>
+      <div class="card-desc">比普通皮手套软，给予生命值较少。</div>
+    </div>
+  </div>
+<div class="card has-img">
+    <div class="card-img"><img src="src/锐歌匕首.png" alt="锐歌匕首" loading="lazy" onerror="this.parentElement.innerHTML='<span class=no-img-icon>🎮</span>'"></div>
+    <div class="card-body">
+      <div class="card-zh">锐歌匕首</div>
+      <div class="card-en">Sharpsong</div>
+      <div class="card-desc">非常短的匕首，冷却时间短。不是投掷武器，而是背刺匕首-只在身后刺杀有效。</div>
+    </div>
+  </div>
+<div class="card has-img">
+    <div class="card-img"><img src="src/闪电手杖.png" alt="闪电手杖" loading="lazy" onerror="this.parentElement.innerHTML='<span class=no-img-icon>🎮</span>'"></div>
+    <div class="card-body">
+      <div class="card-zh">闪电手杖</div>
+      <div class="card-en">Lightning Stick</div>
+      <div class="card-desc">在远程发射出高伤害的能量光束。</div>
+    </div>
+  </div>
+<div class="card has-img">
+    <div class="card-img"><img src="src/闪电小枝.png" alt="闪电小枝" loading="lazy" onerror="this.parentElement.innerHTML='<span class=no-img-icon>🎮</span>'"></div>
+    <div class="card-body">
+      <div class="card-zh">闪电小枝</div>
+      <div class="card-en">Lightning Twig</div>
+      <div class="card-desc">闪电！闪电！</div>
+    </div>
+  </div>
+<div class="card has-img">
+    <div class="card-img"><img src="src/闪光弹.png" alt="闪光弹" loading="lazy" onerror="this.parentElement.innerHTML='<span class=no-img-icon>🎮</span>'"></div>
+    <div class="card-body">
+      <div class="card-zh">闪光弹</div>
+      <div class="card-en">Glitterbomb</div>
+      <div class="card-desc">用神秘配方调制，能闪瞎和烫伤波及到的一切。</div>
+    </div>
+  </div>
+<div class="card has-img">
+    <div class="card-img"><img src="src/神庙守卫之剑.png" alt="神庙守卫之剑" loading="lazy" onerror="this.parentElement.innerHTML='<span class=no-img-icon>🎮</span>'"></div>
+    <div class="card-body">
+      <div class="card-zh">神庙守卫之剑</div>
+      <div class="card-en">Sword of the Temple Guard</div>
+      <div class="card-desc">最伟大的骑士曾经带着这把剑在战场上出生入死。</div>
+    </div>
+  </div>
+<div class="card has-img">
+    <div class="card-img"><img src="src/生命之书Ⅰ.png" alt="生命之书Ⅰ" loading="lazy" onerror="this.parentElement.innerHTML='<span class=no-img-icon>🎮</span>'"></div>
+    <div class="card-body">
+      <div class="card-zh">生命之书Ⅰ</div>
+      <div class="card-en">Book of Life I</div>
+      <div class="card-desc">授予恢复法术，每秒治疗12点，持续5秒，7.5秒冷却时间。</div>
+    </div>
+  </div>
+<div class="card has-img">
+    <div class="card-img"><img src="src/生命之书Ⅱ.png" alt="生命之书Ⅱ" loading="lazy" onerror="this.parentElement.innerHTML='<span class=no-img-icon>🎮</span>'"></div>
+    <div class="card-body">
+      <div class="card-zh">生命之书Ⅱ</div>
+      <div class="card-en">Book of Life II</div>
+      <div class="card-desc">授予缩小法术，减少目标的一半的生命值，然后给予该目标两倍速度，持续5秒，冷却时间7.5秒。提升恢复法术的恢复效果至每秒17.5点生命值。</div>
+    </div>
+  </div>
+<div class="card has-img">
+    <div class="card-img"><img src="src/生命之书Ⅲ.png" alt="生命之书Ⅲ" loading="lazy" onerror="this.parentElement.innerHTML='<span class=no-img-icon>🎮</span>'"></div>
+    <div class="card-body">
+      <div class="card-zh">生命之书Ⅲ</div>
+      <div class="card-en">Book of Life III</div>
+      <div class="card-desc">授予增大法术，给予目标双倍生命值，并减少该目标一半的速度，持续5秒，冷却时间7.5秒。提升恢复法术的恢复效果至每秒36点。减少缩小法术的冷却时间至3.7秒。</div>
+    </div>
+  </div>
+<div class="card has-img">
+    <div class="card-img"><img src="src/生命之书Ⅳ.png" alt="生命之书Ⅳ" loading="lazy" onerror="this.parentElement.innerHTML='<span class=no-img-icon>🎮</span>'"></div>
+    <div class="card-body">
+      <div class="card-zh">生命之书Ⅳ</div>
+      <div class="card-en">Book of Life IV</div>
+      <div class="card-desc">授予时间扭曲法术。提升恢复法术的恢复效果至每秒51.5点。减少缩小法术和增大法术的冷却时间至2.6秒。</div>
+    </div>
+  </div>
+<div class="card has-img">
+    <div class="card-img"><img src="src/生命之书Ⅴ.png" alt="生命之书Ⅴ" loading="lazy" onerror="this.parentElement.innerHTML='<span class=no-img-icon>🎮</span>'"></div>
+    <div class="card-body">
+      <div class="card-zh">生命之书Ⅴ</div>
+      <div class="card-en">Book of Life V</div>
+      <div class="card-desc">激活驱散。提升‘恢复’效果至每秒101点。减少‘增大’和‘缩小’的冷却时间至1.3秒。</div>
+    </div>
+  </div>
+<div class="card has-img">
+    <div class="card-img"><img src="src/生锈的钢制链甲束腰.png" alt="生锈的钢制链甲束腰" loading="lazy" onerror="this.parentElement.innerHTML='<span class=no-img-icon>🎮</span>'"></div>
+    <div class="card-body">
+      <div class="card-zh">生锈的钢制链甲束腰</div>
+      <div class="card-en">Rusted Steel Scale Chainmail Tunic</div>
+      <div class="card-desc"> </div>
+    </div>
+  </div>
+<div class="card has-img">
+    <div class="card-img"><img src="src/生锈的钢制链甲头巾.png" alt="生锈的钢制链甲头巾" loading="lazy" onerror="this.parentElement.innerHTML='<span class=no-img-icon>🎮</span>'"></div>
+    <div class="card-body">
+      <div class="card-zh">生锈的钢制链甲头巾</div>
+      <div class="card-en">Rusted Steel Scale Chainmail Coif</div>
+      <div class="card-desc"> </div>
+    </div>
+  </div>
+<div class="card has-img">
+    <div class="card-img"><img src="src/生锈的铁质头盔.png" alt="生锈的铁质头盔" loading="lazy" onerror="this.parentElement.innerHTML='<span class=no-img-icon>🎮</span>'"></div>
+    <div class="card-body">
+      <div class="card-zh">生锈的铁质头盔</div>
+      <div class="card-en">Rusted Iron Helmet</div>
+      <div class="card-desc">小心你的鼻子别碰到铁锈！</div>
+    </div>
+  </div>
+<div class="card has-img">
+    <div class="card-img"><img src="src/生锈的铁质胸甲.png" alt="生锈的铁质胸甲" loading="lazy" onerror="this.parentElement.innerHTML='<span class=no-img-icon>🎮</span>'"></div>
+    <div class="card-body">
+      <div class="card-zh">生锈的铁质胸甲</div>
+      <div class="card-en">Rusted Iron Breastplate</div>
+      <div class="card-desc">希望你的射击已经更新了！</div>
+    </div>
+  </div>
+<div class="card ai has-img">
+    <div class="card-img"><img src="src/圣骑士之命.png" alt="圣骑士" loading="lazy" onerror="this.parentElement.innerHTML='<span class=no-img-icon>🎮</span>'"></div>
+    <div class="card-body">
+      <div class="card-zh">圣骑士</div>
+      <div class="card-en">Paladin</div>
+      
+    </div>
+  </div>
+<div class="card has-img">
+    <div class="card-img"><img src="src/圣骑士之命.png" alt="圣骑士之命" loading="lazy" onerror="this.parentElement.innerHTML='<span class=no-img-icon>🎮</span>'"></div>
+    <div class="card-body">
+      <div class="card-zh">圣骑士之命</div>
+      <div class="card-en">Order of the Paladin</div>
+      <div class="card-desc">只有最强大的英雄才能佩戴这枚戒指。它会将他们同古老的神秘誓言捆绑在一起。</div>
+    </div>
+  </div>
+<div class="card has-img">
+    <div class="card-img"><img src="src/狮鹫羊毛帽子.png" alt="狮鹫羊毛帽子" loading="lazy" onerror="this.parentElement.innerHTML='<span class=no-img-icon>🎮</span>'"></div>
+    <div class="card-body">
+      <div class="card-zh">狮鹫羊毛帽子</div>
+      <div class="card-en">Griffin Wool Hat</div>
+      <div class="card-desc">只有最聪明的巫师才能戴上这顶帽子。</div>
+    </div>
+  </div>
+<div class="card has-img">
+    <div class="card-img"><img src="src/狮鹫羊毛长袍.png" alt="狮鹫羊毛长袍" loading="lazy" onerror="this.parentElement.innerHTML='<span class=no-img-icon>🎮</span>'"></div>
+    <div class="card-body">
+      <div class="card-zh">狮鹫羊毛长袍</div>
+      <div class="card-en">Griffin Wool Robe</div>
+      <div class="card-desc">你可能会认为这是griffin的残忍，但事实上，这是人造的。</div>
+    </div>
+  </div>
+<div class="card has-img">
+    <div class="card-img"><img src="src/石英灵石.png" alt="石英灵石" loading="lazy" onerror="this.parentElement.innerHTML='<span class=no-img-icon>🎮</span>'"></div>
+    <div class="card-body">
+      <div class="card-zh">石英灵石</div>
+      <div class="card-en">Quartz Sense Stone</div>
+      <div class="card-desc">添加对你英雄当前金币的反思。</div>
+    </div>
+  </div>
+<div class="card has-img">
+    <div class="card-img"><img src="src/石质建造者之锤.png" alt="石质建造者之锤" loading="lazy" onerror="this.parentElement.innerHTML='<span class=no-img-icon>🎮</span>'"></div>
+    <div class="card-body">
+      <div class="card-zh">石质建造者之锤</div>
+      <div class="card-en">Stone Builder's Hammer</div>
+      <div class="card-desc">增加建造防御箭塔的能力。</div>
+    </div>
+  </div>
+<div class="card has-img">
+    <div class="card-img"><img src="src/手工亚麻巫师帽.png" alt="手工亚麻巫师帽" loading="lazy" onerror="this.parentElement.innerHTML='<span class=no-img-icon>🎮</span>'"></div>
+    <div class="card-body">
+      <div class="card-zh">手工亚麻巫师帽</div>
+      <div class="card-en">Hand-sewn Linen Wizard's Hat</div>
+      <div class="card-desc">充满爱的自制</div>
+    </div>
+  </div>
+<div class="card has-img">
+    <div class="card-img"><img src="src/树之赠礼.png" alt="树之赠礼" loading="lazy" onerror="this.parentElement.innerHTML='<span class=no-img-icon>🎮</span>'"></div>
+    <div class="card-body">
+      <div class="card-zh">树之赠礼</div>
+      <div class="card-en">Gift of the Trees</div>
+      <div class="card-desc">射手女神厌倦了一次只射一支箭，于是打造了这把史诗之弓，取材于世界之树（Yggdrasil，北欧神话中连接天，地，地狱的巨树）。</div>
+    </div>
+  </div>
+<div class="card has-img">
+    <div class="card-img"><img src="src/刷漆钢质盾牌.png" alt="刷漆钢质盾牌" loading="lazy" onerror="this.parentElement.innerHTML='<span class=no-img-icon>🎮</span>'"></div>
+    <div class="card-body">
+      <div class="card-zh">刷漆钢质盾牌</div>
+      <div class="card-en">Painted Steel Shield</div>
+      <div class="card-desc">和盾牌、攻城锤一样有用。它比钢质盾牌提供更多的保护，盾击产生大幅击退效果和伤害。</div>
+    </div>
+  </div>
+<div class="card has-img">
+    <div class="card-img"><img src="src/刷漆钢质头盔.png" alt="刷漆钢质头盔" loading="lazy" onerror="this.parentElement.innerHTML='<span class=no-img-icon>🎮</span>'"></div>
+    <div class="card-body">
+      <div class="card-zh">刷漆钢质头盔</div>
+      <div class="card-en">Painted Steel Helmet</div>
+      <div class="card-desc">就像橄榄球员的头盔，能够保护你的脑袋免受球和食人魔攻击。</div>
+    </div>
+  </div>
+<div class="card has-img">
+    <div class="card-img"><img src="src/刷漆钢质胸甲.png" alt="刷漆钢质胸甲" loading="lazy" onerror="this.parentElement.innerHTML='<span class=no-img-icon>🎮</span>'"></div>
+    <div class="card-body">
+      <div class="card-zh">刷漆钢质胸甲</div>
+      <div class="card-en">Painted Steel Breastplate</div>
+      <div class="card-desc">和其他的红色装备很匹配。</div>
+    </div>
+  </div>
+<div class="card has-img">
+    <div class="card-img"><img src="src/双刃大剑.png" alt="双刃大剑" loading="lazy" onerror="this.parentElement.innerHTML='<span class=no-img-icon>🎮</span>'"></div>
+    <div class="card-body">
+      <div class="card-zh">双刃大剑</div>
+      <div class="card-en">Claymore</div>
+      <div class="card-desc">比大剑的每秒伤害还要高一点。powerUp让下一次攻击能从10米外进行，每6秒一次。</div>
+    </div>
+  </div>
+<div class="card has-img">
+    <div class="card-img"><img src="src/水晶魔杖.png" alt="水晶魔杖" loading="lazy" onerror="this.parentElement.innerHTML='<span class=no-img-icon>🎮</span>'"></div>
+    <div class="card-body">
+      <div class="card-zh">水晶魔杖</div>
+      <div class="card-en">Crystal Wand</div>
+      <div class="card-desc">从这根水晶魔杖喷涌而出的法术能量可以射出一道致命的分解射线。</div>
+    </div>
+  </div>
+<div class="card has-img">
+    <div class="card-img"><img src="src/死亡之眼弩.png" alt="死亡之眼弩" loading="lazy" onerror="this.parentElement.innerHTML='<span class=no-img-icon>🎮</span>'"></div>
+    <div class="card-body">
+      <div class="card-zh">死亡之眼弩</div>
+      <div class="card-en">Deadeye Crossbow</div>
+      <div class="card-desc">用这把优雅、快速的弩，干掉视野内的野兽</div>
+    </div>
+  </div>
+<div class="card has-img">
+    <div class="card-img"><img src="src/松软羊毛帽.png" alt="松软羊毛帽" loading="lazy" onerror="this.parentElement.innerHTML='<span class=no-img-icon>🎮</span>'"></div>
+    <div class="card-body">
+      <div class="card-zh">松软羊毛帽</div>
+      <div class="card-en">Floppy Lambswool Hat</div>
+      <div class="card-desc">尽管标着 &quot;Lambswool&quot; ，实际上是冰牦牛的毛。</div>
+    </div>
+  </div>
+<div class="card has-img">
+    <div class="card-img"><img src="src/速度戒指.png" alt="速度戒指" loading="lazy" onerror="this.parentElement.innerHTML='<span class=no-img-icon>🎮</span>'"></div>
+    <div class="card-body">
+      <div class="card-zh">速度戒指</div>
+      <div class="card-en">Ring of Speed</div>
+      <div class="card-desc">这枚戒指会将让哪怕最慢的英雄变为速度之魔。</div>
+    </div>
+  </div>
+<div class="card has-img">
+    <div class="card-img"><img src="src/藤条法杖.png" alt="藤条法杖" loading="lazy" onerror="this.parentElement.innerHTML='<span class=no-img-icon>🎮</span>'"></div>
+    <div class="card-body">
+      <div class="card-zh">藤条法杖</div>
+      <div class="card-en">Vine Staff</div>
+      <div class="card-desc">引导森林之怒，召唤一个树榴为你而战！</div>
+    </div>
+  </div>
+<div class="card has-img">
+    <div class="card-img"><img src="src/剃刀盘.png" alt="剃刀盘" loading="lazy" onerror="this.parentElement.innerHTML='<span class=no-img-icon>🎮</span>'"></div>
+    <div class="card-body">
+      <div class="card-zh">剃刀盘</div>
+      <div class="card-en">Razordisc</div>
+      <div class="card-desc">扔出无限回转的剃刀盘，击中敌人之前它们不会停止。</div>
+    </div>
+  </div>
+<div class="card has-img">
+    <div class="card-img"><img src="src/跳跃之靴.png" alt="跳跃之靴" loading="lazy" onerror="this.parentElement.innerHTML='<span class=no-img-icon>🎮</span>'"></div>
+    <div class="card-body">
+      <div class="card-zh">跳跃之靴</div>
+      <div class="card-en">Boots of Jumping</div>
+      <div class="card-desc">赋予move和jumpTo方法。对更高等级关卡是极好的。</div>
+    </div>
+  </div>
+<div class="card has-img">
+    <div class="card-img"><img src="src/铁盾.png" alt="铁盾" loading="lazy" onerror="this.parentElement.innerHTML='<span class=no-img-icon>🎮</span>'"></div>
+    <div class="card-body">
+      <div class="card-zh">铁盾</div>
+      <div class="card-en">Iron Shield</div>
+      <div class="card-desc">赋予尚可的额外生命和防御效果，毕竟这是一大块铁。</div>
+    </div>
+  </div>
+<div class="card has-img">
+    <div class="card-img"><img src="src/铁防守弩.png" alt="铁防守弩" loading="lazy" onerror="this.parentElement.innerHTML='<span class=no-img-icon>🎮</span>'"></div>
+    <div class="card-body">
+      <div class="card-zh">铁防守弩</div>
+      <div class="card-en">Iron Defender</div>
+      <div class="card-desc">这种短程弩非常适合近距离作战。</div>
+    </div>
+  </div>
+<div class="card has-img">
+    <div class="card-img"><img src="src/铁链.png" alt="铁链" loading="lazy" onerror="this.parentElement.innerHTML='<span class=no-img-icon>🎮</span>'"></div>
+    <div class="card-body">
+      <div class="card-zh">铁链</div>
+      <div class="card-en">Iron Link</div>
+      <div class="card-desc">铸造这枚戒指的工匠为戒指添加了强大的手铐法术。</div>
+    </div>
+  </div>
+<div class="card has-img">
+    <div class="card-img"><img src="src/铁制链甲束腰.png" alt="铁制链甲束腰" loading="lazy" onerror="this.parentElement.innerHTML='<span class=no-img-icon>🎮</span>'"></div>
+    <div class="card-body">
+      <div class="card-zh">铁制链甲束腰</div>
+      <div class="card-en">Iron Chainmail Tunic</div>
+      <div class="card-desc">在萨尔文沙漠的一间废弃仓库中找到。束腰的一部分破损了，但它仍然足以保护你。</div>
+    </div>
+  </div>
+<div class="card has-img">
+    <div class="card-img"><img src="src/铁制链甲头巾.png" alt="铁制链甲头巾" loading="lazy" onerror="this.parentElement.innerHTML='<span class=no-img-icon>🎮</span>'"></div>
+    <div class="card-body">
+      <div class="card-zh">铁制链甲头巾</div>
+      <div class="card-en">Iron Chainmail Coif</div>
+      <div class="card-desc">从奥卡尔的村庄挖掘出来的，这个遗物可以保护你免受几次攻击。</div>
+    </div>
+  </div>
+<div class="card has-img">
+    <div class="card-img"><img src="src/王者之戒.png" alt="王者之戒" loading="lazy" onerror="this.parentElement.innerHTML='<span class=no-img-icon>🎮</span>'"></div>
+    <div class="card-body">
+      <div class="card-zh">王者之戒</div>
+      <div class="card-en">King's Ring</div>
+      <div class="card-desc">宝石戒指适合君王。</div>
+    </div>
+  </div>
+<div class="card has-img">
+    <div class="card-img"><img src="src/无月之夜.png" alt="无月之夜" loading="lazy" onerror="this.parentElement.innerHTML='<span class=no-img-icon>🎮</span>'"></div>
+    <div class="card-body">
+      <div class="card-zh">无月之夜</div>
+      <div class="card-en">Moonless Night</div>
+      <div class="card-desc">很多人说，这枚戒指能将黑暗带往哪怕最光明的地方。</div>
+    </div>
+  </div>
+<div class="card has-img">
+    <div class="card-img"><img src="src/陷阱带.png" alt="陷阱带" loading="lazy" onerror="this.parentElement.innerHTML='<span class=no-img-icon>🎮</span>'"></div>
+    <div class="card-body">
+      <div class="card-zh">陷阱带</div>
+      <div class="card-en">Trap Belt</div>
+      <div class="card-desc">添加熊陷阱到可建造列表中。它是非常好的捕捉大食人魔的方式。</div>
+    </div>
+  </div>
+<div class="card has-img">
+    <div class="card-img"><img src="src/橡木魔杖.png" alt="橡木魔杖" loading="lazy" onerror="this.parentElement.innerHTML='<span class=no-img-icon>🎮</span>'"></div>
+    <div class="card-body">
+      <div class="card-zh">橡木魔杖</div>
+      <div class="card-en">Oak Wand</div>
+      <div class="card-desc">提供了一个扎根法术，能让单个敌人停5秒，每7.5秒一次。</div>
+    </div>
+  </div>
+<div class="card has-img">
+    <div class="card-img"><img src="src/橡弩.png" alt="橡弩" loading="lazy" onerror="this.parentElement.innerHTML='<span class=no-img-icon>🎮</span>'"></div>
+    <div class="card-body">
+      <div class="card-zh">橡弩</div>
+      <div class="card-en">Oak Crossbow</div>
+      <div class="card-desc">比大十字弩杀伤力更大，但攻击范围较近。</div>
+    </div>
+  </div>
+<div class="card has-img">
+    <div class="card-img"><img src="src/橡球法杖.png" alt="橡球法杖" loading="lazy" onerror="this.parentElement.innerHTML='<span class=no-img-icon>🎮</span>'"></div>
+    <div class="card-body">
+      <div class="card-zh">橡球法杖</div>
+      <div class="card-en">Oak Sphere Staff</div>
+      <div class="card-desc">提供了一个风暴法术，当你使用它时，可以让所有的炮弹偏离轨道。</div>
+    </div>
+  </div>
+<div class="card has-img">
+    <div class="card-img"><img src="src/邪恶宝典 I.png" alt="邪恶宝典 I" loading="lazy" onerror="this.parentElement.innerHTML='<span class=no-img-icon>🎮</span>'"></div>
+    <div class="card-body">
+      <div class="card-zh">邪恶宝典 I</div>
+      <div class="card-en">Unholy Tome I</div>
+      <div class="card-desc">赋予吸取生命的能力，在15米内，对目标产生每秒8伤害的吸取。</div>
+    </div>
+  </div>
+<div class="card has-img">
+    <div class="card-img"><img src="src/邪恶宝典 II.png" alt="邪恶宝典 II" loading="lazy" onerror="this.parentElement.innerHTML='<span class=no-img-icon>🎮</span>'"></div>
+    <div class="card-body">
+      <div class="card-zh">邪恶宝典 II</div>
+      <div class="card-en">Unholy Tome II</div>
+      <div class="card-desc">赋予恐惧法术，会引起目标敌人逃亡5秒，10秒的冷却时间。吸取生命效果提升至18点每秒伤害。</div>
+    </div>
+  </div>
+<div class="card has-img">
+    <div class="card-img"><img src="src/邪恶宝典 III.png" alt="邪恶宝典 III" loading="lazy" onerror="this.parentElement.innerHTML='<span class=no-img-icon>🎮</span>'"></div>
+    <div class="card-body">
+      <div class="card-zh">邪恶宝典 III</div>
+      <div class="card-en">Unholy Tome III</div>
+      <div class="card-desc">开启&quot;复活死者&quot;技能，能随机让20米范围内100点的死亡单位半血复活，持续10秒。吸取生命的每秒伤害提升至24。</div>
+    </div>
+  </div>
+<div class="card has-img">
+    <div class="card-img"><img src="src/邪恶宝典 IV.png" alt="邪恶宝典 IV" loading="lazy" onerror="this.parentElement.innerHTML='<span class=no-img-icon>🎮</span>'"></div>
+    <div class="card-body">
+      <div class="card-zh">邪恶宝典 IV</div>
+      <div class="card-en">Unholy Tome IV</div>
+      <div class="card-desc">赋予毒云法术，在10米范围内，产生30点每秒伤害，持续5秒，冷却时间15秒。吸取生命的每秒伤害提升到45。增加复活死者的效果。</div>
+    </div>
+  </div>
+<div class="card has-img">
+    <div class="card-img"><img src="src/邪恶宝典 V.png" alt="邪恶宝典 V" loading="lazy" onerror="this.parentElement.innerHTML='<span class=no-img-icon>🎮</span>'"></div>
+    <div class="card-body">
+      <div class="card-zh">邪恶宝典 V</div>
+      <div class="card-en">Unholy Tome V</div>
+      <div class="card-desc">赋予召唤不死族的法术，增加吸取生命的每秒伤害到76。增加复活死者的目标数目。增加毒云的每秒伤害到50。</div>
+    </div>
+  </div>
+<div class="card has-img">
+    <div class="card-img"><img src="src/星火炸弹.png" alt="星火炸弹" loading="lazy" onerror="this.parentElement.innerHTML='<span class=no-img-icon>🎮</span>'"></div>
+    <div class="card-body">
+      <div class="card-zh">星火炸弹</div>
+      <div class="card-en">Sparkbomb</div>
+      <div class="card-desc">沸腾银火据说可以融化骨头，但见过这招术的人都死了。</div>
+    </div>
+  </div>
+<div class="card has-img">
+    <div class="card-img"><img src="src/玄铁剑.png" alt="玄铁剑" loading="lazy" onerror="this.parentElement.innerHTML='<span class=no-img-icon>🎮</span>'"></div>
+    <div class="card-body">
+      <div class="card-zh">玄铁剑</div>
+      <div class="card-en">Darksteel Blade</div>
+      <div class="card-desc">几乎和短剑一样快，却有更高伤害。具有激活加速攻击的powerUp能力，每12秒一次。</div>
+    </div>
+  </div>
+<div class="card has-img">
+    <div class="card-img"><img src="src/羊毛披风.png" alt="羊毛披风" loading="lazy" onerror="this.parentElement.innerHTML='<span class=no-img-icon>🎮</span>'"></div>
+    <div class="card-body">
+      <div class="card-zh">羊毛披风</div>
+      <div class="card-en">Lambswool Cloak</div>
+      <div class="card-desc">看起来像超级英雄的披风，但遗憾的是，你不能飞。</div>
+    </div>
+  </div>
+<div class="card has-img">
+    <div class="card-img"><img src="src/药水腰带.png" alt="药水腰带" loading="lazy" onerror="this.parentElement.innerHTML='<span class=no-img-icon>🎮</span>'"></div>
+    <div class="card-body">
+      <div class="card-zh">药水腰带</div>
+      <div class="card-en">Potion Belt</div>
+      <div class="card-desc">允许你的英雄在战场上喝药水获得附加效果。</div>
+    </div>
+  </div>
+<div class="card has-img">
+    <div class="card-img"><img src="src/遗忘青铜戒指.png" alt="遗忘青铜戒指" loading="lazy" onerror="this.parentElement.innerHTML='<span class=no-img-icon>🎮</span>'"></div>
+    <div class="card-body">
+      <div class="card-zh">遗忘青铜戒指</div>
+      <div class="card-en">Forgotten Bronze Ring</div>
+      <div class="card-desc">这枚戒指一直遗失在神秘的古墓中，直到被你发现。</div>
+    </div>
+  </div>
+<div class="card has-img">
+    <div class="card-img"><img src="src/遗忘之剑.png" alt="遗忘之剑" loading="lazy" onerror="this.parentElement.innerHTML='<span class=no-img-icon>🎮</span>'"></div>
+    <div class="card-body">
+      <div class="card-zh">遗忘之剑</div>
+      <div class="card-en">Sword of the Forgotten</div>
+      <div class="card-desc">这把古剑的渊源已经被时间湮没。它每攻击一下，都会击退敌人一点。</div>
+    </div>
+  </div>
+<div class="card has-img">
+    <div class="card-img"><img src="src/硬钢眼镜.png" alt="硬钢眼镜" loading="lazy" onerror="this.parentElement.innerHTML='<span class=no-img-icon>🎮</span>'"></div>
+    <div class="card-body">
+      <div class="card-zh">硬钢眼镜</div>
+      <div class="card-en">Hardened Steel Glasses</div>
+      <div class="card-desc">让你可以在代码中使用 `isPathClear` 方法。</div>
+    </div>
+  </div>
+<div class="card has-img">
+    <div class="card-img"><img src="src/硬羊毛帽.png" alt="硬羊毛帽" loading="lazy" onerror="this.parentElement.innerHTML='<span class=no-img-icon>🎮</span>'"></div>
+    <div class="card-body">
+      <div class="card-zh">硬羊毛帽</div>
+      <div class="card-en">Stiff Lambswool Hat</div>
+      <div class="card-desc">有传言说，Omarn 用魔法使这顶帽子变得更高。</div>
+    </div>
+  </div>
+<div class="card has-img">
+    <div class="card-img"><img src="src/硬制翡翠链甲束腰.png" alt="硬制翡翠链甲束腰" loading="lazy" onerror="this.parentElement.innerHTML='<span class=no-img-icon>🎮</span>'"></div>
+    <div class="card-body">
+      <div class="card-zh">硬制翡翠链甲束腰</div>
+      <div class="card-en">Hardened Emerald Chainmail Tunic</div>
+      <div class="card-desc">Kithgard地牢挖出的宝石已被善加使用！</div>
+    </div>
+  </div>
+<div class="card has-img">
+    <div class="card-img"><img src="src/硬制翡翠链甲头巾.png" alt="硬制翡翠链甲头巾" loading="lazy" onerror="this.parentElement.innerHTML='<span class=no-img-icon>🎮</span>'"></div>
+    <div class="card-body">
+      <div class="card-zh">硬制翡翠链甲头巾</div>
+      <div class="card-en">Hardened Emerald Chainmail Coif</div>
+      <div class="card-desc">绿色让你看起来像一条龙。</div>
+    </div>
+  </div>
+<div class="card has-img">
+    <div class="card-img"><img src="src/永恒之戒.png" alt="永恒之戒" loading="lazy" onerror="this.parentElement.innerHTML='<span class=no-img-icon>🎮</span>'"></div>
+    <div class="card-body">
+      <div class="card-zh">永恒之戒</div>
+      <div class="card-en">Undying Ring</div>
+      <div class="card-desc">食人魔大酋长Oniko据说将自己变为了一枚戒指，以保护自己的遗产。</div>
+    </div>
+  </div>
+<div class="card has-img">
+    <div class="card-img"><img src="src/元素法典 I.png" alt="元素法典 I" loading="lazy" onerror="this.parentElement.innerHTML='<span class=no-img-icon>🎮</span>'"></div>
+    <div class="card-body">
+      <div class="card-zh">元素法典 I</div>
+      <div class="card-en">Elemental Codex I</div>
+      <div class="card-desc">赋予迅速法术，提升速度到2倍，持续4.5秒，10秒冷却时间。</div>
+    </div>
+  </div>
+<div class="card has-img">
+    <div class="card-img"><img src="src/元素法典 II.png" alt="元素法典 II" loading="lazy" onerror="this.parentElement.innerHTML='<span class=no-img-icon>🎮</span>'"></div>
+    <div class="card-body">
+      <div class="card-zh">元素法典 II</div>
+      <div class="card-en">Elemental Codex II</div>
+      <div class="card-desc">赋予减速法术，降低目标的速度到半速，持续5秒，10秒冷却时间。</div>
+    </div>
+  </div>
+<div class="card has-img">
+    <div class="card-img"><img src="src/元素法典 III.png" alt="元素法典 III" loading="lazy" onerror="this.parentElement.innerHTML='<span class=no-img-icon>🎮</span>'"></div>
+    <div class="card-body">
+      <div class="card-zh">元素法典 III</div>
+      <div class="card-en">Elemental Codex III</div>
+      <div class="card-desc">赋予冲击波法术，在目标20米范围内造成50点的范围伤害，并有击退效果，15秒冷却时间。</div>
+    </div>
+  </div>
+<div class="card has-img">
+    <div class="card-img"><img src="src/元素法典 IV.png" alt="元素法典 IV" loading="lazy" onerror="this.parentElement.innerHTML='<span class=no-img-icon>🎮</span>'"></div>
+    <div class="card-body">
+      <div class="card-zh">元素法典 IV</div>
+      <div class="card-en">Elemental Codex IV</div>
+      <div class="card-desc">赋予交换法术，增加冲击波的伤害到79点，并增强击退效果。</div>
+    </div>
+  </div>
+<div class="card has-img">
+    <div class="card-img"><img src="src/元素法典 V.png" alt="元素法典 V" loading="lazy" onerror="this.parentElement.innerHTML='<span class=no-img-icon>🎮</span>'"></div>
+    <div class="card-body">
+      <div class="card-zh">元素法典 V</div>
+      <div class="card-en">Elemental Codex V</div>
+      <div class="card-desc">赋予火焰盔甲技能，增加冲击波伤害到125点，增强击退效果。</div>
+    </div>
+  </div>
+<div class="card has-img">
+    <div class="card-img"><img src="src/月耀之刃.png" alt="月耀之刃" loading="lazy" onerror="this.parentElement.innerHTML='<span class=no-img-icon>🎮</span>'"></div>
+    <div class="card-body">
+      <div class="card-zh">月耀之刃</div>
+      <div class="card-en">Moonlit Blade</div>
+      <div class="card-desc">近距离，高伤害，攻击速度缓慢。对大型目标投掷的理想武器。18秒冷却时间。</div>
+    </div>
+  </div>
+<div class="card has-img">
+    <div class="card-img"><img src="src/增强弩.png" alt="增强弩" loading="lazy" onerror="this.parentElement.innerHTML='<span class=no-img-icon>🎮</span>'"></div>
+    <div class="card-body">
+      <div class="card-zh">增强弩</div>
+      <div class="card-en">Reinforced Crossbow</div>
+      <div class="card-desc">此远程弩的射程可以远到视野尽头。</div>
+    </div>
+  </div>
+<div class="card has-img">
+    <div class="card-img"><img src="src/增强型铁质链甲束腰.png" alt="增强型铁质链甲束腰" loading="lazy" onerror="this.parentElement.innerHTML='<span class=no-img-icon>🎮</span>'"></div>
+    <div class="card-body">
+      <div class="card-zh">增强型铁质链甲束腰</div>
+      <div class="card-en">Reinforced Iron Chainmail Tunic</div>
+      <div class="card-desc"> </div>
+    </div>
+  </div>
+<div class="card has-img">
+    <div class="card-img"><img src="src/增强型铁质链甲头巾.png" alt="增强型铁质链甲头巾" loading="lazy" onerror="this.parentElement.innerHTML='<span class=no-img-icon>🎮</span>'"></div>
+    <div class="card-body">
+      <div class="card-zh">增强型铁质链甲头巾</div>
+      <div class="card-en">Reinforced Iron Chainmail Coif</div>
+      <div class="card-desc"> </div>
+    </div>
+  </div>
+<div class="card has-img">
+    <div class="card-img"><img src="src/增强靴子.png" alt="增强靴子" loading="lazy" onerror="this.parentElement.innerHTML='<span class=no-img-icon>🎮</span>'"></div>
+    <div class="card-body">
+      <div class="card-zh">增强靴子</div>
+      <div class="card-en">Reinforced Boots</div>
+      <div class="card-desc">给你的英雄 moveXY 方法和一些附加的生命值</div>
+    </div>
+  </div>
+<div class="card has-img">
+    <div class="card-img"><img src="src/炸弹.png" alt="炸弹" loading="lazy" onerror="this.parentElement.innerHTML='<span class=no-img-icon>🎮</span>'"></div>
+    <div class="card-body">
+      <div class="card-zh">炸弹</div>
+      <div class="card-en">Boom Ball</div>
+      <div class="card-desc">一个好的破坏者可以每秒扔四个炸弹。大师破坏者才能活下来！</div>
+    </div>
+  </div>
+<div class="card has-img">
+    <div class="card-img"><img src="src/炸弹杆.png" alt="炸弹杆" loading="lazy" onerror="this.parentElement.innerHTML='<span class=no-img-icon>🎮</span>'"></div>
+    <div class="card-body">
+      <div class="card-zh">炸弹杆</div>
+      <div class="card-en">Boomrod</div>
+      <div class="card-desc">短程猎枪，解锁散射，可以在38˚弧度内射出25颗子弹，一次射击最多造成180点伤害。重装时间为1秒。</div>
+    </div>
+  </div>
+<div class="card has-img">
+    <div class="card-img"><img src="src/重型铁质头盔.png" alt="重型铁质头盔" loading="lazy" onerror="this.parentElement.innerHTML='<span class=no-img-icon>🎮</span>'"></div>
+    <div class="card-body">
+      <div class="card-zh">重型铁质头盔</div>
+      <div class="card-en">Heavy Iron Helmet</div>
+      <div class="card-desc">粉碎50颗宝石！</div>
+    </div>
+  </div>
+<div class="card has-img">
+    <div class="card-img"><img src="src/重型铁质胸甲.png" alt="重型铁质胸甲" loading="lazy" onerror="this.parentElement.innerHTML='<span class=no-img-icon>🎮</span>'"></div>
+    <div class="card-body">
+      <div class="card-zh">重型铁质胸甲</div>
+      <div class="card-en">Heavy Iron Breastplate</div>
+      <div class="card-desc">喔，穿这个太难移动了！</div>
+    </div>
+  </div>
+<div class="card has-img">
+    <div class="card-img"><img src="src/重型投掷飞刀.png" alt="重型投掷飞刀" loading="lazy" onerror="this.parentElement.innerHTML='<span class=no-img-icon>🎮</span>'"></div>
+    <div class="card-body">
+      <div class="card-zh">重型投掷飞刀</div>
+      <div class="card-en">Weighted Throwing Knives</div>
+      <div class="card-desc">非常大的杀伤力，但是需要23秒来冷却。</div>
+    </div>
+  </div>
+<div class="card has-img">
+    <div class="card-img"><img src="src/装药弹带.png" alt="装药弹带" loading="lazy" onerror="this.parentElement.innerHTML='<span class=no-img-icon>🎮</span>'"></div>
+    <div class="card-body">
+      <div class="card-zh">装药弹带</div>
+      <div class="card-en">Charge Belt</div>
+      <div class="card-desc">赋予throw, throwPos和throwRange方法。所有这些工具可以让你的英雄变为一台装弹投掷机，成为食人魔的噩梦。</div>
+    </div>
+  </div>
+<div class="card has-img">
+    <div class="card-img"><img src="src/Ezeroth计时器.png" alt="Ezeroth计时器" loading="lazy" onerror="this.parentElement.innerHTML='<span class=no-img-icon>🎮</span>'"></div>
+    <div class="card-body">
+      <div class="card-zh">Ezeroth计时器</div>
+      <div class="card-en">Ezeroth's Timepiece</div>
+      <div class="card-desc">传奇时间工匠Ezeroth在与食人魔酋长的大战中遗失了自己的腕表。而这块表阴差阳错地落到了你的手中。</div>
+    </div>
+  </div>
+<div class="card has-img">
+    <div class="card-img"><img src="src/Kithgard工人眼镜.png" alt="Kithgard工人眼镜" loading="lazy" onerror="this.parentElement.innerHTML='<span class=no-img-icon>🎮</span>'"></div>
+    <div class="card-body">
+      <div class="card-zh">Kithgard工人眼镜</div>
+      <div class="card-en">Kithgard Worker's Glasses</div>
+      <div class="card-desc">增加了 findByType 方法来找到特定类型的单位或物品。对于在瞬息万变的战场上构建逻辑非常有帮助。</div>
+    </div>
+  </div>
+<div class="card has-img">
+    <div class="card-img"><img src="src/Kithsteel之剑.png" alt="Kithsteel之剑" loading="lazy" onerror="this.parentElement.innerHTML='<span class=no-img-icon>🎮</span>'"></div>
+    <div class="card-body">
+      <div class="card-zh">Kithsteel之剑</div>
+      <div class="card-en">Kithsteel Blade</div>
+<div class="card-desc">此剑的攻击范围为 7 米，比一般的 3 米要长，可以抢先攻击！</div>
+    </div>
+  </div>
+<div class="card has-img">
+    <div class="card-img"><img src="src/Korath的诺言.png" alt="Korath的诺言" loading="lazy" onerror="this.parentElement.innerHTML='<span class=no-img-icon>🎮</span>'"></div>
+    <div class="card-body">
+      <div class="card-zh">Korath的诺言</div>
+      <div class="card-en">Korath's Promise</div>
+      <div class="card-desc">这枚戒指由大酋长Korath锻造而成，他用它来保护自己的城市。这枚戒指之后再也没被看到过。</div>
+    </div>
+  </div>
+<div class="card ai">
+    <div class="card-img no-img"><span class="no-img-icon">🎮</span></div>
+    <div class="card-body">
+      <div class="card-zh">阿曼多·霍约斯</div>
+      <div class="card-en">Armando Hoyos</div>
+      <div class="card-desc">霍约斯教授是一位著名的知识分子，专门研究调整西班牙语。他对词语有独特的观点和赋予它们搞笑意义的能力。</div>
+    </div>
+  </div>
+<div class="card">
+    <div class="card-img no-img"><span class="no-img-icon">🎮</span></div>
+    <div class="card-body">
+      <div class="card-zh">暴风的兴风者</div>
+      <div class="card-en">Stormbringer</div>
+      <div class="card-desc">有人说，兴风者会吸走任何被杀者的灵魂。</div>
+    </div>
+  </div>
+<div class="card">
+    <div class="card-img no-img"><span class="no-img-icon">🎮</span></div>
+    <div class="card-body">
+      <div class="card-zh">爆炸药水</div>
+      <div class="card-en">Explosive Potion</div>
+      
+    </div>
+  </div>
+<div class="card ai">
+    <div class="card-img no-img"><span class="no-img-icon">🎮</span></div>
+    <div class="card-body">
+      <div class="card-zh">北极熊幼崽英雄</div>
+      <div class="card-en">Polar Bear Cub Hero</div>
+      
+    </div>
+  </div>
+<div class="card">
+    <div class="card-img no-img"><span class="no-img-icon">🎮</span></div>
+    <div class="card-body">
+      <div class="card-zh">编程宝典 II</div>
+      <div class="card-en">Programmaticon II</div>
+      <div class="card-desc">赋予 if/else 方法的使用权。</div>
+    </div>
+  </div>
+<div class="card">
+    <div class="card-img no-img"><span class="no-img-icon">🎮</span></div>
+    <div class="card-body">
+      <div class="card-zh">编程宝典 III</div>
+      <div class="card-en">Programmaticon III</div>
+      <div class="card-desc">赋予 break，while 循环和数组的使用权。</div>
+    </div>
+  </div>
+<div class="card">
+    <div class="card-img no-img"><span class="no-img-icon">🎮</span></div>
+    <div class="card-body">
+      <div class="card-zh">编程宝典 IV</div>
+      <div class="card-en">Programmaticon IV</div>
+      <div class="card-desc">赋予for循环、对象枚举和函数的使用权。</div>
+    </div>
+  </div>
+<div class="card">
+    <div class="card-img no-img"><span class="no-img-icon">🎮</span></div>
+    <div class="card-body">
+      <div class="card-zh">编程宝典 V</div>
+      <div class="card-en">Programmaticon V</div>
+      <div class="card-desc">解锁向量，数学，字符串，方程，数组和对象API。</div>
+    </div>
+  </div>
+<div class="card">
+    <div class="card-img no-img"><span class="no-img-icon">🎮</span></div>
+    <div class="card-body">
+      <div class="card-zh">编程宝典Ⅰ</div>
+      <div class="card-en">Programmaticon I</div>
+      <div class="card-desc">允许访问循环。</div>
+    </div>
+  </div>
+<div class="card">
+    <div class="card-img no-img"><span class="no-img-icon">🎮</span></div>
+    <div class="card-body">
+      <div class="card-zh">冰之戒</div>
+      <div class="card-en">Ring of Ice</div>
+      <div class="card-desc">嵌在这枚戒指上的凯文塔夫冰可以让佩戴者施展治愈雪的法术。</div>
+    </div>
+  </div>
+<div class="card">
+    <div class="card-img no-img"><span class="no-img-icon">🎮</span></div>
+    <div class="card-body">
+      <div class="card-zh">成品石榴石灵石</div>
+      <div class="card-en">Cut Garnet Sense Stone</div>
+      
+    </div>
+  </div>
+<div class="card">
+    <div class="card-img no-img"><span class="no-img-icon">🎮</span></div>
+    <div class="card-body">
+      <div class="card-zh">粗糙建造者之锤</div>
+      <div class="card-en">Crude Builder's Hammer</div>
+      <div class="card-desc">赋予建造围栏和火焰陷阱的能力。</div>
+    </div>
+  </div>
+<div class="card">
+    <div class="card-img no-img"><span class="no-img-icon">🎮</span></div>
+    <div class="card-body">
+      <div class="card-zh">粗糙眼镜</div>
+      <div class="card-en">Crude Glasses</div>
+<div class="card-desc">赋予 findNearestEnemy，以便定位那些不显示名字的食人魔。</div>
+    </div>
+  </div>
+<div class="card">
+    <div class="card-img no-img"><span class="no-img-icon">🎮</span></div>
+    <div class="card-body">
+      <div class="card-zh">大师剑</div>
+      <div class="card-en">Master Sword</div>
+      <div class="card-desc">这把强大的剑可以斩除周围的一切。</div>
+    </div>
+  </div>
+<div class="card">
+    <div class="card-img no-img"><span class="no-img-icon">🎮</span></div>
+    <div class="card-body">
+      <div class="card-zh">大师旗标</div>
+      <div class="card-en">Master's Flags</div>
+      <div class="card-desc">提供addFlag方法，你可以在程序中动态通过点击添加旗标。</div>
+    </div>
+  </div>
+<div class="card">
+    <div class="card-img no-img"><span class="no-img-icon">🎮</span></div>
+    <div class="card-body">
+      <div class="card-zh">点燃元素</div>
+      <div class="card-en">Kindling Elemental</div>
+      <div class="card-desc">小心周围这个活跃的元素 - 他是一个热源！</div>
+    </div>
+  </div>
+<div class="card">
+    <div class="card-img no-img"><span class="no-img-icon">🎮</span></div>
+    <div class="card-body">
+      <div class="card-zh">雕花建造者之锤</div>
+      <div class="card-en">Engraved Builder's Hammer</div>
+      <div class="card-desc">为你的英雄增加可以建造的东西。</div>
+    </div>
+  </div>
+<div class="card">
+    <div class="card-img no-img"><span class="no-img-icon">🎮</span></div>
+    <div class="card-body">
+      <div class="card-zh">动态旗帜</div>
+      <div class="card-en">Dynamic Flags</div>
+      <div class="card-desc">不像原来要使用pickUpFlag命令去往一个旗标并移除它，你现在可以在任何地方移除一个旗标。</div>
+    </div>
+  </div>
+<div class="card">
+    <div class="card-img no-img"><span class="no-img-icon">🎮</span></div>
+    <div class="card-body">
+      <div class="card-zh">法师头环</div>
+      <div class="card-en">Circlet of the Magi</div>
+      <div class="card-desc">头环里缠绕着精灵的力量，使佩戴者减少33%的冷却时间。</div>
+    </div>
+  </div>
+<div class="card">
+    <div class="card-img no-img"><span class="no-img-icon">🎮</span></div>
+    <div class="card-body">
+      <div class="card-zh">风行者链甲</div>
+      <div class="card-en">Windwalker Mail</div>
+      <div class="card-desc">当你跑步的时候，此传奇盔甲能加速你的步伐，让你赶上风的速度。</div>
+    </div>
+  </div>
+<div class="card">
+    <div class="card-img no-img"><span class="no-img-icon">🎮</span></div>
+    <div class="card-body">
+      <div class="card-zh">风行者头巾</div>
+      <div class="card-en">Windwalker Coif</div>
+      <div class="card-desc">当你跑的时候，此传奇头巾能加速你的步伐，让你赶上风的速度。</div>
+    </div>
+  </div>
+<div class="card">
+    <div class="card-img no-img"><span class="no-img-icon">🎮</span></div>
+    <div class="card-body">
+      <div class="card-zh">凤凰</div>
+      <div class="card-en">Phoenix</div>
+<div class="card-desc">浴火重生。小心！</div>
+    </div>
+  </div>
+<div class="card">
+    <div class="card-img no-img"><span class="no-img-icon">🎮</span></div>
+    <div class="card-body">
+      <div class="card-zh">凤凰火</div>
+      <div class="card-en">Phoenixfire</div>
+      <div class="card-desc">此弩由凤凰羽毛制成，被用来发射爆炸性火弩箭，造成群体伤害。</div>
+    </div>
+  </div>
+<div class="card ai">
+    <div class="card-img no-img"><span class="no-img-icon">🎮</span></div>
+    <div class="card-body">
+      <div class="card-zh">凤凰英雄</div>
+      <div class="card-en">Phoenix Hero</div>
+      
+    </div>
+  </div>
+<div class="card">
+    <div class="card-img no-img"><span class="no-img-icon">🎮</span></div>
+    <div class="card-body">
+      <div class="card-zh">高级旗标</div>
+      <div class="card-en">Advanced Flags</div>
+      <div class="card-desc">你可以使用findFlags访问数组中的所有旗标。</div>
+    </div>
+  </div>
+<div class="card">
+    <div class="card-img no-img"><span class="no-img-icon">🎮</span></div>
+    <div class="card-body">
+      <div class="card-zh">工具带</div>
+      <div class="card-en">Tool Belt</div>
+      
+    </div>
+  </div>
+<div class="card">
+    <div class="card-img no-img"><span class="no-img-icon">🎮</span></div>
+    <div class="card-body">
+      <div class="card-zh">轨道炮</div>
+      <div class="card-en">Railgun</div>
+      <div class="card-desc">发射高能能量箭，将路径上的所有东西全部摧毁。</div>
+    </div>
+  </div>
+<div class="card">
+    <div class="card-img no-img"><span class="no-img-icon">🎮</span></div>
+    <div class="card-body">
+      <div class="card-zh">褐鼠</div>
+      <div class="card-en">Brown Rat</div>
+      <div class="card-desc">狡猾的褐鼠虽然没有节操但却是你的完美伴侣。</div>
+    </div>
+  </div>
+<div class="card">
+    <div class="card-img no-img"><span class="no-img-icon">🎮</span></div>
+    <div class="card-body">
+      <div class="card-zh">红木魔杖</div>
+      <div class="card-en">Banded Redwood Wand</div>
+      <div class="card-desc">提供一种扰乱法术，使用一次会使敌人攻击附近任意目标5秒钟, 每10秒一次。</div>
+    </div>
+  </div>
+<div class="card">
+    <div class="card-img no-img"><span class="no-img-icon">🎮</span></div>
+    <div class="card-body">
+      <div class="card-zh">琥珀灵石</div>
+      <div class="card-en">Amber Sense Stone</div>
+      
+    </div>
+  </div>
+<div class="card">
+    <div class="card-img no-img"><span class="no-img-icon">🎮</span></div>
+    <div class="card-body">
+      <div class="card-zh">花之戒</div>
+      <div class="card-en">Ring of Flowers</div>
+      <div class="card-desc">戴着这个戒指，无论你走到哪里，都会长出漂亮的野花。</div>
+    </div>
+  </div>
+<div class="card">
+    <div class="card-img no-img"><span class="no-img-icon">🎮</span></div>
+    <div class="card-body">
+      <div class="card-zh">火之戒</div>
+      <div class="card-en">Ring of Fire</div>
+      
+    </div>
+  </div>
+<div class="card">
+    <div class="card-img no-img"><span class="no-img-icon">🎮</span></div>
+    <div class="card-body">
+      <div class="card-zh">基本旗标</div>
+      <div class="card-en">Basic Flags</div>
+      <div class="card-desc">允许你通过放置旗标向你的英雄发送实时输入。</div>
+    </div>
+  </div>
+<div class="card">
+    <div class="card-img no-img"><span class="no-img-icon">🎮</span></div>
+    <div class="card-body">
+      <div class="card-zh">剑带</div>
+      <div class="card-en">Sword Belt</div>
+      
+    </div>
+  </div>
+<div class="card">
+    <div class="card-img no-img"><span class="no-img-icon">🎮</span></div>
+    <div class="card-body">
+      <div class="card-zh">金属建造者之锤</div>
+      <div class="card-en">Metal Builder's Hammer</div>
+      <div class="card-desc">增加英雄可以建造的东西。</div>
+    </div>
+  </div>
+<div class="card">
+    <div class="card-img no-img"><span class="no-img-icon">🎮</span></div>
+    <div class="card-body">
+      <div class="card-zh">金属蜘蛛宠物</div>
+      <div class="card-en">Metallic Spider Pet</div>
+      <div class="card-desc">食人魔喜欢宠物！这种金属蜘蛛是他们的最爱之一！</div>
+    </div>
+  </div>
+<div class="card">
+    <div class="card-img no-img"><span class="no-img-icon">🎮</span></div>
+    <div class="card-body">
+      <div class="card-zh">蓝狐狸</div>
+      <div class="card-en">Blue Fox</div>
+      <div class="card-desc">那只敏捷的蓝狐狸跳过埋藏的财宝。</div>
+    </div>
+  </div>
+<div class="card ai">
+    <div class="card-img no-img"><span class="no-img-icon">🎮</span></div>
+    <div class="card-body">
+      <div class="card-zh">蓝色狐狸英雄</div>
+      <div class="card-en">Blue Fox Hero</div>
+      
+    </div>
+  </div>
+<div class="card">
+    <div class="card-img no-img"><span class="no-img-icon">🎮</span></div>
+    <div class="card-body">
+      <div class="card-zh">力量护手</div>
+      <div class="card-en">Gauntlets of Strength</div>
+      <div class="card-desc">更狠，更猛，打击强力。</div>
+    </div>
+  </div>
+<div class="card">
+    <div class="card-img no-img"><span class="no-img-icon">🎮</span></div>
+    <div class="card-body">
+      <div class="card-zh">链甲外套</div>
+      <div class="card-en">Chainmail Tunic</div>
+      <div class="card-desc">每个冒险者的标准装备。 充足的保护。</div>
+    </div>
+  </div>
+<div class="card ai">
+    <div class="card-img no-img"><span class="no-img-icon">🎮</span></div>
+    <div class="card-body">
+      <div class="card-zh">烈焰元素英雄</div>
+      <div class="card-en">Kindling Elemental Hero</div>
+      
+    </div>
+  </div>
+<div class="card">
+    <div class="card-img no-img"><span class="no-img-icon">🎮</span></div>
+    <div class="card-body">
+      <div class="card-zh">烈焰之壳</div>
+      <div class="card-en">Flaming Shell</div>
+      
+    </div>
+  </div>
+<div class="card">
+    <div class="card-img no-img"><span class="no-img-icon">🎮</span></div>
+    <div class="card-body">
+      <div class="card-zh">美洲狮</div>
+      <div class="card-en">Cougar</div>
+      <div class="card-desc">每个英雄都需要同伴！这只美洲狮会站在你的英雄旁边，迎接任何挑战！</div>
+    </div>
+  </div>
+<div class="card ai">
+    <div class="card-img no-img"><span class="no-img-icon">🎮</span></div>
+    <div class="card-body">
+      <div class="card-zh">美洲狮英雄</div>
+      <div class="card-en">Cougar Hero</div>
+      
+    </div>
+  </div>
+<div class="card">
+    <div class="card-img no-img"><span class="no-img-icon">🎮</span></div>
+    <div class="card-body">
+      <div class="card-zh">密钥</div>
+      <div class="card-en">Crypt Key</div>
+      <div class="card-desc">Crypt Key是一枚戒指？还是一把钥匙？没人知道，不过据说它能够解锁新世界的秘密。</div>
+    </div>
+  </div>
+<div class="card ai">
+    <div class="card-img no-img"><span class="no-img-icon">🎮</span></div>
+    <div class="card-body">
+      <div class="card-zh">模仿英雄</div>
+      <div class="card-en">Mimic Hero</div>
+      
+    </div>
+  </div>
+<div class="card">
+    <div class="card-img no-img"><span class="no-img-icon">🎮</span></div>
+    <div class="card-body">
+      <div class="card-zh">模仿者</div>
+      <div class="card-en">Mimic</div>
+      <div class="card-desc">每一个英雄都需要一个伙伴！这个模仿者将帮助你收集金币！ </div>
+    </div>
+  </div>
+<div class="card">
+    <div class="card-img no-img"><span class="no-img-icon">🎮</span></div>
+    <div class="card-body">
+      <div class="card-zh">魔法袍</div>
+      <div class="card-en">Robe of the Magi</div>
+      <div class="card-desc">这个法袍能让你的魔法进攻攻速提高一倍。</div>
+    </div>
+  </div>
+<div class="card">
+    <div class="card-img no-img"><span class="no-img-icon">🎮</span></div>
+    <div class="card-body">
+      <div class="card-zh">魔法之都</div>
+      <div class="card-en">Pugicorn</div>
+      <div class="card-desc">没人知道神秘而威严的海狗独角兽的起源（我们认为可能是 Pender 的杰作）。</div>
+    </div>
+  </div>
+<div class="card">
+    <div class="card-img no-img"><span class="no-img-icon">🎮</span></div>
+    <div class="card-body">
+      <div class="card-zh">木制盾牌</div>
+      <div class="card-en">Wooden Shield</div>
+      <div class="card-desc">在你的左边提供更多一点保护。</div>
+    </div>
+  </div>
+<div class="card">
+    <div class="card-img no-img"><span class="no-img-icon">🎮</span></div>
+    <div class="card-body">
+      <div class="card-zh">木制眼镜</div>
+      <div class="card-en">Wooden Glasses</div>
+      <div class="card-desc">赋予 distanceTo和 findNearestItem 方法，让你测距并定位要收集的物品。</div>
+    </div>
+  </div>
+<div class="card">
+    <div class="card-img no-img"><span class="no-img-icon">🎮</span></div>
+    <div class="card-body">
+      <div class="card-zh">抛光的绿宝石灵石</div>
+      <div class="card-en">Polished Emerald Sense Stone</div>
+      
+    </div>
+  </div>
+<div class="card">
+    <div class="card-img no-img"><span class="no-img-icon">🎮</span></div>
+    <div class="card-body">
+      <div class="card-zh">皮带</div>
+      <div class="card-en">Leather Belt</div>
+      <div class="card-desc">这条厚皮带增加些许健康值。</div>
+    </div>
+  </div>
+<div class="card">
+    <div class="card-img no-img"><span class="no-img-icon">🎮</span></div>
+    <div class="card-body">
+      <div class="card-zh">皮束腰</div>
+      <div class="card-en">Leather Tunic</div>
+      
+    </div>
+  </div>
+<div class="card">
+    <div class="card-img no-img"><span class="no-img-icon">🎮</span></div>
+    <div class="card-body">
+      <div class="card-zh">皮靴</div>
+      <div class="card-en">Leather Boots</div>
+      <div class="card-desc">升级英雄的移动能力为moveXY，带有两个坐标参数。</div>
+    </div>
+  </div>
+<div class="card">
+    <div class="card-img no-img"><span class="no-img-icon">🎮</span></div>
+    <div class="card-body">
+      <div class="card-zh">普通剑</div>
+      <div class="card-en">Simple Sword</div>
+      <div class="card-desc">只是入门级的剑罢了。</div>
+    </div>
+  </div>
+<div class="card">
+    <div class="card-img no-img"><span class="no-img-icon">🎮</span></div>
+    <div class="card-body">
+      <div class="card-zh">旗标</div>
+      <div class="card-en">Flag</div>
+      
+    </div>
+  </div>
+<div class="card ai">
+    <div class="card-img no-img"><span class="no-img-icon">🎮</span></div>
+    <div class="card-body">
+      <div class="card-zh">青蛙英雄</div>
+      <div class="card-en">Frog Hero</div>
+      
+    </div>
+  </div>
+<div class="card ai">
+    <div class="card-img no-img"><span class="no-img-icon">🎮</span></div>
+    <div class="card-body">
+      <div class="card-zh">犬独角兽英雄</div>
+      <div class="card-en">Pugicorn Hero</div>
+      
+    </div>
+  </div>
+<div class="card">
+    <div class="card-img no-img"><span class="no-img-icon">🎮</span></div>
+    <div class="card-body">
+      <div class="card-zh">人造裘皮帽</div>
+      <div class="card-en">Faux Fur Hat</div>
+      <div class="card-desc">为你的脑袋提供一些额外保护。</div>
+    </div>
+  </div>
+<div class="card">
+    <div class="card-img no-img"><span class="no-img-icon">🎮</span></div>
+    <div class="card-body">
+      <div class="card-zh">日晷腕表</div>
+      <div class="card-en">Sundial Wristwatch</div>
+<div class="card-desc">赋予你的英雄 isReady 方法，通过这个方法可以判断各种法术和能力是否就绪。</div>
+    </div>
+  </div>
+<div class="card">
+    <div class="card-img no-img"><span class="no-img-icon">🎮</span></div>
+    <div class="card-body">
+      <div class="card-zh">弱装弹</div>
+      <div class="card-en">Weak Charge</div>
+      <div class="card-desc">比毒化投掷碎片和粗糙匕首有更大的攻击范围和伤害能力，需要2秒准备下一次投掷。</div>
+    </div>
+  </div>
+<div class="card">
+    <div class="card-img no-img"><span class="no-img-icon">🎮</span></div>
+    <div class="card-body">
+      <div class="card-zh">少狼</div>
+      <div class="card-en">Wolf Pup Hero</div>
+      
+    </div>
+  </div>
+<div class="card">
+    <div class="card-img no-img"><span class="no-img-icon">🎮</span></div>
+    <div class="card-body">
+      <div class="card-zh">圣剑</div>
+      <div class="card-en">Holy Sword</div>
+      <div class="card-desc">Kithgard 的神圣宝藏散发着难以想象的力量，可以击退不死敌人并治愈活着的单位。</div>
+    </div>
+  </div>
+<div class="card">
+    <div class="card-img no-img"><span class="no-img-icon">🎮</span></div>
+    <div class="card-body">
+      <div class="card-zh">食人魔侦察兵 F</div>
+      <div class="card-en">Ogre Scout F</div>
+      <div class="card-desc">女性食人魔。会毫不犹豫地攻击任何人和物。</div>
+    </div>
+  </div>
+<div class="card">
+    <div class="card-img no-img"><span class="no-img-icon">🎮</span></div>
+    <div class="card-body">
+      <div class="card-zh">首领之星 II</div>
+      <div class="card-en">Boss Star II</div>
+      <div class="card-desc">招募并命令士兵和弓箭手。</div>
+    </div>
+  </div>
+<div class="card">
+    <div class="card-img no-img"><span class="no-img-icon">🎮</span></div>
+    <div class="card-body">
+      <div class="card-zh">首领之星 III</div>
+      <div class="card-en">Boss Star III</div>
+      <div class="card-desc">招募并命令士兵、弓箭手、狮鹫骑士和农民。</div>
+    </div>
+  </div>
+<div class="card">
+    <div class="card-img no-img"><span class="no-img-icon">🎮</span></div>
+    <div class="card-body">
+      <div class="card-zh">首领之星 IV</div>
+      <div class="card-en">Boss Star IV</div>
+      <div class="card-desc">招募并命令士兵、弓箭手、狮鹫骑士、农民和圣骑士。</div>
+    </div>
+  </div>
+<div class="card">
+    <div class="card-img no-img"><span class="no-img-icon">🎮</span></div>
+    <div class="card-body">
+      <div class="card-zh">首领之星 V</div>
+      <div class="card-en">Boss Star V</div>
+      <div class="card-desc">招募并命令士兵、弓箭手、狮鹫骑士、农民、圣骑士和大炮。显而易见的五星品质。</div>
+    </div>
+  </div>
+<div class="card">
+    <div class="card-img no-img"><span class="no-img-icon">🎮</span></div>
+    <div class="card-body">
+      <div class="card-zh">首领之星Ⅰ</div>
+      <div class="card-en">Boss Star I</div>
+      <div class="card-desc">这个领导令牌能让你召唤和命令士兵——只要你有钱。</div>
+    </div>
+  </div>
+<div class="card">
+    <div class="card-img no-img"><span class="no-img-icon">🎮</span></div>
+    <div class="card-body">
+      <div class="card-zh">通用项目</div>
+      <div class="card-en">Generic Item</div>
+      
+    </div>
+  </div>
+<div class="card">
+    <div class="card-img no-img"><span class="no-img-icon">🎮</span></div>
+    <div class="card-body">
+      <div class="card-zh">投石车</div>
+      <div class="card-en">Catapult</div>
+      
+    </div>
+  </div>
+<div class="card ai">
+    <div class="card-img no-img"><span class="no-img-icon">🎮</span></div>
+    <div class="card-body">
+      <div class="card-zh">托卡</div>
+      <div class="card-en">Thoktar</div>
+      
+    </div>
+  </div>
+<div class="card">
+    <div class="card-img no-img"><span class="no-img-icon">🎮</span></div>
+    <div class="card-body">
+      <div class="card-zh">维京头盔</div>
+      <div class="card-en">Viking Helmet</div>
+      <div class="card-desc">这种凶恶头盔有三倍的盾击击退效果（前提是你要有能够盾击的盾）</div>
+    </div>
+  </div>
+<div class="card">
+    <div class="card-img no-img"><span class="no-img-icon">🎮</span></div>
+    <div class="card-body">
+      <div class="card-zh">乌鸦</div>
+      <div class="card-en">Raven</div>
+      <div class="card-desc">每一个英雄都需要一个伙伴！这只乌鸦一只在说要与你在一起。
+乌鸦会飞，所以低矮的障碍对它来说不是问题。</div>
+    </div>
+  </div>
+<div class="card ai">
+    <div class="card-img no-img"><span class="no-img-icon">🎮</span></div>
+    <div class="card-body">
+      <div class="card-zh">乌鸦英雄</div>
+      <div class="card-en">Raven Hero</div>
+      
+    </div>
+  </div>
+<div class="card">
+    <div class="card-img no-img"><span class="no-img-icon">🎮</span></div>
+    <div class="card-body">
+      <div class="card-zh">细石建造者之锤</div>
+      <div class="card-en">Fine Stone Builder's Hammer</div>
+      <div class="card-desc">由最好的大师级建造者凿刻，它让你能够建造一系列很棒的东西！</div>
+    </div>
+  </div>
+<div class="card">
+    <div class="card-img no-img"><span class="no-img-icon">🎮</span></div>
+    <div class="card-body">
+      <div class="card-zh">小北极熊</div>
+      <div class="card-en">Polar Bear Cub</div>
+      <div class="card-desc">每一个英雄都需要一个伙伴！这只小北极熊会跟随着你！</div>
+    </div>
+  </div>
+<div class="card ai">
+    <div class="card-img no-img"><span class="no-img-icon">🎮</span></div>
+    <div class="card-body">
+      <div class="card-zh">小虎崽英雄</div>
+      <div class="card-en">Tiger Cub Hero</div>
+      
+    </div>
+  </div>
+<div class="card">
+    <div class="card-img no-img"><span class="no-img-icon">🎮</span></div>
+    <div class="card-body">
+      <div class="card-zh">小狼</div>
+      <div class="card-en">Wolf Pup</div>
+      <div class="card-desc">每个英雄都需要一个伴侣！ 这只小狼会忠诚地陪伴在你身边！</div>
+    </div>
+  </div>
+<div class="card ai">
+    <div class="card-img no-img"><span class="no-img-icon">🎮</span></div>
+    <div class="card-body">
+      <div class="card-zh">小猎豹英雄</div>
+      <div class="card-en">Panther Cub Hero</div>
+      
+    </div>
+  </div>
+<div class="card ai">
+    <div class="card-img no-img"><span class="no-img-icon">🎮</span></div>
+    <div class="card-body">
+      <div class="card-zh">小狮鹫英雄</div>
+      <div class="card-en">Baby Griffin Hero</div>
+      
+    </div>
+  </div>
+<div class="card">
+    <div class="card-img no-img"><span class="no-img-icon">🎮</span></div>
+    <div class="card-body">
+      <div class="card-zh">邪术冰柱</div>
+      <div class="card-en">Eldritch Icicle</div>
+      <div class="card-desc">这个冻结的魔杖可以暂时让所有的土地结冰，让一切都开始打滑。</div>
+    </div>
+  </div>
+<div class="card">
+    <div class="card-img no-img"><span class="no-img-icon">🎮</span></div>
+    <div class="card-body">
+      <div class="card-zh">眼镜 小部件</div>
+      <div class="card-en">Glasses Doodad</div>
+      
+    </div>
+  </div>
+<div class="card">
+    <div class="card-img no-img"><span class="no-img-icon">🎮</span></div>
+    <div class="card-body">
+      <div class="card-zh">夜莺之歌</div>
+      <div class="card-en">Nightingale's Song</div>
+      <div class="card-desc">即使最甜美的声音也无法与夜莺的歌声相媲美。 </div>
+    </div>
+  </div>
+<div class="card">
+    <div class="card-img no-img"><span class="no-img-icon">🎮</span></div>
+    <div class="card-body">
+      <div class="card-zh">翼龙之爪</div>
+      <div class="card-en">Wyvernclaw</div>
+      <div class="card-desc">翼龙之爪的邪恶力量赋予你召唤食人魔骑士的能力。</div>
+    </div>
+  </div>
+<div class="card">
+    <div class="card-img no-img"><span class="no-img-icon">🎮</span></div>
+    <div class="card-body">
+      <div class="card-zh">长剑</div>
+      <div class="card-en">Long Sword</div>
+      <div class="card-desc">攻击伤害极大，但冷却时间很长。开启劈斩技能，能造成大范围的伤害效果。</div>
+    </div>
+  </div>
+<div class="card ai">
+    <div class="card-img no-img"><span class="no-img-icon">🎮</span></div>
+    <div class="card-body">
+      <div class="card-zh">棕色老鼠英雄</div>
+      <div class="card-en">Brown Rat Hero</div>
+      
+    </div>
+  </div>
+<div class="card">
+    <div class="card-img no-img"><span class="no-img-icon">🎮</span></div>
+    <div class="card-body">
+      <div class="card-zh">钻石灵石</div>
+      <div class="card-en">Diamond Sense Stone</div>
+      
+    </div>
+  </div>
+<div class="card">
+    <div class="card-img no-img"><span class="no-img-icon">🎮</span></div>
+    <div class="card-body">
+      <div class="card-zh">琢石建造者之锤</div>
+      <div class="card-en">Cut Stone Builder's Hammer</div>
+      <div class="card-desc">增加英雄可以建造的物品。</div>
+    </div>
+  </div>
+<div class="card">
+    <div class="card-img no-img"><span class="no-img-icon">🎮</span></div>
+    <div class="card-body">
+      <div class="card-zh">Baby Griffin</div>
+      <div class="card-en">Baby Griffin</div>
+      <div class="card-desc">每个英雄都需要一个伴侣！ 这个小griffin将帮助你的英雄进行他们的追求。</div>
+    </div>
+  </div>
+<div class="card">
+    <div class="card-img no-img"><span class="no-img-icon">🎮</span></div>
+    <div class="card-body">
+      <div class="card-zh">Frog</div>
+      <div class="card-en">Frog</div>
+      <div class="card-desc">每个英雄都需要一个伴侣！ 这个小子乐意来帮助你！</div>
+    </div>
+  </div>
+<div class="card">
+    <div class="card-img no-img"><span class="no-img-icon">🎮</span></div>
+    <div class="card-body">
+      <div class="card-zh">Tauran 盔甲</div>
+      <div class="card-en">Tauran Plate</div>
+      <div class="card-desc">此盔甲里捕获有不可阻挡的公牛精神，让穿戴者可以恢复轻伤。</div>
+    </div>
+  </div>
+<div class="card">
+    <div class="card-img no-img"><span class="no-img-icon">🎮</span></div>
+    <div class="card-body">
+      <div class="card-zh">Tauran 头盔</div>
+      <div class="card-en">Tauran Helm</div>
+      <div class="card-desc">此头盔里捕获有不可阻挡的公牛精神，让穿戴者可以恢复轻伤。</div>
+    </div>
+  </div>
+<div class="card">
+    <div class="card-img no-img"><span class="no-img-icon">🎮</span></div>
+    <div class="card-body">
+      <div class="card-zh">Thoktar的废弃之锤</div>
+      <div class="card-en">Thoktar's Discarded Hammer</div>
+      <div class="card-desc">Thoktar似乎留下了这个，他太粗心了，不是吗？</div>
+    </div>
+  </div>
+<div class="card">
+    <div class="card-img no-img"><span class="no-img-icon">🎮</span></div>
+    <div class="card-body">
+      <div class="card-zh">Yetibab</div>
+      <div class="card-en">Yetibab</div>
+      <div class="card-desc">这个小小的Yetibab只想看到冰面之外的世界，他知道外面的世界很精彩！</div>
+    </div>
+  </div>
+<div class="card ai">
+    <div class="card-img no-img"><span class="no-img-icon">🎮</span></div>
+    <div class="card-body">
+      <div class="card-zh">Yetibab 英雄</div>
+      <div class="card-en">Yetibab Hero</div>
+      
+    </div>
+  </div>
+<div class="card ai">
+    <div class="card-img no-img"><span class="no-img-icon">🎮</span></div>
+    <div class="card-body">
+      <div class="card-zh">鸭子英雄</div>
+      <div class="card-en">Duck Hero</div>
+      
+    </div>
+  </div>
+  </div>
+  <div class="no-result" id="no-result">没有匹配的结果</div>
+</div>
+
+<footer class="footer">
+  CodeCombat 装备机制与物品图鉴 · <a href="index.html">返回文档中心</a>
+</footer>
+
+<script>
+function filter(){
+  const q=(document.getElementById('search').value||'').toLowerCase();
+  const cards=document.querySelectorAll('.card');
+  let visible=0;
+  cards.forEach(c=>{
+    const t=c.textContent.toLowerCase();
+    const show=!q||t.includes(q);
+    c.style.display=show?'':'none';
+    if(show)visible++;
+  });
+  document.getElementById('no-result').style.display=visible?'none':'block';
+}
+</script>
+
+<div data-info-wiki-backlink style="text-align:center;padding:18px 12px;color:#64748b;font:13px/1.6 -apple-system,BlinkMacSystemFont,'Segoe UI','Microsoft YaHei',sans-serif"><a href="../index.html" style="color:#4f46e5;text-decoration:none;font-weight:700">← 返回 CodeCombat 信息百科</a></div>
+</body>
+</html>

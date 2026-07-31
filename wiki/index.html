@@ -1,0 +1,145 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="description" content="CodeCombat 新手指南、闯关指引、英雄与装备机制、关卡指令、教学说明和常见问题。">
+  <title>CodeCombat 文档中心</title>
+  <style>
+    *,*::before,*::after{box-sizing:border-box}
+    html{scroll-behavior:smooth}
+    body{margin:0;background:#f8fafc;color:#1e293b;font-family:-apple-system,BlinkMacSystemFont,"Segoe UI","PingFang SC","Microsoft YaHei",sans-serif;line-height:1.75}
+    a{color:inherit;text-decoration:none}
+    .top{position:sticky;top:0;z-index:20;background:rgba(255,255,255,.94);border-bottom:1px solid #e2e8f0;backdrop-filter:blur(12px)}
+    .top-inner{max-width:1180px;margin:auto;padding:13px 20px;display:flex;align-items:center;justify-content:space-between;gap:16px}
+    .brand{font-weight:850;color:#334155}.nav{display:flex;gap:8px;flex-wrap:wrap}.nav a{padding:7px 11px;border-radius:8px;color:#64748b;font-size:13px}.nav a:hover{background:#eef2ff;color:#4f46e5}
+    .hero{background:linear-gradient(135deg,#eef2ff 0%,#f8fafc 52%,#ecfeff 100%);border-bottom:1px solid #e2e8f0}
+    .hero-inner{max-width:1180px;margin:auto;padding:64px 20px 54px}.eyebrow{font-size:13px;font-weight:800;color:#4f46e5;letter-spacing:.08em}.hero h1{margin:8px 0 14px;font-size:clamp(32px,5vw,52px);line-height:1.15}.hero p{max-width:840px;margin:0;color:#475569;font-size:17px}
+    .layout{max-width:1180px;margin:0 auto;padding:34px 20px 72px;display:grid;grid-template-columns:220px minmax(0,1fr);gap:32px}
+    .side{position:sticky;top:76px;align-self:start;background:#fff;border:1px solid #e2e8f0;border-radius:14px;padding:12px}.side a{display:block;padding:8px 10px;border-radius:8px;font-size:14px;color:#64748b}.side a:hover{background:#eef2ff;color:#4f46e5}.side strong{display:block;padding:6px 10px;color:#334155;font-size:13px}
+    .content{min-width:0}.section{scroll-margin-top:86px;margin-bottom:46px}.section h2{font-size:25px;margin:0 0 10px}.section>p{color:#64748b;margin:0 0 18px}
+    .cards{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:14px}.card{display:block;background:#fff;border:1px solid #e2e8f0;border-radius:14px;padding:20px;transition:.2s}.card:hover{transform:translateY(-2px);border-color:#a5b4fc;box-shadow:0 10px 25px rgba(15,23,42,.07)}.icon{width:58px;height:58px;object-fit:contain;margin-bottom:10px}.card h3{margin:0 0 5px;font-size:17px}.card p{margin:0;color:#64748b;font-size:14px}.arrow{display:inline-block;margin-top:12px;color:#4f46e5;font-size:13px;font-weight:800}
+    .steps{counter-reset:step;display:grid;gap:12px}.step{position:relative;background:#fff;border:1px solid #e2e8f0;border-radius:12px;padding:16px 18px 16px 58px}.step::before{counter-increment:step;content:counter(step);position:absolute;left:17px;top:16px;width:28px;height:28px;border-radius:50%;background:#4f46e5;color:#fff;display:grid;place-items:center;font-weight:800}.step strong{display:block;margin-bottom:2px}.step span{color:#64748b;font-size:14px}
+    .note{background:#eff6ff;border:1px solid #bfdbfe;border-radius:12px;padding:15px 17px;color:#475569;font-size:14px}.note strong{color:#1d4ed8}.mechanic{display:grid;grid-template-columns:92px 1fr;gap:18px;align-items:start;background:#fff;border:1px solid #e2e8f0;border-radius:14px;padding:20px;margin-top:14px}.mechanic img{width:86px;height:86px;object-fit:contain}.mechanic h3{margin:0 0 6px}.mechanic p{margin:0 0 10px;color:#64748b;font-size:14px}.mechanic ul{margin:0;padding-left:20px;color:#475569;font-size:14px}.mechanic .button{margin-top:12px}
+    .list{background:#fff;border:1px solid #e2e8f0;border-radius:14px;padding:7px 20px}.list li{margin:9px 0;color:#475569}.actions{display:flex;gap:10px;flex-wrap:wrap;margin-top:18px}.button{display:inline-flex;align-items:center;padding:9px 14px;border-radius:9px;background:#4f46e5;color:#fff;font-weight:750;font-size:14px}.button.secondary{background:#fff;color:#4f46e5;border:1px solid #c7d2fe}
+    code{font-family:"SFMono-Regular",Consolas,monospace;background:#f1f5f9;padding:2px 5px;border-radius:5px;color:#4338ca}
+    footer{border-top:1px solid #e2e8f0;background:#fff;text-align:center;color:#94a3b8;padding:24px;font-size:13px}
+    @media(max-width:780px){.layout{grid-template-columns:1fr}.side{position:static;display:flex;overflow:auto}.side strong{display:none}.side a{white-space:nowrap}.cards{grid-template-columns:1fr}.nav a:nth-child(-n+2){display:none}.hero-inner{padding-top:44px}.mechanic{grid-template-columns:1fr}.mechanic img{width:72px;height:72px}}
+  </style>
+</head>
+<body>
+  <header class="top">
+    <div class="top-inner">
+      <a class="brand" href="../index.html">CodeCombat 信息百科</a>
+      <nav class="nav" aria-label="文档导航">
+        <a href="../knowledge-tree/index.html">知识体系</a>
+        <a href="../heros/index.html">英雄图鉴</a>
+        <a href="equipment.html">装备机制</a>
+        <a href="api.html">关卡指令</a>
+      </nav>
+    </div>
+  </header>
+
+  <section class="hero">
+    <div class="hero-inner">
+      <div class="eyebrow">CODECOMBAT DOCUMENTATION</div>
+      <h1>文档中心</h1>
+      <p>文档用于解答“如何开始、怎样操作、游戏规则是什么意思、遇到问题怎么办”等常见疑问。这里集中整理账号与闯关指引、英雄和装备机制、关卡指令、教学说明及常见问题。教程帮助你理解编程知识，文档则帮助你快速查找明确的步骤、规则和参考信息，让学习和闯关更加顺畅。</p>
+    </div>
+  </section>
+
+  <div class="layout">
+    <aside class="side" aria-label="页内目录">
+      <strong>文档目录</strong>
+      <a href="#overview">常用文档</a>
+      <a href="#getting-started">新手指南</a>
+      <a href="#progress">闯关指引</a>
+      <a href="#mechanics">英雄与装备</a>
+      <a href="#api-guide">关卡指令</a>
+      <a href="#teaching">教学说明</a>
+      <a href="#faq">常见问题</a>
+    </aside>
+
+    <main class="content">
+      <section class="section" id="overview">
+        <h2>常用文档</h2>
+        <p>第一次使用建议依次查看“新手指南”和“闯关指引”；卡在代码或能力使用上时，再查对应的机制与 API。</p>
+        <div class="cards">
+          <a class="card" href="#getting-started"><img class="icon" src="../assets/icons/quick-beginner.png" alt=""><h3>新手指南</h3><p>三步完成注册并进入第一场代码冒险。</p><span class="arrow">开始阅读 →</span></a>
+          <a class="card" href="#progress"><img class="icon" src="../assets/icons/quick-walkthrough.png" alt=""><h3>闯关指引</h3><p>按目标、思路、程序、调试四步完成关卡。</p><span class="arrow">查看步骤 →</span></a>
+          <a class="card" href="../heros/index.html"><img class="icon" src="../assets/icons/quick-hero.png" alt=""><h3>英雄机制</h3><p>认识英雄角色、能力特点及其在冒险中的作用。</p><span class="arrow">查看英雄 →</span></a>
+          <a class="card" href="equipment.html"><img class="icon" src="../assets/icons/quick-equipment.png" alt=""><h3>装备机制</h3><p>查找装备属性、物品说明，以及装备可能解锁的能力。</p><span class="arrow">查看装备 →</span></a>
+          <a class="card" href="api.html"><img class="icon" src="../assets/icons/quick-commands.png" alt=""><h3>关卡指令</h3><p>按用途查找移动、侦测、战斗、施法、建造与指挥指令。</p><span class="arrow">查询指令 →</span></a>
+          <a class="card" href="https://codecombat.cn/codecombat_faq.html"><img class="icon" src="../assets/icons/quick-faq.png" alt=""><h3>常见问题</h3><p>查找账号、设备、游戏使用及其他常见问题的官方解答。</p><span class="arrow">打开 FAQ →</span></a>
+        </div>
+      </section>
+
+      <section class="section" id="getting-started">
+        <h2>新手指南</h2>
+        <p>不用先背语法，三步就能进入第一场代码冒险。</p>
+        <div class="steps">
+          <div class="step"><strong>进入 CodeCombat 官网</strong><span>打开 <a href="https://codecombat.cn/" style="color:#4f46e5;font-weight:700">codecombat.cn</a>，进入游戏学习页面。</span></div>
+          <div class="step"><strong>注册或登录账号</strong><span>按页面提示完成账号注册；已有账号可直接登录，学习进度会保存在账号中。</span></div>
+          <div class="step"><strong>选择起始关卡，开始冒险</strong><span>进入推荐的新手关卡，阅读目标并运行页面提供的第一段代码，马上就能看到英雄行动。</span></div>
+        </div>
+        <div class="actions"><a class="button secondary" href="../knowledge-tree/index.html">查看知识体系</a></div>
+      </section>
+
+      <section class="section" id="progress">
+        <h2>闯关指引</h2>
+        <p>每一关都可以按照同一套四步流程完成。先想清楚，再动手写；运行后根据结果继续修正。</p>
+        <div class="steps">
+          <div class="step"><strong>阅读目标：明确要完成什么</strong><span>区分主要目标、额外目标和失败条件；同时观察地图上的敌人、物品、友军与关键位置。</span></div>
+          <div class="step"><strong>分析思路：把任务拆成动作</strong><span>按执行顺序列出需要做的事情，例如“找到敌人—判断距离—选择技能—发动攻击”，再判断哪里需要循环或条件。</span></div>
+          <div class="step"><strong>编写程序：从最小步骤开始</strong><span>先让一个动作正确运行，再逐段加入查找、判断和重复逻辑。查找结果可能为空，使用目标前先判断它是否存在。</span></div>
+          <div class="step"><strong>运行调试：观察结果并修正</strong><span>查看英雄停在哪里和报错指向哪一行，依次检查拼写、缩进、括号、参数、技能冷却及装备是否提供该指令；每次只修改一个问题。</span></div>
+        </div>
+        <div class="note"><strong>提示：</strong>地图告诉你学习顺序，知识体系解释编程概念，关卡文档则列出当前场景真正可用的方法和属性。三者结合查看最有效。</div>
+      </section>
+
+      <section class="section" id="mechanics">
+        <h2>英雄与装备机制</h2>
+        <p>英雄和装备共同决定你在关卡中能够做什么，但它们承担的作用不同。</p>
+        <article class="mechanic">
+          <img src="../assets/icons/quick-hero.png" alt="英雄盾牌图标">
+          <div><h3>英雄图鉴：认识代码的执行者</h3><p>英雄是玩家直接控制的角色。代码中的 <code>hero</code> 就指向当前英雄，移动、攻击、施法和建造等指令最终都会变成英雄在场景中的行动。</p><ul><li>不同英雄拥有不同的生命、速度、攻击方式与技能倾向。</li><li>英雄适合的装备和战术可能不同，选择时要结合关卡目标。</li><li>图鉴还提供中文名、称号、所属世界、人物简介和完整故事。</li></ul><a class="button" href="../heros/index.html">进入英雄图鉴</a></div>
+        </article>
+        <article class="mechanic">
+          <img src="../assets/icons/quick-equipment.png" alt="剑与盾装备图标">
+          <div><h3>装备介绍：解锁属性与指令</h3><p>装备会改变英雄的生命、攻击、防御、移动等属性，也可能提供新的方法。靴子常与移动有关，眼镜帮助侦测目标，武器提供攻击能力，盾牌和法杖则可能带来防御或法术。</p><ul><li>同一条代码能否运行，可能取决于当前是否装备了对应物品。</li><li>装备能力仍会受到关卡限制；请以游戏编辑器中的关卡文档为准。</li><li>装备文档支持按中文名、英文名和说明搜索具体物品。</li></ul><a class="button" href="equipment.html">查看装备机制</a></div>
+        </article>
+      </section>
+
+      <section class="section" id="api-guide">
+        <h2>关卡指令</h2>
+        <p>关卡指令是代码中可以调用的方法和读取的属性，例如移动、查找敌人、攻击或读取生命值。写法通常是“对象.方法(参数)”，如 <code>hero.moveXY(40, 30)</code>。</p>
+        <div class="note"><strong>以当前关卡为准：</strong>可用指令会受到关卡、英雄、装备和编程语言影响。本站用于理解和快速查询，游戏代码编辑器中显示的关卡文档是当前场景的最终依据。</div>
+        <div class="actions"><a class="button" href="api.html">打开关卡指令文档</a><a class="button secondary" href="api.html#examples">查看完整示例</a></div>
+      </section>
+
+      <section class="section" id="teaching">
+        <h2>教学说明</h2>
+        <p>在学校或教育机构的教学场景中，可把游戏任务、知识讲解和代码复盘组合起来，让学生既完成关卡，也能说清为什么这样写。</p>
+        <ul class="list">
+          <li><strong>课前：</strong>明确本节只聚焦一到两个知识目标，并准备对应关卡。</li>
+          <li><strong>示范：</strong>展示最小示例和调试过程，避免直接给出完整通关代码。</li>
+          <li><strong>练习：</strong>让学生先独立观察运行结果，再通过提问定位问题。</li>
+          <li><strong>复盘：</strong>要求学生用自己的话解释对象、条件、循环或函数在关卡中的作用。</li>
+          <li><strong>拓展：</strong>完成基本目标后，再尝试更短、更清晰或能完成额外目标的写法。</li>
+        </ul>
+        <div class="actions"><a class="button secondary" href="https://koudashijie.com/">进入教师入口</a><a class="button secondary" href="../index.html#course">了解课程</a></div>
+      </section>
+
+      <section class="section" id="faq">
+        <h2>常见问题</h2>
+        <p>账号登录、设备环境、游戏操作或其他使用问题，可前往 CodeCombat 中国官网的常见问题页面查询。</p>
+        <a class="button" href="https://codecombat.cn/codecombat_faq.html">查看常见问题</a>
+      </section>
+    </main>
+  </div>
+
+  <footer>CodeCombat 文档中心 · <a href="../index.html">返回信息百科</a></footer>
+
+<div data-info-wiki-backlink style="text-align:center;padding:18px 12px;color:#64748b;font:13px/1.6 -apple-system,BlinkMacSystemFont,'Segoe UI','Microsoft YaHei',sans-serif"><a href="../index.html" style="color:#4f46e5;text-decoration:none;font-weight:700">← 返回 CodeCombat 信息百科</a></div>
+</body>
+</html>

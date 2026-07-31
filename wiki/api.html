@@ -1,0 +1,195 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="description" content="CodeCombat 关卡指令中文文档，涵盖英雄、移动、侦测、物品、战斗、技能、法术、建造、召唤、友军、宠物、事件与游戏开发指令，并提供 Python 和 JavaScript 高亮示例。">
+  <title>CodeCombat 关卡指令文档</title>
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/themes/prism-tomorrow.min.css">
+  <style>
+    *,*::before,*::after{box-sizing:border-box}html{scroll-behavior:smooth}body{margin:0;background:#f8fafc;color:#1e293b;font-family:-apple-system,BlinkMacSystemFont,"Segoe UI","PingFang SC","Microsoft YaHei",sans-serif;line-height:1.7}a{color:inherit;text-decoration:none}
+    .top{position:sticky;top:0;z-index:20;background:rgba(255,255,255,.95);border-bottom:1px solid #e2e8f0;backdrop-filter:blur(10px)}.top-inner{max-width:1240px;margin:auto;padding:13px 20px;display:flex;justify-content:space-between;align-items:center;gap:14px}.brand{font-weight:850}.links{display:flex;gap:8px;flex-wrap:wrap}.links a{padding:7px 10px;border-radius:8px;color:#64748b;font-size:13px}.links a:hover{background:#eef2ff;color:#4f46e5}
+    .hero{border-bottom:1px solid #e2e8f0;background:linear-gradient(135deg,#eef2ff,#f8fafc 55%,#ecfeff)}.hero-inner{max-width:1240px;margin:auto;padding:52px 20px}.hero h1{font-size:clamp(32px,5vw,48px);line-height:1.15;margin:5px 0 12px}.hero p{max-width:860px;color:#475569;margin:0}.eyebrow{font-size:13px;color:#4f46e5;font-weight:800;letter-spacing:.08em}
+    .layout{max-width:1240px;margin:auto;padding:30px 20px 70px;display:grid;grid-template-columns:230px minmax(0,1fr);gap:30px}.toc{position:sticky;top:76px;align-self:start;background:#fff;border:1px solid #e2e8f0;border-radius:14px;padding:12px}.toc strong{display:block;padding:7px 10px;font-size:13px}.toc a{display:block;padding:7px 10px;border-radius:8px;font-size:14px;color:#64748b}.toc a:hover{background:#eef2ff;color:#4f46e5}
+    main{min-width:0}.section{scroll-margin-top:84px;margin-bottom:42px}.section h2{font-size:25px;margin:0 0 8px}.section>p{color:#64748b;margin:0 0 16px}.note{border:1px solid #bfdbfe;background:#eff6ff;border-radius:12px;padding:14px 16px;color:#475569;font-size:14px;margin-bottom:18px}.note strong{color:#1d4ed8}
+    .api-grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:12px}.api{background:#fff;border:1px solid #e2e8f0;border-radius:12px;padding:16px}.api h3{font:700 15px/1.5 "SFMono-Regular",Consolas,monospace;color:#4338ca;margin:0 0 7px;overflow-wrap:anywhere}.api p{font-size:14px;color:#64748b;margin:0}.api .returns{display:block;margin-top:8px;color:#94a3b8;font-size:12px}.tag{display:inline-block;padding:2px 7px;border-radius:99px;background:#f1f5f9;color:#64748b;font:12px/1.7 sans-serif;margin-left:4px}
+    .props{width:100%;border-collapse:collapse;background:#fff;border:1px solid #e2e8f0;border-radius:12px;overflow:hidden;display:table}.props th,.props td{text-align:left;padding:11px 13px;border-bottom:1px solid #e2e8f0;font-size:14px}.props th{background:#f8fafc;color:#475569}.props td:first-child{font-family:"SFMono-Regular",Consolas,monospace;color:#4338ca;white-space:nowrap}.props tr:last-child td{border-bottom:0}
+    .code-grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:14px}.example{background:#0f172a;border-radius:13px;overflow:hidden}.example-head{padding:10px 14px;background:#1e293b;color:#cbd5e1;font-size:12px;font-weight:700}.example pre{margin:0;padding:16px;overflow:auto;color:#e2e8f0;font:13px/1.7 "SFMono-Regular",Consolas,monospace}.example code{font:inherit}
+    .checklist{background:#fff;border:1px solid #e2e8f0;border-radius:12px;padding:8px 20px}.checklist li{margin:9px 0;color:#475569}.button{display:inline-block;margin-top:14px;padding:9px 14px;border-radius:9px;background:#4f46e5;color:#fff;font-size:14px;font-weight:750}.button.secondary{background:#fff;color:#4f46e5;border:1px solid #c7d2fe;margin-left:8px}.reference-box{background:#fff;border:1px solid #e2e8f0;border-radius:14px;padding:18px}.reference-box summary{font-weight:800;cursor:pointer}.reference-box p{color:#64748b;font-size:14px}.reference-columns{columns:3 230px;column-gap:24px;margin-top:14px}.reference-columns code{display:block;break-inside:avoid;padding:5px 0;color:#4338ca;font-size:12px}.raw-frame{width:100%;height:480px;border:1px solid #e2e8f0;border-radius:10px;background:#f8fafc;margin-top:14px}footer{background:#fff;border-top:1px solid #e2e8f0;padding:24px;text-align:center;color:#94a3b8;font-size:13px}
+    @media(max-width:820px){.layout{grid-template-columns:1fr}.toc{position:static;display:flex;overflow:auto}.toc strong{display:none}.toc a{white-space:nowrap}.api-grid,.code-grid{grid-template-columns:1fr}.props{display:block;overflow-x:auto}.links a:first-child{display:none}}
+  </style>
+</head>
+<body>
+  <header class="top"><div class="top-inner"><a class="brand" href="../index.html">CodeCombat 信息百科</a><nav class="links" aria-label="文档导航"><a href="index.html">文档中心</a><a href="equipment.html">装备机制</a><a href="../knowledge-tree/index.html">知识体系</a></nav></div></header>
+  <section class="hero"><div class="hero-inner"><div class="eyebrow">LEVEL COMMAND REFERENCE</div><h1>关卡指令文档</h1><p>这里按用途整理 CodeCombat 中常见的方法、属性和代码模式，帮助你快速看懂“能调用什么、参数怎么写、返回什么”。内容覆盖基础闯关、英雄与装备能力、宠物、事件和游戏开发等场景，代码提供清晰的 Python 与 JavaScript 语法高亮。</p></div></section>
+
+  <div class="layout">
+    <aside class="toc" aria-label="关卡指令目录"><strong>指令目录</strong><a href="#before-use">使用前须知</a><a href="#objects">对象与属性</a><a href="#functions">常用指令</a><a href="#movement">移动与位置</a><a href="#sensing">侦测与查找</a><a href="#combat">战斗与技能</a><a href="#items">物品与旗帜</a><a href="#build">建造与指挥</a><a href="#pet">宠物指令</a><a href="#events">事件处理</a><a href="#game-dev">游戏开发</a><a href="#special">特殊关卡</a><a href="#examples">完整示例</a><a href="#full-reference">完整索引</a><a href="#debug">排错清单</a></aside>
+    <main>
+      <section class="section" id="before-use">
+        <h2>使用前须知</h2>
+        <p>CodeCombat 的关卡指令不是每一关都完全相同。英雄、装备、关卡类型和所选编程语言，都会影响当前可用的方法。</p>
+        <div class="note"><strong>判断标准：</strong>游戏代码编辑器中显示的关卡文档，是当前关卡可用指令的最终依据。若本站列出的方法无法调用，请先检查关卡限制、英雄与装备，不要通过猜测添加参数。</div>
+        <ul class="checklist"><li><strong>对象：</strong><code>hero</code> 表示自己的英雄；<code>enemy</code>、<code>item</code>、<code>friend</code> 通常是代码中保存的查找结果。</li><li><strong>方法：</strong><code>hero.moveXY(40, 30)</code> 中，<code>moveXY</code> 是方法，坐标是参数。</li><li><strong>属性：</strong><code>hero.health</code> 直接读取数值，不在末尾加括号。</li><li><strong>空结果：</strong>没有找到目标时，查找方法可能返回空值；使用目标前应先判断它是否存在。</li></ul>
+      </section>
+
+      <section class="section" id="objects"><h2>对象与常用属性</h2><p>属性用于读取对象的当前状态。部分属性只在特定关卡或单位上提供。</p>
+        <table class="props"><thead><tr><th>属性</th><th>含义</th><th>常见值</th></tr></thead><tbody>
+          <tr><td>hero.pos</td><td>英雄当前位置</td><td>带有 <code>x</code>、<code>y</code> 的位置对象</td></tr><tr><td>hero.health</td><td>当前生命值</td><td>数字</td></tr><tr><td>hero.maxHealth</td><td>最大生命值</td><td>数字</td></tr><tr><td>hero.gold</td><td>当前金币</td><td>数字</td></tr><tr><td>hero.time</td><td>关卡已经过的时间</td><td>秒数；需当前关卡或装备支持</td></tr><tr><td>unit.pos</td><td>单位当前位置</td><td><code>unit.pos.x</code>、<code>unit.pos.y</code></td></tr><tr><td>unit.health</td><td>单位当前生命值</td><td>数字</td></tr><tr><td>unit.type</td><td>单位类型</td><td>例如 <code>"soldier"</code></td></tr><tr><td>unit.team</td><td>单位所属阵营</td><td>文本；仅部分关卡需要</td></tr><tr><td>item.pos</td><td>物品所在位置</td><td>位置对象</td></tr><tr><td>item.value</td><td>物品价值</td><td>数字；视物品与关卡而定</td></tr>
+        </tbody></table>
+      </section>
+
+      <section class="section" id="functions"><h2>常用指令速查</h2><p>以下是最常见的学习与闯关指令。标签提示其通常依赖的能力类型。</p><div class="api-grid">
+        <article class="api"><h3>hero.moveXY(x, y) <span class="tag">移动</span></h3><p>移动到指定坐标。两个参数都必须是数字。</p><span class="returns">返回：无须使用返回值</span></article>
+        <article class="api"><h3>hero.move(position) <span class="tag">移动</span></h3><p>朝位置对象移动，常与 <code>item.pos</code> 或 <code>enemy.pos</code> 配合。</p><span class="returns">返回：无须使用返回值</span></article>
+        <article class="api"><h3>hero.findNearestEnemy() <span class="tag">侦测</span></h3><p>查找最近的敌人；没有敌人时可能返回空值。</p><span class="returns">返回：敌人对象或空值</span></article>
+        <article class="api"><h3>hero.findEnemies() <span class="tag">侦测</span></h3><p>取得当前可侦测到的敌人集合。</p><span class="returns">返回：敌人数组/列表</span></article>
+        <article class="api"><h3>hero.findNearestItem() <span class="tag">侦测</span></h3><p>查找最近的可见物品。</p><span class="returns">返回：物品对象或空值</span></article>
+        <article class="api"><h3>hero.findItems() <span class="tag">侦测</span></h3><p>取得当前可侦测到的物品集合。</p><span class="returns">返回：物品数组/列表</span></article>
+        <article class="api"><h3>hero.distanceTo(target) <span class="tag">位置</span></h3><p>计算英雄与目标对象或位置之间的距离。</p><span class="returns">返回：数字</span></article>
+        <article class="api"><h3>hero.attack(enemy) <span class="tag">战斗</span></h3><p>攻击指定敌人，需要武器及关卡支持。</p><span class="returns">返回：无须使用返回值</span></article>
+        <article class="api"><h3>hero.isReady("ability") <span class="tag">技能</span></h3><p>判断某个技能是否已经结束冷却，可把技能名替换为当前可用能力。</p><span class="returns">返回：布尔值</span></article>
+        <article class="api"><h3>hero.canCast("spell", target) <span class="tag">施法</span></h3><p>判断指定法术当前能否对目标施放；有些法术不需要目标参数。</p><span class="returns">返回：布尔值</span></article>
+        <article class="api"><h3>hero.say(value) <span class="tag">交流</span></h3><p>让英雄说出文本或数值；部分关卡用它传递口令或调试信息。</p><span class="returns">返回：无须使用返回值</span></article>
+        <article class="api"><h3>hero.findNearest(objects) <span class="tag">侦测</span></h3><p>从给定的对象集合中找出距离英雄最近的对象。</p><span class="returns">返回：对象或空值</span></article>
+      </div></section>
+
+      <section class="section" id="movement"><h2>移动与位置</h2><p><code>moveXY</code> 接收两个坐标数字；<code>move</code> 接收一个位置对象。不要把完整对象误写成 x 坐标。</p><div class="code-grid">
+        <div class="example"><div class="example-head">Python · 移动到物品</div><pre><code class="language-python">item = hero.findNearestItem()
+if item:
+    hero.move(item.pos)</code></pre></div>
+        <div class="example"><div class="example-head">JavaScript · 移动到物品</div><pre><code class="language-javascript">const item = hero.findNearestItem();
+if (item) {
+    hero.move(item.pos);
+}</code></pre></div>
+      </div></section>
+
+      <section class="section" id="sensing"><h2>侦测与查找</h2><p>“最近目标”方法适合处理一个对象；“查找全部”方法适合遍历、计数或筛选。使用最近目标前要先判断结果是否存在。</p><div class="api-grid">
+        <article class="api"><h3>hero.findFriends()</h3><p>取得当前可见或可指挥的友方单位集合。</p><span class="returns">返回：友方数组/列表</span></article>
+        <article class="api"><h3>hero.findNearestFriend()</h3><p>查找最近的友方单位。</p><span class="returns">返回：友方对象或空值</span></article>
+        <article class="api"><h3>hero.findByType(type, objects)</h3><p>按类型筛选对象。第二个集合参数是否可用取决于关卡文档。</p><span class="returns">返回：匹配对象的数组/列表</span></article>
+        <article class="api"><h3>hero.findFlag()</h3><p>查找玩家放置的旗帜；仅在支持旗帜的关卡中使用。</p><span class="returns">返回：旗帜对象或空值</span></article>
+      </div></section>
+
+      <section class="section" id="combat"><h2>战斗、技能与施法</h2><p>普通攻击、特殊技能和法术通常依赖英雄或装备。使用带冷却时间的能力前先调用 <code>isReady</code>；施法前优先使用 <code>canCast</code>。</p><div class="api-grid">
+        <article class="api"><h3>hero.attack(enemy)</h3><p>使用当前武器攻击敌人。</p></article><article class="api"><h3>hero.shield()</h3><p>举盾进行防御，需要盾牌提供该能力。</p></article><article class="api"><h3>hero.cleave(enemy)</h3><p>使用顺劈斩；先用 <code>isReady("cleave")</code> 判断是否就绪。</p></article><article class="api"><h3>hero.cast("spell", target)</h3><p>施放指定法术。参数随法术而异，应严格按照当前关卡文档填写。</p></article>
+        <article class="api"><h3>hero.bash(enemy)</h3><p>用盾牌猛击敌人；需要提供盾击能力的盾牌。</p></article><article class="api"><h3>hero.backstab(enemy)</h3><p>对目标发动背刺；范围、伤害和冷却由装备决定。</p></article><article class="api"><h3>hero.heal(target)</h3><p>治疗目标；仅在英雄、装备或关卡提供治疗能力时可用。</p></article><article class="api"><h3>hero.throw(enemy)</h3><p>使用支持投掷的武器攻击目标；部分特殊关卡可能改用坐标参数。</p></article>
+      </div></section>
+
+      <section class="section" id="items"><h2>物品与旗帜</h2><p>物品通常提供金币、宝石或关卡目标；旗帜只在支持玩家放旗的关卡中出现。</p><div class="api-grid">
+        <article class="api"><h3>hero.findItems()</h3><p>取得可侦测到的全部物品。</p><span class="returns">返回：物品数组/列表</span></article><article class="api"><h3>hero.findNearestItem()</h3><p>取得最近的可见物品；使用前先判断是否存在。</p><span class="returns">返回：物品对象或空值</span></article><article class="api"><h3>hero.findFlags()</h3><p>取得当前已放置的旗帜集合。</p><span class="returns">返回：旗帜数组/列表</span></article><article class="api"><h3>hero.findFlag(color)</h3><p>查找旗帜；部分关卡允许通过颜色筛选。</p><span class="returns">返回：旗帜对象或空值</span></article><article class="api"><h3>hero.pickUpFlag(flag)</h3><p>让英雄前往并拾取指定旗帜。</p></article><article class="api"><h3>hero.removeFlag(flag)</h3><p>移除指定旗帜；是否可用取决于关卡。</p></article>
+      </div></section>
+
+      <section class="section" id="build"><h2>建造、召唤与指挥</h2><p>以下方法只在相应关卡、装备或英雄支持时出现。可建造和召唤的类型也由当前场景决定。</p><div class="api-grid">
+        <article class="api"><h3>hero.buildXY(type, x, y)</h3><p>在坐标处建造指定类型，例如关卡允许的围栏、陷阱或召唤物。</p></article><article class="api"><h3>hero.build(type, x, y)</h3><p>部分建造或塔防关卡使用的建造写法；位置参数以关卡文档为准。</p></article><article class="api"><h3>hero.costOf(type)</h3><p>查询召唤某种单位所需的金币。</p><span class="returns">返回：数字</span></article><article class="api"><h3>hero.summon(type)</h3><p>召唤指定类型的友方单位。</p></article><article class="api"><h3>hero.command(friend, action, target)</h3><p>命令友方单位执行动作。第三个参数可以是目标对象或位置，取决于动作。</p></article><article class="api"><h3>hero.findFriends()</h3><p>取得友方单位，通常用于循环下达命令。</p><span class="returns">返回：友方数组/列表</span></article><article class="api"><h3>hero.findByType(type, objects)</h3><p>从单位集合中筛选某一类型；第二参数是否必需由关卡决定。</p></article><article class="api"><h3>hero.gold</h3><p>读取当前金币，常用于召唤前的费用判断。</p><span class="returns">返回：数字</span></article>
+      </div></section>
+
+      <section class="section" id="pet"><h2>宠物指令</h2><p>宠物拥有自己的方法，并可通过事件执行任务。具体能力取决于已装备宠物和当前关卡。</p><div class="api-grid">
+        <article class="api"><h3>pet.on(eventType, handler)</h3><p>为宠物注册事件处理函数，例如响应生成事件。</p></article><article class="api"><h3>pet.fetch(item)</h3><p>让宠物取回可搬运物品。</p></article><article class="api"><h3>pet.moveXY(x, y)</h3><p>让宠物移动到指定坐标。</p></article><article class="api"><h3>pet.say(message)</h3><p>让宠物说出信息；部分关卡用于通信或调试。</p></article><article class="api"><h3>pet.findNearestByType(type)</h3><p>查找距离宠物最近的指定类型对象。</p></article><article class="api"><h3>pet.isReady(ability)</h3><p>判断宠物能力是否就绪。</p><span class="returns">返回：布尔值</span></article><article class="api"><h3>pet.chase(enemy)</h3><p>让支持该能力的宠物追赶敌人。</p></article><article class="api"><h3>pet.coldBlast()</h3><p>使用寒冰冲击等宠物专属能力；需要对应宠物支持。</p></article>
+      </div></section>
+
+      <section class="section" id="events"><h2>事件处理</h2><p>事件让代码在“某件事发生时”自动调用函数，常用于宠物关卡和游戏开发。先定义处理函数，再用 <code>on</code> 注册。</p><div class="code-grid">
+        <div class="example"><div class="example-head">Python · 宠物响应 spawn 事件</div><pre><code class="language-python">def on_spawn(event):
+    item = hero.findNearestItem()
+    if item:
+        pet.fetch(item)
+
+pet.on("spawn", on_spawn)</code></pre></div>
+        <div class="example"><div class="example-head">JavaScript · 宠物响应 spawn 事件</div><pre><code class="language-javascript">function onSpawn(event) {
+    const item = hero.findNearestItem();
+    if (item) {
+        pet.fetch(item);
+    }
+}
+
+pet.on("spawn", onSpawn);</code></pre></div>
+      </div><div class="api-grid" style="margin-top:14px"><article class="api"><h3>hero.on(event, handler)</h3><p>在支持事件的特殊关卡中，为英雄注册处理函数。</p></article><article class="api"><h3>unit.on(event, handler)</h3><p>游戏开发关卡中，为单位的生成、碰撞、击败等事件设置处理逻辑。</p></article></div></section>
+
+      <section class="section" id="game-dev"><h2>游戏开发指令</h2><p>游戏开发关卡常使用 <code>game</code> 对象创建场景、单位、目标与界面。不同开发关卡开放的资源名称和事件并不相同。</p><div class="api-grid">
+        <article class="api"><h3>game.spawn(type)</h3><p>在支持该竞技模板的关卡中，从基地生成指定类型单位。</p></article><article class="api"><h3>game.spawnArray(types)</h3><p>按数组批量生成单位；费用与可用类型由对应模板决定。</p></article><article class="api"><h3>game.setBackground(name)</h3><p>设置游戏背景资源。</p></article><article class="api"><h3>game.setMapSize(name)</h3><p>使用关卡提供的尺寸名称设置地图大小。</p></article><article class="api"><h3>game.addTextDirections(text)</h3><p>在游戏界面中显示玩法说明。</p></article><article class="api"><h3>game.setActionFor(type, event, handler)</h3><p>为某一类单位设置 spawn、attack、defend 或 update 等行为。</p></article><article class="api"><h3>game.setPatrolFor(type, range, points)</h3><p>为指定类型单位设置巡逻范围与路径点。</p></article><article class="api"><h3>game.randomInt(max)</h3><p>生成 0 到上限范围内的随机整数；边界规则以关卡文档为准。</p><span class="returns">返回：数字</span></article><article class="api"><h3>game.time / game.score</h3><p>读取已经过的游戏时间或当前分数。</p><span class="returns">返回：数字</span></article><article class="api"><h3>game.win()</h3><p>在自定义获胜条件满足时结束游戏并判定胜利。</p></article><article class="api"><h3>ui.track(object, property)</h3><p>把对象的指定属性显示在游戏界面上。</p></article>
+      </div></section>
+
+      <section class="section" id="special"><h2>特殊关卡与竞技指令</h2><p>原始资料还包含塔防、波次、元素地图、多人竞技和运动类关卡指令。它们只在对应关卡出现，不应直接套用到普通冒险关卡。</p><div class="api-grid">
+        <article class="api"><h3>hero.getWaterMap() / waterAtXY(x, y)</h3><p>读取水域地图或判断坐标的水元素状态。</p></article><article class="api"><h3>hero.getLavaMap() / lavaAtXY(x, y)</h3><p>读取岩浆地图或判断坐标的岩浆状态。</p></article><article class="api"><h3>hero.getSolarMap() / solarAtXY(x, y)</h3><p>读取太阳能地图或判断坐标状态。</p></article><article class="api"><h3>hero.getWaves() / getCurrentWave()</h3><p>读取波次信息和当前波次。</p></article><article class="api"><h3>hero.getTowerAt(place)</h3><p>取得指定位置的塔，配合建造、升级或售卖逻辑。</p></article><article class="api"><h3>hero.getTowerParameters(type, level)</h3><p>读取塔类型在指定等级的参数。</p></article><article class="api"><h3>hero.getUnitParameters(type)</h3><p>读取特殊竞技关卡中的单位参数。</p></article><article class="api"><h3>hero.getSpellData(name)</h3><p>读取特殊关卡中某个法术的费用或其他数据。</p></article><article class="api"><h3>hero.opponent</h3><p>取得对手英雄对象；仅在支持对战的关卡中存在。</p></article><article class="api"><h3>hero.score / hero.opponentScore</h3><p>读取自己与对手的得分。</p></article>
+      </div></section>
+
+      <section class="section" id="examples"><h2>完整示例</h2><p>这些示例展示安全的基本结构。技能、法术和单位类型需要替换成当前关卡实际提供的内容。</p><div class="code-grid">
+        <div class="example"><div class="example-head">Python · 持续侦测与战斗</div><pre><code class="language-python">while True:
+    enemy = hero.findNearestEnemy()
+    if enemy:
+        if hero.isReady("cleave"):
+            hero.cleave(enemy)
+        else:
+            hero.attack(enemy)</code></pre></div>
+        <div class="example"><div class="example-head">JavaScript · 持续侦测与战斗</div><pre><code class="language-javascript">while (true) {
+    const enemy = hero.findNearestEnemy();
+    if (enemy) {
+        if (hero.isReady("cleave")) {
+            hero.cleave(enemy);
+        } else {
+            hero.attack(enemy);
+        }
+    }
+}</code></pre></div>
+        <div class="example"><div class="example-head">Python · 召唤并指挥士兵</div><pre><code class="language-python">soldier_cost = hero.costOf("soldier")
+if hero.gold >= soldier_cost:
+    hero.summon("soldier")
+
+enemy = hero.findNearestEnemy()
+if enemy:
+    for friend in hero.findFriends():
+        hero.command(friend, "attack", enemy)</code></pre></div>
+        <div class="example"><div class="example-head">JavaScript · 召唤并指挥士兵</div><pre><code class="language-javascript">const soldierCost = hero.costOf("soldier");
+if (hero.gold >= soldierCost) {
+    hero.summon("soldier");
+}
+
+const enemy = hero.findNearestEnemy();
+if (enemy) {
+    for (const friend of hero.findFriends()) {
+        hero.command(friend, "attack", enemy);
+    }
+}</code></pre></div>
+      </div></section>
+
+      <section class="section" id="full-reference">
+        <h2>完整指令索引</h2>
+        <p>下面汇总原始资料中最常出现的可编程对象与指令名称，方便按英文名称定位。原始资料还包含大量内部组件、比赛专用能力和关卡裁判字段，它们不一定能由玩家代码直接调用。</p>
+        <details class="reference-box" open>
+          <summary>英雄、单位与物品指令</summary>
+          <div class="reference-columns">
+            <code>hero.moveXY(x, y)</code><code>hero.move(position)</code><code>hero.moveUp(times)</code><code>hero.moveDown(times)</code><code>hero.moveLeft(times)</code><code>hero.moveRight(times)</code><code>hero.moveForward(times)</code><code>hero.moveTo(position)</code><code>hero.moveToward(position)</code><code>hero.turn(direction)</code><code>hero.jump()</code><code>hero.dash()</code><code>hero.wait(seconds)</code><code>hero.distanceTo(target)</code><code>hero.findNearest(objects)</code><code>hero.findNearestEnemy()</code><code>hero.findNearestFriend()</code><code>hero.findEnemies()</code><code>hero.findFriends()</code><code>hero.findItems()</code><code>hero.findNearestItem()</code><code>hero.findByType(type)</code><code>hero.findCorpses()</code><code>hero.findEnemyMissiles()</code><code>hero.findFriendlyMissiles()</code><code>hero.findFlags()</code><code>hero.findFlag(color)</code><code>hero.pickUpFlag(flag)</code><code>hero.removeFlag(flag)</code><code>hero.attack(enemy)</code><code>hero.attackXY(x, y)</code><code>hero.shield()</code><code>hero.cleave(enemy)</code><code>hero.bash(enemy)</code><code>hero.backstab(enemy)</code><code>hero.heal(target)</code><code>hero.cast(spell, target)</code><code>hero.canCast(spell, target)</code><code>hero.isReady(ability)</code><code>hero.say(value)</code><code>hero.buildXY(type, x, y)</code><code>hero.build(type, place)</code><code>hero.costOf(type)</code><code>hero.summon(type)</code><code>hero.command(friend, action, target)</code><code>hero.on(event, handler)</code><code>hero.health</code><code>hero.maxHealth</code><code>hero.gold</code><code>hero.time</code><code>hero.pos</code><code>hero.x</code><code>hero.y</code><code>hero.type</code><code>hero.team</code><code>unit.move(position)</code><code>unit.moveXY(x, y)</code><code>unit.distanceTo(target)</code><code>unit.findNearestEnemy()</code><code>unit.findEnemies()</code><code>unit.findFriends()</code><code>unit.attack(target)</code><code>unit.health</code><code>unit.maxHealth</code><code>unit.maxSpeed</code><code>unit.attackDamage</code><code>unit.attackRange</code><code>unit.pos</code><code>unit.type</code><code>unit.team</code><code>item.pos</code><code>item.value</code><code>flag.pos</code><code>flag.color</code>
+          </div>
+        </details>
+        <details class="reference-box" style="margin-top:12px">
+          <summary>宠物、事件与游戏开发指令</summary>
+          <div class="reference-columns">
+            <code>pet.on(event, handler)</code><code>pet.fetch(item)</code><code>pet.moveXY(x, y)</code><code>pet.say(message)</code><code>pet.findNearestByType(type)</code><code>pet.isReady(ability)</code><code>pet.chase(enemy)</code><code>pet.carryUnit(target, x, y)</code><code>pet.catchProjectile(projectile)</code><code>pet.charm(enemy)</code><code>pet.coldBlast()</code><code>pet.distractionNoise()</code><code>pet.quack()</code><code>pet.shapeShift()</code><code>game.spawn(type)</code><code>game.spawnArray(types)</code><code>game.costOf(type)</code><code>game.costOfSpawnArray(types)</code><code>game.setBackground(name)</code><code>game.setEnvironment(name)</code><code>game.setMapSize(name)</code><code>game.setGravity(strength)</code><code>game.addTextDirections(text)</code><code>game.setActionFor(type, event, handler)</code><code>game.changeActionFor(type, event)</code><code>game.setPatrolFor(type, range, points)</code><code>game.changePatrolFor(type, range, points)</code><code>game.removeActionForUnit(unit)</code><code>game.randomInt(max)</code><code>game.on(event, handler)</code><code>game.say(text)</code><code>game.win()</code><code>game.endStory()</code><code>game.time</code><code>game.score</code><code>ui.track(object, property)</code>
+          </div>
+        </details>
+        <details class="reference-box" style="margin-top:12px">
+          <summary>塔防、波次、元素地图与竞技指令</summary>
+          <div class="reference-columns">
+            <code>hero.get2dMap()</code><code>hero.getWaterMap()</code><code>hero.waterAtXY(x, y)</code><code>hero.getLavaMap()</code><code>hero.lavaAtXY(x, y)</code><code>hero.getSolarMap()</code><code>hero.solarAtXY(x, y)</code><code>hero.getObstacleAt(x, y)</code><code>hero.getWaves()</code><code>hero.getWave(number)</code><code>hero.getWaveNumber()</code><code>hero.getCurrentWave()</code><code>hero.getNextWave()</code><code>hero.findTowers()</code><code>hero.findMyTowers()</code><code>hero.findEnemyTowers()</code><code>hero.getTowerAt(place)</code><code>hero.getTowerParameters(type, level)</code><code>hero.setTargeting(tower, type)</code><code>hero.sell(place)</code><code>hero.findMyUnits()</code><code>hero.findEnemyUnits()</code><code>hero.getUnitParameters(type)</code><code>hero.getSpellData(name)</code><code>hero.getSpellParameters(name)</code><code>hero.getTotalMana(type)</code><code>hero.opponent</code><code>hero.score</code><code>hero.opponentScore</code><code>hero.round</code><code>hero.roundTime</code><code>hero.gameTime</code><code>hero.gameActive</code>
+          </div>
+        </details>
+        <details class="reference-box" style="margin-top:12px">
+          <summary>查看完整英文原始资料</summary>
+          <p>下方直接载入项目中的 <code>api英文文档.txt</code>，保留其全部组件、系统和方法记录。它适合高级检索，不应被理解为每一关都能直接使用的玩家指令。</p>
+          <a class="button secondary" href="api英文文档.txt">在新页面打开原始资料</a>
+          <iframe class="raw-frame" src="api英文文档.txt" title="CodeCombat 完整英文 API 原始资料"></iframe>
+        </details>
+      </section>
+
+      <section class="section" id="debug"><h2>排错清单</h2><p>出现错误或英雄没有按预期行动时，按下面顺序检查通常最快。</p><ol class="checklist"><li>方法名、变量名和字符串是否拼写正确，英文大小写是否一致。</li><li>Python 缩进、JavaScript 花括号和括号是否完整。</li><li>目标是否可能为空；是否在使用前写了 <code>if enemy:</code> 或 <code>if (enemy)</code>。</li><li>参数数量和类型是否符合当前关卡文档，例如坐标数字与位置对象不要混用。</li><li>技能是否冷却完成，法术目标是否合法。</li><li>当前英雄、装备和关卡是否真正提供这个方法。</li></ol><a class="button" href="https://codecombat.cn/codecombat_faq.html">仍有问题？查看常见问题</a></section>
+    </main>
+  </div>
+  <footer>本页依据本项目中的原始指令资料整理；具体可用能力请以当前游戏关卡文档为准 · <a href="index.html">返回文档中心</a></footer>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/components/prism-core.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/components/prism-python.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/components/prism-clike.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/components/prism-javascript.min.js"></script>
+
+<div data-info-wiki-backlink style="text-align:center;padding:18px 12px;color:#64748b;font:13px/1.6 -apple-system,BlinkMacSystemFont,'Segoe UI','Microsoft YaHei',sans-serif"><a href="../index.html" style="color:#4f46e5;text-decoration:none;font-weight:700">← 返回 CodeCombat 信息百科</a></div>
+</body>
+</html>
