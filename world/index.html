@@ -1,0 +1,788 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>CodeCombat扣哒世界</title>
+<style>
+  :root{
+    --shadow:#7b3ff2; --forest:#2fce8e; --desert:#f0a93b;
+    --cloud:#7ec8e3; --glacier:#9fe7ff;
+    --highlight: #00e5ff;
+    --gold:#c8aa6e; --gold-bright:#f0e6d2; --gold-deep:#785a28;
+  }
+  *{margin:0;padding:0;box-sizing:border-box;}
+  html,body{height:100%;overflow:hidden;background:#0b0e1a;
+    font-family:"Noto Serif SC","Songti SC",serif;color:#e8e6f0;}
+
+  /* ===== 世界总览视图 ===== */
+  #world{position:fixed;inset:0;transition:transform 1.1s cubic-bezier(.7,0,.3,1),
+    filter .9s ease, opacity .9s ease;}
+
+  #map-stage{position:absolute;inset:0;width:100%;height:100%;will-change:transform;}
+  #map-img{position:absolute;inset:0;width:100%;height:100%;
+    object-fit:fill;user-select:none;-webkit-user-drag:none;display:block;}
+
+  .fog{position:absolute;inset:-10%;pointer-events:none;
+    background:radial-gradient(ellipse at 50% 50%,transparent 30%,rgba(11,14,26,.55) 100%);
+    opacity:.8;will-change:transform;}
+  .fog.f2{background:radial-gradient(ellipse at 40% 30%,rgba(120,140,200,.08),transparent 60%);
+    animation:drift 26s ease-in-out infinite alternate;}
+  .fog.f3{background:radial-gradient(ellipse at 70% 70%,rgba(180,160,220,.07),transparent 55%);
+    animation:drift 34s ease-in-out infinite alternate-reverse;}
+  @keyframes drift{from{transform:translate(-2%,-1%) scale(1.05);}
+    to{transform:translate(3%,2%) scale(1.1);}}
+  .vignette{position:absolute;inset:0;pointer-events:none;
+    box-shadow:inset 0 0 280px 80px rgba(0,0,0,.85);}
+
+  #map-svg {position:absolute;inset:0;width:100%;height:100%;z-index:10;}
+  .region-poly {fill:transparent;stroke:transparent;vector-effect:non-scaling-stroke;
+    stroke-width:3px;cursor:pointer;transition:all 0.35s ease;}
+  .region-poly:hover, .region-poly.active {
+    fill:rgba(0,229,255,0.15);stroke:var(--highlight);
+    filter:drop-shadow(0 0 8px var(--highlight));}
+
+  /* ===== 区域徽章 ===== */
+  .badge{position:absolute;transform:translate(-50%,-50%);z-index:12;
+    cursor:pointer;text-align:center;display:flex;flex-direction:column;align-items:center;
+    transition:transform .3s ease;}
+  .badge:hover{transform:translate(-50%,-50%) scale(1.1);}
+  .badge .badge-img{position:relative;width:64px;height:64px;}
+  .badge .badge-img img{position:absolute;inset:0;width:100%;height:100%;
+    object-fit:contain;transition:opacity .25s ease;
+    filter:drop-shadow(0 2px 6px rgba(0,0,0,.6));}
+  .badge .badge-img .b2{opacity:0;}
+  .badge:hover .badge-img .b1{opacity:0;}
+  .badge:hover .badge-img .b2{opacity:1;}
+  .badge .badge-name{margin-top:6px;font-size:15px;letter-spacing:1px;font-weight:bold;
+    color:#f0e6d2;text-shadow:0 0 8px #000,0 2px 4px #000;white-space:nowrap;
+    transition:color .25s ease;}
+  .badge:hover .badge-name{color:var(--gold-bright);}
+
+  #world.zoom{transform:scale(2.4);filter:blur(6px) brightness(.6);opacity:0;}
+
+  /* ===== 左上角 LOGO ===== */
+  #logo{position:fixed;top:18px;left:22px;z-index:60;display:block;cursor:pointer;
+    transition:transform .3s ease,filter .3s ease,opacity .4s ease;}
+  #logo img{height:54px;width:auto;display:block;
+    filter:drop-shadow(0 2px 8px rgba(0,0,0,.7));}
+  #logo:hover{transform:scale(1.06);}
+  #logo:hover img{filter:drop-shadow(0 2px 12px rgba(200,170,110,.6));}
+  /* 进入详情页时隐藏全局 LOGO，避免遮挡按钮 */
+  body.in-detail #logo{opacity:0;pointer-events:none;}
+
+  /* ===== 区域详情视图 ===== */
+  #detail{position:fixed;inset:0;display:none;opacity:0;
+    transition:opacity .8s ease;background:#05060d;z-index:20;}
+  #detail.show{display:block;opacity:1;}
+  .poster{position:absolute;inset:0;background-size:cover;background-position:center;
+    animation:ken 18s ease-in-out infinite alternate;}
+  @keyframes ken{from{transform:scale(1)}to{transform:scale(1.12)}}
+  .poster::after{content:"";position:absolute;inset:0;
+    background:linear-gradient(90deg,rgba(5,6,13,.96) 0%,rgba(5,6,13,.78) 46%,rgba(5,6,13,.2) 78%,transparent 100%);
+    transition:opacity .6s ease;}
+  /* 世界观收起时，海报遮罩淡化以展示完整海报 */
+  #detail.collapsed .poster::after{opacity:0;}
+
+  /* 顶部操作栏：返回 + 收起世界观，靠左排成一行 */
+  .detail-topbar{position:absolute;top:24px;left:4vw;z-index:6;
+    display:flex;align-items:center;gap:14px;}
+  .back, .toggle-story{cursor:pointer;display:inline-flex;align-items:center;gap:8px;
+    background:rgba(0,0,0,.5);border:1px solid var(--gold-deep);
+    color:var(--gold);padding:10px 20px;border-radius:30px;font-family:inherit;
+    letter-spacing:2px;font-size:13px;transition:all .3s;white-space:nowrap;
+    backdrop-filter:blur(4px);}
+  .back:hover, .toggle-story:hover{background:var(--gold);color:#1a1208;}
+
+  /* 左侧介绍区：在操作栏下方 */
+  .detail-panel{position:absolute;top:84px;left:0;bottom:0;z-index:2;
+    width:58%;max-width:760px;padding:14px 4vw 4vh 4vw;
+    display:flex;flex-direction:column;
+    transition:transform .6s cubic-bezier(.7,0,.3,1), opacity .5s ease;}
+  /* 收起时整块向左滑出 */
+  #detail.collapsed .detail-panel{transform:translateX(-105%);opacity:0;pointer-events:none;}
+  .panel-head{flex:0 0 auto;}
+  /* 标题与关卡数同一行 */
+  .panel-head .title-row{display:flex;align-items:flex-end;flex-wrap:wrap;gap:18px;}
+  .panel-head h1{font-size:46px;letter-spacing:4px;color:var(--gold-bright);
+    text-shadow:0 0 20px rgba(200,170,110,.5),0 2px 6px #000;line-height:1.1;}
+  .panel-head .en{font-size:14px;letter-spacing:6px;opacity:.65;color:var(--gold);
+    text-transform:uppercase;margin-top:8px;}
+  /* 关卡数量：与标题同行的小胶囊 */
+  .panel-head .level-tag{display:inline-flex;align-items:baseline;gap:5px;
+    padding:5px 15px;border:1px solid rgba(0,229,255,.35);
+    border-radius:30px;background:rgba(0,229,255,.08);margin-bottom:6px;}
+  .panel-head .level-tag .num{font-size:26px;font-weight:900;color:var(--highlight);
+    line-height:1;text-shadow:0 0 12px rgba(0,229,255,.6);}
+  .panel-head .level-tag .unit{font-size:13px;color:var(--gold-bright);letter-spacing:2px;}
+  .panel-head .divider{width:70px;height:2px;margin:16px 0 16px;
+    background:linear-gradient(90deg,var(--gold),transparent);}
+
+  /* 可滚动的下拉文字框 */
+  .panel-scroll{flex:1 1 auto;overflow-y:auto;padding-right:14px;
+    scrollbar-width:thin;scrollbar-color:var(--gold-deep) rgba(255,255,255,.06);}
+  .panel-scroll::-webkit-scrollbar{width:9px;}
+  .panel-scroll::-webkit-scrollbar-track{background:rgba(255,255,255,.05);border-radius:5px;}
+  .panel-scroll::-webkit-scrollbar-thumb{background:var(--gold-deep);border-radius:5px;
+    border:2px solid transparent;background-clip:padding-box;}
+  .panel-scroll::-webkit-scrollbar-thumb:hover{background:var(--gold);}
+
+  .sec-label{font-size:13px;letter-spacing:4px;color:var(--gold);margin:6px 0 14px;
+    text-transform:uppercase;display:flex;align-items:center;gap:10px;}
+  .sec-label::after{content:"";flex:1;height:1px;background:linear-gradient(90deg,var(--gold-deep),transparent);}
+  .story p{font-size:15.5px;line-height:2.05;opacity:.92;margin-bottom:18px;
+    text-align:justify;text-shadow:0 1px 3px #000;}
+  .story .hl{color:var(--gold-bright);font-weight:bold;}
+  .story .hl-c{color:var(--highlight);font-weight:bold;}
+
+  /* 知识点分组 */
+  .kp-group{margin-bottom:22px;}
+  .kp-group h4{font-size:15px;color:var(--gold-bright);margin-bottom:10px;
+    display:flex;align-items:center;gap:8px;font-weight:bold;}
+  .kp-group h4 .dot{width:7px;height:7px;border-radius:50%;background:var(--gold);
+    box-shadow:0 0 8px var(--gold);}
+  .kp-list{display:flex;flex-wrap:wrap;gap:9px;}
+  .kchip{background:rgba(200,170,110,.07);border:1px solid rgba(200,170,110,.25);
+    border-radius:7px;padding:7px 13px;font-size:13.5px;color:#e6dcc8;
+    transition:background .25s, transform .2s;cursor:default;}
+  .kchip:hover{background:rgba(200,170,110,.2);transform:translateY(-2px);color:#fff;}
+
+  /* 全局UI */
+  #mute{position:fixed;top:24px;right:28px;z-index:50;cursor:pointer;
+    background:rgba(0,0,0,.4);border:1px solid rgba(255,255,255,.25);
+    color:#fff;width:42px;height:42px;border-radius:50%;font-size:18px;}
+
+  /* ===================== 开场加载页 ===================== */
+  #intro{position:fixed;inset:0;z-index:100;background:#04060c;overflow:hidden;
+    display:flex;align-items:center;justify-content:center;flex-direction:column;
+    transition:opacity 1s ease;}
+  #intro .intro-map{position:absolute;inset:0;width:100%;height:100%;object-fit:cover;
+    transform:scale(1);filter:brightness(.5);opacity:1;
+    transition:transform 3.5s cubic-bezier(.33,0,.2,1), opacity 1.2s ease;}
+  #intro.blackout .intro-map{opacity:0;transform:scale(1);}
+  #intro.reveal .intro-map{opacity:1;transform:scale(1.12);}
+  #intro .intro-mask{position:absolute;inset:0;pointer-events:none;
+    background:radial-gradient(ellipse 60% 60% at center, rgba(2,4,9,.55) 0%, rgba(2,4,9,.7) 100%);
+    transition:opacity 2.5s ease, background 2.5s ease;opacity:1;}
+  #intro.reveal .intro-mask{
+    background:radial-gradient(ellipse 70% 70% at center, rgba(2,4,9,0) 0%, rgba(2,4,9,.55) 100%);}
+  #intro.entered .intro-mask{
+    background:radial-gradient(ellipse 90% 90% at center, rgba(2,4,9,0) 55%, rgba(2,4,9,.55) 100%);}
+  #intro.blackout .intro-mask{opacity:0;}
+  .radar{position:absolute;top:50%;left:50%;transform:translate(-50%,-50%);
+    width:160vh;height:160vh;border-radius:50%;pointer-events:none;
+    border:1px solid rgba(200,170,110,.32);
+    box-shadow:0 0 60px rgba(200,170,110,.06) inset;transition:opacity .8s ease;}
+  .radar-dash{position:absolute;top:50%;left:50%;transform:translate(-50%,-50%);
+    width:148vh;height:148vh;border-radius:50%;pointer-events:none;
+    border:1px dashed rgba(200,170,110,.2);transition:opacity .8s ease;}
+  .radar-tick{position:absolute;top:50%;left:50%;transform:translate(-50%,-50%);
+    width:154vh;height:154vh;border-radius:50%;pointer-events:none;
+    background:repeating-conic-gradient(rgba(200,170,110,.2) 0deg 0.4deg, transparent 0.4deg 6deg);
+    -webkit-mask:radial-gradient(circle,transparent 48.9%,#000 49%,#000 50%,transparent 50.1%);
+            mask:radial-gradient(circle,transparent 48.9%,#000 49%,#000 50%,transparent 50.1%);
+    animation:spin 80s linear infinite;transition:opacity .8s ease;}
+  @keyframes spin{to{transform:translate(-50%,-50%) rotate(360deg);}}
+  #intro.blackout .radar,#intro.blackout .radar-dash,#intro.blackout .radar-tick{opacity:0;}
+  #intro.no-radar .radar,#intro.no-radar .radar-dash,#intro.no-radar .radar-tick{display:none;}
+  .loading-box{position:absolute;top:50%;left:50%;transform:translate(-50%,-50%);
+    z-index:3;text-align:center;transition:opacity .6s ease;}
+  .loading-box.hide{opacity:0;pointer-events:none;}
+  .progress-frame{width:520px;max-width:80vw;height:30px;margin:0 auto;
+    border:2px solid var(--gold);border-radius:2px;padding:4px;background:rgba(0,0,0,.6);
+    box-shadow:0 0 16px rgba(200,170,110,.5),inset 0 0 10px rgba(0,0,0,.85);}
+  .progress-fill{height:100%;width:0%;border-radius:1px;
+    background:linear-gradient(180deg,#f3e3ac 0%,#d4af5a 45%,#a9803c 100%);
+    box-shadow:0 0 12px rgba(243,227,172,.8),inset 0 1px 0 rgba(255,255,255,.6);
+    transition:width .25s ease;}
+  .progress-text{margin-top:16px;font-size:13px;letter-spacing:4px;
+    color:var(--gold);opacity:.9;text-shadow:0 0 8px rgba(200,170,110,.5);}
+  .title-box{position:absolute;top:50%;left:50%;transform:translate(-50%,-50%);
+    z-index:3;opacity:0;pointer-events:none;transition:opacity 1.4s ease;text-align:center;width:100%;}
+  .title-box.show{opacity:1;pointer-events:auto;}
+  .title-box .eyebrow{font-size:17px;letter-spacing:10px;color:var(--gold);
+    margin-bottom:6px;text-shadow:0 0 10px rgba(200,170,110,.5);}
+  .title-box h1{font-size:64px;letter-spacing:6px;color:var(--gold-bright);
+    font-weight:700;line-height:1.1;text-shadow:0 2px 4px #000,0 0 30px rgba(200,170,110,.4);}
+  .title-box .divider{width:560px;max-width:84vw;height:1px;margin:22px auto 0;
+    background:linear-gradient(90deg,transparent,var(--gold),transparent);position:relative;}
+  .title-box .divider::after{content:"";position:absolute;left:50%;top:-4px;
+    transform:translateX(-50%) rotate(45deg);width:8px;height:8px;
+    border:1px solid var(--gold);background:#04060c;}
+  #enter-btn{margin-top:42px;cursor:pointer;
+    padding:16px 52px;font-family:inherit;font-size:15px;letter-spacing:5px;
+    color:var(--gold);
+    background:rgba(0,0,0,.35);border:2px solid var(--gold-deep);
+    transition:all .3s;text-shadow:0 0 8px rgba(200,170,110,.4);
+    box-shadow:0 0 18px rgba(200,170,110,.15),inset 0 0 12px rgba(0,0,0,.6);}
+  #enter-btn:hover{border-color:var(--gold);color:var(--gold-bright);
+    box-shadow:0 0 28px rgba(200,170,110,.45),inset 0 0 16px rgba(200,170,110,.1);
+    transform:scale(1.04);}
+</style>
+</head>
+<body>
+
+<!-- ===== 开场加载页 ===== -->
+<div id="intro">
+  <img class="intro-map" id="introMap" src="https://assets.koudashijie.com/world/world.png" alt="">
+  <div class="intro-mask"></div>
+  <div class="radar"></div>
+  <div class="radar-dash"></div>
+  <div class="radar-tick"></div>
+  <div class="loading-box" id="loadingBox">
+    <div class="progress-frame"><div class="progress-fill" id="progressFill"></div></div>
+    <div class="progress-text" id="progressText">LOADING WORLD … 0%</div>
+  </div>
+  <div class="title-box" id="titleBox">
+    <div class="eyebrow">探索与发现</div>
+    <h1>CodeCombat扣哒世界</h1>
+    <div class="divider"></div>
+    <button id="enter-btn">开始探索</button>
+  </div>
+</div>
+
+<!-- ===== 左上角 LOGO ===== -->
+<a id="logo" href="https://codecombat.cn/home" target="_blank" rel="noopener" title="CodeCombat扣哒世界">
+  <img src="https://assets.koudashijie.com/world/logo.webp" alt="CodeCombat扣哒世界">
+</a>
+
+<button id="mute" title="静音">🔊</button>
+
+<div id="world">
+  <div id="map-stage">
+    <img id="map-img" src="https://assets.koudashijie.com/world/world.png" alt="CodeCombat扣哒世界地图">
+    <svg id="map-svg" viewBox="0 0 100 100" preserveAspectRatio="none"></svg>
+  </div>
+  <div class="fog f2"></div>
+  <div class="fog f3"></div>
+  <div class="fog"></div>
+  <div class="vignette"></div>
+</div>
+
+<!-- ===== 区域详情视图 ===== -->
+<div id="detail">
+  <div class="poster" id="poster"></div>
+  <div class="detail-topbar">
+    <button class="back" id="back">← 返回世界</button>
+    <button class="toggle-story" id="toggleStory">收起世界观</button>
+  </div>
+  <div class="detail-panel">
+    <div class="panel-head" id="panelHead"></div>
+    <div class="panel-scroll" id="panelScroll"></div>
+  </div>
+</div>
+
+<audio id="sfx-enter" src="https://assets.koudashijie.com/world/sfx-enter.mp3" preload="auto"></audio>
+<audio id="sfx-hover" src="https://assets.koudashijie.com/world/sfx-hover.mp3" preload="auto"></audio>
+<audio id="sfx-click" src="https://assets.koudashijie.com/world/sfx-click.mp3" preload="auto"></audio>
+<audio id="sfx-region" src="https://assets.koudashijie.com/world/sfx-region.mp3" preload="auto"></audio>
+<audio id="bgm" src="https://assets.koudashijie.com/world/bgm.mp3" loop preload="auto"></audio>
+<audio id="sfx-in" src="https://assets.koudashijie.com/world/in.mp3" preload="auto"></audio>
+<audio id="sfx-icon" src="https://assets.koudashijie.com/world/icon.mp3" preload="auto"></audio>
+
+<script>
+/* ===== 区域数据 =====
+   offsetY：徽章纵向微调；levels：关卡数量；story：多段故事(数组)；
+   kpGroups：分组知识点 [{g:'分组名', items:[...]}] */
+const ASSET_BASE = 'https://assets.koudashijie.com/world/';
+const REGIONS = [
+  { id:'glacier', name:'封神冰川', en:'Divine Glacier', offsetY:0, levels:52,
+    points:"16.2,29.8 16.3,33.4 19.3,35.8 22.6,34.5 25.5,31.5 32.2,28.1 37.3,23.8 42.8,19.3 45.7,20 48.2,18.4 48.9,12.9 46.9,7.6 42.7,6.2 36.3,14.7 32.9,19.5 29.8,18.1 26.3,19.8 22.8,22.4 21.9,26 17.9,28.1 16.2,29.4",
+    poster:'poster-glacier.png',
+  // ===== 封神冰川 story =====
+  story:[
+    `返乡的旧路早已被战火夷为废墟。你站在分岔口，唯一的去向，是那片连老向导都讳莫如深的<span class="hl">封神冰川</span>。极北之地终年不化的寒光下，埋着比黄沙更诱人的宝石与黄金，也封存着无数没能走出暴雪的亡魂——传说每一道冰棱里，都冻着一个未竟的故事。你踏进去的第一步，风便像刀子一样割开了斗篷。`,
+    `你并非孤身一人。沿途结识的<span class="hl">星璃</span>循着一颗坠入冰川的星辰逆雪而上，她的父亲临终前曾对她说，那颗最亮的星某年落进了这里，再没出来过；如今她背着盾，要去寻一个关于"失去是否终点"的答案。而<span class="hl">凌克</span>则像一道无名的影子，没有过去、没有姓名，只在你最危急的须臾，悄无声息地替你抹去暗处的杀机。你们第一次配合，星璃的盾挡下了巫师的暗箭，凌克的匕首无声抹过偷袭者的喉咙，像磨合已久的齿轮。`,
+    `冰川的试炼一个比一个古怪，也一次次撬动你心底的东西。雪人从冰洞涌出，你必须从最弱的打起，逆着瀑布般由弱变强，星璃说："有时候，倒着走才能看见真相。"冰林深处，食人魔法师克隆了你的队友，名字完全颠倒，你要让每个弓箭手找到自己镜像般逆序的克隆体——凌克盯着那些颠倒的字母，第一次露出困惑，你轻声说："就像照镜子，左右相反。"他默默点头，走向自己的镜像。而那棵冰封的分形之树，逼你用整整一夜以递归画出第一片雪花：画一条线，在中间折出分支，再折、再折，直到细得看不见。星璃望着地上的图案，喃喃道："原来一即一切。"`,
+    `真正的考验在冰川之巅。食人魔护法召唤的亡灵如黑色潮水般涌来，接连吞没了九座冰封的山头，最勇猛的战士也丢盔弃甲。唯有你们，稳稳立在第十座冰峰之上。你要做的不再是单打独斗，而是调度千军：用队列与栈管理开门的钥匙，用链表把散落的宝石串成一条通往出口的生路，用哈希函数瞬间定位沉睡的牦牛，凭二分查找在十次之内拆穿谜语者的谎言。亡灵的悲鸣一次次撞碎在盾沿，脚跟陷进积雪，你却没有后退半寸——因为身后的第十座山若失守，便再没有第十一座可退。`,
+    `最后一波，护法亲自出手。你站在原地，用眼睛测出他冲锋的角度，朝空中喊出一个数字——那是你指挥狮鹫轰炸机投弹的角度。一道火光划破冰川的天际，正中目标，护法轰然倒下，亡灵如退潮般散去。星璃在冰缝里找到了那颗坠落的星辰，它已熄灭，她却笑了："原来失去不是终点，是另一种抵达。"凌克望着初升的太阳，第一次开口："我叫凌克。"你站在第十座冰峰上，脚下是九座被吞没的山头，身后是再无退路的悬崖。阳光第一次照进这片万年冰封的土地。你想起老人说过的话——<span class="hl-c">封神之路，一步不退</span>。而你，真的没有退过。`
+  ],
+
+    kpGroups:[
+      {g:'第一章 · 函数深入', items:['函数定义与调用','形参 Parameter 与实参 Argument','返回值 return','返回多个值（数组/对象）','函数内定义辅助函数','全局变量与局部变量','常量定义']},
+      {g:'第二章 · 数组与列表进阶', items:['数组索引访问与修改','for item in 数组 遍历','for i in range() 遍历','同时取索引与元素','嵌套循环（双层 for）','二维数组与网格坐标','一维索引映射二维','追加 append()','删除 remove()','数组复制','按条件过滤分组']},
+      {g:'第三章 · 字符串处理', items:['字符串索引与遍历','字符串拼接 +','字符串相等比较 ==','大小写与字母匹配','空字符串初始化与累加','子串查找 in','消息解析（切片/索引）','ASCII 码 ord(字符)','ASCII 求和取模哈希']},
+      {g:'第四章 · 数学与几何', items:['数学常量 Math.PI','三角函数 cos/sin/atan2','角度与弧度转换','距离计算 distanceTo()','浮点数近似比较','矩形周长与面积','正方形几何性质','笛卡尔坐标偏移']},
+      {g:'第五章 · 向量运算', items:['创建向量 Vector','向量加法 add','向量减法 subtract','向量乘法 multiply','向量除法 divide','归一化 normalize','旋转 rotate','幅值 magnitude','极坐标迷宫导航']},
+      {g:'第六章 · 基础算法', items:['线性扫描找最值/最近','累加求和与计数','最值初始化与更新','哨兵值模式 nearest = None','双重循环找最近一对','最高生命值查找','按条件过滤数组']},
+      {g:'第七章 · 数据结构', items:['队列 Queue：enqueue/dequeue','栈 Stack：peek/pickup/drop','链表 next 与 setNext','链表遍历/插入/删除','哈希表与哈希函数','哈希碰撞处理','图 Graph 与邻居方向','图遍历 DFS / BFS']},
+      {g:'第八章 · 排序与搜索', items:['选择排序 Selection Sort','二分查找 Binary Search']},
+      {g:'第九章 · 递归与动态规划', items:['递归思想与分形绘制','递归终止条件','动态规划 DP 求最优路径','分治策略','贪心策略','最优子结构']},
+      {g:'第十章 · 迷宫与路径', items:['左手定则寻路','深度优先搜索 DFS','广度优先搜索 BFS','回溯思想','路径规划','动态障碍规避','状态空间搜索']},
+      {g:'第十一章 · 进阶专题', items:['元胞自动机（生命游戏）','多米诺效应模拟','碰撞规避向量算法','十进制转二进制','十进制转三进制','整除 // 与取余 %','机器人指令字符串格式化']},
+      {g:'第十二章 · 游戏 API 与协同', items:['findItems / findNearest','move / summon / attack','buildXY / say / command','isPathClear / findFlag','removeFlag / findHazards','命令模式 hero.command(unit,...)','按名查找 findByName','单位状态 action/status/size/target','多单位协同控制','消息解码与状态管理','AI 决策与任务调度','资源分配队列与对战框架']},
+      {g:'第十三章 · 调试与复杂度', items:['性能复杂度分析 O(n²)','空值检查 if not array','数组越界防护','错误处理','平均值计算','循环中提前返回','break / continue / pass']}
+    ] },
+
+  { id:'cloud', name:'安息云峰', en:'Cloudrip Mountain', offsetY:0, levels:117,
+    points:"28,40.5 30.5,40.8 35.1,40.8 40,41.2 44.7,39.2 51.6,36 55.3,34.9 55.3,30.4 55.9,25.4 53.4,22 50.8,18.7 47.2,18.7 42,20.3 38.2,22 32.5,25.8 28.1,28.9 24.5,31.4 22.6,36 22.9,37.8",
+    poster:'poster-cloud.png',
+      // ===== 安息云峰 story =====
+  story:[
+    `通往沙漠的旧道在一夜战火中崩塌。你抬头，望见云层之上若隐若现的山脊——那是高耸入云的<span class="hl">安息云峰</span>。这里离星空最近，是无数灵魂最终安睡的归处，也藏着比沙漠更丰厚的宝石与黄金。稀薄的空气里，每一步都更重，每一个对手也都更强。你踏上山路的第一关，是一片被沙尘暴吞没的峡谷，萨满躲在乱窜的牦牛群背后施咒。你不再像从前那样只盯着最近的敌人，而是学会了"遍历"——用目光扫过所有威胁，从中揪出最危险的那个先除掉。`,
+    `守在断桥隘口的<span class="hl">戈登</span>是一座不会塌的墙。那场著名的"断桥守卫战"里，敌军黑压压涌上山道，唯一的通道口只剩他一人，他没喊一句豪言，只是沉默地抡起那柄连壮汉都挪不动的巨锤，一下、又一下，硬生生在云端钉下"不可逾越"四个看不见的大字。再往上，许愿井边散落着金币，你却只能取走恰好一百零四枚——多了井会坍塌，少了门便不开。你站在井前，没有急着弯腰，而是先数清每一堆的价值，多了说"太多"，少了说"不足"，一遍遍调整。那一刻你明白，贪婪与鲁莽在这里活不过一刻。`,
+    `被巨人族流放的<span class="hl">欧卡</span>每迈一步，方圆百里都能感到大地的震颤。他力大无穷，却比谁都克制——因为他太清楚自己的力量曾酿成怎样的悲剧，于是把每一击都死死按住。而坐在古老石棺旁的<span class="hl">纳凡</span>，正温柔地与白骨低语，他始终相信：<span class="hl-c">只要还有人记得，死亡便从不是真正的终点</span>。在他们身边，你遇到了第一支需要指挥的部队——你用首领之星念出士兵的名字，一个个编入队伍，再用循环让他们排成阵型、遇敌则战。你不再亲自挥剑，而是站在高处像棋手般调动每一颗棋子。当你的士兵第一次集体冲锋、将食人魔碾碎时，你知道，自己已从战士蜕变成了统帅。`,
+    `云峰的考验越来越重。最艰苦的"佣兵山"上，刺客从四面八方涌来，你只有一群刚招募的新兵。你一边收集硬币一边不停召唤援军，同时用循环命令每个士兵攻击最近的敌人——代码般的节奏在脑中轰鸣：金币足够就召唤，遍历所有友军，各自迎击最近的威胁。你的剑没有出鞘，指尖却仿佛牵动着千丝万缕的线，刺客一个个倒下，你的队伍却像滚雪球般越来越壮，碾过山坡。`,
+    `峰顶的决战叫"借刀"。食人魔与雪人正红着眼互相厮杀，你带着弓箭手藏在岩后，没有急着帮任何一方，而是用极值查找死死盯住战场上生命值最高的那个——无论它是谁，箭矢便永远落在最强者头上，待两边都奄奄一息时轻松收尾。最后一夜，你坐在云峰之巅，脚下是翻腾的云海，头顶是触手可及的星辰，口袋里装着足以让村庄重建三次的黄金，身后是追随你爬上山巅的士兵与农民。你没有豪言，只是默默用剑在石壁上刻下一行字：<span class="hl-c">遍历千军，不如遍历己心</span>。你终于懂得，真正的宝藏从不是黄金，而是这段让你从孤胆战士成长为真正统帅的云端之路。`
+  ],
+
+    kpGroups:[
+      {g:'第一章 · 数组与列表入门', items:['什么是数组/列表 List','获取数组长度 len(数组)','通过索引访问元素 数组[索引]','索引从 0 开始','用 while 循环遍历数组']},
+      {g:'第二章 · 循环与累加', items:['while 循环','变量递增赋值 +=','循环内累加求和','遍历时索引递增','按步长跳过元素','循环内更新变量']},
+      {g:'第三章 · 条件判断', items:['if / else','比较运算符 < > == != <= >=','逻辑运算符 and / or','哨兵值模式 None / 0']},
+      {g:'第四章 · 查找与对象', items:['数组索引访问','线性查找','极值查找（最大/最小生命）','最近/最远目标查找','对象属性 obj.pos.x','对象字面量 {x, y}']},
+      {g:'第五章 · 函数与封装', items:['def 定义与调用','形参与返回值','函数封装复用','把指挥封装成一句号令']},
+      {g:'第六章 · 指挥 API', items:['summon 召唤单位','command(单位, 动作, 目标)','costOf 费用判断','findFriends / findEnemies','move 与 moveXY 区别']},
+      {g:'第七章 · 战术策略', items:['多单位协同','阵地防守与点位配对','动态切换集火目标','收集金币达标后招兵','按类型优先攻击（投掷者/萨满）']}
+    ] },
+
+  { id:'youth', name:'新手冒险岛', en:'Youth Island', offsetY:0, levels:1768,
+    points:"65.5,15.3 64.1,17 62.3,19 62.8,22.4 62,25.4 62.4,28.7 63.6,30.8 65.9,32.6 68.2,32.4 69.8,34 71.5,32.9 72.9,34.1 73.6,37.7 74.4,41.9 75,42.8 75.5,39.7 76,37.4 77.6,36 79.2,35.8 80,35.4 79.3,31.8 78,28 76.7,24.3 76.7,19.3 76.1,15 73.9,13.2 72.2,14.6 70.8,17.8 69.5,15.6 68.3,13.8 65.5,15",
+    poster:'poster-youth.png',
+      // ===== 新手冒险岛 story =====
+  story:[
+    `海风裹着咸腥味扑面而来。你站在<span class="hl">新手冒险岛</span>的沙滩上，脚下是细软的白沙，远处大陆的轮廓若隐若现。这是每一位英雄启程的地方——没有敌人，没有陷阱，只有三颗静静躺在地上的宝石，和一行刻在石头上的字："向右走。"你试着迈出第一步，宝石近了；再向下，再向右，三颗尽数入囊。你笑了，原来成为英雄，是从乖乖听话、迈出第一步开始的。`,
+    `没有人天生就是英雄。很快你学会了"走几步"，不再笨拙地一次一步，而是像将军巡视领地般干脆利落，穿过长厅，跨过河流，绕过大石，在蛇形走廊里左拐右拐。门是锁着的，你握紧拳头朝它挥去，"砰"的一声，门碎了——原来击打可以开门。你兴奋地砸开一扇又一扇，甚至学会在"气闸"的两扇门之间快速通过，否则会被夹住。你学会了节奏，也第一次尝到了"我能做到"的喜悦。`,
+    `然后，你遇见了第一个敌人，一个獠牙外翻的矮小食人魔挡在宝石前。你挥拳，一下他没倒，再一下他化成了烟。你发现小怪要两拳，大块头要四拳，而自己只有三颗心，不能莽撞——你学会了"选择你的战斗"，绕开打不过的，先捡宝石，回头再收拾。被一群小怪围住时，你急中生智原地旋转，剑风划出圆弧把它们尽数击退。后来你得到了闪电，指尖射出电弧隔空引爆远处的炸药桶，用肉眼数清空地上的格子，再精确地走到安全的位置。`,
+    `最枯燥的路段，你学会了"循环"，面对一排一模一样的箱子，不再一行行写重复的命令，而是写下一个圈让动作重复，甚至把大圈套进小圈，像搭乐高一样干净漂亮。你还学会了"看"，先朝一个方向望一眼，是宝石就捡，是怪物就打，是鸡就绕开；你用"不等于"避免误伤无辜的鸡，用"小于"判断血量低于四颗心就治疗。你第一次用上"变量"，把"螃蟹"这个词、把步数都存进盒子，从一堆杂乱里抽出规律，写出了一条螺旋形的完美路径，站在宝石堆成的小山上，觉得自己像个炼金术士。`,
+    `最后一关，你面对的是"代码大师"。你需要综合所有学过的本领：移动、击打、旋转、闪电、循环、条件、距离、治疗、变量……你深呼吸，一行行写下指令。程序运行，你的分身在地图上精准地移动，砸开门，电掉炸药，旋转清场，捡起宝石，恰好避开每一只鸡，生命值从未跌破三颗心。通关的瞬间，天空炸开金色的礼花。你回望来时模糊的小路，跳上船朝远处的大陆驶去，身后沙滩上留下一行字：<span class="hl-c">从这里出发，去成为传说</span>。海风把你的笑声送得很远很远。`
+  ],
+
+    kpGroups:[
+      {g:'第一章 · 基本移动指令', items:['向指定方向走一步 go(方向)','走多步 go(方向, 步数)','方向：上 / 下 / 左 / 右']},
+      {g:'第二章 · 攻击与破坏', items:['打击敌人或门 hit(方向)','旋转攻击周围 spin()','远程电击 zap(方向)','恢复生命值 heal()']},
+      {g:'第三章 · 感知与探测', items:['查看方向上最近物体 look(方向)','测量连续空格数 dist(方向)']},
+      {g:'第四章 · 程序结构', items:['顺序执行：代码从上往下运行','代码块：缩进表示同一块']},
+      {g:'第五章 · 循环', items:['固定次数循环 for','条件循环 while','无限循环','嵌套循环','循环与条件结合','循环中使用移动/攻击/感知']},
+      {g:'第六章 · 条件判断', items:['条件成立则执行 if','否则执行 else','多分支 if / elif / else','等于 == 与 不等于 !=','大于 > 与 小于 <','与 and / 或 or']},
+      {g:'第七章 · 变量', items:['用变量存储数据','给变量赋值 变量 = 值','变量存数字（步数/生命）','变量存字符串（如 "crab"）','变量存探测结果','修改变量的值','用变量控制步数与循环次数']},
+      {g:'第八章 · 生命值与治疗', items:['英雄拥有生命值 health','生命值低于阈值时治疗','比较生命值 health < 数字','治疗恢复生命值']},
+      {g:'第九章 · 常见物体类型', items:['宝石 gem','螃蟹 crab','鸡 chicken','箱子 crate','方块 cube','炸药 tnt','蜻蜓 fly / dragonfly','门（需打击打开）']},
+      {g:'第十章 · 算法思维', items:['规划从起点到目标的路径','绕开障碍物','识别并利用重复模式','计算最短移动步数','攻击前先检查敌人是否存在','按敌人类型选择 hit/zap/spin','引诱敌人进入陷阱','保存返回路径以便折返','按需治疗，避免浪费','用 dist 动态调整步数']},
+      {g:'第十一章 · 综合项目与挑战', items:['组合顺序/循环/条件/变量完成路线','多阶段任务（收集→击败→到出口）','破解蛇形与螺旋迷宫','躲避火球的无限循环场景','有限生命下的资源管理','行为记忆：记住方向上的物体','用变量统一管理多个参数']}
+    ] },
+
+  { id:'forest', name:'边际森林', en:'Backwoods Forest', offsetY:-4, levels:136,
+    points:"54.9,28.6 52.8,30.3 49.3,31.5 46.5,34.6 43.7,37.2 39.9,38.3 37.3,38.5 33.2,40 29.5,41.1 28.3,44.8 30.3,49.3 33.8,50.2 38.8,50.5 41.8,50.5 45.1,50.3 47.3,49.7 50.3,52.2 52.6,53.9 54.8,54.5 57.2,57 60.1,58.8 62.7,61.4 64.1,66.5 64.8,72.4 66.8,78.6 69.5,76.1 71.6,75.5 71.7,72.4 71.4,66.7 72.8,63.5 71,56.2 71.5,52.8 71.3,45.9 65.4,38.3 63.1,34 59.8,35.1 57.6,36.3 55.4,32.3 55,28.3",
+    poster:'poster-forest.png',
+      // ===== 边际森林 story =====
+  story:[
+    `逃出地牢，你终于呼吸到自由的空气，喘着粗气站在阳光下。<span class="hl">边际森林</span>的绿意扑面而来，鸟鸣取代了哀嚎，花香替代了腐臭。平原森林村的村民收留了你，为你搭起小屋；你开垦出一大片庄园，金黄的南瓜在田里鼓胀，肥壮的奶牛悠闲踱步，还收养了一只会说话、会魔法的小兽。久违的安宁，让你几乎以为那场噩梦已经永远结束。`,
+    `可好景不长。一天傍晚，哨声划破宁静——邪恶的<span class="hl-c">食人魔卷土重来</span>，獠牙与利爪再度逼近村庄。你抓起剑冲向村口。这一次，你不再是当初仓皇出逃的囚徒，而是村民眼中的大英雄，他们捧着鲜花迎你归来，森林村因你而骄傲。你要守住的，已不只是自己的命，而是身后整座村庄的炊烟。你学会在地图上精确定位，敌人在北边突袭你便奔向北面立起栅栏，南边传来吼叫你又转身埋下火焰陷阱——你不再盲目乱跑，而是有章法地巡逻，让食人魔始终无法突破。`,
+    `你不必独自作战。红发队长<span class="hl">安雅</span>从不端架子，冲锋时永远在最前；铁兰花<span class="hl">伊莉亚</span>用一道流光盾墙替你挡下最重的一击；翠羽<span class="hl">娜莉亚</span>的箭，总从敌人意想不到的角落悄然射出。但敌人越来越狡猾，有些路口空无一人，你却差点扑空被偷袭——你很快明白：必须先"看"，再"打"。看见敌人就迎战，没看见就回到村民身边防守。那一刻你懂得，守护不是逞勇，而是清醒地判断该把力气用在哪里。`,
+    `最危险的一次混战，十几个矮人同时涌出，你来不及一个个砍。情急中，你猛地挥出一道剑气圆弧——"劈斩"，前方敌人应声倒下。但它需要冷却，于是你学会了取舍的节奏：强敌逼近先劈斩清场，冷却时便用普通攻击缠斗。你也开始觉得双手不够用，索性把繁复的战斗套路打包成一个名字，比如"靠近就劈斩"，一声号令，英雄便自动执行——这是你第一次懂得，把复杂的事化繁为简，本身就是一种力量。最让你动容的，是你的宠物：你训练它在你中毒倒下时飞奔去叼回解药，送到你嘴边。你专注正面厮杀，它在你身后不停取回药水，你们成了生死相依的搭档。`,
+    `最终一战，食人魔倾巢而出。你站在村庄中央，左手持剑，右手护着身后的农民。你让宠物登上山顶的魔法圆盘为你加持力量，自己踩下召唤圆盘唤出援军。劈斩的寒光在敌群中炸开，火焰陷阱依次爆燃，当最后一个食人魔倒下时，夕阳正把麦田染成金色。村民们涌出来，把你高高抛起。你知道，这场胜利不属于蛮力，而属于在一次次绝境中打磨出的逻辑、判断与秩序——那些在地牢里学会的一步又一步，终于在森林里开出了花。你望向远方的地平线，那里还有更多黑暗，但你已是<span class="hl-c">用代码点燃希望的火炬手</span>，是边际森林永远的守护者。`
+  ],
+
+    kpGroups:[
+      {g:'第一章 · 移动与建造', items:['移动到坐标 hero.moveXY(x, y)','建造围栏 buildXY("fence", x, y)','建造火焰陷阱 "fire-trap"','建造诱饵 "decoy"','条件建造（有敌人才造）','坐标计算与中点 (x1+x2)/2']},
+      {g:'第二章 · 条件判断', items:['if 语句','else 子句','elif 子句','嵌套 if（if 里再写 if）','比较运算符 == != < > <= >=','逻辑运算符 and / or / not','距离阈值判断','根据距离选择攻击或防御']},
+      {g:'第三章 · 循环', items:['while True 无限循环','while 条件循环','循环内使用 if 判断','嵌套 while（事件处理器内）']},
+      {g:'第四章 · 攻击与技能', items:['普通攻击 hero.attack(目标)','劈斩 hero.cleave()','技能就绪检查 isReady("cleave")','防御 hero.shield()','攻击宝箱 attack("Chest")','冷却时间管理']},
+      {g:'第五章 · 宠物系统', items:['监听呼救 pet.on("hear", 函数)','监听出生 pet.on("spawn", 函数)','事件参数 event','宠物说话 pet.say(内容)','宠物移动 pet.moveXY(x, y)','宠物取物 pet.fetch(物品)','宠物找敌 pet.findNearestEnemy()','英雄与宠物分工协作']},
+      {g:'第六章 · 函数', items:['定义函数 def 函数名():','形参与实参','多参数函数','函数封装避免重复','参数化坐标与类型']},
+      {g:'第七章 · 感知与属性', items:['findNearestEnemy / findNearestItem','按类型查找 findByType','单位位置 unit.pos / pos.x / pos.y','单位类型 unit.type','生命值 unit.health / maxHealth','物品价值 item.value','距离 hero.distanceTo(目标)','字符串连接 +','测距并报告']},
+      {g:'第八章 · 算法与策略', items:['巡逻与多入口防御','保卫村庄','基于物品位置躲避火球','炮火支援（说出坐标）','随机敌人处理','树精释放','条件建造陷阱','状态检查与阈值比较','技能冷却管理']},
+      {g:'第九章 · Python 语法基石', items:['def','if / elif / else','while','占位 pass','and / or / not','字符串拼接 +','变量赋值 =','缩进块与注释 #','True / False / None','属性访问 .','事件注册 .on']}
+    ] },
+
+  { id:'desert', name:'流金沙漠', en:'Sarven Desert', offsetY:-4, levels:99,
+    points:"41.7,63.9 40.7,68.1 41.1,73.2 42.3,76.9 43.8,80.4 46.5,81.7 49.1,81 52.5,78.6 54.8,76.3 56.7,79.2 57.8,80.4 60.2,77.8 61,75.9 61.4,73 61.4,69.2 60.1,64.8 57.6,62.1 54.8,60.7 51,60.4 46,61.6 41.8,63.8",
+    poster:'poster-desert.png',
+     // ===== 流金沙漠 story =====
+  story:[
+    `食人魔的反复劫掠让森林的南瓜尽数毁于战火，孩子们饿得直哭，村民的生计一落千丈。村里最年长的老人拄着拐，望向南方那片在烈日下翻滚的金色：<span class="hl">流金沙漠</span>。传说黄沙之下，埋着足以让全村重获新生的金币。为了让村民重燃往日的笑声，你独自背起剑，踏入了沙海。这里没有地牢的阴冷，也没有森林的荫蔽，太阳像一块烧红的铁板，烤得脚下的砂砾发烫——你很快明白，沙漠不会饶恕任何鲁莽的人。`,
+    `第一个考验来自躲在石柱后的巫师，他不与你交手，只出一道题："把左边那人的数字加上七，告诉右边那人。"你愣了一下，随即明白——这不是蛮力能解开的锁，而是逻辑的钥匙。这片土地是强者的修行场，也是淘金者的坟场。金甲战士<span class="hl">塔林</span>在烈日下一砖一瓦为流民筑起遮风的哨塔，他说，盖一座塔让人睡个安稳觉，比砍倒一百个敌人更让他踏实；红衫客<span class="hl">阿莱</span>背着比半个身子还高的巨剑游荡，逢人便笑问"切磋一下？"，不为财不为名，只为印证自己的剑究竟能走多远。`,
+    `最难的考验在一片枯死的胡杨林里，四个岔路口插着写有"与""或""非"的木牌，一个戴兜帽的巫师递给你三个锦囊："只有用正确的逻辑组合，才能找到宝藏。"你像解谜般，把真假用"与"相连、用"或"串起、再用"非"翻转，每解开一个路口，脚下黄沙就裂出一条道。药剂大师<span class="hl">欧曼</span>的工坊飘着草木与硫磺交织的怪味，他坚信世上没有绝对的毒也没有绝对的药，全看"平衡"二字——一如他师姐贺舒曼用理性架起秩序，他则用偏门的药理，悄悄替这世界留住一线生机。沙漠像一位严师，逼着你把所有模糊的直觉，都化作精确的判断。`,
+    `沙漠的考验比森林更狠：流沙、地雷、毒虫，还有翻译不清的求救信号。你把重复的逻辑封装成函数，给它加上可变的参数，让它在任意坐标建造陷阱或栅栏；你学会了看时间，前三十秒拼命收集银币与蓝宝石，三十秒后大军压境便果断切换战斗姿态。金币越攒越多，你始终盯着腰包里的数目——凑够二十五枚便造一个诱饵假人趁机绕后收割，突破九十九枚便毫不犹豫转身奔向出口。你告诉自己："中断"不是怯懦，<span class="hl-c">贪婪才是沙漠里最快的死法</span>。`,
+    `最后一场鏖战，食人魔的巨像从沙里升起。你守在哨塔旁，指挥宠物去踩左右两侧的机关唤醒沉睡的弩炮，一边用函数判断敌人类型——只砍矮人与投矛手，绝不招惹皮糙肉厚的树精——一边用布尔值筛选金币与宝石。当金色的光芒从宝箱里炸开，你知道，够了。你背着沉甸甸的黄金踏上归途，沙漠的风在身后呼啸，像送别，又像邀约；远处村庄的炊烟袅袅升起，孩子们的笑声隔着沙丘传来。你摸了摸剑柄，笑了——地牢给了你生存的本能，森林教会你守护的责任，而沙漠，让你真正懂得了什么是逻辑、分寸与智慧。<span class="hl-c">满载而归，让村庄重燃灯火</span>。`
+  ],
+
+    kpGroups:[
+      {g:'第一章 · 变量与数学运算', items:['变量赋值与更新 += -=','数学运算符 + - * / %','运算符优先级','括号改变运算顺序','比例计算 health / maxHealth','计数器模式','累加器 totalGold += coin.value']},
+      {g:'第二章 · 条件与逻辑', items:['if / elif / else','嵌套 if','比较运算符 == != < > <= >=','逻辑运算符 and / or / not','逻辑短路（if enemy and enemy.type==）','多重条件组合','检查对象存在 if not enemy','布尔代数与逻辑谜题']},
+      {g:'第三章 · 循环', items:['while True 无限循环','while 条件循环','break 跳出循环','continue 跳过本次迭代','循环内更新变量与调用函数','用 while 遍历查找结果']},
+      {g:'第四章 · 函数', items:['定义函数 def','函数参数传递','返回值 return','多个 return 语句','返回布尔/数值/对象','空值 None']},
+      {g:'第五章 · 高级感知与属性', items:['找最近的敌人/朋友/物品','找全部 findItems/Enemies/Friends','按类型查找 findByType','数组/列表概念','数组长度 len(数组)','队伍属性 unit.team','黄金属性 hero.gold','时间属性 hero.time','旗标 hero.findFlag() 与颜色']},
+      {g:'第六章 · 时间与分段行为', items:['按 hero.time 分段执行','按黄金数量建造或招募','按生命值阈值治疗或撤退','计时任务与生存时间']},
+      {g:'第七章 · 宠物进阶', items:['pet.findNearestByType','pet.fetch 取物','pet.moveXY 移动','事件 event.speaker / event.message','消息解析与翻译','命令链与消息响应']},
+      {g:'第八章 · 坐标几何与移动', items:['坐标比较判断方位','相对坐标移动 hero.pos.x + 偏移','中点坐标计算','基于当前 pos 的动态移动','避障逻辑','按敌人左右上下计算建造位置']},
+      {g:'第九章 · 单位与物品类型', items:['敌人 munchkin / thrower / ogre','野兽 burl / sand-yak','友军 soldier / archer / paladin','进阶 griffin-rider / goliath / wizard','物品 gem / coin / potion','危险 poison / mushroom','钥匙 gold-key / silver-key / bronze-key']},
+      {g:'第十章 · 策略与决策', items:['类型筛选（只打特定类型）','数值筛选（只收特定价值）','目标优先级（先打高威胁）','躲避与撤退','治疗请求逻辑','护送与保护任务','资源收集与消费','多人竞技场 AI','炮火支援（说出坐标）']},
+      {g:'第十一章 · 算法思想', items:['顺序/条件/循环三大结构','事件驱动与状态检查','阈值比较与坐标几何','布尔逻辑决策树','资源积累与消耗','基于 time 和 health 的实时反应']},
+      {g:'第十二章 · Python 语法补充', items:['break / continue','+= / -=','取模 %','多变量赋值','对象字面量 {"x":1,"y":2}']}
+    ] },
+
+  { id:'shadow', name:'暗影地牢', en:'Shadow Dungeon', offsetY:0, levels:66,
+    points:"56.1,90.8 58.9,90 60.3,88 62.2,88.6 62.8,91.4 62.5,96.6 64.9,93.4 66.7,89.7 67.2,85.5 64.4,82.6 63.1,78.4 60.9,78.6 58,81.3 56.1,79.3 54.9,76.9 51.7,82 49.6,83.2 47.2,83.3 44.7,82.6 43.1,80.1 40.9,77.2 39.6,74.6 38.9,70.4 37.9,68.7 35.5,69.2 34.7,71.6 35.3,74.4 33.7,79.2 35,82 37.1,83.7 37.3,80.9 38.6,80.4 40.9,86.6 43.9,96.6 45.9,92.1 48,89.4 49.2,88.4 51.1,90.4 56.1,90.6",
+    poster:'poster-shadow.png',
+      // ===== 暗影地牢 story =====
+  story:[
+    `你在一片死寂中睁开眼，四壁阴冷，火把在远处明明灭灭，像垂死者一呼一吸的微光——这里是<span class="hl">暗影地牢</span>。你记不清自己是谁，也不知为何被囚于此，霉味与铁锈钻进鼻腔，唯有一个念头无比清晰：活下去，走出去。曾经，这片土地安宁祥和，人们安居乐业，所有作恶之徒都被永远封锁在这座传闻中"有去无回"的地牢最深处。`,
+    `直到那一天，国王骤然离世。王权的真空让王国瞬间陷入混乱，连这座最森严的牢狱也爆发了暴动。失去束缚的囚徒们在黑暗与怨气的侵蚀下，尽数化作了嗜血的<span class="hl-c">食人魔</span>。铁门轰然洞开，黑暗，开始向地面蔓延。没有人来救你，也没有退路。你握起手边唯一的一件武器，凭着身体里最原始的本能，向那条布满尖刺的甬道迈出第一步——向右，向下，再向右。走廊尽头的宝石微微发亮，你伸手攥住它：那是你在这片绝望里抓住的，第一个希望。`,
+    `地牢从不仁慈。食人魔在阴影中巡逻，视线如刀刃。你学会了贴着墙根、屏住呼吸，在他们转身的刹那悄然滑过；狭路相逢时，你甚至学会后退一步，等待时机，再连进两步，惊险地错开那致命的照面——你开始懂得，勇敢不是莽撞，而是知道何时进、何时退。你并不孤单：冷羽射手<span class="hl">阿玛拉</span>的箭从你看不见的暗处掠过敌人的咽喉；镜中先知<span class="hl">贺舒曼</span>抬手抵一下镜架，便在混沌中强行校准了被黑暗扭曲的现实，为你劈出一道名为"秩序"的坦途。`,
+    `前方的走廊不断喷出火球，左右交替，毫无规律。你站在入口前，恐惧攫住了心脏——可你忽然明白：不必思考，只需重复。你循环着向右、向左、向右、向左，渐渐地，脚步越来越稳，火球竟成了背景的鼓点，你在死亡的间隙里跳起了舞。原来当恐惧被拆解成一个个可以重复的动作，它就不再令人窒息。一座闹鬼的迷宫横在眼前，你闭上眼，听从在循环中磨练出的直觉：右右上下，周而复始，竟一步步走出了生天。`,
+    `恐惧之门的巨锁需要上百次挥砍才能破碎。你一剑、又一剑，不知疲倦，直到它轰然倒塌——你在橱柜里寻到一把更利的剑，和一副能看清敌人的眼镜。戴上它的那一刻，世界变了：你不再需要记住每个食人魔的名字，眼镜会替你标记最近的威胁。最后一关，三个食人魔挡住去路，你没有正面硬闯，而是抡起锤子筑起三道栅栏，转身向右迈出三步，再没回头。出口的光刺得你睁不开眼，身后的阴影仍在翻涌，但你已不属于那里。你想起了那句一直支撑着自己的话——<span class="hl-c">一步，一步，杀出生天</span>。而你，已经做到了。这里，是你成为英雄的真正起点。`
+  ],
+
+    kpGroups:[
+      {g:'第一章 · 编程基础概念', items:['程序 Program 与编程 Programming','顺序结构 Sequential Execution','注释 #：写说明文字','变量 Variable：存放数据的盒子','变量赋值 =','对象 Object（如英雄 hero）','方法 Method：对象能做的动作','参数 Argument：方法括号里的信息','整数/小数/正数/负数','字符串 String（引号括起的文本）','布尔值 True / False','bug 与调试 Debug']},
+      {g:'第二章 · 移动方法', items:['向右移动 hero.moveRight()','向左移动 hero.moveLeft()','向上移动 hero.moveUp()','向下移动 hero.moveDown()','带参数移动 hero.moveRight(3)']},
+      {g:'第三章 · 攻击与交互', items:['攻击敌人 hero.attack(目标)','按名字攻击 attack("Bra")','建造围栏 buildXY("fence", x, y)','建造火焰陷阱 "fire-trap"','说话 hero.say(内容)','速度药水加速','攻击门以释放盟友']},
+      {g:'第四章 · 感知与寻找', items:['寻找最近敌人 findNearestEnemy()','寻找最近物品 findNearestItem()','鼠标悬停查看坐标']},
+      {g:'第五章 · 循环', items:['while True 无限循环','缩进 Indentation 表示代码块','代码块 Code Block','循环内重复移动、攻击','循环前做准备工作']},
+      {g:'第六章 · 算法与策略', items:['顺序执行','循环重复（模式重复）','最近敌人定位','状态检查（敌人是否存在）','资源收集','迷宫寻路','潜行、引诱、分工协作','利用火焰陷阱杀敌','先救盟友再合作','让盟友承担伤害','循环移动躲避火球','路径规划','多次攻击直到击败','代码优化（减少语句）']},
+      {g:'第七章 · 调试与编程习惯', items:['阅读注释获取线索','使用提示系统','字符串大小写敏感','检查引号与拼写','删除错误行观察回放','先写注释再写代码','测试边界情况']},
+      {g:'第八章 · 游戏世界概念', items:['单位：soldier / archer / scout','单位：thrower / brawler / paladin','道具：宝石/药水/发光石/诱饵','建筑：门 / 宝箱 / 橱柜','经济：金币与招募','单位属性：生命/速度/攻击/范围/费用','竞技场对战模式','事件监听（pet.on 概念）']}
+    ] },
+
+  { id:'web1', name:'网页开发1', en:'Web Dev 1', offsetY:-5, levels:13,
+    points:"14.1,59.1 13.4,57.4 14.6,56.7 16.4,56 17.8,56.7 18.7,58.2 17.5,59.4 15.7,59 14,59",
+    poster:'poster-game1.png',
+      // ===== 网页开发1 story（poster 已改为 poster-game1.png）=====
+  story:[
+    `远离主战场的西陲海域，漂浮着一座静谧的<span class="hl">网页开发森林岛</span>。这里听不见食人魔的咆哮，只有海风轻拂，和一片悬浮在空气里、等待被书写的空白羊皮纸。你盘腿坐下，指尖触到纸面，忽然意识到：在这里，每一个字都会变成世界的一砖一瓦，而你将第一次，从一片虚无中建起属于自己的东西。`,
+    `第一课，是让空白说话。你写下文字，那片苍白便长出黑色的字迹；你又学会用一根隐形的木桩，让两句话各自分行。你开始懂得用开合的标记把一段话包进去，告诉这个世界"这是一整块意思"；你写下标题——最大的字号像战鼓，次一级的像号角，再小的像耳畔密语，你忽然明白，连内容也需要等级，就像军队有它的编制。第一次插入图像时你愣住了，羊皮纸上浮现出一位骑士的肖像；你试着调整尺寸，只给宽度，高度便自动配合，两个都指定，他就被拉成怪模样——你看着被压扁的骑士哈哈大笑，又轻轻把他调回优雅的比例。`,
+    `你学会了组织，像建筑师摆放房间：一个大区块装下整张报纸，里头每个帖子又是一个小区块，彼此独立、互不干扰。你还学会了列表，无序的用小圆点，有序的用数字，看着它们整齐排列，心里涌起莫名的满足。真正的魔法始于"样式表"——你在页面顶端铺开一块藏着所有颜色配方的画布，对标题说"红色、下划线、居中"，整个页面瞬间像穿上了节日的盛装。你对着屏幕喃喃："原来这就是层叠，一层规则叠在另一层上，像盔甲的甲片。"`,
+    `你还学会了"类"与"身份"：给一组角色贴上相同的类名，他们便共享同一种底色；给唯一的主角贴上身份编号，他便独享特殊的待遇。你想起沙漠里那些用函数封装的战斗逻辑，此刻在网页的世界里，它们化作了类与编号，整齐划一却又各司其职——原来你在战场上学到的智慧，换一片天地，依然管用。`,
+    `最后一座挑战是"通缉令"。你要用学到的全部本领，为逃犯"炸弹比尔"制作一张海报：最大的红色标题"通缉"，一张凶神恶煞的肖像，二号字写下他的名字，三号字列出罪行，再添上悬赏金额与同伙的头像，最后用粗体写下"只抓活的"。你退后几步，看着这张不再空白、热烈而有序的羊皮纸，忽然觉得，这座岛教会你的不是战斗，而是表达——每一行标记都是你向世界宣告存在的方式，每一条样式都是你赋予万物的性格。海风把通缉令吹得哗哗作响，你拍了拍身上的沙，跳上下一艘船。<span class="hl-c">从空白到世界，只需要一颗造物主的心</span>。`
+  ],
+
+    kpGroups:[
+      {g:'第一章 · HTML 基础概念', items:['HTML（超文本标记语言）','HTML 注释 &lt;!-- 注释 --&gt;','HTML 标签 tags','开始标签 / 结束标签','空标签 empty tag','元素 element','属性 attributes','属性赋值 属性名="值"','用缩进和换行让代码易读']},
+      {g:'第二章 · 常用 HTML 标签', items:['换行 &lt;br&gt;','段落 &lt;p&gt; &lt;/p&gt;','标题 &lt;h1&gt; 到 &lt;h3&gt;','图片 &lt;img&gt;','分区 &lt;div&gt; &lt;/div&gt;','无序列表 &lt;ul&gt; &lt;/ul&gt;','有序列表 &lt;ol&gt; &lt;/ol&gt;','列表项 &lt;li&gt; &lt;/li&gt;','样式 &lt;style&gt; &lt;/style&gt;']},
+      {g:'第三章 · 图片标签属性', items:['图片源 src','宽度 width（像素）','高度 height（像素）','只设一项时等比缩放','同设宽高时强制拉伸']},
+      {g:'第四章 · 列表', items:['无序列表用项目符号','有序列表用数字编号','列表项放在 &lt;ul&gt;/&lt;ol&gt; 内部']},
+      {g:'第五章 · CSS 基础', items:['层叠样式表 CSS','在 &lt;style&gt; 内写规则','CSS 注释 /* 注释 */','元素选择器 p { }','属性: 值;','类选择器 .类名 { }','ID 选择器 #id名 { }']},
+      {g:'第六章 · 常用 CSS 属性', items:['文字颜色 color','文字对齐 text-align: center','下划线 text-decoration: underline','字体大小 font-size','背景颜色 background-color']},
+      {g:'第七章 · CSS 单位', items:['像素 px','相对单位 em']},
+      {g:'第八章 · 类与 ID', items:['类属性 class="类名"','ID 属性 id="唯一标识"','class 可重复用于多个元素','id 只能用于一个元素']},
+      {g:'第九章 · 综合项目', items:['用 HTML 和 CSS 创建通缉海报','组合图片、标题、列表、样式','自定义图像链接']}
+    ] },
+
+
+  { id:'web2', name:'网页开发2', en:'Web Dev 2', offsetY:0, levels:22,
+    points:"13.6,66.8 13.6,69.9 13.8,73.6 15.2,73.8 17.3,72.7 18.8,70.7 18.2,68.4 17.3,66.8 16.8,64.7 16.2,63.8 14.9,65.5 13.6,67",
+    poster:'poster-game2.png',
+      // ===== 网页开发2 story（poster 已改为 poster-game2.png）=====
+  story:[
+    `在第一座岛的基石之上，<span class="hl">网页开发进阶岛</span>赋予静止的页面以灵魂。你踏上这座岛时，看见的是一座寂静的村庄：房屋错落，树木静立，却没有人走动，没有风，没有声音，一切都被按下了暂停。一个声音在你耳边低语："这里每一个元素都在等待被唤醒。用脚本，赐予它们灵魂。"`,
+    `你盘腿坐在村口，发现这座岛的语言比从前更活跃。你对一个英雄说"向右移动，攻击敌人，再来一次"，他真的动了起来；你为火球走廊写下循环，火焰便随你的节拍吞吐。那些曾在地牢与森林里磨练出的战术，如今全被你封装进脚本：看见敌人才攻击，技能就绪就劈斩，敌人逼近便举盾，否则回到原点。你甚至把逻辑嵌套进逻辑，把捡硬币、攻击、建造都打包成一个个名字，主循环里轻轻一唤便自动执行——你忽然意识到，让世界听话的，从来不是蛮力，而是清晰的逻辑。`,
+    `但真正的魔法，是从你摸到那个"美元符号"开始的。只要用它选中一个元素，便能为所欲为：把图片改大它就变大，把文字背景涂红它就红了。你对一个按钮说"当有人点击你，就把那张图片藏起来"，它真的照做了。你造了一整张互动清单，让列表项被点击时划上删除线，让一组选项在选中时高亮自己、同时把同伴悄悄淡去。村庄渐渐有了秩序、有了反馈，也有了温度——它不再是冰冷的静物，而开始懂得回应你。`,
+    `然后你为它们梳妆。你给容器描上边框，用外边距与内边距让拥挤的布局舒展开来；你旋转图片、放大、平移，把多种变换叠在一起，让它一边旋转一边缩放，像一支微型的舞。你还学会了"关键帧动画"，定义一条从左滑到右、从绿变红的轨迹，让图片无限循环地流动起来。村庄里的树开始摇摆，云朵开始飘移，整座岛仿佛终于睁开了眼睛，开始呼吸。`,
+    `最后，你决定造一座"性格测试"。你写下几个问题，点击答案时高亮它、淡化其余；提交时，脚本默默数着每种答案被选了多少次，再根据最多的那个，告诉对方他究竟是猫系、犬系，还是独一无二的那一种。你看着自己创造的问卷，像一位心理学家般微笑——那些按钮与图片，终于不再是死物，而是会回应、会判断、会给出结果的"活物"。这座岛教会你的，不是堆砌标记，而是编织逻辑；<span class="hl-c">不是描绘静止，而是唤醒行动</span>。从今往后，任何死寂的页面在你面前，都将获得灵魂。`
+  ],
+
+    kpGroups:[
+      {g:'第一章 · JavaScript 基础语法', items:['JS 注释 // 单行','代码块用 { } 包围','语句结尾分号 ;','变量声明 var 变量名 = 值','字符串用双引号 "文本"','布尔值 true / false','函数调用 函数名(参数)','对象方法 对象.方法(参数)','属性访问 对象.属性']},
+      {g:'第二章 · 移动与攻击方法', items:['hero.moveRight() / moveLeft()','hero.moveUp() / moveDown()','移动到坐标 moveXY(x, y)','攻击 hero.attack(目标)','劈斩 hero.cleave()','防御 hero.shield()','说话 hero.say(内容)','建造陷阱 buildXY("fire-trap", x, y)']},
+      {g:'第三章 · 查找与距离', items:['寻找最近敌人 findNearestEnemy()','寻找最近物品 findNearestItem()','计算距离 distanceTo(敌人)','获取敌人类型 敌人.type','获取物品位置 物品.pos.x / pos.y']},
+      {g:'第四章 · 技能状态检查', items:['检查技能就绪 isReady("cleave")','技能名称字符串 "cleave"']},
+      {g:'第五章 · 循环', items:['while(true) 无限循环','循环体用 { } 包围','循环内缩进']},
+      {g:'第六章 · 条件语句', items:['if (条件) { ... }','else { ... }','else if (条件) { ... }','比较 < == > >= <=','组合条件 &&（与）']},
+      {g:'第七章 · 变量与数据类型', items:['变量保存敌人引用','变量保存数字','变量保存字符串','变量保存布尔值']},
+      {g:'第八章 · 函数定义', items:['function 函数名() { ... }','带参数 function 名(参数1, 参数2)','函数调用 函数名(实参)','形参与实参的区别']},
+      {g:'第九章 · 嵌套 if 语句', items:['在 if 内部再写 if','用缩进表示层级','根据距离选择攻击或防御']},
+      {g:'第十章 · jQuery 基础', items:['jQuery 库 $ 函数','按 ID 选择 $("#id")','按类选择 $(".class")','按标签选择 $("标签名")','把 DOM 包装为 jQuery 对象','$(this) 表示触发事件的元素']},
+      {g:'第十一章 · jQuery 样式操作', items:['修改 CSS .css("属性", "值")','设置背景色 / 宽度','添加类 addClass()','移除类 removeClass()','切换类 toggleClass()','获取兄弟元素 siblings()']},
+      {g:'第十二章 · jQuery 显示与事件', items:['显示元素 show()','隐藏元素 hide()','绑定事件 on("事件名", 回调)','常见事件 "click"','回调中用 $(this) 获取元素']},
+            {g:'第十三章 · HTML 与 CSS 整合', items:['&lt;script&gt; 内写 JavaScript','&lt;style&gt; 内写 CSS','&lt;link&gt; 引入外部样式','HTML 注释 &lt;!-- --&gt;','CSS 注释 /* */']},
+      {g:'第十四章 · CSS 边框/边距/填充', items:['边框样式 border-style','边框宽度 border-width','边框颜色 border-color','简写 border: 宽度 样式 颜色','外边距 margin','内边距 padding','单位 px / % / em']},
+      {g:'第十五章 · CSS 变换与动画', items:['旋转 transform: rotate(角度deg)','缩放 scale(倍数)','平移 translateX / translateY','多变换组合','关键帧 @keyframes','使用动画 animation: 名称 时间 次数','重复 infinite']},
+      {g:'第十六章 · CSS 颜色与选择器进阶', items:['rgb(红, 绿, 蓝)，范围 0~255','白色/黑色 rgb 表示','属性选择器 [data-value="A"]','后代选择器 .a .b','jQuery 属性选择器','匹配数量 .length','自定义属性 data-*']},
+      {g:'第十七章 · 综合项目：性格测试', items:['HTML 结构：标题/问题/选项/结果','CSS 布局：居中/卡片/选中高亮','jQuery：点击高亮、提交统计、重置','统计答案数量并显示结果','显示/隐藏不同面板']}
+    ] },
+
+  { id:'game1', name:'游戏开发1', en:'Game Dev 1', offsetY:-5, levels:23,
+    points:"76.5,42.8 77.7,45.4 80,46.3 80.7,48.2 82.2,51.4 82.9,48.6 82.1,45.7 81.6,42.5 80.7,40.5 79.1,40.5 77.2,41.1 76.3,41.5 76.6,42.9",
+    poster:'poster-game1.png',
+     // ===== 游戏开发1 story =====
+  story:[
+    `东境的海面上，雾霭终年不散。三座<span class="hl">游戏开发森林岛</span>像沉睡的巨兽，将脊背露出水面，披着茂密的绿衣，这是第一座。你踏上它时，脚下的泥土还带着晨露的凉意。这里没有敌人，没有陷阱，只有一片空旷的沙地，和风中隐约的低语——"创造"。你蹲下身，手指在沙地上划出第一道线，一根木桩便从土里长出来，八根连成一排，围出了你在这个世界上留下的第一个印记。`,
+    `你抬头，在心里描摹出一个骑士的模样，他便应声出现，披着银甲，稳稳站在你指定的坐标上。你画下一个红叉，他便迈开步子走过去停住——这是你第一次让一个角色听从你的指令，那种感觉，奇妙得让你屏住了呼吸。慢慢地你学会更多：在森林里藏下宝石，设定规则，甚至允许只收集六枚就算胜利，因为你觉得那样更有趣。你不再是被世界推着走的人，而是开始为这个世界定规矩的人。`,
+    `你用手指画出一片片森林，它们像墙一样立起，蜿蜒成迷宫；你放进宝箱与银钥匙，藏在最隐秘的角落，又召唤一只会喷火的石像鬼，调整它的方向让火球横飞。你还学会了赋予生命不同的"性情"：让骷髅四处乱跑，让食人魔攻击最近的敌人，让弓箭手守在原地只防御；你造出一个"生成器"，每隔几秒就吐出一个新的小矮人，调它的快慢、强弱，调英雄的速度与攻击——这个世界，开始因你的意志而呼吸。`,
+    `为了让玩的人更投入，你在屏幕上方挂起计时的沙漏，又挂上一块写着"击败数"的牌子，每有人打倒敌人，数字便跳动一下。你还悄悄在后台放了一个口袋，记录总共玩了多少次、赢了多少回，对岛上的守护者郑重地说："让这些数字永远不要消失。"于是数据库记住了每一场战斗。你站在岛上最高的礁石上，望着另外两座更远、更高的森林岛，海风把衣角吹得猎猎作响。`,
+    `你最后一次环顾自己创造的一切：围栏、骑士、宝石、火球、游荡的骷髅、藏在迷宫深处的钥匙……每一寸土地都刻着你的逻辑，每一个生物都遵循着你的律令。你蹲下来，在沙滩上写下"造物者之书"的开篇——第一天创造围栏，第二天创造目标，第三天让角色动起来，第四天给了他们生与死、追与逃、攻与守，第五天造了一座迷宫把自己关进去又放出来，第六天学会了记录，第七天，你休息，看着这一切，觉得很好。然后你跳上船，朝第二座岛划去。<span class="hl-c">你不再是玩家，而是造物者</span>。`
+  ],
+
+    kpGroups:[
+      {g:'第一章 · 基础生成指令', items:['生成物体 game.spawnXY()','生成玩家角色 game.spawnPlayerXY()','生成迷宫 game.spawnMaze()','指定迷宫类型与编号 spawnMaze("forest", 数字)','仅用数字生成迷宫 spawnMaze(数字)']},
+      {g:'第二章 · 游戏目标设定', items:['添加移动目标 addMoveGoalXY()','添加收集目标（全部）addCollectGoal()','添加收集目标（指定数量）','添加击败目标（全部）addDefeatGoal()','添加击败目标（指定数量）','添加生存目标（无限）addSurviveGoal()','添加生存目标（指定秒数）']},
+      {g:'第三章 · 常用单位类型', items:['围栏 "fence"','玩家：knight / captain / duelist','玩家：guardian / champion / samurai','玩家：goliath / raider','敌人：munchkin / ogre / skeleton / thrower','友军：soldier / archer','地形：forest','物品：chest / gem / potion','物品：lightstone / silver-key','陷阱：fire-trap / fire-spewer','特殊：locked-chest / generator']},
+      {g:'第四章 · 物体属性与修改', items:['最大移动速度 maxSpeed','最大生命值 maxHealth','当前生命值 health','攻击伤害 attackDamage','行为模式 behavior','喷射方向 direction','生成器类型 spawnType','生成器延迟 spawnDelay']},
+      {g:'第五章 · 行为模式 behavior', items:['随机移动 "Scampers"','攻击最近 "AttacksNearest"','防御姿态 "Defends"','逃离玩家 "RunsAway"']},
+      {g:'第六章 · 方向设定 direction', items:['水平方向 "horizontal"','垂直方向 "vertical"']},
+      {g:'第七章 · 用户界面 UI 跟踪', items:['跟踪属性 ui.track()','跟踪时间 ui.track(game, "time")','跟踪击败数 "defeated"','跟踪游玩次数 db "plays"','跟踪胜利次数 db "wins"','跟踪总击败 db "total defeated"','跟踪人类/食人魔数量']},
+      {g:'第八章 · 数据库操作（持久化）', items:['数据库对象 db','累加 db.add()','覆盖 db.set()','游玩次数加 1 db.add("plays", 1)','胜利次数加 1 db.add("wins", 1)','累加击败数到数据库']},
+      {g:'第九章 · 事件与回调', items:['监听游戏事件 game.on()','监听胜利 game.on("victory", 函数)','定义胜利函数 def onVictory(event):']},
+      {g:'第十章 · 模拟与生态参数', items:['起始食人魔数 startingOgres','食人魔速度 ogreSpeed','繁殖所需农民数 ogresplit','食人魔视野 ogresight','食人魔存活时间 ogrelifespan','起始农民数 startingPeasants','农民速度/视野/繁殖/存活','硬币生成间隔与数量']},
+      {g:'第十一章 · 编程基础概念', items:['变量赋值','函数调用','注释 #','坐标系统 (x, y)','事件回调函数定义','对象属性读取与修改']},
+      {g:'第十二章 · 游戏机制与设计', items:['跨游戏数据持久化','迷宫生成与编号','生存限时挑战','收集指定数量宝石获胜','击败指定数量敌人获胜','移动目标点','发光石使骷髅逃跑','锁定宝箱需钥匙打开','火焰喷射器方向控制','生成器自动产生敌人','胜利时更新数据库记录','生成后返回对象并修改属性']}
+    ] },
+
+  { id:'game2', name:'游戏开发2', en:'Game Dev 2', offsetY:0, levels:28,
+    points:"75.8,53.9 74.7,55.4 74.2,58.5 74.8,61 76.3,61.3 77,59 77.4,56.2 76,53.6",
+    poster:'poster-game2.png',
+      // ===== 游戏开发2 story =====
+  story:[
+    `第一座岛教会了你创造，而第二座<span class="hl">游戏开发岛</span>，让创造拥有了重量与生命。你踏上它时，脚下的沙地微微下陷——不是松软的沙，而是像踩在真实的泥土上，有回弹，有触感。风穿过树林，叶子会晃动，石块会滚落。你忽然明白：在这里，万物都会碰撞，都会因彼此的相遇而触发故事。`,
+    `你蹲下身，第一次尝试为一个士兵编写"灵魂"：当他诞生，便永远守在通道中央，看见敌人就攻击，看不见就归位。那个银甲战士真的来回巡逻、挥剑、复位，像一台上满发条的钟，忠诚得不再像一串冷冰冰的指令，而像一个有担当的守卫。然后你学会了"批量造物"，不再一个个召唤，而是对所有士兵说"出生后都去篝火旁集合"，对所有食人魔说"一旦出生就去攻击最近的敌人"——世界开始有了阵营、有了规则、有了秩序。`,
+    `你开始制造"时间"，在岛上埋下一只看不见的钟，让它从零走起，每一秒都能唤出新的敌人，先来一个矮人，两秒后再添一个，四秒后投矛手也加入战场。你还学会了"随机"，让敌人在任意坐标出现、生成间隔飘忽不定，玩家永远猜不到下一波从哪个方向袭来。最让你惊喜的，是"碰撞"：英雄吃下蘑菇后体型翻倍，怒吼着冲向那些原本不可逾越的木墙，将它们轰然撞碎。你戳了戳空气里看不见的"碰撞箱"，自言自语："原来如此……物体碰到物体，就会触发故事。"`,
+    `你设计出越来越复杂的游戏。一个"冻结标签"的游乐场，英雄碰到谁谁就被冻住、原地防守，被奔跑的同伴碰到又会解冻，他们在屏幕上追逐、碰撞、冻结、解冻，像一场无声的舞蹈，让你恍惚觉得这不再是游戏，而是一个小小的、活着的社会。你还做了"击败掉落"，让倒下的敌人爆出金币，甚至让一个矮人被击败后像九头蛇般分裂成两个，越砍越多，金币却也叮当落满一地。`,
+    `最复杂的一件作品，是你自创的"吃豆人"迷宫。玩家在森林围墙间穿行收集青铜币，分数每秒流失，逼他跑得飞快；食人魔侦察兵游荡其中，碰到即死，除非先吃到能让他暴涨、攻击拉满的蘑菇。你蹲在屏幕前一遍遍调参——英雄的速度、敌人的间隔、蘑菇的时长、金币的价值，太容易玩家会无聊，太难会摔键盘，你调了整整一个下午，直到自己玩起来手心冒汗、心跳加速，才满意地靠上树。夕阳把整座岛染成金色，你摸了摸胸口，那里跳动的不是代码，而是一个造物主的心跳。<span class="hl-c">让虚拟的世界，真实地呼吸起来</span>。`
+  ],
+
+    kpGroups:[
+      {g:'第一章 · 单位事件与处理器', items:['绑定出生 unit.on("spawn", 函数)','绑定击败 unit.on("defeat", 函数)','绑定收集 unit.on("collect", 函数)','绑定碰撞 unit.on("collide", 函数)','处理器定义 def 名(event):','事件目标 event.target','互动对象 event.other','攻击/移动/说话','找最近敌人/朋友']},
+      {g:'第二章 · 批量设置单位动作', items:['game.setActionFor(类型, 事件名, 函数)','为 soldier 设置 spawn','为 archer 设置 spawn','为 munchkin 设置 defeat','为 scout 设置 collide']},
+      {g:'第三章 · 手动目标（自定义）', items:['添加手动目标 addManualGoal(描述)','设置目标状态 setGoalState(目标, True/False)','读取是否成功 目标.success','示例 goal = addManualGoal("...")']},
+      {g:'第四章 · 单位生成与配置', items:['生成 soldier / archer / munchkin','生成 thrower / scout / ogre / ogre-f','生成金币/铜币/银币/宝石','生成 mushroom / potion','生成 generator 生成器','设置 spawnType / spawnDelay','设置 spawnAI / maxHealth']},
+      {g:'第五章 · 游戏时间与计时器', items:['经过时间 game.time','自定义计时器属性','循环中更新 if game.time > 计时器:','生成后更新计时器','跟踪时间 ui.track(game, "time")']},
+      {g:'第六章 · 随机数', items:['随机整数 game.randomInteger(min, max)','随机位置生成敌人','随机间隔生成敌人']},
+      {g:'第七章 · 击败与销毁', items:['击败单位 unit.defeat()','销毁单位 unit.destroy()','击败生成器 generator.defeat()','销毁障碍物 对象.destroy()','在 defeat 事件中销毁单位']},
+      {g:'第八章 · 收集事件 collect', items:['处理器 def onCollect(event):','收集者 event.target','收集的物品 event.other','判断物品类型 if item.type ==','物品价值 item.value','修改生命值 / 增加分数 game.score','绑定收集 player.on("collect", 函数)']},
+      {g:'第九章 · 碰撞事件 collide', items:['处理器 def onCollide(event):','碰撞主体 event.target','碰撞对象 event.other','判断对象类型 if other.type ==','判断尺寸 if unit.scale == 2:','销毁障碍物 other.destroy()','为玩家/类型批量绑定碰撞']},
+      {g:'第十章 · 单位属性修改', items:['最大速度 maxSpeed','最大生命 maxHealth','当前生命 health','攻击伤害 attackDamage','行为 behavior','缩放 scale','类型 type / 位置 pos.x pos.y']},
+      {g:'第十一章 · 数据库（持久化）', items:['获取值 db.get(键)','设置值 db.set(键, 值)','初始化最高分','跟踪 ui.track(db, "topScore")']},
+      {g:'第十二章 · 游戏循环与计时器函数', items:['无限循环 while True:','每帧检查计时器','每帧减少分数','限制分数最小为 0','检查强化剩余时间','强化结束恢复状态','组合多个计时器检查']},
+      {g:'第十三章 · 玩家控制与交互', items:['生成玩家 spawnPlayerXY("knight", x, y)','设置最大速度/生命/伤害','缩放玩家尺寸','键盘 WASD 或鼠标点击']},
+      {g:'第十四章 · UI 跟踪', items:['跟踪分数 / 生命值','跟踪击败计数 / 生成数量','跟踪手动目标剩余','跟踪强化剩余时间','跟踪自定义属性']},
+      {g:'第十五章 · 状态与行为切换', items:['按条件改变行为','用行为标记冻结状态','改变行为实现"标记"','增加标记计数 game.tagged += 1']},
+      {g:'第十六章 · 物品生命周期', items:['设置销毁时间 item.destroyTime','在 spawn 循环中检查销毁','批量设置物品销毁逻辑']},
+      {g:'第十七章 · 游戏目标综合', items:['收集目标（全部/指定数量）','生存目标（无限/指定秒数）','移动目标 addMoveGoalXY','默认目标 addDefaultGoal','手动与内置目标混合']},
+      {g:'第十八章 · 平衡参数', items:['HERO_SPEED / OGRE_SPEED','SPAWN_DELAY','COIN_SCORE / MUSHROOM_SCORE','DEFEATED_SCORE / TIME_SCORE','POWER_DURATION','初始分数 game.score = 1000']},
+      {g:'第十九章 · 编程基础（进阶）', items:['函数定义与调用','全局变量（game 属性）','while True 循环','if / else 判断','比较 > >= == < <=','算术 + - += -= *= /=','字符串与数字类型','注释 # 与缩进']},
+      {g:'第二十章 · 综合设计', items:['迷宫生成复用','随时间生成多类型敌人','击败掉金币（随机偏移）','九头蛇机制（击败生更多）','自定义胜利条件','条件目标（不打某类敌人）','摧毁障碍物解锁通道','蘑菇临时强化（变大秒杀）','强化期敌人逃跑','最高分持久化','敌人波次生成','手动调整平衡参数']}
+    ] },
+
+  { id:'game3', name:'游戏开发3', en:'Game Dev 3', offsetY:0, levels:11,
+    points:"78.9,71.6 78.6,75.8 79,80.4 80.8,82.4 83.4,82.3 85,79.2 85.6,75.8 84,71.8 81.8,71.6 79.8,70.9 78.9,71.9",
+    poster:'poster-game3.png',
+      // ===== 游戏开发3 story =====
+  story:[
+    `前两座岛教会了你创造与碰撞，而最后一座<span class="hl">游戏开发岛</span>，教会了你"持续"。你踏上它时，发现脚下的沙土不再静止，它们像水一样缓缓流动，树木在风中摇摆，云层在头顶翻滚。一个声音在你耳边说："每一帧，世界都在呼吸。"你忽然懂得，真正的生命不在某个瞬间，而在那永不停歇的、一帧接一帧的流动里。`,
+    `你坐在岩石上，开始尝试新的魔法——"更新"。它不是一次性的命令，而是永不停歇的心跳。你对一个士兵说"每一刻都向左移动三步"，他便滑步直至消失在屏幕边缘；你又告诉他"抵达边界就传送到对面"，他便像穿越梦境般从左边消失、从右边出现，周而复始。你笑了——原来世界可以没有尽头。你还造了一台"石头剪刀布"的战场，侦察兵克士兵，士兵克投矛手，投矛手克弓箭手，每个单位在每一帧里寻找宿敌，找不到便向相反方向逃离，于是战场上有了永恒的追逐与逃离，像一场没有结局的循环史诗。`,
+    `你让静态的物体也活了过来：围栏不再是死板的木桩，你让它们上下浮动，像呼吸的琴键；火焰喷射器沿天花板左右滑行，火球如流星洒落。宝石也疯了，你给每一颗装上速度与方向，它们像台球般在墙壁间弹跳，玩家眼看要抓住，它却"咚"地一声弹走。你哈哈大笑，又把速度调快了几分——你享受这种亲手让世界动起来、再让它越来越鲜活的快乐。`,
+    `最后，你决定造一座"跑酷森林"。英雄固定在左侧，整个地图向右狂奔，树木、围栏、宝石一切都向他冲来，玩家只能上下闪避、收集宝石，身后还有食人魔越追越近。你为它设下一连串精密参数：每帧移动多少米，每隔几秒生成一波障碍，食人魔每分钟加速多少。你反复打磨，太简单就加速，太难就放缓，直到自己玩起来手心冒汗、心跳如鼓，又加上计时器、分数榜、最高分数据库，让每一场游戏都留下印记。`,
+    `夕阳再次沉入海面时，你坐在岛的最高处，俯瞰自己创造的无数个小世界。那些单位在永不停歇的"更新"中奔跑、战斗、弹跳、追逐，像一场永不谢幕的戏剧。你忽然明白：第一座岛给了你"存在"，第二座岛给了你"碰撞"，而第三座岛给了你"时间"——流动的、连续的、不可分割的时间。三座岛的故事已经写满，但你知道，真正的造物主之路才刚刚开始。你拍拍身上的沙土，笑着说："下一站，让世界自己讲自己的故事。"<span class="hl-c">这是造物者的封神之战</span>。`
+  ],
+
+    kpGroups:[
+      {g:'第一章 · update 事件', items:['"update" 事件：每帧触发','绑定单位 unit.on("update", 函数)','绑定游戏 game.on("update", 函数)','批量设置 setActionFor("类型","update",函数)','用 update 替代 while True','帧间隔 event.deltaTime','用 deltaTime 实现平滑移动']},
+      {g:'第二章 · 单位克制关系', items:['scout 克制 soldier','soldier 克制 thrower','thrower 克制 archer','archer 克制 scout','定义克制函数 def shouldAttack(who, target):','按类型判断是否攻击']},
+      {g:'第三章 · 阵营与移动方向', items:['阵营属性 unit.team','按阵营控制移动方向','移出屏幕的单位销毁']},
+      {g:'第四章 · 动态属性与增强', items:['在 update 中跟踪生命值','动态增加 maxHealth *= 1.2','动态增加尺寸 scale *= 1.2','动态增加 attackDamage *= 1.2','设置手动目标 addManualGoal','检查缩放目标达成']},
+      {g:'第五章 · pos 位置直接修改', items:['获取位置 unit.pos.x / pos.y','修改位置 unit.pos.x = 新值','相对移动 unit.pos.x += 10','传送到地图另一边','修改 pos 实现"跳跃"','静态对象也可改位置']},
+      {g:'第六章 · 折回 Wraparound 机制', items:['检查左边界 if pos.x < 10:','检查上边界 if pos.y > 58:','检查下边界 if pos.y < 10:','玩家与敌人共用折回逻辑']},
+      {g:'第七章 · 平滑移动与动画', items:['每帧移动小距离','速度单位：米每帧','方向属性 dir = 1 或 -1','边界反转方向 dir *= -1','移动围栏 / 火焰喷射器']},
+      {g:'第八章 · 动态生成与计时器', items:['按时间生成 if game.time > spawnTime:','生成后更新计时器','按时间增加生成数量','用 while 循环生成多个单位']},
+      {g:'第九章 · 跑酷游戏专用技术', items:['固定玩家 X 坐标','环境向左移动模拟奔跑','超出左边界重置到右侧','森林重置位置、围栏销毁','随机 Y 坐标生成','在右侧边界外生成','为新对象单独绑定 update']},
+      {g:'第十章 · 跑酷的敌人（食人魔）', items:['食人魔追逐玩家（增加 baseX）','限制最大 X 坐标','设置位置 unit.pos.x = baseX','行为 "AttacksNearest"','击败加分 game.score += 10','被击败后变环境物体']},
+      {g:'第十一章 · 分数与数据库', items:['分数属性 game.score','随时间加分 += deltaTime','收集宝石/击败敌人加分','获取最高分 db.get("topScore") or 0','更新最高分 db.set','跟踪 ui.track(game, "topScore")']},
+      {g:'第十二章 · 手动目标与胜利', items:['添加手动目标','按时间设置目标状态','玩家被击败时检查目标']},
+      {g:'第十三章 · 碰撞与收集事件', items:['碰撞 unit.on("collide", 函数)','碰撞围栏则 defeat()','收集 player.on("collect", 函数)','按物品类型加分']},
+      {g:'第十四章 · 事件数据高级用法', items:['event.target 目标单位','event.other 互动对象','event.deltaTime 帧时间差','用 deltaTime 做帧率无关移动']},
+      {g:'第十五章 · 生成器与随机封装', items:['生成器 spawnType / spawnAI','为新单位配置属性','封装 def spawnRandomY(type):','封装 def spawnRandomX(type, x):','随机选两种类型之一','随机 Y 坐标']},
+      {g:'第十六章 · 平衡参数', items:['GAME_SPEED / PLAYER_SPEED','PLAYER_BASE_X / WIN_TIME','FENCE / GEM / OGRE_INTERVAL','OGRE_SPEED_INC','GEM_SCORE / DEFEATED_OGRE_SCORE','参数集中定义在顶部']},
+      {g:'第十七章 · 编程概念（进阶）', items:['函数定义与参数','while 循环与条件判断','属性赋值与读取','算术 + - * += -= *= /=','比较 > < >= <= ==','逻辑 and / or','注释 #','对象动态属性 unit.baseX']},
+      {g:'第十八章 · 综合设计', items:['石头剪刀布式克制战斗','用 update 替代 while True','动态修改属性"越战越强"','传送、跳跃、折回','平滑移动与边界反弹','无尽跑酷核心机制','循环利用地图外对象','敌人随时间生成并追逐','引诱敌人撞障碍物','时间+收集+击败三类分数','最高分持久化','参数集中调整平衡']}
+    ] }
+];
+
+const world = document.getElementById('world');
+const svgLayer = document.getElementById('map-svg');
+const mapStage = document.getElementById('map-stage');
+const detail = document.getElementById('detail');
+const poster = document.getElementById('poster');
+const panelHead = document.getElementById('panelHead');
+const panelScroll = document.getElementById('panelScroll');
+const toggleStory = document.getElementById('toggleStory');
+const sfx = id => document.getElementById(id);
+let muted = false;
+
+function play(id){ if(muted) return; const a=sfx(id); if(a){a.currentTime=0;a.play().catch(()=>{});} }
+
+function badgeSrc(r, n){
+  const base = r.poster.replace(/\.[^.]+$/, '');
+  return `${ASSET_BASE}${base}-${n}.png`;
+}
+
+function polygonCentroid(pointsStr){
+  const pts = pointsStr.trim().split(/\s+/).map(p=>p.split(',').map(Number));
+  let area=0, cx=0, cy=0;
+  for(let i=0;i<pts.length;i++){
+    const [x0,y0]=pts[i];
+    const [x1,y1]=pts[(i+1)%pts.length];
+    const cross = x0*y1 - x1*y0;
+    area += cross; cx += (x0+x1)*cross; cy += (y0+y1)*cross;
+  }
+  area *= 0.5;
+  if(Math.abs(area) < 1e-6){
+    const ax = pts.reduce((s,p)=>s+p[0],0)/pts.length;
+    const ay = pts.reduce((s,p)=>s+p[1],0)/pts.length;
+    return {x:ax, y:ay};
+  }
+  return { x: cx/(6*area), y: cy/(6*area) };
+}
+
+REGIONS.forEach((r) => {
+  const poly = document.createElementNS("http://www.w3.org/2000/svg", "polygon");
+  poly.setAttribute("points", r.points);
+  poly.setAttribute("class", "region-poly");
+  poly.setAttribute("data-id", r.id);
+  svgLayer.appendChild(poly);
+
+  const c = polygonCentroid(r.points);
+  const offY = r.offsetY || 0;
+
+  const badge = document.createElement("div");
+  badge.className = "badge";
+  badge.style.left = c.x + "%";
+  badge.style.top = (c.y + offY) + "%";
+  badge.innerHTML = `
+    <div class="badge-img">
+      <img class="b1" src="${badgeSrc(r,1)}" alt="${r.name}">
+      <img class="b2" src="${badgeSrc(r,2)}" alt="${r.name}">
+    </div>
+    <div class="badge-name">${r.name}</div>`;
+
+  // icon.mp3 仅在鼠标进入徽章（徽章发生变化）时播放
+  badge.addEventListener('mouseenter', () => { play('sfx-hover'); play('sfx-icon'); poly.classList.add('active'); });
+  badge.addEventListener('mouseleave', () => { poly.classList.remove('active'); });
+  badge.addEventListener('click', () => openRegion(r));
+  // 轮廓 hover 不播放 icon 音效
+  poly.addEventListener('mouseenter', () => { badge.classList.add('hovered'); });
+  poly.addEventListener('mouseleave', () => badge.classList.remove('hovered'));
+  poly.addEventListener('click', () => openRegion(r));
+
+  world.appendChild(badge);
+});
+
+/* 打开区域详情 */
+function openRegion(r){
+  play('sfx-click');
+  play('sfx-in');
+  world.classList.add('zoom');
+  setTimeout(()=>{
+    play('sfx-region');
+    poster.style.backgroundImage=`url('${ASSET_BASE}${r.poster}'), radial-gradient(circle at 50% 40%, rgba(200,170,110,0.15), #05060d 70%)`;
+
+    panelHead.innerHTML = `
+      <div class="title-row">
+        <h1>${r.name}</h1>
+        <div class="level-tag"><span class="num">${r.levels}</span><span class="unit">关卡</span></div>
+      </div>
+      <div class="en">${r.en}</div>
+      <div class="divider"></div>`;
+
+    const storyHTML = `
+      <div class="sec-label">世界观 · The Story</div>
+      <div class="story">${r.story.map(p=>`<p>${p}</p>`).join('')}</div>`;
+
+    const kpHTML = `
+      <div class="sec-label">核心知识点 · Key Concepts</div>
+      ${r.kpGroups.map(grp=>`
+        <div class="kp-group">
+          <h4><span class="dot"></span>${grp.g}</h4>
+          <div class="kp-list">
+            ${grp.items.map(it=>`<span class="kchip">${it}</span>`).join('')}
+          </div>
+        </div>`).join('')}`;
+
+    panelScroll.innerHTML = storyHTML + kpHTML;
+    detail.classList.remove('collapsed');     // 每次进入默认展开世界观
+    toggleStory.textContent = '收起世界观';
+    document.body.classList.add('in-detail'); // 隐藏全局 LOGO
+    detail.classList.add('show');
+    panelScroll.scrollTop = 0;
+  },800);
+}
+
+/* 收起 / 展开 世界观 */
+toggleStory.addEventListener('click',()=>{
+  play('sfx-hover');
+  detail.classList.toggle('collapsed');
+  toggleStory.textContent = detail.classList.contains('collapsed') ? '展开世界观' : '收起世界观';
+});
+
+/* 返回世界 */
+document.getElementById('back').addEventListener('click',()=>{
+  play('sfx-hover');
+  detail.classList.remove('show');
+  document.body.classList.remove('in-detail');  // 恢复全局 LOGO
+  setTimeout(()=>{
+    detail.classList.remove('show');
+    detail.classList.remove('collapsed');
+    world.classList.remove('zoom');
+    panelScroll.scrollTop = 0;
+  },500);
+});
+
+/* 鼠标视差 */
+const fogs=document.querySelectorAll('.fog');
+document.addEventListener('mousemove',e=>{
+  const dx=(e.clientX/window.innerWidth-.5);
+  const dy=(e.clientY/window.innerHeight-.5);
+  mapStage.style.transform=`translate(${dx*-12}px,${dy*-12}px)`;
+  document.querySelectorAll('.badge').forEach(b => {
+    b.style.marginLeft = dx*-12 + 'px'; b.style.marginTop = dy*-12 + 'px';
+  });
+  fogs.forEach((f,i)=>{f.style.marginLeft=dx*(20+i*15)*-1+'px'; f.style.marginTop=dy*(20+i*15)*-1+'px';});
+});
+
+/* 静音开关 */
+document.getElementById('mute').addEventListener('click',function(){
+  muted=!muted;
+  this.textContent=muted?'🔇':'🔊';
+  sfx('bgm').muted=muted;
+});
+
+/* ===== 音效预加载（提前加载，打开更流畅） ===== */
+['sfx-enter','sfx-hover','sfx-click','sfx-region','bgm','sfx-in','sfx-icon'].forEach(id=>{
+  const a = sfx(id);
+  if(a){ try{ a.load(); }catch(e){} }
+});
+
+/* ===== 开场加载流程 ===== */
+const intro = document.getElementById('intro');
+const progressFill = document.getElementById('progressFill');
+const progressText = document.getElementById('progressText');
+const loadingBox = document.getElementById('loadingBox');
+const titleBox = document.getElementById('titleBox');
+const enterBtn = document.getElementById('enter-btn');
+
+let prog = 0;
+const timer = setInterval(()=>{
+  prog += Math.random()*18 + 8;
+  if(prog >= 100){
+    prog = 100;
+    clearInterval(timer);
+    progressText.textContent = 'LOADING WORLD … 100%';
+    startReveal();
+  } else {
+    progressText.textContent = `LOADING WORLD … ${Math.floor(prog)}%`;
+  }
+  progressFill.style.width = prog + '%';
+}, 120);
+
+function startReveal(){
+  setTimeout(()=>{ loadingBox.classList.add('hide'); intro.classList.add('blackout'); }, 300);
+  setTimeout(()=>{ intro.classList.add('no-radar'); intro.classList.remove('blackout'); intro.classList.add('reveal'); }, 900);
+  setTimeout(()=>{ titleBox.classList.add('show'); }, 2000);
+}
+
+enterBtn.addEventListener('click', ()=>{
+  play('sfx-in');                 // 点击立即播放 in.mp3
+  play('sfx-enter');
+  sfx('bgm').volume = 0.3; sfx('bgm').play().catch(()=>{});
+  intro.classList.add('entered');
+  setTimeout(()=>{
+    intro.style.opacity = 0;
+    setTimeout(()=> intro.style.display = 'none', 1000);
+  }, 700);
+});
+</script>
+
+<div data-info-wiki-backlink style="text-align:center;padding:18px 12px;color:#64748b;font:13px/1.6 -apple-system,BlinkMacSystemFont,'Segoe UI','Microsoft YaHei',sans-serif"><a href="../index.html" style="color:#4f46e5;text-decoration:none;font-weight:700">← 返回 CodeCombat 信息百科</a></div>
+</body>
+</html>

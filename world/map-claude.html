@@ -1,0 +1,136 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>代码秘境 · 世界地图</title>
+<style>
+  *{margin:0;padding:0;box-sizing:border-box;}
+  html,body{height:100%;overflow:hidden;background:#05060d;
+    font-family:"Noto Serif SC","Songti SC",serif;color:#e8e6f0;}
+
+  /* 地图舞台：保持图片 1024x576 比例，按窗口缩放并居中 */
+  #stage{position:fixed;inset:0;display:flex;align-items:center;justify-content:center;}
+  #mapWrap{position:relative;width:100%;max-width:1024px;aspect-ratio:1024/576;}
+
+  /* 底图 */
+  #mapImg{position:absolute;inset:0;width:100%;height:100%;object-fit:contain;
+    pointer-events:none;user-select:none;display:block;}
+
+  /* SVG 覆盖层，与图片同坐标系 viewBox=0 0 1024 576 */
+  #overlay{position:absolute;inset:0;width:100%;height:100%;}
+
+  /* 区域轮廓：默认透明，悬停/选中时发光 */
+  .region{fill:rgba(255,255,255,0);stroke:rgba(255,255,255,0);
+    stroke-width:2.5;cursor:pointer;transition:all .35s ease;
+    stroke-linejoin:round;}
+  .region:hover{fill:rgba(120,200,255,.12);stroke:#8fd3ff;
+    filter:drop-shadow(0 0 8px #8fd3ff);}
+  .region.active{fill:rgba(120,200,255,.18);stroke:#bfe9ff;
+    filter:drop-shadow(0 0 14px #8fd3ff);
+    animation:pulse 2.2s ease-in-out infinite;}
+  @keyframes pulse{0%,100%{filter:drop-shadow(0 0 10px #8fd3ff);}
+    50%{filter:drop-shadow(0 0 22px #bfe9ff);}}
+
+  /* 区域名提示 */
+  #tip{position:absolute;padding:6px 14px;background:rgba(5,8,20,.82);
+    border:1px solid rgba(143,211,255,.5);border-radius:20px;
+    font-size:15px;letter-spacing:2px;color:#cfeaff;pointer-events:none;
+    transform:translate(-50%,-150%);opacity:0;transition:opacity .25s;
+    white-space:nowrap;text-shadow:0 0 8px rgba(143,211,255,.6);z-index:10;}
+  #tip.show{opacity:1;}
+</style>
+</head>
+<body>
+
+<div id="stage">
+  <div id="mapWrap">
+    <img id="mapImg" src="world.png" alt="代码秘境世界地图">
+    <svg id="overlay" viewBox="0 0 1024 576" preserveAspectRatio="xMidYMid meet">
+      <!-- 11个区域轮廓，坐标对应图片内容。后续可继续精修路径以更贴合插画。 -->
+
+      <!-- 封神冰川（左上雪山） -->
+      <path class="region" data-name="封神冰川"
+        d="M210,130 L300,70 L400,60 L470,90 L460,150 L400,200 L320,210 L250,190 L200,160 Z"/>
+
+      <!-- 安息云峰（中左偏上山脉） -->
+      <path class="region" data-name="安息云峰"
+        d="M250,190 L320,210 L400,200 L420,250 L380,290 L300,300 L240,270 L220,220 Z"/>
+
+      <!-- 边际森林（中部绿色森林） -->
+      <path class="region" data-name="边际森林"
+        d="M420,150 L560,120 L660,160 L700,230 L640,300 L520,320 L440,290 L420,250 L400,200 Z"/>
+
+      <!-- 流金沙漠（中下金色沙漠） -->
+      <path class="region" data-name="流金沙漠"
+        d="M400,330 L520,320 L640,330 L660,400 L590,470 L470,480 L390,440 L370,380 Z"/>
+
+      <!-- 暗影地牢（底部中间山脉） -->
+      <path class="region" data-name="暗影地牢"
+        d="M470,480 L590,470 L640,500 L600,545 L500,550 L440,520 Z"/>
+
+      <!-- 少年冒险海岛（右上岛） -->
+      <path class="region" data-name="少年冒险海岛"
+        d="M680,110 L760,90 L820,120 L820,180 L760,210 L700,190 L680,150 Z"/>
+
+      <!-- 游戏开发1森林岛（右中偏上） -->
+      <path class="region" data-name="游戏开发1森林岛"
+        d="M840,250 L920,240 L960,280 L930,320 L860,320 L830,290 Z"/>
+
+      <!-- 游戏开发2森林岛（右中） -->
+      <path class="region" data-name="游戏开发2森林岛"
+        d="M850,350 L920,345 L955,380 L925,415 L860,415 L835,385 Z"/>
+
+      <!-- 游戏开发3森林岛（右下） -->
+      <path class="region" data-name="游戏开发3森林岛"
+        d="M840,450 L915,445 L955,485 L920,525 L850,525 L820,490 Z"/>
+
+      <!-- 网页开发1森林岛（左中） -->
+      <path class="region" data-name="网页开发1森林岛"
+        d="M70,330 L150,325 L185,360 L155,400 L85,400 L55,365 Z"/>
+
+      <!-- 网页开发2森林岛（左下） -->
+      <path class="region" data-name="网页开发2森林岛"
+        d="M80,420 L160,415 L195,455 L165,500 L90,500 L60,460 Z"/>
+
+    </svg>
+    <div id="tip"></div>
+  </div>
+</div>
+
+<script>
+  const overlay = document.getElementById('overlay');
+  const regions = document.querySelectorAll('.region');
+  const tip = document.getElementById('tip');
+  const mapWrap = document.getElementById('mapWrap');
+  let active = null;
+
+  regions.forEach(r=>{
+    // 悬停显示名称
+    r.addEventListener('mousemove', e=>{
+      const rect = mapWrap.getBoundingClientRect();
+      tip.textContent = r.dataset.name;
+      tip.style.left = (e.clientX - rect.left) + 'px';
+      tip.style.top  = (e.clientY - rect.top) + 'px';
+      tip.classList.add('show');
+    });
+    r.addEventListener('mouseleave', ()=> tip.classList.remove('show'));
+
+    // 点击高亮轮廓
+    r.addEventListener('click', ()=>{
+      if(active) active.classList.remove('active');
+      if(active === r){ active = null; return; } // 再次点击取消
+      r.classList.add('active');
+      active = r;
+    });
+  });
+
+  // 点击空白处取消高亮
+  overlay.addEventListener('click', e=>{
+    if(e.target === overlay && active){ active.classList.remove('active'); active=null; }
+  });
+</script>
+
+<div data-info-wiki-backlink style="text-align:center;padding:18px 12px;color:#64748b;font:13px/1.6 -apple-system,BlinkMacSystemFont,'Segoe UI','Microsoft YaHei',sans-serif"><a href="../index.html" style="color:#4f46e5;text-decoration:none;font-weight:700">← 返回 CodeCombat 信息百科</a></div>
+</body>
+</html>
