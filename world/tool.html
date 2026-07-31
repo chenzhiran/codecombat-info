@@ -1,0 +1,95 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<title>地图轮廓坐标绘制工具</title>
+<style>
+  *{margin:0;padding:0;box-sizing:border-box;font-family:system-ui,"Microsoft YaHei",sans-serif;}
+  body{background:#1b1f2e;color:#e8e6f0;padding:16px;}
+  h3{margin-bottom:8px;}
+  .hint{font-size:13px;opacity:.75;line-height:1.7;margin-bottom:12px;}
+  .hint b{color:#00e5ff;}
+  #wrap{position:relative;display:inline-block;border:1px solid #333;line-height:0;}
+  #wrap img{display:block;max-width:90vw;height:auto;user-select:none;}
+  #draw{position:absolute;inset:0;width:100%;height:100%;cursor:crosshair;}
+  .toolbar{margin:12px 0;display:flex;gap:10px;flex-wrap:wrap;align-items:center;}
+  button{background:#2a3147;color:#cfeaff;border:1px solid #3a4straße;border:1px solid #3a4358;
+    padding:8px 16px;border-radius:8px;cursor:pointer;font-size:14px;}
+  button:hover{background:#39425e;}
+  textarea{width:100%;max-width:90vw;height:80px;background:#11141f;color:#7CFC00;
+    border:1px solid #333;border-radius:8px;padding:10px;font-family:monospace;font-size:14px;margin-top:8px;}
+  .row{margin-top:6px;font-size:13px;opacity:.8;}
+</style>
+</head>
+<body>
+  <h3>🗺️ 地图轮廓坐标绘制工具</h3>
+  <div class="hint">
+    操作：在地图上<b>沿着某个区域的边缘依次点击</b>描点 → 自动生成坐标（按图片宽高的 0~100 百分比）。<br>
+    描完一个区域 → 点 <b>复制坐标</b> → 粘贴到主文件 REGIONS 里对应区域的 <b>points</b> 字段。<br>
+    点错了按 <b>撤销上一点</b>；换下一个区域前点 <b>清空重画</b>。
+  </div>
+
+  <div id="wrap">
+    <img id="img" src="world.png" alt="地图">
+    <svg id="draw" viewBox="0 0 100 100" preserveAspectRatio="none"></svg>
+  </div>
+
+  <div class="toolbar">
+    <button id="undo">↩ 撤销上一点</button>
+    <button id="clear">🗑 清空重画</button>
+    <button id="copy">📋 复制坐标</button>
+    <span class="row" id="count">已描 0 个点</span>
+  </div>
+
+  <textarea id="out" readonly placeholder="坐标将显示在这里…"></textarea>
+
+<script>
+  const img = document.getElementById('img');
+  const svg = document.getElementById('draw');
+  const out = document.getElementById('out');
+  const count = document.getElementById('count');
+  let pts = [];
+
+  function render(){
+    svg.innerHTML = '';
+    // 连线
+    if(pts.length > 0){
+      const poly = document.createElementNS('http://www.w3.org/2000/svg','polygon');
+      poly.setAttribute('points', pts.map(p=>p.join(',')).join(' '));
+      poly.setAttribute('fill','rgba(0,229,255,0.2)');
+      poly.setAttribute('stroke','#00e5ff');
+      poly.setAttribute('stroke-width','0.4');
+      poly.setAttribute('vector-effect','non-scaling-stroke');
+      svg.appendChild(poly);
+    }
+    // 点
+    pts.forEach((p,i)=>{
+      const c = document.createElementNS('http://www.w3.org/2000/svg','circle');
+      c.setAttribute('cx',p[0]); c.setAttribute('cy',p[1]); c.setAttribute('r','0.7');
+      c.setAttribute('fill', i===0 ? '#ffd400' : '#00e5ff');
+      svg.appendChild(c);
+    });
+    out.value = pts.map(p=>p.join(',')).join(' ');
+    count.textContent = '已描 ' + pts.length + ' 个点';
+  }
+
+  svg.addEventListener('click', e=>{
+    const rect = svg.getBoundingClientRect();
+    const x = +(( (e.clientX - rect.left) / rect.width ) * 100).toFixed(1);
+    const y = +(( (e.clientY - rect.top ) / rect.height) * 100).toFixed(1);
+    pts.push([x,y]);
+    render();
+  });
+
+  document.getElementById('undo').onclick = ()=>{ pts.pop(); render(); };
+  document.getElementById('clear').onclick = ()=>{ pts = []; render(); };
+  document.getElementById('copy').onclick = ()=>{
+    out.select(); document.execCommand('copy');
+    navigator.clipboard && navigator.clipboard.writeText(out.value);
+    alert('坐标已复制！粘贴到主文件对应区域的 points 字段即可');
+  };
+</script>
+
+<div data-info-wiki-backlink style="text-align:center;padding:18px 12px;color:#64748b;font:13px/1.6 -apple-system,BlinkMacSystemFont,'Segoe UI','Microsoft YaHei',sans-serif"><a href="../index.html" style="color:#4f46e5;text-decoration:none;font-weight:700">← 返回 CodeCombat 信息百科</a></div>
+</body>
+</html>
