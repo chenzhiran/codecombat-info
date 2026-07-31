@@ -1,0 +1,273 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>用户故事：找了好几年编程课，最后是学校帮我选对了 | CodeCombat</title>
+    <style>
+        /* ================= 品牌色彩体系 ================= */
+        :root {
+            --bg-body: #f8fafc;
+            --bg-white: #ffffff;
+            
+            --text-heading: #1e293b; 
+            --text-main: #334155;    
+            --text-muted: #64748b;   
+            
+            --brand-indigo: #4338ca; /* 品牌蓝 */
+            --brand-indigo-light: #e0e7ff;
+            --brand-gold: #F2BE22;   /* 荣耀金 */
+            --brand-gold-text: #000000;
+            
+            --font-main: "Noto Sans SC", -apple-system, BlinkMacSystemFont, sans-serif;
+            --font-serif: "Noto Serif SC", serif;
+            
+            --shadow-sm: 0 4px 6px -1px rgba(0, 0, 0, 0.05);
+            --shadow-md: 0 10px 30px -10px rgba(0, 0, 0, 0.1);
+            --shadow-lg: 0 20px 40px -10px rgba(0, 0, 0, 0.15);
+        }
+
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        
+        body {
+            background: var(--bg-body);
+            color: var(--text-main);
+            font-family: var(--font-main);
+            line-height: 1.8;
+            -webkit-font-smoothing: antialiased;
+            overflow-x: hidden;
+        }
+
+        /* ================= 极简导航栏 (无右侧菜单) ================= */
+        header {
+            position: fixed; top: 0; width: 100%; z-index: 1000;
+            background: rgba(255, 255, 255, 0.95); backdrop-filter: blur(12px);
+            border-bottom: 1px solid rgba(0,0,0,0.05);
+            display: flex; justify-content: flex-start; align-items: center;
+            padding: 15px 40px;
+        }
+        .logo img { height: 36px; display: block; }
+
+        /* ================= 全局动画 ================= */
+        .reveal { opacity: 0; transform: translateY(30px); transition: all 0.8s cubic-bezier(0.2, 0.8, 0.2, 1); }
+        .reveal.active { opacity: 1; transform: translateY(0); }
+
+        /* ================= 博客文章头部 ================= */
+        .article-header {
+            padding: 160px 20px 60px;
+            background: var(--bg-white);
+            border-bottom: 1px solid var(--border-light);
+            text-align: center;
+        }
+        .article-header-inner { max-width: 800px; margin: 0 auto; }
+        
+        .article-title {
+            font-size: 2.8rem; font-weight: 900; color: var(--text-heading);
+            line-height: 1.3; margin-bottom: 25px; letter-spacing: -0.5px;
+        }
+        
+        /* 真实记录认证标签 */
+        .interview-badge {
+            display: inline-flex; align-items: center; gap: 10px;
+            background: #fffbeb; border: 1px solid #fde68a; color: #b45309;
+            padding: 10px 20px; border-radius: 50px; font-weight: 800; font-size: 0.95rem;
+            margin-bottom: 30px; box-shadow: var(--shadow-sm);
+            text-align: left;
+            line-height: 1.6;
+        }
+        
+        .article-meta {
+            display: flex; justify-content: center; gap: 20px; color: var(--text-muted);
+            font-size: 0.95rem; font-weight: 600;
+        }
+        .meta-item { display: flex; align-items: center; gap: 6px; }
+
+        /* ================= 博客正文区 ================= */
+        .article-body {
+            max-width: 760px; margin: 0 auto; padding: 60px 20px 100px;
+            font-size: 1.15rem; line-height: 2; color: var(--text-main);
+        }
+
+        .article-body p { margin-bottom: 25px; }
+
+        /* 段落小标题 */
+        .article-body h2 {
+            font-size: 1.6rem; font-weight: 900; color: var(--brand-indigo);
+            margin: 60px 0 25px; position: relative; display: inline-block;
+        }
+        .article-body h2::after {
+            content: ''; position: absolute; left: 0; bottom: -8px; width: 100%; height: 3px; background: var(--brand-gold); border-radius: 2px;
+        }
+
+        /* 荧光笔下半部半遮盖特效 */
+        .highlight-marker {
+            background: linear-gradient(180deg, transparent 55%, rgba(242, 190, 34, 0.8) 55%);
+            padding: 0 4px; font-weight: 900; color: var(--text-heading); display: inline;
+        }
+
+        /* 次重点加粗 */
+        .strong-text { font-weight: 800; color: var(--text-heading); }
+
+        /* 引言块 */
+        .story-quote {
+            font-family: var(--font-serif); font-size: 1.3rem; font-weight: 800; color: var(--brand-indigo);
+            border-left: 5px solid var(--brand-gold); padding: 25px 30px; margin: 40px 0;
+            background: var(--brand-indigo-light); border-radius: 0 16px 16px 0; line-height: 1.7;
+        }
+
+        /* ================= 底部声明框 ================= */
+        .statement-box {
+            background: var(--bg-body);
+            border-radius: 16px;
+            padding: 25px 30px;
+            margin-top: 60px;
+            font-size: 0.9rem;
+            color: var(--text-muted);
+            line-height: 1.8;
+            border: 1px solid var(--border-light);
+        }
+        .statement-box strong { color: var(--text-main); font-size: 0.95rem; display: block; margin-bottom: 8px;}
+
+        /* ================= 页脚 ================= */
+        footer { text-align: center; padding: 40px 20px; font-size: 0.95rem; color: var(--text-muted); background: var(--bg-white); border-top: 1px solid var(--border-light); }
+
+        /* 响应式 */
+        @media (max-width: 768px) {
+            header { padding: 15px 20px; }
+            .article-header { padding: 120px 20px 40px; }
+            .article-title { font-size: 2.2rem; }
+            .article-body { font-size: 1.05rem; padding: 40px 20px; }
+            .article-body h2 { font-size: 1.4rem; margin-top: 40px; }
+            .interview-badge { font-size: 0.85rem; padding: 10px 15px; }
+            .statement-box { padding: 20px; margin-top: 40px; }
+        }
+    </style>
+</head>
+<body>
+
+    <header>
+        <div class="logo">
+            <a href="index.html">
+                <img src="https://assets.koudashijie.com/creator-center/logo-creator-center.png" alt="CodeCombat 扣哒世界">
+            </a>
+        </div>
+    </header>
+
+    <section class="article-header">
+        <div class="article-header-inner reveal">
+            <div class="interview-badge">
+                🎙️ 声明：本篇内容根据真实用户访谈整理发布，发布前经受访者本人审阅确认。
+            </div>
+            <h1 class="article-title">找了好几年编程课，最后是学校帮我选对了</h1>
+            <div class="article-meta">
+                <div class="meta-item"><span>分享者：</span> 坐标苏州 · 五年级学生家长</div>
+            </div>
+        </div>
+    </section>
+
+    <main class="article-body">
+        <div class="reveal delay-1">
+            <p><span class="strong-text">我是孩子的妈妈，坐标苏州，孩子今年五年级。</span></p>
+            <p>关于给孩子学编程这件事，我算是起步很早的家长了。从幼儿园毕业就开始报班，到现在差不多五六年，中间换过平台、踩过坑，也算积累了一些自己的判断。</p>
+        </div>
+
+        <div class="reveal">
+            <h2>最早是在公园被"截获"的</h2>
+            <p>幼儿园毕业那年暑假，带孩子在公园玩，碰到有人在推广编程课。聊了几句觉得还行，就给孩子报了一家线上编程平台，一学就是好几年。</p>
+            <p>那家整体体验还可以，孩子能安安静静坐在那儿自己学，我也不用在旁边辅导。后来也考虑过另一家大平台，价格还便宜一点，就去试听了一节课。</p>
+            <p>试完我就放弃了。那个课堂氛围让我很不舒服——老师一直在喊，节奏非常紧，整个感觉就像在卖东西。编程这个东西本来就需要孩子自己静下来想，你一直在旁边喊喊喊，注意力是集中了，但脑子根本没在思考。</p>
+            <p>我选编程课有一个很核心的标准：<span class="highlight-marker">能让孩子安安静静地动脑，有自己卡住、自己琢磨的空间。太吵的不行，太赶的也不行。</span></p>
+        </div>
+
+        <div class="reveal">
+            <h2>CodeCombat是学校带进来的</h2>
+            <p>说实话，CodeCombat我以前完全不知道。</p>
+            <p>孩子上了五年级，学校开了一个编程兴趣社团，用的就是CodeCombat的教育版。要不是学校用了这个，我到现在可能都没听说过——你们的宣传真的太不到位了。别家的编程课我在孩子幼儿园的时候就知道了，CodeCombat是学校推了才知道的。</p>
+            <p>但知道归知道，孩子用了之后的反应让我挺惊喜的。</p>
+            <p>他是真的喜欢。每周学校只有一节社团课，一个小时，他觉得完全不够。回家之后主动要求继续闯关，不用我催，不用我盯。现在基本上每周二、四、六都会做，每次大概三四十分钟。放学回来书包一放，先打开电脑闯关，闯完了再吃饭写作业。</p>
+            <p><span class="strong-text">对一个五年级的男孩来说，能自己坐在那儿安安静静敲三四十分钟代码，这件事本身就让我觉得这个东西是对的。</span></p>
+        </div>
+
+        <div class="reveal">
+            <h2>他自己能说出来"为什么喜欢"</h2>
+            <p>有一次我问他这个到底哪里好玩，他跟我说：代码写得好，他的兵就多，力量就强，就能打败对手。</p>
+            <p>听起来好像就是个游戏对吧。但仔细想想，他说的其实是"代码质量决定了结果"——写得好就有正向反馈，写得差就会输。这个逻辑对小孩来说太直接了，比什么"编程培养逻辑思维"的大道理管用一百倍。</p>
+            <p><span class="highlight-marker">他不是在"学编程"，他是在"赢"。只不过赢的方式是写代码。</span></p>
+            <p>而且整个过程是他自己在掌控节奏。没有老师在旁边一句一句喊，没有倒计时催你交作业。他卡住了就自己想，想不通就换个思路再试。有时候一个关卡卡二十分钟，我看他也不急不躁。这种自己跟问题较劲的状态，比上什么课都管用。</p>
+        </div>
+
+        <div class="reveal">
+            <h2>但我也有纠结的地方</h2>
+            <p>从家长的角度，我对纯游戏化的界面是有一点点顾虑的。</p>
+            <p>我是80后，我们那一代人亲眼见过身边多少同学因为沉迷游戏把学业荒废了。所以看到那个小人在屏幕上跳来跳去，我本能地会有一点警觉。</p>
+            <p>当然我知道这跟打游戏不一样，他写的是真实代码，他在动脑子。但纯粹的西方魔幻风格、打怪升级的模式，说实话时间长了会显得单薄。</p>
+            <p>我自己有一个不成熟的想法——如果能把编程跟一些有厚度的内容结合起来会更好。比如中国历史，随便拿出一场战役就有很大的发挥空间。汉武帝北击匈奴、赤壁之战、甲午海战，孩子们都知道这些，你把编程逻辑嵌进去，他一边学编程一边了解历史，家长看着也觉得这个时间花得值。</p>
+            <p>就像肯德基到了中国会推油条豆浆一样，本土化很重要。纯西方那套打来打去的，对低年级孩子确实有吸引力，但如果想让家长心甘情愿长期支持，内容得再厚一点。<br>
+<span style="font-size: 0.95rem; color: var(--text-muted);">（编者注：非常中肯的建议！教研团队已经在研发并逐步上线具有更多文化深度与跨学科结合的特色内容，感谢家长的反馈。）</span>
+            </p>
+        </div>
+
+        <div class="reveal">
+            <h2>让我着急的一件事</h2>
+            <p>孩子在学校用的是教育版，进度越来越快，已经超过班上大部分同学了。但教育版把很多功能都隐藏了，包括那个AI辅导功能。</p>
+            <p>他闯关遇到bug的时候就卡住了，不知道错在哪，我又完全不懂编程，帮不上任何忙。后来我去问了豆包，豆包告诉我说这个平台有AI指导功能，可以提示你哪里写错了。我一听觉得太好了，就想给孩子升级开通这个功能。</p>
+            <p>然后我就开始找付费入口。</p>
+            <p>找了半天，找不到。</p>
+            <p>页面上翻来翻去，没有任何一个地方能让我充值或者升级。我当时真的挺着急的——<span class="strong-text">我拿着钱想给孩子买个功能，却找不到地方交钱。</span>最后没办法，看到有个可以沟通的平台，就试着联系了一下，这才搞清楚原来教育版是故意把付费入口藏起来的。</p>
+            <p>我理解这是为了防止小孩子乱花钱，但对于真心想给孩子升级的家长来说，这个体验真的很不好。如果能有一个专门面向家长的入口或者提示，哪怕就是一行字"家长如需升级请联系客服"，都会好很多。<br>
+<span style="font-size: 0.95rem; color: var(--text-muted);">（编者注：感谢家长的反馈。教育版的初衷是保持校园环境的纯粹，但在家校共育的衔接上我们确实考虑不足。团队正在优化平台架构，在保障合规和校园管理的前提下，增加对家长的合理指引。）</span>
+            </p>
+        </div>
+
+        <div class="reveal">
+            <h2>还有一个让我很在意的事</h2>
+            <p>代码区的字太小了。</p>
+            <p>我家对视力管理抓得很严。每天编程时间控制在三四十分钟以内，户外活动时间也是必须保证的。但就算只有三四十分钟，如果字小到要凑近了看，对眼睛的伤害也不小。</p>
+            <p>现在苏州有些学校评优都把视力纳入了考核，国家也越来越重视这个事。你们做编程教育的，不能让孩子学了编程近视了，那家长心里肯定不舒服。</p>
+            <p>后来客服教了一个办法，用浏览器的缩放功能把代码区放大。能用，但说实话这是个临时方案。如果产品本身能在代码编辑区加一个字号调节的按钮，对家长来说就是一个实实在在的加分项。<br>
+<span style="font-size: 0.95rem; color: var(--text-muted);">（编者注：收到！关于界面的无障碍设计和护眼体验，特别是代码区字号调节功能，已作为重要优化项反馈给产品团队。）</span>
+            </p>
+        </div>
+
+        <div class="reveal">
+            <h2>我选编程课的标准</h2>
+            <p>找了这么多年，我的经验就是两条。</p>
+            <p>第一，产品要好。好的标准不是广告打得响，是孩子用了之后愿意主动继续。我之前选的那家也不是因为它广告多，是因为孩子坐得住。我选CodeCombat也不是因为它有名，是因为孩子每天追着要玩。反过来，有的平台广告打得再多、价格再便宜，试听完孩子和我都不舒服，直接淘汰。</p>
+            <p>第二，<span class="highlight-marker">孩子的状态比成绩重要。</span>他现在每周三天主动坐在电脑前安安静静敲代码，遇到问题自己琢磨。如果以后能参加比赛拿个奖当然好，拿不到也没关系。能在这个年纪找到一个愿意投入的爱好，能养成遇到问题不放弃的习惯，这比任何证书都有价值。</p>
+            <p>我不懂编程，可能以后也不会懂。但我能看懂孩子的眼神——他坐在屏幕前认真想问题的那个样子，是对的。</p>
+            
+            <p style="font-weight: 800; font-size: 1.35rem; color: var(--text-heading); margin-top: 60px; text-align: center; line-height: 2;">
+                当妈的能做的，就是把路给他铺好，<br>
+                <span class="highlight-marker" style="font-size: 1.5rem;">别让他被找不到付费入口这种事给耽误了。</span>
+            </p>
+        </div>
+        
+        <div class="statement-box reveal">
+            <strong>编者补充：</strong>
+            文中学习体验因人而异，不构成学习效果承诺。
+        </div>
+    </main>
+
+    <footer>
+        <p>京ICP备2026009460号 | 京公网安备 11010802038619号 | 版权 ©2026 CodeCombat Inc. 版权所有.</p>
+    </footer>
+
+    <script>
+        document.addEventListener("DOMContentLoaded", function() {
+            const observer = new IntersectionObserver((entries) => {
+                entries.forEach(entry => {
+                    if (entry.isIntersecting) {
+                        entry.target.classList.add('active');
+                    }
+                });
+            }, { threshold: 0.1, rootMargin: "0px 0px -50px 0px" });
+
+            document.querySelectorAll('.reveal').forEach((el) => {
+                observer.observe(el);
+            });
+        });
+    </script>
+
+<div data-info-wiki-backlink style="text-align:center;padding:18px 12px;color:#64748b;font:13px/1.6 -apple-system,BlinkMacSystemFont,'Segoe UI','Microsoft YaHei',sans-serif"><a href="../index.html" style="color:#4f46e5;text-decoration:none;font-weight:700">← 返回 CodeCombat 信息百科</a></div>
+</body>
+</html>
