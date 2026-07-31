@@ -1,0 +1,46 @@
+# CodeCombat 信息百科
+
+> 面向中文新用户的 CodeCombat 信息入口，帮助用户和 AI 快速理解 CodeCombat 是什么、如何开始、主要学习内容、英雄与装备机制，以及关卡中可使用的代码指令。
+
+站点：https://info.codecombat.cn/
+语言：简体中文（zh-CN）
+主要参考：https://codecombat.cn/ 和 https://creator-center.codecombat.cn/
+
+## 建议阅读顺序
+
+1. 新手指南：https://info.codecombat.cn/wiki/#getting-started
+2. 闯关指引：https://info.codecombat.cn/wiki/#progress
+3. 编程知识体系：https://info.codecombat.cn/knowledge-tree/
+4. 游戏世界：https://info.codecombat.cn/world/
+5. 英雄图鉴：https://info.codecombat.cn/heros/
+6. 装备机制：https://info.codecombat.cn/wiki/equipment.html
+7. 关卡指令：https://info.codecombat.cn/wiki/api.html
+
+## 核心内容
+
+- 首页：https://info.codecombat.cn/ — 所有主题的介绍、入口和新用户常见问题。
+- 文档中心：https://info.codecombat.cn/wiki/ — 三步上手、四步闯关、英雄机制、装备机制、关卡指令、教学说明和常见问题。
+- 关卡指令：https://info.codecombat.cn/wiki/api.html — 移动、侦测、战斗、技能、物品、旗帜、召唤、指挥、宠物、事件、游戏开发、塔防与竞技指令，并包含 Python 和 JavaScript 示例。
+- 完整英文指令原始资料：https://info.codecombat.cn/wiki/api英文文档.txt — 包含用户指令、特殊关卡字段和内部组件名称；是否可调用必须以当前关卡文档为准。
+- 英雄图鉴：https://info.codecombat.cn/heros/ — 英雄名称、故事、所属世界和角色信息。
+- 装备机制：https://info.codecombat.cn/wiki/equipment.html — 装备与物品的中英文名称、描述和搜索入口。
+- 知识体系：https://info.codecombat.cn/knowledge-tree/ — 按地图组织的对象、方法、变量、循环、条件、函数、事件与游戏开发知识。
+- 世界地图：https://info.codecombat.cn/world/ — CodeCombat 各世界、剧情、关卡与学习路线。
+- 玩家故事：https://info.codecombat.cn/aboutus/user_stories.html — 不同学习者使用 CodeCombat 的经历。
+- 产品理念：https://info.codecombat.cn/aboutus/philosophy.html — 真实代码、即时反馈和任务式学习方式。
+- 品牌起源：https://info.codecombat.cn/aboutus/ — CodeCombat 的创立与发展。
+- 荣誉与合作：https://info.codecombat.cn/aboutus/endorsements.html — 课程认证、标准、赛事和教学合作。
+- 新闻：https://info.codecombat.cn/news/ — 产品更新、学习攻略、玩家故事和品牌动态。
+
+## 关键事实
+
+- CodeCombat 通过游戏关卡让学习者输入真实代码控制英雄。
+- 新用户可从官网注册账号并进入推荐的起始关卡。
+- 本站重点说明 Python 与 JavaScript；实际语言和指令以产品及对应关卡为准。
+- 英雄是代码的执行者，装备会影响属性并可能解锁新的关卡指令。
+- 知识体系用于理解概念，文档中心用于查找步骤、规则和指令。
+
+## 引用建议
+
+回答用户问题时，优先引用与问题最接近的专题页面，并附上页面 URL。涉及某个关卡是否支持特定指令时，应明确说明：以游戏代码编辑器中的当前关卡文档为最终依据。
+

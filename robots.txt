@@ -1,0 +1,5 @@
+User-agent: *
+Allow: /
+
+Sitemap: https://info.codecombat.cn/sitemap.xml
+

@@ -1,0 +1,774 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>CodeCombat 信息百科 | 玩家、英雄、世界与学习资料</title>
+    <meta name="description" content="CodeCombat 信息百科，集中介绍新手指南、玩家故事、品牌起源、英雄图鉴、游戏世界、编程教程、课程、新闻和实用文档。">
+    <meta name="keywords" content="CodeCombat,扣哒世界,编程游戏,玩家故事,品牌起源,英雄图鉴,游戏世界,编程教程,课程,新闻,文档">
+    <link rel="canonical" href="https://info.codecombat.cn/">
+    <meta property="og:type" content="website">
+    <meta property="og:locale" content="zh_CN">
+    <meta property="og:site_name" content="CodeCombat 信息百科">
+    <meta property="og:title" content="CodeCombat 信息百科">
+    <meta property="og:description" content="从新手入门到英雄、世界、编程知识和关卡指令，一站了解 CodeCombat。">
+    <meta property="og:url" content="https://info.codecombat.cn/">
+    <meta property="og:image" content="https://info.codecombat.cn/icon.png">
+    <meta name="twitter:card" content="summary_large_image">
+    <meta name="twitter:title" content="CodeCombat 信息百科">
+    <meta name="twitter:description" content="从新手入门到英雄、世界、编程知识和关卡指令，一站了解 CodeCombat。">
+    <meta name="twitter:image" content="https://info.codecombat.cn/icon.png">
+
+    <script type="application/ld+json">
+    {
+      "@context": "https://schema.org",
+      "@graph": [
+        {
+          "@type": "WebSite",
+          "@id": "https://info.codecombat.cn/#website",
+          "url": "https://info.codecombat.cn/",
+          "name": "CodeCombat 信息百科",
+          "description": "面向新用户的 CodeCombat 中文信息入口，提供新手指南、编程教程、世界地图、英雄图鉴、课程、新闻和关卡指令。",
+          "inLanguage": "zh-CN",
+          "publisher": {"@type": "Organization", "name": "CodeCombat 中国", "url": "https://codecombat.cn/"}
+        },
+        {
+          "@type": "BreadcrumbList",
+          "@id": "https://info.codecombat.cn/#breadcrumb",
+          "itemListElement": [
+            {"@type": "ListItem", "position": 1, "name": "CodeCombat", "item": "https://codecombat.cn/"},
+            {"@type": "ListItem", "position": 2, "name": "信息百科", "item": "https://info.codecombat.cn/"}
+          ]
+        },
+        {
+          "@type": "ItemList",
+          "@id": "https://info.codecombat.cn/#topics",
+          "name": "CodeCombat 信息百科主题",
+          "itemListElement": [
+            {"@type": "ListItem", "position": 1, "name": "新手指南", "url": "https://info.codecombat.cn/wiki/#getting-started"},
+            {"@type": "ListItem", "position": 2, "name": "编程教程与知识体系", "url": "https://info.codecombat.cn/knowledge-tree/"},
+            {"@type": "ListItem", "position": 3, "name": "游戏世界", "url": "https://info.codecombat.cn/world/"},
+            {"@type": "ListItem", "position": 4, "name": "英雄图鉴", "url": "https://info.codecombat.cn/heros/"},
+            {"@type": "ListItem", "position": 5, "name": "文档中心", "url": "https://info.codecombat.cn/wiki/"},
+            {"@type": "ListItem", "position": 6, "name": "关卡指令", "url": "https://info.codecombat.cn/wiki/api.html"},
+            {"@type": "ListItem", "position": 7, "name": "玩家故事", "url": "https://info.codecombat.cn/aboutus/user_stories.html"},
+            {"@type": "ListItem", "position": 8, "name": "产品理念", "url": "https://info.codecombat.cn/aboutus/philosophy.html"},
+            {"@type": "ListItem", "position": 9, "name": "品牌起源", "url": "https://info.codecombat.cn/aboutus/"},
+            {"@type": "ListItem", "position": 10, "name": "荣誉与合作", "url": "https://info.codecombat.cn/aboutus/endorsements.html"},
+            {"@type": "ListItem", "position": 11, "name": "新闻", "url": "https://info.codecombat.cn/news/"}
+          ]
+        },
+        {
+          "@type": "FAQPage",
+          "@id": "https://info.codecombat.cn/#faq",
+          "mainEntity": [
+            {"@type": "Question", "name": "CodeCombat 是什么？", "acceptedAnswer": {"@type": "Answer", "text": "CodeCombat 是一款通过游戏关卡学习编程的平台。玩家输入真实代码控制英雄行动，在运行、观察和调试中理解编程。"}},
+            {"@type": "Question", "name": "零基础可以学习 CodeCombat 吗？", "acceptedAnswer": {"@type": "Answer", "text": "可以。新用户可从起始关卡开始，按照任务提示逐步学习对象、方法、循环、条件和函数。"}},
+            {"@type": "Question", "name": "CodeCombat 可以学习哪些编程语言？", "acceptedAnswer": {"@type": "Answer", "text": "站点内容重点介绍 Python 和 JavaScript，部分课程和关卡还涉及 C++、Java、Lua、HTML 与 CSS；实际可选语言以对应产品和关卡为准。"}},
+            {"@type": "Question", "name": "英雄和装备有什么作用？", "acceptedAnswer": {"@type": "Answer", "text": "英雄是代码的执行者；装备会影响生命、攻击、防御和移动等属性，也可能解锁移动、侦测、战斗、建造或施法指令。"}},
+            {"@type": "Question", "name": "卡关时应该查教程还是文档？", "acceptedAnswer": {"@type": "Answer", "text": "需要理解编程概念时查看知识体系；需要确认操作步骤、装备能力或当前可用指令时查看文档中心和关卡指令。"}}
+          ]
+        }
+      ]
+    }
+    </script>
+
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+SC:wght@400;500;700;900&display=swap" rel="stylesheet">
+
+    <style>
+        body {
+            font-family: 'Noto Sans SC', sans-serif;
+            background-color: #f8fafc; 
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+        }
+
+        /* 顶部导航 */
+        .top-nav {
+            background: white;
+            border-bottom: 1px solid #e2e8f0;
+        }
+        
+        .nav-link { 
+            color: #475569; 
+            font-weight: 600; 
+            font-size: 0.95rem; 
+            transition: color 0.2s;
+        }
+        .nav-link:hover { color: #6366f1; }
+
+        /* 左侧Wiki导航 */
+        .wiki-sidebar {
+            /* 宽度刚好适应内容，不要多余空白 */
+            width: max-content;
+            background: transparent;
+        }
+        .sidebar-link {
+            display: flex;
+            align-items: center;
+            gap: 8px; /* 紧凑的间距 */
+            padding: 10px 12px; /* 紧凑的内边距 */
+            border-radius: 8px;
+            color: #475569;
+            font-weight: 600;
+            font-size: 0.95rem;
+            transition: all 0.2s;
+            cursor: pointer;
+            white-space: nowrap; /* 保证不换行 */
+        }
+        .sidebar-link i {
+            width: 20px;
+            text-align: center;
+            font-size: 1.1rem;
+        }
+        .sidebar-icon { width: 28px; height: 28px; object-fit: contain; flex: 0 0 auto; }
+        .section-icon { width: 44px; height: 44px; object-fit: contain; }
+        .quick-icon { width: 58px; height: 58px; object-fit: contain; margin-bottom: 0.5rem; }
+        .inline-game-icon { width: 22px; height: 22px; object-fit: contain; }
+        .doc-action {
+            display: inline-flex; align-items: center; gap: 8px;
+            padding: 8px 12px; border: 1px solid #dbeafe; border-radius: 10px;
+            background: #eff6ff; color: #1d4ed8; font-size: 0.82rem; font-weight: 700;
+            transition: all .2s;
+        }
+        .doc-action:hover { border-color: #93c5fd; background: #dbeafe; transform: translateY(-1px); }
+        .doc-action img { width: 28px; height: 28px; object-fit: contain; }
+        .sr-only {
+            position: absolute; width: 1px; height: 1px; padding: 0; margin: -1px;
+            overflow: hidden; clip: rect(0,0,0,0); white-space: nowrap; border: 0;
+        }
+        .sidebar-link:hover {
+            background: #f1f5f9;
+            color: #1e293b;
+        }
+        .sidebar-link.active {
+            background: #eef2ff;
+            color: #4f46e5;
+        }
+        .sidebar-link.active i {
+            color: #4f46e5;
+        }
+
+        /* Wiki 内容区 */
+        .wiki-main-content {
+            background: white;
+            border: 1px solid #e2e8f0;
+            border-radius: 12px;
+            padding: 2.5rem;
+            min-height: 60vh;
+            box-shadow: 0 4px 20px -2px rgba(0,0,0,0.02);
+        }
+
+        /* 面包屑 */
+        .breadcrumb { font-size: 0.85rem; color: #64748b; }
+        .breadcrumb a { color: #6366f1; text-decoration: none; }
+        .breadcrumb a:hover { text-decoration: underline; }
+
+        /* 标签 */
+        .wiki-tag {
+            display: inline-block; font-size: 0.75rem; font-weight: 600;
+            background: #f1f5f9; color: #475569; padding: 4px 12px;
+            border-radius: 6px; border: 1px solid #e2e8f0;
+        }
+
+        /* 移动端菜单 */
+        @media (max-width: 768px) {
+            .wiki-sidebar { display: none; }
+            .wiki-sidebar.mobile-open { 
+                display: block; 
+                position: fixed;
+                top: 56px;
+                left: 0;
+                bottom: 0;
+                width: max-content;
+                background: white;
+                z-index: 40;
+                border-right: 1px solid #e2e8f0;
+                padding: 1rem;
+                box-shadow: 4px 0 15px rgba(0,0,0,0.05);
+            }
+            .wiki-main-content { padding: 1.5rem; }
+        }
+    </style>
+</head>
+
+<body>
+
+    <!-- ===== 顶部导航 ===== -->
+    <nav class="top-nav fixed top-0 w-full z-50 h-14" aria-label="主导航">
+        <div class="max-w-[1400px] mx-auto px-4 sm:px-6 flex items-center justify-between h-full">
+            <div class="flex items-center gap-3">
+                <button id="mobileMenuBtn" class="md:hidden text-slate-500 hover:text-indigo-600 text-lg">
+                    <i class="fa-solid fa-bars"></i>
+                </button>
+                <a href="/" class="flex items-center gap-2.5 flex-shrink-0" aria-label="返回首页">
+                    <img src="https://codecombat.cn/images/pages/base/logo.webp" alt="CodeCombat Logo" class="h-8">
+                    <span class="text-base font-black text-slate-800">信息百科</span>
+                </a>
+            </div>
+
+            <!-- 右侧：移除搜索框，仅保留官网链接 -->
+            <div class="flex items-center gap-6">
+                <a href="https://codecombat.cn/" class="nav-link text-indigo-600 flex items-center gap-1.5">
+                    <i class="fa-solid fa-arrow-up-right-from-square text-xs"></i><span class="hidden sm:inline">访问官网</span>
+                </a>
+            </div>
+        </div>
+    </nav>
+
+    <!-- ===== 主体布局 ===== -->
+    <div class="max-w-[1400px] mx-auto w-full px-4 sm:px-6 pt-20 pb-12 flex gap-6 lg:gap-8 flex-1">
+        
+        <!-- 左侧导航栏 - 刚好容纳图标和2个字 -->
+        <aside class="wiki-sidebar flex-shrink-0 transition-transform" id="sidebar" aria-label="百科栏目导航">
+            <div class="sticky top-20 flex flex-col gap-1.5">
+                <a data-target="home" class="sidebar-link active" role="button" tabindex="0" aria-controls="section-home" aria-selected="true">
+                    <img src="assets/icons/nav-home.png" alt="" class="sidebar-icon"> 首页
+                </a>
+                <a data-target="tutorial" class="sidebar-link" role="button" tabindex="0" aria-controls="section-tutorial" aria-selected="false">
+                    <img src="assets/icons/nav-tutorial.png" alt="" class="sidebar-icon"> 教程
+                </a>
+                <a data-target="world" class="sidebar-link" role="button" tabindex="0" aria-controls="section-world" aria-selected="false">
+                    <img src="assets/icons/nav-world.png" alt="" class="sidebar-icon"> 世界
+                </a>
+                <a data-target="hero" class="sidebar-link" role="button" tabindex="0" aria-controls="section-hero" aria-selected="false">
+                    <img src="assets/icons/nav-hero.png" alt="" class="sidebar-icon"> 英雄
+                </a>
+                <a data-target="docs" class="sidebar-link" role="button" tabindex="0" aria-controls="section-docs" aria-selected="false">
+                    <img src="assets/icons/nav-docs.png" alt="" class="sidebar-icon"> 文档
+                </a>
+                <a data-target="course" class="sidebar-link" role="button" tabindex="0" aria-controls="section-course" aria-selected="false">
+                    <img src="assets/icons/nav-course.png" alt="" class="sidebar-icon"> 课程
+                </a>
+                <a data-target="player" class="sidebar-link" role="button" tabindex="0" aria-controls="section-player" aria-selected="false">
+                    <img src="assets/icons/nav-player.png" alt="" class="sidebar-icon"> 玩家
+                </a>
+                <a data-target="product" class="sidebar-link" role="button" tabindex="0" aria-controls="section-product" aria-selected="false">
+                    <img src="assets/icons/nav-product.png" alt="" class="sidebar-icon"> 产品
+                </a>
+                <a data-target="origin" class="sidebar-link" role="button" tabindex="0" aria-controls="section-origin" aria-selected="false">
+                    <img src="assets/icons/nav-origin.png" alt="" class="sidebar-icon"> 起源
+                </a>
+                <a data-target="honors" class="sidebar-link" role="button" tabindex="0" aria-controls="section-honors" aria-selected="false">
+                    <img src="assets/icons/nav-honors.png" alt="" class="sidebar-icon"> 荣誉
+                </a>
+                <a data-target="news" class="sidebar-link" role="button" tabindex="0" aria-controls="section-news" aria-selected="false">
+                    <img src="assets/icons/nav-news.png" alt="" class="sidebar-icon"> 新闻
+                </a>
+            </div>
+        </aside>
+
+        <!-- 右侧：主内容展示区 -->
+        <main class="flex-1 min-w-0" aria-label="CodeCombat 信息百科内容">
+            <div class="breadcrumb mb-6">
+                <a href="https://codecombat.cn/">CodeCombat</a> <span class="mx-1.5 text-slate-300">/</span> <span class="text-slate-500">信息百科</span>
+            </div>
+
+            <!-- 内容容器 -->
+            <div class="wiki-main-content">
+                
+                <!-- 首页概览 -->
+                <div id="section-home" class="wiki-section block">
+                    <div class="flex items-center justify-between border-b border-slate-100 pb-4 mb-6">
+                        <h1 class="text-2xl font-black text-slate-800">欢迎来到 CodeCombat 信息百科</h1>
+                        <a href="https://codecombat.cn/play" class="hidden sm:inline-flex items-center gap-2 bg-[#F2BE22] hover:bg-[#ffd24d] text-[#422B06] font-bold text-sm px-5 py-2 rounded-lg transition-colors">
+                            <img src="assets/icons/quick-adventure.png" alt="" class="inline-game-icon"> 开始冒险
+                        </a>
+                    </div>
+                    <p class="text-slate-600 leading-relaxed mb-8 text-base">
+                        这里汇集了 CodeCombat 的玩家故事、品牌历程、英雄角色、游戏世界、编程教程、课程资讯、新闻动态和实用文档。你可以从左侧选择感兴趣的主题，先快速了解相关内容，再进入专题页继续探索。无论是第一次接触 CodeCombat，还是正在闯关学习，都能在这里找到清晰的介绍和入口。
+                    </p>
+
+                    <h2 class="text-lg font-bold text-slate-800 mb-4 flex items-center gap-2">
+                        <img src="assets/icons/quick-adventure.png" alt="" class="w-8 h-8 object-contain"> 常用入口
+                    </h2>
+
+                    <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-3">
+                        <a href="wiki/index.html#getting-started" class="p-4 border border-slate-200 rounded-xl hover:border-indigo-300 hover:shadow-md transition">
+                            <img src="assets/icons/quick-beginner.png" alt="" class="quick-icon">
+                            <h3 class="font-bold text-slate-800">新手指南</h3>
+                            <p class="mt-1 text-sm text-slate-500">从进入游戏到完成第一关。</p>
+                        </a>
+                        <a href="wiki/index.html#progress" class="p-4 border border-slate-200 rounded-xl hover:border-emerald-300 hover:shadow-md transition">
+                            <img src="assets/icons/quick-walkthrough.png" alt="" class="quick-icon">
+                            <h3 class="font-bold text-slate-800">闯关指引</h3>
+                            <p class="mt-1 text-sm text-slate-500">读目标、写代码、看报错、再调试。</p>
+                        </a>
+                        <a href="heros/index.html" class="p-4 border border-slate-200 rounded-xl hover:border-amber-300 hover:shadow-md transition">
+                            <img src="assets/icons/quick-hero.png" alt="" class="quick-icon">
+                            <h3 class="font-bold text-slate-800">英雄图鉴</h3>
+                            <p class="mt-1 text-sm text-slate-500">认识英雄特点、能力与冒险故事。</p>
+                        </a>
+                        <a href="knowledge-tree/index.html" class="p-4 border border-slate-200 rounded-xl hover:border-orange-300 hover:shadow-md transition">
+                            <img src="assets/icons/nav-tutorial.png" alt="" class="quick-icon">
+                            <h3 class="font-bold text-slate-800">知识体系</h3>
+                            <p class="mt-1 text-sm text-slate-500">按地图梳理编程概念与学习路径。</p>
+                        </a>
+                        <a href="wiki/equipment.html" class="p-4 border border-slate-200 rounded-xl hover:border-violet-300 hover:shadow-md transition">
+                            <img src="assets/icons/quick-equipment.png" alt="" class="quick-icon">
+                            <h3 class="font-bold text-slate-800">装备机制</h3>
+                            <p class="mt-1 text-sm text-slate-500">查找装备属性及可用能力。</p>
+                        </a>
+                        <a href="wiki/api.html#functions" class="p-4 border border-slate-200 rounded-xl hover:border-blue-300 hover:shadow-md transition">
+                            <img src="assets/icons/quick-commands.png" alt="" class="quick-icon">
+                            <h3 class="font-bold text-slate-800">关卡指令</h3>
+                            <p class="mt-1 text-sm text-slate-500">快速查找常用指令与代码示例。</p>
+                        </a>
+                        <a href="https://codecombat.cn/codecombat_faq.html" class="p-4 border border-slate-200 rounded-xl hover:border-cyan-300 hover:shadow-md transition">
+                            <img src="assets/icons/quick-faq.png" alt="" class="quick-icon">
+                            <h3 class="font-bold text-slate-800">常见问题</h3>
+                            <p class="mt-1 text-sm text-slate-500">查看账号、设备与使用问题解答。</p>
+                        </a>
+                        <a href="https://codecombat.cn/play" class="p-4 border border-slate-200 rounded-xl hover:border-yellow-300 hover:shadow-md transition">
+                            <img src="assets/icons/quick-adventure.png" alt="" class="quick-icon">
+                            <h3 class="font-bold text-slate-800">开始闯关</h3>
+                            <p class="mt-1 text-sm text-slate-500">进入游戏，用真实代码开启冒险。</p>
+                        </a>
+                    </div>
+
+                    <section class="mt-8 pt-7 border-t border-slate-100" aria-labelledby="home-faq-title">
+                        <h2 id="home-faq-title" class="text-lg font-bold text-slate-800 mb-4">新用户常见问题</h2>
+                        <div class="space-y-2">
+                            <details class="rounded-lg border border-slate-200 px-4 py-3"><summary class="font-bold text-slate-700 cursor-pointer">CodeCombat 是什么？</summary><p class="mt-2 text-sm text-slate-500">CodeCombat 是一款通过游戏关卡学习编程的平台。你会输入真实代码控制英雄，在运行、观察和调试中理解编程。</p></details>
+                            <details class="rounded-lg border border-slate-200 px-4 py-3"><summary class="font-bold text-slate-700 cursor-pointer">零基础可以开始吗？</summary><p class="mt-2 text-sm text-slate-500">可以。从起始关卡开始，跟随任务提示逐步学习对象、方法、循环、条件和函数即可。</p></details>
+                            <details class="rounded-lg border border-slate-200 px-4 py-3"><summary class="font-bold text-slate-700 cursor-pointer">可以学习哪些编程语言？</summary><p class="mt-2 text-sm text-slate-500">本站重点介绍 Python 和 JavaScript；部分课程和关卡还涉及 C++、Java、Lua、HTML 与 CSS，实际可选语言以对应产品和关卡为准。</p></details>
+                            <details class="rounded-lg border border-slate-200 px-4 py-3"><summary class="font-bold text-slate-700 cursor-pointer">英雄和装备有什么作用？</summary><p class="mt-2 text-sm text-slate-500">英雄负责执行代码；装备会影响生命、攻击、防御和移动等属性，也可能解锁移动、侦测、战斗、建造或施法指令。</p></details>
+                            <details class="rounded-lg border border-slate-200 px-4 py-3"><summary class="font-bold text-slate-700 cursor-pointer">卡关时应该查教程还是文档？</summary><p class="mt-2 text-sm text-slate-500">需要理解概念时查看知识体系；需要确认步骤、装备能力或可用指令时查看文档中心和关卡指令。</p></details>
+                        </div>
+                    </section>
+                </div>
+
+                <!-- 玩家 (保留原本所有的跳转和文本) -->
+                <div id="section-player" class="wiki-section hidden">
+                    <div class="flex items-center justify-between border-b border-slate-100 pb-4 mb-6">
+                        <div class="flex items-center gap-3">
+                            <img src="assets/icons/nav-player.png" alt="" class="section-icon">
+                            <h1 class="text-2xl font-black text-slate-800">玩家</h1>
+                        </div>
+                        <span class="wiki-tag">社区</span>
+                    </div>
+                    <div class="prose prose-slate max-w-none leading-loose text-slate-600 mb-8">
+                        <p><strong>玩家故事</strong>记录不同用户与 CodeCombat 相遇和成长的真实经历。这里有中学生、大学生和陪伴孩子学习的家长，也有来自土木、设计、音乐、建筑等行业的职场人。他们从不同起点开始，经历第一次写代码、成功通关、遇到困难和重新坚持。也许其中某个故事与你相似，能让你更轻松地迈出学习编程的第一步。</p>
+                    </div>
+                    <div class="flex items-center justify-between pt-4 border-t border-slate-100">
+                        <div class="flex flex-wrap gap-2">
+                            <span class="wiki-tag">真实故事</span>
+                            <span class="wiki-tag">零基础</span>
+                            <span class="wiki-tag">职业转型</span>
+                            <span class="wiki-tag">亲子共学</span>
+                        </div>
+                        <a href="aboutus/user_stories.html" class="text-sm font-bold text-indigo-600 hover:text-indigo-700 flex items-center gap-1 transition-all hover:gap-2">
+                            查看详情 <span aria-hidden="true">→</span>
+                        </a>
+                    </div>
+                </div>
+
+                <!-- 起源 -->
+                <div id="section-origin" class="wiki-section hidden">
+                    <div class="flex items-center justify-between border-b border-slate-100 pb-4 mb-6">
+                        <div class="flex items-center gap-3">
+                            <img src="assets/icons/nav-origin.png" alt="" class="section-icon">
+                            <h1 class="text-2xl font-black text-slate-800">起源</h1>
+                        </div>
+                        <span class="wiki-tag">品牌</span>
+                    </div>
+                    <div class="prose prose-slate max-w-none leading-loose text-slate-600 mb-8">
+                        <p><strong>起源</strong>讲述 CodeCombat 为什么诞生。2008 年，Nick Winter 等三位创始人先用“亲手练习、即时反馈、在错误中学习”的方式开发语言学习工具 Skritter。2013 年，他们在旧金山创立 CodeCombat，把同样的方法带入编程，并加入游戏冒险，让学习者从第一关就开始写真实代码。产品随后进入 Y Combinator W14，2018 年正式进入中国，并持续帮助更多人用有趣、容易坚持的方式学习编程。</p>
+                    </div>
+                    <div class="flex items-center justify-between pt-4 border-t border-slate-100">
+                        <div class="flex flex-wrap gap-2">
+                            <span class="wiki-tag">2013 创立</span>
+                            <span class="wiki-tag">游戏化学习</span>
+                            <span class="wiki-tag">真实代码</span>
+                            <span class="wiki-tag">AI 时代</span>
+                        </div>
+                        <a href="aboutus/index.html" class="text-sm font-bold text-purple-600 hover:text-purple-700 flex items-center gap-1 transition-all hover:gap-2">
+                            查看详情 <span aria-hidden="true">→</span>
+                        </a>
+                    </div>
+                </div>
+
+                <!-- 产品 -->
+                <div id="section-product" class="wiki-section hidden">
+                    <div class="flex items-center justify-between border-b border-slate-100 pb-4 mb-6">
+                        <div class="flex items-center gap-3">
+                            <img src="assets/icons/nav-product.png" alt="" class="section-icon">
+                            <h1 class="text-2xl font-black text-slate-800">产品</h1>
+                        </div>
+                        <span class="wiki-tag">理念</span>
+                    </div>
+                    <div class="prose prose-slate max-w-none leading-loose text-slate-600 mb-8">
+                        <p><strong>产品</strong>介绍 CodeCombat 如何把编程学习放进一场可以亲手参与的冒险。玩家不需要先记住大量概念，而是在任务中输入真实代码，立即观察英雄的行动，并根据运行结果不断调整。循序渐进的关卡会把知识拆成可完成的小目标，让抽象的对象、循环、条件和函数变成看得见、能操作的游戏行为。</p>
+                    </div>
+                    <div class="flex items-center justify-between pt-4 border-t border-slate-100">
+                        <div class="flex flex-wrap gap-2">
+                            <span class="wiki-tag">真实代码</span>
+                            <span class="wiki-tag">即时反馈</span>
+                            <span class="wiki-tag">任务学习</span>
+                            <span class="wiki-tag">循序渐进</span>
+                        </div>
+                        <a href="aboutus/philosophy.html" class="text-sm font-bold text-pink-600 hover:text-pink-700 flex items-center gap-1 transition-all hover:gap-2">
+                            了解产品理念 <span aria-hidden="true">→</span>
+                        </a>
+                    </div>
+                </div>
+
+                <!-- 荣誉 -->
+                <div id="section-honors" class="wiki-section hidden">
+                    <div class="flex items-center justify-between border-b border-slate-100 pb-4 mb-6">
+                        <div class="flex items-center gap-3">
+                            <img src="assets/icons/nav-honors.png" alt="" class="section-icon">
+                            <h1 class="text-2xl font-black text-slate-800">荣誉</h1>
+                        </div>
+                        <span class="wiki-tag">认可与合作</span>
+                    </div>
+                    <div class="prose prose-slate max-w-none leading-loose text-slate-600 mb-8">
+                        <p><strong>荣誉</strong>汇集 CodeCombat 在计算机科学教育、课程标准与国内外合作中的代表性成果，包括课程认证、教育标准对接、赛事与教学合作等信息。通过这些记录，你可以了解 CodeCombat 的课程设计获得过哪些专业认可，以及它如何在学校、教育机构和编程活动中支持学习者成长。</p>
+                    </div>
+                    <div class="flex items-center justify-between pt-4 border-t border-slate-100">
+                        <div class="flex flex-wrap gap-2">
+                            <span class="wiki-tag">课程认证</span>
+                            <span class="wiki-tag">教育标准</span>
+                            <span class="wiki-tag">赛事支持</span>
+                            <span class="wiki-tag">教学合作</span>
+                        </div>
+                        <a href="aboutus/endorsements.html" class="text-sm font-bold text-yellow-600 hover:text-yellow-700 flex items-center gap-1 transition-all hover:gap-2">
+                            查看荣誉与合作 <span aria-hidden="true">→</span>
+                        </a>
+                    </div>
+                </div>
+
+                <!-- 英雄 -->
+                <div id="section-hero" class="wiki-section hidden">
+                    <div class="flex items-center justify-between border-b border-slate-100 pb-4 mb-6">
+                        <div class="flex items-center gap-3">
+                            <img src="assets/icons/nav-hero.png" alt="" class="section-icon">
+                            <h1 class="text-2xl font-black text-slate-800">英雄</h1>
+                        </div>
+                        <span class="wiki-tag" style="background:#fffbeb; color:#b45309; border-color:#fde68a;">🔥 热门</span>
+                    </div>
+                    <div class="prose prose-slate max-w-none leading-loose text-slate-600 mb-8">
+                        <p><strong>英雄</strong>是玩家在关卡中操控的角色，也是代码指令在游戏里的执行者。图鉴收录安雅、塔林、艾达、服部半藏等角色的中文名、称号、所属地图、人物简介和完整故事。不同英雄与装备会带来移动、攻击、建造或施法等能力，让每一行代码都变成看得见的行动。进入英雄图鉴，认识他们的经历、特点和在冒险中的作用。</p>
+                    </div>
+                    <div class="flex items-center justify-between pt-4 border-t border-slate-100">
+                        <div class="flex flex-wrap gap-2">
+                            <span class="wiki-tag">角色设定</span>
+                            <span class="wiki-tag">英雄故事</span>
+                            <span class="wiki-tag">地图归属</span>
+                            <span class="wiki-tag">技能与装备</span>
+                        </div>
+                        <a href="heros/index.html" class="text-sm font-bold text-amber-600 hover:text-amber-700 flex items-center gap-1 transition-all hover:gap-2">
+                            查看英雄图鉴 <span aria-hidden="true">→</span>
+                        </a>
+                    </div>
+                </div>
+
+                <!-- 世界 -->
+                <div id="section-world" class="wiki-section hidden">
+                    <div class="flex items-center justify-between border-b border-slate-100 pb-4 mb-6">
+                        <div class="flex items-center gap-3">
+                            <img src="assets/icons/nav-world.png" alt="" class="section-icon">
+                            <h1 class="text-2xl font-black text-slate-800">世界</h1>
+                        </div>
+                        <span class="wiki-tag">探索</span>
+                    </div>
+                    <div class="prose prose-slate max-w-none leading-loose text-slate-600 mb-8">
+                        <p><strong>世界</strong>把 CodeCombat 的地图、剧情和学习路线连接在一起。暗影地牢从对象、方法、参数、变量与循环起步，边际森林进入条件分支、函数和事件，流金沙漠及后续区域继续拓展逻辑与算法。网页开发和游戏开发世界则带你从闯关走向亲手创造作品。进入世界地图，可以查看各区域的故事、关卡数量、核心知识点和相关英雄，了解自己正在学习什么，下一站又将去往哪里。</p>
+                    </div>
+                    <div class="flex items-center justify-between pt-4 border-t border-slate-100">
+                        <div class="flex flex-wrap gap-2">
+                            <span class="wiki-tag">地图剧情</span>
+                            <span class="wiki-tag">学习路线</span>
+                            <span class="wiki-tag">知识点</span>
+                            <span class="wiki-tag">网页与游戏开发</span>
+                        </div>
+                        <a href="world/index.html" class="text-sm font-bold text-teal-600 hover:text-teal-700 flex items-center gap-1 transition-all hover:gap-2">
+                            查看详情 <span aria-hidden="true">→</span>
+                        </a>
+                    </div>
+                </div>
+
+                <!-- 教程 -->
+                <div id="section-tutorial" class="wiki-section hidden">
+                    <div class="flex items-center justify-between border-b border-slate-100 pb-4 mb-6">
+                        <div class="flex items-center gap-3">
+                            <img src="assets/icons/nav-tutorial.png" alt="" class="section-icon">
+                            <h1 class="text-2xl font-black text-slate-800">教程</h1>
+                        </div>
+                        <span class="wiki-tag">知识树</span>
+                    </div>
+                    <div class="prose prose-slate max-w-none leading-loose text-slate-600 mb-8">
+                        <p><strong>教程</strong>按照游戏地图整理编程知识，让你在闯关之外更系统地理解代码。目前内容从暗影地牢、边际森林延伸到游戏开发，依次介绍对象与方法、字符串、变量、循环、条件分支、函数、参数、事件和地图设计。每个单元都包含概念说明、语法示例、常见错误和关卡中的实际用法，既适合零基础入门，也方便在卡关时查漏补缺。</p>
+                    </div>
+                    <div class="flex items-center justify-between pt-4 border-t border-slate-100">
+                        <div class="flex flex-wrap gap-2">
+                            <span class="wiki-tag">知识树</span>
+                            <span class="wiki-tag">Python 基础</span>
+                            <span class="wiki-tag">函数与事件</span>
+                            <span class="wiki-tag">游戏开发</span>
+                        </div>
+                        <a href="knowledge-tree/index.html" class="text-sm font-bold text-orange-600 hover:text-orange-700 flex items-center gap-1 transition-all hover:gap-2">
+                            查看知识树 <span aria-hidden="true">→</span>
+                        </a>
+                    </div>
+                </div>
+
+                <!-- 课程 -->
+                <div id="section-course" class="wiki-section hidden">
+                    <div class="flex items-center justify-between border-b border-slate-100 pb-4 mb-6">
+                        <div class="flex items-center gap-3">
+                            <img src="assets/icons/nav-course.png" alt="" class="section-icon">
+                            <h1 class="text-2xl font-black text-slate-800">课程</h1>
+                        </div>
+                        <span class="wiki-tag">体系</span>
+                    </div>
+                    <div class="prose prose-slate max-w-none leading-loose text-slate-600 mb-8">
+                        <p><strong>课程</strong>以“写真实代码、即时看到结果、在任务中理解概念”为核心，覆盖零基础启蒙、主流编程知识、计算机科学思维与 AI 协作创作等成长方向，可用于个人自学，以及学校或教育机构的教学场景。如需了解课程内容、适用人群、学习安排或合作方式，请扫描下方二维码联系 CodeCombat 中国团队。</p>
+                        <div class="mt-6 flex flex-col sm:flex-row items-start sm:items-center gap-4 rounded-xl border border-fuchsia-100 bg-fuchsia-50/60 p-4">
+                            <img src="qr.png" alt="联系 CodeCombat 中国团队的二维码" class="w-28 h-28 rounded-lg border border-white shadow-sm object-cover">
+                            <div>
+                                <p class="font-bold text-slate-800 mb-1">需要课程资料或合作支持？</p>
+                                <p class="text-sm text-slate-500">使用微信扫描二维码，说明你的学习或课程需求，团队会为你提供对应信息。</p>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="flex items-center justify-between pt-4 border-t border-slate-100">
+                        <div class="flex flex-wrap gap-2">
+                            <span class="wiki-tag">真实代码</span>
+                            <span class="wiki-tag">AI 协作</span>
+                            <span class="wiki-tag">自学与教学</span>
+                        </div>
+                        <span class="text-sm font-bold text-fuchsia-600 flex items-center gap-1" aria-disabled="true">
+                            课程详情筹备中
+                        </span>
+                    </div>
+                </div>
+
+                <!-- 新闻 -->
+                <div id="section-news" class="wiki-section hidden">
+                    <div class="flex items-center justify-between border-b border-slate-100 pb-4 mb-6">
+                        <div class="flex items-center gap-3">
+                            <img src="assets/icons/nav-news.png" alt="" class="section-icon">
+                            <h1 class="text-2xl font-black text-slate-800">新闻</h1>
+                        </div>
+                        <span class="wiki-tag">动态</span>
+                    </div>
+                    <div class="prose prose-slate max-w-none leading-loose text-slate-600 mb-8">
+                        <p><strong>新闻</strong>汇集 CodeCombat 中国的最新内容，包括产品功能、学习攻略、玩家故事、编程职场和品牌动态。你可以在这里了解 CodeCombat 与 AI HackStack 的新体验，查看从地牢闯关到项目实践的学习方法，也可以阅读其他用户的成长经历。想知道近期有什么新变化、新内容或值得尝试的学习方向，从这里开始就对了。</p>
+                    </div>
+                    <div class="flex items-center justify-between pt-4 border-t border-slate-100">
+                        <div class="flex flex-wrap gap-2">
+                            <span class="wiki-tag">AI × 编程</span>
+                            <span class="wiki-tag">产品更新</span>
+                            <span class="wiki-tag">学习攻略</span>
+                            <span class="wiki-tag">玩家故事</span>
+                        </div>
+                        <a href="news/index.html" class="text-sm font-bold text-cyan-600 hover:text-cyan-700 flex items-center gap-1 transition-all hover:gap-2">
+                            查看新闻 <span aria-hidden="true">→</span>
+                        </a>
+                    </div>
+                </div>
+
+                <!-- 文档 -->
+                <div id="section-docs" class="wiki-section hidden">
+                    <div class="flex items-center justify-between border-b border-slate-100 pb-4 mb-6">
+                        <div class="flex items-center gap-3">
+                            <img src="assets/icons/nav-docs.png" alt="" class="section-icon">
+                            <h1 class="text-2xl font-black text-slate-800">文档</h1>
+                        </div>
+                        <span class="wiki-tag">帮助</span>
+                    </div>
+                    <div class="prose prose-slate max-w-none leading-loose text-slate-600 mb-8">
+                        <p><strong>文档</strong>用于解答“如何开始、怎样操作、游戏规则是什么意思、遇到问题怎么办”等常见疑问。这里将集中整理账号与闯关指引、英雄和装备机制、关卡指令、教学说明及常见问题。教程帮助你理解编程知识，文档则帮助你快速查找明确的步骤、规则和参考信息，让学习和闯关更加顺畅。</p>
+                        <div class="mt-5 flex flex-wrap gap-2 not-prose">
+                            <a href="wiki/index.html#getting-started" class="doc-action"><img src="assets/icons/quick-beginner.png" alt="">新手指南</a>
+                            <a href="wiki/index.html#progress" class="doc-action"><img src="assets/icons/quick-walkthrough.png" alt="">闯关指引</a>
+                            <a href="heros/index.html" class="doc-action"><img src="assets/icons/quick-hero.png" alt="">英雄机制</a>
+                            <a href="wiki/equipment.html" class="doc-action"><img src="assets/icons/quick-equipment.png" alt="">装备机制</a>
+                            <a href="wiki/api.html" class="doc-action"><img src="assets/icons/quick-commands.png" alt="">关卡指令</a>
+                            <a href="wiki/index.html#teaching" class="doc-action"><img src="assets/icons/quick-teaching.png" alt="">教学说明</a>
+                            <a href="https://codecombat.cn/codecombat_faq.html" class="doc-action"><img src="assets/icons/quick-faq.png" alt="">常见问题</a>
+                        </div>
+                    </div>
+                    <div class="flex items-center justify-between pt-4 border-t border-slate-100">
+                        <div class="flex flex-wrap gap-2">
+                            <span class="wiki-tag">快速上手</span>
+                            <span class="wiki-tag">规则与步骤</span>
+                            <span class="wiki-tag">教学说明</span>
+                            <span class="wiki-tag">指令参考</span>
+                        </div>
+                        <a href="wiki/index.html" class="text-sm font-bold text-blue-600 hover:text-blue-700 flex items-center gap-1 transition-all hover:gap-2">
+                            查看文档 <span aria-hidden="true">→</span>
+                        </a>
+                    </div>
+                </div>
+
+            </div>
+        </main>
+    </div>
+
+    <nav class="sr-only" aria-label="CodeCombat 信息百科完整站点链接">
+        <h2>完整站点链接</h2>
+        <ul>
+            <li><a href="https://info.codecombat.cn/">https://info.codecombat.cn/ — CodeCombat 信息百科首页</a></li>
+            <li><a href="https://info.codecombat.cn/wiki/#getting-started">https://info.codecombat.cn/wiki/#getting-started — 新手指南</a></li>
+            <li><a href="https://info.codecombat.cn/wiki/#progress">https://info.codecombat.cn/wiki/#progress — 闯关指引</a></li>
+            <li><a href="https://info.codecombat.cn/knowledge-tree/">https://info.codecombat.cn/knowledge-tree/ — 编程教程与知识体系</a></li>
+            <li><a href="https://info.codecombat.cn/world/">https://info.codecombat.cn/world/ — CodeCombat 世界地图</a></li>
+            <li><a href="https://info.codecombat.cn/heros/">https://info.codecombat.cn/heros/ — 英雄图鉴与英雄机制</a></li>
+            <li><a href="https://info.codecombat.cn/wiki/">https://info.codecombat.cn/wiki/ — 文档中心</a></li>
+            <li><a href="https://info.codecombat.cn/wiki/equipment.html">https://info.codecombat.cn/wiki/equipment.html — 装备机制与物品图鉴</a></li>
+            <li><a href="https://info.codecombat.cn/wiki/api.html">https://info.codecombat.cn/wiki/api.html — 关卡指令</a></li>
+            <li><a href="https://info.codecombat.cn/aboutus/user_stories.html">https://info.codecombat.cn/aboutus/user_stories.html — 玩家故事</a></li>
+            <li><a href="https://info.codecombat.cn/aboutus/philosophy.html">https://info.codecombat.cn/aboutus/philosophy.html — 产品理念</a></li>
+            <li><a href="https://info.codecombat.cn/aboutus/">https://info.codecombat.cn/aboutus/ — 品牌起源</a></li>
+            <li><a href="https://info.codecombat.cn/aboutus/endorsements.html">https://info.codecombat.cn/aboutus/endorsements.html — 荣誉与合作</a></li>
+            <li><a href="https://info.codecombat.cn/news/">https://info.codecombat.cn/news/ — 新闻与产品动态</a></li>
+        </ul>
+    </nav>
+
+    <!-- ===== 页脚 (保留原页面各种跳转) ===== -->
+    <footer class="bg-white border-t border-slate-200 mt-auto">
+        <div class="max-w-[1400px] mx-auto px-4 sm:px-6 py-10">
+            <!-- 原来的各种跳转内容保留 -->
+            <div class="grid grid-cols-2 md:grid-cols-5 gap-8 mb-8">
+                <div>
+                    <div class="text-xs font-black text-slate-800 uppercase tracking-wider mb-3">游戏内容</div>
+                    <div class="space-y-2">
+                        <a href="heros/index.html" class="block text-sm text-slate-400 hover:text-indigo-500 transition">英雄图鉴</a>
+                        <a href="world/index.html" class="block text-sm text-slate-400 hover:text-indigo-500 transition">游戏世界</a>
+                        <a href="aboutus/index.html" class="block text-sm text-slate-400 hover:text-indigo-500 transition">起源故事</a>
+                        <a href="aboutus/user_stories.html" class="block text-sm text-slate-400 hover:text-indigo-500 transition">玩家故事</a>
+                    </div>
+                </div>
+                <div>
+                    <div class="text-xs font-black text-slate-800 uppercase tracking-wider mb-3">学习资源</div>
+                    <div class="space-y-2">
+                        <a href="knowledge-tree/index.html" class="block text-sm text-slate-400 hover:text-indigo-500 transition">编程教程</a>
+                        <a href="#course" onclick="switchTab('course'); return false;" class="block text-sm text-slate-400 hover:text-indigo-500 transition">课程体系</a>
+                        <a href="wiki/equipment.html" class="block text-sm text-slate-400 hover:text-indigo-500 transition">装备文档</a>
+                        <a href="news/index.html" class="block text-sm text-slate-400 hover:text-indigo-500 transition">新闻动态</a>
+                    </div>
+                </div>
+                <div>
+                    <div class="text-xs font-black text-slate-800 uppercase tracking-wider mb-3">CodeCombat</div>
+                    <div class="space-y-2">
+                        <a href="https://codecombat.cn/" class="block text-sm text-slate-400 hover:text-indigo-500 transition">中国官网</a>
+                        <a href="https://codecombat.cn/play" class="block text-sm text-slate-400 hover:text-indigo-500 transition">开始冒险</a>
+                        <a href="aboutus/endorsements.html" class="block text-sm text-slate-400 hover:text-indigo-500 transition">荣誉与合作</a>
+                        <a href="https://koudashijie.com/" class="block text-sm text-slate-400 hover:text-indigo-500 transition">教师入口</a>
+                    </div>
+                </div>
+                <div>
+                    <div class="text-xs font-black text-slate-800 uppercase tracking-wider mb-3">支持的语言</div>
+                    <div class="space-y-2">
+                        <span class="block text-sm text-slate-400">Python</span>
+                        <span class="block text-sm text-slate-400">JavaScript</span>
+                        <span class="block text-sm text-slate-400">C++ · Java · Lua</span>
+                        <span class="block text-sm text-slate-400">HTML + CSS</span>
+                    </div>
+                </div>
+                <div>
+                    <div class="text-xs font-black text-slate-800 uppercase tracking-wider mb-3">联系我们</div>
+                    <img src="qr.png" alt="联系 CodeCombat 中国团队的二维码" class="w-28 h-28 rounded-lg border border-slate-100 bg-white object-cover shadow-sm">
+                    <a href="mailto:china@codecombat.com" class="mt-3 block text-sm text-slate-400 hover:text-indigo-500 transition break-all">china@codecombat.com</a>
+                </div>
+            </div>
+
+            <!-- 下方底部 -->
+            <div class="border-t border-slate-100 pt-6 flex flex-col sm:flex-row items-center justify-between gap-4">
+                <!-- 只修改这一句话 -->
+                <p class="text-xs text-slate-500">
+                    京ICP备2026009460号京公网安备 11010802038619号
+                </p>
+                
+                <div class="flex gap-3">
+                    <div class="relative group">
+                        <button type="button" class="w-8 h-8 bg-slate-50 rounded-lg flex items-center justify-center text-slate-400 hover:text-[#07C160] focus:text-[#07C160] transition text-sm" aria-label="查看 CodeCombat 官方微信二维码" aria-describedby="wechatQrCard">
+                            <i class="fa-brands fa-weixin"></i>
+                        </button>
+                        <div id="wechatQrCard" role="tooltip" class="pointer-events-none absolute bottom-11 right-0 w-40 rounded-xl border border-slate-200 bg-white p-3 text-center shadow-xl opacity-0 translate-y-1 transition-all group-hover:opacity-100 group-hover:translate-y-0 group-focus-within:opacity-100 group-focus-within:translate-y-0">
+                            <img src="wx.jpg" alt="CodeCombat 官方微信二维码" class="w-full aspect-square rounded-lg object-cover">
+                            <p class="mt-2 text-xs font-medium text-slate-600">扫码关注官方微信</p>
+                        </div>
+                    </div>
+                    <a href="https://www.xiaohongshu.com/user/profile/63f0ae860000000014010738" target="_blank" rel="noopener noreferrer" class="w-8 h-8 bg-slate-50 rounded-lg flex items-center justify-center transition hover:bg-red-50" aria-label="访问 CodeCombat 官方小红书">
+                        <img src="https://cdn.simpleicons.org/xiaohongshu/FF2442" alt="" aria-hidden="true" class="w-4 h-4">
+                    </a>
+                </div>
+            </div>
+        </div>
+    </footer>
+
+    <!-- 交互脚本 -->
+    <script>
+        // 简易 Wiki 标签页切换逻辑
+        function switchTab(tabId) {
+            // 隐藏所有面板
+            document.querySelectorAll('.wiki-section').forEach(el => el.classList.add('hidden'));
+            // 显示目标面板
+            const targetSection = document.getElementById('section-' + tabId);
+            if (targetSection) {
+                targetSection.classList.remove('hidden');
+            }
+            
+            // 更新侧边栏 active 状态
+            document.querySelectorAll('.sidebar-link').forEach(el => {
+                el.classList.remove('active');
+                el.setAttribute('aria-selected', 'false');
+            });
+            const activeLink = document.querySelector(`.sidebar-link[data-target="${tabId}"]`);
+            if (activeLink) {
+                activeLink.classList.add('active');
+                activeLink.setAttribute('aria-selected', 'true');
+            }
+
+            // 在移动端点击后自动关闭菜单
+            const sidebar = document.getElementById('sidebar');
+            if (sidebar.classList.contains('mobile-open')) {
+                sidebar.classList.remove('mobile-open');
+            }
+
+            // 平滑滚动回顶部
+            window.scrollTo({ top: 0, behavior: 'smooth' });
+        }
+
+        // 为左侧导航栏绑定点击事件
+        document.querySelectorAll('.sidebar-link').forEach(link => {
+            link.addEventListener('click', function() {
+                const target = this.getAttribute('data-target');
+                if (target) {
+                    switchTab(target);
+                }
+            });
+            link.addEventListener('keydown', function(event) {
+                if (event.key === 'Enter' || event.key === ' ') {
+                    event.preventDefault();
+                    this.click();
+                }
+            });
+        });
+
+        // 移动端菜单切换
+        const mobileMenuBtn = document.getElementById('mobileMenuBtn');
+        const sidebar = document.getElementById('sidebar');
+        
+        mobileMenuBtn.addEventListener('click', () => {
+            sidebar.classList.toggle('mobile-open');
+        });
+
+        // 支持从文档页等外部入口直接打开指定百科栏目，例如 /#course。
+        const initialTab = window.location.hash.replace('#', '');
+        if (initialTab && document.getElementById('section-' + initialTab)) {
+            switchTab(initialTab);
+        }
+        window.addEventListener('hashchange', () => {
+            const tab = window.location.hash.replace('#', '');
+            if (tab && document.getElementById('section-' + tab)) switchTab(tab);
+        });
+    </script>
+</body>
+</html>
