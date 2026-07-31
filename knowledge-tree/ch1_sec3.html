@@ -1,0 +1,1168 @@
+﻿<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>第三单元：循环结构—— while True 无限循环 | CodeCombat 编程知识</title>
+    <style>
+        :root {
+            --primary: #FF6B35;
+            --primary-light: #FF8F5E;
+            --primary-lighter: #FFF0E8;
+            --primary-dark: #E55A2B;
+            --dark: #1a1a2e;
+            --dark-code: #1e1e2e;
+            --dark-code-border: #313244;
+            --text: #2d2d2d;
+            --text-light: #555;
+            --text-lighter: #888;
+            --bg: #ffffff;
+            --bg-alt: #fafafa;
+            --border: #e8e8e8;
+            --success: #4CAF50;
+            --warning: #FFC107;
+            --error: #f44336;
+            --info: #2196F3;
+            --code-keyword: #c678dd;
+            --code-string: #98c379;
+            --code-comment: #5c6370;
+            --code-function: #61afef;
+            --code-number: #d19a66;
+            --code-text: #abb2bf;
+            --code-punctuation: #abb2bf;
+            --code-object: #e5c07b;
+            --sidebar-width: 260px;
+        }
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body { font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'PingFang SC', 'Hiragino Sans GB', 'Microsoft YaHei', sans-serif; line-height: 1.8; color: var(--text); background: var(--bg); font-size: 16px; }
+        .sidebar-nav { position: fixed; top: 0; left: 0; width: var(--sidebar-width); height: 100vh; background: #1a1a2e; overflow-y: auto; padding: 20px 0; z-index: 1000; border-right: 3px solid var(--primary); transition: transform 0.3s ease; }
+        .sidebar-nav::-webkit-scrollbar { width: 4px; }
+        .sidebar-nav::-webkit-scrollbar-thumb { background: var(--primary); border-radius: 4px; }
+        .sidebar-nav::-webkit-scrollbar-track { background: #2a2a4e; }
+        .sidebar-nav .nav-title { color: var(--primary); font-size: 0.95em; font-weight: 700; padding: 8px 18px; margin-bottom: 5px; letter-spacing: 1px; }
+        .sidebar-nav a { display: block; color: #ccc; text-decoration: none; padding: 6px 18px; font-size: 0.82em; line-height: 1.5; border-left: 3px solid transparent; transition: all 0.2s ease; }
+        .sidebar-nav a:hover { color: #fff; background: rgba(255,107,53,0.1); border-left-color: var(--primary); }
+        .sidebar-nav a.nav-section { color: var(--primary-light); font-weight: 600; font-size: 0.88em; margin-top: 12px; padding-top: 10px; border-top: 1px solid #2a2a4e; }
+        .sidebar-nav a.nav-section:first-of-type { border-top: none; margin-top: 0; }
+        .sidebar-nav a.nav-sub { padding-left: 30px; color: #aaa; font-size: 0.78em; }
+        .sidebar-nav a.nav-sub:hover { color: #fff; }
+        .nav-toggle { display: none; position: fixed; top: 15px; left: 15px; z-index: 1100; background: var(--primary); color: white; border: none; border-radius: 8px; padding: 8px 12px; font-size: 1.2em; cursor: pointer; box-shadow: 0 2px 10px rgba(0,0,0,0.2); }
+        .page-wrapper { margin-left: var(--sidebar-width); }
+        .hero-banner { background: linear-gradient(135deg, var(--primary) 0%, var(--primary-dark) 100%); color: white; padding: 60px 20px; text-align: center; position: relative; overflow: hidden; }
+        .hero-banner::before { content: ''; position: absolute; top: -50%; left: -50%; width: 200%; height: 200%; background: radial-gradient(circle, rgba(255,255,255,0.1) 0%, transparent 60%); animation: pulse 8s ease-in-out infinite; }
+        @keyframes pulse { 0%, 100% { transform: scale(1); } 50% { transform: scale(1.1); } }
+        .hero-banner h1 { font-size: 2.5em; margin-bottom: 10px; position: relative; z-index: 1; }
+        .hero-banner .subtitle { font-size: 1.2em; opacity: 0.9; position: relative; z-index: 1; }
+        .hero-banner .badge { display: inline-block; background: rgba(255,255,255,0.2); padding: 5px 15px; border-radius: 20px; margin-top: 15px; font-size: 0.9em; position: relative; z-index: 1; }
+        .container { max-width: 900px; margin: 0 auto; padding: 40px 20px; }
+        .section-header { background: var(--primary-lighter); border-left: 5px solid var(--primary); padding: 20px 25px; margin: 50px 0 30px; border-radius: 0 12px 12px 0; }
+        .section-header h2 { color: var(--primary-dark); font-size: 1.8em; margin-bottom: 5px; }
+        .section-header .en-title { color: var(--text-light); font-size: 0.95em; font-style: italic; }
+        h3 { color: var(--primary); font-size: 1.4em; margin: 40px 0 15px; padding-bottom: 8px; border-bottom: 2px solid var(--primary-lighter); }
+        h4 { color: var(--text); font-size: 1.15em; margin: 30px 0 12px; padding-left: 12px; border-left: 3px solid var(--primary-light); }
+        h4 .en { display: block; font-size: 0.8em; color: var(--text-lighter); font-weight: normal; margin-top: 2px; }
+        p { margin: 12px 0; text-align: justify; }
+        .keyword { background: var(--primary-lighter); color: var(--primary-dark); padding: 2px 6px; border-radius: 4px; font-weight: 600; white-space: nowrap; }
+        .keyword-en { background: #e8f4fd; color: #1565c0; padding: 2px 6px; border-radius: 4px; font-weight: 600; font-family: 'SF Mono', 'Fira Code', 'Consolas', monospace; font-size: 0.9em; white-space: nowrap; }
+        .keyword-green { background: #e8f5e9; color: #2e7d32; padding: 2px 6px; border-radius: 4px; font-weight: 600; white-space: nowrap; }
+        code { background: #f0f0f0; color: #d63384; padding: 2px 7px; border-radius: 4px; font-family: 'SF Mono', 'Fira Code', 'Consolas', 'Courier New', monospace; font-size: 0.88em; white-space: nowrap; }
+        .code-block { background: var(--dark-code); border: 1px solid var(--dark-code-border); border-radius: 10px; padding: 20px 24px; margin: 16px 0; overflow-x: auto; position: relative; }
+        .code-block::before { content: 'Python'; position: absolute; top: 8px; right: 12px; font-size: 0.7em; color: #666; text-transform: uppercase; letter-spacing: 1px; }
+        .code-block .dots { display: flex; gap: 6px; margin-bottom: 14px; }
+        .code-block .dots span { width: 10px; height: 10px; border-radius: 50%; }
+        .code-block .dots .red { background: #ff5f57; }
+        .code-block .dots .yellow { background: #febc2e; }
+        .code-block .dots .green { background: #28c840; }
+        .code-block pre { margin: 0; font-family: 'SF Mono', 'Fira Code', 'Consolas', 'Courier New', monospace; font-size: 0.9em; line-height: 1.7; color: var(--code-text); }
+        .code-block .kw { color: var(--code-keyword); }
+        .code-block .str { color: var(--code-string); }
+        .code-block .cmt { color: var(--code-comment); font-style: italic; }
+        .code-block .fn { color: var(--code-function); }
+        .code-block .num { color: var(--code-number); }
+        .code-block .obj { color: var(--code-object); }
+        .code-block .punc { color: var(--code-punctuation); }
+        .code-block .err { color: var(--error); text-decoration: line-through; }
+        .tip-box { background: #fff8e1; border-left: 4px solid var(--warning); padding: 14px 18px; margin: 16px 0; border-radius: 0 8px 8px 0; font-size: 0.95em; }
+        .tip-box .tip-label { font-weight: 700; color: #f57f17; margin-right: 6px; }
+        .info-box { background: #e3f2fd; border-left: 4px solid var(--info); padding: 14px 18px; margin: 16px 0; border-radius: 0 8px 8px 0; font-size: 0.95em; }
+        .info-box .info-label { font-weight: 700; color: #1565c0; margin-right: 6px; }
+        .remember-box { background: var(--primary-lighter); border-left: 4px solid var(--primary); padding: 14px 18px; margin: 16px 0; border-radius: 0 8px 8px 0; font-size: 0.95em; }
+        .remember-box .remember-label { font-weight: 700; color: var(--primary-dark); margin-right: 6px; }
+        .figure { margin: 24px 0; text-align: center; }
+        .figure img { max-width: 100%; height: auto; border-radius: 10px; box-shadow: 0 4px 20px rgba(0,0,0,0.08); border: 1px solid var(--border); }
+        .figure .caption { font-size: 0.85em; color: var(--text-lighter); margin-top: 8px; font-style: italic; }
+        .styled-table { width: 100%; border-collapse: collapse; margin: 16px 0; border-radius: 10px; overflow: hidden; box-shadow: 0 2px 12px rgba(0,0,0,0.06); }
+        .styled-table thead { background: var(--primary); color: white; }
+        .styled-table th { padding: 12px 16px; text-align: left; font-weight: 600; }
+        .styled-table td { padding: 10px 16px; border-bottom: 1px solid var(--border); }
+        .styled-table tbody tr:nth-child(even) { background: var(--bg-alt); }
+        .styled-table tbody tr:hover { background: var(--primary-lighter); }
+        .text-illustration { background: linear-gradient(135deg, #f8f9fa 0%, #fff 100%); border: 1px dashed var(--primary-light); border-radius: 10px; padding: 18px 22px; margin: 16px 0; font-size: 0.93em; color: var(--text-light); }
+        .text-illustration .illus-title { font-weight: 700; color: var(--primary); margin-bottom: 6px; font-size: 0.95em; }
+        .summary-card { background: linear-gradient(135deg, var(--primary-lighter) 0%, #fff 100%); border: 2px solid var(--primary-light); border-radius: 14px; padding: 30px; margin: 40px 0; }
+        .summary-card h3 { color: var(--primary-dark); border: none; margin-top: 0; }
+        @media (max-width: 1024px) { .sidebar-nav { transform: translateX(-100%); } .sidebar-nav.active { transform: translateX(0); } .nav-toggle { display: block; } .page-wrapper { margin-left: 0; } }
+        @media (max-width: 768px) { .hero-banner h1 { font-size: 1.8em; } .container { padding: 20px 15px; } .section-header h2 { font-size: 1.4em; } .code-block { padding: 14px 16px; } .styled-table { font-size: 0.9em; } }
+    </style>
+</head>
+<body>
+
+<button class="nav-toggle" onclick="document.querySelector('.sidebar-nav').classList.toggle('active')">☰</button>
+
+<nav class="sidebar-nav">
+    <div class="nav-title">暗影地牢-第三单元</div>
+    <a href="#section-3-1" class="nav-section">3.1 循环的概念</a>
+    <a href="#sec-3-1-1" class="nav-sub">3.1.1 为什么需要循环</a>
+    <a href="#sec-3-1-2" class="nav-sub">3.1.2 循环的定义</a>
+    <a href="#sec-3-1-3" class="nav-sub">3.1.3 循环的类型概述</a>
+    <a href="#section-3-2" class="nav-section">3.2 while True 循环</a>
+    <a href="#sec-3-2-1" class="nav-sub">3.2.1 while 基本语法</a>
+    <a href="#sec-3-2-2" class="nav-sub">3.2.2 布尔值 True</a>
+    <a href="#sec-3-2-3" class="nav-sub">3.2.3 while True 的含义</a>
+    <a href="#sec-3-2-4" class="nav-sub">3.2.4 完整写法</a>
+    <a href="#section-3-3" class="nav-section">3.3 缩进</a>
+    <a href="#sec-3-3-1" class="nav-sub">3.3.1 缩进的概念</a>
+    <a href="#sec-3-3-2" class="nav-sub">3.3.2 缩进的规则</a>
+    <a href="#sec-3-3-3" class="nav-sub">3.3.3 代码块</a>
+    <a href="#sec-3-3-4" class="nav-sub">3.3.4 缩进与循环</a>
+    <a href="#section-3-4" class="nav-section">3.4 循环体中的操作</a>
+    <a href="#sec-3-4-1" class="nav-sub">3.4.1 循环内移动命令</a>
+    <a href="#sec-3-4-2" class="nav-sub">3.4.2 循环内攻击命令</a>
+    <a href="#sec-3-4-3" class="nav-sub">3.4.3 组合多种命令</a>
+    <a href="#section-3-5" class="nav-section">3.5 循环前的代码</a>
+    <a href="#sec-3-5-1" class="nav-sub">3.5.1 初始化操作</a>
+    <a href="#sec-3-5-2" class="nav-sub">3.5.2 循环前vs循环内</a>
+    <a href="#section-3-6" class="nav-section">3.6 模式识别与循环设计</a>
+    <a href="#sec-3-6-1" class="nav-sub">3.6.1 识别重复模式</a>
+    <a href="#sec-3-6-2" class="nav-sub">3.6.2 循环设计原则</a>
+    <a href="#section-3-7" class="nav-section">3.7 无限循环注意事项</a>
+    <a href="#sec-3-7-1" class="nav-sub">3.7.1 无限循环的风险</a>
+    <a href="#sec-3-7-2" class="nav-sub">3.7.2 何时使用无限循环</a>
+    <a href="#sec-3-7-3" class="nav-sub">3.7.3 break 语句预告</a>
+    <a href="#section-3-8" class="nav-section">3.8 代码复用与效率</a>
+    <a href="#sec-3-8-1" class="nav-sub">3.8.1 循环实现代码复用</a>
+    <a href="#sec-3-8-2" class="nav-sub">3.8.2 代码效率衡量</a>
+    <a href="#section-3-9" class="nav-section">3.9 Python 语法总结</a>
+    <a href="#sec-3-9-1" class="nav-sub">3.9.1 while 循环语法</a>
+    <a href="#sec-3-9-2" class="nav-sub">3.9.2 相关关键字</a>
+    <a href="#section-summary" class="nav-section">📋 本单元小结</a>
+</nav>
+
+<div class="page-wrapper">
+
+<div class="hero-banner">
+    <h1>第三单元：循环结构—— while True 无限循环</h1>
+    <div class="subtitle">Unit 3: Loop Structure — while True Infinite Loop</div>
+    <div class="badge">对应关卡 · 暗影地牢 Kithgard Dungeon · 焰中舞动 → 橱柜里的骷髅</div>
+</div>
+
+<div class="container">
+
+<!-- ==================== 3.1 ==================== -->
+<div class="section-header" id="section-3-1">
+    <h2>3.1 循环的概念</h2>
+    <div class="en-title">The Concept of Loops</div>
+</div>
+
+<h3 id="sec-3-1-1">3.1.1 为什么需要循环（Why We Need Loops）</h3>
+
+<h4>3.1.1.1 重复执行相同代码的需求
+    <span class="en">Need to repeat the same code</span>
+</h4>
+
+<div class="figure">
+    <img src="https://assets.koudashijie.com/knowledge/3-1-1-1_why_loops.png" alt="为什么需要循环">
+    <div class="caption">图1：没有循环时，重复的代码堆成了"意大利面条"</div>
+</div>
+
+<p>在第 17 关"恐惧之门"中，塔林需要不停地攻击一扇大门直到它被打破。如果没有循环，你要写多少行 <code>hero.attack("Door")</code>？答案是：<strong>你根本不知道要写几行</strong>，因为你不确定门要被打多少次才会碎！</p>
+
+<p>这就是<span class="keyword">循环（Loop）</span>出现的原因——当你需要让英雄<strong>重复做某件事</strong>时，循环就是你的超级武器。</p>
+
+<h4>3.1.1.2 手动重复代码的问题
+    <span class="en">Problems with manually repeating code</span>
+</h4>
+
+<p>假设没有循环，第 17 关你可能要这样写：</p>
+
+<div class="code-block">
+    <div class="dots"><span class="red"></span><span class="yellow"></span><span class="green"></span></div>
+<pre><span class="obj">hero</span><span class="punc">.</span><span class="fn">attack</span><span class="punc">(</span><span class="str">"Door"</span><span class="punc">)</span>   <span class="cmt"># 第1次</span>
+<span class="obj">hero</span><span class="punc">.</span><span class="fn">attack</span><span class="punc">(</span><span class="str">"Door"</span><span class="punc">)</span>   <span class="cmt"># 第2次</span>
+<span class="obj">hero</span><span class="punc">.</span><span class="fn">attack</span><span class="punc">(</span><span class="str">"Door"</span><span class="punc">)</span>   <span class="cmt"># 第3次</span>
+<span class="obj">hero</span><span class="punc">.</span><span class="fn">attack</span><span class="punc">(</span><span class="str">"Door"</span><span class="punc">)</span>   <span class="cmt"># 第4次</span>
+<span class="obj">hero</span><span class="punc">.</span><span class="fn">attack</span><span class="punc">(</span><span class="str">"Door"</span><span class="punc">)</span>   <span class="cmt"># 第5次……够了吗？不知道！</span>
+<span class="cmt"># 也许还需要20次？50次？100次？😱</span></pre>
+</div>
+
+<p>问题太多了：代码又长又丑、你不确定要写多少次、修改时要改几十处相同的代码……</p>
+
+<h4>3.1.1.3 循环提高代码效率
+    <span class="en">Loops improve code efficiency</span>
+</h4>
+
+<p>有了循环，同样的任务只需要<strong>两行代码</strong>：</p>
+
+<div class="code-block">
+    <div class="dots"><span class="red"></span><span class="yellow"></span><span class="green"></span></div>
+<pre><span class="kw">while</span> <span class="kw">True</span><span class="punc">:</span>
+    <span class="obj">hero</span><span class="punc">.</span><span class="fn">attack</span><span class="punc">(</span><span class="str">"Door"</span><span class="punc">)</span></pre>
+</div>
+
+<p>两行代码做到了无限次攻击！门总会碎的——而你不需要关心到底要打几次。</p>
+
+<h4>3.1.1.4 循环减少代码重复
+    <span class="en">Loops reduce code repetition</span>
+</h4>
+
+<p>在第 14 关"闹鬼的迷宫"中，安雅需要不断重复"向右走两步、向上走两步"的模式来穿越迷宫。没有循环需要写一大堆重复代码，有了循环只需要 5 行：</p>
+
+<div class="code-block">
+    <div class="dots"><span class="red"></span><span class="yellow"></span><span class="green"></span></div>
+<pre><span class="kw">while</span> <span class="kw">True</span><span class="punc">:</span>
+    <span class="obj">hero</span><span class="punc">.</span><span class="fn">moveRight</span><span class="punc">()</span>
+    <span class="obj">hero</span><span class="punc">.</span><span class="fn">moveRight</span><span class="punc">()</span>
+    <span class="obj">hero</span><span class="punc">.</span><span class="fn">moveUp</span><span class="punc">()</span>
+    <span class="obj">hero</span><span class="punc">.</span><span class="fn">moveUp</span><span class="punc">()</span></pre>
+</div>
+
+<h4>3.1.1.5 DRY 原则：Don't Repeat Yourself
+    <span class="en">Don't Repeat Yourself</span>
+</h4>
+
+<p>编程界有一条著名的原则叫 <span class="keyword">DRY</span>——<strong>Don't Repeat Yourself</strong>（不要重复你自己）。如果你发现自己在复制粘贴相同的代码，那就是使用循环的信号。循环就是实现 DRY 原则的最基本工具。</p>
+
+<div class="remember-box">
+    <span class="remember-label">DRY 原则：</span>看到重复的代码？用循环替代它！写一次，执行无数次。
+</div>
+
+<!-- ===== 3.1.2 ===== -->
+<h3 id="sec-3-1-2">3.1.2 循环的定义（Definition of Loops）</h3>
+
+<h4>3.1.2.1 循环是重复执行代码块的控制结构
+    <span class="en">A control structure that repeats a code block</span>
+</h4>
+
+<div class="figure">
+    <img src="https://assets.koudashijie.com/knowledge/3-1-2-1_loop_definition.png" alt="循环的定义">
+    <div class="caption">图2：循环就像旋转木马——同一段代码被反复执行</div>
+</div>
+
+<p><span class="keyword">循环（Loop）</span>是程序中的一种控制结构，它能让一段代码<strong>重复执行</strong>多次（甚至无限次）。你只需写一遍要重复的动作，循环帮你执行千百次。</p>
+
+<h4>3.1.2.2 循环也叫迭代
+    <span class="en">Loops are also called iteration</span>
+</h4>
+
+<p>在学术课程中，循环有一个更正式的名字：<span class="keyword">迭代（Iteration）</span>。"迭代"的意思就是"反复做"。每执行一遍循环体就叫做"一次迭代"。</p>
+
+<h4>3.1.2.3 AP CSP 中的迭代概念
+    <span class="en">AP CSP: Iteration concept</span>
+</h4>
+
+<p>AP 计算机科学原理课程将<span class="keyword-en">Iteration</span>列为算法三大构建块之一（顺序、选择、迭代）。所有复杂的算法都可以用这三种结构组合而成。</p>
+
+<h4>3.1.2.4 AQA A Level：有限循环与无限循环
+    <span class="en">Definite and indefinite iteration</span>
+</h4>
+
+<p>英国 A Level 课程区分两种迭代：<span class="keyword">确定性迭代</span>（事先知道重复多少次，如 <code>for i in range(10)</code>）和<span class="keyword">不确定性迭代</span>（不知道要重复多少次，靠条件控制）。<code>while True</code> 属于不确定性迭代的极端情况——永远重复！</p>
+
+<!-- ===== 3.1.3 ===== -->
+<h3 id="sec-3-1-3">3.1.3 循环的类型概述（Overview of Loop Types）</h3>
+
+<h4>3.1.3.1 无限循环 / 无限迭代
+    <span class="en">Infinite loop / Indefinite iteration</span>
+</h4>
+
+<p><span class="keyword">无限循环</span>就是永远不停的循环——除非外部力量强制中断它。<code>while True:</code> 就是最经典的无限循环。在 CodeCombat 的关卡中，游戏结束（通关或失败）时循环自动停止。</p>
+
+<h4>3.1.3.2 有限循环 / 有限迭代
+    <span class="en">Finite loop / Definite iteration，预告</span>
+</h4>
+
+<p>有限循环会在一定次数后停止，比如"重复 10 次"。在后面的学习中你会遇到 <code>for i in range(10):</code> 这样的有限循环，它精确地执行 10 次后停止。</p>
+
+<h4>3.1.3.3 while 循环
+    <span class="en">while loop</span>
+</h4>
+
+<p><code>while</code> 循环的逻辑是："<strong>当</strong>某个条件为真时，就一直重复。"条件变为假时停止。本单元学习最简单的情况：条件永远为真（<code>True</code>）。</p>
+
+<h4>3.1.3.4 for 循环
+    <span class="en">for loop，预告</span>
+</h4>
+
+<p><code>for</code> 循环是另一种循环方式，适合"遍历一个序列"或"重复固定次数"。后续单元会学到。</p>
+
+<h4>3.1.3.5 本单元重点：while True 无限循环
+    <span class="en">Focus of this unit</span>
+</h4>
+
+<p>本单元只学一种循环：<span class="keyword-en">while True</span>。它是最简单、最直接的循环——让代码永远重复。掌握了它，后面的有条件循环就是小菜一碟！</p>
+
+<!-- ==================== 3.2 ==================== -->
+<div class="section-header" id="section-3-2">
+    <h2>3.2 while True 循环</h2>
+    <div class="en-title">The while True Loop</div>
+</div>
+
+<h3 id="sec-3-2-1">3.2.1 while 语句的基本语法（Basic Syntax of while Statement）</h3>
+
+<h4>3.2.1.1 关键字 while
+    <span class="en">Keyword while</span>
+</h4>
+
+<div class="figure">
+    <img src="https://assets.koudashijie.com/knowledge/3-2-1-1_while_syntax.png" alt="while语法拆解">
+    <div class="caption">图3：while True: 的每个部分都有明确含义</div>
+</div>
+
+<p><span class="keyword-en">while</span> 是 Python 的关键字，意思是"当……的时候"。它告诉 Python："接下来有一个条件，只要这个条件为真，就重复执行下面的代码。"</p>
+
+<h4>3.2.1.2 条件表达式
+    <span class="en">Condition expression</span>
+</h4>
+
+<p><code>while</code> 后面跟着的是一个<span class="keyword">条件</span>。每次循环开始前，Python 会检查这个条件——如果为真（True），就执行循环体；如果为假（False），就跳过循环。</p>
+
+<h4>3.2.1.3 冒号 :
+    <span class="en">Colon at end of while line</span>
+</h4>
+
+<p><code>while True</code> 后面必须跟一个<span class="keyword">冒号 <code>:</code></span>。冒号的作用是说"下面是循环体了，开始缩进吧！"忘了冒号会直接报语法错误。</p>
+
+<h4>3.2.1.4 循环体
+    <span class="en">Loop body</span>
+</h4>
+
+<p><span class="keyword">循环体（Loop Body）</span>就是要被重复执行的那些代码——它们被缩进放在 <code>while True:</code> 下面。每次循环都会从头到尾执行一遍循环体中的所有语句。</p>
+
+<h4>3.2.1.5 完整语法：while condition:
+    <span class="en">Full syntax</span>
+</h4>
+
+<div class="code-block">
+    <div class="dots"><span class="red"></span><span class="yellow"></span><span class="green"></span></div>
+<pre><span class="kw">while</span> <span class="kw">True</span><span class="punc">:</span>          <span class="cmt"># ← 关键字 + 条件 + 冒号</span>
+    <span class="obj">hero</span><span class="punc">.</span><span class="fn">moveRight</span><span class="punc">()</span>  <span class="cmt"># ← 循环体（缩进4个空格）</span>
+    <span class="obj">hero</span><span class="punc">.</span><span class="fn">moveLeft</span><span class="punc">()</span>   <span class="cmt"># ← 循环体（继续缩进）</span></pre>
+</div>
+
+<!-- ===== 3.2.2 ===== -->
+<h3 id="sec-3-2-2">3.2.2 布尔值 True（The Boolean Value True）</h3>
+
+<h4>3.2.2.1 True 是 Python 关键字
+    <span class="en">True is a Python keyword</span>
+</h4>
+
+<p><code>True</code> 是 Python 的保留关键字，代表"真"。它不是变量，不能被重新赋值。</p>
+
+<h4>3.2.2.2 True 表示"真"/"是"
+    <span class="en">True means "yes" or "truth"</span>
+</h4>
+
+<p>你可以把 <code>True</code> 想象成对一个问题回答"是！"。当 <code>while</code> 后面的条件是 <code>True</code> 时，就像问"要继续吗？"答案永远是"是！"——所以永远继续。</p>
+
+<h4>3.2.2.3 布尔类型只有两个值：True 和 False
+    <span class="en">Boolean type has only two values</span>
+</h4>
+
+<div class="figure">
+    <img src="https://assets.koudashijie.com/knowledge/3-2-2-3_boolean_values.png" alt="布尔值True和False">
+    <div class="caption">图4：布尔值就像开关——只有 True（开）和 False（关）</div>
+</div>
+
+<p><span class="keyword">布尔类型（Boolean / bool）</span>是最简单的数据类型——只有两个值：<code>True</code>（真/是/开）和 <code>False</code>（假/否/关）。就像灯的开关只有开和关两种状态。</p>
+
+<h4>3.2.2.4 True 的首字母必须大写
+    <span class="en">True must be capitalized</span>
+</h4>
+
+<div class="code-block">
+    <div class="dots"><span class="red"></span><span class="yellow"></span><span class="green"></span></div>
+<pre><span class="kw">while</span> <span class="kw">True</span><span class="punc">:</span>     <span class="cmt"># ✓ 正确：T 大写</span>
+<span class="kw">while</span> <span class="err">true</span><span class="punc">:</span>     <span class="cmt"># ✗ 错误：t 小写，Python 不认识</span>
+<span class="kw">while</span> <span class="err">TRUE</span><span class="punc">:</span>     <span class="cmt"># ✗ 错误：全大写也不行</span></pre>
+</div>
+
+<h4>3.2.2.5 布尔值在条件判断中的作用
+    <span class="en">Role of Boolean in conditions</span>
+</h4>
+
+<p>布尔值是所有条件判断的基础。<code>while</code> 后面的条件最终都会被计算为 <code>True</code> 或 <code>False</code>。本单元中我们直接写 <code>True</code>，后续你会学到像 <code>hero.health > 0</code> 这样的条件表达式——它的结果也是布尔值。</p>
+
+<!-- ===== 3.2.3 ===== -->
+<h3 id="sec-3-2-3">3.2.3 while True 的含义（Meaning of while True）</h3>
+
+<h4>3.2.3.1 "当条件为真时，重复执行"
+    <span class="en">"While condition is true, repeat"</span>
+</h4>
+
+<p><code>while True:</code> 翻译成人话就是："<strong>当 True 为真时，重复执行下面的代码。</strong>"那 True 什么时候不为真呢？永远不会！所以这就是一个永远重复的循环。</p>
+
+<h4>3.2.3.2 True 永远为真 → 永远重复
+    <span class="en">True is always true → repeats forever</span>
+</h4>
+
+<p>这就像问"1+1等于2吗？"——答案永远是"是"。所以循环永远不会自己停下来。在 CodeCombat 中，关卡通过或英雄死亡时循环才会被强制终止。</p>
+
+<h4>3.2.3.3 无限循环 / 永久循环
+    <span class="en">Infinite loop / Forever loop</span>
+</h4>
+
+<p><code>while True:</code> 创建的循环被称为<span class="keyword">无限循环（Infinite Loop）</span>或<span class="keyword">永久循环（Forever Loop）</span>。它是循环家族中最"执着"的成员——除非外力介入，否则永不停歇。</p>
+
+<h4>3.2.3.4 无限循环的应用场景
+    <span class="en">Use cases for infinite loops</span>
+</h4>
+
+<p>无限循环在真实编程中非常常见：游戏的主循环（每帧都在更新画面）、聊天程序（一直等待新消息）、服务器程序（持续监听请求）——都是 <code>while True</code> 的变体。</p>
+
+<h4>3.2.3.5 游戏主循环就是无限循环的例子
+    <span class="en">Game main loop as example</span>
+</h4>
+
+<p>你正在玩的 CodeCombat 本身就运行着一个无限循环：每一帧更新画面、检测碰撞、处理输入……直到你关闭游戏为止。你写的 <code>while True:</code> 代码正是在这个框架中运行的！</p>
+
+<!-- ===== 3.2.4 ===== -->
+<h3 id="sec-3-2-4">3.2.4 while True 的完整写法（Complete while True Syntax）</h3>
+
+<h4>3.2.4.1 while True: 的写法
+    <span class="en">Writing while True:</span>
+</h4>
+
+<div class="figure">
+    <img src="https://assets.koudashijie.com/knowledge/3-2-4-1_complete_syntax.png" alt="while True完整写法">
+    <div class="caption">图5：while True: 的完整写法——注意冒号和缩进</div>
+</div>
+
+<p>来看第 13 关"焰中舞动"的完整解法：</p>
+
+<div class="code-block">
+    <div class="dots"><span class="red"></span><span class="yellow"></span><span class="green"></span></div>
+<pre><span class="kw">while</span> <span class="kw">True</span><span class="punc">:</span>
+    <span class="obj">hero</span><span class="punc">.</span><span class="fn">moveRight</span><span class="punc">()</span>
+    <span class="obj">hero</span><span class="punc">.</span><span class="fn">moveLeft</span><span class="punc">()</span></pre>
+</div>
+
+<p>安雅就像在"跳舞"一样——不断地左右移动来躲避火球。这个舞蹈会一直跳下去直到通关！</p>
+
+<p style="margin: 10px 0; color: #555;">立即访问 <a href="https://codecombat.cn" target="_blank" style="color: #d35400; font-weight: 700; text-decoration: none;">codecombat.cn</a> 开启你的 CodeCombat 编程冒险之旅！</p>
+
+<h4>3.2.4.2 冒号不能省略
+    <span class="en">Colon cannot be omitted</span>
+</h4>
+
+<div class="code-block">
+    <div class="dots"><span class="red"></span><span class="yellow"></span><span class="green"></span></div>
+<pre><span class="kw">while</span> <span class="kw">True</span><span class="punc">:</span>     <span class="cmt"># ✓ 有冒号</span>
+<span class="kw">while</span> <span class="kw">True</span>      <span class="cmt"># ✗ 没冒号 → SyntaxError!</span></pre>
+</div>
+
+<h4>3.2.4.3 循环体必须缩进
+    <span class="en">Loop body must be indented</span>
+</h4>
+
+<p>循环体中的每一行都必须缩进（通常是 4 个空格）。缩进告诉 Python："这些代码属于循环内部，要被重复执行。"</p>
+
+<h4>3.2.4.4 循环体可以包含多条语句
+    <span class="en">Loop body can contain multiple statements</span>
+</h4>
+
+<p>来看第 16 关"循环仓库"——循环体有 4 条语句：</p>
+
+<div class="code-block">
+    <div class="dots"><span class="red"></span><span class="yellow"></span><span class="green"></span></div>
+<pre><span class="kw">while</span> <span class="kw">True</span><span class="punc">:</span>
+    <span class="obj">hero</span><span class="punc">.</span><span class="fn">moveUp</span><span class="punc">(</span><span class="num">2</span><span class="punc">)</span>       <span class="cmt"># 循环体第1行</span>
+    <span class="obj">hero</span><span class="punc">.</span><span class="fn">moveRight</span><span class="punc">(</span><span class="num">2</span><span class="punc">)</span>    <span class="cmt"># 循环体第2行</span>
+    <span class="obj">hero</span><span class="punc">.</span><span class="fn">moveDown</span><span class="punc">()</span>      <span class="cmt"># 循环体第3行</span>
+    <span class="obj">hero</span><span class="punc">.</span><span class="fn">moveLeft</span><span class="punc">()</span>      <span class="cmt"># 循环体第4行</span></pre>
+</div>
+
+<p>每次循环都会按顺序执行这 4 行，然后回到第 1 行重新开始——形成一个"回"字形的路径模式！</p>
+
+<!-- ==================== 3.3 ==================== -->
+<div class="section-header" id="section-3-3">
+    <h2>3.3 缩进</h2>
+    <div class="en-title">Indentation</div>
+</div>
+
+<h3 id="sec-3-3-1">3.3.1 缩进的概念（The Concept of Indentation）</h3>
+
+<h4>3.3.1.1 缩进的定义：行首的空白
+    <span class="en">Whitespace at the beginning of a line</span>
+</h4>
+
+<div class="figure">
+    <img src="https://assets.koudashijie.com/knowledge/3-3-1-1_indentation_concept.png" alt="缩进概念">
+    <div class="caption">图6：缩进就像书本的目录——子级内容往右缩进表示从属关系</div>
+</div>
+
+<p><span class="keyword">缩进（Indentation）</span>就是代码行前面的空白。在 Python 中，缩进不是为了好看——它是<strong>语法的一部分</strong>，决定了代码的结构和层次关系。</p>
+
+<h4>3.3.1.2 Python 使用缩进表示代码块
+    <span class="en">Python uses indentation to denote code blocks</span>
+</h4>
+
+<p>在 Python 中，缩进告诉解释器"这些代码是一组的，它们属于上面那个结构（如 while 循环）"。不缩进的代码就在循环外面。</p>
+
+<h4>3.3.1.3 缩进在 Python 中是语法要求
+    <span class="en">Indentation is syntactically required in Python</span>
+</h4>
+
+<p>这是 Python 和很多其他语言的<strong>最大区别</strong>：缩进不是可选的美化——它是强制性的语法要求。缩进错了，程序就错了。</p>
+
+<h4>3.3.1.4 其他语言使用花括号 {}
+    <span class="en">Other languages use braces {}</span>
+</h4>
+
+<p>在 C、Java、JavaScript 等语言中，代码块用花括号 <code>{}</code> 包围。Python 用缩进替代了花括号——更简洁但也更需要注意格式。</p>
+
+<!-- ===== 3.3.2 ===== -->
+<h3 id="sec-3-3-2">3.3.2 缩进的规则（Rules of Indentation）</h3>
+
+<h4>3.3.2.1 使用 4 个空格作为标准缩进
+    <span class="en">4 spaces as standard indentation</span>
+</h4>
+
+<p>Python 社区约定用 <span class="keyword">4 个空格</span>表示一级缩进。在 CodeCombat 的编辑器中按 Tab 键会自动插入 4 个空格。</p>
+
+<h4>3.3.2.2 Tab 键通常自动转换为 4 个空格
+    <span class="en">Tab key usually converts to 4 spaces</span>
+</h4>
+
+<p>在 CodeCombat 编辑器中，你只需要按一下 <code>Tab</code> 键就能正确缩进。编辑器会自动处理空格的问题。</p>
+
+<h4>3.3.2.3 同一代码块的缩进必须一致
+    <span class="en">Consistent indentation within a block</span>
+</h4>
+
+<div class="code-block">
+    <div class="dots"><span class="red"></span><span class="yellow"></span><span class="green"></span></div>
+<pre><span class="kw">while</span> <span class="kw">True</span><span class="punc">:</span>
+    <span class="obj">hero</span><span class="punc">.</span><span class="fn">moveRight</span><span class="punc">()</span>    <span class="cmt"># 4 个空格 ✓</span>
+    <span class="obj">hero</span><span class="punc">.</span><span class="fn">moveUp</span><span class="punc">()</span>       <span class="cmt"># 4 个空格 ✓ （一致！）</span></pre>
+</div>
+
+<h4>3.3.2.4 缩进不一致会导致错误
+    <span class="en">Inconsistent indentation causes errors</span>
+</h4>
+
+<div class="code-block">
+    <div class="dots"><span class="red"></span><span class="yellow"></span><span class="green"></span></div>
+<pre><span class="kw">while</span> <span class="kw">True</span><span class="punc">:</span>
+    <span class="obj">hero</span><span class="punc">.</span><span class="fn">moveRight</span><span class="punc">()</span>    <span class="cmt"># 4 个空格</span>
+      <span class="obj">hero</span><span class="punc">.</span><span class="fn">moveUp</span><span class="punc">()</span>     <span class="cmt"># 6 个空格 ✗ 不一致！IndentationError!</span></pre>
+</div>
+
+<h4>3.3.2.5 IndentationError 错误
+    <span class="en">IndentationError</span>
+</h4>
+
+<p>当缩进出问题时，Python 会报 <code>IndentationError</code>。看到这个错误时，检查你的缩进是否一致——所有循环体内的代码都应该对齐在同一个位置。</p>
+
+<!-- ===== 3.3.3 ===== -->
+<h3 id="sec-3-3-3">3.3.3 代码块（Code Block）</h3>
+
+<h4>3.3.3.1 代码块的定义
+    <span class="en">A group of statements at the same indentation level</span>
+</h4>
+
+<p><span class="keyword">代码块（Code Block）</span>就是一组具有相同缩进层级的语句，它们被视为一个整体。循环体就是一个典型的代码块。</p>
+
+<h4>3.3.3.2 循环体是一个代码块
+    <span class="en">Loop body is a code block</span>
+</h4>
+
+<p><code>while True:</code> 下面缩进的所有语句共同组成了一个代码块——这就是循环体。它们作为一个整体被重复执行。</p>
+
+<h4>3.3.3.3 代码块的开始：冒号 + 缩进增加
+    <span class="en">Block start: colon + increased indentation</span>
+</h4>
+
+<p>冒号 <code>:</code> 标志着"接下来有一个新的代码块"，下一行开始缩进就是代码块的开始。</p>
+
+<h4>3.3.3.4 代码块的结束：缩进减少
+    <span class="en">Block end: decreased indentation</span>
+</h4>
+
+<p>当缩进恢复到上一级别时，代码块就结束了。不过在 <code>while True:</code> 的情况下，由于循环是无限的，循环体后面通常不会再有代码——它会一直循环下去。</p>
+
+<h4>3.3.3.5 嵌套代码块
+    <span class="en">Nested code blocks，概念预告</span>
+</h4>
+
+<p>代码块可以嵌套——一个循环里面可以有 if 判断，if 里面还可以有另一个循环。每嵌套一层就多缩进 4 个空格。这个概念在后续关卡中会用到。</p>
+
+<!-- ===== 3.3.4 ===== -->
+<h3 id="sec-3-3-4">3.3.4 缩进与循环的关系（Indentation and Loops）</h3>
+
+<h4>3.3.4.1 循环内的代码必须缩进
+    <span class="en">Code inside loop must be indented</span>
+</h4>
+
+<div class="figure">
+    <img src="https://assets.koudashijie.com/knowledge/3-3-4-1_indent_loop.png" alt="缩进决定循环体">
+    <div class="caption">图7：缩进决定"谁在循环内，谁在循环外"</div>
+</div>
+
+<p>缩进是 Python 用来区分"循环内"和"循环外"的唯一方式。来看第 18 关"攻破突袭"的代码结构：</p>
+
+<div class="code-block">
+    <div class="dots"><span class="red"></span><span class="yellow"></span><span class="green"></span></div>
+<pre><span class="cmt"># 这些代码不缩进 → 循环外（只执行一次）</span>
+<span class="obj">hero</span><span class="punc">.</span><span class="fn">moveRight</span><span class="punc">()</span>
+<span class="obj">hero</span><span class="punc">.</span><span class="fn">moveUp</span><span class="punc">()</span>
+<span class="obj">hero</span><span class="punc">.</span><span class="fn">attack</span><span class="punc">(</span><span class="str">"Chest"</span><span class="punc">)</span>
+<span class="obj">hero</span><span class="punc">.</span><span class="fn">moveDown</span><span class="punc">()</span>
+
+<span class="kw">while</span> <span class="kw">True</span><span class="punc">:</span>
+    <span class="cmt"># 这些代码缩进 → 循环内（重复执行）</span>
+    <span class="obj">hero</span><span class="punc">.</span><span class="fn">moveRight</span><span class="punc">(</span><span class="num">3</span><span class="punc">)</span>
+    <span class="obj">hero</span><span class="punc">.</span><span class="fn">moveDown</span><span class="punc">(</span><span class="num">3</span><span class="punc">)</span></pre>
+</div>
+
+<h4>3.3.4.2 缩进决定哪些代码属于循环体
+    <span class="en">Indentation determines what's in the loop</span>
+</h4>
+
+<p>只有缩进的代码才会被重复。不缩进的代码只执行一次然后就"过去了"。</p>
+
+<h4>3.3.4.3 循环外的代码不缩进
+    <span class="en">Code outside loop is not indented</span>
+</h4>
+
+<p>在 <code>while True:</code> 之前的代码都是顶格写的（不缩进），它们只执行一次。</p>
+
+<h4>3.3.4.4 常见错误：忘记缩进
+    <span class="en">Common error: forgetting to indent</span>
+</h4>
+
+<div class="code-block">
+    <div class="dots"><span class="red"></span><span class="yellow"></span><span class="green"></span></div>
+<pre><span class="kw">while</span> <span class="kw">True</span><span class="punc">:</span>
+<span class="err">hero.moveRight()</span>   <span class="cmt"># ✗ 错误！没缩进 → IndentationError</span></pre>
+</div>
+
+<h4>3.3.4.5 常见错误：多余的缩进
+    <span class="en">Common error: unexpected indent</span>
+</h4>
+
+<div class="code-block">
+    <div class="dots"><span class="red"></span><span class="yellow"></span><span class="green"></span></div>
+<pre><span class="err">    hero.moveRight()</span>   <span class="cmt"># ✗ 错误！没有 while 就缩进 → IndentationError</span>
+<span class="obj">hero</span><span class="punc">.</span><span class="fn">moveLeft</span><span class="punc">()</span>       <span class="cmt"># ✓ 顶级代码不需要缩进</span></pre>
+</div>
+
+<!-- ==================== 3.4 ==================== -->
+<div class="section-header" id="section-3-4">
+    <h2>3.4 循环体中的操作</h2>
+    <div class="en-title">Operations Inside the Loop Body</div>
+</div>
+
+<h3 id="sec-3-4-1">3.4.1 循环内使用移动命令（Movement Commands Inside Loops）</h3>
+
+<h4>3.4.1.1 重复移动模式
+    <span class="en">Repeating movement patterns</span>
+</h4>
+
+<p>第 13 关"焰中舞动"是最简单的循环移动：安雅不断左右移动来躲避火球。</p>
+
+<div class="code-block">
+    <div class="dots"><span class="red"></span><span class="yellow"></span><span class="green"></span></div>
+<pre><span class="kw">while</span> <span class="kw">True</span><span class="punc">:</span>
+    <span class="obj">hero</span><span class="punc">.</span><span class="fn">moveRight</span><span class="punc">()</span>   <span class="cmt"># 右！</span>
+    <span class="obj">hero</span><span class="punc">.</span><span class="fn">moveLeft</span><span class="punc">()</span>    <span class="cmt"># 左！然后再右、再左、再右……</span></pre>
+</div>
+
+<h4>3.4.1.2 组合多个移动命令
+    <span class="en">Combining multiple movement commands</span>
+</h4>
+
+<p>第 15a 关"迷一般的 Kithmaze"需要更复杂的移动组合：</p>
+
+<div class="code-block">
+    <div class="dots"><span class="red"></span><span class="yellow"></span><span class="green"></span></div>
+<pre><span class="kw">while</span> <span class="kw">True</span><span class="punc">:</span>
+    <span class="obj">hero</span><span class="punc">.</span><span class="fn">moveRight</span><span class="punc">()</span>
+    <span class="obj">hero</span><span class="punc">.</span><span class="fn">moveDown</span><span class="punc">()</span>
+    <span class="obj">hero</span><span class="punc">.</span><span class="fn">moveRight</span><span class="punc">(</span><span class="num">2</span><span class="punc">)</span>
+    <span class="obj">hero</span><span class="punc">.</span><span class="fn">moveUp</span><span class="punc">()</span></pre>
+</div>
+
+<h4>3.4.1.3 循环移动实现迷宫穿越
+    <span class="en">Loop-based maze traversal</span>
+</h4>
+
+<p>当迷宫有重复的结构时（比如每段走廊都是相同形状），用循环来重复这个模式就能自动穿越整个迷宫。第 14、15 关就是这个原理。</p>
+
+<h4>3.4.1.4 循环移动实现躲避
+    <span class="en">Loop-based evasion</span>
+</h4>
+
+<p>第 15b 关"辐射光环"中，安雅需要重复"捡发光石→经过骷髅"的模式：</p>
+
+<div class="code-block">
+    <div class="dots"><span class="red"></span><span class="yellow"></span><span class="green"></span></div>
+<pre><span class="kw">while</span> <span class="kw">True</span><span class="punc">:</span>
+    <span class="obj">hero</span><span class="punc">.</span><span class="fn">moveUp</span><span class="punc">()</span>       <span class="cmt"># 走到发光石</span>
+    <span class="obj">hero</span><span class="punc">.</span><span class="fn">moveDown</span><span class="punc">()</span>     <span class="cmt"># 退回来</span>
+    <span class="obj">hero</span><span class="punc">.</span><span class="fn">moveRight</span><span class="punc">(</span><span class="num">2</span><span class="punc">)</span>   <span class="cmt"># 趁骷髅被吓跑时通过！</span></pre>
+</div>
+
+<!-- ===== 3.4.2 ===== -->
+<h3 id="sec-3-4-2">3.4.2 循环内使用攻击命令（Attack Commands Inside Loops）</h3>
+
+<h4>3.4.2.1 循环攻击直到目标被摧毁
+    <span class="en">Loop attack until target is destroyed</span>
+</h4>
+
+
+<p>当你不知道需要攻击多少次时，用循环"一直攻击"就对了。第 17 关"恐惧之门"就是经典例子：</p>
+
+<div class="code-block">
+    <div class="dots"><span class="red"></span><span class="yellow"></span><span class="green"></span></div>
+<pre><span class="kw">while</span> <span class="kw">True</span><span class="punc">:</span>
+    <span class="obj">hero</span><span class="punc">.</span><span class="fn">attack</span><span class="punc">(</span><span class="str">"Door"</span><span class="punc">)</span>   <span class="cmt"># 砍！砍！砍！直到门碎为止</span></pre>
+</div>
+
+<h4>3.4.2.2 while True: hero.attack("Door")
+    <span class="en">Example: attacking a door</span>
+</h4>
+
+<p>这可能是你写过的最短的循环程序——仅仅两行代码就完成了"破门"任务。不管门有多厚、需要砍多少下，循环都会帮你坚持到底。</p>
+
+<h4>3.4.2.3 循环攻击的效率
+    <span class="en">Efficiency of loop attacks</span>
+</h4>
+
+<p>同样的任务，循环 vs 手动对比：手动写可能需要 20+ 行 <code>attack("Door")</code>；用循环只需要 2 行。而且如果门变厚了（需要更多次攻击），循环代码不需要任何修改——它自动适应！</p>
+
+<!-- ===== 3.4.3 ===== -->
+<h3 id="sec-3-4-3">3.4.3 循环内组合多种命令（Combining Multiple Commands in Loops）</h3>
+
+<h4>3.4.3.1 移动 + 攻击的组合
+    <span class="en">Movement + attack combination</span>
+</h4>
+
+<p>循环体里可以组合不同类型的命令。比如"走一步，砍一下"的巡逻模式。</p>
+
+<h4>3.4.3.2 移动 + 拾取的组合
+    <span class="en">Movement + collection combination</span>
+</h4>
+
+<p>第 16 关"循环仓库"中，循环体组合了多个移动命令来按"回"字形路线收集宝石。</p>
+
+<h4>3.4.3.3 循环体内语句的执行顺序
+    <span class="en">Execution order within loop body</span>
+</h4>
+
+<p>循环体内的语句仍然按照<span class="keyword">顺序结构</span>从上到下执行。一轮循环结束后，回到循环体第一行重新开始。就像一首歌唱到结尾后，从头再唱一遍。</p>
+
+<!-- ==================== 3.5 ==================== -->
+<div class="section-header" id="section-3-5">
+    <h2>3.5 循环前的代码</h2>
+    <div class="en-title">Code Before the Loop</div>
+</div>
+
+<h3 id="sec-3-5-1">3.5.1 初始化操作（Initialization Operations）</h3>
+
+<h4>3.5.1.1 循环前执行一次性操作
+    <span class="en">One-time operations before the loop</span>
+</h4>
+
+<div class="figure">
+    <img src="https://assets.koudashijie.com/knowledge/3-5-1-1_before_loop.png" alt="循环前的代码">
+    <div class="caption">图9：循环前的代码只执行一次——做好准备工作再开始循环</div>
+</div>
+
+<p>有些操作只需要做一次——比如"走到门前面"。走到以后就不需要再走了，接下来要做的是不断攻击门。这类一次性操作就放在 <code>while True:</code> 之前。</p>
+
+<p>第 19 关"橱柜里的骷髅"完美展示了这个模式：</p>
+
+<div class="code-block">
+    <div class="dots"><span class="red"></span><span class="yellow"></span><span class="green"></span></div>
+<pre><span class="cmt"># 循环前：移动到橱柜旁（只做一次）</span>
+<span class="obj">hero</span><span class="punc">.</span><span class="fn">moveUp</span><span class="punc">()</span>
+<span class="obj">hero</span><span class="punc">.</span><span class="fn">moveRight</span><span class="punc">(</span><span class="num">2</span><span class="punc">)</span>
+<span class="obj">hero</span><span class="punc">.</span><span class="fn">moveDown</span><span class="punc">(</span><span class="num">2</span><span class="punc">)</span>
+
+<span class="cmt"># 循环内：不断攻击橱柜（重复执行）</span>
+<span class="kw">while</span> <span class="kw">True</span><span class="punc">:</span>
+    <span class="obj">hero</span><span class="punc">.</span><span class="fn">attack</span><span class="punc">(</span><span class="str">"Cupboard"</span><span class="punc">)</span></pre>
+</div>
+
+<h4>3.5.1.2 移动到起始位置
+    <span class="en">Moving to starting position</span>
+</h4>
+
+<p>先移动到正确的位置，再开始循环操作——这是"初始化 → 循环"模式的经典应用。</p>
+
+<h4>3.5.1.3 攻击障碍物
+    <span class="en">Attacking obstacles</span>
+</h4>
+
+<p>在第 18 关"攻破突袭"中，先攻击箱子获取药水（一次性操作），然后才开始循环逃跑。</p>
+
+<h4>3.5.1.4 收集道具
+    <span class="en">Collecting items</span>
+</h4>
+
+<p>有时你需要先收集一个道具（比如速度药水），然后再开始循环移动。道具只需要拿一次，所以放在循环前面。</p>
+
+<!-- ===== 3.5.2 ===== -->
+<h3 id="sec-3-5-2">3.5.2 循环前与循环内的区别（Difference: Before Loop vs. Inside Loop）</h3>
+
+<h4>3.5.2.1 循环前的代码只执行一次
+    <span class="en">Code before loop executes once</span>
+</h4>
+
+<h4>3.5.2.2 循环内的代码重复执行
+    <span class="en">Code inside loop repeats</span>
+</h4>
+
+<table class="styled-table">
+    <thead><tr><th>位置</th><th>执行次数</th><th>适合放什么</th><th>例子</th></tr></thead>
+    <tbody>
+        <tr><td><strong>循环前</strong>（不缩进）</td><td>1 次</td><td>一次性操作</td><td>移动到位、打开箱子</td></tr>
+        <tr><td><strong>循环内</strong>（缩进）</td><td>无限次</td><td>需要重复的操作</td><td>攻击门、巡逻路线</td></tr>
+    </tbody>
+</table>
+
+<h4>3.5.2.3 如何决定代码放在循环内还是循环外
+    <span class="en">Deciding: inside or outside the loop</span>
+</h4>
+
+<p>问自己："这个动作需要做几次？"如果答案是"一次"→ 放循环前；如果是"很多次/一直做"→ 放循环里。</p>
+
+<h4>3.5.2.4 程序结构：初始化 → 循环
+    <span class="en">Program structure: initialization → loop</span>
+</h4>
+
+<p>这种"先准备、后循环"的结构是编程中极其常见的模式。即使在大型程序中，你也经常能看到：初始化阶段（加载资源、设置参数）→ 主循环（持续运行的核心逻辑）。</p>
+
+<!-- ==================== 3.6 ==================== -->
+<div class="section-header" id="section-3-6">
+    <h2>3.6 模式识别与循环设计</h2>
+    <div class="en-title">Pattern Recognition and Loop Design</div>
+</div>
+
+<h3 id="sec-3-6-1">3.6.1 识别重复模式（Identifying Repetitive Patterns）</h3>
+
+<h4>3.6.1.1 观察任务中的重复部分
+    <span class="en">Observing repeated parts in a task</span>
+</h4>
+
+<div class="figure">
+    <img src="https://assets.koudashijie.com/knowledge/3-6-1-1_pattern_recognition.png" alt="模式识别">
+    <div class="caption">图10：发现重复模式——迷宫中的阶梯形重复结构</div>
+</div>
+
+<p>设计循环的第一步是<span class="keyword">发现模式</span>——观察地图，找出哪些动作在反复出现。第 14 关的迷宫就是"右右上上"不断重复。第 15 关是"右右下"不断重复。</p>
+
+<h4>3.6.1.2 确定循环体的内容
+    <span class="en">Determining loop body content</span>
+</h4>
+
+<p>找到重复单元后，把它写进循环体就完成了！重复单元 = 循环体。</p>
+
+<h4>3.6.1.3 确定循环前的初始化代码
+    <span class="en">Determining initialization code</span>
+</h4>
+
+<p>有些动作不属于重复模式（比如到达起始位置），就放在循环之前。</p>
+
+<h4>3.6.1.4 迷宫中的重复路径模式
+    <span class="en">Repeated path patterns in mazes</span>
+</h4>
+
+<p>CodeCombat 中的迷宫关卡都是精心设计的——有明显的重复结构让你用循环来解决。学会"用眼睛找模式"是通关的关键技能。</p>
+
+<!-- ===== 3.6.2 ===== -->
+<h3 id="sec-3-6-2">3.6.2 循环的设计原则（Loop Design Principles）</h3>
+
+<h4>3.6.2.1 循环体应包含完整的重复单元
+    <span class="en">Loop body should contain complete repeat unit</span>
+</h4>
+
+<p>循环体必须是一个<strong>完整的重复周期</strong>。如果模式是"右右上上"，那循环体就要包含全部四步——不能只放一半。</p>
+
+<h4>3.6.2.2 最小化循环体中的语句数
+    <span class="en">Minimize statements in loop body</span>
+</h4>
+
+<p>第 16 关要求使用不超过 5 条语句。使用参数（如 <code>moveUp(2)</code> 代替两次 <code>moveUp()</code>）可以精简循环体。</p>
+
+<h4>3.6.2.3 确保循环能够正确重复
+    <span class="en">Ensure loop repeats correctly</span>
+</h4>
+
+<p>循环体执行完一轮后，英雄的状态应该能让下一轮正确开始。如果第一轮结束时英雄在错误位置，第二轮就会走错路。</p>
+
+<h4>3.6.2.4 测试循环的第一次和第二次迭代
+    <span class="en">Test first and second iterations</span>
+</h4>
+
+<p>写完循环后，在脑中模拟前两轮：第一轮走对了吗？第二轮从上一轮结束位置开始还对吗？两轮都对，后面基本就没问题了。</p>
+
+<!-- ==================== 3.7 ==================== -->
+<div class="section-header" id="section-3-7">
+    <h2>3.7 无限循环的注意事项</h2>
+    <div class="en-title">Considerations for Infinite Loops</div>
+</div>
+
+<h3 id="sec-3-7-1">3.7.1 无限循环的风险（Risks of Infinite Loops）</h3>
+
+<h4>3.7.1.1 程序永不停止
+    <span class="en">Program never terminates</span>
+</h4>
+
+<p>在 CodeCombat 中，游戏会帮你管理循环的终止。但在传统编程中，一个意外的无限循环会导致程序永远运行下去——必须手动杀掉它。</p>
+
+<h4>3.7.1.2 消耗系统资源
+    <span class="en">Consuming system resources</span>
+</h4>
+
+<p>无限循环会持续占用 CPU 资源。如果你的电脑突然变慢或风扇狂转，可能就是某个程序进入了意外的无限循环。</p>
+
+<h4>3.7.1.3 需要手动终止程序
+    <span class="en">Need to manually terminate，如 Ctrl+C</span>
+</h4>
+
+<p>在终端/命令行中，<code>Ctrl + C</code> 可以强制终止一个正在运行的 Python 程序。这是程序员处理"失控"循环的急救措施。</p>
+
+<!-- ===== 3.7.2 ===== -->
+<h3 id="sec-3-7-2">3.7.2 何时使用无限循环（When to Use Infinite Loops）</h3>
+
+<h4>3.7.2.1 游戏主循环
+    <span class="en">Game main loops</span>
+</h4>
+
+<p>几乎所有游戏的核心都是一个无限循环：更新画面 → 处理输入 → 计算逻辑 → 再更新画面……</p>
+
+<h4>3.7.2.2 服务器持续监听
+    <span class="en">Server continuous listening</span>
+</h4>
+
+<p>网站服务器需要 24/7 等待用户请求——这也是无限循环。</p>
+
+<h4>3.7.2.3 持续监控任务
+    <span class="en">Continuous monitoring tasks</span>
+</h4>
+
+<p>比如温度监控系统：不断读取温度 → 判断是否超标 → 如果超标就报警。</p>
+
+<h4>3.7.2.4 配合 break 语句退出
+    <span class="en">Exiting with break statement，预告</span>
+</h4>
+
+<p>在实际开发中，<code>while True</code> 通常配合 <code>break</code> 使用——在满足某个条件时跳出循环。这让"无限循环"变成了"当条件满足时退出的循环"。</p>
+
+<!-- ===== 3.7.3 ===== -->
+<h3 id="sec-3-7-3">3.7.3 break 语句预告（Preview of break Statement）</h3>
+
+<h4>3.7.3.1 break 可以跳出循环
+    <span class="en">break exits the loop</span>
+</h4>
+
+<p><code>break</code> 是 Python 的关键字，意思是"立刻终止当前循环"。它让 <code>while True</code> 有了"出口"。</p>
+
+<h4>3.7.3.2 while True + break 的常见模式
+    <span class="en">Common pattern</span>
+</h4>
+
+<div class="code-block">
+    <div class="dots"><span class="red"></span><span class="yellow"></span><span class="green"></span></div>
+<pre><span class="kw">while</span> <span class="kw">True</span><span class="punc">:</span>
+    <span class="cmt"># 做某件事</span>
+    <span class="kw">if</span> 条件满足<span class="punc">:</span>
+        <span class="kw">break</span>    <span class="cmt"># 退出循环！</span></pre>
+</div>
+
+<h4>3.7.3.3 后续关卡将深入学习
+    <span class="en">Covered in later levels</span>
+</h4>
+
+<p>当前关卡不需要 <code>break</code>（因为游戏会帮你终止循环），但在后面的关卡中你会学到如何优雅地控制循环的退出。</p>
+
+<!-- ==================== 3.8 ==================== -->
+<div class="section-header" id="section-3-8">
+    <h2>3.8 代码复用与效率</h2>
+    <div class="en-title">Code Reuse and Efficiency</div>
+</div>
+
+<h3 id="sec-3-8-1">3.8.1 循环实现代码复用（Loops Enable Code Reuse）</h3>
+
+<h4>3.8.1.1 相同逻辑只写一次
+    <span class="en">Same logic written only once</span>
+</h4>
+
+<p>循环最大的好处：<strong>写一遍，用无数遍</strong>。不管要重复多少次，代码量不变。</p>
+
+<h4>3.8.1.2 修改更方便：只需改一处
+    <span class="en">Easier to modify: change in one place</span>
+</h4>
+
+<p>如果你想改变移动方向，只需改循环体里的一行。如果没用循环（复制了 20 遍），你得改 20 个地方——而且很容易漏掉某一处。</p>
+
+<h4>3.8.1.3 减少代码总量
+    <span class="en">Reduces total amount of code</span>
+</h4>
+
+<p>第 17 关用循环只需 2 行；没有循环可能需要 30+ 行。代码越短越好维护。</p>
+
+<h4>3.8.1.4 降低出错概率
+    <span class="en">Reduces probability of errors</span>
+</h4>
+
+<p>写的代码越少，出错的机会就越少。循环让你把潜在的错误点从 N 处减少到 1 处。</p>
+
+<!-- ===== 3.8.2 ===== -->
+<h3 id="sec-3-8-2">3.8.2 代码效率衡量（Measuring Code Efficiency）</h3>
+
+<h4>3.8.2.1 语句数量
+    <span class="en">Number of statements</span>
+</h4>
+
+<p>第 15 关要求"使用少于 5 条语句"，第 16 关要求"使用不超过 5 条语句"——循环 + 参数是达成这些挑战的关键。</p>
+
+<h4>3.8.2.2 代码行数
+    <span class="en">Lines of code</span>
+</h4>
+
+<p>虽然行数不是唯一标准，但更短的代码通常更容易理解和维护。</p>
+
+<h4>3.8.2.3 代码简洁性挑战
+    <span class="en">Code conciseness challenges</span>
+</h4>
+
+<p>CodeCombat 的"语句限制"挑战鼓励你用最少的代码完成任务——这正是循环和参数大展身手的时候。</p>
+
+<h4>3.8.2.4 可读性与简洁性的平衡
+    <span class="en">Balance between readability and conciseness</span>
+</h4>
+
+<p>代码要简洁但不能"晦涩难懂"。<code>while True: hero.moveRight(2); hero.moveDown()</code> 比用难以理解的技巧更好——清晰第一！</p>
+
+<!-- ==================== 3.9 ==================== -->
+<div class="section-header" id="section-3-9">
+    <h2>3.9 本单元相关 Python 语法总结</h2>
+    <div class="en-title">Python Syntax Summary for This Unit</div>
+</div>
+
+<h3 id="sec-3-9-1">3.9.1 while 循环语法（while Loop Syntax）</h3>
+
+<h4>3.9.1.1 while True: 的完整写法</h4>
+
+<div class="code-block">
+    <div class="dots"><span class="red"></span><span class="yellow"></span><span class="green"></span></div>
+<pre><span class="kw">while</span> <span class="kw">True</span><span class="punc">:</span>
+    语句1
+    语句2
+    ...</pre>
+</div>
+
+<h4>3.9.1.2 冒号 : 的必要性</h4>
+<p>冒号是 Python 的"代码块开始标志"——<code>while</code>、<code>if</code>、<code>for</code>、<code>def</code> 后面都需要冒号。</p>
+
+<h4>3.9.1.3 缩进规则回顾</h4>
+<p>4 个空格 = 1 级缩进。循环体内所有语句保持相同缩进。按 Tab 键自动处理。</p>
+
+<h4>3.9.1.4 while condition: 的一般形式
+    <span class="en">General form，预告</span>
+</h4>
+
+<p>将来你会学到把 <code>True</code> 替换为其他条件：<code>while hero.health > 0:</code>（当英雄还活着时循环）。</p>
+
+<!-- ===== 3.9.2 ===== -->
+<h3 id="sec-3-9-2">3.9.2 相关关键字（Related Keywords）</h3>
+
+<h4>3.9.2.1 while —— 循环关键字</h4>
+<p>意思是"当……的时候"。开启一个条件循环。</p>
+
+<h4>3.9.2.2 True —— 布尔真值</h4>
+<p>永远为真的值。<code>while True:</code> = 永远循环。首字母必须大写。</p>
+
+<h4>3.9.2.3 False —— 布尔假值（预告）</h4>
+<p>与 True 相反。<code>while False:</code> 的循环体永远不会执行（没意义但能理解概念）。</p>
+
+<h4>3.9.2.4 break —— 跳出循环（预告）</h4>
+<p>在循环内部使用，立刻终止当前循环。后续关卡学习。</p>
+
+<h4>3.9.2.5 continue —— 跳过本次迭代（预告）</h4>
+<p>跳过本次循环的剩余部分，直接开始下一轮循环。后续关卡学习。</p>
+
+<!-- ==================== 小结 ==================== -->
+<div class="summary-card" id="section-summary">
+<h3>本单元小结 ✨</h3>
+
+    <div class="figure">
+        <img src="https://assets.koudashijie.com/knowledge/3-summary_card.png" alt="单元总结">
+        <div class="caption">图11：第三单元核心概念——while True 让代码获得"永动力"</div>
+    </div>
+
+    <p>恭喜你掌握了循环的力量！来看第 18 关"攻破突袭"的完整解法，回顾"初始化 + 循环"的结构：</p>
+
+    <div class="code-block">
+        <div class="dots"><span class="red"></span><span class="yellow"></span><span class="green"></span></div>
+<pre><span class="cmt"># === 初始化阶段（循环前，只执行一次） ===</span>
+<span class="obj">hero</span><span class="punc">.</span><span class="fn">moveRight</span><span class="punc">()</span>          <span class="cmt"># 走到岔路口</span>
+<span class="obj">hero</span><span class="punc">.</span><span class="fn">moveUp</span><span class="punc">()</span>             <span class="cmt"># 走到箱子旁</span>
+<span class="obj">hero</span><span class="punc">.</span><span class="fn">attack</span><span class="punc">(</span><span class="str">"Chest"</span><span class="punc">)</span>      <span class="cmt"># 打开箱子获取药水</span>
+<span class="obj">hero</span><span class="punc">.</span><span class="fn">moveDown</span><span class="punc">()</span>           <span class="cmt"># 回到主走廊</span>
+
+<span class="cmt"># === 循环阶段（重复执行，持续逃跑） ===</span>
+<span class="kw">while</span> <span class="kw">True</span><span class="punc">:</span>
+    <span class="obj">hero</span><span class="punc">.</span><span class="fn">moveRight</span><span class="punc">(</span><span class="num">3</span><span class="punc">)</span>      <span class="cmt"># 全速向右冲！</span>
+    <span class="obj">hero</span><span class="punc">.</span><span class="fn">moveDown</span><span class="punc">(</span><span class="num">3</span><span class="punc">)</span>       <span class="cmt"># 全速向下跑！逃离精灵！</span></pre>
+    </div>
+
+    <table class="styled-table">
+        <thead><tr><th>核心概念</th><th>关键知识</th><th>对应关卡</th></tr></thead>
+        <tbody>
+            <tr><td>循环的需求</td><td>DRY 原则：不要重复自己</td><td>焰中舞动</td></tr>
+            <tr><td>while True:</td><td>创建无限循环的语法</td><td>焰中舞动</td></tr>
+            <tr><td>布尔值 True</td><td>永远为真，首字母大写</td><td>焰中舞动</td></tr>
+            <tr><td>缩进（4空格）</td><td>缩进 = 循环体内部</td><td>焰中舞动</td></tr>
+            <tr><td>循环体</td><td>被重复执行的代码块</td><td>全部关卡</td></tr>
+            <tr><td>循环内移动</td><td>重复移动模式穿越迷宫</td><td>闹鬼的迷宫 / 再下一步 / 迷一般的Kithmaze / 辐射光环</td></tr>
+            <tr><td>循环内攻击</td><td>持续攻击直到目标摧毁</td><td>恐惧之门</td></tr>
+            <tr><td>循环前初始化</td><td>一次性操作放循环之前</td><td>攻破突袭 / 橱柜里的骷髅</td></tr>
+            <tr><td>模式识别</td><td>观察重复模式 → 写入循环体</td><td>闹鬼的迷宫 / 再下一步 / 循环仓库</td></tr>
+            <tr><td>代码简洁</td><td>循环 + 参数 = 最少语句数</td><td>再下一步 / 循环仓库</td></tr>
+        </tbody>
+    </table>
+
+    <p style="text-align: center; margin-top: 20px; font-size: 1.1em;">
+        安雅学会了在火焰中跳舞，塔林掌握了用循环破门的暴力美学。<br>
+        下一站：<strong>第四单元</strong>——变量与赋值，让英雄学会"记住"事情！🧠
+    </p>
+</div>
+
+
+<div class="member-promo" style="background: linear-gradient(135deg,#fff3e0 0%,#fff 100%); border: 2px solid #f59e0b; border-radius: 14px; padding: 24px 28px; margin: 30px 0; text-align: center;">
+    <h3 style="color: #d35400; border: none; margin-top: 0; font-size: 1.3em;">🎮 想在 CodeCombat 中实战这些关卡吗？</h3>
+    <p style="margin: 10px 0; font-size: 1.05em;">加入 <strong>CodeCombat（codecombat.cn）</strong> 会员，即可解锁全部编程关卡，跟随英雄安雅和塔林在真实游戏环境中边玩边学！通过实战闯关巩固本单元所学的每一个知识点，让编程学习不再枯燥。</p>
+    
+</div>
+
+
+
+</div><!-- end page-wrapper -->
+
+<script>
+document.querySelectorAll('.sidebar-nav a').forEach(link => {
+    link.addEventListener('click', () => {
+        if (window.innerWidth <= 1024) {
+            document.querySelector('.sidebar-nav').classList.remove('active');
+        }
+    });
+});
+</script>
+
+
+<div data-info-wiki-backlink style="text-align:center;padding:18px 12px;color:#64748b;font:13px/1.6 -apple-system,BlinkMacSystemFont,'Segoe UI','Microsoft YaHei',sans-serif"><a href="../index.html" style="color:#4f46e5;text-decoration:none;font-weight:700">← 返回 CodeCombat 信息百科</a></div>
+</body>
+</html>

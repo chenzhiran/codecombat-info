@@ -1,0 +1,1577 @@
+﻿<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>第四单元：变量与赋值 | CodeCombat 编程知识</title>
+    <style>
+        /* ===== 基础重置与变量 ===== */
+        :root {
+            --primary: #FF6B35;
+            --primary-light: #FF8F5E;
+            --primary-lighter: #FFF0E8;
+            --primary-dark: #E55A2B;
+            --dark: #1a1a2e;
+            --dark-code: #1e1e2e;
+            --dark-code-border: #313244;
+            --text: #2d2d2d;
+            --text-light: #555;
+            --text-lighter: #888;
+            --bg: #ffffff;
+            --bg-alt: #fafafa;
+            --bg-card: #ffffff;
+            --border: #e8e8e8;
+            --success: #4CAF50;
+            --warning: #FFC107;
+            --error: #f44336;
+            --info: #2196F3;
+            --code-keyword: #c678dd;
+            --code-string: #98c379;
+            --code-comment: #5c6370;
+            --code-function: #61afef;
+            --code-number: #d19a66;
+            --code-text: #abb2bf;
+            --code-punctuation: #abb2bf;
+            --code-object: #e5c07b;
+            --sidebar-width: 260px;
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'PingFang SC', 'Hiragino Sans GB', 'Microsoft YaHei', sans-serif;
+            line-height: 1.8;
+            color: var(--text);
+            background: var(--bg);
+            font-size: 16px;
+        }
+
+        /* ===== 左侧导航栏 ===== */
+        .sidebar-nav {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: var(--sidebar-width);
+            height: 100vh;
+            background: #1a1a2e;
+            overflow-y: auto;
+            padding: 20px 0;
+            z-index: 1000;
+            border-right: 3px solid var(--primary);
+            transition: transform 0.3s ease;
+        }
+
+        .sidebar-nav::-webkit-scrollbar {
+            width: 4px;
+        }
+
+        .sidebar-nav::-webkit-scrollbar-thumb {
+            background: var(--primary);
+            border-radius: 4px;
+        }
+
+        .sidebar-nav::-webkit-scrollbar-track {
+            background: #2a2a4e;
+        }
+
+        .sidebar-nav .nav-title {
+            color: var(--primary);
+            font-size: 0.95em;
+            font-weight: 700;
+            padding: 8px 18px;
+            margin-bottom: 5px;
+            letter-spacing: 1px;
+        }
+
+        .sidebar-nav a {
+            display: block;
+            color: #ccc;
+            text-decoration: none;
+            padding: 6px 18px;
+            font-size: 0.82em;
+            line-height: 1.5;
+            border-left: 3px solid transparent;
+            transition: all 0.2s ease;
+        }
+
+        .sidebar-nav a:hover {
+            color: #fff;
+            background: rgba(255, 107, 53, 0.1);
+            border-left-color: var(--primary);
+        }
+
+        .sidebar-nav a.nav-section {
+            color: var(--primary-light);
+            font-weight: 600;
+            font-size: 0.88em;
+            margin-top: 12px;
+            padding-top: 10px;
+            border-top: 1px solid #2a2a4e;
+        }
+
+        .sidebar-nav a.nav-section:first-of-type {
+            border-top: none;
+            margin-top: 0;
+        }
+
+        .sidebar-nav a.nav-sub {
+            padding-left: 30px;
+            color: #aaa;
+            font-size: 0.78em;
+        }
+
+        .sidebar-nav a.nav-sub:hover {
+            color: #fff;
+        }
+
+        .nav-toggle {
+            display: none;
+            position: fixed;
+            top: 15px;
+            left: 15px;
+            z-index: 1100;
+            background: var(--primary);
+            color: white;
+            border: none;
+            border-radius: 8px;
+            padding: 8px 12px;
+            font-size: 1.2em;
+            cursor: pointer;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.2);
+        }
+
+        .page-wrapper {
+            margin-left: var(--sidebar-width);
+        }
+
+        /* ===== 头部横幅 ===== */
+        .hero-banner {
+            background: linear-gradient(135deg, var(--primary) 0%, var(--primary-dark) 100%);
+            color: white;
+            padding: 60px 20px;
+            text-align: center;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .hero-banner::before {
+            content: '';
+            position: absolute;
+            top: -50%;
+            left: -50%;
+            width: 200%;
+            height: 200%;
+            background: radial-gradient(circle, rgba(255,255,255,0.1) 0%, transparent 60%);
+            animation: pulse 8s ease-in-out infinite;
+        }
+
+        @keyframes pulse {
+            0%, 100% { transform: scale(1); }
+            50% { transform: scale(1.1); }
+        }
+
+        .hero-banner h1 {
+            font-size: 2.5em;
+            margin-bottom: 10px;
+            position: relative;
+            z-index: 1;
+        }
+
+        .hero-banner .subtitle {
+            font-size: 1.2em;
+            opacity: 0.9;
+            position: relative;
+            z-index: 1;
+        }
+
+        .hero-banner .badge {
+            display: inline-block;
+            background: rgba(255,255,255,0.2);
+            padding: 5px 15px;
+            border-radius: 20px;
+            margin-top: 15px;
+            font-size: 0.9em;
+            position: relative;
+            z-index: 1;
+        }
+
+        /* ===== 主容器 ===== */
+        .container {
+            max-width: 900px;
+            margin: 0 auto;
+            padding: 40px 20px;
+        }
+
+        /* ===== 章节标题 ===== */
+        .section-header {
+            background: var(--primary-lighter);
+            border-left: 5px solid var(--primary);
+            padding: 20px 25px;
+            margin: 50px 0 30px;
+            border-radius: 0 12px 12px 0;
+        }
+
+        .section-header h2 {
+            color: var(--primary-dark);
+            font-size: 1.8em;
+            margin-bottom: 5px;
+        }
+
+        .section-header .en-title {
+            color: var(--text-light);
+            font-size: 0.95em;
+            font-style: italic;
+        }
+
+        h3 {
+            color: var(--primary);
+            font-size: 1.4em;
+            margin: 40px 0 15px;
+            padding-bottom: 8px;
+            border-bottom: 2px solid var(--primary-lighter);
+        }
+
+        h4 {
+            color: var(--text);
+            font-size: 1.15em;
+            margin: 30px 0 12px;
+            padding-left: 12px;
+            border-left: 3px solid var(--primary-light);
+        }
+
+        h4 .en {
+            display: block;
+            font-size: 0.8em;
+            color: var(--text-lighter);
+            font-weight: normal;
+            margin-top: 2px;
+        }
+
+        p {
+            margin: 12px 0;
+            text-align: justify;
+        }
+
+        .keyword {
+            background: var(--primary-lighter);
+            color: var(--primary-dark);
+            padding: 2px 6px;
+            border-radius: 4px;
+            font-weight: 600;
+            white-space: nowrap;
+        }
+
+        .keyword-en {
+            background: #e8f4fd;
+            color: #1565c0;
+            padding: 2px 6px;
+            border-radius: 4px;
+            font-weight: 600;
+            font-family: 'SF Mono', 'Fira Code', 'Consolas', monospace;
+            font-size: 0.9em;
+            white-space: nowrap;
+        }
+
+        .keyword-green {
+            background: #e8f5e9;
+            color: #2e7d32;
+            padding: 2px 6px;
+            border-radius: 4px;
+            font-weight: 600;
+            white-space: nowrap;
+        }
+
+        code {
+            background: #f0f0f0;
+            color: #d63384;
+            padding: 2px 7px;
+            border-radius: 4px;
+            font-family: 'SF Mono', 'Fira Code', 'Consolas', 'Courier New', monospace;
+            font-size: 0.88em;
+            white-space: nowrap;
+        }
+
+        .code-block {
+            background: var(--dark-code);
+            border: 1px solid var(--dark-code-border);
+            border-radius: 10px;
+            padding: 20px 24px;
+            margin: 16px 0;
+            overflow-x: auto;
+            position: relative;
+        }
+
+        .code-block::before {
+            content: 'Python';
+            position: absolute;
+            top: 8px;
+            right: 12px;
+            font-size: 0.7em;
+            color: #666;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+        }
+
+        .code-block .dots {
+            display: flex;
+            gap: 6px;
+            margin-bottom: 14px;
+        }
+
+        .code-block .dots span {
+            width: 10px;
+            height: 10px;
+            border-radius: 50%;
+        }
+
+        .code-block .dots .red { background: #ff5f57; }
+        .code-block .dots .yellow { background: #febc2e; }
+        .code-block .dots .green { background: #28c840; }
+
+        .code-block pre {
+            margin: 0;
+            font-family: 'SF Mono', 'Fira Code', 'Consolas', 'Courier New', monospace;
+            font-size: 0.9em;
+            line-height: 1.7;
+            color: var(--code-text);
+        }
+
+        .code-block .kw { color: var(--code-keyword); }
+        .code-block .str { color: var(--code-string); }
+        .code-block .cmt { color: var(--code-comment); font-style: italic; }
+        .code-block .fn { color: var(--code-function); }
+        .code-block .num { color: var(--code-number); }
+        .code-block .obj { color: var(--code-object); }
+        .code-block .punc { color: var(--code-punctuation); }
+        .code-block .err { color: var(--error); text-decoration: line-through; }
+
+        .tip-box {
+            background: #fff8e1;
+            border-left: 4px solid var(--warning);
+            padding: 14px 18px;
+            margin: 16px 0;
+            border-radius: 0 8px 8px 0;
+            font-size: 0.95em;
+        }
+
+        .tip-box .tip-label {
+            font-weight: 700;
+            color: #f57f17;
+            margin-right: 6px;
+        }
+
+        .info-box {
+            background: #e3f2fd;
+            border-left: 4px solid var(--info);
+            padding: 14px 18px;
+            margin: 16px 0;
+            border-radius: 0 8px 8px 0;
+            font-size: 0.95em;
+        }
+
+        .info-box .info-label {
+            font-weight: 700;
+            color: #1565c0;
+            margin-right: 6px;
+        }
+
+        .remember-box {
+            background: var(--primary-lighter);
+            border-left: 4px solid var(--primary);
+            padding: 14px 18px;
+            margin: 16px 0;
+            border-radius: 0 8px 8px 0;
+            font-size: 0.95em;
+        }
+
+        .remember-box .remember-label {
+            font-weight: 700;
+            color: var(--primary-dark);
+            margin-right: 6px;
+        }
+
+        .warning-box {
+            background: #fde8e8;
+            border-left: 4px solid var(--error);
+            padding: 14px 18px;
+            margin: 16px 0;
+            border-radius: 0 8px 8px 0;
+            font-size: 0.95em;
+        }
+
+        .warning-box .warning-label {
+            font-weight: 700;
+            color: #c62828;
+            margin-right: 6px;
+        }
+
+        .figure {
+            margin: 24px 0;
+            text-align: center;
+        }
+
+        .figure img {
+            max-width: 100%;
+            height: auto;
+            border-radius: 10px;
+            box-shadow: 0 4px 20px rgba(0,0,0,0.08);
+            border: 1px solid var(--border);
+        }
+
+        .figure .caption {
+            font-size: 0.85em;
+            color: var(--text-lighter);
+            margin-top: 8px;
+            font-style: italic;
+        }
+
+        .styled-table {
+            width: 100%;
+            border-collapse: collapse;
+            margin: 16px 0;
+            border-radius: 10px;
+            overflow: hidden;
+            box-shadow: 0 2px 12px rgba(0,0,0,0.06);
+        }
+
+        .styled-table thead {
+            background: var(--primary);
+            color: white;
+        }
+
+        .styled-table th {
+            padding: 12px 16px;
+            text-align: left;
+            font-weight: 600;
+        }
+
+        .styled-table td {
+            padding: 10px 16px;
+            border-bottom: 1px solid var(--border);
+        }
+
+        .styled-table tbody tr:nth-child(even) {
+            background: var(--bg-alt);
+        }
+
+        .styled-table tbody tr:hover {
+            background: var(--primary-lighter);
+        }
+
+        .comparison-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 16px;
+            margin: 16px 0;
+        }
+
+        .comparison-grid .card {
+            background: var(--bg-card);
+            border: 1px solid var(--border);
+            border-radius: 10px;
+            padding: 18px;
+            box-shadow: 0 2px 12px rgba(0,0,0,0.04);
+        }
+
+        .comparison-grid .card h5 {
+            color: var(--primary);
+            margin-bottom: 8px;
+            font-size: 1em;
+        }
+
+        .summary-card {
+            background: linear-gradient(135deg, var(--primary-lighter) 0%, #fff 100%);
+            border: 2px solid var(--primary-light);
+            border-radius: 14px;
+            padding: 30px;
+            margin: 40px 0;
+        }
+
+        .summary-card h3 {
+            color: var(--primary-dark);
+            border: none;
+            margin-top: 0;
+        }
+
+        @media (max-width: 1024px) {
+            .sidebar-nav {
+                transform: translateX(-100%);
+            }
+            .sidebar-nav.active {
+                transform: translateX(0);
+            }
+            .nav-toggle {
+                display: block;
+            }
+            .page-wrapper {
+                margin-left: 0;
+            }
+        }
+
+        @media (max-width: 768px) {
+            .hero-banner h1 { font-size: 1.8em; }
+            .container { padding: 20px 15px; }
+            .section-header h2 { font-size: 1.4em; }
+            .code-block { padding: 14px 16px; }
+            .styled-table { font-size: 0.9em; }
+            .comparison-grid {
+                grid-template-columns: 1fr;
+            }
+        }
+    </style>
+</head>
+<body>
+
+<button class="nav-toggle" onclick="document.querySelector('.sidebar-nav').classList.toggle('active')">☰</button>
+
+<!-- ===== 左侧导航栏 ===== -->
+<nav class="sidebar-nav">
+    <div class="nav-title">暗影地牢-第四单元</div>
+
+    <a href="#section-4-1" class="nav-section">4.1 变量的概念</a>
+    <a href="#section-4-1-1" class="nav-sub">4.1.1 变量的定义</a>
+    <a href="#section-4-1-2" class="nav-sub">4.1.2 为什么需要变量</a>
+    <a href="#section-4-1-3" class="nav-sub">4.1.3 变量的类比</a>
+
+    <a href="#section-4-2" class="nav-section">4.2 变量赋值</a>
+    <a href="#section-4-2-1" class="nav-sub">4.2.1 赋值语句</a>
+    <a href="#section-4-2-2" class="nav-sub">4.2.2 变量的重新赋值</a>
+    <a href="#section-4-2-3" class="nav-sub">4.2.3 赋值与等号的区别</a>
+
+    <a href="#section-4-3" class="nav-section">4.3 变量命名规则</a>
+    <a href="#section-4-3-1" class="nav-sub">4.3.1 命名的语法规则</a>
+    <a href="#section-4-3-2" class="nav-sub">4.3.2 命名的最佳实践</a>
+    <a href="#section-4-3-3" class="nav-sub">4.3.3 命名对比示例</a>
+
+    <a href="#section-4-4" class="nav-section">4.4 变量的值与数据类型</a>
+    <a href="#section-4-4-1" class="nav-sub">4.4.1 变量可存储的数据类型</a>
+    <a href="#section-4-4-2" class="nav-sub">4.4.2 动态类型特性</a>
+
+    <a href="#section-4-5" class="nav-section">4.5 方法返回值与变量</a>
+    <a href="#section-4-5-1" class="nav-sub">4.5.1 什么是返回值</a>
+    <a href="#section-4-5-2" class="nav-sub">4.5.2 findNearestEnemy()</a>
+    <a href="#section-4-5-3" class="nav-sub">4.5.3 用变量存储返回值</a>
+
+    <a href="#section-4-6" class="nav-section">4.6 变量与循环</a>
+    <a href="#section-4-6-1" class="nav-sub">4.6.1 循环中更新变量</a>
+    <a href="#section-4-6-2" class="nav-sub">4.6.2 计数器变量</a>
+    <a href="#section-4-6-3" class="nav-sub">4.6.3 累加器模式</a>
+
+    <a href="#section-4-7" class="nav-section">4.7 常量</a>
+    <a href="#section-4-7-1" class="nav-sub">4.7.1 常量的概念</a>
+    <a href="#section-4-7-2" class="nav-sub">4.7.2 常量的命名惯例</a>
+
+    <a href="#section-4-8" class="nav-section">4.8 buildXY 方法</a>
+    <a href="#section-4-8-1" class="nav-sub">4.8.1 buildXY 的语法</a>
+    <a href="#section-4-8-2" class="nav-sub">4.8.2 buildXY 与变量结合</a>
+    <a href="#section-4-8-3" class="nav-sub">4.8.3 buildXY 应用实例</a>
+
+    <a href="#section-4-9" class="nav-section">4.9 综合运用</a>
+    <a href="#section-4-9-1" class="nav-sub">4.9.1 关卡实战代码</a>
+    <a href="#section-4-9-2" class="nav-sub">4.9.2 调试技巧</a>
+    <a href="#section-4-9-3" class="nav-sub">4.9.3 常见错误</a>
+
+    <a href="#section-4-10" class="nav-section">4.10 语法总结</a>
+    <a href="#section-4-11" class="nav-section">4.11 单元总结</a>
+</nav>
+
+<!-- ===== 页面主体 ===== -->
+<div class="page-wrapper">
+
+<div class="hero-banner">
+    <h1>第四单元：变量与赋值</h1>
+    <div class="subtitle">Unit 4: Variables and Assignment</div>
+    <div class="badge">对应关卡 · 暗影地牢 Kithgard Dungeon · 恐惧之门 → Kithgard之门</div>
+</div>
+
+<div class="container">
+
+<!-- ==================== 4.1 ==================== -->
+<div class="section-header" id="section-4-1">
+    <h2>4.1 变量的概念</h2>
+    <div class="en-title">The Concept of Variables</div>
+</div>
+
+<p>想象一下，你的英雄安雅（Anya）正在地下城里冒险。她需要记住身边最近的敌人叫什么名字，才能精准地挥剑攻击。如果她的脑子里没有"格子"来装这个名字，每走一步就忘了刚才看到的怪物——那可就糟糕啦！在编程的世界里，<span class="keyword">变量</span>（Variable）就是我们给英雄准备的"记忆格子"，让程序能够记住信息、使用信息、甚至改变信息。</p>
+
+<h3 id="section-4-1-1">4.1.1 变量的定义（Definition of Variables）</h3>
+
+<h4>4.1.1.1 变量是存储数据的容器
+    <span class="en">A named container that stores data</span>
+</h4>
+
+<p>在编程中，变量是一个<span class="keyword">可以存储数据的命名容器</span>。你可以把数据"放进去"，之后随时取出来使用。就像冒险者的背包里有很多口袋，每个口袋都贴了一个标签——"金币"口袋里装金币数量，"血量"口袋里装当前生命值，"敌人"口袋里装最近一个怪物的名字。</p>
+
+<p>在 Python 中，创建变量非常简单，只需要给它起个名字，然后用等号 <code>=</code> 把值"放进去"：</p>
+
+<div class="code-block">
+    <div class="dots"><span class="red"></span><span class="yellow"></span><span class="green"></span></div>
+<pre><span class="cmt"># 创建变量并赋值</span>
+<span class="obj">gold</span> = <span class="num">0</span>          <span class="cmt"># 变量 gold 里装了数字 0</span>
+<span class="obj">health</span> = <span class="num">100</span>      <span class="cmt"># 变量 health 里装了数字 100</span>
+<span class="obj">enemy</span> = <span class="str">"Kratt"</span>  <span class="cmt"># 变量 enemy 里装了字符串 "Kratt"</span></pre>
+</div>
+
+<h4>4.1.1.2 变量是代表数据的符号
+    <span class="en">A symbol that represents data</span>
+</h4>
+
+<p>换一种角度理解：变量就是一个<span class="keyword">代号</span>或者<span class="keyword">符号</span>，它代表了某个具体的数据。当你在代码中写 <code>enemy</code>，计算机会自动去找它对应的值——也许是 "Kratt"，也许下一秒就变成了 "Grul"。这就像在学校里老师叫你的名字，你代表你自己；在游戏里"最近的敌人"这个代号，在不同时刻可能代表不同的怪物。</p>
+
+<p>变量最重要的特性就是：<span class="keyword">值可以变</span>。如果一个值永远不变，我们通常称它为常量（后面会讲到）。变量之所以叫"变量"（Variable），就是因为 Variable 这个词本身的意思就是"可变的"。</p>
+
+<h4>4.1.1.3 变量像一个标签/名牌
+    <span class="en">A variable is like a name tag</span>
+</h4>
+
+<p>还有一种更精确的比喻方式：变量像一个<span class="keyword">标签</span>（name tag），而不是盒子。你把标签贴到一个物品上，这个标签就"指向"那个物品。当你撕下标签贴到另一个物品上时，标签指向的东西就变了，但标签的名字没变。</p>
+
+<p>在 Python 中这种理解尤为重要。当你写：</p>
+
+<div class="code-block">
+    <div class="dots"><span class="red"></span><span class="yellow"></span><span class="green"></span></div>
+<pre><span class="obj">enemy</span> = <span class="str">"Kratt"</span>
+<span class="obj">enemy</span> = <span class="str">"Grul"</span></pre>
+</div>
+
+<p>你并没有"修改" Kratt 变成了 Grul——你只是把 <code>enemy</code> 这个标签从 "Kratt" 身上撕下来，重新贴到了 "Grul" 身上。原来的 "Kratt" 字符串还在内存里（只是没有标签指向它了）。</p>
+
+<div class="figure">
+    <img src="https://assets.koudashijie.com/knowledge/4-1-1_variable_concept.png" alt="变量概念图示">
+    <div class="caption">图1 — 变量就像标签，可以贴在不同的数据上</div>
+</div>
+
+<h3 id="section-4-1-2">4.1.2 为什么需要变量（Why We Need Variables）</h3>
+
+<p>你可能会问："我直接写 <code>hero.attack("Kratt")</code> 不就好了吗？为什么还要多此一举弄个变量？" 好问题！让我们来看看没有变量时会遇到的窘境：</p>
+
+<p><strong>场景一：敌人名字未知。</strong>在很多关卡中，敌人不止一个，而且它们的名字你事先不知道。你没法直接写 <code>hero.attack("???")</code>。你需要英雄用眼睛"看"一下最近的敌人是谁，把这个信息记下来（存到变量里），然后再攻击。</p>
+
+<p><strong>场景二：信息会变化。</strong>英雄塔林（Talin）在循环中一遍又一遍地寻找最近的敌人。第一圈最近的是 Kratt，攻击它；第二圈最近的变成了 Grul，再攻击它。如果不用变量来动态保存"当前最近的敌人"，你就没法灵活应对不断变化的战场。</p>
+
+<p><strong>场景三：避免重复。</strong>如果某个值在代码中出现了很多次，把它存入变量可以让你只需要修改一个地方就更新全部。这对大型程序来说非常重要。</p>
+
+<div class="tip-box">
+    <span class="tip-label">小贴士：</span>在 CodeCombat 中，<code>hero.findNearestEnemy()</code> 是英雄的"侦察"方法，它返回最近的敌人对象。你必须把返回值存到变量里才能使用它！
+</div>
+
+<h3 id="section-4-1-3">4.1.3 变量的类比（Variable Analogies）</h3>
+
+<p>为了帮助你更好地理解变量，这里整理了几种常见的类比：</p>
+
+<table class="styled-table">
+    <thead>
+        <tr><th>类比</th><th>变量是什么</th><th>值是什么</th><th>要点</th></tr>
+    </thead>
+    <tbody>
+        <tr><td>🗃️ 鞋盒</td><td>贴着标签的盒子</td><td>盒子里的东西</td><td>内容可以换，标签名不变</td></tr>
+        <tr><td>🏷️ 名牌</td><td>贴在物品上的标签</td><td>标签指向的物品</td><td>标签可以撕下来贴到别处</td></tr>
+        <tr><td>📱 通讯录</td><td>联系人名字</td><td>电话号码</td><td>名字不变，号码可以更新</td></tr>
+        <tr><td>🧪 实验变量</td><td>温度、浓度等名称</td><td>具体的数值</td><td>实验中可以改变的量</td></tr>
+        <tr><td>📌 便利贴</td><td>便利贴上写的名字</td><td>便利贴贴在的物品</td><td>把便利贴从一个物品移到另一个</td></tr>
+    </tbody>
+</table>
+
+<p>在数学课上你可能见过 <code>x + 5 = 10</code> 这样的表达式，其中 <code>x</code> 就是变量。编程中的变量概念与此类似，但有一个巨大差异：<span class="keyword">数学里的 = 表示"等于"（一种关系），而编程里的 = 表示"赋值"（一个动作）</span>。这个区别非常重要，我们在 4.2.3 会详细讲解。</p>
+
+<div class="figure">
+    <img src="https://assets.koudashijie.com/knowledge/4-1-3_variable_analogy.png" alt="变量类比图示">
+    <div class="caption">图2 — 各种生活场景中的"变量"类比</div>
+</div>
+
+<!-- ==================== 4.2 ==================== -->
+<div class="section-header" id="section-4-2">
+    <h2>4.2 变量赋值</h2>
+    <div class="en-title">Variable Assignment</div>
+</div>
+
+<p>了解了变量是什么之后，最关键的操作就是<span class="keyword">赋值</span>（Assignment）——把一个值"塞进"变量里。赋值是编程中最基础、最高频的操作之一。每次你写 <code>x = 5</code>，你就在做赋值。</p>
+
+<h3 id="section-4-2-1">4.2.1 赋值语句（Assignment Statement）</h3>
+
+<p>Python 中赋值语句的基本格式是：</p>
+
+<div class="code-block">
+    <div class="dots"><span class="red"></span><span class="yellow"></span><span class="green"></span></div>
+<pre><span class="obj">变量名</span> = <span class="obj">值</span></pre>
+</div>
+
+<p>等号 <code>=</code> 在这里是<span class="keyword">赋值运算符</span>（assignment operator）。它的含义是：把右边的值，交给左边的变量来保管。</p>
+
+<p>让我们看看英雄安雅在关卡中怎么用赋值：</p>
+
+<div class="code-block">
+    <div class="dots"><span class="red"></span><span class="yellow"></span><span class="green"></span></div>
+<pre><span class="cmt"># 安雅把敌人信息存入变量</span>
+<span class="obj">enemy</span> = <span class="obj">hero</span><span class="punc">.</span><span class="fn">findNearestEnemy</span><span class="punc">()</span>
+<span class="cmt"># 现在 enemy 这个变量里装的是最近的敌人对象</span>
+<span class="obj">hero</span><span class="punc">.</span><span class="fn">attack</span><span class="punc">(</span><span class="obj">enemy</span><span class="punc">)</span>
+<span class="cmt"># 用变量 enemy 作为参数传给 attack 方法</span></pre>
+</div>
+
+<p>赋值的执行顺序很重要：计算机<span class="keyword">先计算等号右边的值</span>，然后<span class="keyword">再把结果存到左边的变量</span>。所以 <code>enemy = hero.findNearestEnemy()</code> 的执行过程是：先调用 <code>hero.findNearestEnemy()</code> 得到一个结果（比如一只叫 Kratt 的食人魔），然后把这个结果存到 <code>enemy</code> 变量中。</p>
+
+<div class="figure">
+    <img src="https://assets.koudashijie.com/knowledge/4-2-1_assignment_statement.png" alt="赋值语句图解">
+    <div class="caption">图3 — 赋值语句的执行方向：从右到左</div>
+</div>
+
+<h3 id="section-4-2-2">4.2.2 变量的重新赋值（Reassignment）</h3>
+
+<p>变量的值不是"刻在石头上"的，它可以随时被更新！当你给一个已有的变量赋一个新值时，旧值就被丢弃了，变量现在指向新值。</p>
+
+<div class="code-block">
+    <div class="dots"><span class="red"></span><span class="yellow"></span><span class="green"></span></div>
+<pre><span class="obj">health</span> = <span class="num">100</span>     <span class="cmt"># 英雄初始血量 100</span>
+<span class="obj">health</span> = <span class="num">80</span>      <span class="cmt"># 被怪物打了！血量变成 80</span>
+<span class="obj">health</span> = <span class="num">80</span> + <span class="num">20</span>  <span class="cmt"># 喝了药水！血量恢复到 100</span></pre>
+</div>
+
+<p>在游戏循环中，这种重新赋值非常常见。每一帧（tick），英雄都需要重新侦察最近的敌人，因为敌人在移动，最近的那个可能已经换了：</p>
+
+<div class="code-block">
+    <div class="dots"><span class="red"></span><span class="yellow"></span><span class="green"></span></div>
+<pre><span class="kw">while</span> <span class="kw">True</span>:
+    <span class="obj">enemy</span> = <span class="obj">hero</span><span class="punc">.</span><span class="fn">findNearestEnemy</span><span class="punc">()</span>  <span class="cmt"># 每一轮都重新赋值</span>
+    <span class="kw">if</span> <span class="obj">enemy</span>:
+        <span class="obj">hero</span><span class="punc">.</span><span class="fn">attack</span><span class="punc">(</span><span class="obj">enemy</span><span class="punc">)</span></pre>
+</div>
+
+<p>每次循环执行到 <code>enemy = hero.findNearestEnemy()</code>，变量 <code>enemy</code> 都会被更新为此刻最新的最近敌人。这就是"重新赋值"的力量——让你的程序能实时响应变化。</p>
+
+<h3 id="section-4-2-3">4.2.3 赋值与等号的区别（Assignment vs. Equality）</h3>
+
+<p>很多初学者会混淆编程中的 <code>=</code> 和数学中的 <code>=</code>。让我们彻底搞清楚这两者的区别：</p>
+
+<div class="comparison-grid">
+    <div class="card">
+        <h5>数学中的 =</h5>
+        <p>表示"等于"，是一种<strong>对称关系</strong>。<br><code>x = 5</code> 和 <code>5 = x</code> 是一样的意思。<br>它表达一个事实：x 的值等于 5。</p>
+    </div>
+    <div class="card">
+        <h5>编程中的 =</h5>
+        <p>表示"赋值"，是一个<strong>有方向的动作</strong>。<br><code>x = 5</code> 合法（把 5 存入 x）。<br><code>5 = x</code> 非法！你不能把东西存入数字 5。</p>
+    </div>
+</div>
+
+<p>一个经典的例子能让区别更明显：</p>
+
+<div class="code-block">
+    <div class="dots"><span class="red"></span><span class="yellow"></span><span class="green"></span></div>
+<pre><span class="obj">x</span> = <span class="num">5</span>
+<span class="obj">x</span> = <span class="obj">x</span> + <span class="num">1</span>   <span class="cmt"># 在数学里这是矛盾的（x 不能等于 x+1）</span>
+                <span class="cmt"># 但在编程里完全合法！意思是：取出 x 当前的值(5)，</span>
+                <span class="cmt"># 加上 1 得到 6，然后把 6 重新存回 x</span></pre>
+</div>
+
+<p>执行完后，<code>x</code> 的值从 5 变成了 6。这在编程里叫做"自增"，超级常用！</p>
+
+<div class="remember-box">
+    <span class="remember-label">记住：</span>编程中 <code>=</code> 是赋值（把右边的值存到左边的变量），而 <code>==</code> 才是"等于"的比较运算符。写代码时千万不要搞混！
+</div>
+
+<!-- ==================== 4.3 ==================== -->
+<div class="section-header" id="section-4-3">
+    <h2>4.3 变量命名规则</h2>
+    <div class="en-title">Variable Naming Rules</div>
+</div>
+
+<p>给变量起名字可是一门大学问！一个好的变量名能让代码一目了然，而一个糟糕的名字会让代码读起来像天书。在 CodeCombat 中，当你看到 <code>enemy = hero.findNearestEnemy()</code>，一眼就知道这个变量存的是敌人。如果写成 <code>a = hero.findNearestEnemy()</code>……谁知道 <code>a</code> 是什么呢？</p>
+
+<h3 id="section-4-3-1">4.3.1 命名的语法规则（Syntax Rules for Naming）</h3>
+
+<p>Python 对变量名有严格的语法要求。如果违反了这些规则，程序直接报错：</p>
+
+<table class="styled-table">
+    <thead>
+        <tr><th>规则</th><th>正确示例</th><th>错误示例</th><th>说明</th></tr>
+    </thead>
+    <tbody>
+        <tr><td>只能包含字母、数字、下划线</td><td><code>enemy_1</code></td><td><code>enemy-1</code></td><td>减号、空格、特殊符号都不行</td></tr>
+        <tr><td>不能以数字开头</td><td><code>level2_boss</code></td><td><code>2nd_enemy</code></td><td>开头必须是字母或下划线</td></tr>
+        <tr><td>不能使用保留字</td><td><code>my_class</code></td><td><code>class</code></td><td>while、if、for、True 等都不能用</td></tr>
+        <tr><td>区分大小写</td><td><code>Enemy ≠ enemy</code></td><td>—</td><td>大小写不同就是不同变量</td></tr>
+    </tbody>
+</table>
+
+<div class="code-block">
+    <div class="dots"><span class="red"></span><span class="yellow"></span><span class="green"></span></div>
+<pre><span class="cmt"># ✅ 合法的变量名</span>
+<span class="obj">enemy</span> = <span class="str">"Kratt"</span>
+<span class="obj">nearest_enemy</span> = <span class="obj">hero</span><span class="punc">.</span><span class="fn">findNearestEnemy</span><span class="punc">()</span>
+<span class="obj">_health</span> = <span class="num">100</span>
+<span class="obj">level2Boss</span> = <span class="str">"Brak"</span>
+
+<span class="cmt"># ❌ 非法的变量名（会报错）</span>
+<span class="cmt"># 2enemy = "Kratt"       # 数字开头</span>
+<span class="cmt"># my-enemy = "Kratt"     # 含有减号</span>
+<span class="cmt"># while = "Kratt"        # 保留字</span></pre>
+</div>
+
+<h3 id="section-4-3-2">4.3.2 命名的最佳实践（Best Practices for Naming）</h3>
+
+<p>除了语法层面的"硬规则"，还有一些约定俗成的"软规则"，虽然不遵守不会报错，但会让你的代码更专业、更易读：</p>
+
+<p><strong>1. 使用有意义的名字。</strong>变量名应该能告诉读者"这里存了什么"。<code>enemy</code> 比 <code>e</code> 好，<code>nearest_enemy</code> 比 <code>ne</code> 好。想象六个月后你再看自己的代码，你能看懂 <code>ne</code> 是什么吗？</p>
+
+<p><strong>2. 使用蛇形命名法（snake_case）。</strong>Python 社区的惯例是：用小写字母，单词之间用下划线分隔。比如 <code>nearest_enemy</code>、<code>total_gold</code>、<code>max_health</code>。（Java 和 JavaScript 则习惯用驼峰命名法 <code>nearestEnemy</code>，不同语言有不同风格。）</p>
+
+<p><strong>3. 不要太长也不要太短。</strong>一个字母的变量名（如 <code>x</code>）通常只用在很小的范围内。太长的名字（如 <code>the_nearest_enemy_that_i_need_to_attack</code>）则冗余。2-3 个词的组合通常刚刚好。</p>
+
+<p><strong>4. 避免使用容易混淆的名字。</strong>不要用 <code>l</code>（小写 L）和 <code>1</code>（数字一）、<code>O</code>（大写 O）和 <code>0</code>（数字零）这类容易看花眼的字符作为变量名。</p>
+
+<div class="figure">
+    <img src="https://assets.koudashijie.com/knowledge/4-3-2_naming_best_practices.png" alt="命名最佳实践">
+    <div class="caption">图4 — 好的变量名 vs 差的变量名</div>
+</div>
+
+<h3 id="section-4-3-3">4.3.3 命名对比示例（Naming Comparison Examples）</h3>
+
+<p>让我们用一个实际的 CodeCombat 场景来感受好坏命名的差异：</p>
+
+<div class="comparison-grid">
+    <div class="card">
+        <h5>😵 难以阅读的代码</h5>
+        <div class="code-block">
+            <div class="dots"><span class="red"></span><span class="yellow"></span><span class="green"></span></div>
+<pre><span class="kw">while</span> <span class="kw">True</span>:
+    <span class="obj">a</span> = <span class="obj">hero</span><span class="punc">.</span><span class="fn">findNearestEnemy</span><span class="punc">()</span>
+    <span class="kw">if</span> <span class="obj">a</span>:
+        <span class="obj">hero</span><span class="punc">.</span><span class="fn">attack</span><span class="punc">(</span><span class="obj">a</span><span class="punc">)</span>
+    <span class="obj">b</span> = <span class="obj">hero</span><span class="punc">.</span><span class="fn">findNearestItem</span><span class="punc">()</span>
+    <span class="kw">if</span> <span class="obj">b</span>:
+        <span class="obj">hero</span><span class="punc">.</span><span class="fn">moveXY</span><span class="punc">(</span><span class="obj">b</span>.pos.x, <span class="obj">b</span>.pos.y<span class="punc">)</span></pre>
+        </div>
+    </div>
+    <div class="card">
+        <h5>✨ 清晰易读的代码</h5>
+        <div class="code-block">
+            <div class="dots"><span class="red"></span><span class="yellow"></span><span class="green"></span></div>
+<pre><span class="kw">while</span> <span class="kw">True</span>:
+    <span class="obj">enemy</span> = <span class="obj">hero</span><span class="punc">.</span><span class="fn">findNearestEnemy</span><span class="punc">()</span>
+    <span class="kw">if</span> <span class="obj">enemy</span>:
+        <span class="obj">hero</span><span class="punc">.</span><span class="fn">attack</span><span class="punc">(</span><span class="obj">enemy</span><span class="punc">)</span>
+    <span class="obj">item</span> = <span class="obj">hero</span><span class="punc">.</span><span class="fn">findNearestItem</span><span class="punc">()</span>
+    <span class="kw">if</span> <span class="obj">item</span>:
+        <span class="obj">hero</span><span class="punc">.</span><span class="fn">moveXY</span><span class="punc">(</span><span class="obj">item</span>.pos.x, <span class="obj">item</span>.pos.y<span class="punc">)</span></pre>
+        </div>
+    </div>
+</div>
+
+<p>两段代码的功能完全一样，但右边的版本让人一眼就能看懂每个变量存的是什么。在实际开发中，"代码首先是写给人看的，其次才是让机器执行的"。好的命名就是好的文档！</p>
+
+<div class="info-box">
+    <span class="info-label">知识拓展：</span>Python 有一些内置名字不应该被用作变量名，比如 <code>list</code>、<code>str</code>、<code>int</code>、<code>print</code> 等。虽然用了不会报错，但会覆盖（shadowing）原有的内置功能，导致难以发现的 bug。
+</div>
+
+<!-- ==================== 4.4 ==================== -->
+<div class="section-header" id="section-4-4">
+    <h2>4.4 变量的值与数据类型</h2>
+    <div class="en-title">Variable Values and Data Types</div>
+</div>
+
+<p>变量可以存各种各样的数据，但这些数据并不都是同一类"东西"。数字和文字是不同类型的数据，就像背包里的金币和信件是不同类型的物品一样。Python 中常见的数据类型有以下几种：</p>
+
+<h3 id="section-4-4-1">4.4.1 变量可存储的数据类型（Data Types a Variable Can Store）</h3>
+
+<table class="styled-table">
+    <thead>
+        <tr><th>数据类型</th><th>Python 名</th><th>描述</th><th>示例</th></tr>
+    </thead>
+    <tbody>
+        <tr><td>整数</td><td><code>int</code></td><td>没有小数点的数字</td><td><code>42</code>, <code>-7</code>, <code>0</code></td></tr>
+        <tr><td>浮点数</td><td><code>float</code></td><td>有小数点的数字</td><td><code>3.14</code>, <code>0.5</code>, <code>-2.8</code></td></tr>
+        <tr><td>字符串</td><td><code>str</code></td><td>由引号包裹的文本</td><td><code>"Anya"</code>, <code>'hello'</code></td></tr>
+        <tr><td>布尔值</td><td><code>bool</code></td><td>只有两个值：真/假</td><td><code>True</code>, <code>False</code></td></tr>
+        <tr><td>对象</td><td>各种类</td><td>复杂的数据结构</td><td>英雄、敌人、物品</td></tr>
+        <tr><td>空值</td><td><code>None</code></td><td>表示"什么都没有"</td><td><code>None</code></td></tr>
+    </tbody>
+</table>
+
+<p>在 CodeCombat 中，你会频繁接触到这些类型。让我们看安雅在一个关卡中用到的各种变量：</p>
+
+<div class="code-block">
+    <div class="dots"><span class="red"></span><span class="yellow"></span><span class="green"></span></div>
+<pre><span class="cmt"># 整数 int — 坐标、生命值</span>
+<span class="obj">x_pos</span> = <span class="num">34</span>
+<span class="obj">y_pos</span> = <span class="num">20</span>
+
+<span class="cmt"># 浮点数 float — 距离</span>
+<span class="obj">distance</span> = <span class="num">12.5</span>
+
+<span class="cmt"># 字符串 str — 名字、类型</span>
+<span class="obj">hero_name</span> = <span class="str">"Anya"</span>
+<span class="obj">build_type</span> = <span class="str">"fence"</span>
+
+<span class="cmt"># 布尔值 bool — 条件判断</span>
+<span class="obj">is_alive</span> = <span class="kw">True</span>
+
+<span class="cmt"># 对象 — findNearestEnemy 返回的是一个敌人对象</span>
+<span class="obj">enemy</span> = <span class="obj">hero</span><span class="punc">.</span><span class="fn">findNearestEnemy</span><span class="punc">()</span>
+
+<span class="cmt"># None — 当没有敌人时，findNearestEnemy 返回 None</span>
+<span class="obj">enemy</span> = <span class="obj">hero</span><span class="punc">.</span><span class="fn">findNearestEnemy</span><span class="punc">()</span>  <span class="cmt"># 如果没敌人，enemy 就是 None</span></pre>
+</div>
+
+<div class="figure">
+    <img src="https://assets.koudashijie.com/knowledge/4-4-1_data_types.png" alt="数据类型">
+    <div class="caption">图5 — Python 中变量可以存储的常见数据类型</div>
+</div>
+
+<h3 id="section-4-4-2">4.4.2 动态类型特性（Dynamic Typing）</h3>
+
+<p>Python 是一门<span class="keyword">动态类型</span>（dynamically typed）语言。这意味着你<strong>不需要提前声明变量的类型</strong>，而且同一个变量可以在不同时刻存储不同类型的值：</p>
+
+<div class="code-block">
+    <div class="dots"><span class="red"></span><span class="yellow"></span><span class="green"></span></div>
+<pre><span class="obj">x</span> = <span class="num">42</span>          <span class="cmt"># 此时 x 是 int</span>
+<span class="obj">x</span> = <span class="str">"hello"</span>     <span class="cmt"># 此时 x 变成了 str</span>
+<span class="obj">x</span> = <span class="kw">True</span>        <span class="cmt"># 此时 x 又变成了 bool</span></pre>
+</div>
+
+<p>虽然 Python 允许这样做，但在实际编程中，<strong>频繁改变变量的数据类型是不好的习惯</strong>。这会让代码变得混乱难懂。一个叫 <code>enemy</code> 的变量最好始终存敌人对象（或 None），而不是突然变成一个数字。</p>
+
+<p>与 Python 不同，有些语言（如 Java、C++）是<span class="keyword">静态类型</span>语言，你必须在创建变量时就声明它的类型：</p>
+
+<div class="code-block">
+    <div class="dots"><span class="red"></span><span class="yellow"></span><span class="green"></span></div>
+<pre><span class="cmt">// Java 示例（对比用，不需要在 CodeCombat 中写）</span>
+<span class="kw">int</span> <span class="obj">health</span> = <span class="num">100</span>;      <span class="cmt">// 声明 health 是 int 类型</span>
+<span class="kw">String</span> <span class="obj">name</span> = <span class="str">"Anya"</span>;  <span class="cmt">// 声明 name 是 String 类型</span>
+<span class="cmt">// health = "hello";    // ❌ 报错！不能把字符串存入 int 变量</span></pre>
+</div>
+
+<div class="tip-box">
+    <span class="tip-label">小贴士：</span>在 CodeCombat 中你可以使用 Python 的 <code>type()</code> 函数来查看一个变量的数据类型。比如 <code>type(enemy)</code> 会告诉你 enemy 当前存的是什么类型的数据。不过在游戏关卡中一般不需要这么做，了解即可。
+</div>
+
+<!-- ==================== 4.5 ==================== -->
+<div class="section-header" id="section-4-5">
+    <h2>4.5 方法返回值与变量</h2>
+    <div class="en-title">Method Return Values and Variables</div>
+</div>
+
+<p>在前面的单元中我们学过方法（method）是对象能执行的动作。有些方法不仅执行动作，还会<span class="keyword">返回一个结果</span>给你。这个结果叫做<span class="keyword">返回值</span>（return value）。变量在这里的作用就是"接住"这个返回值，就像你抛出一个飞盘，需要有人接住它一样。</p>
+
+<h3 id="section-4-5-1">4.5.1 什么是返回值（What is a Return Value）</h3>
+
+<p>方法可以分为两大类：</p>
+
+<p><strong>只做事不返回值的方法</strong>：比如 <code>hero.moveRight()</code>、<code>hero.attack(enemy)</code>。它们执行了一个动作（移动、攻击），但不给你任何"答案"。</p>
+
+<p><strong>做事并返回结果的方法</strong>：比如 <code>hero.findNearestEnemy()</code>。它执行了一个动作（扫描周围），并且<strong>返回</strong>一个结果（最近的敌人对象）。你需要用变量来接收这个结果。</p>
+
+<div class="code-block">
+    <div class="dots"><span class="red"></span><span class="yellow"></span><span class="green"></span></div>
+<pre><span class="cmt"># 不需要接收返回值的方法</span>
+<span class="obj">hero</span><span class="punc">.</span><span class="fn">moveXY</span><span class="punc">(</span><span class="num">20</span>, <span class="num">30</span><span class="punc">)</span>  <span class="cmt"># 英雄移动到 (20,30)，没有返回值需要保存</span>
+
+<span class="cmt"># 需要用变量接收返回值的方法</span>
+<span class="obj">enemy</span> = <span class="obj">hero</span><span class="punc">.</span><span class="fn">findNearestEnemy</span><span class="punc">()</span>  <span class="cmt"># 返回值是最近的敌人对象</span>
+<span class="obj">item</span> = <span class="obj">hero</span><span class="punc">.</span><span class="fn">findNearestItem</span><span class="punc">()</span>    <span class="cmt"># 返回值是最近的物品对象</span></pre>
+</div>
+
+<p>如果你调用了一个有返回值的方法，却不用变量接收，那返回值就"飘走了"——你没法使用它。这就像有人告诉你最近的敌人叫 Kratt，但你转头就忘了。</p>
+
+<h3 id="section-4-5-2">4.5.2 findNearestEnemy()</h3>
+
+<p><code>hero.findNearestEnemy()</code> 是 CodeCombat 中最重要的返回值方法之一。让我们深入了解它：</p>
+
+<p><strong>功能</strong>：扫描英雄周围的视野范围，找到距离最近的敌人。</p>
+<p><strong>返回值</strong>：如果找到了敌人，返回该敌人对象（包含名字、位置、血量等信息）；如果没有敌人在视野内，返回 <code>None</code>。</p>
+<p><strong>为什么需要变量</strong>：因为你接下来想要对这个敌人"做点什么"（比如攻击它），你需要一个名字来指代它。</p>
+
+<div class="code-block">
+    <div class="dots"><span class="red"></span><span class="yellow"></span><span class="green"></span></div>
+<pre><span class="cmt"># 塔林（Talin）使用 findNearestEnemy 的完整流程</span>
+<span class="obj">enemy</span> = <span class="obj">hero</span><span class="punc">.</span><span class="fn">findNearestEnemy</span><span class="punc">()</span>  <span class="cmt"># 第1步：侦察并记住</span>
+<span class="kw">if</span> <span class="obj">enemy</span>:                         <span class="cmt"># 第2步：检查是否找到了敌人</span>
+    <span class="obj">hero</span><span class="punc">.</span><span class="fn">attack</span><span class="punc">(</span><span class="obj">enemy</span><span class="punc">)</span>             <span class="cmt"># 第3步：攻击！</span></pre>
+</div>
+
+<p>注意第2步的 <code>if enemy:</code>——这是一个非常重要的安全检查。如果场上没有敌人，<code>findNearestEnemy()</code> 返回 <code>None</code>。如果你对 <code>None</code> 调用 <code>attack()</code>，程序就会报错。所以我们先检查 <code>enemy</code> 是否有值（不是 None），再去攻击。</p>
+
+<div class="figure">
+    <img src="https://assets.koudashijie.com/knowledge/4-5-2_findNearestEnemy.png" alt="findNearestEnemy 流程图">
+    <div class="caption">图6 — findNearestEnemy() 的调用和返回值流程</div>
+</div>
+
+<h3 id="section-4-5-3">4.5.3 用变量存储返回值（Storing Return Values in Variables）</h3>
+
+<p>除了 <code>findNearestEnemy()</code>，CodeCombat 中还有许多返回值方法，它们都需要变量来接收结果：</p>
+
+<table class="styled-table">
+    <thead>
+        <tr><th>方法</th><th>返回值类型</th><th>描述</th></tr>
+    </thead>
+    <tbody>
+        <tr><td><code>hero.findNearestEnemy()</code></td><td>对象 或 None</td><td>最近的敌人</td></tr>
+        <tr><td><code>hero.findNearestItem()</code></td><td>对象 或 None</td><td>最近的物品（宝石、药水等）</td></tr>
+        <tr><td><code>hero.findNearestFriend()</code></td><td>对象 或 None</td><td>最近的友方单位</td></tr>
+        <tr><td><code>hero.findEnemies()</code></td><td>列表 (list)</td><td>所有可见敌人的列表</td></tr>
+        <tr><td><code>hero.findItems()</code></td><td>列表 (list)</td><td>所有可见物品的列表</td></tr>
+        <tr><td><code>hero.distanceTo(target)</code></td><td>float</td><td>到目标的距离</td></tr>
+        <tr><td><code>hero.isReady("skill")</code></td><td>bool</td><td>技能是否冷却完毕</td></tr>
+    </tbody>
+</table>
+
+<p>让我们看一个综合使用多个返回值方法的例子：</p>
+
+<div class="code-block">
+    <div class="dots"><span class="red"></span><span class="yellow"></span><span class="green"></span></div>
+<pre><span class="cmt"># 安雅的综合战斗循环</span>
+<span class="kw">while</span> <span class="kw">True</span>:
+    <span class="obj">enemy</span> = <span class="obj">hero</span><span class="punc">.</span><span class="fn">findNearestEnemy</span><span class="punc">()</span>
+    <span class="kw">if</span> <span class="obj">enemy</span>:
+        <span class="obj">distance</span> = <span class="obj">hero</span><span class="punc">.</span><span class="fn">distanceTo</span><span class="punc">(</span><span class="obj">enemy</span><span class="punc">)</span>
+        <span class="kw">if</span> <span class="obj">distance</span> &lt; <span class="num">10</span>:
+            <span class="obj">hero</span><span class="punc">.</span><span class="fn">attack</span><span class="punc">(</span><span class="obj">enemy</span><span class="punc">)</span>
+    <span class="obj">item</span> = <span class="obj">hero</span><span class="punc">.</span><span class="fn">findNearestItem</span><span class="punc">()</span>
+    <span class="kw">if</span> <span class="obj">item</span>:
+        <span class="obj">hero</span><span class="punc">.</span><span class="fn">moveXY</span><span class="punc">(</span><span class="obj">item</span>.pos.x, <span class="obj">item</span>.pos.y<span class="punc">)</span></pre>
+</div>
+
+<div class="remember-box">
+    <span class="remember-label">记住：</span>当你在代码提示（方法面板）中看到某个方法前面有一个小箭头 → 或说明提示"returns..."时，说明这个方法有返回值。别忘了用 <code>变量 = </code> 来接住它！
+</div>
+
+<!-- ==================== 4.6 ==================== -->
+<div class="section-header" id="section-4-6">
+    <h2>4.6 变量与循环</h2>
+    <div class="en-title">Variables and Loops</div>
+</div>
+
+<p>变量和循环是一对绝佳搭档！在循环中，变量可以被不断更新，帮助程序追踪变化的状态。就像英雄塔林在巡逻时需要不断刷新"最近敌人"的信息一样，循环中的变量让你的代码有了"实时更新"的超能力。</p>
+
+<h3 id="section-4-6-1">4.6.1 循环中更新变量（Updating Variables in Loops）</h3>
+
+<p>在 <code>while True</code> 循环中更新变量是 CodeCombat 最常见的模式。每一次循环（每一个"tick"），英雄重新观察环境，更新变量中的信息，然后基于最新信息做出决策：</p>
+
+<div class="code-block">
+    <div class="dots"><span class="red"></span><span class="yellow"></span><span class="green"></span></div>
+<pre><span class="cmt"># 塔林的巡逻模式</span>
+<span class="kw">while</span> <span class="kw">True</span>:
+    <span class="cmt"># 每次循环都重新侦察 → 变量被更新</span>
+    <span class="obj">enemy</span> = <span class="obj">hero</span><span class="punc">.</span><span class="fn">findNearestEnemy</span><span class="punc">()</span>
+    
+    <span class="cmt"># 基于最新的变量值做决策</span>
+    <span class="kw">if</span> <span class="obj">enemy</span>:
+        <span class="obj">hero</span><span class="punc">.</span><span class="fn">attack</span><span class="punc">(</span><span class="obj">enemy</span><span class="punc">)</span>
+        <span class="obj">hero</span><span class="punc">.</span><span class="fn">attack</span><span class="punc">(</span><span class="obj">enemy</span><span class="punc">)</span>  <span class="cmt"># 攻击两次确保击杀</span></pre>
+</div>
+
+<p>为什么要在循环<strong>内部</strong>更新变量？因为如果你把 <code>enemy = hero.findNearestEnemy()</code> 写在循环<strong>外面</strong>，那 <code>enemy</code> 永远是开始时找到的那一个敌人。即使那个敌人已经被击败了，变量也不会自动更新——你的英雄会对着一堆骨灰空挥剑！</p>
+
+<div class="warning-box">
+    <span class="warning-label">常见错误：</span>把侦察方法放在循环外面，导致变量永远不更新。如果你发现英雄打死第一个敌人后就傻站着不动了，很可能就是这个问题！
+</div>
+
+<h3 id="section-4-6-2">4.6.2 计数器变量（Counter Variables）</h3>
+
+<p>计数器（counter）是一种特殊用途的变量，专门用来计数。它通常在循环外初始化为 0，每次循环满足某个条件时加 1：</p>
+
+<div class="code-block">
+    <div class="dots"><span class="red"></span><span class="yellow"></span><span class="green"></span></div>
+<pre><span class="cmt"># 安雅数自己消灭了多少敌人</span>
+<span class="obj">kill_count</span> = <span class="num">0</span>  <span class="cmt"># 计数器初始化为 0（循环外）</span>
+
+<span class="kw">while</span> <span class="kw">True</span>:
+    <span class="obj">enemy</span> = <span class="obj">hero</span><span class="punc">.</span><span class="fn">findNearestEnemy</span><span class="punc">()</span>
+    <span class="kw">if</span> <span class="obj">enemy</span>:
+        <span class="obj">hero</span><span class="punc">.</span><span class="fn">attack</span><span class="punc">(</span><span class="obj">enemy</span><span class="punc">)</span>
+        <span class="obj">hero</span><span class="punc">.</span><span class="fn">attack</span><span class="punc">(</span><span class="obj">enemy</span><span class="punc">)</span>
+        <span class="obj">kill_count</span> = <span class="obj">kill_count</span> + <span class="num">1</span>  <span class="cmt"># 每消灭一个，计数加1</span>
+        <span class="obj">hero</span><span class="punc">.</span><span class="fn">say</span><span class="punc">(</span><span class="str">"已消灭 "</span> + <span class="fn">str</span><span class="punc">(</span><span class="obj">kill_count</span><span class="punc">)</span> + <span class="str">" 个敌人！"</span><span class="punc">)</span></pre>
+</div>
+
+<p><code>kill_count = kill_count + 1</code> 这行代码的意思是：取出 <code>kill_count</code> 的当前值，加上 1，然后把新值存回 <code>kill_count</code>。这正是我们在 4.2.3 讨论的"编程中的 = 不是数学等号"的体现。</p>
+
+<div class="tip-box">
+    <span class="tip-label">小贴士：</span>Python 提供了简写方式 <code>kill_count += 1</code>，效果和 <code>kill_count = kill_count + 1</code> 完全一样。类似地，还有 <code>-=</code>、<code>*=</code>、<code>/=</code> 等运算符。
+</div>
+
+<h3 id="section-4-6-3">4.6.3 累加器模式（Accumulator Pattern）</h3>
+
+<p>累加器（accumulator）和计数器类似，但它不一定是每次加 1，而是可能加上不同的值。比如英雄收集金币，每枚金币的价值不同：</p>
+
+<div class="code-block">
+    <div class="dots"><span class="red"></span><span class="yellow"></span><span class="green"></span></div>
+<pre><span class="cmt"># 塔林收集金币并追踪总金额</span>
+<span class="obj">total_gold</span> = <span class="num">0</span>  <span class="cmt"># 累加器初始化</span>
+
+<span class="kw">while</span> <span class="kw">True</span>:
+    <span class="obj">item</span> = <span class="obj">hero</span><span class="punc">.</span><span class="fn">findNearestItem</span><span class="punc">()</span>
+    <span class="kw">if</span> <span class="obj">item</span>:
+        <span class="obj">hero</span><span class="punc">.</span><span class="fn">moveXY</span><span class="punc">(</span><span class="obj">item</span>.pos.x, <span class="obj">item</span>.pos.y<span class="punc">)</span>
+        <span class="obj">total_gold</span> += <span class="obj">item</span>.value  <span class="cmt"># 加上这枚金币的价值</span>
+        <span class="obj">hero</span><span class="punc">.</span><span class="fn">say</span><span class="punc">(</span><span class="str">"当前金币总额: "</span> + <span class="fn">str</span><span class="punc">(</span><span class="obj">total_gold</span><span class="punc">)</span><span class="punc">)</span></pre>
+</div>
+
+<p>累加器模式非常实用，在很多关卡中你需要"攒够"一定金币才能购买装备或建造建筑。通过累加器变量，你可以随时知道自己攒了多少钱，然后在达到目标时做出相应的行动。</p>
+
+<div class="figure">
+    <img src="https://assets.koudashijie.com/knowledge/4-6_variable_loop.png" alt="变量与循环配合">
+    <div class="caption">图7 — 变量在循环中不断更新的过程示意</div>
+</div>
+
+<!-- ==================== 4.7 ==================== -->
+<div class="section-header" id="section-4-7">
+    <h2>4.7 常量</h2>
+    <div class="en-title">Constants</div>
+</div>
+
+<p>并非所有值都需要变化。有时候你需要一个"永远不变"的值——比如游戏地图的宽度、一个固定的坐标位置、或者某个阈值。这就是<span class="keyword">常量</span>（Constant）的用武之地。</p>
+
+<h3 id="section-4-7-1">4.7.1 常量的概念（The Concept of Constants）</h3>
+
+<p>常量是指在程序运行过程中<span class="keyword">值保持不变</span>的量。与变量（可以被重新赋值）不同，常量一旦设定就不应该再修改。</p>
+
+<p>为什么要用常量？原因有两个。第一，<strong>可读性</strong>：<code>FENCE_X = 40</code> 比到处写数字 40 好得多——读代码的人一看就知道 40 是栅栏的 X 坐标。第二，<strong>可维护性</strong>：如果栅栏位置需要调整，你只需要修改常量定义的那一处，所有用到它的地方都会自动更新。</p>
+
+<p>在 CodeCombat 中，典型的常量使用场景包括固定的建造位置、移动目标点、或者触发条件的阈值：</p>
+
+<div class="code-block">
+    <div class="dots"><span class="red"></span><span class="yellow"></span><span class="green"></span></div>
+<pre><span class="cmt"># 定义常量（建造位置和金币阈值）</span>
+<span class="obj">FENCE_X</span> = <span class="num">40</span>
+<span class="obj">FENCE_Y</span> = <span class="num">52</span>
+<span class="obj">GOLD_THRESHOLD</span> = <span class="num">25</span>
+
+<span class="cmt"># 在代码中使用常量</span>
+<span class="kw">while</span> <span class="kw">True</span>:
+    <span class="obj">item</span> = <span class="obj">hero</span><span class="punc">.</span><span class="fn">findNearestItem</span><span class="punc">()</span>
+    <span class="kw">if</span> <span class="obj">item</span>:
+        <span class="obj">hero</span><span class="punc">.</span><span class="fn">moveXY</span><span class="punc">(</span><span class="obj">item</span>.pos.x, <span class="obj">item</span>.pos.y<span class="punc">)</span>
+    <span class="kw">if</span> <span class="obj">hero</span>.gold >= <span class="obj">GOLD_THRESHOLD</span>:
+        <span class="obj">hero</span><span class="punc">.</span><span class="fn">buildXY</span><span class="punc">(</span><span class="str">"fence"</span>, <span class="obj">FENCE_X</span>, <span class="obj">FENCE_Y</span><span class="punc">)</span></pre>
+</div>
+
+<h3 id="section-4-7-2">4.7.2 常量的命名惯例（Naming Conventions for Constants）</h3>
+
+<p>Python 本身没有语法级别的"常量"——你没法真正禁止重新赋值。但程序员有一个<strong>约定俗成的规矩</strong>：用<span class="keyword">全大写字母加下划线</span>来命名常量。</p>
+
+<div class="code-block">
+    <div class="dots"><span class="red"></span><span class="yellow"></span><span class="green"></span></div>
+<pre><span class="cmt"># 常量用全大写 + 下划线（约定俗成）</span>
+<span class="obj">MAX_HEALTH</span> = <span class="num">200</span>
+<span class="obj">SPAWN_X</span> = <span class="num">14</span>
+<span class="obj">SPAWN_Y</span> = <span class="num">36</span>
+<span class="obj">PI</span> = <span class="num">3.14159</span>
+
+<span class="cmt"># 变量用小写 + 下划线（普通变量）</span>
+<span class="obj">current_health</span> = <span class="num">200</span>
+<span class="obj">enemy_count</span> = <span class="num">0</span></pre>
+</div>
+
+<p>当其他程序员（包括未来的你自己）看到全大写的名字时，就知道"这是一个不应该被修改的值"。虽然从技术上你<em>可以</em>修改它，但这违反了团队约定，会让代码变得不可预测。</p>
+
+<div class="info-box">
+    <span class="info-label">知识拓展：</span>在其他编程语言中，常量有更严格的支持。比如 JavaScript 中用 <code>const</code> 关键字声明常量（尝试修改会报错），Java 中用 <code>final</code> 关键字。Python 选择相信程序员的自觉性——看到全大写，就别改它！
+</div>
+
+<!-- ==================== 4.8 ==================== -->
+<div class="section-header" id="section-4-8">
+    <h2>4.8 buildXY 方法</h2>
+    <div class="en-title">The buildXY Method</div>
+</div>
+
+<p>在某些 CodeCombat 关卡中，英雄不仅要战斗，还要<strong>建造</strong>！<code>buildXY</code> 是一个强大的方法，让英雄在指定坐标处建造各种结构。这个方法完美展示了变量的实用价值——通过变量，你可以灵活控制建造的类型和位置。</p>
+
+<h3 id="section-4-8-1">4.8.1 buildXY 的语法（Syntax of buildXY）</h3>
+
+<p><code>buildXY</code> 方法需要三个参数：要建造的<strong>东西的类型</strong>（字符串）、建造位置的 <strong>X 坐标</strong>（数字）和 <strong>Y 坐标</strong>（数字）。</p>
+
+<div class="code-block">
+    <div class="dots"><span class="red"></span><span class="yellow"></span><span class="green"></span></div>
+<pre><span class="obj">hero</span><span class="punc">.</span><span class="fn">buildXY</span><span class="punc">(</span><span class="str">"fence"</span>, <span class="num">40</span>, <span class="num">52</span><span class="punc">)</span>
+<span class="cmt"># 参数1: "fence" → 建造类型（字符串）</span>
+<span class="cmt"># 参数2: 40     → X 坐标（数字）</span>
+<span class="cmt"># 参数3: 52     → Y 坐标（数字）</span></pre>
+</div>
+
+<p>常见的可建造物品包括：</p>
+
+<table class="styled-table">
+    <thead>
+        <tr><th>类型字符串</th><th>建造物</th><th>用途</th></tr>
+    </thead>
+    <tbody>
+        <tr><td><code>"fence"</code></td><td>栅栏</td><td>阻挡敌人前进</td></tr>
+        <tr><td><code>"fire-trap"</code></td><td>火焰陷阱</td><td>对经过的敌人造成伤害</td></tr>
+        <tr><td><code>"decoy"</code></td><td>诱饵</td><td>吸引敌人注意力</td></tr>
+        <tr><td><code>"bear-trap"</code></td><td>捕兽夹</td><td>定住敌人</td></tr>
+    </tbody>
+</table>
+<div class="figure">
+    <img src="https://assets.koudashijie.com/knowledge/4-8-1_buildXY_syntax.png" alt="变量与循环配合">
+    <div class="caption">图8 — buildXY 方法的参数结构</div>
+</div>
+
+<h3 id="section-4-8-2">4.8.2 buildXY 与变量结合（buildXY with Variables）</h3>
+
+<p><code>buildXY</code> 的参数完全可以用变量来提供。这让你的代码更灵活、更易修改：</p>
+
+<div class="code-block">
+    <div class="dots"><span class="red"></span><span class="yellow"></span><span class="green"></span></div>
+<pre><span class="cmt"># 使用变量控制建造——安雅的防线布置</span>
+<span class="obj">build_type</span> = <span class="str">"fence"</span>
+<span class="obj">build_x</span> = <span class="num">40</span>
+<span class="obj">build_y</span> = <span class="num">52</span>
+
+<span class="obj">hero</span><span class="punc">.</span><span class="fn">buildXY</span><span class="punc">(</span><span class="obj">build_type</span>, <span class="obj">build_x</span>, <span class="obj">build_y</span><span class="punc">)</span>
+
+<span class="cmt"># 如果要改位置或类型，只需要修改变量值</span>
+<span class="obj">build_type</span> = <span class="str">"fire-trap"</span>
+<span class="obj">build_y</span> = <span class="num">20</span>
+<span class="obj">hero</span><span class="punc">.</span><span class="fn">buildXY</span><span class="punc">(</span><span class="obj">build_type</span>, <span class="obj">build_x</span>, <span class="obj">build_y</span><span class="punc">)</span></pre>
+</div>
+
+<p>更高级的用法是结合循环和条件判断——根据敌人出现的方向来决定建造什么类型的防御：</p>
+
+<div class="code-block">
+    <div class="dots"><span class="red"></span><span class="yellow"></span><span class="green"></span></div>
+<pre><span class="cmt"># 塔林根据敌人位置动态建造防御</span>
+<span class="kw">while</span> <span class="kw">True</span>:
+    <span class="obj">enemy</span> = <span class="obj">hero</span><span class="punc">.</span><span class="fn">findNearestEnemy</span><span class="punc">()</span>
+    <span class="kw">if</span> <span class="obj">enemy</span>:
+        <span class="kw">if</span> <span class="obj">enemy</span>.pos.x &lt; <span class="num">30</span>:
+            <span class="cmt"># 敌人从左边来，在左通道建栅栏</span>
+            <span class="obj">hero</span><span class="punc">.</span><span class="fn">buildXY</span><span class="punc">(</span><span class="str">"fence"</span>, <span class="num">25</span>, <span class="num">34</span><span class="punc">)</span>
+        <span class="kw">else</span>:
+            <span class="cmt"># 敌人从右边来，在右通道放陷阱</span>
+            <span class="obj">hero</span><span class="punc">.</span><span class="fn">buildXY</span><span class="punc">(</span><span class="str">"fire-trap"</span>, <span class="num">55</span>, <span class="num">34</span><span class="punc">)</span></pre>
+</div>
+
+<h3 id="section-4-8-3">4.8.3 buildXY 应用实例（buildXY Application Examples）</h3>
+
+<p>让我们看一个完整的关卡策略——收集金币然后建造防御设施：</p>
+
+<div class="code-block">
+    <div class="dots"><span class="red"></span><span class="yellow"></span><span class="green"></span></div>
+<pre><span class="cmt"># 关卡策略：先攒钱，再建造</span>
+<span class="cmt"># 常量定义</span>
+<span class="obj">GOLD_NEEDED</span> = <span class="num">25</span>
+<span class="obj">DECOY_X</span> = <span class="num">40</span>
+<span class="obj">DECOY_Y</span> = <span class="num">52</span>
+
+<span class="cmt"># 第一阶段：收集金币直到够用</span>
+<span class="kw">while</span> <span class="obj">hero</span>.gold &lt; <span class="obj">GOLD_NEEDED</span>:
+    <span class="obj">item</span> = <span class="obj">hero</span><span class="punc">.</span><span class="fn">findNearestItem</span><span class="punc">()</span>
+    <span class="kw">if</span> <span class="obj">item</span>:
+        <span class="obj">hero</span><span class="punc">.</span><span class="fn">moveXY</span><span class="punc">(</span><span class="obj">item</span>.pos.x, <span class="obj">item</span>.pos.y<span class="punc">)</span>
+
+<span class="cmt"># 第二阶段：建造诱饵</span>
+<span class="obj">hero</span><span class="punc">.</span><span class="fn">buildXY</span><span class="punc">(</span><span class="str">"decoy"</span>, <span class="obj">DECOY_X</span>, <span class="obj">DECOY_Y</span><span class="punc">)</span>
+
+<span class="cmt"># 第三阶段：躲到安全位置</span>
+<span class="obj">hero</span><span class="punc">.</span><span class="fn">moveXY</span><span class="punc">(</span><span class="num">20</span>, <span class="num">52</span><span class="punc">)</span></pre>
+</div>
+
+<div class="tip-box">
+    <span class="tip-label">小贴士：</span>建造需要消耗金币！如果你的金币不够，<code>buildXY</code> 会失败。所以在建造之前，通常需要先收集足够的金币。你可以用 <code>hero.gold</code> 属性来检查当前金币数量。
+</div>
+
+<!-- ==================== 4.9 ==================== -->
+<div class="section-header" id="section-4-9">
+    <h2>4.9 综合运用</h2>
+    <div class="en-title">Comprehensive Application</div>
+</div>
+
+<p>学了这么多关于变量的知识，是时候把它们组合起来，在真实的关卡中大展身手了！下面是几个关卡的实战代码，展示变量在不同场景中的应用。</p>
+
+<h3 id="section-4-9-1">4.9.1 关卡实战代码（Level Practice Code）</h3>
+
+<h4>关卡示例 A：True Names（使用变量攻击命名敌人）
+    <span class="en">Using variables to attack named enemies</span>
+</h4>
+
+<p>在这个关卡中，英雄需要知道敌人的"真名"才能攻击它。你需要把敌人的名字存入变量，然后传给 <code>attack</code> 方法：</p>
+
+<div class="code-block">
+    <div class="dots"><span class="red"></span><span class="yellow"></span><span class="green"></span></div>
+<pre><span class="cmt"># True Names 关卡 — 安雅通过变量记住敌人名字</span>
+<span class="obj">enemy1</span> = <span class="str">"Treg"</span>
+<span class="obj">hero</span><span class="punc">.</span><span class="fn">attack</span><span class="punc">(</span><span class="obj">enemy1</span><span class="punc">)</span>
+<span class="obj">hero</span><span class="punc">.</span><span class="fn">attack</span><span class="punc">(</span><span class="obj">enemy1</span><span class="punc">)</span>
+
+<span class="obj">enemy2</span> = <span class="str">"Brak"</span>
+<span class="obj">hero</span><span class="punc">.</span><span class="fn">attack</span><span class="punc">(</span><span class="obj">enemy2</span><span class="punc">)</span>
+<span class="obj">hero</span><span class="punc">.</span><span class="fn">attack</span><span class="punc">(</span><span class="obj">enemy2</span><span class="punc">)</span></pre>
+</div>
+
+<h4>关卡示例 B：Known Enemy（使用 findNearestEnemy）
+    <span class="en">Using findNearestEnemy for dynamic targeting</span>
+</h4>
+
+<p>这个关卡中敌人不止一个，你不知道它们的名字，需要用 <code>findNearestEnemy()</code> 来动态查找：</p>
+
+<div class="code-block">
+    <div class="dots"><span class="red"></span><span class="yellow"></span><span class="green"></span></div>
+<pre><span class="cmt"># Known Enemy 关卡 — 塔林动态寻敌并攻击</span>
+<span class="kw">while</span> <span class="kw">True</span>:
+    <span class="obj">enemy</span> = <span class="obj">hero</span><span class="punc">.</span><span class="fn">findNearestEnemy</span><span class="punc">()</span>
+    <span class="kw">if</span> <span class="obj">enemy</span>:
+        <span class="obj">hero</span><span class="punc">.</span><span class="fn">attack</span><span class="punc">(</span><span class="obj">enemy</span><span class="punc">)</span>
+        <span class="obj">hero</span><span class="punc">.</span><span class="fn">attack</span><span class="punc">(</span><span class="obj">enemy</span><span class="punc">)</span></pre>
+</div>
+
+<h4>关卡示例 C：Bait and Switch（收集金币+建造）
+    <span class="en">Collecting gold and building</span>
+</h4>
+
+<p>这个关卡完美结合了变量、循环和 <code>buildXY</code>：</p>
+
+<div class="code-block">
+    <div class="dots"><span class="red"></span><span class="yellow"></span><span class="green"></span></div>
+<pre><span class="cmt"># Bait and Switch 关卡 — 安雅的策略</span>
+<span class="cmt"># 第一步：收集 25 金币</span>
+<span class="kw">while</span> <span class="obj">hero</span>.gold &lt; <span class="num">25</span>:
+    <span class="obj">item</span> = <span class="obj">hero</span><span class="punc">.</span><span class="fn">findNearestItem</span><span class="punc">()</span>
+    <span class="kw">if</span> <span class="obj">item</span>:
+        <span class="obj">hero</span><span class="punc">.</span><span class="fn">moveXY</span><span class="punc">(</span><span class="obj">item</span>.pos.x, <span class="obj">item</span>.pos.y<span class="punc">)</span>
+
+<span class="cmt"># 第二步：建造诱饵</span>
+<span class="obj">hero</span><span class="punc">.</span><span class="fn">buildXY</span><span class="punc">(</span><span class="str">"decoy"</span>, <span class="num">40</span>, <span class="num">52</span><span class="punc">)</span>
+
+<span class="cmt"># 第三步：躲起来！</span>
+<span class="obj">hero</span><span class="punc">.</span><span class="fn">moveXY</span><span class="punc">(</span><span class="num">20</span>, <span class="num">52</span><span class="punc">)</span></pre>
+</div>
+
+ <p style="margin: 10px 0; color: #555;">立即访问 <a href="https://codecombat.cn" target="_blank" style="color: #d35400; font-weight: 700; text-decoration: none;">codecombat.cn</a> 开启你的 CodeCombat 编程冒险之旅！</p>
+
+<h4>关卡示例 D：综合防御关卡（多种建造+条件判断）
+    <span class="en">Comprehensive defense level</span>
+</h4>
+
+<div class="code-block">
+    <div class="dots"><span class="red"></span><span class="yellow"></span><span class="green"></span></div>
+<pre><span class="cmt"># 综合防御关卡 — 塔林建造多道防线</span>
+<span class="obj">TRAP_COST</span> = <span class="num">20</span>
+
+<span class="kw">while</span> <span class="kw">True</span>:
+    <span class="cmt"># 收集金币</span>
+    <span class="obj">item</span> = <span class="obj">hero</span><span class="punc">.</span><span class="fn">findNearestItem</span><span class="punc">()</span>
+    <span class="kw">if</span> <span class="obj">item</span>:
+        <span class="obj">hero</span><span class="punc">.</span><span class="fn">moveXY</span><span class="punc">(</span><span class="obj">item</span>.pos.x, <span class="obj">item</span>.pos.y<span class="punc">)</span>
+    
+    <span class="cmt"># 够钱就建造</span>
+    <span class="kw">if</span> <span class="obj">hero</span>.gold >= <span class="obj">TRAP_COST</span>:
+        <span class="obj">enemy</span> = <span class="obj">hero</span><span class="punc">.</span><span class="fn">findNearestEnemy</span><span class="punc">()</span>
+        <span class="kw">if</span> <span class="obj">enemy</span>:
+            <span class="cmt"># 在敌人前方建造陷阱</span>
+            <span class="obj">hero</span><span class="punc">.</span><span class="fn">buildXY</span><span class="punc">(</span><span class="str">"fire-trap"</span>, <span class="obj">enemy</span>.pos.x, <span class="obj">enemy</span>.pos.y<span class="punc">)</span></pre>
+</div>
+
+
+
+<h3 id="section-4-9-2">4.9.2 调试技巧（Debugging Tips）</h3>
+
+<p>当你的代码出了问题，变量往往是排查的关键。以下是一些实用的调试技巧：</p>
+
+<h4>技巧 1：用 hero.say() 打印变量值
+    <span class="en">Print variable values with hero.say()</span>
+</h4>
+
+<p>不确定变量里存了什么？让英雄"说出来"：</p>
+
+<div class="code-block">
+    <div class="dots"><span class="red"></span><span class="yellow"></span><span class="green"></span></div>
+<pre><span class="obj">enemy</span> = <span class="obj">hero</span><span class="punc">.</span><span class="fn">findNearestEnemy</span><span class="punc">()</span>
+<span class="obj">hero</span><span class="punc">.</span><span class="fn">say</span><span class="punc">(</span><span class="obj">enemy</span><span class="punc">)</span>  <span class="cmt"># 英雄会说出 enemy 变量的内容</span>
+<span class="obj">hero</span><span class="punc">.</span><span class="fn">say</span><span class="punc">(</span><span class="obj">hero</span>.gold<span class="punc">)</span>  <span class="cmt"># 英雄会说出当前金币数</span></pre>
+</div>
+
+<h4>技巧 2：检查变量是否为 None
+    <span class="en">Check if variable is None</span>
+</h4>
+
+<p>如果 <code>findNearestEnemy()</code> 没找到敌人，返回的是 <code>None</code>。对 <code>None</code> 调用任何方法都会报错。永远在使用变量前检查它是否为 <code>None</code>：</p>
+
+<div class="code-block">
+    <div class="dots"><span class="red"></span><span class="yellow"></span><span class="green"></span></div>
+<pre><span class="obj">enemy</span> = <span class="obj">hero</span><span class="punc">.</span><span class="fn">findNearestEnemy</span><span class="punc">()</span>
+<span class="kw">if</span> <span class="obj">enemy</span>:  <span class="cmt"># 这行相当于 if enemy != None:</span>
+    <span class="obj">hero</span><span class="punc">.</span><span class="fn">attack</span><span class="punc">(</span><span class="obj">enemy</span><span class="punc">)</span>  <span class="cmt"># 确认有敌人才攻击</span></pre>
+</div>
+
+<h4>技巧 3：检查变量作用域
+    <span class="en">Check variable scope</span>
+</h4>
+
+<p>如果你在循环内部定义了一个变量，在循环外部可能无法访问它（虽然 Python 的作用域规则比较宽松，但养成好习惯很重要）。把需要在循环外使用的变量在循环外初始化。</p>
+
+<h4>技巧 4：检查赋值位置
+    <span class="en">Check assignment placement</span>
+</h4>
+
+<p>确认你的 <code>findNearestEnemy()</code> 是在循环内部被调用的，而不是只在开头调用了一次。</p>
+
+<h3 id="section-4-9-3">4.9.3 常见错误（Common Mistakes）</h3>
+
+<p>以下是初学者使用变量时最常犯的错误，以及如何修复它们：</p>
+
+<table class="styled-table">
+    <thead>
+        <tr><th>错误</th><th>错误代码</th><th>正确代码</th><th>原因</th></tr>
+    </thead>
+    <tbody>
+        <tr>
+            <td>忘记赋值就使用变量</td>
+            <td><code>hero.attack(enemy)</code></td>
+            <td><code>enemy = hero.findNearestEnemy()<br>hero.attack(enemy)</code></td>
+            <td>enemy 未定义会报 NameError</td>
+        </tr>
+        <tr>
+            <td>不检查 None</td>
+            <td><code>enemy = hero.findNearestEnemy()<br>hero.attack(enemy)</code></td>
+            <td><code>enemy = hero.findNearestEnemy()<br>if enemy:<br>&nbsp;&nbsp;hero.attack(enemy)</code></td>
+            <td>没有敌人时 enemy 为 None</td>
+        </tr>
+        <tr>
+            <td>字符串忘加引号</td>
+            <td><code>enemy = Kratt</code></td>
+            <td><code>enemy = "Kratt"</code></td>
+            <td>不加引号 Python 把 Kratt 当成变量名</td>
+        </tr>
+        <tr>
+            <td>侦察不在循环内</td>
+            <td><code>enemy = hero.findNearestEnemy()<br>while True:<br>&nbsp;&nbsp;hero.attack(enemy)</code></td>
+            <td><code>while True:<br>&nbsp;&nbsp;enemy = hero.findNearestEnemy()<br>&nbsp;&nbsp;if enemy:<br>&nbsp;&nbsp;&nbsp;&nbsp;hero.attack(enemy)</code></td>
+            <td>变量永远不更新</td>
+        </tr>
+    </tbody>
+</table>
+
+
+
+<!-- ==================== 4.10 ==================== -->
+<div class="section-header" id="section-4-10">
+    <h2>4.10 语法总结</h2>
+    <div class="en-title">Syntax Summary</div>
+</div>
+
+<p>让我们把本单元学到的所有语法知识整理到一起，方便你随时查阅：</p>
+
+<table class="styled-table">
+    <thead>
+        <tr><th>概念</th><th>语法</th><th>示例</th><th>说明</th></tr>
+    </thead>
+    <tbody>
+        <tr><td>创建变量</td><td><code>变量名 = 值</code></td><td><code>gold = 0</code></td><td>等号是赋值运算符</td></tr>
+        <tr><td>重新赋值</td><td><code>变量名 = 新值</code></td><td><code>gold = 50</code></td><td>旧值被覆盖</td></tr>
+        <tr><td>接收返回值</td><td><code>变量 = 方法()</code></td><td><code>enemy = hero.findNearestEnemy()</code></td><td>方法的结果存入变量</td></tr>
+        <tr><td>自增</td><td><code>变量 = 变量 + 数值</code></td><td><code>count = count + 1</code></td><td>或简写 <code>count += 1</code></td></tr>
+        <tr><td>变量作参数</td><td><code>方法(变量)</code></td><td><code>hero.attack(enemy)</code></td><td>变量值作为参数传入</td></tr>
+        <tr><td>常量</td><td><code>ALL_CAPS = 值</code></td><td><code>MAX_HP = 200</code></td><td>全大写表示不应修改</td></tr>
+        <tr><td>建造</td><td><code>hero.buildXY(类型, x, y)</code></td><td><code>hero.buildXY("fence", 40, 52)</code></td><td>三个参数：类型+坐标</td></tr>
+        <tr><td>None 检查</td><td><code>if 变量:</code></td><td><code>if enemy:</code></td><td>确保变量不是 None</td></tr>
+        <tr><td>访问属性</td><td><code>变量.属性</code></td><td><code>enemy.pos.x</code></td><td>获取对象中的数据</td></tr>
+    </tbody>
+</table>
+
+<div class="code-block">
+    <div class="dots"><span class="red"></span><span class="yellow"></span><span class="green"></span></div>
+<pre><span class="cmt"># 完整语法示范 — 一个完整关卡的结构</span>
+
+<span class="cmt"># 1. 定义常量</span>
+<span class="obj">BUILD_COST</span> = <span class="num">25</span>
+<span class="obj">BUILD_TYPE</span> = <span class="str">"fence"</span>
+
+<span class="cmt"># 2. 初始化变量</span>
+<span class="obj">kill_count</span> = <span class="num">0</span>
+
+<span class="cmt"># 3. 主循环</span>
+<span class="kw">while</span> <span class="kw">True</span>:
+    <span class="cmt"># 4. 更新变量（侦察）</span>
+    <span class="obj">enemy</span> = <span class="obj">hero</span><span class="punc">.</span><span class="fn">findNearestEnemy</span><span class="punc">()</span>
+    <span class="obj">item</span> = <span class="obj">hero</span><span class="punc">.</span><span class="fn">findNearestItem</span><span class="punc">()</span>
+    
+    <span class="cmt"># 5. 条件判断 + 使用变量</span>
+    <span class="kw">if</span> <span class="obj">enemy</span>:
+        <span class="obj">hero</span><span class="punc">.</span><span class="fn">attack</span><span class="punc">(</span><span class="obj">enemy</span><span class="punc">)</span>
+        <span class="obj">kill_count</span> += <span class="num">1</span>
+    <span class="kw">elif</span> <span class="obj">item</span>:
+        <span class="obj">hero</span><span class="punc">.</span><span class="fn">moveXY</span><span class="punc">(</span><span class="obj">item</span>.pos.x, <span class="obj">item</span>.pos.y<span class="punc">)</span>
+    
+    <span class="cmt"># 6. 使用常量作为条件</span>
+    <span class="kw">if</span> <span class="obj">hero</span>.gold >= <span class="obj">BUILD_COST</span>:
+        <span class="obj">hero</span><span class="punc">.</span><span class="fn">buildXY</span><span class="punc">(</span><span class="obj">BUILD_TYPE</span>, <span class="num">40</span>, <span class="num">34</span><span class="punc">)</span></pre>
+</div>
+
+<!-- ==================== 4.11 ==================== -->
+<div class="summary-card" id="section-4-11">
+    <h3>4.11 单元总结 ✨</h3>
+
+
+
+    <p>恭喜你完成了 Unit 4 的学习！让我们来回顾一下这个单元中你掌握的超级技能：</p>
+
+    <p><strong>变量是什么：</strong>变量是存储数据的命名容器，像贴着标签的盒子或便利贴一样。变量名指向一个值，而这个值是可以改变的。</p>
+
+    <p><strong>赋值操作：</strong>使用 <code>=</code> 赋值运算符将值存入变量。计算机先计算右边的表达式，再将结果存到左边的变量中。编程中的 <code>=</code> 不是数学里的"等于"，而是一个有方向的动作。</p>
+
+    <p><strong>命名规则：</strong>变量名只能包含字母、数字和下划线，不能以数字开头，不能使用保留字。好的命名应该有意义、使用蛇形命名法、长度适中。</p>
+
+    <p><strong>数据类型：</strong>变量可以存储 int、float、str、bool、对象和 None 等不同类型的数据。Python 是动态类型语言，不需要提前声明变量类型。</p>
+
+    <p><strong>返回值：</strong>有些方法会返回一个值（如 <code>findNearestEnemy()</code>），你需要用变量接收这个返回值才能使用它。使用前记得检查是否为 None。</p>
+
+    <p><strong>变量与循环：</strong>在循环中更新变量可以让程序实时响应变化。计数器和累加器是两种常见的循环中使用变量的模式。</p>
+
+    <p><strong>常量：</strong>值不会改变的量用全大写命名，便于识别和维护。</p>
+
+    <p><strong>buildXY：</strong>使用变量控制建造类型和坐标，让代码更灵活。建造前需要收集足够的金币。</p>
+
+    <div class="remember-box">
+        <span class="remember-label">核心思想：</span>变量让你的程序从"死板的指令清单"变成了"能够感知和适应环境的智能体"。没有变量，英雄只能按照固定路线行动；有了变量，英雄可以根据实时侦察到的信息做出灵活的决策。这就是变量的力量！
+    </div>
+
+    <table class="styled-table">
+        <thead><tr><th>核心概念</th><th>关键知识</th><th>对应章节</th></tr></thead>
+        <tbody>
+            <tr><td>变量概念</td><td>命名容器，存储可变数据</td><td>4.1</td></tr>
+            <tr><td>赋值操作</td><td><code>=</code> 是赋值运算符，从右到左执行</td><td>4.2</td></tr>
+            <tr><td>命名规则</td><td>snake_case，有意义，避免保留字</td><td>4.3</td></tr>
+            <tr><td>数据类型</td><td>int, float, str, bool, 对象, None</td><td>4.4</td></tr>
+            <tr><td>返回值</td><td>用变量接收方法返回值，检查 None</td><td>4.5</td></tr>
+            <tr><td>循环中的变量</td><td>计数器、累加器、实时更新</td><td>4.6</td></tr>
+            <tr><td>常量</td><td>全大写命名，值不应改变</td><td>4.7</td></tr>
+            <tr><td>buildXY</td><td>hero.buildXY(类型, x, y)，需要金币</td><td>4.8</td></tr>
+        </tbody>
+    </table>
+
+    <p style="text-align: center; margin-top: 20px; font-size: 1.1em;">
+        安雅已经学会了用变量记住敌人信息，塔林也掌握了动态建造防御的技能。<br>
+        下一站：<strong>第五单元</strong>——更复杂的条件与策略，让英雄做出更聪明的决策！⚔️
+    </p>
+</div>
+
+
+<div class="member-promo" style="background: linear-gradient(135deg,#fff3e0 0%,#fff 100%); border: 2px solid #f59e0b; border-radius: 14px; padding: 24px 28px; margin: 30px 0; text-align: center;">
+    <h3 style="color: #d35400; border: none; margin-top: 0; font-size: 1.3em;">🎮 想在 CodeCombat 中实战这些关卡吗？</h3>
+    <p style="margin: 10px 0; font-size: 1.05em;">加入 <strong>CodeCombat（codecombat.cn）</strong> 会员，即可解锁全部编程关卡，跟随英雄安雅和塔林在真实游戏环境中边玩边学！通过实战闯关巩固本单元所学的每一个知识点，让编程学习不再枯燥。</p>
+   
+</div>
+
+
+
+</div><!-- end page-wrapper -->
+
+<script>
+document.querySelectorAll('.sidebar-nav a').forEach(link => {
+    link.addEventListener('click', () => {
+        if (window.innerWidth <= 1024) {
+            document.querySelector('.sidebar-nav').classList.remove('active');
+        }
+    });
+});
+</script>
+
+
+<div data-info-wiki-backlink style="text-align:center;padding:18px 12px;color:#64748b;font:13px/1.6 -apple-system,BlinkMacSystemFont,'Segoe UI','Microsoft YaHei',sans-serif"><a href="../index.html" style="color:#4f46e5;text-decoration:none;font-weight:700">← 返回 CodeCombat 信息百科</a></div>
+</body>
+</html>

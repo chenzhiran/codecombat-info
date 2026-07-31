@@ -1,0 +1,1002 @@
+﻿<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>第三单元：if-else 双分支选择结构 | CodeCombat 编程知识</title>
+    <style>
+        :root {
+            --primary: #2E9E5B;
+            --primary-light: #4FBF7C;
+            --primary-lighter: #E8F7EE;
+            --primary-dark: #1F7A44;
+            --dark: #14241a;
+            --dark-code: #1e2a22;
+            --dark-code-border: #314538;
+            --text: #2d2d2d;
+            --text-light: #555;
+            --text-lighter: #888;
+            --bg: #ffffff;
+            --bg-alt: #f7faf8;
+            --bg-card: #ffffff;
+            --border: #e3ece6;
+            --success: #4CAF50;
+            --warning: #FFC107;
+            --error: #f44336;
+            --info: #2196F3;
+            --code-keyword: #c678dd;
+            --code-string: #98c379;
+            --code-comment: #5c8a6f;
+            --code-function: #61afef;
+            --code-number: #d19a66;
+            --code-text: #b6c2ba;
+            --code-punctuation: #b6c2ba;
+            --code-object: #e5c07b;
+            --sidebar-width: 270px;
+        }
+
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'PingFang SC', 'Hiragino Sans GB', 'Microsoft YaHei', sans-serif;
+            line-height: 1.8;
+            color: var(--text);
+            background: var(--bg);
+            font-size: 16px;
+        }
+
+        .sidebar-nav {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: var(--sidebar-width);
+            height: 100vh;
+            background: #14241a;
+            overflow-y: auto;
+            padding: 20px 0;
+            z-index: 1000;
+            border-right: 3px solid var(--primary);
+            transition: transform 0.3s ease;
+        }
+
+        .sidebar-nav::-webkit-scrollbar { width: 4px; }
+        .sidebar-nav::-webkit-scrollbar-thumb { background: var(--primary); border-radius: 4px; }
+        .sidebar-nav::-webkit-scrollbar-track { background: #1f3a29; }
+
+        .sidebar-nav .nav-title {
+            color: var(--primary-light);
+            font-size: 0.95em;
+            font-weight: 700;
+            padding: 8px 18px;
+            margin-bottom: 5px;
+            letter-spacing: 1px;
+        }
+
+        .sidebar-nav a {
+            display: block;
+            color: #cdd8d0;
+            text-decoration: none;
+            padding: 6px 18px;
+            font-size: 0.82em;
+            line-height: 1.5;
+            border-left: 3px solid transparent;
+            transition: all 0.2s ease;
+        }
+
+        .sidebar-nav a:hover {
+            color: #fff;
+            background: rgba(46, 158, 91, 0.15);
+            border-left-color: var(--primary);
+        }
+
+        .sidebar-nav a.nav-section {
+            color: var(--primary-light);
+            font-weight: 600;
+            font-size: 0.88em;
+            margin-top: 12px;
+            padding-top: 10px;
+            border-top: 1px solid #23402e;
+        }
+
+        .sidebar-nav a.nav-section:first-of-type { border-top: none; margin-top: 0; }
+
+        .sidebar-nav a.nav-sub {
+            padding-left: 30px;
+            color: #a7b8ad;
+            font-size: 0.78em;
+        }
+
+        .sidebar-nav a.nav-sub:hover { color: #fff; }
+
+        .nav-toggle {
+            display: none;
+            position: fixed;
+            top: 15px;
+            left: 15px;
+            z-index: 1100;
+            background: var(--primary);
+            color: white;
+            border: none;
+            border-radius: 8px;
+            padding: 8px 12px;
+            font-size: 1.2em;
+            cursor: pointer;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.2);
+        }
+
+        .page-wrapper { margin-left: var(--sidebar-width); }
+
+        .hero-banner {
+            background: linear-gradient(135deg, var(--primary) 0%, var(--primary-dark) 100%);
+            color: white;
+            padding: 60px 20px;
+            text-align: center;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .hero-banner::before {
+            content: '';
+            position: absolute;
+            top: -50%;
+            left: -50%;
+            width: 200%;
+            height: 200%;
+            background: radial-gradient(circle, rgba(255,255,255,0.12) 0%, transparent 60%);
+            animation: pulse 8s ease-in-out infinite;
+        }
+
+        @keyframes pulse {
+            0%, 100% { transform: scale(1); }
+            50% { transform: scale(1.1); }
+        }
+
+        .hero-banner h1 { font-size: 2.5em; margin-bottom: 10px; position: relative; z-index: 1; }
+        .hero-banner .subtitle { font-size: 1.2em; opacity: 0.92; position: relative; z-index: 1; }
+        .hero-banner .badge {
+            display: inline-block;
+            background: rgba(255,255,255,0.2);
+            padding: 5px 15px;
+            border-radius: 20px;
+            margin-top: 15px;
+            font-size: 0.9em;
+            position: relative;
+            z-index: 1;
+        }
+
+        .container { max-width: 900px; margin: 0 auto; padding: 40px 20px; }
+
+        .section-header {
+            background: var(--primary-lighter);
+            border-left: 5px solid var(--primary);
+            padding: 20px 25px;
+            margin: 50px 0 30px;
+            border-radius: 0 12px 12px 0;
+        }
+
+        .section-header h2 { color: var(--primary-dark); font-size: 1.8em; margin-bottom: 5px; }
+        .section-header .en-title { color: var(--text-light); font-size: 0.95em; font-style: italic; }
+
+        h3 {
+            color: var(--primary);
+            font-size: 1.4em;
+            margin: 40px 0 15px;
+            padding-bottom: 8px;
+            border-bottom: 2px solid var(--primary-lighter);
+        }
+
+        h4 {
+            color: var(--text);
+            font-size: 1.15em;
+            margin: 30px 0 12px;
+            padding-left: 12px;
+            border-left: 3px solid var(--primary-light);
+        }
+
+        h4 .en {
+            display: block;
+            font-size: 0.8em;
+            color: var(--text-lighter);
+            font-weight: normal;
+            margin-top: 2px;
+        }
+
+        p { margin: 12px 0; text-align: justify; }
+
+        .keyword {
+            background: var(--primary-lighter);
+            color: var(--primary-dark);
+            padding: 2px 6px;
+            border-radius: 4px;
+            font-weight: 600;
+            white-space: nowrap;
+        }
+
+        .keyword-en {
+            background: #e8f4fd;
+            color: #1565c0;
+            padding: 2px 6px;
+            border-radius: 4px;
+            font-weight: 600;
+            font-family: 'SF Mono', 'Fira Code', 'Consolas', monospace;
+            font-size: 0.9em;
+            white-space: nowrap;
+        }
+
+        .keyword-green {
+            background: #e8f5e9;
+            color: #2e7d32;
+            padding: 2px 6px;
+            border-radius: 4px;
+            font-weight: 600;
+            white-space: nowrap;
+        }
+
+        code {
+            background: #eef2ef;
+            color: #c2185b;
+            padding: 2px 7px;
+            border-radius: 4px;
+            font-family: 'SF Mono', 'Fira Code', 'Consolas', 'Courier New', monospace;
+            font-size: 0.88em;
+            white-space: nowrap;
+        }
+
+        .code-block {
+            background: var(--dark-code);
+            border: 1px solid var(--dark-code-border);
+            border-radius: 10px;
+            padding: 20px 24px;
+            margin: 16px 0;
+            overflow-x: auto;
+            position: relative;
+        }
+
+        .code-block::before {
+            content: 'Python';
+            position: absolute;
+            top: 8px;
+            right: 12px;
+            font-size: 0.7em;
+            color: #6b8a76;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+        }
+
+        .code-block .dots { display: flex; gap: 6px; margin-bottom: 14px; }
+        .code-block .dots span { width: 10px; height: 10px; border-radius: 50%; }
+        .code-block .dots .red { background: #ff5f57; }
+        .code-block .dots .yellow { background: #febc2e; }
+        .code-block .dots .green { background: #28c840; }
+
+        .code-block pre {
+            margin: 0;
+            font-family: 'SF Mono', 'Fira Code', 'Consolas', 'Courier New', monospace;
+            font-size: 0.9em;
+            line-height: 1.7;
+            color: var(--code-text);
+        }
+
+        .code-block .kw { color: var(--code-keyword); }
+        .code-block .str { color: var(--code-string); }
+        .code-block .cmt { color: var(--code-comment); font-style: italic; }
+        .code-block .fn { color: var(--code-function); }
+        .code-block .num { color: var(--code-number); }
+        .code-block .obj { color: var(--code-object); }
+        .code-block .punc { color: var(--code-punctuation); }
+        .code-block .err { color: var(--error); text-decoration: line-through; }
+
+        .tip-box {
+            background: #fff8e1;
+            border-left: 4px solid var(--warning);
+            padding: 14px 18px;
+            margin: 16px 0;
+            border-radius: 0 8px 8px 0;
+            font-size: 0.95em;
+        }
+        .tip-box .tip-label { font-weight: 700; color: #f57f17; margin-right: 6px; }
+
+        .info-box {
+            background: #e3f2fd;
+            border-left: 4px solid var(--info);
+            padding: 14px 18px;
+            margin: 16px 0;
+            border-radius: 0 8px 8px 0;
+            font-size: 0.95em;
+        }
+        .info-box .info-label { font-weight: 700; color: #1565c0; margin-right: 6px; }
+
+        .remember-box {
+            background: var(--primary-lighter);
+            border-left: 4px solid var(--primary);
+            padding: 14px 18px;
+            margin: 16px 0;
+            border-radius: 0 8px 8px 0;
+            font-size: 0.95em;
+        }
+        .remember-box .remember-label { font-weight: 700; color: var(--primary-dark); margin-right: 6px; }
+
+        .warn-box {
+            background: #fdecea;
+            border-left: 4px solid var(--error);
+            padding: 14px 18px;
+            margin: 16px 0;
+            border-radius: 0 8px 8px 0;
+            font-size: 0.95em;
+        }
+        .warn-box .warn-label { font-weight: 700; color: #c62828; margin-right: 6px; }
+
+        .figure { margin: 24px 0; text-align: center; }
+        .figure img {
+            max-width: 100%;
+            height: auto;
+            border-radius: 10px;
+            box-shadow: 0 4px 20px rgba(0,0,0,0.08);
+            border: 1px solid var(--border);
+        }
+        .figure .caption { font-size: 0.85em; color: var(--text-lighter); margin-top: 8px; font-style: italic; }
+
+        .styled-table {
+            width: 100%;
+            border-collapse: collapse;
+            margin: 16px 0;
+            border-radius: 10px;
+            overflow: hidden;
+            box-shadow: 0 2px 12px rgba(0,0,0,0.06);
+        }
+        .styled-table thead { background: var(--primary); color: white; }
+        .styled-table th { padding: 12px 16px; text-align: left; font-weight: 600; }
+        .styled-table td { padding: 10px 16px; border-bottom: 1px solid var(--border); }
+        .styled-table tbody tr:nth-child(even) { background: var(--bg-alt); }
+        .styled-table tbody tr:hover { background: var(--primary-lighter); }
+
+        .summary-card {
+            background: linear-gradient(135deg, var(--primary-lighter) 0%, #fff 100%);
+            border: 2px solid var(--primary-light);
+            border-radius: 14px;
+            padding: 30px;
+            margin: 40px 0;
+        }
+        .summary-card h3 { color: var(--primary-dark); border: none; margin-top: 0; }
+
+        .text-illustration {
+            background: linear-gradient(135deg, #f4f8f5 0%, #fff 100%);
+            border: 1px dashed var(--primary-light);
+            border-radius: 10px;
+            padding: 18px 22px;
+            margin: 16px 0;
+            font-size: 0.93em;
+            color: var(--text-light);
+        }
+        .text-illustration .illus-title {
+            font-weight: 700;
+            color: var(--primary);
+            margin-bottom: 6px;
+            font-size: 0.95em;
+        }
+
+        .flow-demo {
+            background: var(--bg-alt);
+            border: 1px solid var(--border);
+            border-radius: 10px;
+            padding: 20px;
+            margin: 20px 0;
+            text-align: center;
+        }
+        .flow-demo svg { max-width: 100%; height: auto; }
+
+        @media (max-width: 1024px) {
+            .sidebar-nav { transform: translateX(-100%); }
+            .sidebar-nav.active { transform: translateX(0); }
+            .nav-toggle { display: block; }
+            .page-wrapper { margin-left: 0; }
+        }
+
+        @media (max-width: 768px) {
+            .hero-banner h1 { font-size: 1.8em; }
+            .container { padding: 20px 15px; }
+            .section-header h2 { font-size: 1.4em; }
+            .code-block { padding: 14px 16px; }
+            .styled-table { font-size: 0.9em; }
+        }
+    </style>
+</head>
+<body>
+
+<button class="nav-toggle" onclick="document.querySelector('.sidebar-nav').classList.toggle('active')">☰</button>
+
+<nav class="sidebar-nav">
+    <div class="nav-title">边际森林-第三单元</div>
+
+    <a href="#section-3-1" class="nav-section">3.1 从单分支到双分支</a>
+    <a href="#sec-3-1-1" class="nav-sub">3.1.1 单分支的局限</a>
+    <a href="#sec-3-1-2" class="nav-sub">3.1.2 什么是双分支</a>
+    <a href="#sec-3-1-3" class="nav-sub">3.1.3 生活中的二选一</a>
+
+    <a href="#section-3-2" class="nav-section">3.2 if-else 语句</a>
+    <a href="#sec-3-2-1" class="nav-sub">3.2.1 基本语法</a>
+    <a href="#sec-3-2-2" class="nav-sub">3.2.2 else 的含义</a>
+    <a href="#sec-3-2-3" class="nav-sub">3.2.3 缩进与对齐</a>
+    <a href="#sec-3-2-4" class="nav-sub">3.2.4 执行流程图</a>
+
+    <a href="#section-3-3" class="nav-section">3.3 else 的核心规则</a>
+    <a href="#sec-3-3-1" class="nav-sub">3.3.1 必须依附 if</a>
+    <a href="#sec-3-3-2" class="nav-sub">3.3.2 互斥与完备</a>
+    <a href="#sec-3-3-3" class="nav-sub">3.3.3 单分支 vs 双分支</a>
+
+    <a href="#section-3-4" class="nav-section">3.4 条件的进阶</a>
+    <a href="#sec-3-4-1" class="nav-sub">3.4.1 distanceTo 测距</a>
+    <a href="#sec-3-4-2" class="nav-sub">3.4.2 比较运算符 &lt;</a>
+    <a href="#sec-3-4-3" class="nav-sub">3.4.3 isReady 技能判断</a>
+
+    <a href="#section-3-5" class="nav-section">3.5 if-else 实战模式</a>
+    <a href="#sec-3-5-1" class="nav-sub">3.5.1 攻击或撤防</a>
+    <a href="#sec-3-5-2" class="nav-sub">3.5.2 攻击或开箱</a>
+    <a href="#sec-3-5-3" class="nav-sub">3.5.3 劈斩或普攻</a>
+    <a href="#sec-3-5-4" class="nav-sub">3.5.4 按距离决策</a>
+
+    <a href="#section-3-6" class="nav-section">3.6 实战关卡精讲</a>
+    <a href="#sec-3-6-1" class="nav-sub">3.6.1 背靠背</a>
+    <a href="#sec-3-6-2" class="nav-sub">3.6.2 食人魔营地</a>
+    <a href="#sec-3-6-3" class="nav-sub">3.6.3 边地僵局</a>
+    <a href="#sec-3-6-4" class="nav-sub">3.6.4 贴身护卫</a>
+    <a href="#sec-3-6-5" class="nav-sub">3.6.5 矮人蜂拥而至</a>
+    <a href="#sec-3-6-6" class="nav-sub">3.6.6 勇敢的食人魔</a>
+
+    <a href="#section-3-7" class="nav-section">3.7 常见错误与技巧</a>
+    <a href="#sec-3-7-1" class="nav-sub">3.7.1 易错点清单</a>
+    <a href="#sec-3-7-2" class="nav-sub">3.7.2 选择小结</a>
+
+    <a href="#section-summary" class="nav-section">📋 本单元小结</a>
+</nav>
+
+<div class="page-wrapper">
+
+<div class="hero-banner">
+    <h1>第三单元：if-else 双分支选择结构</h1>
+    <div class="subtitle">Unit 3: The if-else Two-Way Selection</div>
+    <div class="badge">计算机科学 2 · 边际森林 Border Forest · 背靠背 → 勇敢的食人魔</div>
+</div>
+
+<div class="container">
+
+<!-- ==================== 3.1 ==================== -->
+<div class="section-header" id="section-3-1">
+    <h2>3.1 从单分支到双分支</h2>
+    <div class="en-title">From Single-Branch to Two-Way Branch</div>
+</div>
+
+<h3 id="sec-3-1-1">3.1.1 单分支的局限（Limits of Single-Branch）</h3>
+
+<h4>3.1.1.1 上单元我们只解决了一半
+    <span class="en">Last unit solved only half the problem</span>
+</h4>
+
+<p>在第二单元里，你学会了单分支的 <code>if</code> 语句——"如果有敌人，就攻击它"。它很强大，但有一个明显的"留白"：<strong>当条件不成立时，程序什么都不做</strong>。</p>
+
+<p>这在很多场景下是不够的。想象英雄在村口巡逻：有敌人时当然要攻击，但<strong>没有敌人时英雄该干什么？</strong> 用单分支，英雄只会原地发呆。可我们真正想要的是——没有敌人时，英雄应该<strong>回到防守位置</strong>保护村民。这就需要"否则该做什么"的能力。</p>
+
+<h3 id="sec-3-1-2">3.1.2 什么是双分支（What is Two-Way Branch）</h3>
+
+<h4>3.1.2.1 给"否则"也安排上动作
+    <span class="en">Giving the "otherwise" case an action too</span>
+</h4>
+
+<div class="figure">
+    <img src="https://assets.koudashijie.com/knowledge/3-1-2-1_two_way.png" alt="双分支：两条路二选一">
+    <div class="caption">图1：双分支结构——条件成立走 A 路，不成立走 B 路，必走其一</div>
+</div>
+
+<p><span class="keyword">双分支选择结构</span>在单分支的基础上，增加了一条 <code>else</code>（否则）分支。它的逻辑是："<strong>如果条件成立，做 A；否则，做 B。</strong>" 两条分支必定会走其中一条，绝不会两条都走，也绝不会一条都不走。</p>
+
+<h3 id="sec-3-1-3">3.1.3 生活中的二选一（Either-Or in Daily Life）</h3>
+
+<h4>3.1.3.1 无处不在的"否则"
+    <span class="en">"Otherwise" is everywhere</span>
+</h4>
+
+<p>双分支在生活中比单分支更常见，因为我们的决定往往是"二选一"的：</p>
+
+<ul style="margin: 10px 0 10px 24px; list-style: none;">
+    <li>● <strong>如果</strong>是绿灯，<strong>就</strong>过马路；<strong>否则</strong>就停下等待。</li>
+    <li>● <strong>如果</strong>考试及格，<strong>就</strong>升级；<strong>否则</strong>就补考。</li>
+    <li>● <strong>如果</strong>钱够，<strong>就</strong>买下；<strong>否则</strong>就放回货架。</li>
+</ul>
+
+<p>注意这些句子都有完整的"<strong>如果……就……否则……</strong>"三段式。翻译成 Python，就是本单元的主角：<code>if-else</code> 语句。</p>
+
+<!-- ==================== 3.2 ==================== -->
+<div class="section-header" id="section-3-2">
+    <h2>3.2 if-else 语句</h2>
+    <div class="en-title">The if-else Statement</div>
+</div>
+
+<h3 id="sec-3-2-1">3.2.1 基本语法（Basic Syntax）</h3>
+
+<h4>3.2.1.1 if 与 else 配对出现
+    <span class="en">if and else come as a pair</span>
+</h4>
+
+<p>if-else 语句在第二单元 <code>if</code> 的下方，多了一个 <code>else</code> 代码块。它的基本语法是：</p>
+
+<div class="code-block">
+    <div class="dots"><span class="red"></span><span class="yellow"></span><span class="green"></span></div>
+<pre><span class="kw">if</span> 条件<span class="punc">:</span>
+    <span class="cmt"># 条件成立时执行这里</span>
+    动作 A
+<span class="kw">else</span><span class="punc">:</span>
+    <span class="cmt"># 条件不成立时执行这里</span>
+    动作 B</pre>
+</div>
+
+<p>注意 <code>else</code> 后面<strong>没有条件</strong>，直接跟一个冒号 <code>:</code>。因为它代表的就是"<strong>除了 if 条件成立之外的所有情况</strong>"，不需要再写条件。</p>
+
+<h3 id="sec-3-2-2">3.2.2 else 的含义（The Meaning of else）</h3>
+
+<h4>3.2.2.1 "if 以外的所有情况"
+    <span class="en">"Everything outside the if"</span>
+</h4>
+
+<p>正如"Else 之战"关卡所说："<code>else</code> 在 if 语句条件不成立时执行动作。可以这样认为，<strong>else 的情况也就是 if 语句以外的所有情况。</strong>" 这是理解 <code>else</code> 最精准的一句话。</p>
+
+<div class="text-illustration">
+    <div class="illus-title">💡 用"背靠背"关卡来理解</div>
+    <p>"背靠背"是你第一次接触 <code>else</code> 的关卡。它的逻辑非常清晰："<strong>如果(if) 有敌人，那么(then) 攻击它，否则(else) 移动到 X 标记处。</strong>" 攻击和撤防是两个互斥的动作——英雄要么在前线杀敌，要么回阵地防守，二者必居其一。这正是双分支的精髓。</p>
+</div>
+
+<h3 id="sec-3-2-3">3.2.3 缩进与对齐（Indentation and Alignment）</h3>
+
+<h4>3.2.3.1 else 要和 if 顶格对齐
+    <span class="en">else must align with its if</span>
+</h4>
+
+<div class="figure">
+    <img src="https://assets.koudashijie.com/knowledge/3-2-3-1_indent_align.png" alt="if 与 else 对齐示意">
+    <div class="caption">图2：else 必须与对应的 if 在同一缩进层级上对齐</div>
+</div>
+
+<p>书写 if-else 时有两个缩进规则必须牢记：第一，<code>else</code> 关键字要和它配对的 <code>if</code> <strong>处在同一缩进层级</strong>（左边对齐）；第二，<code>if</code> 和 <code>else</code> 各自的<strong>代码块都要向右缩进</strong>。</p>
+
+<div class="code-block">
+    <div class="dots"><span class="red"></span><span class="yellow"></span><span class="green"></span></div>
+<pre><span class="kw">if</span> enemy<span class="punc">:</span>
+    <span class="obj">hero</span><span class="punc">.</span><span class="fn">attack</span><span class="punc">(</span>enemy<span class="punc">)</span>     <span class="cmt"># 属于 if 的代码块（缩进）</span>
+<span class="kw">else</span><span class="punc">:</span>                     <span class="cmt"># else 与 if 对齐（顶格）</span>
+    <span class="obj">hero</span><span class="punc">.</span><span class="fn">moveXY</span><span class="punc">(</span><span class="num">40</span><span class="punc">,</span> <span class="num">34</span><span class="punc">)</span>  <span class="cmt"># 属于 else 的代码块（缩进）</span></pre>
+</div>
+
+<h3 id="sec-3-2-4">3.2.4 执行流程图（Flowchart）</h3>
+
+<h4>3.2.4.1 一图看懂双分支
+    <span class="en">Two-way branch in one diagram</span>
+</h4>
+
+<div class="flow-demo">
+    <svg viewBox="0 0 460 340" width="460" role="img" aria-label="双分支选择结构流程图">
+        <rect x="180" y="14" width="100" height="32" rx="16" fill="#2E9E5B"/>
+        <text x="230" y="35" text-anchor="middle" fill="#fff" font-size="14" font-family="sans-serif">开始</text>
+        <line x1="230" y1="46" x2="230" y2="72" stroke="#555" stroke-width="2"/>
+        <polygon points="230,72 225,62 235,62" fill="#555"/>
+        <polygon points="230,78 320,124 230,170 140,124" fill="#fff" stroke="#2E9E5B" stroke-width="2"/>
+        <text x="230" y="122" text-anchor="middle" fill="#1F7A44" font-size="13" font-family="sans-serif">条件成立?</text>
+        <text x="230" y="140" text-anchor="middle" fill="#888" font-size="11" font-family="monospace">if 条件</text>
+        <!-- True 左 -->
+        <line x1="140" y1="124" x2="80" y2="124" stroke="#2E9E5B" stroke-width="2"/>
+        <text x="92" y="116" fill="#2E9E5B" font-size="12" font-family="sans-serif">是</text>
+        <line x1="80" y1="124" x2="80" y2="200" stroke="#2E9E5B" stroke-width="2"/>
+        <polygon points="80,200 75,190 85,190" fill="#2E9E5B"/>
+        <rect x="20" y="202" width="120" height="40" rx="6" fill="#E8F7EE" stroke="#2E9E5B"/>
+        <text x="80" y="227" text-anchor="middle" fill="#1F7A44" font-size="12.5" font-family="sans-serif">动作 A（if）</text>
+        <!-- False 右 -->
+        <line x1="320" y1="124" x2="380" y2="124" stroke="#c62828" stroke-width="2"/>
+        <text x="332" y="116" fill="#c62828" font-size="12" font-family="sans-serif">否</text>
+        <line x1="380" y1="124" x2="380" y2="200" stroke="#c62828" stroke-width="2"/>
+        <polygon points="380,200 375,190 385,190" fill="#c62828"/>
+        <rect x="320" y="202" width="120" height="40" rx="6" fill="#fdecea" stroke="#c62828"/>
+        <text x="380" y="227" text-anchor="middle" fill="#c62828" font-size="12.5" font-family="sans-serif">动作 B（else）</text>
+        <!-- 汇合 -->
+        <line x1="80" y1="242" x2="80" y2="280" stroke="#555" stroke-width="2"/>
+        <line x1="380" y1="242" x2="380" y2="280" stroke="#555" stroke-width="2"/>
+        <line x1="80" y1="280" x2="380" y2="280" stroke="#555" stroke-width="2"/>
+        <line x1="230" y1="280" x2="230" y2="300" stroke="#555" stroke-width="2"/>
+        <polygon points="230,300 225,290 235,290" fill="#555"/>
+        <rect x="180" y="300" width="100" height="32" rx="16" fill="#1F7A44"/>
+        <text x="230" y="321" text-anchor="middle" fill="#fff" font-size="13" font-family="sans-serif">继续往下</text>
+    </svg>
+    <div class="caption">图3：双分支流程图——两条路必走其一，然后汇合继续</div>
+</div>
+
+<!-- ==================== 3.3 ==================== -->
+<div class="section-header" id="section-3-3">
+    <h2>3.3 else 的核心规则</h2>
+    <div class="en-title">Core Rules of else</div>
+</div>
+
+<h3 id="sec-3-3-1">3.3.1 必须依附 if（else Must Follow an if）</h3>
+
+<h4>3.3.1.1 else 不能单独存在
+    <span class="en">else cannot stand alone</span>
+</h4>
+
+<p>"Else 之战"关卡明确指出："<strong>else 只能与相应的 if 语句配对使用。</strong>" 这意味着你不能写一个孤零零的 <code>else</code>——它必须紧跟在某个 <code>if</code>（及其代码块）之后。<code>else</code> 就像 <code>if</code> 的"影子"，没有 <code>if</code> 就没有 <code>else</code>。</p>
+
+<h3 id="sec-3-3-2">3.3.2 互斥与完备（Mutually Exclusive &amp; Complete）</h3>
+
+<h4>3.3.2.1 二者恰好执行其一
+    <span class="en">Exactly one branch runs</span>
+</h4>
+
+<p>if-else 有两个重要特性，理解它们能帮你避免很多 bug：</p>
+
+<table class="styled-table">
+    <thead><tr><th>特性</th><th>含义</th></tr></thead>
+    <tbody>
+        <tr><td><strong>互斥（Mutually Exclusive）</strong></td><td>if 块和 else 块<strong>不可能同时执行</strong>，每次只走一条</td></tr>
+        <tr><td><strong>完备（Complete）</strong></td><td>两条分支<strong>覆盖了所有情况</strong>，必定会执行其中一条</td></tr>
+    </tbody>
+</table>
+
+<div class="remember-box">
+    <span class="remember-label">一句话记忆：</span>if-else 是一道"二选一"的门——要么进左门，要么进右门，<strong>不多走、不少走、不漏走</strong>。
+</div>
+
+<h3 id="sec-3-3-3">3.3.3 单分支 vs 双分支（Single vs. Two-Way）</h3>
+
+<h4>3.3.3.1 关键区别一目了然
+    <span class="en">The key differences at a glance</span>
+</h4>
+
+<table class="styled-table">
+    <thead><tr><th>对比项</th><th>单分支 if</th><th>双分支 if-else</th></tr></thead>
+    <tbody>
+        <tr><td>结构</td><td>只有 if</td><td>if + else</td></tr>
+        <tr><td>条件为假时</td><td>什么都不做，跳过</td><td>执行 else 块</td></tr>
+        <tr><td>形象比喻</td><td>"有就做，没有就算了"</td><td>"有就做这个，没有就做那个"</td></tr>
+        <tr><td>典型场景</td><td>发现敌人才攻击</td><td>有敌人攻击，否则撤防</td></tr>
+    </tbody>
+</table>
+
+<!-- ==================== 3.4 ==================== -->
+<div class="section-header" id="section-3-4">
+    <h2>3.4 条件的进阶</h2>
+    <div class="en-title">Advanced Conditions</div>
+</div>
+
+<p>本单元的条件不再只是"有没有敌人"，而是引入了更丰富的判断依据：<strong>距离</strong>和<strong>技能冷却</strong>。这让英雄的决策更加精细。</p>
+
+<h3 id="sec-3-4-1">3.4.1 distanceTo 测距（Measuring Distance）</h3>
+
+<h4>3.4.1.1 测量到目标的距离
+    <span class="en">Measure the distance to a target</span>
+</h4>
+
+<div class="figure">
+    <img src="https://assets.koudashijie.com/knowledge/3-4-1-1_distance_to.png" alt="distanceTo 测距示意">
+    <div class="caption">图4：distanceTo 返回英雄与目标之间的距离（米）</div>
+</div>
+
+<p>新的眼镜赋予了英雄 <code>distanceTo()</code> 技能：它能测量英雄与某个目标（或坐标）之间的距离，单位是米。通常我们会把结果存进一个变量，方便后面判断：</p>
+
+<div class="code-block">
+    <div class="dots"><span class="red"></span><span class="yellow"></span><span class="green"></span></div>
+<pre>enemy = <span class="obj">hero</span><span class="punc">.</span><span class="fn">findNearestEnemy</span><span class="punc">()</span>
+distance = <span class="obj">hero</span><span class="punc">.</span><span class="fn">distanceTo</span><span class="punc">(</span>enemy<span class="punc">)</span>  <span class="cmt"># 测出离这个敌人多远</span></pre>
+</div>
+
+<p>在"测距仪"关卡里，英雄甚至不用亲自战斗——只需用 <code>distanceTo()</code> 测出每个敌人的距离，再用 <code>say()</code> 喊给大炮听，让大炮去轰击。这是 <code>distanceTo</code> 的纯粹应用。</p>
+
+<h3 id="sec-3-4-2">3.4.2 比较运算符 &lt;（The &lt; Operator）</h3>
+
+<h4>3.4.2.1 把距离变成"真"或"假"
+    <span class="en">Turning distance into true or false</span>
+</h4>
+
+<p>光测出距离还不够，我们需要拿它和一个数字比较，得到一个布尔值，才能放进 <code>if</code> 里。这就要用到<span class="keyword">小于运算符 <code>&lt;</code></span>：</p>
+
+<div class="code-block">
+    <div class="dots"><span class="red"></span><span class="yellow"></span><span class="green"></span></div>
+<pre><span class="kw">if</span> distance <span class="punc">&lt;</span> <span class="num">10</span><span class="punc">:</span>   <span class="cmt"># 如果距离小于 10 米……</span>
+    <span class="obj">hero</span><span class="punc">.</span><span class="fn">attack</span><span class="punc">(</span>enemy<span class="punc">)</span></pre>
+</div>
+
+<p>这行代码可以读作："如果距离小于 10 米，那么就攻击敌人。" 当 <code>distance</code> 确实小于 10 时，<code>distance &lt; 10</code> 的结果是 <code>True</code>，攻击执行；否则结果是 <code>False</code>，走 <code>else</code> 分支。</p>
+
+<table class="styled-table">
+    <thead><tr><th>表达式</th><th>distance 的值</th><th>结果</th></tr></thead>
+    <tbody>
+        <tr><td><code>distance &lt; 10</code></td><td>7</td><td><code>True</code>（执行 if）</td></tr>
+        <tr><td><code>distance &lt; 10</code></td><td>15</td><td><code>False</code>（执行 else）</td></tr>
+        <tr><td><code>distance &lt; 5</code></td><td>3</td><td><code>True</code>（执行 if）</td></tr>
+    </tbody>
+</table>
+
+<h3 id="sec-3-4-3">3.4.3 isReady 技能判断（Checking Skill Readiness）</h3>
+
+<h4>3.4.3.1 特殊技能有冷却时间
+    <span class="en">Special skills have cooldowns</span>
+</h4>
+
+<div class="figure">
+    <img src="https://assets.koudashijie.com/knowledge/3-4-3-1_is_ready.png" alt="isReady 检查技能冷却">
+    <div class="caption">图5：cleave 等特殊技能有冷却时间，使用前要先用 isReady 检查</div>
+</div>
+
+<p>英雄的长剑有一个强力技能 <code>cleave()</code>（劈斩）——它能一次攻击周围十米内的<strong>所有</strong>敌人！但如此强大的技能不能连续使用，它有<strong>冷却时间</strong>（每 10 秒一次）。所以使用前必须先用日晷腕表的 <code>isReady()</code> 方法检查它是否准备好了：</p>
+
+<div class="code-block">
+    <div class="dots"><span class="red"></span><span class="yellow"></span><span class="green"></span></div>
+<pre><span class="kw">if</span> <span class="obj">hero</span><span class="punc">.</span><span class="fn">isReady</span><span class="punc">(</span><span class="str">"cleave"</span><span class="punc">)</span><span class="punc">:</span>  <span class="cmt"># 如果劈斩准备好了……</span>
+    <span class="obj">hero</span><span class="punc">.</span><span class="fn">cleave</span><span class="punc">(</span>enemy<span class="punc">)</span>          <span class="cmt"># 就劈斩！</span>
+<span class="kw">else</span><span class="punc">:</span>                          <span class="cmt"># 否则（还在冷却中）……</span>
+    <span class="obj">hero</span><span class="punc">.</span><span class="fn">attack</span><span class="punc">(</span>enemy<span class="punc">)</span>          <span class="cmt"># 用普通攻击撑过冷却</span></pre>
+</div>
+
+<div class="info-box">
+    <span class="info-label">妙用 else：</span>用 <code>else</code> 在冷却期间发动普通攻击，能让英雄"不浪费每一秒"——劈斩好了就劈斩，没好就普攻，火力永不停歇。
+</div>
+
+<!-- ==================== 3.5 ==================== -->
+<div class="section-header" id="section-3-5">
+    <h2>3.5 if-else 实战模式</h2>
+    <div class="en-title">Common if-else Patterns</div>
+</div>
+
+<p>本单元的关卡虽多，但 if-else 的用法可归纳为四种经典"决策模式"。认清模式，就能以不变应万变。</p>
+
+<h3 id="sec-3-5-1">3.5.1 模式一：攻击或撤防（Attack or Defend）</h3>
+
+<h4>3.5.1.1 有敌人就打，没敌人就回防
+    <span class="en">Fight if there's an enemy, otherwise defend</span>
+</h4>
+
+<p>这是最基础的 if-else 模式：条件是"是否有敌人"，两条分支分别是"攻击"和"回到防守位置"。代表关卡有"背靠背""林间圣地"。逻辑骨架是：</p>
+
+<div class="code-block">
+    <div class="dots"><span class="red"></span><span class="yellow"></span><span class="green"></span></div>
+<pre><span class="kw">if</span> enemy<span class="punc">:</span>
+    <span class="obj">hero</span><span class="punc">.</span><span class="fn">attack</span><span class="punc">(</span>enemy<span class="punc">)</span>
+<span class="kw">else</span><span class="punc">:</span>
+    <span class="obj">hero</span><span class="punc">.</span><span class="fn">moveXY</span><span class="punc">(</span>防守点 x<span class="punc">,</span> 防守点 y<span class="punc">)</span></pre>
+</div>
+
+<h3 id="sec-3-5-2">3.5.2 模式二：攻击或开箱（Attack or Loot）</h3>
+
+<h4>3.5.2.1 有敌人就打，没敌人就干别的事
+    <span class="en">Fight if there's an enemy, otherwise do other work</span>
+</h4>
+
+<p>这个模式把 else 分支换成了"做正事"——比如攻击宝箱开锁。代表关卡是"食人魔营地"：有食人魔来就反击，没有了就持续攻击 <code>"Chest"</code> 把宝箱打开。它体现了一种"<strong>战斗优先，间隙做事</strong>"的智能。</p>
+
+<h3 id="sec-3-5-3">3.5.3 模式三：劈斩或普攻（Cleave or Attack）</h3>
+
+<h4>3.5.3.1 技能好了就放大招，否则普攻
+    <span class="en">Use the big skill if ready, otherwise basic attack</span>
+</h4>
+
+<p>这个模式的条件不是"有没有敌人"，而是"<strong>技能是否就绪</strong>"。代表关卡有"森林劈斩者""Else 之战""边地僵局"系列。它的价值在于<strong>用 else 填满技能的冷却空窗</strong>，让输出最大化。</p>
+
+<h3 id="sec-3-5-4">3.5.4 模式四：按距离决策（Decide by Distance）</h3>
+
+<h4>3.5.4.1 敌人近了才出手
+    <span class="en">Act only when the enemy is close</span>
+</h4>
+
+<p>这个模式用 <code>distanceTo</code> + <code>&lt;</code> 作为条件，只有当敌人足够近时才采取行动。代表关卡有"贴身护卫""矮人蜂拥而至""勇敢的食人魔"。它让英雄学会"<strong>沉住气、不贪攻</strong>"——不被远处的敌人引诱离开关键位置。</p>
+
+<!-- ==================== 3.6 ==================== -->
+<div class="section-header" id="section-3-6">
+    <h2>3.6 实战关卡精讲</h2>
+    <div class="en-title">Level Strategy &amp; Analysis</div>
+</div>
+
+<p>这一节我们聚焦每一关的<strong>难点、思路和策略</strong>，只用关键片段辅助讲解，不展示完整解法。读懂"为什么这样设计"，你就能自己补全代码。</p>
+
+<h3 id="sec-3-6-1">3.6.1 背靠背（Back to Back）</h3>
+
+<h4>3.6.1.1 思路：用 else 守住阵地
+    <span class="en">Strategy: hold your ground with else</span>
+</h4>
+
+<div class="figure">
+    <img src="https://assets.koudashijie.com/knowledge/3-6-1-1_back_to_back.png" alt="背靠背关卡">
+    <div class="caption">图6：背靠背——有敌人就出击，没敌人就回到中间守护两侧农民</div>
+</div>
+
+<p>这是你第一次使用 <code>else</code> 的关卡，也是理解"否则"的最佳起点。英雄要同时保护<strong>背靠背的两个农民</strong>，难点在于：不能为了追一个敌人而跑太远，否则另一边的农民就危险了。</p>
+
+<p>策略是把"中间防守点"设为 else 分支的归宿：发现敌人就上前清剿，一旦清完（没有敌人了），立刻 <code>moveXY</code> 回到正中央的防守坐标。这样英雄就像一个钟摆，始终守在能照顾两侧的位置。</p>
+
+<div class="warn-box">
+    <span class="warn-label">关卡警示：</span>"确保别把 X 标记的坐标弄错，否则你将来不及同时保护两个农民。" 防守点的坐标选错，整个策略就崩了——它必须是能兼顾两侧的"中点"。
+</div>
+
+<h3 id="sec-3-6-2">3.6.2 食人魔营地（Ogre Encampment）</h3>
+
+<h4>3.6.2.1 思路：把 else 用在"干正事"上
+    <span class="en">Strategy: use else to get work done</span>
+</h4>
+
+<p>这一关的目标是<strong>夺回被锁在宝箱里的宝物</strong>。挑战在于：营地里的食人魔会不断骚扰你，你不能光顾着开箱被打死，也不能光打怪不开箱。</p>
+
+<p>if-else 完美解决了这个两难：把"有敌人"作为条件，<strong>if 分支反击敌人，else 分支攻击宝箱</strong>。这样英雄会自动"战斗优先"——只要还有食人魔就先打它们，一旦清场就抓紧时间凿宝箱。注意这里 else 攻击的目标是用字符串 <code>"Chest"</code> 指定的：</p>
+
+<div class="code-block">
+    <div class="dots"><span class="red"></span><span class="yellow"></span><span class="green"></span></div>
+<pre><span class="kw">if</span> enemy<span class="punc">:</span>
+    <span class="obj">hero</span><span class="punc">.</span><span class="fn">attack</span><span class="punc">(</span>enemy<span class="punc">)</span>
+<span class="kw">else</span><span class="punc">:</span>
+    <span class="obj">hero</span><span class="punc">.</span><span class="fn">attack</span><span class="punc">(</span><span class="str">"Chest"</span><span class="punc">)</span>  <span class="cmt"># 用名字攻击宝箱</span></pre>
+</div>
+
+<h3 id="sec-3-6-3">3.6.3 边地僵局（Borderlands Stymie）系列</h3>
+
+<h4>3.6.3.1 思路：让 else 填满冷却空窗
+    <span class="en">Strategy: fill the cooldown gap with else</span>
+</h4>
+
+<div class="figure">
+    <img src="https://assets.koudashijie.com/knowledge/3-6-3-1_cleave_stymie.png" alt="边地僵局劈斩关卡">
+    <div class="caption">图7：边地僵局——劈斩就绪时清场，冷却期间用普攻续航</div>
+</div>
+
+<p>"森林劈斩者""Else 之战""边地僵局 A/B"这一系列，核心都是<strong>围绕技能冷却来做决策</strong>。矮人成群结队地涌来，<code>cleave()</code> 能一次清掉一片，但它有 10 秒冷却。如果只会等劈斩，那冷却的这 10 秒英雄就只能挨打。</p>
+
+<p>聪明的做法是用 if-else 把这 10 秒"榨干"：<strong>if 判断 <code>isReady("cleave")</code>——好了就劈斩；else——没好就普通攻击</strong>。这样英雄永远在输出，要么群秒，要么单点，绝不空闲。</p>
+
+<div class="tip-box">
+    <span class="tip-label">关卡点拨：</span>"用 else 能让你的英雄避免对 cleave 的目标敌人进行普通攻击。" 也就是说，else 还顺带避免了"劈斩好了却跑去普攻单个敌人"的低效行为。
+</div>
+
+<p style="margin: 10px 0; color: #555;">立即访问 <a href="https://codecombat.cn" target="_blank" style="color: #1F7A44; font-weight: 700; text-decoration: none;">codecombat.cn</a> 开启你的 CodeCombat 编程冒险之旅！</p>
+
+<h3 id="sec-3-6-4">3.6.4 贴身护卫（Close Protection）</h3>
+
+<h4>3.6.4.1 思路：距离是新的判断标准
+    <span class="en">Strategy: distance becomes the new criterion</span>
+</h4>
+
+<div class="figure">
+    <img src="https://assets.koudashijie.com/knowledge/3-6-4-1_close_protection.png" alt="贴身护卫关卡">
+    <div class="caption">图8：贴身护卫——敌人近了就反击，远了就回到农民身边</div>
+</div>
+
+<p>这一关首次把<strong>距离</strong>引入 if 条件。要护卫脆弱的农民 Victor，英雄不能见敌人就追——追远了 Victor 就暴露了。所以判断标准变成了"<strong>敌人离得够不够近</strong>"。</p>
+
+<p>策略是：测出与最近敌人的距离，<strong>如果 <code>distance &lt; 10</code> 就攻击</strong>（说明敌人已逼近，威胁到农民）；<strong>否则就 <code>moveXY</code> 回到 Victor 身边的防守点</strong>。这是"模式一"的升级版——把条件从"有没有敌人"换成了"敌人近不近"。</p>
+
+<div class="warn-box">
+    <span class="warn-label">坐标提示：</span>关卡明确给出防御位置 <code>{x: 40, y: 37}</code>。else 分支一定要回到这个正确的位置，否则走远了食人魔就会伤到 Victor。
+</div>
+
+<h3 id="sec-3-6-5">3.6.5 矮人蜂拥而至（Dwarvenholdt）</h3>
+
+<h4>3.6.5.1 思路：多个知识点的总集成
+    <span class="en">Strategy: integrating everything learned</span>
+</h4>
+
+<p>这是一道"综合大考"，需要同时用上 <code>if/else</code>、<code>distanceTo()</code>、<code>&lt;</code>、<code>cleave()</code>、<code>while True</code> 循环和 <code>attack("Chest")</code>。任务是：在被矮人群包围的情况下，打开一个大宝箱并存活。</p>
+
+<p>关键策略是用<strong>距离</strong>来决定何时放劈斩：矮人因为怕你，会扎堆靠近后才前进。所以<strong>当最近的矮人距离 <code>&lt; 10</code> 时用 <code>cleave</code> 群秒</strong>，把它们一锅端；<strong>else 则去攻击 <code>"Chest"</code></strong>，趁敌人不近的间隙开箱。</p>
+
+<div class="remember-box">
+    <span class="remember-label">判断成功的标志：</span>关卡给了一个绝妙的自检方法——"只要英雄不追击远离宝箱的敌人，你就知道自己的距离判别成功了。" 如果英雄乱跑追敌，说明你的 <code>distance &lt; 10</code> 逻辑出了问题。
+</div>
+
+<h3 id="sec-3-6-6">3.6.6 勇敢的食人魔（Brave Ogre）</h3>
+
+<h4>3.6.6.1 思路：嵌套——if 里面还有 if-else
+    <span class="en">Strategy: nesting if-else inside if</span>
+</h4>
+
+<p>这道概念挑战引入了一个更高级的结构：<strong>嵌套（Nesting）</strong>。大多数食人魔害怕英雄不敢上前，但有的会勇敢进攻。规则是：离得近（&lt; 5 米）的就打它，否则去攻击 <code>"Door"</code>。</p>
+
+<p>这里巧妙的地方是<strong>双层判断</strong>：外层先用 <code>if enemy:</code> 确认敌人存在（避免对 <code>None</code> 测距出错），<strong>内层</strong>再用 <code>if distance &lt; 5 / else</code> 按距离决策。来看这个嵌套骨架：</p>
+
+<div class="code-block">
+    <div class="dots"><span class="red"></span><span class="yellow"></span><span class="green"></span></div>
+<pre><span class="kw">if</span> enemy<span class="punc">:</span>                       <span class="cmt"># 外层：先确认有敌人</span>
+    distance = <span class="obj">hero</span><span class="punc">.</span><span class="fn">distanceTo</span><span class="punc">(</span>enemy<span class="punc">)</span>
+    <span class="kw">if</span> distance <span class="punc">&lt;</span> <span class="num">5</span><span class="punc">:</span>           <span class="cmt"># 内层 if：近</span>
+        <span class="obj">hero</span><span class="punc">.</span><span class="fn">attack</span><span class="punc">(</span>enemy<span class="punc">)</span>
+    <span class="kw">else</span><span class="punc">:</span>                       <span class="cmt"># 内层 else：远</span>
+        <span class="obj">hero</span><span class="punc">.</span><span class="fn">attack</span><span class="punc">(</span><span class="str">"Door"</span><span class="punc">)</span></pre>
+</div>
+
+<div class="info-box">
+    <span class="info-label">为什么要先 if enemy？</span>因为如果场上没有敌人，<code>findNearestEnemy()</code> 返回 <code>None</code>，对 <code>None</code> 调用 <code>distanceTo</code> 会出错。外层的 <code>if enemy</code> 就是一道"安全锁"——这也呼应了第二单元学过的存在性检查。
+</div>
+
+<!-- ==================== 3.7 ==================== -->
+<div class="section-header" id="section-3-7">
+    <h2>3.7 常见错误与技巧</h2>
+    <div class="en-title">Common Mistakes &amp; Tips</div>
+</div>
+
+<h3 id="sec-3-7-1">3.7.1 易错点清单（Pitfalls）</h3>
+
+<h4>3.7.1.1 写 if-else 最容易踩的坑
+    <span class="en">Common pitfalls with if-else</span>
+</h4>
+
+<div class="warn-box">
+    <span class="warn-label">易错点清单：</span>
+    <ul style="margin: 8px 0 0 20px;">
+        <li><code>else</code> 后面误写条件——<code>else</code> 不带条件，直接跟冒号。</li>
+        <li><code>else</code> 没和 <code>if</code> 对齐——缩进层级不一致会报错。</li>
+        <li>给 <code>else</code> 也写了条件却忘了——孤立的 <code>else</code> 没有配对的 <code>if</code>。</li>
+        <li>测距前没先 <code>if enemy</code>——对 <code>None</code> 调用 <code>distanceTo</code> 会崩溃。</li>
+        <li>把 <code>&lt;</code> 写反成 <code>&gt;</code>——逻辑就完全相反了。</li>
+        <li>用 cleave 前忘了 <code>isReady</code> 检查——技能在冷却时调用会无效。</li>
+    </ul>
+</div>
+
+<h3 id="sec-3-7-2">3.7.2 选择小结（Selection Recap）</h3>
+
+<h4>3.7.2.1 三种选择结构的全景
+    <span class="en">The full picture of selection</span>
+</h4>
+
+<p>到目前为止，你已经接触了选择结构的几种形态。把它们放在一起对比，脉络就清晰了：</p>
+
+<table class="styled-table">
+    <thead><tr><th>形态</th><th>结构</th><th>含义</th></tr></thead>
+    <tbody>
+        <tr><td>单分支</td><td><code>if</code></td><td>满足才做，否则跳过</td></tr>
+        <tr><td>双分支</td><td><code>if … else</code></td><td>二选一，必走其一</td></tr>
+        <tr><td>嵌套</td><td><code>if</code> 里再放 <code>if-else</code></td><td>先大类判断，再细分决策</td></tr>
+    </tbody>
+</table>
+
+<!-- ==================== 小结 ==================== -->
+<div class="summary-card" id="section-summary">
+<h3>本单元小结 ✨</h3>
+
+    <p>恭喜你完成边际森林第三单元！你的英雄从"会判断"进化到了"会权衡"——不仅知道该不该做，还知道该做这个还是做那个。来回顾一下核心概念：</p>
+
+    <table class="styled-table">
+        <thead><tr><th>核心概念</th><th>关键点</th><th>对应关卡</th></tr></thead>
+        <tbody>
+            <tr><td>双分支结构</td><td>条件成立做 A，否则做 B</td><td>全部</td></tr>
+            <tr><td>if-else 语法</td><td><code>else:</code> 不带条件</td><td>背靠背</td></tr>
+            <tr><td>else 规则</td><td>必须配对 if、互斥完备</td><td>Else 之战</td></tr>
+            <tr><td>缩进对齐</td><td>else 与 if 同层级</td><td>全部</td></tr>
+            <tr><td>distanceTo</td><td>测量到目标的距离</td><td>测距仪</td></tr>
+            <tr><td>比较运算符 &lt;</td><td>距离与数字比较得真假</td><td>贴身护卫</td></tr>
+            <tr><td>isReady</td><td>检查技能是否冷却完毕</td><td>森林劈斩者</td></tr>
+            <tr><td>cleave 劈斩</td><td>群体攻击，需配合 isReady</td><td>边地僵局</td></tr>
+            <tr><td>else 干正事</td><td>有敌人打，没敌人开箱</td><td>食人魔营地</td></tr>
+            <tr><td>嵌套判断</td><td>if 里再套 if-else</td><td>勇敢的食人魔</td></tr>
+        </tbody>
+    </table>
+
+    <p style="text-align: center; margin-top: 20px; font-size: 1.1em;">
+        会权衡、懂取舍的英雄，才能在险境中游刃有余。<br>
+        继续征战边际森林吧，勇敢的程序员！🌲⚔️
+    </p>
+</div>
+
+
+<div class="member-promo" style="background: linear-gradient(135deg,#e8f5e9 0%,#fff 100%); border: 2px solid #2E9E5B; border-radius: 14px; padding: 24px 28px; margin: 30px 0; text-align: center;">
+    <h3 style="color: #1F7A44; border: none; margin-top: 0; font-size: 1.3em;">🎮 想在 CodeCombat 中实战这些关卡吗？</h3>
+    <p style="margin: 10px 0; font-size: 1.05em;">加入 <strong>CodeCombat（codecombat.cn）</strong> 会员，即可解锁全部编程关卡，跟随英雄安雅和塔林在真实游戏环境中边玩边学！通过实战闯关巩固本单元所学的每一个知识点，让编程学习不再枯燥。</p>
+    
+</div>
+
+
+
+</div><!-- end page-wrapper -->
+
+<script>
+document.querySelectorAll('.sidebar-nav a').forEach(link => {
+    link.addEventListener('click', () => {
+        if (window.innerWidth <= 1024) {
+            document.querySelector('.sidebar-nav').classList.remove('active');
+        }
+    });
+});
+</script>
+
+
+<div data-info-wiki-backlink style="text-align:center;padding:18px 12px;color:#64748b;font:13px/1.6 -apple-system,BlinkMacSystemFont,'Segoe UI','Microsoft YaHei',sans-serif"><a href="../index.html" style="color:#4f46e5;text-decoration:none;font-weight:700">← 返回 CodeCombat 信息百科</a></div>
+</body>
+</html>

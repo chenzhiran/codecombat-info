@@ -1,0 +1,463 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>CodeCombat知识体系</title>
+<style>
+  :root {
+    --bg-page: #f4f7fb;
+    --sidebar-bg: #ffffff;
+    --sidebar-border: #e2e8f2;
+    --brand: #3b82f6;
+    --brand-deep: #2563eb;
+    --brand-soft: #eef4ff;
+    --accent: #f59e0b;
+    --text: #2c3344;
+    --text-dim: #8593a8;
+    --map-1: #8b5cf6;
+    --map-2: #22b573;
+    --map-3: #f59e0b;
+    --map-4: #3b82f6;
+    --map-5: #06b6d4;
+  }
+
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+  html, body { height: 100%; }
+  body {
+    font-family: "PingFang SC", "Microsoft YaHei", "Segoe UI", sans-serif;
+    background: var(--bg-page);
+    color: var(--text);
+    overflow: hidden;
+  }
+
+  .layout { display: flex; height: 100vh; }
+
+  /* ===================== 侧边栏 ===================== */
+  .sidebar {
+    width: 300px;
+    background: var(--sidebar-bg);
+    border-right: 1px solid var(--sidebar-border);
+    overflow-y: auto;
+    flex-shrink: 0;
+    padding: 18px 0 50px;
+    box-shadow: 2px 0 14px rgba(40,60,120,0.04);
+    transition: width 0.3s ease, padding 0.3s ease;
+  }
+  .sidebar.collapsed {
+    width: 62px;
+    overflow-y: auto;
+    overflow-x: hidden;
+  }
+  .sidebar::-webkit-scrollbar { width: 8px; }
+  .sidebar.collapsed::-webkit-scrollbar { width: 0; }
+  .sidebar::-webkit-scrollbar-thumb { background: #d6deec; border-radius: 4px; }
+  .sidebar::-webkit-scrollbar-track { background: transparent; }
+
+  .sidebar-title {
+    padding: 6px 22px 18px;
+    font-size: 17px; font-weight: 800; color: var(--text); letter-spacing: 0.5px;
+    display: flex; align-items: center; gap: 10px;
+    position: relative;
+    transition: padding 0.3s ease, justify-content 0.3s ease;
+  }
+  .sidebar.collapsed .sidebar-title {
+    padding: 10px 8px 14px;
+    justify-content: center;
+  }
+  .sidebar.collapsed .sidebar-title .title-text { display: none; }
+  .sidebar.collapsed .sidebar-title .bar { display: none; }
+  .sidebar-title .bar {
+    width: 5px; height: 22px; border-radius: 3px;
+    background: linear-gradient(180deg, var(--brand), var(--brand-deep));
+  }
+
+  /* 折叠/展开按钮 */
+  .sidebar-toggle {
+    position: sticky;
+    top: 0;
+    z-index: 10;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 30px; height: 30px;
+    background: var(--sidebar-bg);
+    border: 1.5px solid var(--sidebar-border);
+    border-radius: 8px;
+    cursor: pointer;
+    font-size: 13px;
+    color: var(--text-dim);
+    transition: all 0.22s;
+    flex-shrink: 0;
+    margin-left: auto;
+    user-select: none;
+  }
+  .sidebar-toggle:hover {
+    background: var(--brand-soft);
+    border-color: var(--brand);
+    color: var(--brand);
+  }
+  .sidebar.collapsed .sidebar-toggle {
+    margin: 6px auto 10px;
+    position: static;
+  }
+  .sidebar.collapsed .sidebar-toggle::after {
+    content: '▶';
+  }
+  .sidebar:not(.collapsed) .sidebar-toggle::after {
+    content: '◀';
+  }
+
+  .map-group { margin-bottom: 4px; }
+
+  .map-header {
+    display: flex; align-items: center; gap: 12px;
+    padding: 12px 20px; cursor: pointer; user-select: none;
+    transition: background 0.18s, padding 0.3s ease, justify-content 0.3s ease;
+    border-left: 4px solid transparent;
+  }
+  .map-header:hover { background: #f6f9fe; }
+  .map-header.active-map { border-left-color: var(--brand); background: var(--brand-soft); }
+
+  .sidebar.collapsed .map-header {
+    padding: 10px 8px;
+    justify-content: center;
+    gap: 0;
+    border-left: none;
+    position: relative;
+  }
+  .sidebar.collapsed .map-header.active-map {
+    background: var(--brand-soft);
+    border-radius: 8px;
+  }
+  .sidebar.collapsed .map-header .map-name,
+  .sidebar.collapsed .map-header .lock-badge,
+  .sidebar.collapsed .map-header .chevron { display: none; }
+
+  .sidebar.collapsed .unit-list { display: none !important; }
+
+  .map-header .map-icon {
+    width: 26px;
+    height: 52px;
+    flex-shrink: 0;
+    object-fit: contain;
+    background: transparent;
+    filter: drop-shadow(0 2px 4px rgba(40,60,120,0.18));
+    transition: transform 0.18s;
+  }
+  .map-header:hover .map-icon { transform: translateY(-2px) scale(1.05); }
+
+  .map-header .map-name { flex: 1; font-size: 15px; font-weight: 700; }
+  .map-header .lock-badge {
+    font-size: 11px; background: #fff5e3; color: #d98714;
+    padding: 2px 9px; border-radius: 10px; border: 1px solid #f3d9a3;
+  }
+  .map-header .chevron {
+    font-size: 10px; color: var(--text-dim);
+    transition: transform 0.25s; margin-left: 4px;
+  }
+  .map-header.expanded .chevron { transform: rotate(90deg); }
+
+  .unit-list { max-height: 0; overflow: hidden; transition: max-height 0.4s ease; }
+  .unit-list.open { max-height: 1200px; }
+
+  .unit-item {
+    display: flex; align-items: center; gap: 11px;
+    padding: 10px 20px 10px 30px; cursor: pointer;
+    font-size: 13px; color: var(--text-dim);
+    transition: all 0.16s; border-left: 4px solid transparent; line-height: 1.45;
+  }
+  .unit-item:hover { color: var(--text); background: #f6f9fe; }
+  .unit-item.active {
+    color: var(--brand-deep); background: var(--brand-soft);
+    border-left-color: var(--brand); font-weight: 600;
+  }
+  .unit-item .unit-no {
+    width: 22px; height: 22px; border-radius: 7px; flex-shrink: 0;
+    background: #eef1f6; color: var(--text-dim);
+    display: flex; align-items: center; justify-content: center; font-size: 11px;
+    transition: all 0.16s;
+  }
+  .unit-item.active .unit-no { background: var(--brand); color: #fff; }
+
+  .map-desc {
+    padding: 6px 20px 6px 30px;
+    font-size: 12px; color: var(--text-dim);
+    line-height: 1.6; border-left: 4px solid transparent;
+  }
+  .map-desc.ready { color: #22b573; font-weight: 500; }
+  .map-desc.in-progress { color: #f59e0b; }
+  .coming-soon-note {
+    padding: 12px 30px; font-size: 12px; color: var(--text-dim); font-style: italic;
+  }
+
+  /* ===================== 内容区 ===================== */
+  .content { flex: 1; position: relative; background: var(--bg-page); display: flex; flex-direction: column; }
+  .frame-wrap { flex: 1; position: relative; }
+  iframe.unit-frame { width: 100%; height: 100%; border: none; background: #fff; display: block; }
+
+
+
+
+  /* ===================== 开发中占位 ===================== */
+  .placeholder {
+    display: flex; flex-direction: column;
+    align-items: center; justify-content: center;
+    height: 100%; text-align: center; padding: 40px;
+  }
+  .placeholder .ph-badge {
+    width: 88px; height: 88px; border-radius: 24px;
+    display: flex; align-items: center; justify-content: center;
+    font-size: 34px; font-weight: 800; color: #fff; margin-bottom: 24px;
+    animation: float 3s ease-in-out infinite;
+  }
+  .ph-ch4 .ph-badge { background: linear-gradient(135deg,#fbbf24,#f59e0b); box-shadow: 0 12px 30px rgba(245,158,11,0.35); }
+  .ph-ch5 .ph-badge { background: linear-gradient(135deg,#60a5fa,#3b82f6); box-shadow: 0 12px 30px rgba(59,130,246,0.35); }
+  .ph-ch6 .ph-badge { background: linear-gradient(135deg,#22d3ee,#06b6d4); box-shadow: 0 12px 30px rgba(6,182,212,0.35); }
+  @keyframes float { 0%,100%{transform:translateY(0)} 50%{transform:translateY(-12px)} }
+
+  .placeholder h2 { font-size: 24px; margin-bottom: 12px; color: var(--text); letter-spacing: 1px; }
+  .placeholder p { color: var(--text-dim); font-size: 14px; max-width: 440px; line-height: 1.8; }
+
+  .placeholder .dev-bar {
+    margin-top: 28px; width: 300px; height: 10px;
+    background: #e7edf6; border-radius: 6px; overflow: hidden;
+  }
+  .placeholder .dev-bar span {
+    display: block; height: 100%; width: 35%;
+    background: linear-gradient(90deg, var(--brand), var(--brand-deep));
+    border-radius: 6px; animation: load 1.8s ease-in-out infinite alternate;
+  }
+  @keyframes load { from{width:18%} to{width:62%} }
+  .placeholder .dev-text { margin-top: 12px; font-size: 12px; color: var(--text-dim); letter-spacing: 2px; }
+</style>
+</head>
+<body>
+
+  <div class="layout">
+    <aside class="sidebar" id="sidebar"></aside>
+    <main class="content" id="content"></main>
+  </div>
+
+<script>
+const MAPS = [
+  {
+    id: "ch1", name: "暗影地牢", cls: "map-ch1", available: true,
+    icon: "icon_ch1.png",
+    units: [
+      { file: "ch1_sec1.html", title: "第一单元：对象、方法、参数与数据类型基础" },
+      { file: "ch1_sec2.html", title: "第二单元：程序、编程、注释、字符串与调试" },
+      { file: "ch1_sec3.html", title: "第三单元：循环结构 —— while True 无限循环" },
+      { file: "ch1_sec4.html", title: "第四单元：变量与赋值" },
+    ]
+  },
+  {
+    id: "ch3", name: "边际森林", cls: "map-ch3", available: true,
+    icon: "icon_ch3.png",
+    units: [
+      { file: "ch3_sec1.html", title: "第一单元：笛卡尔坐标、moveXY 与 buildXY 基础" },
+      { file: "ch3_sec2.html", title: "第二单元：if 语句与打敌人三件套" },
+      { file: "ch3_sec3.html", title: "第三单元：if-else 双分支选择结构" },
+      { file: "ch3_sec4.html", title: "第四单元：if-elif-else 多分支选择结构" },
+      { file: "ch3_sec5.html", title: "第五单元：嵌套选择结构" },
+      { file: "ch3_sec6.html", title: "第六单元：函数的定义与调用" },
+      { file: "ch3_sec7.html", title: "第七单元：函数参数" },
+      { file: "ch3_sec8.html", title: "第八单元：多参数函数" },
+      { file: "ch3_sec9.html", title: "第九单元：事件与事件处理机制" },
+    ]
+  },
+  {
+    id: "ch4", name: "流金沙漠", cls: "map-ch4", available: false,
+    icon: "icon_ch4.png",
+    units: [
+      { file: "ch4_sec1.html", title: "第一单元：算术运算符与运算优先级" },
+      { file: "ch4_sec2.html", title: "第二单元：布尔值与比较运算符" },
+      { file: "ch4_sec3.html", title: "第三单元：逻辑运算符 and / or / not" },
+      { file: "ch4_sec4.html", title: "第四单元：变量递增、累加器与计数器" },
+      { file: "ch4_sec5.html", title: "第五单元：函数返回值 return" },
+      { file: "ch4_sec6.html", title: "第六单元：break 与 continue" },
+      { file: "ch4_sec7.html", title: "第七单元：数组长度 len 与索引访问" },
+      { file: "ch4_sec8.html", title: "第八单元：while 循环遍历数组" },
+    ]
+  },
+  {
+    id: "ch5", name: "安息云峰", cls: "map-ch5", available: false,
+    icon: "icon_ch5.png",
+    units: [
+      { file: "ch5_sec1.html", title: "第一单元：for 循环与 range 遍历" },
+      { file: "ch5_sec2.html", title: "第二单元：对象字面量与属性访问" },
+      { file: "ch5_sec3.html", title: "第三单元：线性查找与极值（max/min）" },
+      { file: "ch5_sec4.html", title: "第四单元：哨兵值模式与累加求和" },
+      { file: "ch5_sec5.html", title: "第五单元：单位指挥 summon 与 command" },
+      { file: "ch5_sec6.html", title: "第六单元：多单位协同与动态目标选择" },
+    ]
+  },
+  {
+    id: "ch6", name: "封神冰川", cls: "map-ch6", available: false,
+    icon: "icon_ch6.png",
+    units: [
+      { file: "ch6_sec1.html", title: "第一单元：向量运算 Vector" },
+      { file: "ch6_sec2.html", title: "第二单元：栈、队列与链表" },
+      { file: "ch6_sec3.html", title: "第三单元：哈希函数与碰撞处理" },
+      { file: "ch6_sec4.html", title: "第四单元：选择排序与二分查找" },
+      { file: "ch6_sec5.html", title: "第五单元：递归与分形绘制" },
+      { file: "ch6_sec6.html", title: "第六单元：迷宫寻路 DFS / BFS" },
+      { file: "ch6_sec7.html", title: "第七单元：动态规划与最优路径" },
+    ]
+  }
+];
+
+const sidebar = document.getElementById('sidebar');
+const content = document.getElementById('content');
+
+function buildSidebar() {
+  const title = document.createElement('div');
+  title.className = 'sidebar-title';
+  title.innerHTML = '<span class="bar"></span><span class="title-text">CodeCombat知识体系 <span style="font-size:0.7em;font-weight:500;">官网链接</span> <a href="https://codecombat.cn" style="color:#3b82f6;text-decoration:none;font-size:0.7em;font-weight:500;" target="_blank">codecombat.cn</a></span><button class="sidebar-toggle" onclick="toggleSidebar()" title="折叠/展开侧栏"></button>';
+  sidebar.appendChild(title);
+
+  MAPS.forEach((map) => {
+    const group = document.createElement('div');
+    group.className = 'map-group ' + map.cls;
+
+    const header = document.createElement('div');
+    header.className = 'map-header';
+    header.innerHTML = `
+      <img class="map-icon" src="${map.icon}" alt="${map.name}">
+      <span class="map-name">${map.name}</span>
+      ${map.available ? '' : '<span class="lock-badge">教程开发中</span>'}
+      <span class="chevron">▶</span>
+    `;
+
+    const list = document.createElement('div');
+    list.className = 'unit-list';
+
+    if (map.available) {
+      const desc = document.createElement('div');
+      desc.className = 'map-desc ready';
+      desc.textContent = '关卡与教程已就绪，立即开始';
+      list.appendChild(desc);
+      map.units.forEach((unit, ui) => {
+        const item = document.createElement('div');
+        item.className = 'unit-item';
+        item.dataset.key = map.id + '_' + ui;
+        item.innerHTML = `<span class="unit-no">${ui + 1}</span><span>${unit.title}</span>`;
+        item.onclick = (e) => { e.stopPropagation(); selectUnit(map, ui); };
+        list.appendChild(item);
+      });
+    } else {
+      const desc = document.createElement('div');
+      desc.className = 'map-desc in-progress';
+      desc.textContent = '关卡可直接游玩，教程完善中';
+      list.appendChild(desc);
+      const note = document.createElement('div');
+      note.className = 'coming-soon-note';
+      note.textContent = '该教程正在开发中，关卡可直接游玩';
+      list.appendChild(note);
+      map.units.forEach((unit, ui) => {
+        const item = document.createElement('div');
+        item.className = 'unit-item';
+        item.style.opacity = '0.55';
+        item.innerHTML = `<span class="unit-no">·</span><span>${unit.title}</span>`;
+        item.onclick = (e) => { e.stopPropagation(); showComingSoon(map); };
+        list.appendChild(item);
+      });
+    }
+
+    header.onclick = () => {
+      const isOpen = list.classList.contains('open');
+      if (isOpen) {
+        list.classList.remove('open');
+        header.classList.remove('expanded');
+      } else {
+        list.classList.add('open');
+        header.classList.add('expanded');
+      }
+      if (!map.available) showComingSoon(map);
+    };
+
+    group.appendChild(header);
+    group.appendChild(list);
+    sidebar.appendChild(group);
+  });
+}
+
+function selectUnit(map, ui) {
+  const key = map.id + '_' + ui;
+
+  document.querySelectorAll('.unit-item').forEach(el => el.classList.remove('active'));
+  const el = document.querySelector(`.unit-item[data-key="${key}"]`);
+  if (el) el.classList.add('active');
+  document.querySelectorAll('.map-header').forEach(h => h.classList.remove('active-map'));
+  if (el) el.closest('.map-group').querySelector('.map-header').classList.add('active-map');
+
+  const unit = map.units[ui];
+
+  content.innerHTML = `
+    <div class="frame-wrap">
+      <iframe class="unit-frame" src="${unit.file}"></iframe>
+    </div>
+  `;
+}
+
+function showComingSoon(map) {
+  document.querySelectorAll('.unit-item').forEach(el => el.classList.remove('active'));
+  const phClass = 'ph-' + map.id;
+  const initial = map.name.charAt(0);
+  content.innerHTML = `
+    <div class="placeholder ${phClass}">
+      <div class="ph-badge">${initial}</div>
+      <h2>${map.name} · 开发中</h2>
+      <p>这片地图尚未解锁。我们正在打磨每一关的知识点与示例，很快就能与你并肩闯关。
+      请先在「暗影地牢」与「边际森林」中磨练你的代码剑术！<br>
+      加入 <strong>CodeCombat（codecombat.cn）</strong> 会员，抢先体验全部关卡实战！</p>
+      <div class="dev-bar"><span></span></div>
+      <div class="dev-text">LOADING</div>
+    </div>
+  `;
+}
+
+function toggleSidebar() {
+  const isCollapsed = sidebar.classList.toggle('collapsed');
+  // 折叠时关闭所有展开的地图列表
+  if (isCollapsed) {
+    sidebar.querySelectorAll('.unit-list.open').forEach(l => l.classList.remove('open'));
+    sidebar.querySelectorAll('.map-header.expanded').forEach(h => h.classList.remove('expanded'));
+  } else {
+    // 展开时恢复默认展开前两张地图
+    const groups = sidebar.querySelectorAll('.map-group');
+    [0, 1].forEach(i => {
+      if (groups[i]) {
+        groups[i].querySelector('.unit-list').classList.add('open');
+        groups[i].querySelector('.map-header').classList.add('expanded');
+      }
+    });
+  }
+}
+
+/* 初始化：默认展开前两张地图 + 加载第一个文件 */
+buildSidebar();
+const groups = sidebar.querySelectorAll('.map-group');
+[0, 1].forEach(i => {
+  if (groups[i]) {
+    groups[i].querySelector('.unit-list').classList.add('open');
+    groups[i].querySelector('.map-header').classList.add('expanded');
+  }
+});
+selectUnit(MAPS[0], 0);
+
+const footer = document.createElement('div');
+footer.style.cssText = 'position:fixed;bottom:0;left:300px;right:0;background:linear-gradient(90deg,#1a1a2e,#2c3344);color:#ccc;text-align:center;padding:8px 20px;font-size:13px;z-index:50;border-top:2px solid #f59e0b;';
+footer.innerHTML = '⭐ CodeCombat 编程学习平台 · 官网 codecombat.cn · 加入会员 解锁全部关卡，边玩边学编程！';
+document.body.appendChild(footer);
+
+document.getElementById('sidebar').addEventListener('transitionend', function(e) {
+  if (e.propertyName === 'width') {
+    footer.style.left = getComputedStyle(this).width;
+  }
+});
+</script>
+
+<div data-info-wiki-backlink style="text-align:center;padding:18px 12px;color:#64748b;font:13px/1.6 -apple-system,BlinkMacSystemFont,'Segoe UI','Microsoft YaHei',sans-serif"><a href="../index.html" style="color:#4f46e5;text-decoration:none;font-weight:700">← 返回 CodeCombat 信息百科</a></div>
+</body>
+</html>

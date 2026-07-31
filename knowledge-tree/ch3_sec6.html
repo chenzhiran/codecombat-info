@@ -1,0 +1,953 @@
+﻿<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>第六单元：函数的定义与调用 | CodeCombat 编程知识</title>
+    <style>
+        /* ===== 基础重置与变量 ===== */
+        :root {
+            --primary: #2E9E5B;
+            --primary-light: #4FBF7C;
+            --primary-lighter: #E8F7EE;
+            --primary-dark: #1F7A44;
+            --dark: #14241a;
+            --dark-code: #1e2a22;
+            --dark-code-border: #314538;
+            --text: #2d2d2d;
+            --text-light: #555;
+            --text-lighter: #888;
+            --bg: #ffffff;
+            --bg-alt: #f7faf8;
+            --bg-card: #ffffff;
+            --border: #e3ece6;
+            --success: #4CAF50;
+            --warning: #FFC107;
+            --error: #f44336;
+            --info: #2196F3;
+            --code-keyword: #c678dd;
+            --code-string: #98c379;
+            --code-comment: #5c8a6f;
+            --code-function: #61afef;
+            --code-number: #d19a66;
+            --code-text: #b6c2ba;
+            --code-punctuation: #b6c2ba;
+            --code-object: #e5c07b;
+            --sidebar-width: 270px;
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'PingFang SC', 'Hiragino Sans GB', 'Microsoft YaHei', sans-serif;
+            line-height: 1.8;
+            color: var(--text);
+            background: var(--bg);
+            font-size: 16px;
+        }
+
+        /* ===== 左侧导航栏 ===== */
+        .sidebar-nav {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: var(--sidebar-width);
+            height: 100vh;
+            background: #14241a;
+            overflow-y: auto;
+            padding: 20px 0;
+            z-index: 1000;
+            border-right: 3px solid var(--primary);
+            transition: transform 0.3s ease;
+        }
+
+        .sidebar-nav::-webkit-scrollbar { width: 4px; }
+        .sidebar-nav::-webkit-scrollbar-thumb { background: var(--primary); border-radius: 4px; }
+        .sidebar-nav::-webkit-scrollbar-track { background: #1f3a29; }
+
+        .sidebar-nav .nav-title {
+            color: var(--primary-light);
+            font-size: 0.95em;
+            font-weight: 700;
+            padding: 8px 18px;
+            margin-bottom: 5px;
+            letter-spacing: 1px;
+        }
+
+        .sidebar-nav a {
+            display: block;
+            color: #cdd8d0;
+            text-decoration: none;
+            padding: 6px 18px;
+            font-size: 0.82em;
+            line-height: 1.5;
+            border-left: 3px solid transparent;
+            transition: all 0.2s ease;
+        }
+
+        .sidebar-nav a:hover {
+            color: #fff;
+            background: rgba(46, 158, 91, 0.15);
+            border-left-color: var(--primary);
+        }
+
+        .sidebar-nav a.nav-section {
+            color: var(--primary-light);
+            font-weight: 600;
+            font-size: 0.88em;
+            margin-top: 12px;
+            padding-top: 10px;
+            border-top: 1px solid #23402e;
+        }
+
+        .sidebar-nav a.nav-section:first-of-type {
+            border-top: none;
+            margin-top: 0;
+        }
+
+        .sidebar-nav a.nav-sub {
+            padding-left: 30px;
+            color: #a7b8ad;
+            font-size: 0.78em;
+        }
+
+        .sidebar-nav a.nav-sub:hover { color: #fff; }
+
+        .nav-toggle {
+            display: none;
+            position: fixed;
+            top: 15px;
+            left: 15px;
+            z-index: 1100;
+            background: var(--primary);
+            color: white;
+            border: none;
+            border-radius: 8px;
+            padding: 8px 12px;
+            font-size: 1.2em;
+            cursor: pointer;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.2);
+        }
+
+        .page-wrapper { margin-left: var(--sidebar-width); }
+
+        /* ===== 头部横幅 ===== */
+        .hero-banner {
+            background: linear-gradient(135deg, var(--primary) 0%, var(--primary-dark) 100%);
+            color: white;
+            padding: 60px 20px;
+            text-align: center;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .hero-banner::before {
+            content: '';
+            position: absolute;
+            top: -50%;
+            left: -50%;
+            width: 200%;
+            height: 200%;
+            background: radial-gradient(circle, rgba(255,255,255,0.12) 0%, transparent 60%);
+            animation: pulse 8s ease-in-out infinite;
+        }
+
+        @keyframes pulse {
+            0%, 100% { transform: scale(1); }
+            50% { transform: scale(1.1); }
+        }
+
+        .hero-banner h1 { font-size: 2.5em; margin-bottom: 10px; position: relative; z-index: 1; }
+        .hero-banner .subtitle { font-size: 1.2em; opacity: 0.92; position: relative; z-index: 1; }
+        .hero-banner .badge {
+            display: inline-block;
+            background: rgba(255,255,255,0.2);
+            padding: 5px 15px;
+            border-radius: 20px;
+            margin-top: 15px;
+            font-size: 0.9em;
+            position: relative;
+            z-index: 1;
+        }
+
+        .container { max-width: 900px; margin: 0 auto; padding: 40px 20px; }
+
+        /* ===== 章节标题 ===== */
+        .section-header {
+            background: var(--primary-lighter);
+            border-left: 5px solid var(--primary);
+            padding: 20px 25px;
+            margin: 50px 0 30px;
+            border-radius: 0 12px 12px 0;
+        }
+
+        .section-header h2 { color: var(--primary-dark); font-size: 1.8em; margin-bottom: 5px; }
+        .section-header .en-title { color: var(--text-light); font-size: 0.95em; font-style: italic; }
+
+        h3 {
+            color: var(--primary);
+            font-size: 1.4em;
+            margin: 40px 0 15px;
+            padding-bottom: 8px;
+            border-bottom: 2px solid var(--primary-lighter);
+        }
+
+        h4 {
+            color: var(--text);
+            font-size: 1.15em;
+            margin: 30px 0 12px;
+            padding-left: 12px;
+            border-left: 3px solid var(--primary-light);
+        }
+
+        h4 .en {
+            display: block;
+            font-size: 0.8em;
+            color: var(--text-lighter);
+            font-weight: normal;
+            margin-top: 2px;
+        }
+
+        p { margin: 12px 0; text-align: justify; }
+
+        .keyword {
+            background: var(--primary-lighter);
+            color: var(--primary-dark);
+            padding: 2px 6px;
+            border-radius: 4px;
+            font-weight: 600;
+            white-space: nowrap;
+        }
+
+        .keyword-en {
+            background: #e8f4fd;
+            color: #1565c0;
+            padding: 2px 6px;
+            border-radius: 4px;
+            font-weight: 600;
+            font-family: 'SF Mono', 'Fira Code', 'Consolas', monospace;
+            font-size: 0.9em;
+            white-space: nowrap;
+        }
+
+        .keyword-green {
+            background: #e8f5e9;
+            color: #2e7d32;
+            padding: 2px 6px;
+            border-radius: 4px;
+            font-weight: 600;
+            white-space: nowrap;
+        }
+
+        code {
+            background: #eef2ef;
+            color: #c2185b;
+            padding: 2px 7px;
+            border-radius: 4px;
+            font-family: 'SF Mono', 'Fira Code', 'Consolas', 'Courier New', monospace;
+            font-size: 0.88em;
+            white-space: nowrap;
+        }
+
+        .code-block {
+            background: var(--dark-code);
+            border: 1px solid var(--dark-code-border);
+            border-radius: 10px;
+            padding: 20px 24px;
+            margin: 16px 0;
+            overflow-x: auto;
+            position: relative;
+        }
+
+        .code-block::before {
+            content: 'Python';
+            position: absolute;
+            top: 8px;
+            right: 12px;
+            font-size: 0.7em;
+            color: #6b8a76;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+        }
+
+        .code-block .dots { display: flex; gap: 6px; margin-bottom: 14px; }
+        .code-block .dots span { width: 10px; height: 10px; border-radius: 50%; }
+        .code-block .dots .red { background: #ff5f57; }
+        .code-block .dots .yellow { background: #febc2e; }
+        .code-block .dots .green { background: #28c840; }
+
+        .code-block pre {
+            margin: 0;
+            font-family: 'SF Mono', 'Fira Code', 'Consolas', 'Courier New', monospace;
+            font-size: 0.9em;
+            line-height: 1.7;
+            color: var(--code-text);
+        }
+
+        .code-block .kw { color: var(--code-keyword); }
+        .code-block .str { color: var(--code-string); }
+        .code-block .cmt { color: var(--code-comment); font-style: italic; }
+        .code-block .fn { color: var(--code-function); }
+        .code-block .num { color: var(--code-number); }
+        .code-block .obj { color: var(--code-object); }
+        .code-block .punc { color: var(--code-punctuation); }
+        .code-block .err { color: var(--error); text-decoration: line-through; }
+
+        .tip-box {
+            background: #fff8e1;
+            border-left: 4px solid var(--warning);
+            padding: 14px 18px;
+            margin: 16px 0;
+            border-radius: 0 8px 8px 0;
+            font-size: 0.95em;
+        }
+        .tip-box .tip-label { font-weight: 700; color: #f57f17; margin-right: 6px; }
+
+        .info-box {
+            background: #e3f2fd;
+            border-left: 4px solid var(--info);
+            padding: 14px 18px;
+            margin: 16px 0;
+            border-radius: 0 8px 8px 0;
+            font-size: 0.95em;
+        }
+        .info-box .info-label { font-weight: 700; color: #1565c0; margin-right: 6px; }
+
+        .remember-box {
+            background: var(--primary-lighter);
+            border-left: 4px solid var(--primary);
+            padding: 14px 18px;
+            margin: 16px 0;
+            border-radius: 0 8px 8px 0;
+            font-size: 0.95em;
+        }
+        .remember-box .remember-label { font-weight: 700; color: var(--primary-dark); margin-right: 6px; }
+
+        .warn-box {
+            background: #fdecea;
+            border-left: 4px solid var(--error);
+            padding: 14px 18px;
+            margin: 16px 0;
+            border-radius: 0 8px 8px 0;
+            font-size: 0.95em;
+        }
+        .warn-box .warn-label { font-weight: 700; color: #c62828; margin-right: 6px; }
+
+        .figure { margin: 24px 0; text-align: center; }
+        .figure img {
+            max-width: 100%;
+            height: auto;
+            border-radius: 10px;
+            box-shadow: 0 4px 20px rgba(0,0,0,0.08);
+            border: 1px solid var(--border);
+        }
+        .figure .caption { font-size: 0.85em; color: var(--text-lighter); margin-top: 8px; font-style: italic; }
+
+        .styled-table {
+            width: 100%;
+            border-collapse: collapse;
+            margin: 16px 0;
+            border-radius: 10px;
+            overflow: hidden;
+            box-shadow: 0 2px 12px rgba(0,0,0,0.06);
+        }
+        .styled-table thead { background: var(--primary); color: white; }
+        .styled-table th { padding: 12px 16px; text-align: left; font-weight: 600; }
+        .styled-table td { padding: 10px 16px; border-bottom: 1px solid var(--border); }
+        .styled-table tbody tr:nth-child(even) { background: var(--bg-alt); }
+        .styled-table tbody tr:hover { background: var(--primary-lighter); }
+
+        .summary-card {
+            background: linear-gradient(135deg, var(--primary-lighter) 0%, #fff 100%);
+            border: 2px solid var(--primary-light);
+            border-radius: 14px;
+            padding: 30px;
+            margin: 40px 0;
+        }
+        .summary-card h3 { color: var(--primary-dark); border: none; margin-top: 0; }
+
+        .text-illustration {
+            background: linear-gradient(135deg, #f4f8f5 0%, #fff 100%);
+            border: 1px dashed var(--primary-light);
+            border-radius: 10px;
+            padding: 18px 22px;
+            margin: 16px 0;
+            font-size: 0.93em;
+            color: var(--text-light);
+        }
+        .text-illustration .illus-title {
+            font-weight: 700;
+            color: var(--primary);
+            margin-bottom: 6px;
+            font-size: 0.95em;
+        }
+
+        /* ===== 流程图（纯 SVG） ===== */
+        .flow-demo {
+            background: var(--bg-alt);
+            border: 1px solid var(--border);
+            border-radius: 10px;
+            padding: 20px;
+            margin: 20px 0;
+            text-align: center;
+        }
+        .flow-demo svg { max-width: 100%; height: auto; }
+
+        /* ===== 函数解剖图 ===== */
+        .anatomy {
+            background: var(--dark-code);
+            border: 1px solid var(--dark-code-border);
+            border-radius: 10px;
+            padding: 24px;
+            margin: 20px 0;
+            text-align: center;
+        }
+        .anatomy svg { max-width: 100%; height: auto; }
+
+        @media (max-width: 1024px) {
+            .sidebar-nav { transform: translateX(-100%); }
+            .sidebar-nav.active { transform: translateX(0); }
+            .nav-toggle { display: block; }
+            .page-wrapper { margin-left: 0; }
+        }
+
+        @media (max-width: 768px) {
+            .hero-banner h1 { font-size: 1.8em; }
+            .container { padding: 20px 15px; }
+            .section-header h2 { font-size: 1.4em; }
+            .code-block { padding: 14px 16px; }
+            .styled-table { font-size: 0.9em; }
+        }
+    </style>
+</head>
+<body>
+
+<button class="nav-toggle" onclick="document.querySelector('.sidebar-nav').classList.toggle('active')">☰</button>
+
+<nav class="sidebar-nav">
+    <div class="nav-title">边际森林-第六单元</div>
+
+    <a href="#section-6-1" class="nav-section">6.1 为什么需要函数</a>
+    <a href="#sec-6-1-1" class="nav-sub">6.1.1 重复劳动的烦恼</a>
+    <a href="#sec-6-1-2" class="nav-sub">6.1.2 函数的三大好处</a>
+    <a href="#sec-6-1-3" class="nav-sub">6.1.3 你早就在用函数</a>
+
+    <a href="#section-6-2" class="nav-section">6.2 什么是函数</a>
+    <a href="#sec-6-2-1" class="nav-sub">6.2.1 函数的定义</a>
+    <a href="#sec-6-2-2" class="nav-sub">6.2.2 函数名与函数体</a>
+    <a href="#sec-6-2-3" class="nav-sub">6.2.3 黑箱比喻</a>
+
+    <a href="#section-6-3" class="nav-section">6.3 定义函数</a>
+    <a href="#sec-6-3-1" class="nav-sub">6.3.1 def 关键字</a>
+    <a href="#sec-6-3-2" class="nav-sub">6.3.2 语法解剖</a>
+    <a href="#sec-6-3-3" class="nav-sub">6.3.3 命名规则</a>
+
+    <a href="#section-6-4" class="nav-section">6.4 调用函数</a>
+    <a href="#sec-6-4-1" class="nav-sub">6.4.1 如何调用</a>
+    <a href="#sec-6-4-2" class="nav-sub">6.4.2 定义≠调用</a>
+    <a href="#sec-6-4-3" class="nav-sub">6.4.3 不要加 hero</a>
+
+    <a href="#section-6-5" class="nav-section">6.5 实战关卡精讲</a>
+    <a href="#sec-6-5-1" class="nav-sub">6.5.1 乡村巡游者</a>
+    <a href="#sec-6-5-2" class="nav-sub">6.5.2 村庄守卫</a>
+    <a href="#sec-6-5-3" class="nav-sub">6.5.3 村庄守护神</a>
+    <a href="#sec-6-5-4" class="nav-sub">6.5.4 造币厂</a>
+    <a href="#sec-6-5-5" class="nav-sub">6.5.5 寂静市</a>
+
+    <a href="#section-6-6" class="nav-section">6.6 函数的常见错误</a>
+    <a href="#sec-6-6-1" class="nav-sub">6.6.1 易错点清单</a>
+
+    <a href="#section-summary" class="nav-section">📋 本单元小结</a>
+</nav>
+
+<div class="page-wrapper">
+
+<div class="hero-banner">
+    <h1>第六单元：函数的定义与调用</h1>
+    <div class="subtitle">Unit 6: Defining and Calling Functions</div>
+    <div class="badge">计算机科学 2 · 边际森林 Border Forest · 乡村巡游者 → 寂静市</div>
+</div>
+
+<div class="container">
+
+<!-- ==================== 6.1 ==================== -->
+<div class="section-header" id="section-6-1">
+    <h2>6.1 为什么需要函数</h2>
+    <div class="en-title">Why We Need Functions</div>
+</div>
+
+<h3 id="sec-6-1-1">6.1.1 重复劳动的烦恼（The Pain of Repetition）</h3>
+
+<h4>6.1.1.1 巡逻这件"无聊事"
+    <span class="en">Patrolling is boring repetition</span>
+</h4>
+
+<p>在"乡村巡游者"关卡里，英雄要在村庄的几个入口之间来回巡逻、清剿敌人。关卡一开始就点出了痛点：<strong>"在村庄中巡逻是很无聊的重复工作。"</strong> 每到一个巡逻点，你都要重复写"找敌人 → 判断 → 攻击"这同样的几行代码——点越多，重复得越多，代码又长又乱。</p>
+
+<p>有没有办法只写一次这套逻辑，然后到处反复使用？有！这就是本单元的主角：<span class="keyword">函数（Function）</span>。关卡说得很直白：<strong>"使用函数可以让重复工作轻松许多。你可以将很多行代码放到一行里！"</strong></p>
+
+<h3 id="sec-6-1-2">6.1.2 函数的三大好处（Three Benefits of Functions）</h3>
+
+<h4>6.1.2.1 浓缩、复用、易读
+    <span class="en">Condense, reuse, readable</span>
+</h4>
+
+<p>函数为什么这么重要？因为它一次性带来了三个好处：</p>
+
+<table class="styled-table">
+    <thead><tr><th>好处</th><th>含义</th><th>带来的改变</th></tr></thead>
+    <tbody>
+        <tr><td>浓缩代码</td><td>把很多行代码压缩成一行调用</td><td>主循环变得短小清爽</td></tr>
+        <tr><td>避免重复</td><td>同一段逻辑只写一次，到处复用</td><td>不用反复键入相同代码</td></tr>
+        <tr><td>提升可读性</td><td>用有意义的名字代表一整套逻辑</td><td>复杂逻辑变得一目了然</td></tr>
+    </tbody>
+</table>
+
+<p>关卡里有一句很形象的话：<strong>"这是函数的第一大好处：它们能将大量代码浓缩到一行。"</strong> 想象一下，如果每次挥剑都要写 25 行代码，那将是怎样的灾难！</p>
+
+<h3 id="sec-6-1-3">6.1.3 你早就在用函数（You've Been Using Functions）</h3>
+
+<h4>6.1.3.1 attack 其实就是一个函数
+    <span class="en">attack is already a function</span>
+</h4>
+
+<p>其实，你一直都在用函数，只是没意识到。关卡揭晓了真相：当你写 <code>hero.attack(enemy)</code> 时，<strong>"这是在调用（calling 或者说 invoking）一个函数，名为 attack。"</strong></p>
+
+<div class="text-illustration">
+    <div class="illus-title">💡 attack 背后藏着多少代码？</div>
+    <p>调用 <code>attack</code> 时实际运行的代码"很长很复杂"。它要判断："我有武器吗？我离得够近吗？挥一次要多久？我该打吗？造成多少伤害？"——所有这些细节，全被打包浓缩进了一个简单的词：<code>attack</code>。这正是函数的魔力：把复杂藏起来，只露出一个好用的名字。</p>
+</div>
+
+<p>本单元最大的跃迁是：你将<strong>从"只会调用别人写好的函数"，升级到"定义自己的函数"</strong>。</p>
+
+<!-- ==================== 6.2 ==================== -->
+<div class="section-header" id="section-6-2">
+    <h2>6.2 什么是函数</h2>
+    <div class="en-title">What is a Function</div>
+</div>
+
+<h3 id="sec-6-2-1">6.2.1 函数的定义（Definition）</h3>
+
+<h4>6.2.1.1 一段可以重复使用的代码
+    <span class="en">A reusable block of code</span>
+</h4>
+
+<div class="figure">
+    <img src="https://assets.koudashijie.com/knowledge/6-2-1-1_function_intro.png" alt="函数示意：把一组动作打包起来">
+    <div class="caption">图1：函数就是把一组动作打包、贴上名字，之后随时一键调用</div>
+</div>
+
+<p><span class="keyword">函数（Function）</span>是<strong>一段被命名、可以重复使用的代码</strong>。你把若干行代码"打包"在一起，给这个包起个名字；以后任何时候想运行这段代码，只要喊一声这个名字就行。关卡说：<strong>"函数是代码的重要组成部分。"</strong></p>
+
+<h3 id="sec-6-2-2">6.2.2 函数名与函数体（Name and Body）</h3>
+
+<h4>6.2.2.1 函数由两部分组成
+    <span class="en">A function has two parts</span>
+</h4>
+
+<p>关卡明确指出：<strong>"定义一个函数，它含有两部分：函数名和函数体。"</strong></p>
+
+<table class="styled-table">
+    <thead><tr><th>组成部分</th><th>英文</th><th>作用</th></tr></thead>
+    <tbody>
+        <tr><td>函数名</td><td>Function Name</td><td>函数的名称，以后用它来调用，例如 <code>attack</code></td></tr>
+        <tr><td>函数体</td><td>Function Body</td><td>调用函数时实际执行的那些代码</td></tr>
+    </tbody>
+</table>
+
+<p>有时函数还会带<span class="keyword">参数（Parameter）</span>——比如 <code>attack(enemy)</code> 括号里的 <code>enemy</code>。不过本单元先专注于不带参数的函数，参数留到以后的单元再深入。</p>
+
+<h3 id="sec-6-2-3">6.2.3 黑箱比喻（The Black Box）</h3>
+
+<h4>6.2.3.1 像一台贴了标签的机器
+    <span class="en">Like a labeled machine</span>
+</h4>
+
+<div class="text-illustration">
+    <div class="illus-title">💡 函数 = 贴了标签的机器</div>
+    <p>把函数想象成一台机器：机器外面贴着名字（函数名），机器内部装着一整套零件和工序（函数体）。你不需要知道内部怎么运转，只要按下写着名字的按钮，机器就会乖乖完成整套工作。<code>findAndAttackEnemy()</code> 就是这样一台"找敌人并攻击"的机器——按一下，它就把找敌人、判断、攻击全做完。</p>
+</div>
+
+<!-- ==================== 6.3 ==================== -->
+<div class="section-header" id="section-6-3">
+    <h2>6.3 定义函数</h2>
+    <div class="en-title">Defining a Function</div>
+</div>
+
+<h3 id="sec-6-3-1">6.3.1 def 关键字（The def Keyword）</h3>
+
+<h4>6.3.1.1 用 def 开启一个定义
+    <span class="en">Start a definition with def</span>
+</h4>
+
+<p>在 Python 里，定义函数要用关键字 <span class="keyword-en">def</span>（define 的缩写，意为"定义"）。基本格式是：</p>
+
+<div class="code-block">
+    <div class="dots"><span class="red"></span><span class="yellow"></span><span class="green"></span></div>
+<pre><span class="kw">def</span> <span class="fn">函数名</span><span class="punc">():</span>
+    <span class="cmt"># 函数体：调用时要执行的代码（缩进）</span>
+    要做的事情</pre>
+</div>
+
+<p>它由四个部分组成：关键字 <code>def</code>、一个<strong>函数名</strong>、一对<strong>圆括号</strong> <code>()</code> 加<strong>冒号</strong> <code>:</code>，以及下面<strong>缩进</strong>的函数体。是不是有点眼熟？它的"冒号 + 缩进"骨架和 <code>if</code>、<code>while</code> 一脉相承。</p>
+
+<h3 id="sec-6-3-2">6.3.2 语法解剖（Anatomy）</h3>
+
+<h4>6.3.2.1 一行行看清楚每个部件
+    <span class="en">Examine each part</span>
+</h4>
+
+<div class="anatomy">
+    <svg viewBox="0 0 560 150" width="560" role="img" aria-label="函数定义语法解剖图">
+        <!-- 代码行 -->
+        <text x="20" y="50" font-size="22" font-family="monospace" fill="#c678dd">def</text>
+        <text x="78" y="50" font-size="22" font-family="monospace" fill="#61afef">findAndAttackEnemy</text>
+        <text x="318" y="50" font-size="22" font-family="monospace" fill="#b6c2ba">( )</text>
+        <text x="352" y="50" font-size="22" font-family="monospace" fill="#b6c2ba">:</text>
+        <!-- 指示线与标签 -->
+        <line x1="40" y1="62" x2="40" y2="92" stroke="#c678dd" stroke-width="2"/>
+        <text x="40" y="110" text-anchor="middle" font-size="12" fill="#c678dd" font-family="sans-serif">关键字 def</text>
+        <text x="40" y="126" text-anchor="middle" font-size="11" fill="#888" font-family="sans-serif">"我要定义"</text>
+
+        <line x1="195" y1="62" x2="195" y2="92" stroke="#61afef" stroke-width="2"/>
+        <text x="195" y="110" text-anchor="middle" font-size="12" fill="#61afef" font-family="sans-serif">函数名</text>
+        <text x="195" y="126" text-anchor="middle" font-size="11" fill="#888" font-family="sans-serif">以后用它来调用</text>
+
+        <line x1="330" y1="62" x2="330" y2="92" stroke="#e5c07b" stroke-width="2"/>
+        <text x="330" y="110" text-anchor="middle" font-size="12" fill="#c8862f" font-family="sans-serif">括号 ()</text>
+        <text x="330" y="126" text-anchor="middle" font-size="11" fill="#888" font-family="sans-serif">放参数的地方</text>
+
+        <line x1="356" y1="62" x2="356" y2="92" stroke="#98c379" stroke-width="2"/>
+        <text x="440" y="110" text-anchor="middle" font-size="12" fill="#5c8a6f" font-family="sans-serif">冒号 :</text>
+        <text x="440" y="126" text-anchor="middle" font-size="11" fill="#888" font-family="sans-serif">下面要开始函数体了</text>
+    </svg>
+</div>
+
+<p>以"乡村巡游者"里的函数为例，把"找敌人并攻击"这套逻辑完整地装进函数体：</p>
+
+<div class="code-block">
+    <div class="dots"><span class="red"></span><span class="yellow"></span><span class="green"></span></div>
+<pre><span class="cmt"># 这定义了 findAndAttackEnemy 函数</span>
+<span class="kw">def</span> <span class="fn">findAndAttackEnemy</span><span class="punc">():</span>
+    enemy = <span class="obj">hero</span><span class="punc">.</span><span class="fn">findNearestEnemy</span><span class="punc">()</span>
+    <span class="kw">if</span> enemy<span class="punc">:</span>
+        <span class="obj">hero</span><span class="punc">.</span><span class="fn">attack</span><span class="punc">(</span>enemy<span class="punc">)</span></pre>
+</div>
+
+<div class="info-box">
+    <span class="info-label">注意：</span>定义函数<strong>只是把代码"存"起来</strong>，并不会立刻运行里面的内容。就像写好一份菜谱，菜谱本身不会自动做出菜来——要等你照着做（调用）时才会执行。
+</div>
+
+<h3 id="sec-6-3-3">6.3.3 命名规则（Naming）</h3>
+
+<h4>6.3.3.1 取个好名字，代码会"说话"
+    <span class="en">Good names make code self-explaining</span>
+</h4>
+
+<p>函数名可以自己起，但好名字能让代码自我解释。看本单元这些名字就知道它们各自负责什么：<code>findAndAttackEnemy</code>（找到并攻击）、<code>findAndCleaveEnemy</code>（找到并劈斩）、<code>cleaveOrAttack</code>（劈斩或攻击）、<code>pickUpCoin</code>（捡硬币）、<code>checkAndAttack</code>（检查并攻击）。</p>
+
+<div class="tip-box">
+    <span class="tip-label">命名建议：</span>用<strong>动词 + 名词</strong>描述函数"做什么事"，比如 <code>attackEnemy</code>。常用<strong>驼峰命名法</strong>（第一个词小写，后面每个词首字母大写）。名字里不能有空格，也不能用数字开头。
+</div>
+
+<!-- ==================== 6.4 ==================== -->
+<div class="section-header" id="section-6-4">
+    <h2>6.4 调用函数</h2>
+    <div class="en-title">Calling a Function</div>
+</div>
+
+<h3 id="sec-6-4-1">6.4.1 如何调用（How to Call）</h3>
+
+<h4>6.4.1.1 写下名字加括号
+    <span class="en">Write the name with parentheses</span>
+</h4>
+
+<p>定义好函数后，<strong>调用（call / invoke）</strong>它非常简单——写下函数名，后面跟一对圆括号即可。每写一次，函数体里的代码就完整执行一遍。</p>
+
+<div class="code-block">
+    <div class="dots"><span class="red"></span><span class="yellow"></span><span class="green"></span></div>
+<pre><span class="kw">while</span> <span class="kw">True</span><span class="punc">:</span>
+    <span class="obj">hero</span><span class="punc">.</span><span class="fn">moveXY</span><span class="punc">(</span><span class="num">35</span><span class="punc">,</span> <span class="num">34</span><span class="punc">)</span>      <span class="cmt"># 走到第一个巡逻点</span>
+    <span class="fn">findAndAttackEnemy</span><span class="punc">()</span>     <span class="cmt"># 调用！一行顶好几行</span>
+
+    <span class="obj">hero</span><span class="punc">.</span><span class="fn">moveXY</span><span class="punc">(</span><span class="num">60</span><span class="punc">,</span> <span class="num">31</span><span class="punc">)</span>      <span class="cmt"># 走到右侧入口</span>
+    <span class="fn">findAndAttackEnemy</span><span class="punc">()</span>     <span class="cmt"># 再调用一次，逻辑复用</span></pre>
+</div>
+
+<div class="remember-box">
+    <span class="remember-label">核心威力：</span>同一套"找敌人并攻击"的逻辑只写了一次（在 def 里），却能在巡逻路上反复调用。主循环瞬间变得清爽好读——这正是函数浓缩与复用的价值。
+</div>
+
+<h3 id="sec-6-4-2">6.4.2 定义 ≠ 调用（Define vs. Call）</h3>
+
+<h4>6.4.2.1 写菜谱和照着做是两回事
+    <span class="en">Writing a recipe vs. cooking it</span>
+</h4>
+
+<p>这是新手最容易绕晕的地方：<strong>定义函数和调用函数是两个完全不同的动作。</strong> 关卡反复强调：<strong>"你需要编写函数的定义，这样你就可以在主循环中调用它了。"</strong></p>
+
+<table class="styled-table">
+    <thead><tr><th>动作</th><th>写法</th><th>发生了什么</th></tr></thead>
+    <tbody>
+        <tr><td>定义</td><td><code>def findAndAttackEnemy():</code> + 函数体</td><td>把代码存起来，<strong>暂不执行</strong></td></tr>
+        <tr><td>调用</td><td><code>findAndAttackEnemy()</code></td><td><strong>立即执行</strong>函数体里的代码</td></tr>
+    </tbody>
+</table>
+
+<div class="warn-box">
+    <span class="warn-label">常见误区：</span>只写了 <code>def</code> 定义却忘了在循环里调用——函数永远不会运行，英雄会原地发呆。比如"造币厂"关卡就提醒你：写好 <code>attackEnemy</code> 函数后，<strong>记得取消 <code>attackEnemy()</code> 那行的注释</strong>，否则它不会生效。
+</div>
+
+<h3 id="sec-6-4-3">6.4.3 调用时不要加 hero（No hero Prefix）</h3>
+
+<h4>6.4.3.1 自己定义的函数，直接喊名字
+    <span class="en">Your own functions need no hero.</span>
+</h4>
+
+<p>关卡特别强调了一个关键区别：<strong>"调用函数时不要加 hero，因为函数由你定义，而不是英雄。"</strong></p>
+
+<div class="code-block">
+    <div class="dots"><span class="red"></span><span class="yellow"></span><span class="green"></span></div>
+<pre><span class="obj">hero</span><span class="punc">.</span><span class="fn">attack</span><span class="punc">(</span>enemy<span class="punc">)</span>        <span class="cmt"># attack 是英雄自带的 → 要加 hero.</span>
+<span class="fn">findAndAttackEnemy</span><span class="punc">()</span>     <span class="cmt"># 这是你定义的 → 不加 hero，直接喊名字</span></pre>
+</div>
+
+<div class="info-box">
+    <span class="info-label">怎么区分？</span>像 <code>attack</code>、<code>moveXY</code>、<code>cleave</code> 这些是<strong>英雄的本领</strong>，调用要写 <code>hero.</code> 开头；而 <code>findAndAttackEnemy</code> 这种<strong>你自己 def 出来的函数</strong>，是"全局"的，直接写名字加括号即可，不带 <code>hero.</code>。
+</div>
+
+<!-- ==================== 6.5 ==================== -->
+<div class="section-header" id="section-6-5">
+    <h2>6.5 实战关卡精讲</h2>
+    <div class="en-title">Level Strategy &amp; Analysis</div>
+</div>
+
+<p>这一节聚焦每一关如何用函数解决问题。看懂"为什么这样封装"，你就能自己写出完整解法。</p>
+
+<h3 id="sec-6-5-1">6.5.1 乡村巡游者（Village Rover）</h3>
+
+<h4>6.5.1.1 思路：把"找+打"封装成一个函数
+    <span class="en">Strategy: wrap find+attack into one function</span>
+</h4>
+
+<div class="figure">
+    <img src="https://assets.koudashijie.com/knowledge/6-5-1-1_village_rover.png" alt="乡村巡游者关卡">
+    <div class="caption">图2：乡村巡游者——定义一个巡逻函数，在各入口反复调用</div>
+</div>
+
+<p>这是你第一次<strong>定义自己的函数</strong>。地图上有几个固定巡逻点，每个点都要做同样的"找敌人并攻击"。难点不在逻辑，而在于<strong>意识到"该把重复的部分抽出来"</strong>。策略就是把这套逻辑装进 <code>findAndAttackEnemy()</code>，然后在主循环里"移动 → 调用"地反复使用。</p>
+
+<div class="code-block">
+    <div class="dots"><span class="red"></span><span class="yellow"></span><span class="green"></span></div>
+<pre><span class="kw">def</span> <span class="fn">findAndAttackEnemy</span><span class="punc">():</span>   <span class="cmt"># ① 先定义</span>
+    enemy = <span class="obj">hero</span><span class="punc">.</span><span class="fn">findNearestEnemy</span><span class="punc">()</span>
+    <span class="kw">if</span> enemy<span class="punc">:</span>
+        <span class="obj">hero</span><span class="punc">.</span><span class="fn">attack</span><span class="punc">(</span>enemy<span class="punc">)</span>
+
+<span class="kw">while</span> <span class="kw">True</span><span class="punc">:</span>                  <span class="cmt"># ② 再在循环里调用</span>
+    <span class="obj">hero</span><span class="punc">.</span><span class="fn">moveXY</span><span class="punc">(</span><span class="num">35</span><span class="punc">,</span> <span class="num">34</span><span class="punc">)</span>
+    <span class="fn">findAndAttackEnemy</span><span class="punc">()</span>
+    <span class="cmt"># 到右侧入口再调一次……</span></pre>
+</div>
+
+<div class="tip-box">
+    <span class="tip-label">注意顺序：</span><code>def</code> 定义要写在<strong>调用之前</strong>（通常放在文件顶部）。函数定义部分不在 <code>while</code> 循环里——它独立存在，循环里只负责"调用"。
+</div>
+
+<h3 id="sec-6-5-2">6.5.2 村庄守卫（Village Guard）</h3>
+
+<h4>6.5.2.1 思路：定义多个函数，各司其职
+    <span class="en">Strategy: define multiple functions</span>
+</h4>
+
+<div class="figure">
+    <img src="https://assets.koudashijie.com/knowledge/6-5-2-1_village_guard.png" alt="村庄守卫关卡">
+    <div class="caption">图3：村庄守卫——同时定义"攻击"和"劈斩"两个函数，配合御敌</div>
+</div>
+
+<p>敌人成群来袭，单靠普通攻击不够了，需要再加一个使用 <code>cleave</code> 的函数。这一关教你<strong>同时定义并使用多个函数</strong>:<code>findAndAttackEnemy</code> 负责普通攻击,<code>findAndCleaveEnemy</code> 负责劈斩。后者里要做两层检查——敌人存在,且 cleave 就绪。</p>
+
+<div class="code-block">
+    <div class="dots"><span class="red"></span><span class="yellow"></span><span class="green"></span></div>
+<pre><span class="kw">def</span> <span class="fn">findAndCleaveEnemy</span><span class="punc">():</span>
+    enemy = <span class="obj">hero</span><span class="punc">.</span><span class="fn">findNearestEnemy</span><span class="punc">()</span>
+    <span class="kw">if</span> enemy<span class="punc">:</span>                       <span class="cmt"># 检查 1：敌人存在</span>
+        <span class="kw">if</span> <span class="obj">hero</span><span class="punc">.</span><span class="fn">isReady</span><span class="punc">(</span><span class="str">'cleave'</span><span class="punc">)</span><span class="punc">:</span>  <span class="cmt"># 检查 2：劈斩就绪</span>
+            <span class="obj">hero</span><span class="punc">.</span><span class="fn">cleave</span><span class="punc">(</span>enemy<span class="punc">)</span></pre>
+</div>
+
+<div class="remember-box">
+    <span class="remember-label">封装的好处显现：</span>主循环里只需在每个巡逻点依次调用 <code>findAndCleaveEnemy()</code> 和 <code>findAndAttackEnemy()</code>，逻辑清晰得像"读说明书"。这就是把复杂藏进函数、让主流程保持简洁的威力。
+</div>
+
+<h3 id="sec-6-5-3">6.5.3 村庄守护神（Village Champion）</h3>
+
+<h4>6.5.3.1 思路：在函数里融合嵌套 if/else
+    <span class="en">Strategy: combine nesting inside a function</span>
+</h4>
+
+<div class="figure">
+    <img src="https://assets.koudashijie.com/knowledge/6-5-3-1_village_champion.png" alt="村庄守护神关卡">
+    <div class="caption">图4：村庄守护神——把上一单元的嵌套判断,整个封装进一个函数</div>
+</div>
+
+<p>这一关让你"只能靠自己"定义函数,而且要把第五单元学的<strong>嵌套 if/else</strong> 融进函数体。思路是写一个 <code>cleaveOrAttack()</code> 函数:有敌人时,如果 cleave 就绪就劈斩,否则就普通攻击——一个函数把"该用哪种攻击"的决策全部包办。</p>
+
+<div class="code-block">
+    <div class="dots"><span class="red"></span><span class="yellow"></span><span class="green"></span></div>
+<pre><span class="kw">def</span> <span class="fn">cleaveOrAttack</span><span class="punc">():</span>
+    enemy = <span class="obj">hero</span><span class="punc">.</span><span class="fn">findNearestEnemy</span><span class="punc">()</span>
+    <span class="kw">if</span> enemy<span class="punc">:</span>
+        <span class="kw">if</span> <span class="obj">hero</span><span class="punc">.</span><span class="fn">isReady</span><span class="punc">(</span><span class="str">'cleave'</span><span class="punc">)</span><span class="punc">:</span>
+            <span class="obj">hero</span><span class="punc">.</span><span class="fn">cleave</span><span class="punc">(</span>enemy<span class="punc">)</span>
+        <span class="kw">else</span><span class="punc">:</span>                       <span class="cmt"># 劈斩没好 → 普通攻击</span>
+            <span class="obj">hero</span><span class="punc">.</span><span class="fn">attack</span><span class="punc">(</span>enemy<span class="punc">)</span></pre>
+</div>
+
+<div class="info-box">
+    <span class="info-label">能力叠加：</span>函数 + 嵌套 if/else，两个单元的本领合体了。把复杂的决策逻辑封进函数后，主循环只剩"移动 + 调用 <code>cleaveOrAttack()</code>"，无论有几个巡逻点都一样简洁。
+</div>
+
+<p style="margin: 10px 0; color: #555;">立即访问 <a href="https://codecombat.cn" target="_blank" style="color: #1F7A44; font-weight: 700; text-decoration: none;">codecombat.cn</a> 开启你的 CodeCombat 编程冒险之旅！</p>
+
+<h3 id="sec-6-5-4">6.5.4 造币厂（The Mint）</h3>
+
+<h4>6.5.4.1 思路：照着示例，从零写一个函数
+    <span class="en">Strategy: write a function from scratch</span>
+</h4>
+
+<div class="figure">
+    <img src="https://assets.koudashijie.com/knowledge/6-5-4-1_the_mint.png" alt="造币厂关卡">
+    <div class="caption">图5：造币厂——既要捡硬币,又要在差役偷走前干掉它们</div>
+</div>
+
+<p>这一关要你<strong>"从头开始创建一个函数"</strong>。关卡给了 <code>pickUpCoin</code>(捡硬币)作示范,要你照葫芦画瓢,自己写一个 <code>attackEnemy</code>(攻击敌人)。<code>pickUpCoin</code> 里还用到了上一单元学的 <code>pos</code>:找到硬币后移动到它的 <code>coin.pos.x, coin.pos.y</code> 去捡。</p>
+
+<div class="code-block">
+    <div class="dots"><span class="red"></span><span class="yellow"></span><span class="green"></span></div>
+<pre><span class="kw">def</span> <span class="fn">pickUpCoin</span><span class="punc">():</span>             <span class="cmt"># 关卡给的示例</span>
+    coin = <span class="obj">hero</span><span class="punc">.</span><span class="fn">findNearestItem</span><span class="punc">()</span>
+    <span class="kw">if</span> coin<span class="punc">:</span>
+        <span class="obj">hero</span><span class="punc">.</span><span class="fn">moveXY</span><span class="punc">(</span>coin<span class="punc">.</span>pos<span class="punc">.</span>x<span class="punc">,</span> coin<span class="punc">.</span>pos<span class="punc">.</span>y<span class="punc">)</span>
+
+<span class="kw">def</span> <span class="fn">attackEnemy</span><span class="punc">():</span>            <span class="cmt"># 照着写的新函数</span>
+    enemy = <span class="obj">hero</span><span class="punc">.</span><span class="fn">findNearestEnemy</span><span class="punc">()</span>
+    <span class="kw">if</span> enemy<span class="punc">:</span>
+        <span class="obj">hero</span><span class="punc">.</span><span class="fn">attack</span><span class="punc">(</span>enemy<span class="punc">)</span></pre>
+</div>
+
+<div class="warn-box">
+    <span class="warn-label">别忘了这一步：</span>主循环里要<strong>同时调用两个函数</strong>——先 <code>attackEnemy()</code> 清场，再 <code>pickUpCoin()</code> 捡钱。记得把示例里 <code>attackEnemy()</code> 那行的注释取消掉，否则函数白定义了！
+</div>
+
+<h3 id="sec-6-5-5">6.5.5 寂静市（概念挑战 · Silent City）</h3>
+
+<h4>6.5.5.1 思路：把全部逻辑塞进一个函数
+    <span class="en">Strategy: put all logic in one function</span>
+</h4>
+
+<p>这是一个<strong>概念挑战</strong>，要求很巧妙：<strong>必须定义一个函数，并且 <code>while True</code> 循环里只能有一条语句。</strong> 这等于强制你把"看到敌人就打、否则回中心"的<strong>全部逻辑都封装进一个函数</strong>，让主循环干净到只剩一行调用。</p>
+
+<div class="code-block">
+    <div class="dots"><span class="red"></span><span class="yellow"></span><span class="green"></span></div>
+<pre><span class="kw">def</span> <span class="fn">checkAndAttack</span><span class="punc">():</span>
+    enemy = <span class="obj">hero</span><span class="punc">.</span><span class="fn">findNearestEnemy</span><span class="punc">()</span>
+    <span class="kw">if</span> enemy<span class="punc">:</span>
+        <span class="obj">hero</span><span class="punc">.</span><span class="fn">attack</span><span class="punc">(</span>enemy<span class="punc">)</span>
+    <span class="kw">else</span><span class="punc">:</span>
+        <span class="obj">hero</span><span class="punc">.</span><span class="fn">moveXY</span><span class="punc">(</span><span class="num">30</span><span class="punc">,</span> <span class="num">26</span><span class="punc">)</span>   <span class="cmt"># 没敌人 → 回中心标记</span>
+
+<span class="kw">while</span> <span class="kw">True</span><span class="punc">:</span>
+    <span class="fn">checkAndAttack</span><span class="punc">()</span>             <span class="cmt"># 循环里只有这一条语句！</span></pre>
+</div>
+
+<div class="remember-box">
+    <span class="remember-label">融会贯通：</span>循环里只剩一行,逻辑却毫不缺失——全藏进了函数。这道题完美展示了函数的终极意义:<strong>把复杂封装起来,让主程序读起来像一句简单的话。</strong>
+</div>
+
+<!-- ==================== 6.6 ==================== -->
+<div class="section-header" id="section-6-6">
+    <h2>6.6 函数的常见错误</h2>
+    <div class="en-title">Common Mistakes with Functions</div>
+</div>
+
+<h3 id="sec-6-6-1">6.6.1 新手最容易踩的坑（Pitfalls for Beginners）</h3>
+
+<h4>6.6.1.1 定义和调用环节的典型问题
+    <span class="en">Typical issues when defining and calling</span>
+</h4>
+
+<div class="figure">
+    <img src="https://assets.koudashijie.com/knowledge/6-6-1-1_common_errors.png" alt="函数常见错误示意">
+    <div class="caption">图6：定义了却忘记调用,是新手最常见的失误</div>
+</div>
+
+<div class="warn-box">
+    <span class="warn-label">易错点清单：</span>
+    <ul style="margin: 8px 0 0 20px;">
+        <li>只定义、不调用——写了 <code>def</code> 却没在循环里喊它的名字，函数永远不运行。</li>
+        <li>调用时多加了 <code>hero.</code>——自己定义的函数直接写名字，不要加 <code>hero.</code>。</li>
+        <li>忘写括号——调用必须带 <code>()</code>，只写函数名不加括号是错的。</li>
+        <li>忘写冒号 <code>:</code>——<code>def 函数名()</code> 后面少了冒号。</li>
+        <li>函数体没缩进——属于函数的代码必须统一向右缩进。</li>
+        <li>定义写在调用之后——要先 <code>def</code> 好，再去调用。</li>
+    </ul>
+</div>
+
+<!-- ==================== 小结 ==================== -->
+<div class="summary-card" id="section-summary">
+<h3>本单元小结 ✨</h3>
+
+    <p>恭喜你完成边际森林第六单元！你已经从"使用现成函数"进化到"创造自己的函数"。你的代码从此可以浓缩、复用、变得清晰易读。来回顾一下核心概念：</p>
+
+    <table class="styled-table">
+        <thead><tr><th>核心概念</th><th>关键点</th><th>对应关卡</th></tr></thead>
+        <tbody>
+            <tr><td>函数</td><td>一段被命名、可复用的代码</td><td>全部</td></tr>
+            <tr><td>三大好处</td><td>浓缩、避免重复、易读</td><td>全部</td></tr>
+            <tr><td>函数名 / 函数体</td><td>名字用来调用，体是实际代码</td><td>全部</td></tr>
+            <tr><td>def 定义</td><td><code>def 名字():</code> + 缩进函数体</td><td>乡村巡游者</td></tr>
+            <tr><td>调用函数</td><td>写名字 + <code>()</code></td><td>全部</td></tr>
+            <tr><td>定义 ≠ 调用</td><td>定义只存代码，调用才执行</td><td>造币厂</td></tr>
+            <tr><td>不加 hero.</td><td>自定义函数直接喊名字</td><td>村庄守卫</td></tr>
+            <tr><td>多个函数</td><td>各司其职，配合使用</td><td>村庄守卫、造币厂</td></tr>
+            <tr><td>函数 + 嵌套</td><td>把复杂判断封进函数</td><td>村庄守护神</td></tr>
+            <tr><td>极简主循环</td><td>循环里只剩一行调用</td><td>寂静市</td></tr>
+        </tbody>
+    </table>
+
+    <p style="text-align: center; margin-top: 20px; font-size: 1.1em;">
+        会封装、懂复用的英雄，才是真正高效优雅的英雄。<br>
+        继续守护边际森林吧，勇敢的程序员！🌲🛡️⚙️
+    </p>
+</div>
+
+
+<div class="member-promo" style="background: linear-gradient(135deg,#e8f5e9 0%,#fff 100%); border: 2px solid #2E9E5B; border-radius: 14px; padding: 24px 28px; margin: 30px 0; text-align: center;">
+    <h3 style="color: #1F7A44; border: none; margin-top: 0; font-size: 1.3em;">🎮 想在 CodeCombat 中实战这些关卡吗？</h3>
+    <p style="margin: 10px 0; font-size: 1.05em;">加入 <strong>CodeCombat（codecombat.cn）</strong> 会员，即可解锁全部编程关卡，跟随英雄安雅和塔林在真实游戏环境中边玩边学！通过实战闯关巩固本单元所学的每一个知识点，让编程学习不再枯燥。</p>
+    
+</div>
+
+
+
+</div><!-- end page-wrapper -->
+
+<script>
+document.querySelectorAll('.sidebar-nav a').forEach(link => {
+    link.addEventListener('click', () => {
+        if (window.innerWidth <= 1024) {
+            document.querySelector('.sidebar-nav').classList.remove('active');
+        }
+    });
+});
+</script>
+
+
+<div data-info-wiki-backlink style="text-align:center;padding:18px 12px;color:#64748b;font:13px/1.6 -apple-system,BlinkMacSystemFont,'Segoe UI','Microsoft YaHei',sans-serif"><a href="../index.html" style="color:#4f46e5;text-decoration:none;font-weight:700">← 返回 CodeCombat 信息百科</a></div>
+</body>
+</html>

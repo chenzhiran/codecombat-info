@@ -1,0 +1,1073 @@
+﻿<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>游戏开发1：地图设计与游戏构建 | CodeCombat 编程知识</title>
+    <style>
+        /* ===== 基础重置与变量 ===== */
+        :root {
+            --primary: #2E9E5B;
+            --primary-light: #4FBF7C;
+            --primary-lighter: #E8F7EE;
+            --primary-dark: #1F7A44;
+            --dark: #14241a;
+            --dark-code: #1e2a22;
+            --dark-code-border: #314538;
+            --text: #2d2d2d;
+            --text-light: #555;
+            --text-lighter: #888;
+            --bg: #ffffff;
+            --bg-alt: #f7faf8;
+            --bg-card: #ffffff;
+            --border: #e3ece6;
+            --success: #4CAF50;
+            --warning: #FFC107;
+            --error: #f44336;
+            --info: #2196F3;
+            --code-keyword: #c678dd;
+            --code-string: #98c379;
+            --code-comment: #5c8a6f;
+            --code-function: #61afef;
+            --code-number: #d19a66;
+            --code-text: #b6c2ba;
+            --code-punctuation: #b6c2ba;
+            --code-object: #e5c07b;
+            --sidebar-width: 270px;
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'PingFang SC', 'Hiragino Sans GB', 'Microsoft YaHei', sans-serif;
+            line-height: 1.8;
+            color: var(--text);
+            background: var(--bg);
+            font-size: 16px;
+        }
+
+        /* ===== 左侧导航栏 ===== */
+        .sidebar-nav {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: var(--sidebar-width);
+            height: 100vh;
+            background: #14241a;
+            overflow-y: auto;
+            padding: 20px 0;
+            z-index: 1000;
+            border-right: 3px solid var(--primary);
+            transition: transform 0.3s ease;
+        }
+
+        .sidebar-nav::-webkit-scrollbar { width: 4px; }
+        .sidebar-nav::-webkit-scrollbar-thumb { background: var(--primary); border-radius: 4px; }
+        .sidebar-nav::-webkit-scrollbar-track { background: #1f3a29; }
+
+        .sidebar-nav .nav-title {
+            color: var(--primary-light);
+            font-size: 0.95em;
+            font-weight: 700;
+            padding: 8px 18px;
+            margin-bottom: 5px;
+            letter-spacing: 1px;
+        }
+
+        .sidebar-nav a {
+            display: block;
+            color: #cdd8d0;
+            text-decoration: none;
+            padding: 6px 18px;
+            font-size: 0.82em;
+            line-height: 1.5;
+            border-left: 3px solid transparent;
+            transition: all 0.2s ease;
+        }
+
+        .sidebar-nav a:hover {
+            color: #fff;
+            background: rgba(46, 158, 91, 0.15);
+            border-left-color: var(--primary);
+        }
+
+        .sidebar-nav a.nav-section {
+            color: var(--primary-light);
+            font-weight: 600;
+            font-size: 0.88em;
+            margin-top: 12px;
+            padding-top: 10px;
+            border-top: 1px solid #23402e;
+        }
+
+        .sidebar-nav a.nav-section:first-of-type {
+            border-top: none;
+            margin-top: 0;
+        }
+
+        .sidebar-nav a.nav-sub {
+            padding-left: 30px;
+            color: #a7b8ad;
+            font-size: 0.78em;
+        }
+
+        .sidebar-nav a.nav-sub:hover { color: #fff; }
+
+        .nav-toggle {
+            display: none;
+            position: fixed;
+            top: 15px;
+            left: 15px;
+            z-index: 1100;
+            background: var(--primary);
+            color: white;
+            border: none;
+            border-radius: 8px;
+            padding: 8px 12px;
+            font-size: 1.2em;
+            cursor: pointer;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.2);
+        }
+
+        .page-wrapper { margin-left: var(--sidebar-width); }
+
+        /* ===== 头部横幅 ===== */
+        .hero-banner {
+            background: linear-gradient(135deg, var(--primary) 0%, var(--primary-dark) 100%);
+            color: white;
+            padding: 60px 20px;
+            text-align: center;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .hero-banner::before {
+            content: '';
+            position: absolute;
+            top: -50%;
+            left: -50%;
+            width: 200%;
+            height: 200%;
+            background: radial-gradient(circle, rgba(255,255,255,0.12) 0%, transparent 60%);
+            animation: pulse 8s ease-in-out infinite;
+        }
+
+        @keyframes pulse {
+            0%, 100% { transform: scale(1); }
+            50% { transform: scale(1.1); }
+        }
+
+        .hero-banner h1 { font-size: 2.5em; margin-bottom: 10px; position: relative; z-index: 1; }
+        .hero-banner .subtitle { font-size: 1.2em; opacity: 0.92; position: relative; z-index: 1; }
+        .hero-banner .badge {
+            display: inline-block;
+            background: rgba(255,255,255,0.2);
+            padding: 5px 15px;
+            border-radius: 20px;
+            margin-top: 15px;
+            font-size: 0.9em;
+            position: relative;
+            z-index: 1;
+        }
+
+        .container { max-width: 900px; margin: 0 auto; padding: 40px 20px; }
+
+        /* ===== 章节标题 ===== */
+        .section-header {
+            background: var(--primary-lighter);
+            border-left: 5px solid var(--primary);
+            padding: 20px 25px;
+            margin: 50px 0 30px;
+            border-radius: 0 12px 12px 0;
+        }
+
+        .section-header h2 { color: var(--primary-dark); font-size: 1.8em; margin-bottom: 5px; }
+        .section-header .en-title { color: var(--text-light); font-size: 0.95em; font-style: italic; }
+
+        h3 {
+            color: var(--primary);
+            font-size: 1.4em;
+            margin: 40px 0 15px;
+            padding-bottom: 8px;
+            border-bottom: 2px solid var(--primary-lighter);
+        }
+
+        h4 {
+            color: var(--text);
+            font-size: 1.15em;
+            margin: 30px 0 12px;
+            padding-left: 12px;
+            border-left: 3px solid var(--primary-light);
+        }
+
+        h4 .en {
+            display: block;
+            font-size: 0.8em;
+            color: var(--text-lighter);
+            font-weight: normal;
+            margin-top: 2px;
+        }
+
+        p { margin: 12px 0; text-align: justify; }
+
+        .keyword {
+            background: var(--primary-lighter);
+            color: var(--primary-dark);
+            padding: 2px 6px;
+            border-radius: 4px;
+            font-weight: 600;
+            white-space: nowrap;
+        }
+
+        .keyword-en {
+            background: #e8f4fd;
+            color: #1565c0;
+            padding: 2px 6px;
+            border-radius: 4px;
+            font-weight: 600;
+            font-family: 'SF Mono', 'Fira Code', 'Consolas', monospace;
+            font-size: 0.9em;
+            white-space: nowrap;
+        }
+
+        .keyword-green {
+            background: #e8f5e9;
+            color: #2e7d32;
+            padding: 2px 6px;
+            border-radius: 4px;
+            font-weight: 600;
+            white-space: nowrap;
+        }
+
+        code {
+            background: #eef2ef;
+            color: #c2185b;
+            padding: 2px 7px;
+            border-radius: 4px;
+            font-family: 'SF Mono', 'Fira Code', 'Consolas', 'Courier New', monospace;
+            font-size: 0.88em;
+            white-space: nowrap;
+        }
+
+        .code-block {
+            background: var(--dark-code);
+            border: 1px solid var(--dark-code-border);
+            border-radius: 10px;
+            padding: 20px 24px;
+            margin: 16px 0;
+            overflow-x: auto;
+            position: relative;
+        }
+
+        .code-block::before {
+            content: 'Python';
+            position: absolute;
+            top: 8px;
+            right: 12px;
+            font-size: 0.7em;
+            color: #6b8a76;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+        }
+
+        .code-block .dots { display: flex; gap: 6px; margin-bottom: 14px; }
+        .code-block .dots span { width: 10px; height: 10px; border-radius: 50%; }
+        .code-block .dots .red { background: #ff5f57; }
+        .code-block .dots .yellow { background: #febc2e; }
+        .code-block .dots .green { background: #28c840; }
+
+        .code-block pre {
+            margin: 0;
+            font-family: 'SF Mono', 'Fira Code', 'Consolas', 'Courier New', monospace;
+            font-size: 0.9em;
+            line-height: 1.7;
+            color: var(--code-text);
+        }
+
+        .code-block .kw { color: var(--code-keyword); }
+        .code-block .str { color: var(--code-string); }
+        .code-block .cmt { color: var(--code-comment); font-style: italic; }
+        .code-block .fn { color: var(--code-function); }
+        .code-block .num { color: var(--code-number); }
+        .code-block .obj { color: var(--code-object); }
+        .code-block .punc { color: var(--code-punctuation); }
+        .code-block .err { color: var(--error); text-decoration: line-through; }
+        .code-block .hl { background: rgba(255, 193, 7, 0.18); border-radius: 3px; padding: 0 2px; }
+
+        .tip-box {
+            background: #fff8e1;
+            border-left: 4px solid var(--warning);
+            padding: 14px 18px;
+            margin: 16px 0;
+            border-radius: 0 8px 8px 0;
+            font-size: 0.95em;
+        }
+        .tip-box .tip-label { font-weight: 700; color: #f57f17; margin-right: 6px; }
+
+        .info-box {
+            background: #e3f2fd;
+            border-left: 4px solid var(--info);
+            padding: 14px 18px;
+            margin: 16px 0;
+            border-radius: 0 8px 8px 0;
+            font-size: 0.95em;
+        }
+        .info-box .info-label { font-weight: 700; color: #1565c0; margin-right: 6px; }
+
+        .remember-box {
+            background: var(--primary-lighter);
+            border-left: 4px solid var(--primary);
+            padding: 14px 18px;
+            margin: 16px 0;
+            border-radius: 0 8px 8px 0;
+            font-size: 0.95em;
+        }
+        .remember-box .remember-label { font-weight: 700; color: var(--primary-dark); margin-right: 6px; }
+
+        .warn-box {
+            background: #fdecea;
+            border-left: 4px solid var(--error);
+            padding: 14px 18px;
+            margin: 16px 0;
+            border-radius: 0 8px 8px 0;
+            font-size: 0.95em;
+        }
+        .warn-box .warn-label { font-weight: 700; color: #c62828; margin-right: 6px; }
+
+        .figure { margin: 24px 0; text-align: center; }
+        .figure img {
+            max-width: 100%;
+            height: auto;
+            border-radius: 10px;
+            box-shadow: 0 4px 20px rgba(0,0,0,0.08);
+            border: 1px solid var(--border);
+        }
+        .figure .caption { font-size: 0.85em; color: var(--text-lighter); margin-top: 8px; font-style: italic; }
+
+        .styled-table {
+            width: 100%;
+            border-collapse: collapse;
+            margin: 16px 0;
+            border-radius: 10px;
+            overflow: hidden;
+            box-shadow: 0 2px 12px rgba(0,0,0,0.06);
+        }
+        .styled-table thead { background: var(--primary); color: white; }
+        .styled-table th { padding: 12px 16px; text-align: left; font-weight: 600; }
+        .styled-table td { padding: 10px 16px; border-bottom: 1px solid var(--border); }
+        .styled-table tbody tr:nth-child(even) { background: var(--bg-alt); }
+        .styled-table tbody tr:hover { background: var(--primary-lighter); }
+
+        .summary-card {
+            background: linear-gradient(135deg, var(--primary-lighter) 0%, #fff 100%);
+            border: 2px solid var(--primary-light);
+            border-radius: 14px;
+            padding: 30px;
+            margin: 40px 0;
+        }
+        .summary-card h3 { color: var(--primary-dark); border: none; margin-top: 0; }
+
+        .text-illustration {
+            background: linear-gradient(135deg, #f4f8f5 0%, #fff 100%);
+            border: 1px dashed var(--primary-light);
+            border-radius: 10px;
+            padding: 18px 22px;
+            margin: 16px 0;
+            font-size: 0.93em;
+            color: var(--text-light);
+        }
+        .text-illustration .illus-title {
+            font-weight: 700;
+            color: var(--primary);
+            margin-bottom: 6px;
+            font-size: 0.95em;
+        }
+
+        .flow-demo {
+            background: var(--bg-alt);
+            border: 1px solid var(--border);
+            border-radius: 10px;
+            padding: 20px;
+            margin: 20px 0;
+            text-align: center;
+        }
+        .flow-demo svg { max-width: 100%; height: auto; }
+
+        .anatomy {
+            background: var(--dark-code);
+            border: 1px solid var(--dark-code-border);
+            border-radius: 10px;
+            padding: 24px;
+            margin: 20px 0;
+            text-align: center;
+        }
+        .anatomy svg { max-width: 100%; height: auto; }
+
+        @media (max-width: 1024px) {
+            .sidebar-nav { transform: translateX(-100%); }
+            .sidebar-nav.active { transform: translateX(0); }
+            .nav-toggle { display: block; }
+            .page-wrapper { margin-left: 0; }
+        }
+
+        @media (max-width: 768px) {
+            .hero-banner h1 { font-size: 1.8em; }
+            .container { padding: 20px 15px; }
+            .section-header h2 { font-size: 1.4em; }
+            .code-block { padding: 14px 16px; }
+            .styled-table { font-size: 0.9em; }
+        }
+    </style>
+</head>
+<body>
+
+<button class="nav-toggle" onclick="document.querySelector('.sidebar-nav').classList.toggle('active')">☰</button>
+
+<nav class="sidebar-nav">
+    <div class="nav-title">游戏开发1 · 地图与游戏构建</div>
+
+    <a href="#section-1" class="nav-section">第1章 游戏设计基础</a>
+    <a href="#sec-1-1" class="nav-sub">1.1 什么是游戏开发</a>
+    <a href="#sec-1-2" class="nav-sub">1.2 玩家与非玩家</a>
+    <a href="#sec-1-3" class="nav-sub">1.3 目标·机制·元素</a>
+    <a href="#sec-1-4" class="nav-sub">1.4 坐标系与 game 对象</a>
+
+    <a href="#section-2" class="nav-section">第2章 生成元素（1-5关）</a>
+    <a href="#sec-2-1" class="nav-sub">2.1 spawnXY 生成布景</a>
+    <a href="#sec-2-2" class="nav-sub">2.2 spawnPlayerXY 生成玩家</a>
+    <a href="#sec-2-3" class="nav-sub">2.3 addMoveGoalXY 移动目标</a>
+    <a href="#sec-2-4" class="nav-sub">2.4 addCollectGoal 收集目标</a>
+    <a href="#sec-2-5" class="nav-sub">2.5 关卡精讲 1-5</a>
+
+    <a href="#section-3" class="nav-section">第3章 目标调整（6-11关）</a>
+    <a href="#sec-3-1" class="nav-sub">3.1 击败目标 defeat</a>
+    <a href="#sec-3-2" class="nav-sub">3.2 存活目标 survive</a>
+    <a href="#sec-3-3" class="nav-sub">3.3 元素的种类</a>
+    <a href="#sec-3-4" class="nav-sub">3.4 spawnMaze 迷宫</a>
+    <a href="#sec-3-5" class="nav-sub">3.5 关卡精讲 6-11</a>
+
+    <a href="#section-4" class="nav-section">第4章 属性调整（12-16关）</a>
+    <a href="#sec-4-1" class="nav-sub">4.1 什么是属性</a>
+    <a href="#sec-4-2" class="nav-sub">4.2 变量保存生成物</a>
+    <a href="#sec-4-3" class="nav-sub">4.3 生命/攻击/速度</a>
+    <a href="#sec-4-4" class="nav-sub">4.4 方向与行为属性</a>
+    <a href="#sec-4-5" class="nav-sub">4.5 生成器 generator</a>
+    <a href="#sec-4-6" class="nav-sub">4.6 关卡精讲 12-16</a>
+
+    <a href="#section-5" class="nav-section">第5章 白手起家（第17关）</a>
+    <a href="#sec-5-1" class="nav-sub">5.1 工程开发六步</a>
+    <a href="#sec-5-2" class="nav-sub">5.2 从零搭建你的游戏</a>
+
+    <a href="#section-6" class="nav-section">第6章 常见错误</a>
+    <a href="#sec-6-1" class="nav-sub">6.1 易错点清单</a>
+
+    <a href="#section-summary" class="nav-section">📋 本单元小结</a>
+</nav>
+
+<div class="page-wrapper">
+
+<div class="hero-banner">
+    <h1>游戏开发1：地图设计与游戏构建</h1>
+    <div class="subtitle">Game Development 1: Designing Maps &amp; Building Games</div>
+    <div class="badge">计算机科学拓展 · 元素与机制 → 白手起家 · 越过花园墙 → 生存时间</div>
+</div>
+
+<div class="container">
+
+<!-- ==================== 第1章 ==================== -->
+<div class="section-header" id="section-1">
+    <h2>第1章 游戏设计基础</h2>
+    <div class="en-title">Foundations of Game Design</div>
+</div>
+
+<p>在之前的课程里，你一直是<strong>玩家</strong>——指挥英雄通关。从这个单元开始，身份大转变：你将成为<strong>游戏设计师</strong>，亲手搭建地图、放置元素、设定规则，做出一个让别人来玩的游戏。这一章先打地基，搞清楚"什么是游戏""游戏由什么组成"。</p>
+
+<h3 id="sec-1-1">1.1 什么是游戏开发（What Is Game Development）</h3>
+
+<h4>1.1.1 从"玩游戏"到"造游戏"
+    <span class="en">From playing to building</span>
+</h4>
+
+<p><span class="keyword">游戏开发（Game Development）</span>就是设计并创造一个游戏的全过程。在 CodeCombat 里，你写的代码不再是命令英雄移动，而是用来<strong>布置整个关卡世界</strong>：哪里有树、哪里站着玩家、玩家要完成什么任务、有哪些敌人来捣乱。换句话说，你写的程序"长出"了一个可以玩的世界。</p>
+
+<div class="text-illustration">
+    <div class="illus-title">🎮 玩家视角 vs 设计师视角</div>
+    <p>玩家关心"我怎么赢"；设计师关心"我怎么让玩家觉得好玩、有挑战又能赢"。本单元你要学会用设计师的眼光思考：先想清楚游戏要什么样，再用代码把它造出来。</p>
+</div>
+
+<h3 id="sec-1-2">1.2 玩家与非玩家（Player vs Non-Player）</h3>
+
+<h4>1.2.1 谁来控制，谁被控制
+    <span class="en">Who controls, who is controlled</span>
+</h4>
+
+<p><span class="keyword">玩家（Player）</span>是真正操控游戏的人，也就是坐在屏幕前玩你游戏的那个人。在你的关卡里，玩家会用键盘（WASD、方向键）或鼠标点击来控制一个角色，那个被控制的角色叫<strong>玩家单位</strong>，用 <code>spawnPlayerXY</code> 生成。</p>
+
+<p>除此之外，地图上还有许多<span class="keyword">非玩家单位（NPC，Non-Player Character）</span>——它们不受玩家直接控制，而是按照游戏设定的规则自己行动，比如冲过来的食人魔、巡逻的弓箭手、原地不动的宝箱和树木。设计师的工作，就是安排好"玩家单位"和这些"非玩家单位"之间的关系。</p>
+
+<table class="styled-table">
+    <thead><tr><th>类别</th><th>说明</th><th>例子</th></tr></thead>
+    <tbody>
+        <tr><td>玩家单位</td><td>玩家用键鼠操控的角色</td><td>骑士、船长、勇士</td></tr>
+        <tr><td>敌方 NPC</td><td>会主动攻击或干扰玩家</td><td>食人魔、投掷手、骷髅</td></tr>
+        <tr><td>友方/中立 NPC</td><td>帮忙或不参与战斗</td><td>弓箭手、士兵</td></tr>
+        <tr><td>静态元素</td><td>不会动的布景或物品</td><td>树木、篱笆、宝石、宝箱</td></tr>
+    </tbody>
+</table>
+
+<h3 id="sec-1-3">1.3 目标、机制与元素（Goals, Mechanics &amp; Elements）</h3>
+
+<h4>1.3.1 一个游戏的三大支柱
+    <span class="en">The three pillars of a game</span>
+</h4>
+
+<p>课程开篇就强调了三个最核心的概念，它们是任何游戏的骨架：</p>
+
+<table class="styled-table">
+    <thead><tr><th>概念</th><th>定义</th><th>生活例子</th></tr></thead>
+    <tbody>
+        <tr><td><span class="keyword">目标 Goal</span></td><td>玩家要取胜或推进必须达成的事</td><td>俄罗斯方块：消除尽量多的行</td></tr>
+        <tr><td><span class="keyword">机制 Mechanic</span></td><td>玩家与游戏交互的规则</td><td>超级玛丽：按键让角色跳跃</td></tr>
+        <tr><td><span class="keyword">元素 Element</span></td><td>屏幕上可以交互的对象</td><td>方块、金币、敌人、墙</td></tr>
+    </tbody>
+</table>
+
+<div class="remember-box">
+    <span class="remember-label">区分要点：</span><strong>机制</strong>告诉玩家"怎么玩"（按键跳跃、点击攻击）；<strong>目标</strong>告诉玩家"怎么赢"（收集10颗宝石、存活20秒）。同一套元素，配上不同目标和机制，就能变成完全不同的游戏。
+</div>
+
+<h3 id="sec-1-4">1.4 坐标系与 game 对象（Coordinates &amp; the game Object）</h3>
+
+<h4>1.4.1 (0,0) 在屏幕左下角
+    <span class="en">(0,0) is the bottom-left corner</span>
+</h4>
+
+<p>要把元素准确摆到地图上，必须懂<strong>坐标系</strong>。CodeCombat 用的是直角坐标系：原点 <code>(0, 0)</code> 在屏幕的<strong>左下角</strong>，X 坐标向右增大，Y 坐标向上增大。把鼠标移到地图某处，就能看到那个位置的坐标，方便你决定元素该放哪。</p>
+
+<div class="flow-demo">
+    <svg viewBox="0 0 360 240" width="360" role="img" aria-label="坐标系示意">
+        <line x1="40" y1="200" x2="330" y2="200" stroke="#2E9E5B" stroke-width="2"/>
+        <line x1="40" y1="200" x2="40" y2="20" stroke="#2E9E5B" stroke-width="2"/>
+        <polygon points="330,200 320,195 320,205" fill="#2E9E5B"/>
+        <polygon points="40,20 35,30 45,30" fill="#2E9E5B"/>
+        <text x="335" y="205" font-size="13" font-family="sans-serif" fill="#1F7A44">X →</text>
+        <text x="20" y="18" font-size="13" font-family="sans-serif" fill="#1F7A44">Y ↑</text>
+        <circle cx="40" cy="200" r="4" fill="#f44336"/>
+        <text x="20" y="218" font-size="12" font-family="sans-serif" fill="#c62828">(0,0)</text>
+        <circle cx="210" cy="110" r="5" fill="#2196F3"/>
+        <line x1="40" y1="110" x2="210" y2="110" stroke="#2196F3" stroke-width="1" stroke-dasharray="4"/>
+        <line x1="210" y1="200" x2="210" y2="110" stroke="#2196F3" stroke-width="1" stroke-dasharray="4"/>
+        <text x="218" y="106" font-size="12" font-family="sans-serif" fill="#1565c0">spawnXY("gem", 20, 34)</text>
+    </svg>
+    <div class="caption">坐标(0,0)在左下角；游戏元素按 (x, y) 放到对应位置</div>
+</div>
+
+<h4>1.4.2 game 是这个单元的"主角"
+    <span class="en">game is the central object</span>
+</h4>
+
+<p>计算机科学入门里你用 <code>hero</code> 指挥英雄；游戏开发里，你的大多数命令都发给 <code>game</code> 对象。<strong>game 代表整个游戏世界</strong>，所有"生成元素""设定目标"的方法都挂在它名下，比如 <code>game.spawnXY()</code>、<code>game.addCollectGoal()</code>。记住这个转变：以前指挥角色，现在搭建世界。</p>
+
+<!-- ==================== 第2章 ==================== -->
+<div class="section-header" id="section-2">
+    <h2>第2章 生成元素与第一个目标（关卡 1-5）</h2>
+    <div class="en-title">Module 1: Spawning Elements &amp; First Goals</div>
+</div>
+
+<p>关卡 1 到 5（"越过花园墙"到"宝石太棒了"）是你的第一块拼图：学会把元素摆到地图上，并给游戏设第一个目标。</p>
+
+<h3 id="sec-2-1">2.1 spawnXY：生成布景与物品（Spawn Scenery）</h3>
+
+<h4>2.1.1 三个参数：类型、X、Y
+    <span class="en">Three arguments: type, x, y</span>
+</h4>
+
+<p>生成任何元素，最基础的方法就是 <code>game.spawnXY()</code>。它接收三个参数：第一个是<strong>元素类型字符串</strong>（如 <code>"fence"</code> 篱笆、<code>"forest"</code> 树木、<code>"gem"</code> 宝石），后两个是放置的 <strong>x、y 坐标</strong>。</p>
+
+<div class="anatomy">
+    <svg viewBox="0 0 560 130" width="560" role="img" aria-label="spawnXY语法解剖">
+        <text x="20" y="55" font-size="19" font-family="monospace" fill="#e5c07b">game</text>
+        <text x="68" y="55" font-size="19" font-family="monospace" fill="#b6c2ba">.</text>
+        <text x="78" y="55" font-size="19" font-family="monospace" fill="#61afef">spawnXY</text>
+        <text x="160" y="55" font-size="19" font-family="monospace" fill="#b6c2ba">(</text>
+        <text x="170" y="55" font-size="19" font-family="monospace" fill="#98c379">"fence"</text>
+        <text x="248" y="55" font-size="19" font-family="monospace" fill="#b6c2ba">,</text>
+        <text x="262" y="55" font-size="19" font-family="monospace" fill="#d19a66">39</text>
+        <text x="288" y="55" font-size="19" font-family="monospace" fill="#b6c2ba">,</text>
+        <text x="302" y="55" font-size="19" font-family="monospace" fill="#d19a66">16</text>
+        <text x="328" y="55" font-size="19" font-family="monospace" fill="#b6c2ba">)</text>
+        <line x1="200" y1="65" x2="200" y2="92" stroke="#98c379" stroke-width="2"/>
+        <text x="150" y="112" font-size="12" font-family="sans-serif" fill="#2e7d32">元素类型</text>
+        <line x1="272" y1="65" x2="272" y2="92" stroke="#d19a66" stroke-width="2"/>
+        <text x="330" y="112" font-size="12" font-family="sans-serif" fill="#d49100">X 坐标 / Y 坐标</text>
+    </svg>
+</div>
+
+<div class="code-block">
+    <div class="dots"><span class="red"></span><span class="yellow"></span><span class="green"></span></div>
+<pre><span class="cmt"># 用一排篱笆围出一道墙（"越过花园墙"片段）</span>
+<span class="obj">game</span><span class="punc">.</span><span class="fn">spawnXY</span><span class="punc">(</span><span class="str">"fence"</span><span class="punc">,</span> <span class="num">39</span><span class="punc">,</span> <span class="num">16</span><span class="punc">)</span>
+<span class="obj">game</span><span class="punc">.</span><span class="fn">spawnXY</span><span class="punc">(</span><span class="str">"fence"</span><span class="punc">,</span> <span class="num">39</span><span class="punc">,</span> <span class="num">20</span><span class="punc">)</span>
+<span class="obj">game</span><span class="punc">.</span><span class="fn">spawnXY</span><span class="punc">(</span><span class="str">"fence"</span><span class="punc">,</span> <span class="num">39</span><span class="punc">,</span> <span class="num">24</span><span class="punc">)</span>
+<span class="cmt"># ……继续往上摆，X 不变、Y 递增，就连成一道竖墙</span></pre>
+</div>
+
+<div class="tip-box">
+    <span class="tip-label">观察规律：</span>上面几行 X 都是 39、Y 每次加 4，于是篱笆排成一条竖直的线。<strong>"坐标的规律"就是地图设计的语言</strong>——想要一排横墙就固定 Y、改变 X；想要斜线就让 X、Y 同时变化。
+</div>
+
+<h3 id="sec-2-2">2.2 spawnPlayerXY：生成玩家角色（Spawn the Player）</h3>
+
+<h4>2.2.1 让玩家有一个能操控的角色
+    <span class="en">Give the player a controllable hero</span>
+</h4>
+
+<p>光有布景还不够，得有玩家来玩。<code>game.spawnPlayerXY()</code> 生成一个<strong>由玩家用键鼠操控</strong>的角色。第一个参数是角色类型（如 <code>"knight"</code> 骑士、<code>"captain"</code> 船长、<code>"duelist"</code> 决斗者），后两个是出生坐标。</p>
+
+<div class="code-block">
+    <div class="dots"><span class="red"></span><span class="yellow"></span><span class="green"></span></div>
+<pre><span class="cmt"># 在 (5, 8) 处生成一名骑士供玩家操控</span>
+<span class="obj">game</span><span class="punc">.</span><span class="fn">spawnPlayerXY</span><span class="punc">(</span><span class="str">"knight"</span><span class="punc">,</span> <span class="num">5</span><span class="punc">,</span> <span class="num">8</span><span class="punc">)</span></pre>
+</div>
+
+<div class="info-box">
+    <span class="info-label">关键区别：</span><code>spawnPlayerXY</code> 生成的是<strong>玩家能控制</strong>的角色，而 <code>spawnXY("munchkin", …)</code> 生成的敌人是<strong>不受玩家控制</strong>的 NPC。一个游戏通常只生成一个玩家角色。
+</div>
+
+<h3 id="sec-2-3">2.3 addMoveGoalXY：移动目标（Move Goal）</h3>
+
+<h4>2.3.1 走到指定地点就算赢
+    <span class="en">Reach a spot to win</span>
+</h4>
+
+<p>有了角色，就该给玩家一个任务。<span class="keyword">移动目标</span>是最简单的目标：用 <code>game.addMoveGoalXY(x, y)</code> 在地图上放一个红色十字标记，玩家只要把角色走到那个位置，游戏就胜利。</p>
+
+<div class="code-block">
+    <div class="dots"><span class="red"></span><span class="yellow"></span><span class="green"></span></div>
+<pre><span class="obj">game</span><span class="punc">.</span><span class="fn">spawnPlayerXY</span><span class="punc">(</span><span class="str">"captain"</span><span class="punc">,</span> <span class="num">31</span><span class="punc">,</span> <span class="num">22</span><span class="punc">)</span>
+<span class="obj">game</span><span class="punc">.</span><span class="fn">addMoveGoalXY</span><span class="punc">(</span><span class="num">31</span><span class="punc">,</span> <span class="num">33</span><span class="punc">)</span>   <span class="cmt"># 让玩家走到 (31,33)</span></pre>
+</div>
+
+<h3 id="sec-2-4">2.4 addCollectGoal：收集目标（Collect Goal）</h3>
+
+<h4>2.4.1 捡齐物品才能通关
+    <span class="en">Gather items to win</span>
+</h4>
+
+<p><span class="keyword">收集目标</span>要求玩家拾取地图上的物品（如宝石、宝箱）。用 <code>game.addCollectGoal()</code> 设定这个目标。<strong>注意一个设计逻辑：设了收集目标，就必须真的生成可收集的物品</strong>，否则玩家永远赢不了。</p>
+
+<div class="code-block">
+    <div class="dots"><span class="red"></span><span class="yellow"></span><span class="green"></span></div>
+<pre><span class="obj">game</span><span class="punc">.</span><span class="fn">spawnPlayerXY</span><span class="punc">(</span><span class="str">"captain"</span><span class="punc">,</span> <span class="num">9</span><span class="punc">,</span> <span class="num">18</span><span class="punc">)</span>
+<span class="obj">game</span><span class="punc">.</span><span class="fn">addCollectGoal</span><span class="punc">()</span>          <span class="cmt"># 目标：收集物品</span>
+<span class="obj">game</span><span class="punc">.</span><span class="fn">spawnXY</span><span class="punc">(</span><span class="str">"gem"</span><span class="punc">,</span> <span class="num">25</span><span class="punc">,</span> <span class="num">30</span><span class="punc">)</span>   <span class="cmt"># 配套生成宝石供收集</span></pre>
+</div>
+
+<div class="warn-box">
+    <span class="warn-label">设计陷阱：</span>课程特别提醒——如果目标是"收集"却没生成任何金币或宝石，这个游戏就<strong>无法完成</strong>。目标和元素必须配套：设了收集目标，就得放收集物。
+</div>
+
+<h3 id="sec-2-5">2.5 关卡精讲 1-5（Level Strategy 1-5）</h3>
+
+<h4>2.5.1 越过花园墙 ~ 宝石太棒了
+    <span class="en">Over the Garden Wall → Gemtacular</span>
+</h4>
+
+<table class="styled-table">
+    <thead><tr><th>关卡</th><th>核心技能</th><th>设计思路</th></tr></thead>
+    <tbody>
+        <tr><td>1 越过花园墙</td><td><code>spawnXY</code></td><td>用多行 spawnXY 把篱笆排成墙，体会"坐标规律"</td></tr>
+        <tr><td>2-3 地图布置</td><td><code>spawnPlayerXY</code> + <code>addMoveGoalXY</code></td><td>生成玩家，再放移动目标，组成最小可玩游戏</td></tr>
+        <tr><td>4 宝箱</td><td><code>addCollectGoal</code></td><td>设收集目标并生成宝箱/树木，搭出一个收集小游戏</td></tr>
+        <tr><td>5 宝石太棒了</td><td>综合</td><td>玩家 + 收集目标 + 多颗宝石，第一个完整目标游戏</td></tr>
+    </tbody>
+</table>
+
+<div class="remember-box">
+    <span class="remember-label">通用解题套路：</span>这五关教会你一个固定流程——<strong>① 生成玩家 → ② 设定一个目标 → ③ 生成与目标配套的元素</strong>。掌握这三步，你就能造出第一个能玩的游戏。
+</div>
+
+<p style="margin: 10px 0; color: #555;">立即访问 <a href="https://codecombat.cn" target="_blank" style="color: #1F7A44; font-weight: 700; text-decoration: none;">codecombat.cn</a> 开启你的 CodeCombat 游戏开发之旅！</p>
+
+<!-- ==================== 第3章 ==================== -->
+<div class="section-header" id="section-3">
+    <h2>第3章 目标调整与元素种类（关卡 6-11）</h2>
+    <div class="en-title">Module 2: Tuning Goals &amp; Element Types</div>
+</div>
+
+<p>会摆元素、会设一个目标后，关卡 6-11（"斩首鼠标"到"障碍魔法"）带你认识<strong>更多目标类型</strong>，并学会生成各种不同的元素来配合这些目标。</p>
+
+<h3 id="sec-3-1">3.1 击败目标 addDefeatGoal（Defeat Goal）</h3>
+
+<h4>3.1.1 消灭敌人才能赢
+    <span class="en">Win by defeating enemies</span>
+</h4>
+
+<p><span class="keyword">击败目标</span>要求玩家打败地图上的敌人。用 <code>game.addDefeatGoal()</code> 设定。设了它，自然要生成敌人（如 <code>"munchkin"</code> 食人魔仔）供玩家攻击。</p>
+
+<div class="code-block">
+    <div class="dots"><span class="red"></span><span class="yellow"></span><span class="green"></span></div>
+<pre><span class="obj">game</span><span class="punc">.</span><span class="fn">addDefeatGoal</span><span class="punc">()</span>            <span class="cmt"># 目标：击败敌人</span>
+<span class="obj">game</span><span class="punc">.</span><span class="fn">spawnXY</span><span class="punc">(</span><span class="str">"munchkin"</span><span class="punc">,</span> <span class="num">40</span><span class="punc">,</span> <span class="num">25</span><span class="punc">)</span>
+<span class="obj">game</span><span class="punc">.</span><span class="fn">spawnXY</span><span class="punc">(</span><span class="str">"munchkin"</span><span class="punc">,</span> <span class="num">44</span><span class="punc">,</span> <span class="num">25</span><span class="punc">)</span></pre>
+</div>
+
+<h3 id="sec-3-2">3.2 存活目标 addSurviveGoal（Survive Goal）</h3>
+
+<h4>3.2.1 撑过一段时间就胜利
+    <span class="en">Survive for a set time</span>
+</h4>
+
+<p><span class="keyword">存活目标</span>和别的目标都不同：玩家不用完成什么任务，只要在规定时间内<strong>保持存活</strong>就赢。用 <code>game.addSurviveGoal(秒数)</code> 设定，括号里的数字就是要撑过的秒数。</p>
+
+<div class="code-block">
+    <div class="dots"><span class="red"></span><span class="yellow"></span><span class="green"></span></div>
+<pre><span class="obj">game</span><span class="punc">.</span><span class="fn">addSurviveGoal</span><span class="punc">(</span><span class="num">20</span><span class="punc">)</span>          <span class="cmt"># 目标：存活 20 秒</span></pre>
+</div>
+
+<div class="info-box">
+    <span class="info-label">目标对比：</span>移动/收集/击败目标都要"做成某件事"；而存活目标只要"别死"。这让它非常适合做<strong>防守、躲避类</strong>游戏——四面八方涌来敌人，玩家要靠走位和反击撑到时间结束。
+</div>
+
+<h3 id="sec-3-3">3.3 认识更多元素种类（More Element Types）</h3>
+
+<h4>3.3.1 不同目标需要不同元素
+    <span class="en">Different goals need different elements</span>
+</h4>
+
+<p>设计师要懂"什么目标配什么元素"。这一模块你会接触到许多新元素：陷阱、药水、各种兵种。它们让游戏从"静态摆设"变得有攻有守、有惊险有补给。</p>
+
+<table class="styled-table">
+    <thead><tr><th>元素类型</th><th>英文</th><th>作用</th></tr></thead>
+    <tbody>
+        <tr><td>火焰陷阱</td><td><code>"fire-trap"</code></td><td>踩到会受伤，制造危险路径</td></tr>
+        <tr><td>小/大药水</td><td><code>"potion-small"</code> / <code>"potion-large"</code></td><td>给玩家回血，提供补给</td></tr>
+        <tr><td>投掷手</td><td><code>"thrower"</code></td><td>远程攻击的敌人</td></tr>
+        <tr><td>士兵 / 弓箭手</td><td><code>"soldier"</code> / <code>"archer"</code></td><td>近战 / 远程单位</td></tr>
+    </tbody>
+</table>
+
+<h3 id="sec-3-4">3.4 spawnMaze：一键生成迷宫（Spawn a Maze）</h3>
+
+<h4>3.4.1 用一行代码铺满整张迷宫
+    <span class="en">Generate a whole maze in one line</span>
+</h4>
+
+<p>如果要一格一格摆篱笆做迷宫，会写到手酸。<code>game.spawnMaze()</code> 能<strong>自动生成一整片迷宫</strong>。第一个参数是构成迷宫的元素类型，第二个数字是<strong>迷宫的随机种子/编号</strong>——换一个数字，迷宫的布局就完全变了。</p>
+
+<div class="code-block">
+    <div class="dots"><span class="red"></span><span class="yellow"></span><span class="green"></span></div>
+<pre><span class="cmt"># "障碍魔法"片段：用篱笆生成迷宫，再放玩家和目标</span>
+<span class="obj">game</span><span class="punc">.</span><span class="fn">spawnMaze</span><span class="punc">(</span><span class="str">"fence"</span><span class="punc">,</span> <span class="num">1</span><span class="punc">)</span>
+<span class="obj">game</span><span class="punc">.</span><span class="fn">spawnPlayerXY</span><span class="punc">(</span><span class="str">"goliath"</span><span class="punc">,</span> <span class="num">36</span><span class="punc">,</span> <span class="num">30</span><span class="punc">)</span>
+<span class="obj">game</span><span class="punc">.</span><span class="fn">addMoveGoalXY</span><span class="punc">(</span><span class="num">36</span><span class="punc">,</span> <span class="num">30</span><span class="punc">)</span></pre>
+</div>
+
+<div class="tip-box">
+    <span class="tip-label">玩法巧思：</span>把 <code>spawnMaze</code> 和移动目标组合，就是经典的"走迷宫"玩法；换成第二个数字（种子）可以快速试出最有趣的迷宫布局。
+</div>
+
+<h3 id="sec-3-5">3.5 关卡精讲 6-11（Level Strategy 6-11）</h3>
+
+<h4>3.5.1 斩首鼠标 ~ 障碍魔法
+    <span class="en">Mouseman → Magic Maze</span>
+</h4>
+
+<table class="styled-table">
+    <thead><tr><th>关卡</th><th>核心目标</th><th>设计思路</th></tr></thead>
+    <tbody>
+        <tr><td>6 斩首鼠标</td><td>击败 / 存活</td><td>生成玩家与一群敌人，设击败目标，靠点击攻击取胜</td></tr>
+        <tr><td>7 军队训练</td><td>存活 + 击败</td><td>多个敌人围攻，组合两种目标增加难度</td></tr>
+        <tr><td>8 陷阱地图</td><td>存活 + 移动</td><td>布置 fire-trap 和药水，让玩家在危险中找补给</td></tr>
+        <tr><td>9-10 兵种混战</td><td>存活</td><td>生成 thrower / soldier / archer，营造多兵种战场</td></tr>
+        <tr><td>11 障碍魔法</td><td>移动（迷宫）</td><td>spawnMaze 造迷宫 + 移动目标，玩家走出迷宫</td></tr>
+    </tbody>
+</table>
+
+<div class="remember-box">
+    <span class="remember-label">核心心法：</span>这一模块反复训练同一个判断——<strong>"先想好目标类型，再决定生成哪些元素"</strong>。击败目标就要有敌人，收集目标就要有物品，迷宫目标就要有迷宫。目标与元素永远成对出现。
+</div>
+
+<!-- ==================== 第4章 ==================== -->
+<div class="section-header" id="section-4">
+    <h2>第4章 属性调整（关卡 12-16）</h2>
+    <div class="en-title">Module 3: Tuning Properties</div>
+</div>
+
+<p>到这里你已能搭出有目标、有元素的游戏。但所有单位都用默认设置，难度无法精细控制。关卡 12-16（"森林入侵"到"生存时间"）教你修改<strong>对象的属性</strong>，让游戏难度恰到好处。</p>
+
+<h3 id="sec-4-1">4.1 什么是属性（What Is a Property）</h3>
+
+<h4>4.1.1 对象身上的"特征数据"
+    <span class="en">A characteristic of an object</span>
+</h4>
+
+<p><span class="keyword">属性（Property）</span>是一个对象的特征——任何描述这个对象的信息。比如英雄的最大生命值、攻击伤害、移动速度，宝石的坐标，火焰喷射器的方向。属性以<strong>"键-值对"（key-value）</strong>的形式存在：键是属性名（如 <code>maxHealth</code>），值是具体数值（如 <code>100</code>）。</p>
+
+<div class="text-illustration">
+    <div class="illus-title">🪑 用一把椅子理解属性</div>
+    <p>一把椅子有"颜色=红""高度=80厘米""材质=木头"等特征。每个特征就是一个属性键，对应的具体情况就是值。游戏单位也一样：<code>maxHealth = 100</code> 就是"最大生命值这个属性的值是100"。</p>
+</div>
+
+<h3 id="sec-4-2">4.2 用变量保存生成物（Save the Spawned Object）</h3>
+
+<h4>4.2.1 想改属性，先抓住对象
+    <span class="en">Grab the object before tuning it</span>
+</h4>
+
+<p>要修改某个单位的属性，必须先能<strong>"指向"</strong>它。办法是用<span class="keyword">变量</span>接住 spawn 方法返回的对象：</p>
+
+<div class="anatomy">
+    <svg viewBox="0 0 560 130" width="560" role="img" aria-label="变量接住生成物语法">
+        <text x="20" y="55" font-size="18" font-family="monospace" fill="#e5c07b">player</text>
+        <text x="88" y="55" font-size="18" font-family="monospace" fill="#b6c2ba">=</text>
+        <text x="106" y="55" font-size="18" font-family="monospace" fill="#e5c07b">game</text>
+        <text x="150" y="55" font-size="18" font-family="monospace" fill="#b6c2ba">.</text>
+        <text x="160" y="55" font-size="18" font-family="monospace" fill="#61afef">spawnPlayerXY</text>
+        <text x="298" y="55" font-size="18" font-family="monospace" fill="#b6c2ba">(</text>
+        <text x="306" y="55" font-size="18" font-family="monospace" fill="#98c379">"knight"</text>
+        <text x="388" y="55" font-size="18" font-family="monospace" fill="#b6c2ba">,</text>
+        <text x="400" y="55" font-size="18" font-family="monospace" fill="#d19a66">40</text>
+        <text x="424" y="55" font-size="18" font-family="monospace" fill="#b6c2ba">,</text>
+        <text x="436" y="55" font-size="18" font-family="monospace" fill="#d19a66">10</text>
+        <text x="458" y="55" font-size="18" font-family="monospace" fill="#b6c2ba">)</text>
+        <line x1="48" y1="65" x2="48" y2="95" stroke="#e5c07b" stroke-width="2"/>
+        <text x="20" y="115" font-size="12" font-family="sans-serif" fill="#d49100">变量名（之后用它来改属性）</text>
+    </svg>
+</div>
+
+<div class="code-block">
+    <div class="dots"><span class="red"></span><span class="yellow"></span><span class="green"></span></div>
+<pre><span class="cmt"># 把生成的玩家存进变量 player，之后才能调整它</span>
+player = <span class="obj">game</span><span class="punc">.</span><span class="fn">spawnPlayerXY</span><span class="punc">(</span><span class="str">"knight"</span><span class="punc">,</span> <span class="num">40</span><span class="punc">,</span> <span class="num">10</span><span class="punc">)</span>
+player<span class="punc">.</span>maxHealth = <span class="num">100</span>     <span class="cmt"># 用 变量.属性 = 值 来修改</span></pre>
+</div>
+
+<div class="warn-box">
+    <span class="warn-label">最常见错误：</span>很多人忘了用变量接住生成物，直接写 <code>game.spawnXY(...)</code> 然后想改属性，结果没有"把手"可抓。<strong>要改属性，必先用变量保存对象</strong>。
+</div>
+
+<h3 id="sec-4-3">4.3 生命、攻击与速度（Health, Damage, Speed）</h3>
+
+<h4>4.3.1 三个最常调的属性
+    <span class="en">The three most-tuned properties</span>
+</h4>
+
+<p>最常用来平衡难度的三个属性是：<code>maxHealth</code>（最大生命值）、<code>attackDamage</code>（攻击伤害）、<code>maxSpeed</code>（最大移动速度）。调大玩家的这些值会让游戏变简单，调大敌人的值会让游戏变难。</p>
+
+<div class="code-block">
+    <div class="dots"><span class="red"></span><span class="yellow"></span><span class="green"></span></div>
+<pre>player = <span class="obj">game</span><span class="punc">.</span><span class="fn">spawnPlayerXY</span><span class="punc">(</span><span class="str">"goliath"</span><span class="punc">,</span> <span class="num">12</span><span class="punc">,</span> <span class="num">9</span><span class="punc">)</span>
+player<span class="punc">.</span>maxHealth = <span class="num">1000</span>      <span class="cmt"># 更耐打</span>
+player<span class="punc">.</span>attackDamage = <span class="num">100</span>    <span class="cmt"># 攻击更强</span>
+player<span class="punc">.</span>maxSpeed = <span class="num">30</span>         <span class="cmt"># 跑得更快</span></pre>
+</div>
+
+<div class="info-box">
+    <span class="info-label">设计意义：</span>属性是设计师手里的"难度旋钮"。同一张地图，把敌人血量调高、玩家速度调低，瞬间从休闲变硬核。<strong>调属性 = 调难度与体验</strong>。
+</div>
+
+<h3 id="sec-4-4">4.4 方向与行为属性（direction &amp; behavior）</h3>
+
+<h4>4.4.1 控制元素"怎么动、怎么打"
+    <span class="en">Control how elements move and act</span>
+</h4>
+
+<p>有些属性不是数值，而是字符串，用来控制元素的行为模式。例如火焰喷射器的 <code>direction</code>（喷射方向），以及敌人的 <code>behavior</code>（行为模式）。</p>
+
+<div class="code-block">
+    <div class="dots"><span class="red"></span><span class="yellow"></span><span class="green"></span></div>
+<pre><span class="cmt"># 设置火焰喷射器的喷射方向（"森林入侵"片段）</span>
+fs1 = <span class="obj">game</span><span class="punc">.</span><span class="fn">spawnXY</span><span class="punc">(</span><span class="str">"fire-spewer"</span><span class="punc">,</span> <span class="num">12</span><span class="punc">,</span> <span class="num">25</span><span class="punc">)</span>
+fs1<span class="punc">.</span>direction = <span class="str">"vertical"</span>   <span class="cmt"># 竖直方向喷火</span>
+
+<span class="cmt"># 设置敌人的行为模式（"行为驱动"片段）</span>
+skeleton1 = <span class="obj">game</span><span class="punc">.</span><span class="fn">spawnXY</span><span class="punc">(</span><span class="str">"skeleton"</span><span class="punc">,</span> <span class="num">60</span><span class="punc">,</span> <span class="num">48</span><span class="punc">)</span>
+skeleton1<span class="punc">.</span>behavior = <span class="str">"Scampers"</span>   <span class="cmt"># 四处乱窜</span></pre>
+</div>
+
+<table class="styled-table">
+    <thead><tr><th>behavior 值</th><th>含义</th></tr></thead>
+    <tbody>
+        <tr><td><code>"Scampers"</code></td><td>四处乱窜、躲避</td></tr>
+        <tr><td><code>"AttacksNearest"</code></td><td>攻击最近的目标</td></tr>
+        <tr><td><code>"Defends"</code></td><td>防守（如友方弓箭手）</td></tr>
+    </tbody>
+</table>
+
+<h3 id="sec-4-5">4.5 生成器 generator（The Generator）</h3>
+
+<h4>4.5.1 源源不断地"生孩子"
+    <span class="en">Spawns enemies continuously</span>
+</h4>
+
+<p><code>"generator"</code>（生成器）是一种特殊元素：它会<strong>不停地生成敌人</strong>，制造源源不断的压力。通过设置它的 <code>spawnType</code> 属性，决定它生成哪种敌人——这正是"存活类"游戏的灵魂。</p>
+
+<div class="code-block">
+    <div class="dots"><span class="red"></span><span class="yellow"></span><span class="green"></span></div>
+<pre><span class="cmt"># "生存时间"片段：用生成器持续刷怪</span>
+generator = <span class="obj">game</span><span class="punc">.</span><span class="fn">spawnXY</span><span class="punc">(</span><span class="str">"generator"</span><span class="punc">,</span> <span class="num">60</span><span class="punc">,</span> <span class="num">40</span><span class="punc">)</span>
+generator<span class="punc">.</span>spawnType = <span class="str">"munchkin"</span>   <span class="cmt"># 持续生成食人魔仔</span></pre>
+</div>
+
+<div class="remember-box">
+    <span class="remember-label">注意顺序：</span>必须<strong>先用变量接住生成器</strong>，再设它的 <code>spawnType</code>。写成 <code>generator = game.spawnXY("generator", ...)</code>，下一行才能用 <code>generator.spawnType = "..."</code> 配置它。
+</div>
+
+<h3 id="sec-4-6">4.6 关卡精讲 12-16（Level Strategy 12-16）</h3>
+
+<h4>4.6.1 森林入侵 ~ 生存时间
+    <span class="en">Forest Invasion → Time to Live</span>
+</h4>
+
+<table class="styled-table">
+    <thead><tr><th>关卡</th><th>核心属性</th><th>设计思路</th></tr></thead>
+    <tbody>
+        <tr><td>12 森林入侵</td><td>maxHealth / attackDamage</td><td>用变量接住玩家，调高属性让其撑过来袭</td></tr>
+        <tr><td>13 火焰喷射</td><td><code>direction</code></td><td>多个 fire-spewer 设方向，造危险地形 + 收集</td></tr>
+        <tr><td>14 属性配置</td><td>综合属性</td><td>调玩家速度/血量/伤害，搭配 generator 等元素</td></tr>
+        <tr><td>15 行为驱动</td><td><code>behavior</code></td><td>给骷髅/食人魔/弓箭手设不同行为，造混战</td></tr>
+        <tr><td>16 生存时间</td><td><code>spawnType</code> + 存活目标</td><td>生成器持续刷怪 + 存活目标，经典防守游戏</td></tr>
+    </tbody>
+</table>
+
+<div class="info-box">
+    <span class="info-label">综合范式：</span>"生存时间"是本模块的集大成——<strong>存活目标 + 迷宫 + 生成器 + 属性调整</strong>四样齐用。设 <code>addSurviveGoal(20)</code>，放一个 <code>spawnType="munchkin"</code> 的生成器，再调好玩家血量与伤害，一个完整的塔防式生存游戏就诞生了。
+</div>
+
+<!-- ==================== 第5章 ==================== -->
+<div class="section-header" id="section-5">
+    <h2>第5章 白手起家：你的原创游戏（第17关）</h2>
+    <div class="en-title">Module 4: Build From Scratch</div>
+</div>
+
+<p>第17关"白手起家"<strong>没有任何初始代码</strong>，整张地图是空白的画布。这是对前面所有技能的终极检验：从零设计、构建、测试、改进一个属于你自己的游戏。</p>
+
+<h3 id="sec-5-1">5.1 工程开发六步（The Six-Step Cycle）</h3>
+
+<h4>5.1.1 优秀程序员只有 1/3 时间在写代码
+    <span class="en">Design before you code</span>
+</h4>
+
+<p>课程强调，真正的游戏开发遵循一套工程流程，写代码只是其中一环。<strong>千万别一上来就敲代码</strong>，先在纸上设计和规划。</p>
+
+<table class="styled-table">
+    <thead><tr><th>步骤</th><th>做什么</th></tr></thead>
+    <tbody>
+        <tr><td>1. 设计 Design</td><td>在纸上写想法、画草图、列出游戏目标</td></tr>
+        <tr><td>2. 计划 Plan</td><td>画流程图，想清楚每段代码怎么写</td></tr>
+        <tr><td>3. 实现 Implement</td><td>在平台上把设计变成代码</td></tr>
+        <tr><td>4. 测试 Test</td><td>运行游戏，检查是否能正常通关</td></tr>
+        <tr><td>5. 反馈 Feedback</td><td>让同学试玩，收集优点与缺点</td></tr>
+        <tr><td>6. 改进 Improve</td><td>根据反馈再打磨，让游戏更好玩</td></tr>
+    </tbody>
+</table>
+
+<h3 id="sec-5-2">5.2 从零搭建你的游戏（Build It Yourself）</h3>
+
+<h4>5.2.1 一个完整游戏的最低要求
+    <span class="en">Minimum requirements of a game</span>
+</h4>
+
+<p>课程要求你的原创游戏至少包含：<strong>生成一个玩家、设定一个或多个目标、用障碍/敌人/收集物等元素增加难度</strong>。下面是一个从零搭建的骨架示例（仅展示结构，具体内容由你自由发挥）：</p>
+
+<div class="code-block">
+    <div class="dots"><span class="red"></span><span class="yellow"></span><span class="green"></span></div>
+<pre><span class="cmt"># ① 生成玩家</span>
+player = <span class="obj">game</span><span class="punc">.</span><span class="fn">spawnPlayerXY</span><span class="punc">(</span><span class="str">"knight"</span><span class="punc">,</span> <span class="num">15</span><span class="punc">,</span> <span class="num">15</span><span class="punc">)</span>
+player<span class="punc">.</span>maxHealth = <span class="num">100</span>
+
+<span class="cmt"># ② 设定目标（可多个）</span>
+<span class="obj">game</span><span class="punc">.</span><span class="fn">addSurviveGoal</span><span class="punc">(</span><span class="num">20</span><span class="punc">)</span>
+
+<span class="cmt"># ③ 生成元素增加难度</span>
+<span class="obj">game</span><span class="punc">.</span><span class="fn">spawnMaze</span><span class="punc">(</span><span class="str">"forest"</span><span class="punc">,</span> <span class="num">1</span><span class="punc">)</span>
+generator = <span class="obj">game</span><span class="punc">.</span><span class="fn">spawnXY</span><span class="punc">(</span><span class="str">"generator"</span><span class="punc">,</span> <span class="num">60</span><span class="punc">,</span> <span class="num">40</span><span class="punc">)</span>
+generator<span class="punc">.</span>spawnType = <span class="str">"munchkin"</span>
+<span class="cmt"># …… 继续添加你自己的创意元素！</span></pre>
+</div>
+
+<div class="tip-box">
+    <span class="tip-label">设计建议：</span>很多人能做出基础游戏，但拉开差距的是<strong>额外的巧思</strong>——加点药水让玩家有补给、用篱笆设计一条危险通道、混合多种敌人行为。先做出能玩的版本，再不断加料、测试、改进。
+</div>
+
+<!-- ==================== 第6章 ==================== -->
+<div class="section-header" id="section-6">
+    <h2>第6章 常见错误</h2>
+    <div class="en-title">Common Mistakes</div>
+</div>
+
+<h3 id="sec-6-1">6.1 新手最容易踩的坑（Pitfalls for Beginners）</h3>
+
+<h4>6.1.1 游戏开发的典型问题
+    <span class="en">Typical issues in game dev</span>
+</h4>
+
+<div class="warn-box">
+    <span class="warn-label">易错点清单：</span>
+    <ul style="margin: 8px 0 0 20px;">
+        <li>设了目标却没生成配套元素——如设收集目标却没放宝石，游戏永远赢不了。</li>
+        <li>想改属性却没用变量接住生成物——必须先 <code>x = game.spawnXY(...)</code>，再 <code>x.属性 = 值</code>。</li>
+        <li>坐标超出地图范围，元素被放到看不见的地方——记住 (0,0) 在左下角。</li>
+        <li>元素类型字符串拼错或忘了引号——<code>"munchkin"</code>、<code>"fence"</code> 必须准确且带引号。</li>
+        <li>属性名拼错——如把 <code>maxHealth</code> 写成 <code>maxhealth</code>，大小写要一致。</li>
+        <li>生成器忘了设 <code>spawnType</code>，或设置行写在了接住变量之前。</li>
+        <li>一上来就写代码、跳过设计与规划——优秀的开发总是先设计后实现。</li>
+    </ul>
+</div>
+
+<!-- ==================== 小结 ==================== -->
+<div class="summary-card" id="section-summary">
+<h3>本单元小结 ✨</h3>
+
+    <p>恭喜你完成游戏开发1！你的身份从"玩家"升级成了"游戏设计师"。你学会了生成地图元素、设定多种目标、调整对象属性，并最终从零造出了属于自己的游戏。来回顾一下核心概念：</p>
+
+    <table class="styled-table">
+        <thead><tr><th>核心概念</th><th>关键点</th><th>对应模块</th></tr></thead>
+        <tbody>
+            <tr><td>目标·机制·元素</td><td>游戏的三大支柱</td><td>第1章 基础</td></tr>
+            <tr><td>game 对象</td><td>所有搭建命令的发起者</td><td>第1章 基础</td></tr>
+            <tr><td>spawnXY</td><td>按坐标生成布景/物品/敌人</td><td>关卡1-5</td></tr>
+            <tr><td>spawnPlayerXY</td><td>生成玩家可操控的角色</td><td>关卡1-5</td></tr>
+            <tr><td>移动/收集目标</td><td>走到点 / 捡齐物品</td><td>关卡1-5</td></tr>
+            <tr><td>击败/存活目标</td><td>消灭敌人 / 撑过时间</td><td>关卡6-11</td></tr>
+            <tr><td>spawnMaze</td><td>一行生成整片迷宫</td><td>关卡6-11</td></tr>
+            <tr><td>对象属性</td><td>键-值对，调难度的旋钮</td><td>关卡12-16</td></tr>
+            <tr><td>变量保存生成物</td><td>抓住对象才能改属性</td><td>关卡12-16</td></tr>
+            <tr><td>生成器 generator</td><td>持续刷怪，存活游戏核心</td><td>关卡12-16</td></tr>
+            <tr><td>工程六步法</td><td>设计→计划→实现→测试→反馈→改进</td><td>白手起家</td></tr>
+        </tbody>
+    </table>
+
+    <p style="text-align: center; margin-top: 20px; font-size: 1.1em;">
+        会设计、懂属性、能创造的你，已经是一名真正的游戏开发者。<br>
+        发挥想象，造出独一无二的游戏世界吧，未来的游戏设计师！🎮🌲🛠️
+    </p>
+</div>
+
+
+<div class="member-promo" style="background: linear-gradient(135deg,#e8f5e9 0%,#fff 100%); border: 2px solid #2E9E5B; border-radius: 14px; padding: 24px 28px; margin: 30px 0; text-align: center;">
+    <h3 style="color: #1F7A44; border: none; margin-top: 0; font-size: 1.3em;">🎮 想亲手开发这些游戏关卡吗？</h3>
+    <p style="margin: 10px 0; font-size: 1.05em;">加入 <strong>CodeCombat（codecombat.cn）</strong> 会员，即可解锁全部游戏开发关卡，在真实编程环境中边玩边学，亲手设计、构建并分享属于你自己的游戏作品！</p>
+</div>
+
+</div><!-- end page-wrapper -->
+
+<script>
+document.querySelectorAll('.sidebar-nav a').forEach(link => {
+    link.addEventListener('click', () => {
+        if (window.innerWidth <= 1024) {
+            document.querySelector('.sidebar-nav').classList.remove('active');
+        }
+    });
+});
+</script>
+
+
+<div data-info-wiki-backlink style="text-align:center;padding:18px 12px;color:#64748b;font:13px/1.6 -apple-system,BlinkMacSystemFont,'Segoe UI','Microsoft YaHei',sans-serif"><a href="../index.html" style="color:#4f46e5;text-decoration:none;font-weight:700">← 返回 CodeCombat 信息百科</a></div>
+</body>
+</html>

@@ -1,0 +1,2411 @@
+﻿<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>第一单元：对象、方法、参数与数据类型基础 | CodeCombat 编程知识</title>
+    <style>
+        /* ===== 基础重置与变量 ===== */
+        :root {
+            --primary: #FF6B35;
+            --primary-light: #FF8F5E;
+            --primary-lighter: #FFF0E8;
+            --primary-dark: #E55A2B;
+            --dark: #1a1a2e;
+            --dark-code: #1e1e2e;
+            --dark-code-border: #313244;
+            --text: #2d2d2d;
+            --text-light: #555;
+            --text-lighter: #888;
+            --bg: #ffffff;
+            --bg-alt: #fafafa;
+            --bg-card: #ffffff;
+            --border: #e8e8e8;
+            --success: #4CAF50;
+            --warning: #FFC107;
+            --error: #f44336;
+            --info: #2196F3;
+            --code-keyword: #c678dd;
+            --code-string: #98c379;
+            --code-comment: #5c6370;
+            --code-function: #61afef;
+            --code-number: #d19a66;
+            --code-text: #abb2bf;
+            --code-punctuation: #abb2bf;
+            --code-object: #e5c07b;
+            --sidebar-width: 260px;
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'PingFang SC', 'Hiragino Sans GB', 'Microsoft YaHei', sans-serif;
+            line-height: 1.8;
+            color: var(--text);
+            background: var(--bg);
+            font-size: 16px;
+        }
+
+        /* ===== 左侧导航栏 ===== */
+        .sidebar-nav {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: var(--sidebar-width);
+            height: 100vh;
+            background: #1a1a2e;
+            overflow-y: auto;
+            padding: 20px 0;
+            z-index: 1000;
+            border-right: 3px solid var(--primary);
+            transition: transform 0.3s ease;
+        }
+
+        .sidebar-nav::-webkit-scrollbar {
+            width: 4px;
+        }
+
+        .sidebar-nav::-webkit-scrollbar-thumb {
+            background: var(--primary);
+            border-radius: 4px;
+        }
+
+        .sidebar-nav::-webkit-scrollbar-track {
+            background: #2a2a4e;
+        }
+
+        .sidebar-nav .nav-title {
+            color: var(--primary);
+            font-size: 0.95em;
+            font-weight: 700;
+            padding: 8px 18px;
+            margin-bottom: 5px;
+            letter-spacing: 1px;
+        }
+
+        .sidebar-nav a {
+            display: block;
+            color: #ccc;
+            text-decoration: none;
+            padding: 6px 18px;
+            font-size: 0.82em;
+            line-height: 1.5;
+            border-left: 3px solid transparent;
+            transition: all 0.2s ease;
+        }
+
+        .sidebar-nav a:hover {
+            color: #fff;
+            background: rgba(255, 107, 53, 0.1);
+            border-left-color: var(--primary);
+        }
+
+        .sidebar-nav a.nav-section {
+            color: var(--primary-light);
+            font-weight: 600;
+            font-size: 0.88em;
+            margin-top: 12px;
+            padding-top: 10px;
+            border-top: 1px solid #2a2a4e;
+        }
+
+        .sidebar-nav a.nav-section:first-of-type {
+            border-top: none;
+            margin-top: 0;
+        }
+
+        .sidebar-nav a.nav-sub {
+            padding-left: 30px;
+            color: #aaa;
+            font-size: 0.78em;
+        }
+
+        .sidebar-nav a.nav-sub:hover {
+            color: #fff;
+        }
+
+        /* 移动端导航切换 */
+        .nav-toggle {
+            display: none;
+            position: fixed;
+            top: 15px;
+            left: 15px;
+            z-index: 1100;
+            background: var(--primary);
+            color: white;
+            border: none;
+            border-radius: 8px;
+            padding: 8px 12px;
+            font-size: 1.2em;
+            cursor: pointer;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.2);
+        }
+
+        /* ===== 主内容区偏移 ===== */
+        .page-wrapper {
+            margin-left: var(--sidebar-width);
+        }
+
+        /* ===== 头部横幅 ===== */
+        .hero-banner {
+            background: linear-gradient(135deg, var(--primary) 0%, var(--primary-dark) 100%);
+            color: white;
+            padding: 60px 20px;
+            text-align: center;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .hero-banner::before {
+            content: '';
+            position: absolute;
+            top: -50%;
+            left: -50%;
+            width: 200%;
+            height: 200%;
+            background: radial-gradient(circle, rgba(255,255,255,0.1) 0%, transparent 60%);
+            animation: pulse 8s ease-in-out infinite;
+        }
+
+        @keyframes pulse {
+            0%, 100% { transform: scale(1); }
+            50% { transform: scale(1.1); }
+        }
+
+        .hero-banner h1 {
+            font-size: 2.5em;
+            margin-bottom: 10px;
+            position: relative;
+            z-index: 1;
+        }
+
+        .hero-banner .subtitle {
+            font-size: 1.2em;
+            opacity: 0.9;
+            position: relative;
+            z-index: 1;
+        }
+
+        .hero-banner .badge {
+            display: inline-block;
+            background: rgba(255,255,255,0.2);
+            padding: 5px 15px;
+            border-radius: 20px;
+            margin-top: 15px;
+            font-size: 0.9em;
+            position: relative;
+            z-index: 1;
+        }
+
+        /* ===== 主容器 ===== */
+        .container {
+            max-width: 900px;
+            margin: 0 auto;
+            padding: 40px 20px;
+        }
+
+        /* ===== 章节标题 ===== */
+        .section-header {
+            background: var(--primary-lighter);
+            border-left: 5px solid var(--primary);
+            padding: 20px 25px;
+            margin: 50px 0 30px;
+            border-radius: 0 12px 12px 0;
+        }
+
+        .section-header h2 {
+            color: var(--primary-dark);
+            font-size: 1.8em;
+            margin-bottom: 5px;
+        }
+
+        .section-header .en-title {
+            color: var(--text-light);
+            font-size: 0.95em;
+            font-style: italic;
+        }
+
+        /* ===== 子章节标题 ===== */
+        h3 {
+            color: var(--primary);
+            font-size: 1.4em;
+            margin: 40px 0 15px;
+            padding-bottom: 8px;
+            border-bottom: 2px solid var(--primary-lighter);
+        }
+
+        h4 {
+            color: var(--text);
+            font-size: 1.15em;
+            margin: 30px 0 12px;
+            padding-left: 12px;
+            border-left: 3px solid var(--primary-light);
+        }
+
+        h4 .en {
+            display: block;
+            font-size: 0.8em;
+            color: var(--text-lighter);
+            font-weight: normal;
+            margin-top: 2px;
+        }
+
+        /* ===== 正文 ===== */
+        p {
+            margin: 12px 0;
+            text-align: justify;
+        }
+
+        /* ===== 关键词高亮 ===== */
+        .keyword {
+            background: var(--primary-lighter);
+            color: var(--primary-dark);
+            padding: 2px 6px;
+            border-radius: 4px;
+            font-weight: 600;
+            white-space: nowrap;
+        }
+
+        .keyword-en {
+            background: #e8f4fd;
+            color: #1565c0;
+            padding: 2px 6px;
+            border-radius: 4px;
+            font-weight: 600;
+            font-family: 'SF Mono', 'Fira Code', 'Consolas', monospace;
+            font-size: 0.9em;
+            white-space: nowrap;
+        }
+
+        .keyword-green {
+            background: #e8f5e9;
+            color: #2e7d32;
+            padding: 2px 6px;
+            border-radius: 4px;
+            font-weight: 600;
+            white-space: nowrap;
+        }
+
+        /* ===== 行内代码 ===== */
+        code {
+            background: #f0f0f0;
+            color: #d63384;
+            padding: 2px 7px;
+            border-radius: 4px;
+            font-family: 'SF Mono', 'Fira Code', 'Consolas', 'Courier New', monospace;
+            font-size: 0.88em;
+            white-space: nowrap;
+        }
+
+        /* ===== 代码块 ===== */
+        .code-block {
+            background: var(--dark-code);
+            border: 1px solid var(--dark-code-border);
+            border-radius: 10px;
+            padding: 20px 24px;
+            margin: 16px 0;
+            overflow-x: auto;
+            position: relative;
+        }
+
+        .code-block::before {
+            content: 'Python';
+            position: absolute;
+            top: 8px;
+            right: 12px;
+            font-size: 0.7em;
+            color: #666;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+        }
+
+        .code-block .dots {
+            display: flex;
+            gap: 6px;
+            margin-bottom: 14px;
+        }
+
+        .code-block .dots span {
+            width: 10px;
+            height: 10px;
+            border-radius: 50%;
+        }
+
+        .code-block .dots .red { background: #ff5f57; }
+        .code-block .dots .yellow { background: #febc2e; }
+        .code-block .dots .green { background: #28c840; }
+
+        .code-block pre {
+            margin: 0;
+            font-family: 'SF Mono', 'Fira Code', 'Consolas', 'Courier New', monospace;
+            font-size: 0.9em;
+            line-height: 1.7;
+            color: var(--code-text);
+        }
+
+        .code-block .kw { color: var(--code-keyword); }
+        .code-block .str { color: var(--code-string); }
+        .code-block .cmt { color: var(--code-comment); font-style: italic; }
+        .code-block .fn { color: var(--code-function); }
+        .code-block .num { color: var(--code-number); }
+        .code-block .obj { color: var(--code-object); }
+        .code-block .punc { color: var(--code-punctuation); }
+        .code-block .err { color: var(--error); text-decoration: line-through; }
+
+        /* ===== 提示框 ===== */
+        .tip-box {
+            background: #fff8e1;
+            border-left: 4px solid var(--warning);
+            padding: 14px 18px;
+            margin: 16px 0;
+            border-radius: 0 8px 8px 0;
+            font-size: 0.95em;
+        }
+
+        .tip-box .tip-label {
+            font-weight: 700;
+            color: #f57f17;
+            margin-right: 6px;
+        }
+
+        .info-box {
+            background: #e3f2fd;
+            border-left: 4px solid var(--info);
+            padding: 14px 18px;
+            margin: 16px 0;
+            border-radius: 0 8px 8px 0;
+            font-size: 0.95em;
+        }
+
+        .info-box .info-label {
+            font-weight: 700;
+            color: #1565c0;
+            margin-right: 6px;
+        }
+
+        .remember-box {
+            background: var(--primary-lighter);
+            border-left: 4px solid var(--primary);
+            padding: 14px 18px;
+            margin: 16px 0;
+            border-radius: 0 8px 8px 0;
+            font-size: 0.95em;
+        }
+
+        .remember-box .remember-label {
+            font-weight: 700;
+            color: var(--primary-dark);
+            margin-right: 6px;
+        }
+
+        /* ===== 配图 ===== */
+        .figure {
+            margin: 24px 0;
+            text-align: center;
+        }
+
+        .figure img {
+            max-width: 100%;
+            height: auto;
+            border-radius: 10px;
+            box-shadow: 0 4px 20px rgba(0,0,0,0.08);
+            border: 1px solid var(--border);
+        }
+
+        .figure .caption {
+            font-size: 0.85em;
+            color: var(--text-lighter);
+            margin-top: 8px;
+            font-style: italic;
+        }
+
+        /* ===== 表格 ===== */
+        .styled-table {
+            width: 100%;
+            border-collapse: collapse;
+            margin: 16px 0;
+            border-radius: 10px;
+            overflow: hidden;
+            box-shadow: 0 2px 12px rgba(0,0,0,0.06);
+        }
+
+        .styled-table thead {
+            background: var(--primary);
+            color: white;
+        }
+
+        .styled-table th {
+            padding: 12px 16px;
+            text-align: left;
+            font-weight: 600;
+        }
+
+        .styled-table td {
+            padding: 10px 16px;
+            border-bottom: 1px solid var(--border);
+        }
+
+        .styled-table tbody tr:nth-child(even) {
+            background: var(--bg-alt);
+        }
+
+        .styled-table tbody tr:hover {
+            background: var(--primary-lighter);
+        }
+
+        /* ===== 流程图 ===== */
+        .flowchart {
+            background: var(--bg-alt);
+            border: 1px solid var(--border);
+            border-radius: 10px;
+            padding: 24px;
+            margin: 20px 0;
+            text-align: center;
+            font-family: 'SF Mono', 'Consolas', monospace;
+            font-size: 0.9em;
+            line-height: 1.6;
+            white-space: pre;
+        }
+
+        /* ===== 小结卡片 ===== */
+        .summary-card {
+            background: linear-gradient(135deg, var(--primary-lighter) 0%, #fff 100%);
+            border: 2px solid var(--primary-light);
+            border-radius: 14px;
+            padding: 30px;
+            margin: 40px 0;
+        }
+
+        .summary-card h3 {
+            color: var(--primary-dark);
+            border: none;
+            margin-top: 0;
+        }
+
+        /* ===== 补充文字说明块（替代删除的图片） ===== */
+        .text-illustration {
+            background: linear-gradient(135deg, #f8f9fa 0%, #fff 100%);
+            border: 1px dashed var(--primary-light);
+            border-radius: 10px;
+            padding: 18px 22px;
+            margin: 16px 0;
+            font-size: 0.93em;
+            color: var(--text-light);
+        }
+
+        .text-illustration .illus-title {
+            font-weight: 700;
+            color: var(--primary);
+            margin-bottom: 6px;
+            font-size: 0.95em;
+        }
+
+        /* ===== 响应式 ===== */
+        @media (max-width: 1024px) {
+            .sidebar-nav {
+                transform: translateX(-100%);
+            }
+
+            .sidebar-nav.active {
+                transform: translateX(0);
+            }
+
+            .nav-toggle {
+                display: block;
+            }
+
+            .page-wrapper {
+                margin-left: 0;
+            }
+        }
+
+        @media (max-width: 768px) {
+            .hero-banner h1 { font-size: 1.8em; }
+            .container { padding: 20px 15px; }
+            .section-header h2 { font-size: 1.4em; }
+            .code-block { padding: 14px 16px; }
+            .styled-table { font-size: 0.9em; }
+        }
+    </style>
+</head>
+<body>
+
+<!-- ===== 移动端导航切换按钮 ===== -->
+<button class="nav-toggle" onclick="document.querySelector('.sidebar-nav').classList.toggle('active')">☰</button>
+
+<!-- ===== 左侧导航栏 ===== -->
+<nav class="sidebar-nav">
+    <div class="nav-title">暗影地牢-第一单元</div>
+
+    <a href="#section-1-1" class="nav-section">1.1 计算机程序与编程概述</a>
+    <a href="#sec-1-1-1" class="nav-sub">1.1.1 什么是程序</a>
+    <a href="#sec-1-1-2" class="nav-sub">1.1.2 什么是编程</a>
+    <a href="#sec-1-1-3" class="nav-sub">1.1.3 编程环境</a>
+
+    <a href="#section-1-2" class="nav-section">1.2 对象与方法</a>
+    <a href="#sec-1-2-1" class="nav-sub">1.2.1 对象的概念</a>
+    <a href="#sec-1-2-2" class="nav-sub">1.2.2 方法的概念</a>
+    <a href="#sec-1-2-3" class="nav-sub">1.2.3 点表示法</a>
+    <a href="#sec-1-2-4" class="nav-sub">1.2.4 常用移动方法</a>
+
+    <a href="#section-1-3" class="nav-section">1.3 参数</a>
+    <a href="#sec-1-3-1" class="nav-sub">1.3.1 参数的概念</a>
+    <a href="#sec-1-3-2" class="nav-sub">1.3.2 参数的语法</a>
+    <a href="#sec-1-3-3" class="nav-sub">1.3.3 参数的类型</a>
+    <a href="#sec-1-3-4" class="nav-sub">1.3.4 使用参数优化代码</a>
+
+    <a href="#section-1-4" class="nav-section">1.4 基本数据类型</a>
+    <a href="#sec-1-4-1" class="nav-sub">1.4.1 数据类型概述</a>
+    <a href="#sec-1-4-2" class="nav-sub">1.4.2 整数 int</a>
+    <a href="#sec-1-4-3" class="nav-sub">1.4.3 浮点数 float</a>
+    <a href="#sec-1-4-4" class="nav-sub">1.4.4 正数与负数</a>
+    <a href="#sec-1-4-5" class="nav-sub">1.4.5 基本运算</a>
+
+    <a href="#section-1-5" class="nav-section">1.5 坐标系统</a>
+    <a href="#sec-1-5-1" class="nav-sub">1.5.1 二维坐标系</a>
+
+    <a href="#section-1-6" class="nav-section">1.6 顺序执行</a>
+    <a href="#sec-1-6-1" class="nav-sub">1.6.1 顺序结构的定义</a>
+    <a href="#sec-1-6-2" class="nav-sub">1.6.2 顺序结构的特点</a>
+    <a href="#sec-1-6-3" class="nav-sub">1.6.3 多行代码的组织</a>
+
+    <a href="#section-1-8" class="nav-section">1.8 问题分解与路径规划</a>
+    <a href="#sec-1-8-1" class="nav-sub">1.8.1 问题分解</a>
+    <a href="#sec-1-8-2" class="nav-sub">1.8.2 路径规划</a>
+
+    <a href="#section-1-9" class="nav-section">1.9 Python 语法总结</a>
+    <a href="#sec-1-9-1" class="nav-sub">1.9.1 方法调用语法</a>
+    <a href="#sec-1-9-2" class="nav-sub">1.9.2 Python 基本规则</a>
+
+    <a href="#section-summary" class="nav-section">📋 本单元小结</a>
+</nav>
+
+<!-- ===== 页面主体 ===== -->
+<div class="page-wrapper">
+
+<!-- ===== 顶部横幅 ===== -->
+<div class="hero-banner">
+    <h1>第一单元：对象、方法、参数与数据类型基础</h1>
+    <div class="subtitle">Unit 1: Objects, Methods, Arguments & Fundamental Data Types</div>
+    <div class="badge">对应关卡 · 暗影地牢 Kithgard Dungeon · 英雄觉醒 → 漫长脚步</div>
+</div>
+
+<!-- ===== 主内容 ===== -->
+<div class="container">
+
+<!-- ==================== 1.1 ==================== -->
+<div class="section-header" id="section-1-1">
+    <h2>1.1 计算机程序与编程概述</h2>
+    <div class="en-title">Introduction to Computer Programs and Programming</div>
+</div>
+
+<h3 id="sec-1-1-1">1.1.1 什么是程序（What is a Program）</h3>
+
+<h4>1.1.1.1 程序的定义：一组指令的有序集合
+    <span class="en">A program is an ordered collection of instructions</span>
+</h4>
+
+<div class="figure">
+    <img src="https://assets.koudashijie.com/knowledge/1-1-1-1_program_definition.png" alt="程序的定义示意图">
+    <div class="caption">图1：程序就像一份行动清单，英雄按照清单逐条执行</div>
+</div>
+
+<p>想象一下，<span class="keyword">安雅（Anya）</span>站在 Kithgard 地牢的入口，前方是一条布满尖刺的走廊。她很聪明，但她不会自己行动——她需要你告诉她怎么走。</p>
+
+<p><span class="keyword">程序（Program）</span>，就是你写给计算机（或英雄）的一份"行动清单"。这份清单里的每一行，都是一条明确的指令，按照从上到下的顺序排列好。计算机会忠实地按照这个顺序，一条一条地执行。</p>
+
+<p>就好比你给朋友写一张纸条：</p>
+
+<div class="code-block">
+    <div class="dots"><span class="red"></span><span class="yellow"></span><span class="green"></span></div>
+<pre><span class="obj">hero</span><span class="punc">.</span><span class="fn">moveRight</span><span class="punc">()</span>
+<span class="obj">hero</span><span class="punc">.</span><span class="fn">moveDown</span><span class="punc">()</span>
+<span class="obj">hero</span><span class="punc">.</span><span class="fn">moveRight</span><span class="punc">()</span></pre>
+</div>
+
+<p>这三行代码就是一个完整的程序。它简单、明确、有序——这就是程序最本质的样子。</p>
+
+<div class="remember-box">
+    <span class="remember-label">一句话记忆：</span>程序 = 一组按顺序排列的指令集合。<br>
+    <span class="remember-label">One-liner:</span> A program is an ordered collection of instructions.
+</div>
+
+<!-- 1.1.1.2 -->
+<h4>1.1.1.2 程序的执行方式：逐行顺序执行
+    <span class="en">Programs execute line by line in sequence</span>
+</h4>
+
+<div class="figure">
+    <img src="https://assets.koudashijie.com/knowledge/1-1-1-2_sequential_execution.png" alt="逐行执行示意图">
+    <div class="caption">图2：程序像读书一样从第一行读到最后一行</div>
+</div>
+
+<p>计算机执行程序时，就像读一本书一样——<span class="keyword">从第一行开始，一行一行往下读</span>，读完一行、做完一行，再去读下一行。</p>
+
+<p>当安雅收到上面那三行指令时：</p>
+<ul style="margin: 10px 0 10px 24px; list-style: none;">
+    <li>● 她先执行第 1 行：向右走一步 ✓</li>
+    <li>● 第 1 行做完后，执行第 2 行：向下走一步 ✓</li>
+    <li>● 第 2 行做完后，执行第 3 行：向右走一步，抓住宝石！✓</li>
+</ul>
+
+<p>她绝不会跳过某一行，也不会先做第 3 行再做第 1 行。这种"从头到尾、逐行执行"的方式，就是<span class="keyword">顺序执行（Sequential Execution）</span>。</p>
+
+<div class="tip-box">
+    <span class="tip-label">小提示：</span>如果你把第 2 行和第 3 行的顺序调换，安雅走的路就完全不一样了——可能还会撞上尖刺！顺序很重要。
+</div>
+
+<!-- 1.1.1.3 -->
+<h4>1.1.1.3 程序与计算机的关系
+    <span class="en">Relationship between programs and computers</span>
+</h4>
+
+<div class="figure">
+    <img src="https://assets.koudashijie.com/knowledge/1-1-1-3_program_computer_relationship.png" alt="程序与计算机关系图">
+    <div class="caption">图3：没有程序的计算机就像没有乐谱的钢琴</div>
+</div>
+
+<p>计算机本身其实是个"听话但不会思考"的家伙。它跑得飞快、算得精准，但有一个问题：<span class="keyword">它不知道自己该做什么</span>。</p>
+
+<p>程序就是告诉计算机"该做什么"的东西。没有程序的计算机，就像没有乐谱的钢琴——钢琴再好，也发不出曲子。</p>
+
+<p>在 CodeCombat 的世界里：</p>
+<ul style="margin: 10px 0 10px 24px; list-style: none;">
+    <li>● <strong>计算机</strong> = 游戏引擎（它能让英雄走动、攻击、拾取物品）</li>
+    <li>● <strong>程序</strong> = 你写的代码（它告诉游戏引擎让英雄做什么）</li>
+    <li>● <strong>英雄（<code>hero</code>）</strong> = 执行你指令的对象</li>
+</ul>
+
+<p>你就是那个写乐谱的作曲家！</p>
+
+<!-- 1.1.1.4 -->
+<h4>1.1.1.4 源代码与可执行代码
+    <span class="en">Source code vs. executable code</span>
+</h4>
+
+<div class="figure">
+    <img src="https://assets.koudashijie.com/knowledge/1-1-1-4_source_vs_executable.png" alt="源代码与可执行代码对比">
+    <div class="caption">图4：源代码经过解释器翻译后，计算机才能理解</div>
+</div>
+
+<p>你在编辑器里写的那些文字——<code>hero.moveRight()</code> 之类的——叫做<span class="keyword">源代码（Source Code）</span>。源代码是给人看的，用人类能读懂的编程语言写成。</p>
+
+<p>但计算机的"母语"其实是由 0 和 1 组成的机器语言。所以在你点击"运行"按钮后，背后会有一个翻译官把你的 Python 代码翻译成计算机能理解的指令——这个翻译后的东西就是<span class="keyword">可执行代码（Executable Code）</span>。</p>
+
+<p>不过别担心！在 CodeCombat 和大多数 Python 开发中，这个翻译过程是全自动的。你只需要专注于写好源代码，剩下的交给 Python 解释器就好。</p>
+
+<table class="styled-table">
+    <thead><tr><th>概念</th><th>类比</th><th>说明</th></tr></thead>
+    <tbody>
+        <tr><td>源代码 Source Code</td><td>你写的中文菜谱</td><td>人类可读的指令</td></tr>
+        <tr><td>可执行代码 Executable Code</td><td>厨师实际的操作</td><td>计算机能理解的指令</td></tr>
+        <tr><td>解释器 Interpreter</td><td>翻译官</td><td>把源代码翻译给计算机</td></tr>
+    </tbody>
+</table>
+
+<!-- ===== 1.1.2 ===== -->
+<h3 id="sec-1-1-2">1.1.2 什么是编程（What is Programming）</h3>
+
+<h4>1.1.2.1 编程的定义：编写计算机指令的过程
+    <span class="en">The process of writing instructions for a computer</span>
+</h4>
+
+<div class="figure">
+    <img src="https://assets.koudashijie.com/knowledge/1-1-2-1_programming_process.png" alt="编程过程示意图">
+    <div class="caption">图5：编程的四步循环——想、写、测、改</div>
+</div>
+
+<p><span class="keyword">编程（Programming）</span>就是把你脑子里的想法——"我要让安雅走到宝石那里"——翻译成计算机能执行的代码的过程。</p>
+
+<p>编程的核心步骤是：</p>
+<ul style="margin: 10px 0 10px 24px; list-style: none;">
+    <li>1️⃣ <strong>想清楚</strong>：我要让英雄做什么？（向右走，然后向下走）</li>
+    <li>2️⃣ <strong>写出来</strong>：用编程语言表达（<code>hero.moveRight()</code>）</li>
+    <li>3️⃣ <strong>测试它</strong>：点击运行，看看英雄是否按你的想法行动</li>
+    <li>4️⃣ <strong>修正它</strong>：如果英雄走错了路，修改代码再试一次</li>
+</ul>
+
+<p>恭喜！当你在 Kithgard 地牢的第 1 关写下第一行 <code>hero.moveRight()</code> 并点击运行时，你就已经在编程了！</p>
+
+<!-- 1.1.2.2 -->
+<h4>1.1.2.2 编程语言的作用
+    <span class="en">The role of programming languages</span>
+</h4>
+
+<div class="figure">
+    <img src="https://assets.koudashijie.com/knowledge/1-1-2-2_programming_languages.png" alt="编程语言作为桥梁">
+    <div class="caption">图6：编程语言是人类与计算机之间的桥梁</div>
+</div>
+
+<p>人类说中文、英文、法文……计算机只懂 0 和 1。<span class="keyword">编程语言</span>就是人类和计算机之间的"桥梁语言"。</p>
+
+<p>编程语言有很多种（就像人类语言有很多种一样），比如 <span class="keyword-en">Python</span>、<span class="keyword-en">JavaScript</span>、<span class="keyword-en">Java</span>、<span class="keyword-en">C++</span> 等等。它们各有特色，但都是为了同一个目的：让人类能方便地写出计算机能执行的指令。</p>
+
+<p>在 CodeCombat 中，你使用的是 <span class="keyword-en">Python</span> 语言。</p>
+
+<!-- 1.1.2.3 -->
+<h4>1.1.2.3 Python 作为编程语言的特点
+    <span class="en">Python as a programming language</span>
+</h4>
+
+<div class="figure">
+    <img src="https://assets.koudashijie.com/knowledge/1-1-2-3_python_features.png" alt="Python语言特点">
+    <div class="caption">图7：Python——初学者最友好的编程语言之一</div>
+</div>
+
+<p>为什么我们选择 Python？因为它是对初学者最友好的编程语言之一：</p>
+<ul style="margin: 10px 0 10px 24px; list-style: none;">
+    <li>● <strong>语法简洁</strong>：代码看起来很接近英文，读起来不费劲</li>
+    <li>● <strong>不需要分号</strong>：很多语言每行末尾都要加 <code>;</code>，Python 不用</li>
+    <li>● <strong>用缩进表示结构</strong>：代码的层次感一目了然（后面会详细学）</li>
+    <li>● <strong>全球最流行之一</strong>：从网站开发到人工智能，到处都用 Python</li>
+    <li>● <strong>庞大的社区</strong>：遇到问题随时能找到帮助</li>
+</ul>
+
+<p>看看这段 Python 代码有多自然：</p>
+
+<div class="code-block">
+    <div class="dots"><span class="red"></span><span class="yellow"></span><span class="green"></span></div>
+<pre><span class="obj">hero</span><span class="punc">.</span><span class="fn">moveRight</span><span class="punc">()</span>
+<span class="obj">hero</span><span class="punc">.</span><span class="fn">moveDown</span><span class="punc">()</span>
+<span class="obj">hero</span><span class="punc">.</span><span class="fn">moveRight</span><span class="punc">()</span></pre>
+</div>
+
+<p>即使你从没学过编程，也大概能猜到它的意思——让英雄向右走、向下走、再向右走。</p>
+
+<!-- 1.1.2.4 -->
+<h4>1.1.2.4 编程与问题解决
+    <span class="en">Programming and problem solving</span>
+</h4>
+
+<div class="figure">
+    <img src="https://assets.koudashijie.com/knowledge/1-1-2-4_problem_solving.png" alt="编程与问题解决">
+    <div class="caption">图8：编程的核心是解决问题——理解、设计、编写、验证</div>
+</div>
+
+<p>编程不仅仅是"打字"——它的核心是<span class="keyword">解决问题（Problem Solving）</span>。</p>
+
+<p>在第 3 关"幽影守卫"中，安雅不能直接冲过去，因为食人魔矮人挡在路上。你需要想出一条绕开它的路线，然后用代码实现这个计划。</p>
+
+<p>这个过程就是：</p>
+<ul style="margin: 10px 0 10px 24px; list-style: none;">
+    <li>1️⃣ <strong>理解问题</strong>：食人魔在中间，我不能被它看到</li>
+    <li>2️⃣ <strong>设计方案</strong>：我可以从雕像后面绕过去</li>
+    <li>3️⃣ <strong>编写代码</strong>：把方案翻译成一系列移动指令</li>
+    <li>4️⃣ <strong>验证结果</strong>：运行代码看看安雅是否安全通过</li>
+</ul>
+
+<p>编程教会你的不只是 Python 语法，更是一种<span class="keyword">系统化思考和解决问题的能力</span>。这种能力在任何领域都有用！</p>
+
+<!-- ===== 1.1.3 ===== -->
+<h3 id="sec-1-1-3">1.1.3 编程环境（Programming Environment）</h3>
+
+<h4>1.1.3.1 代码编辑器
+    <span class="en">Code editor</span>
+</h4>
+
+<div class="figure">
+    <img src="https://assets.koudashijie.com/knowledge/1-1-3-1_code_editor.png" alt="CodeCombat代码编辑器界面">
+    <div class="caption">图9：CodeCombat的代码编辑器位于游戏画面右侧</div>
+</div>
+
+<p><span class="keyword">代码编辑器（Code Editor）</span>是你写代码的地方。在 CodeCombat 中，它位于游戏画面的右侧。</p>
+
+<p>代码编辑器和普通的文字处理软件（比如 Word）不同：</p>
+<ul style="margin: 10px 0 10px 24px; list-style: none;">
+    <li>● 它会用不同颜色高亮显示不同类型的代码（这叫<span class="keyword">语法高亮</span>）</li>
+    <li>● 它会帮你自动缩进</li>
+    <li>● 它会在你打字时提供建议（自动完成功能）</li>
+</ul>
+
+<div class="tip-box">
+    <span class="tip-label">小技巧：</span>在第 5b 关"健忘的宝石匠"中，你可以输入 <code>r</code>，然后按回车来自动补全 <code>moveRight()</code> 命令，写代码更快！
+</div>
+
+<!-- 1.1.3.2 -->
+<h4>1.1.3.2 运行/执行按钮
+    <span class="en">Run/Execute button</span>
+</h4>
+
+<div class="figure">
+    <img src="https://assets.koudashijie.com/knowledge/1-1-3-2_run_button.png" alt="运行按钮示意">
+    <div class="caption">图10：点击运行，英雄就会按照你的代码行动</div>
+</div>
+
+<p>写好代码后，点击<span class="keyword">"运行"按钮</span>，你的代码就会开始执行。在 CodeCombat 中：</p>
+<ul style="margin: 10px 0 10px 24px; list-style: none;">
+    <li>● 点击运行后，你会看到英雄按照你的代码一步步行动</li>
+    <li>● 如果英雄成功完成目标，恭喜过关！</li>
+    <li>● 如果英雄撞上尖刺或被敌人发现……没关系，修改代码再试一次</li>
+</ul>
+
+<!-- 1.1.3.3 -->
+<h4>1.1.3.3 输出与反馈
+    <span class="en">Output and feedback</span>
+</h4>
+
+<div class="figure">
+    <img src="https://assets.koudashijie.com/knowledge/1-1-3-3_output_feedback.png" alt="输出与反馈示意">
+    <div class="caption">图11：英雄的行为就是你的代码的可视化输出</div>
+</div>
+
+<p>当程序运行后，你能看到<span class="keyword">执行结果</span>——这就是"输出"。</p>
+
+<p>在 CodeCombat 中，输出是可视化的：你能<strong>看到</strong>英雄在地图上移动、是否撞到障碍物、任务是否完成。</p>
+
+<p>在传统 Python 编程中，输出通常是文字信息，通过 <code>print()</code> 函数显示在屏幕上。不过在 CodeCombat 的早期关卡中，你的"输出"就是英雄的行为——这让学习变得直观又有趣！</p>
+
+<!-- 1.1.3.4 -->
+<h4>1.1.3.4 集成开发环境 IDE 简介
+    <span class="en">Introduction to Integrated Development Environment</span>
+</h4>
+
+<div class="figure">
+    <img src="https://assets.koudashijie.com/knowledge/1-1-3-4_ide_intro.png" alt="IDE简介">
+    <div class="caption">图12：CodeCombat 界面就是一个简化版的 IDE</div>
+</div>
+
+<p>CodeCombat 的界面其实就是一个简化版的 <span class="keyword">IDE（集成开发环境，Integrated Development Environment）</span>。</p>
+
+<p>一个 IDE 通常包含：代码编辑器（写代码）、运行按钮（执行程序）、输出区域（显示结果）、调试工具（帮你找错误，比如 CodeCombat 中的回放进度条）。</p>
+
+<p>常见的 Python IDE 有：PyCharm、VS Code、IDLE（Python 自带）等。CodeCombat 把这些功能包装在了一个游戏界面里，让你边玩边学。核心流程是一样的：<strong>写代码 → 运行 → 查看结果 → 修改 → 重复</strong>。</p>
+
+<!-- ==================== 1.2 ==================== -->
+<div class="section-header" id="section-1-2">
+    <h2>1.2 对象与方法</h2>
+    <div class="en-title">Objects and Methods</div>
+</div>
+
+<h3 id="sec-1-2-1">1.2.1 对象的概念（The Concept of Objects）</h3>
+
+<h4>1.2.1.1 对象的定义：具有属性和行为的实体
+    <span class="en">An entity with attributes and behaviors</span>
+</h4>
+
+<div class="figure">
+    <img src="https://assets.koudashijie.com/knowledge/1-2-1-1_object_definition.png" alt="对象的定义">
+    <div class="caption">图13：对象 = 属性（特征）+ 方法（本领）</div>
+</div>
+
+<p>在编程世界里，<span class="keyword">对象（Object）</span>是一个核心概念。简单来说，对象就是一个"东西"——一个拥有<strong>特征</strong>和<strong>本领</strong>的东西。</p>
+
+<p>在 CodeCombat 中，<code>hero</code>（英雄）就是一个对象。让我们看看<span class="keyword">塔林（Tharin）</span>有什么：</p>
+
+<table class="styled-table">
+    <thead><tr><th>类别</th><th>举例</th></tr></thead>
+    <tbody>
+        <tr><td><strong>属性（特征）</strong></td><td>生命值、速度、位置</td></tr>
+        <tr><td><strong>方法（本领）</strong></td><td>向右走、向左走、向上走、向下走</td></tr>
+    </tbody>
+</table>
+
+<p>对象 = 属性 + 方法，就是这么简单！</p>
+
+<!-- 1.2.1.2 -->
+<h4>1.2.1.2 对象的类比：现实世界中的事物
+    <span class="en">Real-world analogy of objects</span>
+</h4>
+
+<div class="figure">
+    <img src="https://assets.koudashijie.com/knowledge/1-2-1-2_real_world_objects.png" alt="现实世界中的对象类比">
+    <div class="caption">图14：猫、手机、英雄——都是对象！</div>
+</div>
+
+<p>其实你身边到处都是"对象"！来看几个例子：</p>
+
+<p><strong>一只猫</strong></p>
+<ul style="margin: 4px 0 12px 24px; list-style: none;">
+    <li>● 属性：名字是"咪咪"、颜色是橘色、体重 5kg</li>
+    <li>● 方法（行为）：喵喵叫、跳跃、抓老鼠、睡觉</li>
+</ul>
+
+<p><strong>一部手机</strong></p>
+<ul style="margin: 4px 0 12px 24px; list-style: none;">
+    <li>● 属性：品牌是 Apple、颜色是黑色、电量 80%</li>
+    <li>● 方法（行为）：打电话、发消息、拍照、播放音乐</li>
+</ul>
+
+<p><strong>游戏中的英雄塔林</strong></p>
+<ul style="margin: 4px 0 12px 24px; list-style: none;">
+    <li>● 属性：生命值 200、速度 6m/s</li>
+    <li>● 方法（行为）：<code>moveRight()</code>、<code>moveLeft()</code>、<code>moveUp()</code>、<code>moveDown()</code></li>
+</ul>
+
+<p>看出规律了吗？任何有特征、会做事的东西，在编程中都可以被看作一个"对象"。</p>
+
+<!-- 1.2.1.3 -->
+<h4>1.2.1.3 Python 中一切皆对象
+    <span class="en">Everything in Python is an object</span>
+</h4>
+
+<div class="figure">
+    <img src="https://assets.koudashijie.com/knowledge/1-2-1-3_everything_is_object.png" alt="Python中一切皆对象">
+    <div class="caption">图15：在 Python 中，数字、字符串、英雄……全都是对象</div>
+</div>
+
+<p>Python 有一个很酷的设计哲学：<span class="keyword">一切皆对象（Everything is an object）</span>。</p>
+
+<p>不仅仅是英雄是对象——数字 <code>3</code> 是对象、字符串 <code>"Hello"</code> 是对象、甚至你写的函数也是对象。</p>
+
+<p>不过现在你只需要记住一个对象就好：<span class="keyword-en">hero</span>——你在 CodeCombat 中的英雄。其他的以后慢慢认识！</p>
+
+<!-- 1.2.1.4 -->
+<h4>1.2.1.4 对象的标识符/名称
+    <span class="en">Object identifier/name，如 hero</span>
+</h4>
+
+<div class="figure">
+    <img src="https://assets.koudashijie.com/knowledge/1-2-1-4_object_identifier.png" alt="对象的名称hero">
+    <div class="caption">图16：无论选择安雅还是塔林，在代码中都叫 hero</div>
+</div>
+
+<p>每个对象都需要一个<span class="keyword">名字（标识符 / Identifier）</span>，这样我们才能在代码中引用它。</p>
+
+<p>在 CodeCombat 中，你的英雄的名字就是 <code>hero</code>。无论你选择安雅还是塔林，在代码中都用 <code>hero</code> 来称呼他们。</p>
+
+<div class="code-block">
+    <div class="dots"><span class="red"></span><span class="yellow"></span><span class="green"></span></div>
+<pre><span class="obj">hero</span><span class="punc">.</span><span class="fn">moveRight</span><span class="punc">()</span>   <span class="cmt"># "hero" 就是对象的名字</span></pre>
+</div>
+
+<p>就像你在教室里喊"塔林，向右走！"一样，在代码里你写 <code>hero.moveRight()</code> 就是在对英雄下达指令。</p>
+
+<div class="info-box">
+    <span class="info-label">注意：</span><code>hero</code> 这个名字是 CodeCombat 预先设定好的，不能随便改。
+</div>
+
+<!-- 1.2.1.5 -->
+<h4>1.2.1.5 对象的属性
+    <span class="en">Object attributes/properties</span>
+</h4>
+
+<div class="figure">
+    <img src="https://assets.koudashijie.com/knowledge/1-2-1-5_object_attributes.png" alt="对象的属性">
+    <div class="caption">图17：属性描述对象"是什么样的"</div>
+</div>
+
+<p><span class="keyword">属性（Attributes / Properties）</span>描述了对象"是什么样的"——它的特征、状态、数据。</p>
+
+<p>英雄的属性例如：当前生命值、当前位置（在地图上的哪个格子）、移动速度。</p>
+
+<p>虽然在前 6 关中我们不需要直接读取属性值，但了解它们的存在很重要：<span class="keyword">属性是对象携带的信息</span>。</p>
+
+<!-- 1.2.1.6 -->
+<h4>1.2.1.6 对象的行为/动作
+    <span class="en">Object behaviors/actions</span>
+</h4>
+
+<div class="figure">
+    <img src="https://assets.koudashijie.com/knowledge/1-2-1-6_object_behaviors.png" alt="对象的行为">
+    <div class="caption">图18：方法是对象能执行的动作</div>
+</div>
+
+<p><span class="keyword">行为（Behaviors）</span>描述了对象"会做什么"——它能执行的动作。在编程中，我们把对象的行为叫做<span class="keyword">方法（Method）</span>。</p>
+
+<p>在第 1–6 关中，英雄能做的动作是四个方向的移动：<code>moveRight()</code>、<code>moveLeft()</code>、<code>moveUp()</code>、<code>moveDown()</code>。</p>
+
+<!-- ===== 1.2.2 ===== -->
+<h3 id="sec-1-2-2">1.2.2 方法的概念（The Concept of Methods）</h3>
+
+<h4>1.2.2.1 方法的定义：对象能执行的动作
+    <span class="en">Actions that an object can perform</span>
+</h4>
+
+<div class="figure">
+    <img src="https://assets.koudashijie.com/knowledge/1-2-2-1_method_definition.png" alt="方法的定义">
+    <div class="caption">图19：对象是"谁"，方法是"做什么"</div>
+</div>
+
+<p><span class="keyword">方法（Method）</span>是附属于对象的一段可执行代码，代表对象能够执行的一个动作。</p>
+
+<p>当你写 <code>hero.moveRight()</code> 时：</p>
+<ul style="margin: 10px 0 10px 24px; list-style: none;">
+    <li>● <code>hero</code> 是谁？→ 英雄（对象）</li>
+    <li>● <code>moveRight()</code> 做什么？→ 向右移动（方法）</li>
+</ul>
+<p>翻译成人话就是："嘿英雄，请向右移动！"</p>
+
+<!-- 1.2.2.2 -->
+<h4>1.2.2.2 方法与函数的关系
+    <span class="en">Relationship between methods and functions</span>
+</h4>
+
+<div class="figure">
+    <img src="https://assets.koudashijie.com/knowledge/1-2-2-2_method_vs_function.png" alt="方法与函数的关系">
+    <div class="caption">图20：方法是属于对象的函数</div>
+</div>
+
+<p>你可能会在学习中听到两个词：<span class="keyword">方法（Method）</span>和<span class="keyword">函数（Function）</span>。它们非常相似，核心区别是：</p>
+<ul style="margin: 10px 0 10px 24px; list-style: none;">
+    <li>● <span class="keyword-en">Function</span>（函数）：独立存在的一段可执行代码</li>
+    <li>● <span class="keyword-en">Method</span>（方法）：属于某个对象的函数</li>
+</ul>
+
+<p>类比：</p>
+<ul style="margin: 10px 0 10px 24px; list-style: none;">
+    <li>● "跑步"是一个通用动作（函数）</li>
+    <li>● "塔林跑步"是塔林的专属动作（方法）</li>
+</ul>
+
+<p>在 CodeCombat 中，<code>moveRight()</code> 是 <code>hero</code> 的方法——只有英雄能做这个动作。</p>
+
+<!-- 1.2.2.3 -->
+<h4>1.2.2.3 方法的调用/执行
+    <span class="en">Calling/invoking a method</span>
+</h4>
+
+<div class="figure">
+    <img src="https://assets.koudashijie.com/knowledge/1-2-2-3_method_calling.png" alt="调用方法">
+    <div class="caption">图21：调用方法就像呼唤英雄去做某件事</div>
+</div>
+
+<p>写下一个方法并让它执行，叫做<span class="keyword">调用方法（Calling a method）</span>。</p>
+
+<div class="code-block">
+    <div class="dots"><span class="red"></span><span class="yellow"></span><span class="green"></span></div>
+<pre><span class="obj">hero</span><span class="punc">.</span><span class="fn">moveRight</span><span class="punc">()</span>  <span class="cmt"># 调用 moveRight 方法</span></pre>
+</div>
+
+<p>当 Python 读到这一行时，它会：① 找到 <code>hero</code> 这个对象 → ② 在 <code>hero</code> 身上找到 <code>moveRight</code> 这个方法 → ③ 执行这个方法（让英雄向右移动）。</p>
+
+<!-- 1.2.2.4 -->
+<h4>1.2.2.4 方法调用的语法：圆括号 ()
+    <span class="en">Syntax of method calls: parentheses</span>
+</h4>
+
+<div class="figure">
+    <img src="https://assets.koudashijie.com/knowledge/1-2-2-4_parentheses.png" alt="圆括号的重要性">
+    <div class="caption">图22：圆括号的意思是"现在就做！"</div>
+</div>
+
+<p>注意到方法名后面那对<span class="keyword">圆括号 <code>()</code></span> 了吗？它非常重要！</p>
+
+<div class="code-block">
+    <div class="dots"><span class="red"></span><span class="yellow"></span><span class="green"></span></div>
+<pre><span class="obj">hero</span><span class="punc">.</span><span class="fn">moveRight</span><span class="punc">()</span>   <span class="cmt"># ✓ 正确：有括号，调用方法</span>
+<span class="obj">hero</span><span class="punc">.</span><span class="fn">moveRight</span>     <span class="cmt"># ✗ 错误：没括号，不执行</span></pre>
+</div>
+
+<p>圆括号的意思是："<strong>现在就做！</strong>"。把它想象成按门铃——<code>moveRight</code> 是门铃按钮本身，<code>moveRight()</code> 是按下门铃的动作。</p>
+
+<div class="remember-box">
+    <span class="remember-label">牢记：</span>没有那对括号，方法就不会执行。这是初学者常见的坑！
+</div>
+
+<!-- 1.2.2.5 -->
+<h4>1.2.2.5 方法的命名规范
+    <span class="en">Method naming conventions</span>
+</h4>
+
+<div class="figure">
+    <img src="https://assets.koudashijie.com/knowledge/1-2-2-5_naming_conventions.png" alt="方法命名规范">
+    <div class="caption">图23：好的方法名一看就知道它做什么</div>
+</div>
+
+<p>在 CodeCombat 中，方法名使用<span class="keyword">驼峰命名法（camelCase）</span>：第一个单词小写，后面每个单词首字母大写。</p>
+
+<table class="styled-table">
+    <thead><tr><th>方法名</th><th>命名分析</th></tr></thead>
+    <tbody>
+        <tr><td><code>moveRight</code></td><td>move（移动）+ Right（右边）→ 向右移动</td></tr>
+        <tr><td><code>moveLeft</code></td><td>move（移动）+ Left（左边）→ 向左移动</td></tr>
+        <tr><td><code>moveUp</code></td><td>move（移动）+ Up（上面）→ 向上移动</td></tr>
+        <tr><td><code>moveDown</code></td><td>move（移动）+ Down（下面）→ 向下移动</td></tr>
+    </tbody>
+</table>
+
+<p>好的方法名本身就能告诉你它做什么——代码像读英语一样自然。</p>
+
+<div class="figure">
+    <img src="https://assets.koudashijie.com/knowledge/1-2-2-5_naming_conventions1.png" alt="方法命名规范1">
+    <div class="caption">图24：蛇形命名法与驼峰命名法对比</div>
+</div>
+
+<p>小知识：Python 官方推荐函数和方法使用 snake_case（蛇形命名法，如 move_right），但 CodeCombat 使用了 camelCase（驼峰命名法，如 moveRight）。两种风格都很常见，关键是在同一个项目中保持一致。</p>
+
+<!-- 1.2.2.6 -->
+<h4>1.2.2.6 内置方法与自定义方法
+    <span class="en">Built-in methods vs. custom methods</span>
+</h4>
+
+<div class="figure">
+    <img src="https://assets.koudashijie.com/knowledge/1-2-2-6_builtin_methods.png" alt="内置方法">
+    <div class="caption">图25：内置方法是游戏已经写好的，直接用就行</div>
+</div>
+
+<p>在 CodeCombat 中，四个移动方法都是<span class="keyword">内置方法（Built-in Methods）</span>——游戏已经帮你写好了，你直接用就行。在未来的学习中，你还会学到如何自己创建方法。</p>
+
+<!-- ===== 1.2.3 ===== -->
+<h3 id="sec-1-2-3">1.2.3 点表示法（Dot Notation）</h3>
+
+<h4>1.2.3.1 点表示法的语法：对象.方法()
+    <span class="en">Syntax: object.method()</span>
+</h4>
+
+<div class="figure">
+    <img src="https://assets.koudashijie.com/knowledge/1-2-3-1_dot_notation.png" alt="点表示法语法">
+    <div class="caption">图26：点表示法——对象 + 点 + 方法 + 括号</div>
+</div>
+
+<p><span class="keyword">点表示法（Dot Notation）</span>是 Python 中让对象做事情的方式：</p>
+
+<div class="code-block">
+    <div class="dots"><span class="red"></span><span class="yellow"></span><span class="green"></span></div>
+<pre><span class="obj">hero</span><span class="punc">.</span><span class="fn">moveRight</span><span class="punc">()</span>
+<span class="cmt"># ^      ^         ^</span>
+<span class="cmt"># 对象   点号     方法()</span></pre>
+</div>
+
+<!-- 1.2.3.2 -->
+<h4>1.2.3.2 点号 <code>.</code> 的含义：访问对象的成员
+    <span class="en">The dot means "access a member of"</span>
+</h4>
+
+<div class="figure">
+    <img src="https://assets.koudashijie.com/knowledge/1-2-3-2_dot_meaning.png" alt="点号的含义">
+    <div class="caption">图27：点号 = "的"——表示方法属于这个对象</div>
+</div>
+
+<p>那个小小的 <code>.</code> 的意思是<strong>"的"</strong>——就像中文里的"的"或英文里的 <code>'s</code>。</p>
+<ul style="margin: 10px 0 10px 24px; list-style: none;">
+    <li>● <code>hero.moveRight()</code> = "英雄<strong>的</strong> moveRight 动作"</li>
+    <li>● <code>hero.moveUp()</code> = "英雄<strong>的</strong> moveUp 动作"</li>
+</ul>
+
+<!-- 1.2.3.3 -->
+<h4>1.2.3.3 点表示法的读法
+    <span class="en">How to read dot notation</span>
+</h4>
+
+<div class="figure">
+    <img src="https://assets.koudashijie.com/knowledge/1-2-3-3_reading_dot_notation.png" alt="如何读点表示法">
+    <div class="caption">图28：三种读法——正式、口语、英文</div>
+</div>
+
+<p>当你看到 <code>hero.moveRight()</code> 时，可以这样读：</p>
+<ul style="margin: 10px 0 10px 24px; list-style: none;">
+    <li>● 中文读法："<code>hero</code> 对象调用 <code>moveRight</code> 方法"</li>
+    <li>● 口语读法："英雄，向右走！"</li>
+    <li>● 英文读法："hero dot moveRight"</li>
+</ul>
+
+<!-- 1.2.3.4 -->
+<h4>1.2.3.4 链式调用的概念
+    <span class="en">Concept of method chaining，初步了解</span>
+</h4>
+
+<div class="figure">
+    <img src="https://assets.koudashijie.com/knowledge/1-2-3-4_method_chaining.png" alt="链式调用概念">
+    <div class="caption">图29：链式调用——多个点号连在一起（未来会学到）</div>
+</div>
+
+<p>在某些编程场景中，你可以把多个点号连在一起用，像一串链条——这叫<span class="keyword">链式调用（Method Chaining）</span>。虽然前 6 关不会用到，先知道这个概念存在就好。</p>
+
+<!-- 1.2.3.5 -->
+<h4>1.2.3.5 实例：hero.moveRight()
+    <span class="en">Example: hero.moveRight()</span>
+</h4>
+
+<div class="figure">
+    <img src="https://assets.koudashijie.com/knowledge/1-2-3-5_example_moveRight.png" alt="hero.moveRight()拆解">
+    <div class="caption">图30：将 hero.moveRight() 拆解为四个部分</div>
+</div>
+
+<table class="styled-table">
+    <thead><tr><th>部分</th><th>含义</th><th>类比</th></tr></thead>
+    <tbody>
+        <tr><td><code>hero</code></td><td>要行动的对象</td><td>"安雅"</td></tr>
+        <tr><td><code>.</code></td><td>的</td><td>"安雅<strong>的</strong>动作"</td></tr>
+        <tr><td><code>moveRight</code></td><td>方法名：向右移动</td><td>"向右走"</td></tr>
+        <tr><td><code>()</code></td><td>执行这个方法</td><td>"现在就做！"</td></tr>
+    </tbody>
+</table>
+
+<!-- 1.2.3.6 -->
+<h4>1.2.3.6 实例：hero.moveDown()
+    <span class="en">Example: hero.moveDown()</span>
+</h4>
+
+<div class="figure">
+    <img src="https://assets.koudashijie.com/knowledge/1-2-3-6_example_level1.png" alt="第1关解法示例">
+    <div class="caption">图31：第1关 Kithgard 地牢——三行代码拿到宝石</div>
+</div>
+
+<p>在第 1 关 "Kithgard 地牢"中，塔林需要先向右走，再向下走，最后向右走到宝石处：</p>
+
+<div class="code-block">
+    <div class="dots"><span class="red"></span><span class="yellow"></span><span class="green"></span></div>
+<pre><span class="obj">hero</span><span class="punc">.</span><span class="fn">moveRight</span><span class="punc">()</span>   <span class="cmt"># 第1步：向右走，避开入口处的尖刺</span>
+<span class="obj">hero</span><span class="punc">.</span><span class="fn">moveDown</span><span class="punc">()</span>    <span class="cmt"># 第2步：向下走到安全通道</span>
+<span class="obj">hero</span><span class="punc">.</span><span class="fn">moveRight</span><span class="punc">()</span>   <span class="cmt"># 第3步：向右走到宝石处！</span></pre>
+</div>
+
+<!-- ===== 1.2.4 ===== -->
+<h3 id="sec-1-2-4">1.2.4 常用移动方法（Common Movement Methods）</h3>
+
+<h4>1.2.4.1 hero.moveRight() —— 向右移动
+    <span class="en">Move right</span>
+</h4>
+
+<div class="figure">
+    <img src="https://assets.koudashijie.com/knowledge/1-2-4-1_moveRight.png" alt="moveRight方法">
+    <div class="caption">图32：moveRight() 让英雄向右移动一格</div>
+</div>
+
+<p>让英雄向<strong>右</strong>移动一个格子。地面上的小瓷砖就是移动的单位——每次调用 <code>moveRight()</code> 英雄就移动到右边下一个瓷砖的位置。</p>
+
+<!-- 1.2.4.2 -->
+<h4>1.2.4.2 hero.moveLeft() —— 向左移动
+    <span class="en">Move left</span>
+</h4>
+
+<div class="figure">
+    <img src="https://assets.koudashijie.com/knowledge/1-2-4-2_moveLeft.png" alt="moveLeft方法">
+    <div class="caption">图33：moveLeft() 让英雄向左移动——有时退一步是为了更好地前进</div>
+</div>
+
+<p>让英雄向<strong>左</strong>移动一个格子。在第 3b 关"狭路相逢"中，<code>moveLeft()</code> 用来"退回去"配合时机：</p>
+
+<div class="code-block">
+    <div class="dots"><span class="red"></span><span class="yellow"></span><span class="green"></span></div>
+<pre><span class="obj">hero</span><span class="punc">.</span><span class="fn">moveRight</span><span class="punc">()</span>    <span class="cmt"># 先探一步</span>
+<span class="obj">hero</span><span class="punc">.</span><span class="fn">moveLeft</span><span class="punc">()</span>     <span class="cmt"># 退回来！等矮人走开</span>
+<span class="obj">hero</span><span class="punc">.</span><span class="fn">moveRight</span><span class="punc">(</span><span class="num">2</span><span class="punc">)</span>   <span class="cmt"># 趁机快速冲过去</span></pre>
+</div>
+
+<!-- 1.2.4.3 -->
+<h4>1.2.4.3 hero.moveUp() —— 向上移动
+    <span class="en">Move up</span>
+</h4>
+
+<div class="figure">
+    <img src="https://assets.koudashijie.com/knowledge/1-2-4-3_moveUp.png" alt="moveUp方法">
+    <div class="caption">图34：moveUp() 让英雄向上移动一格</div>
+</div>
+
+<p>让英雄向<strong>上</strong>移动一个格子。在第 2 关"深藏的宝石"中需要向上走两步：</p>
+
+<div class="code-block">
+    <div class="dots"><span class="red"></span><span class="yellow"></span><span class="green"></span></div>
+<pre><span class="obj">hero</span><span class="punc">.</span><span class="fn">moveUp</span><span class="punc">()</span>    <span class="cmt"># 向上走一步</span>
+<span class="obj">hero</span><span class="punc">.</span><span class="fn">moveUp</span><span class="punc">()</span>    <span class="cmt"># 再向上走一步（到达顶端）</span></pre>
+</div>
+
+<!-- 1.2.4.4 -->
+<h4>1.2.4.4 hero.moveDown() —— 向下移动
+    <span class="en">Move down</span>
+</h4>
+
+<div class="figure">
+    <img src="https://assets.koudashijie.com/knowledge/1-2-4-4_moveDown.png" alt="moveDown方法">
+    <div class="caption">图35：moveDown() 让英雄向下移动一格</div>
+</div>
+
+<p>让英雄向<strong>下</strong>移动一个格子。这四个方向的方法构成了英雄在二维地图上移动的基础，就像遥控器上的上下左右四个按钮。</p>
+
+<!-- 1.2.4.5 -->
+<h4>1.2.4.5 方法执行的效果与反馈
+    <span class="en">Effect and feedback of method execution</span>
+</h4>
+
+<div class="figure">
+    <img src="https://assets.koudashijie.com/knowledge/1-2-4-5_execution_feedback.png" alt="方法执行的反馈">
+    <div class="caption">图36：每条语句执行后都能看到英雄的行为变化</div>
+</div>
+
+<p>每次你调用一个移动方法后：英雄会<strong>可视地</strong>在地图上移动一步；移动需要一小段时间（不是瞬移）；英雄必须移动完毕后，才会执行下一行代码。</p>
+
+<p>如果安雅走到了你不期望的位置，那说明某行代码有问题——这时候可以拖动下方的<span class="keyword">回放进度条</span>，看看她是在哪一步走错的。</p>
+
+<!-- 1.2.4.6 -->
+<h4>1.2.4.6 多次调用相同方法
+    <span class="en">Calling the same method multiple times</span>
+</h4>
+
+<div class="figure">
+    <img src="https://assets.koudashijie.com/knowledge/1-2-4-6_multiple_calls.png" alt="多次调用相同方法">
+    <div class="caption">图37：重复调用同一方法——写几次就走几步</div>
+</div>
+
+<p>在第 4 关"细心脚步"中，路线更复杂，你需要大量重复调用移动方法（12 行代码！）。有点累对吧？别急，下面的"参数"就是来解决这个问题的！</p>
+
+<!-- ==================== 1.3 ==================== -->
+<div class="section-header" id="section-1-3">
+    <h2>1.3 参数</h2>
+    <div class="en-title">Arguments / Parameters</div>
+</div>
+
+<h3 id="sec-1-3-1">1.3.1 参数的概念（The Concept of Arguments）</h3>
+
+<h4>1.3.1.1 参数的定义：传递给方法的附加信息
+    <span class="en">Additional information passed to a method</span>
+</h4>
+
+<div class="figure">
+    <img src="https://assets.koudashijie.com/knowledge/1-3-1-1_argument_definition.png" alt="参数的定义">
+    <div class="caption">图38：参数就是给方法的"补充说明"</div>
+</div>
+
+<p><span class="keyword">参数（Argument）</span>是你在调用方法时，额外提供给它的信息，放在圆括号里面。</p>
+
+<p>打个比方：</p>
+<ul style="margin: 10px 0 10px 24px; list-style: none;">
+    <li>● "安雅，向右走" → <code>hero.moveRight()</code>（没有额外信息，默认走 1 步）</li>
+    <li>● "安雅，向右走<strong>三步</strong>" → <code>hero.moveRight(3)</code>（"三步"就是参数）</li>
+</ul>
+
+<!-- 1.3.1.2 -->
+<h4>1.3.1.2 参数（Argument）与形参（Parameter）的区别
+    <span class="en">Argument vs. Parameter</span>
+</h4>
+
+<div class="figure">
+    <img src="https://assets.koudashijie.com/knowledge/1-3-1-2_argument_vs_parameter.png" alt="Argument与Parameter的区别">
+    <div class="caption">图39：Parameter 是空槽位，Argument 是你填进去的值</div>
+</div>
+
+<p><span class="keyword-en">Parameter</span>（形参）：方法定义时的"占位符"，像是一个空槽。<br>
+<span class="keyword-en">Argument</span>（实参）：调用方法时，你实际填进去的值。</p>
+
+<p>类比：点外卖时，表单上写着"份数：________"（Parameter），你填上"3"（Argument）。</p>
+
+<p>在日常学习中，大家通常统一叫"参数"，不用太纠结。</p>
+
+<!-- 1.3.1.3 -->
+<h4>1.3.1.3 参数的作用：改变方法的行为
+    <span class="en">How arguments modify method behavior</span>
+</h4>
+
+<div class="figure">
+    <img src="https://assets.koudashijie.com/knowledge/1-3-1-3_argument_effect.png" alt="参数改变行为">
+    <div class="caption">图40：同一方法 + 不同参数 = 不同行为</div>
+</div>
+
+<p>没有参数的 <code>moveRight()</code>：英雄走 1 步。<br>
+有参数的 <code>moveRight(3)</code>：英雄走 3 步。</p>
+
+<p>在第 5 关"敌人的陷阱"中，安雅需要一次向右走 3 格穿过火焰陷阱区域：</p>
+
+<div class="code-block">
+    <div class="dots"><span class="red"></span><span class="yellow"></span><span class="green"></span></div>
+<pre><span class="obj">hero</span><span class="punc">.</span><span class="fn">moveRight</span><span class="punc">(</span><span class="num">3</span><span class="punc">)</span>   <span class="cmt"># 一次走3步，快速穿过！</span></pre>
+</div>
+
+<!-- 1.3.1.4 -->
+<h4>1.3.1.4 有参数与无参数的方法调用对比
+    <span class="en">Method calls with vs. without arguments</span>
+</h4>
+
+<div class="text-illustration">
+    <div class="illus-title">💡 对比说明：有参数 vs 无参数</div>
+    <p>想象你在叫出租车。"师傅，走吧"（无参数）= 默认往前开一段。"师傅，往前走3公里"（有参数）= 明确告诉他走多远。参数让你的指令更精确、更高效。下面的表格清楚地展示了这种差异：</p>
+</div>
+
+<table class="styled-table">
+    <thead><tr><th>调用方式</th><th>含义</th><th>效果</th></tr></thead>
+    <tbody>
+        <tr><td><code>hero.moveRight()</code></td><td>向右移动（默认 1 步）</td><td>走 1 格</td></tr>
+        <tr><td><code>hero.moveRight(1)</code></td><td>向右移动 1 步</td><td>走 1 格（同上）</td></tr>
+        <tr><td><code>hero.moveRight(2)</code></td><td>向右移动 2 步</td><td>走 2 格</td></tr>
+        <tr><td><code>hero.moveRight(3)</code></td><td>向右移动 3 步</td><td>走 3 格</td></tr>
+        <tr><td><code>hero.moveDown(2)</code></td><td>向下移动 2 步</td><td>走 2 格</td></tr>
+    </tbody>
+</table>
+
+<p>来看第 3a 关"逆时针回转"：</p>
+
+<div class="code-block">
+    <div class="dots"><span class="red"></span><span class="yellow"></span><span class="green"></span></div>
+<pre><span class="obj">hero</span><span class="punc">.</span><span class="fn">moveDown</span><span class="punc">(</span><span class="num">2</span><span class="punc">)</span>    <span class="cmt"># 一口气向下走2步</span>
+<span class="obj">hero</span><span class="punc">.</span><span class="fn">moveRight</span><span class="punc">()</span>    <span class="cmt"># 向右走1步</span>
+<span class="obj">hero</span><span class="punc">.</span><span class="fn">moveUp</span><span class="punc">()</span>       <span class="cmt"># 向上走1步</span>
+<span class="obj">hero</span><span class="punc">.</span><span class="fn">moveRight</span><span class="punc">()</span>    <span class="cmt"># 向右走1步</span></pre>
+</div>
+
+<!-- ===== 1.3.2 ===== -->
+<h3 id="sec-1-3-2">1.3.2 参数的语法（Syntax of Arguments）</h3>
+
+<h4>1.3.2.1 参数写在圆括号内
+    <span class="en">Arguments are placed inside parentheses</span>
+</h4>
+
+<div class="figure">
+    <img src="https://assets.koudashijie.com/knowledge/1-3-2-1_args_in_parentheses.png" alt="参数位置">
+    <div class="caption">图41：参数必须在圆括号里面</div>
+</div>
+
+<div class="code-block">
+    <div class="dots"><span class="red"></span><span class="yellow"></span><span class="green"></span></div>
+<pre><span class="obj">hero</span><span class="punc">.</span><span class="fn">moveRight</span><span class="punc">(</span><span class="num">3</span><span class="punc">)</span>     <span class="cmt"># ✓ 参数在括号里</span>
+<span class="obj">hero</span><span class="punc">.</span><span class="fn">moveRight</span> <span class="num">3</span>      <span class="cmt"># ✗ 错误！参数不在括号里</span></pre>
+</div>
+
+<!-- 1.3.2.2 -->
+<h4>1.3.2.2 单参数传递：moveRight(3)
+    <span class="en">Single argument: moveRight(3)</span>
+</h4>
+
+<div class="figure">
+    <img src="https://assets.koudashijie.com/knowledge/1-3-2-2_single_argument.png" alt="单参数示例">
+    <div class="caption">图42：第5关完整解法——每个移动方法都用了参数</div>
+</div>
+
+<p>来看第 5 关"火中取宝"的完整解法，全都用了参数：</p>
+
+<div class="code-block">
+    <div class="dots"><span class="red"></span><span class="yellow"></span><span class="green"></span></div>
+<pre><span class="obj">hero</span><span class="punc">.</span><span class="fn">moveRight</span><span class="punc">(</span><span class="num">3</span><span class="punc">)</span>   <span class="cmt"># 快速穿过右侧火焰区</span>
+<span class="obj">hero</span><span class="punc">.</span><span class="fn">moveUp</span><span class="punc">()</span>       <span class="cmt"># 向上绕过陷阱</span>
+<span class="obj">hero</span><span class="punc">.</span><span class="fn">moveRight</span><span class="punc">()</span>    <span class="cmt"># 继续前进</span>
+<span class="obj">hero</span><span class="punc">.</span><span class="fn">moveDown</span><span class="punc">(</span><span class="num">3</span><span class="punc">)</span>   <span class="cmt"># 向下穿过另一段</span>
+<span class="obj">hero</span><span class="punc">.</span><span class="fn">moveRight</span><span class="punc">(</span><span class="num">2</span><span class="punc">)</span>   <span class="cmt"># 到达宝石！</span></pre>
+</div>
+
+<!-- 1.3.2.3 to 1.3.2.5 -->
+<h4>1.3.2.3 多参数传递
+    <span class="en">Multiple arguments</span>
+</h4>
+
+<div class="text-illustration">
+    <div class="illus-title">💡 多参数的概念</div>
+    <p>有些方法需要一次性接收多个信息。就像点外卖时你要同时告诉系统：菜品名称、数量、口味偏好。每个信息就是一个参数，多个参数之间用逗号隔开。虽然前 6 关只用到单参数（步数），但在后面的关卡中，你会遇到类似 <code>hero.buildXY("fence", 36, 34)</code> 这样的多参数写法——第一个是建造物类型（字符串），第二、三个是坐标位置（数字）。</p>
+</div>
+
+<p>虽然在前 6 关中我们只用到了单参数，但有些方法需要<strong>多个参数</strong>（用逗号隔开）。你在后续关卡中会遇到。</p>
+
+<h4>1.3.2.4 参数之间用逗号分隔
+    <span class="en">Arguments separated by commas</span>
+</h4>
+
+<p>当方法有多个参数时，使用<span class="keyword">逗号 <code>,</code></span> 分隔。当前只需记住规则，后面用到时会很自然。</p>
+
+<div class="text-illustration">
+    <div class="illus-title">💡 逗号分隔参数示意</div>
+    <p>想象一份快递单上要填收件人姓名、电话、地址三个字段，每个字段之间用逗号隔开。在代码中也是一样的格式：<code>method(参数1, 参数2, 参数3)</code>。注意逗号后面通常加一个空格，这不是必须的，但能让代码更美观易读。</p>
+</div>
+
+<h4>1.3.2.5 参数的顺序
+    <span class="en">Order of arguments matters</span>
+</h4>
+
+<p>参数的<strong>位置决定含义</strong>。对于移动方法来说只有一个参数（步数），暂时不涉及顺序问题。</p>
+
+<div class="text-illustration">
+    <div class="illus-title">💡 参数顺序为什么重要？</div>
+    <p>假如某个方法需要两个参数 <code>method(宽度, 高度)</code>，你写 <code>method(3, 5)</code> 表示宽3高5，但如果写成 <code>method(5, 3)</code> 就变成了宽5高3——完全不一样的结果！计算机是按照位置来理解每个参数含义的，而不是按"名字"。所以永远要按照方法要求的正确顺序传递参数。</p>
+</div>
+
+<!-- ===== 1.3.3 ===== -->
+<h3 id="sec-1-3-3">1.3.3 参数的类型（Types of Arguments）</h3>
+
+<h4>1.3.3.1 数字参数
+    <span class="en">Numeric arguments，如步数</span>
+</h4>
+
+<div class="figure">
+    <img src="https://assets.koudashijie.com/knowledge/1-3-3-1_numeric_arguments.png" alt="数字参数">
+    <div class="caption">图43：数字参数直接写数字，不加引号</div>
+</div>
+
+<p>在前 6 关中，移动方法接受的参数都是<span class="keyword">数字</span>——表示步数：</p>
+
+<div class="code-block">
+    <div class="dots"><span class="red"></span><span class="yellow"></span><span class="green"></span></div>
+<pre><span class="obj">hero</span><span class="punc">.</span><span class="fn">moveRight</span><span class="punc">(</span><span class="num">3</span><span class="punc">)</span>    <span class="cmt"># 3 是整数参数</span>
+<span class="obj">hero</span><span class="punc">.</span><span class="fn">moveUp</span><span class="punc">(</span><span class="num">2</span><span class="punc">)</span>       <span class="cmt"># 2 是整数参数</span>
+<span class="obj">hero</span><span class="punc">.</span><span class="fn">moveDown</span><span class="punc">(</span><span class="num">3</span><span class="punc">)</span>     <span class="cmt"># 3 是整数参数</span></pre>
+</div>
+
+<p>有趣的是，这个数字还可以是<span class="keyword">小数（Float）</span>（如 <code>1.5</code>）或<span class="keyword">负数</span>（如 <code>-1</code>，表示反方向移动）。</p>
+
+<!-- 1.3.3.2 -->
+<h4>1.3.3.2 字符串参数
+    <span class="en">String arguments，如名称</span>
+</h4>
+
+<div class="text-illustration">
+    <div class="illus-title">💡 字符串参数预览</div>
+    <p>字符串参数就是用引号括起来的文字内容。例如在后面的关卡中，<code>hero.attack("Brak")</code> 里的 <code>"Brak"</code> 就是一个字符串参数——它告诉英雄要攻击哪个敌人。又如 <code>hero.say("Hello")</code> 让英雄说出一句话。字符串参数必须加引号（单引号 <code>'</code> 或双引号 <code>"</code> 都可以），而数字参数不加引号。记住这个区别：<code>3</code> 是数字，<code>"3"</code> 是字符串——它们对计算机来说完全不同！</p>
+</div>
+
+<p>在后面的关卡中你会遇到<span class="keyword">字符串参数</span>——用引号包围的文字。现在只需知道：<strong>参数不只有数字一种类型</strong>。</p>
+
+<!-- 1.3.3.3 -->
+<h4>1.3.3.3 参数的类型必须匹配方法的要求
+    <span class="en">Argument type must match method requirement</span>
+</h4>
+
+<div class="text-illustration">
+    <div class="illus-title">💡 类型匹配——方法的"口味偏好"</div>
+    <p>每个方法对参数的类型有明确要求，就像自动售货机的投币口：它要硬币，你塞纸条进去是不行的。<code>moveRight()</code> 方法期望一个数字（告诉它走几步），如果你给它一个文字 <code>"三"</code>，它就会困惑并报错。这是初学者常犯的错误之一，一定要注意数字不加引号、文字必须加引号！</p>
+</div>
+
+<div class="code-block">
+    <div class="dots"><span class="red"></span><span class="yellow"></span><span class="green"></span></div>
+<pre><span class="obj">hero</span><span class="punc">.</span><span class="fn">moveRight</span><span class="punc">(</span><span class="num">3</span><span class="punc">)</span>        <span class="cmt"># ✓ 正确：3 是数字</span>
+<span class="obj">hero</span><span class="punc">.</span><span class="fn">moveRight</span><span class="punc">(</span><span class="err">"三"</span><span class="punc">)</span>     <span class="cmt"># ✗ 错误："三" 是文字，不是数字！</span></pre>
+</div>
+
+<!-- ===== 1.3.4 ===== -->
+<h3 id="sec-1-3-4">1.3.4 使用参数优化代码（Using Arguments to Optimize Code）</h3>
+
+<h4>1.3.4.1 参数减少代码行数
+    <span class="en">Arguments reduce lines of code</span>
+</h4>
+
+<div class="figure">
+    <img src="https://assets.koudashijie.com/knowledge/1-3-4-1_reduce_lines.png" alt="参数减少行数">
+    <div class="caption">图44：3行代码 vs 1行代码——效果完全相同</div>
+</div>
+
+<div class="code-block">
+    <div class="dots"><span class="red"></span><span class="yellow"></span><span class="green"></span></div>
+<pre><span class="cmt"># 不用参数：3行</span>
+<span class="obj">hero</span><span class="punc">.</span><span class="fn">moveUp</span><span class="punc">()</span>
+<span class="obj">hero</span><span class="punc">.</span><span class="fn">moveUp</span><span class="punc">()</span>
+<span class="obj">hero</span><span class="punc">.</span><span class="fn">moveUp</span><span class="punc">()</span>
+
+<span class="cmt"># 用参数：1行</span>
+<span class="obj">hero</span><span class="punc">.</span><span class="fn">moveUp</span><span class="punc">(</span><span class="num">3</span><span class="punc">)</span></pre>
+</div>
+
+<p>效果完全一样，但代码从 3 行变成了 1 行！</p>
+
+<!-- 1.3.4.2 -->
+<h4>1.3.4.2 moveRight(3) 等价于三次 moveRight()
+    <span class="en">Equivalence of parameterized calls</span>
+</h4>
+
+<p>来对比第 5a 关"虚幻干扰"的两种写法：</p>
+
+<div class="code-block">
+    <div class="dots"><span class="red"></span><span class="yellow"></span><span class="green"></span></div>
+<pre><span class="cmt"># 不用参数的写法（8行）：</span>
+<span class="obj">hero</span><span class="punc">.</span><span class="fn">moveRight</span><span class="punc">()</span>
+<span class="obj">hero</span><span class="punc">.</span><span class="fn">moveDown</span><span class="punc">()</span>
+<span class="obj">hero</span><span class="punc">.</span><span class="fn">moveDown</span><span class="punc">()</span>
+<span class="obj">hero</span><span class="punc">.</span><span class="fn">moveUp</span><span class="punc">()</span>
+<span class="obj">hero</span><span class="punc">.</span><span class="fn">moveUp</span><span class="punc">()</span>
+<span class="obj">hero</span><span class="punc">.</span><span class="fn">moveRight</span><span class="punc">()</span>
+<span class="obj">hero</span><span class="punc">.</span><span class="fn">moveRight</span><span class="punc">()</span>
+<span class="obj">hero</span><span class="punc">.</span><span class="fn">moveRight</span><span class="punc">()</span>
+
+<span class="cmt"># 用参数的写法（4行）：</span>
+<span class="obj">hero</span><span class="punc">.</span><span class="fn">moveRight</span><span class="punc">()</span>
+<span class="obj">hero</span><span class="punc">.</span><span class="fn">moveDown</span><span class="punc">(</span><span class="num">2</span><span class="punc">)</span>
+<span class="obj">hero</span><span class="punc">.</span><span class="fn">moveUp</span><span class="punc">(</span><span class="num">2</span><span class="punc">)</span>
+<span class="obj">hero</span><span class="punc">.</span><span class="fn">moveRight</span><span class="punc">(</span><span class="num">3</span><span class="punc">)</span></pre>
+</div>
+
+<!-- 1.3.4.3 -->
+<h4>1.3.4.3 代码简洁性与可读性
+    <span class="en">Code conciseness and readability</span>
+</h4>
+
+<div class="figure">
+    <img src="https://assets.koudashijie.com/knowledge/1-3-4-3_conciseness_readability.png" alt="简洁性与可读性">
+    <div class="caption">图45：好代码 = 简洁 + 可读</div>
+</div>
+
+<p>好的代码应该追求<span class="keyword">简洁（Concise）</span>但同时保持<span class="keyword">可读（Readable）</span>。<code>hero.moveRight(3)</code> 一眼就能看出"向右走 3 步"。</p>
+
+<div class="info-box">
+    <span class="info-label">编程名言：</span>"代码是写给人读的，只是顺便能被机器执行。" — Harold Abelson
+</div>
+
+<!-- 1.3.4.4 -->
+<h4>1.3.4.4 语句数量限制挑战
+    <span class="en">Statement count optimization challenges</span>
+</h4>
+
+<div class="figure">
+    <img src="https://assets.koudashijie.com/knowledge/1-3-4-4_statement_challenge.png" alt="语句数量挑战">
+    <div class="caption">图46：第6关挑战——7条语句完成！</div>
+</div>
+
+<p>在第 6 关"漫长脚步"中：<strong>使用少于 8 条语句</strong>完成关卡。</p>
+
+<div class="code-block">
+    <div class="dots"><span class="red"></span><span class="yellow"></span><span class="green"></span></div>
+<pre><span class="obj">hero</span><span class="punc">.</span><span class="fn">moveRight</span><span class="punc">(</span><span class="num">1</span><span class="punc">)</span>   <span class="cmt"># 语句1</span>
+<span class="obj">hero</span><span class="punc">.</span><span class="fn">moveUp</span><span class="punc">(</span><span class="num">3</span><span class="punc">)</span>      <span class="cmt"># 语句2</span>
+<span class="obj">hero</span><span class="punc">.</span><span class="fn">moveRight</span><span class="punc">(</span><span class="num">2</span><span class="punc">)</span>   <span class="cmt"># 语句3</span>
+<span class="obj">hero</span><span class="punc">.</span><span class="fn">moveDown</span><span class="punc">(</span><span class="num">3</span><span class="punc">)</span>    <span class="cmt"># 语句4</span>
+<span class="obj">hero</span><span class="punc">.</span><span class="fn">moveLeft</span><span class="punc">(</span><span class="num">1</span><span class="punc">)</span>    <span class="cmt"># 语句5</span>
+<span class="obj">hero</span><span class="punc">.</span><span class="fn">moveUp</span><span class="punc">(</span><span class="num">2</span><span class="punc">)</span>      <span class="cmt"># 语句6</span>
+<span class="obj">hero</span><span class="punc">.</span><span class="fn">moveRight</span><span class="punc">(</span><span class="num">3</span><span class="punc">)</span>   <span class="cmt"># 语句7 ← 低于8条！</span></pre>
+</div>
+
+<p>不用参数需要 15 行！参数就是你的"秘密武器"。</p>
+
+<!-- ==================== 1.4 ==================== -->
+<div class="section-header" id="section-1-4">
+    <h2>1.4 基本数据类型</h2>
+    <div class="en-title">Fundamental Data Types</div>
+</div>
+
+<h3 id="sec-1-4-1">1.4.1 数据类型概述（Overview of Data Types）</h3>
+
+<h4>1.4.1.1 数据类型的定义：数据的分类
+    <span class="en">Classification of data</span>
+</h4>
+
+<div class="figure">
+    <img src="https://assets.koudashijie.com/knowledge/1-4-1-1_data_types_overview.png" alt="数据类型概述">
+    <div class="caption">图47：数据的分类——数字、文字、布尔值</div>
+</div>
+
+<p><span class="keyword">数据类型（Data Type）</span>就是数据的分类方式：数字类型可以做加减乘除（如 <code>3</code>、<code>2.5</code>、<code>-1</code>）；字符串类型表示文字（如 <code>"Hello"</code>）；布尔类型只有真或假（如 <code>True</code>、<code>False</code>）。</p>
+
+<!-- 1.4.1.2 -->
+<h4>1.4.1.2 为什么需要数据类型
+    <span class="en">Why data types matter</span>
+</h4>
+
+<div class="figure">
+    <img src="https://assets.koudashijie.com/knowledge/1-4-1-2_why_types_matter.png" alt="为什么需要数据类型">
+    <div class="caption">图48：类型搞混了，程序就不知道该怎么办</div>
+</div>
+
+<p>数据类型帮助计算机理解数据是什么、能做什么、怎么存储。在 CodeCombat 中，<code>hero.moveRight(3)</code> 里的 <code>3</code> 必须是数字——你不能写 <code>hero.moveRight("三")</code>！</p>
+
+<!-- 1.4.1.3 -->
+<h4>1.4.1.3 Python 是动态类型语言
+    <span class="en">Python is dynamically typed</span>
+</h4>
+
+<div class="text-illustration">
+    <div class="illus-title">💡 动态类型 vs 静态类型</div>
+    <p>有些编程语言（如 Java、C++）要求你在使用变量之前先"声明"它的类型，比如写 <code>int steps = 3;</code> 来告诉计算机 <code>steps</code> 是整数——这叫<strong>静态类型</strong>。而 Python 是<strong>动态类型语言</strong>，意思是你直接写 <code>steps = 3</code> 就行，Python 会自动识别出 <code>3</code> 是整数。这就像去餐厅点餐：有的餐厅要求你先声明"我要一份主食类的饭"（静态类型），而 Python 餐厅只需要你直接说"来碗米饭"，服务员自己就知道这是主食（动态类型）。</p>
+</div>
+
+<p>Python 是<span class="keyword">动态类型语言</span>——它会自动判断数据的类型，你不需要事先声明。</p>
+
+<!-- 1.4.1.4 -->
+<h4>1.4.1.4 使用 type() 函数查看数据类型（以后会学习如何使用，现在先了解）
+    <span class="en">Using type() to check data types</span>
+</h4>
+
+<div class="text-illustration">
+    <div class="illus-title">💡 type() 函数是你的"身份识别器"</div>
+    <p><code>type()</code> 函数就像一个"身份识别器"——你把任何数据放进去，它就会告诉你这个数据是什么类型的。虽然在 CodeCombat 里暂时用不到，但在传统 Python 编程中，当你不确定一个数据是什么类型时，<code>type()</code> 就是你最好的朋友。下面的代码演示了如何使用它：</p>
+</div>
+
+<div class="code-block">
+    <div class="dots"><span class="red"></span><span class="yellow"></span><span class="green"></span></div>
+<pre><span class="fn">print</span><span class="punc">(</span><span class="fn">type</span><span class="punc">(</span><span class="num">3</span><span class="punc">))</span>        <span class="cmt"># &lt;class 'int'&gt;     → 整数</span>
+<span class="fn">print</span><span class="punc">(</span><span class="fn">type</span><span class="punc">(</span><span class="num">2.5</span><span class="punc">))</span>      <span class="cmt"># &lt;class 'float'&gt;   → 浮点数</span>
+<span class="fn">print</span><span class="punc">(</span><span class="fn">type</span><span class="punc">(</span><span class="num">-1</span><span class="punc">))</span>       <span class="cmt"># &lt;class 'int'&gt;     → 整数</span>
+<span class="fn">print</span><span class="punc">(</span><span class="fn">type</span><span class="punc">(</span><span class="kw">True</span><span class="punc">))</span>     <span class="cmt"># &lt;class 'bool'&gt;    → 布尔值</span></pre>
+</div>
+
+<!-- ===== 1.4.2 ===== -->
+<h3 id="sec-1-4-2">1.4.2 整数（Integer / int）</h3>
+
+<h4>1.4.2.1 整数的定义：没有小数部分的数
+    <span class="en">Whole numbers without decimal part</span>
+</h4>
+
+<div class="figure">
+    <img src="https://assets.koudashijie.com/knowledge/1-4-2-1_integer_definition.png" alt="整数的定义">
+    <div class="caption">图49：整数就是没有小数点的数</div>
+</div>
+
+<p><span class="keyword">整数（Integer，简称 int）</span>就是没有小数点的数：<code>1, 2, 3, 100, -5, 0</code>。在 CodeCombat 中，你传给移动方法的参数大多是整数。</p>
+
+<!-- 1.4.2.2 -->
+<h4>1.4.2.2 正整数
+    <span class="en">Positive integers，如 1, 2, 3</span>
+</h4>
+
+<div class="text-illustration">
+    <div class="illus-title">💡 正整数——你最常用的参数类型</div>
+    <p>正整数就是大于零的整数：1、2、3、4、5……在前 6 关的所有关卡解法中，你传给 <code>moveRight()</code>、<code>moveUp()</code> 等方法的参数基本都是正整数。比如 <code>hero.moveRight(3)</code> 中的 <code>3</code>，意思就是"向右走 3 步"。正整数在编程中无处不在——计数、循环次数、数组索引等都离不开它。</p>
+</div>
+
+<p>大于零的整数叫做<span class="keyword">正整数</span>。前 6 关中所有参数都是正整数。</p>
+
+<!-- 1.4.2.3 -->
+<h4>1.4.2.3 负整数
+    <span class="en">Negative integers，如 -1, -2, -3</span>
+</h4>
+
+<div class="text-illustration">
+    <div class="illus-title">💡 负整数——"反方向"的秘密武器</div>
+    <p>负整数就是小于零的整数，前面带一个减号：-1、-2、-3……在数学中，负数表示与正数相反的方向。在 CodeCombat 的移动方法中，负数参数同样表示<strong>反方向移动</strong>。这就像走路时向前走 3 步是正数，而向后退 3 步就是负数。理解负数=反方向的概念，对将来学习坐标系统、物理引擎等都很有帮助。</p>
+</div>
+
+<p>小于零的整数叫做<span class="keyword">负整数</span>。有趣的是，给移动方法传入负数，英雄会朝<strong>反方向</strong>移动：</p>
+
+<div class="code-block">
+    <div class="dots"><span class="red"></span><span class="yellow"></span><span class="green"></span></div>
+<pre><span class="obj">hero</span><span class="punc">.</span><span class="fn">moveDown</span><span class="punc">(</span><span class="num">-1</span><span class="punc">)</span>    <span class="cmt"># 等同于 hero.moveUp(1)  —— 向上走！</span>
+<span class="obj">hero</span><span class="punc">.</span><span class="fn">moveRight</span><span class="punc">(</span><span class="num">-2</span><span class="punc">)</span>   <span class="cmt"># 等同于 hero.moveLeft(2) —— 向左走！</span>
+<span class="obj">hero</span><span class="punc">.</span><span class="fn">moveLeft</span><span class="punc">(</span><span class="num">-1</span><span class="punc">)</span>    <span class="cmt"># 等同于 hero.moveRight(1) —— 向右走！</span></pre>
+</div>
+
+<div class="tip-box">
+    <span class="tip-label">想一想：</span><code>hero.moveLeft(-1)</code> 会怎样？答案：向<strong>右</strong>走 1 步！因为"向左的反方向"就是向右。虽然实际编码时我们用正确方向+正数更清楚，但理解负数=反方向的原理很重要。
+</div>
+
+<!-- 1.4.2.4 -->
+<h4>1.4.2.4 零
+    <span class="en">Zero, 0</span>
+</h4>
+
+<div class="text-illustration">
+    <div class="illus-title">💡 零——"什么都不做"的指令</div>
+    <p>零是一个特殊的数，它既不是正数也不是负数，处于数轴的正中央。在移动方法中传入 0 表示"不移动"——<code>hero.moveRight(0)</code> 就是让英雄原地不动。虽然在实际游戏中你不太会故意写这种代码，但理解 0 的含义有助于你理解参数和方向的关系：正数向前，负数向后，零不动。</p>
+</div>
+
+<p>零既不是正数也不是负数。<code>hero.moveRight(0)</code> = 原地不动！</p>
+
+<!-- 1.4.2.5 -->
+<h4>1.4.2.5 整数在编程中的用途
+    <span class="en">Uses of integers in programming</span>
+</h4>
+
+<div class="text-illustration">
+    <div class="illus-title">💡 整数的典型使用场景</div>
+    <p>整数是编程中使用最广泛的数据类型之一。除了在 CodeCombat 中表示移动步数之外，整数还常用于：计数（"循环执行 5 次"）、索引（"获取列表中第 3 个元素"）、表示数量（"背包里有 10 颗宝石"）、表示状态码（"HTTP 200 表示成功"）等。在未来的学习中，你会发现几乎所有程序都离不开整数运算。</p>
+</div>
+
+<table class="styled-table">
+    <thead><tr><th>用途</th><th>示例</th></tr></thead>
+    <tbody>
+        <tr><td>向右移动3步</td><td><code>hero.moveRight(3)</code></td></tr>
+        <tr><td>向上移动2步</td><td><code>hero.moveUp(2)</code></td></tr>
+        <tr><td>向下移动3步</td><td><code>hero.moveDown(3)</code></td></tr>
+        <tr><td>向左移动1步</td><td><code>hero.moveLeft(1)</code></td></tr>
+    </tbody>
+</table>
+
+<!-- 1.4.2.6 -->
+<h4>1.4.2.6 Python 中整数的表示
+    <span class="en">Integer representation in Python</span>
+</h4>
+
+<div class="text-illustration">
+    <div class="illus-title">💡 数字 vs "数字"——不加引号 vs 加引号</div>
+    <p>在 Python 中写整数非常简单：直接写数字就行。关键点是<strong>不要加引号</strong>！<code>3</code> 是一个数字（整数类型），可以做数学运算、可以当步数；但 <code>"3"</code> 是一个字符串（文字类型），在计算机看来它只是一个字符，不能直接用来做加减法或当作步数。这就像现实中"三"字和 3 个苹果的区别——前者只是文字描述，后者才是真正的数量。</p>
+</div>
+
+<p>在 Python 中，整数直接写数字即可，<strong>不需要引号</strong>。<code>3</code>（整数，能当步数）和 <code>"3"</code>（字符串，只是一个字符）是完全不同的东西！</p>
+
+<!-- 1.4.2.7 -->
+<h4>1.4.2.7 整数的范围
+    <span class="en">Range of integers：Python 中无固定上限</span>
+</h4>
+
+<div class="text-illustration">
+    <div class="illus-title">💡 Python 整数的"超能力"</div>
+    <p>在很多编程语言（如 C、Java）中，整数有大小限制（比如 32 位整数最大只能到约 21 亿）。但 Python 的整数没有固定上限！你可以写出超级大的数字，Python 都能处理。不过在 CodeCombat 的前 6 关中，你用到的数字通常是 1 到 5 之间的小整数——毕竟地图就那么大，不需要走几百步。</p>
+</div>
+
+<p>Python 的整数<strong>没有大小限制</strong>！不过在 CodeCombat 中你用到的数字通常不超过 10。</p>
+
+<!-- ===== 1.4.3 ===== -->
+<h3 id="sec-1-4-3">1.4.3 浮点数 / 小数（Float / Floating-point number）</h3>
+
+<h4>1.4.3.1 浮点数的定义：带小数点的数
+    <span class="en">Numbers with a decimal point</span>
+</h4>
+
+<div class="figure">
+    <img src="https://assets.koudashijie.com/knowledge/1-4-3-1_float_definition.png" alt="浮点数定义">
+    <div class="caption">图50：浮点数就是带小数点的数</div>
+</div>
+
+<p><span class="keyword">浮点数（Float）</span>就是带小数点的数：<code>3.14, 2.5, 0.1, -7.8, 1.0</code></p>
+
+<p>在 CodeCombat 中，浮点数也可以作为移动参数：</p>
+
+<div class="code-block">
+    <div class="dots"><span class="red"></span><span class="yellow"></span><span class="green"></span></div>
+<pre><span class="obj">hero</span><span class="punc">.</span><span class="fn">moveRight</span><span class="punc">(</span><span class="num">1.5</span><span class="punc">)</span>   <span class="cmt"># 向右移动1.5个单位</span>
+<span class="obj">hero</span><span class="punc">.</span><span class="fn">moveUp</span><span class="punc">(</span><span class="num">2.5</span><span class="punc">)</span>      <span class="cmt"># 向上移动2.5个单位</span></pre>
+</div>
+
+<!-- 1.4.3.2 to 1.4.3.3 -->
+<h4>1.4.3.2 正浮点数
+    <span class="en">Positive floats，如 3.14</span>
+</h4>
+
+<div class="text-illustration">
+    <div class="illus-title">💡 正浮点数——更精确的步数</div>
+    <p>正浮点数就是大于零的小数。当你需要英雄移动"半步"或其他非整数距离时就会用到它们。比如 <code>hero.moveRight(1.5)</code> 会让英雄向右移动一个半格子的距离。在精确定位（如对准某个坐标点）时，浮点数特别有用。常见的正浮点数例子：<code>3.14</code>（圆周率π的近似值）、<code>2.5</code>、<code>1.5</code>、<code>0.5</code>（半步）。</p>
+</div>
+
+<p>大于零的浮点数：<code>3.14</code>、<code>2.5</code>、<code>1.5</code>、<code>0.5</code></p>
+
+<h4>1.4.3.3 负浮点数
+    <span class="en">Negative floats，如 -2.5</span>
+</h4>
+
+<div class="text-illustration">
+    <div class="illus-title">💡 负浮点数——精确的反向移动</div>
+    <p>负浮点数结合了"小数精度"和"反方向"两个特性。<code>hero.moveRight(-1.5)</code> 会让英雄向<strong>左</strong>移动 1.5 个单位——既精确到半格，又是反方向。它的原理和负整数完全一致：负号代表反方向，数值大小代表移动距离。</p>
+</div>
+
+<p>和负整数一样，负浮点数作为参数时也表示<strong>反方向</strong>移动：<code>hero.moveRight(-1.5)</code> = 向左移动1.5个单位。</p>
+
+<!-- 1.4.3.4 -->
+<h4>1.4.3.4 整数与浮点数的区别
+    <span class="en">Difference between int and float</span>
+</h4>
+
+<div class="text-illustration">
+    <div class="illus-title">💡 整数 vs 浮点数——如何选择？</div>
+    <p>简单的判断方法：如果你的数据是"整个"的（1步、2步、3个苹果），用整数；如果你的数据需要精确到小数（1.5米、3.14圆周率），用浮点数。在 CodeCombat 中，大多数情况下整数参数就够用了（因为地图格子通常是整数距离），只有需要精确移动到两格之间的位置时才用浮点数。</p>
+</div>
+
+<table class="styled-table">
+    <thead><tr><th>特点</th><th>整数（int）</th><th>浮点数（float）</th></tr></thead>
+    <tbody>
+        <tr><td>小数点</td><td>没有</td><td>有</td></tr>
+        <tr><td>例子</td><td><code>3</code>, <code>-5</code>, <code>0</code></td><td><code>3.0</code>, <code>-5.5</code>, <code>0.1</code></td></tr>
+        <tr><td>精确性</td><td>完全精确</td><td>可能有微小误差</td></tr>
+        <tr><td>常见用途</td><td>步数、计数</td><td>精确距离</td></tr>
+    </tbody>
+</table>
+
+<!-- 1.4.3.5 -->
+<h4>1.4.3.5 浮点数的精度问题简介
+    <span class="en">Introduction to floating-point precision</span>
+</h4>
+
+<div class="text-illustration">
+    <div class="illus-title">💡 为什么 0.1 + 0.2 ≠ 0.3？</div>
+    <p>计算机使用二进制（0 和 1）来存储所有数据，包括小数。但就像十进制无法精确表示 1/3（只能写 0.333...），二进制也无法精确表示某些十进制小数（如 0.1）。这导致浮点运算会产生极其微小的误差。这不是 Python 的 bug，所有编程语言都有这个问题。好消息是：在 CodeCombat 的前 6 关中，你主要使用整数参数，完全不会遇到这个问题！</p>
+</div>
+
+<div class="code-block">
+    <div class="dots"><span class="red"></span><span class="yellow"></span><span class="green"></span></div>
+<pre><span class="fn">print</span><span class="punc">(</span><span class="num">0.1</span> + <span class="num">0.2</span><span class="punc">)</span>   <span class="cmt"># 输出: 0.30000000000000004</span></pre>
+</div>
+
+<p>这不是 bug，是计算机用二进制存储小数时的微小误差。前 6 关中通常用整数参数，不太会遇到这个问题。</p>
+
+<!-- 1.4.3.6 -->
+<h4>1.4.3.6 浮点数在坐标中的应用
+    <span class="en">Floats in coordinate systems</span>
+</h4>
+
+<div class="text-illustration">
+    <div class="illus-title">💡 浮点数与坐标——精确定位</div>
+    <p>在游戏地图上，每个位置都可以用坐标 (x, y) 来描述。有时候目标位置恰好在两个整数格子之间，比如 (3.5, 2.0)——这时就需要用浮点数来精确表示。在后面的关卡中，你会遇到 <code>buildXY</code> 等方法，它们的坐标参数经常是浮点数。理解浮点数可以帮助你在更高级的关卡中精确地定位建筑物或移动到特定位置。</p>
+</div>
+
+<p>游戏地图上的位置可以用浮点数精确描述。理解这一点有助于你在未来处理更精确的坐标计算。</p>
+
+<!-- ===== 1.4.4 ===== -->
+<h3 id="sec-1-4-4">1.4.4 正数与负数（Positive and Negative Numbers）</h3>
+
+<h4>1.4.4.1 正数的概念
+    <span class="en">Numbers greater than zero</span>
+</h4>
+
+<div class="text-illustration">
+    <div class="illus-title">💡 正数——"正常方向"的参数</div>
+    <p>正数是大于零的数（包括正整数和正浮点数），如 1、2、3.5、100。在 CodeCombat 的移动方法中，正数参数表示按照方法名指定的方向移动。<code>moveRight(3)</code> = 向右走 3 步，<code>moveUp(2)</code> = 向上走 2 步。前 6 关的所有标准解法中使用的参数全部是正数——简单直接，容易理解。</p>
+</div>
+
+<p><span class="keyword">正数</span>是大于零的数。前 6 关关卡解法中使用的参数全部是正数。</p>
+
+<!-- 1.4.4.2 -->
+<h4>1.4.4.2 负数的概念
+    <span class="en">Numbers less than zero</span>
+</h4>
+
+<div class="text-illustration">
+    <div class="illus-title">💡 负数——减号开头的"反向"指令</div>
+    <p>负数是小于零的数，写法是在正数前面加一个减号 <code>-</code>。在数学中，负数表示与正数相反的方向或概念：温度 -5°C 表示零下五度，海拔 -100m 表示在海平面以下 100 米。在编程中，负数同样表示"反向"。当你对 <code>moveDown</code> 传入 -1 时，它的效果就是"反方向"——即向上移动 1 步。</p>
+</div>
+
+<p><span class="keyword">负数</span>是小于零的数，用减号 <code>-</code> 表示。</p>
+
+<!-- 1.4.4.3 -->
+<h4>1.4.4.3 数轴与坐标系中的正负数
+    <span class="en">Positive/negative numbers on number line and coordinate system</span>
+</h4>
+
+<div class="figure">
+    <img src="https://assets.koudashijie.com/knowledge/1-4-4-3_number_line_coordinates.png" alt="数轴与坐标系">
+    <div class="caption">图51：数轴——左负右正；坐标系——右正上正</div>
+</div>
+
+<p>在二维坐标系中：x 轴右正左负，y 轴上正下负。<code>moveRight()</code> 增加 x 值，<code>moveUp()</code> 增加 y 值。</p>
+
+<!-- 1.4.4.4 -->
+<h4>1.4.4.4 正负数在移动方向中的应用
+    <span class="en">Application in directional movement</span>
+</h4>
+
+<div class="text-illustration">
+    <div class="illus-title">💡 正负数与移动方向的完整对照</div>
+    <p>正数参数 = 按照方法名的方向移动；负数参数 = 与方法名相反的方向移动。这个规律适用于所有四个移动方法。可以把每个方法想象成一条"路"，正数表示沿着路走，负数表示掉头走。虽然实际编程中我们通常直接用正确方向的方法名（比如想向左走就直接用 <code>moveLeft(正数)</code>），但理解负数原理能帮助你在更复杂的坐标运算中游刃有余。</p>
+</div>
+
+<table class="styled-table">
+    <thead><tr><th>方法</th><th>正数参数</th><th>负数参数</th></tr></thead>
+    <tbody>
+        <tr><td><code>moveRight(n)</code></td><td>向<strong>右</strong>走 n 步</td><td>向<strong>左</strong>走 |n| 步</td></tr>
+        <tr><td><code>moveLeft(n)</code></td><td>向<strong>左</strong>走 n 步</td><td>向<strong>右</strong>走 |n| 步</td></tr>
+        <tr><td><code>moveUp(n)</code></td><td>向<strong>上</strong>走 n 步</td><td>向<strong>下</strong>走 |n| 步</td></tr>
+        <tr><td><code>moveDown(n)</code></td><td>向<strong>下</strong>走 n 步</td><td>向<strong>上</strong>走 |n| 步</td></tr>
+    </tbody>
+</table>
+
+<div class="remember-box">
+    <span class="remember-label">本质规律：</span>负数 = 反方向。这和现实中"前进-3米"="后退3米"是一个道理。
+</div>
+
+<!-- ===== 1.4.5 ===== -->
+<h3 id="sec-1-4-5">1.4.5 数字类型的基本运算（Basic Numeric Operations）</h3>
+
+<h4>1.4.5.1 加法 +
+    <span class="en">Addition</span>
+</h4>
+
+<div class="text-illustration">
+    <div class="illus-title">💡 加法运算符 <code>+</code></div>
+    <p>加法是最基础的算术运算。在 Python 中，加号 <code>+</code> 用于将两个数相加。结果的类型取决于参与运算的数：两个整数相加得整数（如 <code>3 + 2 = 5</code>），如果有一个是浮点数则结果为浮点数（如 <code>3 + 0.5 = 3.5</code>）。虽然前 6 关中你不需要直接做运算，但了解这些为后面用变量做计算打基础。</p>
+</div>
+
+<div class="code-block">
+    <div class="dots"><span class="red"></span><span class="yellow"></span><span class="green"></span></div>
+<pre><span class="num">3</span> + <span class="num">2</span>      <span class="cmt"># 结果是 5</span>
+<span class="num">10</span> + <span class="num">20</span>    <span class="cmt"># 结果是 30</span></pre>
+</div>
+
+<h4>1.4.5.2 减法 -
+    <span class="en">Subtraction</span>
+</h4>
+
+<div class="text-illustration">
+    <div class="illus-title">💡 减法运算符 <code>-</code></div>
+    <p>减法用减号 <code>-</code> 表示。当结果小于零时会得到负数（如 <code>10 - 20 = -10</code>）。减法在编程中常用于计算差值、剩余数量、距离等。比如将来你可能需要计算"目标在英雄右边几步"：<code>目标x坐标 - 英雄x坐标</code>。</p>
+</div>
+
+<div class="code-block">
+    <div class="dots"><span class="red"></span><span class="yellow"></span><span class="green"></span></div>
+<pre><span class="num">5</span> - <span class="num">2</span>      <span class="cmt"># 结果是 3</span>
+<span class="num">10</span> - <span class="num">20</span>    <span class="cmt"># 结果是 -10</span></pre>
+</div>
+
+<h4>1.4.5.3 乘法 *
+    <span class="en">Multiplication</span>
+</h4>
+
+<div class="text-illustration">
+    <div class="illus-title">💡 乘法运算符 <code>*</code></div>
+    <p>Python 使用星号 <code>*</code> 表示乘法（不是 <code>×</code>！）。如果一个整数乘以一个浮点数，结果是浮点数。乘法在编程中用于缩放、计算面积、重复倍数等场景。</p>
+</div>
+
+<div class="code-block">
+    <div class="dots"><span class="red"></span><span class="yellow"></span><span class="green"></span></div>
+<pre><span class="num">3</span> * <span class="num">4</span>      <span class="cmt"># 结果是 12</span>
+<span class="num">2</span> * <span class="num">2.5</span>    <span class="cmt"># 结果是 5.0</span></pre>
+</div>
+
+<h4>1.4.5.4 除法 /
+    <span class="en">Division</span>
+</h4>
+
+<div class="text-illustration">
+    <div class="illus-title">💡 除法运算符 <code>/</code></div>
+    <p>Python 3 中的除法 <code>/</code> 总是返回浮点数结果，即使两个整数能整除。例如 <code>10 / 2</code> 的结果是 <code>5.0</code> 而不是 <code>5</code>。如果需要整数除法（向下取整），可以使用双斜杠 <code>//</code>，如 <code>7 // 2 = 3</code>。这些细节以后会更深入地学到。</p>
+</div>
+
+<div class="code-block">
+    <div class="dots"><span class="red"></span><span class="yellow"></span><span class="green"></span></div>
+<pre><span class="num">10</span> / <span class="num">2</span>     <span class="cmt"># 结果是 5.0（Python 3 中 / 总是返回浮点数）</span>
+<span class="num">7</span> / <span class="num">2</span>      <span class="cmt"># 结果是 3.5</span></pre>
+</div>
+
+<h4>1.4.5.5 运算符的概念
+    <span class="en">Concept of operators</span>
+</h4>
+
+<div class="text-illustration">
+    <div class="illus-title">💡 运算符——数据之间的"动作词"</div>
+    <p>运算符就是告诉计算机"对这些数据做什么操作"的符号。<code>+</code>、<code>-</code>、<code>*</code>、<code>/</code> 是最基本的算术运算符。将来你还会学到比较运算符（<code>==</code>、<code>&gt;</code>、<code>&lt;</code>）和逻辑运算符（<code>and</code>、<code>or</code>、<code>not</code>）。有趣的是，你甚至可以在参数中使用运算表达式！比如 <code>hero.moveRight(2 + 1)</code> 等价于 <code>hero.moveRight(3)</code>——Python 会先计算 <code>2 + 1</code> 的值，再把结果 <code>3</code> 传给方法。</p>
+</div>
+
+<p><code>+</code>、<code>-</code>、<code>*</code>、<code>/</code> 这些符号叫做<span class="keyword">运算符（Operators）</span>。虽然前 6 关中不直接使用运算符做计算，但它们是 Python 的基础。将来你可以写 <code>hero.moveRight(2 + 1)</code> 等价于 <code>hero.moveRight(3)</code>。</p>
+
+<!-- ==================== 1.5 ==================== -->
+<div class="section-header" id="section-1-5">
+    <h2>1.5 坐标系统</h2>
+    <div class="en-title">Coordinate System</div>
+</div>
+
+<h3 id="sec-1-5-1">1.5.1 二维坐标系（Two-dimensional Coordinate System）</h3>
+
+<h4>1.5.1.1 x 轴与 y 轴
+    <span class="en">x-axis and y-axis</span>
+</h4>
+
+<div class="figure">
+    <img src="https://assets.koudashijie.com/knowledge/1-5-1-1_xy_axes.png" alt="x轴与y轴">
+    <div class="caption">图52：CodeCombat 地图的坐标系——x水平，y垂直</div>
+</div>
+
+<p>CodeCombat 的地图有两条轴：<span class="keyword-en">x 轴</span>（水平方向，从左到右）和 <span class="keyword-en">y 轴</span>（垂直方向，从下到上）。</p>
+
+<p>理解坐标系有助于你理解英雄的位置和移动方向：<code>moveRight()</code> 让 x 值增大，<code>moveLeft()</code> 让 x 值减小；<code>moveUp()</code> 让 y 值增大，<code>moveDown()</code> 让 y 值减小。地图上每个位置都可以用 (x, y) 坐标来精确描述，比如英雄的起始位置可能是 (10, 10)，宝石可能在 (13, 8)。通过计算坐标差值，你可以算出英雄需要走几步：向右 13-10=3 步，向下 10-8=2 步。</p>
+
+<!-- ==================== 1.6 ==================== -->
+<div class="section-header" id="section-1-6">
+    <h2>1.6 顺序执行</h2>
+    <div class="en-title">Sequential Execution</div>
+</div>
+
+<h3 id="sec-1-6-1">1.6.1 顺序结构的定义（Definition of Sequential Structure）</h3>
+
+<h4>1.6.1.1 代码按书写顺序从上到下执行<span class="en">Code executes from top to bottom</span></h4>
+
+<div class="figure">
+    <img src="https://assets.koudashijie.com/knowledge/1-6-1-1_top_to_bottom.png" alt="从上到下执行">
+    <div class="caption">图53：顺序结构——代码从第一行到最后一行，绝不跳行</div>
+</div>
+
+<p><span class="keyword">顺序结构（Sequential Structure）</span>就是代码<strong>从第一行开始，按照书写顺序，一行一行向下执行</strong>。前 6 关的所有解法都是纯顺序结构。</p>
+
+<h4>1.6.1.2 每条语句执行一次<span class="en">Each statement executes once</span></h4>
+
+<div class="text-illustration">
+    <div class="illus-title">💡 "一次且仅一次"——顺序结构的特征</div>
+    <p>在纯顺序结构中，每一行代码只会被执行<strong>恰好一次</strong>——不会多也不会少。这意味着如果你写了 5 行代码，程序运行时就会精确地执行 5 个动作。想让英雄做 10 个动作？那你就得写 10 行代码（或者用参数优化，但总的移动"次数"不变）。后面学到循环结构后，你就能让一段代码重复执行多次——那就不再是纯顺序结构了。</p>
+</div>
+
+<h4>1.6.1.3 前一条语句完成后才执行下一条<span class="en">Next statement executes after previous completes</span></h4>
+
+<div class="text-illustration">
+    <div class="illus-title">💡 "排队执行"——不会插队</div>
+    <p>顺序执行意味着代码是"排队"的：第 1 行必须<strong>完全执行完毕</strong>后，第 2 行才会开始执行。在 CodeCombat 中，这表现为英雄必须走完一步后才会走下一步——你不会看到英雄同时做两件事。这种"阻塞式"执行方式让程序行为完全可预测：你可以准确地知道在任意时刻英雄在哪里、在做什么。这个特性对于时机策略非常重要，如下面第 3b 关的例子所示。</p>
+</div>
+
+<p>在第 3b 关"狭路相逢"中，严格的顺序执行让时机策略成为可能：</p>
+
+<div class="code-block">
+    <div class="dots"><span class="red"></span><span class="yellow"></span><span class="green"></span></div>
+<pre><span class="obj">hero</span><span class="punc">.</span><span class="fn">moveRight</span><span class="punc">()</span>    <span class="cmt"># 时刻1：走到门廊处</span>
+<span class="obj">hero</span><span class="punc">.</span><span class="fn">moveLeft</span><span class="punc">()</span>     <span class="cmt"># 时刻2：退回来！</span>
+<span class="obj">hero</span><span class="punc">.</span><span class="fn">moveRight</span><span class="punc">(</span><span class="num">2</span><span class="punc">)</span>   <span class="cmt"># 时刻3：趁机冲过去！</span></pre>
+</div>
+
+<h4>1.6.1.4 顺序结构是最基本的控制结构<span class="en">Sequential structure is the most basic control structure</span></h4>
+
+<div class="text-illustration">
+    <div class="illus-title">💡 三大控制结构——程序的"骨架"</div>
+    <p>所有计算机程序，无论多复杂，都是由三种基本控制结构组合而成的：<strong>顺序</strong>（从上到下依次执行）、<strong>选择</strong>（根据条件选择不同路径，如 if/else）、<strong>迭代</strong>（循环重复执行某段代码，如 while/for）。前 6 关只用到了顺序结构——这是最基础的，也是另外两种结构的"地基"。后面的关卡会逐步引入循环（Unit 3）和条件判断，让你写出更强大的程序。</p>
+</div>
+
+<p>所有程序都由三种<span class="keyword">控制结构</span>组成：<span class="keyword-green">顺序（Sequence）</span>、选择（Selection）、迭代（Iteration）。前 6 关只用到了最简单的顺序结构。</p>
+
+<p style="margin: 10px 0; color: #555;">立即访问 <a href="https://codecombat.cn" target="_blank" style="color: #d35400; font-weight: 700; text-decoration: none;">codecombat.cn</a> 开启你的 CodeCombat 编程冒险之旅！</p>
+
+<!-- ===== 1.6.2 ===== -->
+<h3 id="sec-1-6-2">1.6.2 顺序结构的特点（Characteristics of Sequential Structure）</h3>
+
+<h4>1.6.2.1 确定性：执行顺序固定<span class="en">Deterministic: fixed execution order</span></h4>
+
+<div class="text-illustration">
+    <div class="illus-title">💡 确定性——每次运行结果都一样</div>
+    <p>顺序结构的第一个重要特点是<strong>确定性</strong>：代码的执行顺序是固定的，不会随机改变。这意味着同样的代码每次运行都会产生完全相同的结果。在 CodeCombat 中，只要你不修改代码，英雄每次走的路线都一模一样。这个特性让程序变得可预测、可调试——如果代码有错，错误也是稳定复现的，方便你找到并修复它。</p>
+</div>
+
+<h4>1.6.2.2 可预测性：结果可预知<span class="en">Predictable: results are foreseeable</span></h4>
+
+<div class="text-illustration">
+    <div class="illus-title">💡 可预测性——你可以"脑中运行"代码</div>
+    <p>因为顺序结构是确定性的，你可以在脑子里"模拟运行"代码——逐行阅读，想象英雄的每一步，就能预知最终结果。这是一个非常有用的能力，叫做"代码追踪"（Code Tracing）或"干运行"（Dry Run）。在点击运行按钮之前，先用脑子走一遍代码，可以帮你提前发现错误。试试在纸上画出地图，然后用铅笔跟着代码一步步画出英雄的路线。</p>
+</div>
+
+<h4>1.6.2.3 语句顺序影响结果<span class="en">Order of statements affects outcome</span></h4>
+
+<div class="text-illustration">
+    <div class="illus-title">💡 顺序不同，结果天差地别！</div>
+    <p>想象你做饭的步骤：先切菜再炒菜（正确！），如果改成先炒菜再切菜（怎么炒一整棵白菜？）。编程也是一样——调换语句的顺序可能导致完全不同的结果。比如在第 3 关中，安雅需要先向右走到雕像旁，再向上走躲起来。如果你把两行调换，她会先向上撞墙，然后向右暴露在食人魔面前——结果完全不同！</p>
+</div>
+
+<p>来看第 3 关"幽影守卫"。如果调换前两行的顺序，安雅可能撞墙或被食人魔发现！</p>
+
+<div class="remember-box">
+    <span class="remember-label">记住：</span>写代码就像给人导航——"先左转再直行"和"先直行再左转"可能带你去完全不同的地方。
+</div>
+
+
+<!-- ===== 1.6.3 ===== -->
+<h3 id="sec-1-6-3">1.6.3 多行代码的组织（Organizing Multiple Lines of Code）</h3>
+
+<h4>1.6.3.1 一行一条语句<span class="en">One statement per line</span></h4>
+
+<div class="text-illustration">
+    <div class="illus-title">💡 一行一指令——Python 的基本格式</div>
+    <p>Python 的基本规则之一：<strong>每行写一条语句</strong>。不要把多条指令挤在同一行。虽然 Python 在技术上允许用分号 <code>;</code> 把多条语句写在一行（如 <code>hero.moveRight(); hero.moveDown()</code>），但这样做会让代码难以阅读。就像写作文要分段一样，每行一条语句让代码清晰、整洁、容易理解。</p>
+</div>
+
+<h4>1.6.3.2 语句的分解与组合<span class="en">Decomposing and combining statements</span></h4>
+
+<div class="text-illustration">
+    <div class="illus-title">💡 分解与组合——灵活运用参数</div>
+    <p>同一个任务可以用不同的语句组合来完成。"向右走 3 步"既可以分解为 3 行 <code>hero.moveRight()</code>，也可以组合成 1 行 <code>hero.moveRight(3)</code>——效果相同。学会灵活地分解（让每步清晰）和组合（让代码简洁）语句，是编程的基本功。通常的原则是：在不牺牲可读性的前提下，尽量用参数来减少重复的行。</p>
+</div>
+
+<h4>1.6.3.3 代码的逻辑分组<span class="en">Logical grouping of code</span></h4>
+
+<div class="text-illustration">
+    <div class="illus-title">💡 逻辑分组——给代码"分段落"</div>
+    <p>当代码行数较多时（比如第 4 关有 12 行），可以按照逻辑意义将代码分组。例如："第一段：从入口走到拐角"、"第二段：从拐角走到宝石"。你可以用空行或注释来分隔这些逻辑组，让代码读起来像一篇结构清晰的短文。</p>
+</div>
+
+<h4>1.6.3.4 空行的使用提高可读性<span class="en">Using blank lines for readability</span></h4>
+
+<div class="text-illustration">
+    <div class="illus-title">💡 空行——代码中的"呼吸空间"</div>
+    <p>空行不会被 Python 执行（它什么都不做），但对人类阅读代码帮助巨大。在不同的逻辑段落之间加一个空行，就像文章中的段落间距一样，让读者能轻松分辨代码的不同部分。好习惯从现在开始培养！</p>
+</div>
+
+<p><strong>空行</strong>不会被执行，但能让人类读代码时"喘口气"。就像写文章要分段一样，写代码也要适当留白！</p>
+
+
+<!-- ==================== 1.8 ==================== -->
+<div class="section-header" id="section-1-8">
+    <h2>1.8 问题分解与路径规划</h2>
+    <div class="en-title">Problem Decomposition and Path Planning</div>
+</div>
+
+<h3 id="sec-1-8-1">1.8.1 问题分解（Problem Decomposition）</h3>
+
+<h4>1.8.1.1 将大问题分解为小步骤<span class="en">Breaking a big problem into smaller steps</span></h4>
+
+<div class="figure">
+    <img src="https://assets.koudashijie.com/knowledge/1-8-1-1_decomposition.png" alt="问题分解">
+    <div class="caption">图54：大问题看起来复杂，分解后每步都很简单</div>
+</div>
+
+<p><span class="keyword">问题分解（Decomposition）</span>是编程最重要的思维方式之一。面对第 4 关复杂的路线时，把"收集所有宝石并返回出口"拆解成每一小步，每步都不难！</p>
+
+<div class="info-box">
+    <span class="info-label">AP CSP 核心概念：</span>分解（Decomposition）是计算思维的四大支柱之一。
+</div>
+
+<h4>1.8.1.2 确定起点与终点<span class="en">Identifying start and end points</span></h4>
+
+<div class="text-illustration">
+    <div class="illus-title">💡 起点与终点——问题的"边界"</div>
+    <p>解决任何问题的第一步是搞清楚：<strong>现在在哪？要去哪？</strong>在 CodeCombat 中，起点是英雄的初始位置（通常在地图左侧），终点是目标位置（宝石或出口）。明确了起点和终点，你就能开始规划中间的路径了。在纸上画出地图格子，标出起点和终点，然后再填充中间步骤——这是一种很好的问题解决习惯。</p>
+</div>
+
+<h4>1.8.1.3 规划中间步骤<span class="en">Planning intermediate steps</span></h4>
+
+<div class="text-illustration">
+    <div class="illus-title">💡 中间步骤——"沿路设置检查点"</div>
+    <p>从起点到终点之间，设置几个"检查点"——比如拐角处、需要避开障碍物的位置、需要改变方向的地方。每到一个检查点，确认方向对了再继续下一段。这就像导航软件给你标注的"在A路口左转、经过B大桥、在C出口驶出"——把长距离分成几个短距离，每段都简单明了。</p>
+</div>
+
+<div class="code-block">
+    <div class="dots"><span class="red"></span><span class="yellow"></span><span class="green"></span></div>
+<pre><span class="cmt"># 第3关"幽影守卫"的路径规划：</span>
+<span class="obj">hero</span><span class="punc">.</span><span class="fn">moveRight</span><span class="punc">()</span>   <span class="cmt"># 到雕像旁</span>
+<span class="obj">hero</span><span class="punc">.</span><span class="fn">moveUp</span><span class="punc">()</span>      <span class="cmt"># 躲到雕像后面</span>
+<span class="obj">hero</span><span class="punc">.</span><span class="fn">moveRight</span><span class="punc">()</span>   <span class="cmt"># 从食人魔身后通过</span>
+<span class="obj">hero</span><span class="punc">.</span><span class="fn">moveDown</span><span class="punc">()</span>    <span class="cmt"># 回到通道</span>
+<span class="obj">hero</span><span class="punc">.</span><span class="fn">moveRight</span><span class="punc">()</span>   <span class="cmt"># 到达宝石！</span></pre>
+</div>
+
+<h4>1.8.1.4 AP CSP 概念：算法设计<span class="en">AP CSP: Algorithm Design</span></h4>
+
+<div class="text-illustration">
+    <div class="illus-title">💡 算法设计——有限步骤解决问题</div>
+    <p>在 AP 计算机科学原理课程中，<strong>算法</strong>被定义为"为解决特定问题或完成特定任务而设计的有限步骤序列"。你在 CodeCombat 中写的每一关的解法，本质上就是一个小型算法！它具备算法的所有特征：有明确的输入（地图布局）、有限的步骤（你的代码行数是有限的）、确定的输出（英雄到达目标位置）、以及正确性（通过关卡验证）。从第 1 关开始，你就在进行算法设计了。</p>
+</div>
+
+<!-- ===== 1.8.2 ===== -->
+<h3 id="sec-1-8-2">1.8.2 路径规划（Path Planning）</h3>
+
+<h4>1.8.2.1 在网格/地图上规划路线<span class="en">Planning a route on a grid/map</span></h4>
+
+<div class="text-illustration">
+    <div class="illus-title">💡 网格规划——把地图想象成棋盘</div>
+    <p>CodeCombat 的地图可以看作一个网格（棋盘），英雄每次移动一格。规划路线时，你可以在脑中（或纸上）把地图画成格子，标出障碍物（墙壁、尖刺、敌人的巡逻范围），然后找出一条从起点到终点的安全路径。每个格子只有四个方向可以走（上下左右），这让问题简化了很多。</p>
+</div>
+
+<h4>1.8.2.2 避障策略<span class="en">Obstacle avoidance strategy</span></h4>
+
+<div class="text-illustration">
+    <div class="illus-title">💡 避障——绕开不能走的格子</div>
+    <p>地图上有些格子是不能走的：墙壁会挡住你、尖刺会伤害你、食人魔的视线范围内会被发现。避障策略就是：先识别所有不能走的格子，然后规划一条避开它们的安全路线。常见的策略包括"紧贴墙壁绕行"、"从障碍物的上方/下方绕过"、"等待巡逻敌人走开后再通过"等。第 3 关的雕像路线和第 3b 关的时机等待都是避障策略的经典应用。</p>
+</div>
+
+<h4>1.8.2.3 最短路径思维<span class="en">Shortest path thinking</span></h4>
+
+<div class="text-illustration">
+    <div class="illus-title">💡 最短路径——用最少的步数达到目标</div>
+    <p>在满足安全要求的前提下，尽量走最短的路径。这不仅让代码更短（特别是有语句数量限制时），也让程序更高效。判断最短路径的简单方法：计算起点和终点的坐标差值，看看是否能找到一条直达路线。如果中间有障碍，就找绕行距离最短的替代路线。第 6 关要求 7 条语句以内完成，正是对最短路径思维的考验。</p>
+</div>
+
+<h4>1.8.2.4 时机与顺序的考虑<span class="en">Timing and order considerations</span></h4>
+
+<div class="text-illustration">
+    <div class="illus-title">💡 时机——"什么时候走"和"走哪里"同样重要</div>
+    <p>在某些关卡（如第 3b 关"狭路相逢"）中，除了规划路线，你还需要考虑<strong>时机</strong>。食人魔矮人在巡逻——如果你在错误的时刻通过它的面前，就会被发现。解决方法是先走一步引起它注意，然后退回来等它走开，最后趁它背对你时快速冲过去。这里的关键是利用顺序执行的特性（每步花费时间）来"消耗"时间，配合敌人的巡逻节奏。</p>
+</div>
+
+<!-- ==================== 1.9 ==================== -->
+<div class="section-header" id="section-1-9">
+    <h2>1.9 本单元相关 Python 语法总结</h2>
+    <div class="en-title">Python Syntax Summary for This Unit</div>
+</div>
+
+<h3 id="sec-1-9-1">1.9.1 方法调用语法（Method Call Syntax）</h3>
+
+<h4>1.9.1.1 基本格式：object.method()<span class="en">Basic format</span></h4>
+
+<div class="text-illustration">
+    <div class="illus-title">💡 方法调用的三种格式</div>
+    <p>本单元学到的方法调用有三种基本格式：① 无参数：<code>hero.moveRight()</code>，英雄按默认行为执行；② 单参数：<code>hero.moveRight(3)</code>，用参数自定义行为；③ 多参数（预告）：<code>hero.method(arg1, arg2, arg3)</code>，用多个信息控制更复杂的行为。无论哪种格式，核心结构都是 <code>对象.方法名(参数列表)</code>——这是 Python 面向对象编程的基本语法。</p>
+</div>
+
+<div class="code-block">
+    <div class="dots"><span class="red"></span><span class="yellow"></span><span class="green"></span></div>
+<pre><span class="cmt"># 基本格式：无参数</span>
+<span class="obj">hero</span><span class="punc">.</span><span class="fn">moveRight</span><span class="punc">()</span>
+
+<span class="cmt"># 带参数格式</span>
+<span class="obj">hero</span><span class="punc">.</span><span class="fn">moveRight</span><span class="punc">(</span><span class="num">3</span><span class="punc">)</span>
+
+<span class="cmt"># 多参数格式（后续关卡会用到）</span>
+<span class="obj">hero</span><span class="punc">.</span><span class="fn">someMethod</span><span class="punc">(</span>arg1<span class="punc">,</span> arg2<span class="punc">,</span> arg3<span class="punc">)</span></pre>
+</div>
+
+<h4>1.9.1.2–1.9.1.3 带参数与多参数格式</h4>
+<p>（已在上面的代码示例中展示）</p>
+
+<h4>1.9.1.4 大小写敏感<span class="en">Case sensitivity</span></h4>
+
+<div class="text-illustration">
+    <div class="illus-title">💡 大小写敏感——一个字母大小写不同就报错！</div>
+    <p>Python 是<strong>大小写敏感</strong>（Case Sensitive）的语言，这意味着 <code>hero</code>、<code>Hero</code>、<code>HERO</code> 是三个完全不同的名字！同样地，<code>moveRight</code> 和 <code>MoveRight</code> 和 <code>moveright</code> 也是完全不同的。这是初学者最常犯的错误之一。记住 CodeCombat 中的规则：对象名 <code>hero</code> 全小写，方法名第一个单词小写、后面每个单词首字母大写（驼峰命名法）。</p>
+</div>
+
+<div class="code-block">
+    <div class="dots"><span class="red"></span><span class="yellow"></span><span class="green"></span></div>
+<pre><span class="obj">hero</span><span class="punc">.</span><span class="fn">moveRight</span><span class="punc">()</span>    <span class="cmt"># ✓ 正确</span>
+<span class="err">Hero</span><span class="punc">.</span><span class="fn">moveRight</span><span class="punc">()</span>    <span class="cmt"># ✗ 错误！"Hero" ≠ "hero"</span>
+<span class="obj">hero</span><span class="punc">.</span><span class="err">MoveRight</span><span class="punc">()</span>    <span class="cmt"># ✗ 错误！"MoveRight" ≠ "moveRight"</span>
+<span class="obj">hero</span><span class="punc">.</span><span class="err">moveright</span><span class="punc">()</span>    <span class="cmt"># ✗ 错误！"moveright" ≠ "moveRight"</span></pre>
+</div>
+
+<div class="tip-box">
+    <span class="tip-label">记忆技巧：</span><code>hero</code> 全小写，<code>move</code> 小写，方向首字母大写（<code>Right</code>、<code>Left</code>、<code>Up</code>、<code>Down</code>）。
+</div>
+
+<!-- ===== 1.9.2 ===== -->
+<h3 id="sec-1-9-2">1.9.2 Python 基本规则（Basic Python Rules）</h3>
+
+<h4>1.9.2.1 每行一条语句<span class="en">One statement per line</span></h4>
+
+<div class="text-illustration">
+    <div class="illus-title">💡 一行一语句——Python 的书写规范</div>
+    <p>Python 使用换行符来分隔不同的语句。这意味着每写完一条指令就按一次回车，开始新的一行。这个规则让 Python 代码看起来干净整洁，每行只做一件事，阅读时一目了然。如果你在其他语言（如 JavaScript）中见过 <code>;</code> 结尾的语句，在 Python 中不需要——换行本身就标志着一条语句的结束。</p>
+</div>
+
+<h4>1.9.2.2 缩进的重要性预告<span class="en">Preview: importance of indentation</span></h4>
+
+<div class="text-illustration">
+    <div class="illus-title">💡 缩进预告——Unit 3 的重要准备</div>
+    <p>在前 6 关中，你的所有代码都是顶格写的（没有缩进）。但在后面学到循环（<code>while True:</code>）和条件判断（<code>if</code>）时，你就需要用<strong>缩进</strong>（通常是 4 个空格）来表示"哪些代码属于循环/条件内部"。Python 用缩进来标识代码块的层级关系——这是 Python 的独特设计。现在先记住：缩进在 Python 中不只是美观，它有语法意义！</p>
+</div>
+
+<h4>1.9.2.3 Python 关键字<span class="en">Python keywords，初步了解</span></h4>
+
+<div class="text-illustration">
+    <div class="illus-title">💡 关键字——Python "保留"的特殊单词</div>
+    <p>Python 有一些被"保留"的单词，叫做<strong>关键字</strong>（Keywords），如 <code>while</code>、<code>True</code>、<code>False</code>、<code>if</code>、<code>else</code>、<code>for</code>、<code>def</code>、<code>return</code> 等。这些词在 Python 中有特殊含义，你不能用它们作为变量名或自定义标识符。在前 6 关中你还不会直接使用这些关键字，但了解它们的存在可以避免将来踩坑——比如你不能写 <code>True = 3</code> 这样的代码。</p>
+</div>
+
+<h4>1.9.2.4 标识符命名规则<span class="en">Identifier naming rules</span></h4>
+
+<div class="text-illustration">
+    <div class="illus-title">💡 标识符命名——给"东西"取名的规则</div>
+    <p>在 Python 中，标识符（变量名、函数名、方法名等）需要遵循这些规则：① 只能包含字母、数字和下划线 <code>_</code>；② 不能以数字开头（<code>1hero</code> 不行，<code>hero1</code> 可以）；③ 不能使用 Python 关键字；④ 区分大小写（<code>Hero</code> 和 <code>hero</code> 是不同的名字）。好的命名习惯：名字应该有意义（<code>moveRight</code> 比 <code>mr</code> 好）、保持一致的风格（全用 camelCase 或全用 snake_case）。在 CodeCombat 中，<code>hero</code> 已经帮你取好了名字，但在将来的编程中你需要自己给变量取名。</p>
+</div>
+
+<!-- ==================== 小结 ==================== -->
+<div class="summary-card" id="section-summary">
+<h3>本单元小结 ✨</h3>
+
+    <div class="figure">
+        <img src="https://assets.koudashijie.com/knowledge/1-summary_card.png" alt="单元总结">
+        <div class="caption">图55：第一单元核心概念全景图</div>
+    </div>
+
+    <p>恭喜你完成了第一单元！来看第 6 关"漫长脚步"的完整解法，回顾所有核心概念：</p>
+
+    <div class="code-block">
+        <div class="dots"><span class="red"></span><span class="yellow"></span><span class="green"></span></div>
+<pre><span class="obj">hero</span><span class="punc">.</span><span class="fn">moveRight</span><span class="punc">(</span><span class="num">1</span><span class="punc">)</span>    <span class="cmt"># 对象.方法(参数) → 向右走1步</span>
+<span class="obj">hero</span><span class="punc">.</span><span class="fn">moveUp</span><span class="punc">(</span><span class="num">3</span><span class="punc">)</span>       <span class="cmt"># 正整数参数 → 向上走3步</span>
+<span class="obj">hero</span><span class="punc">.</span><span class="fn">moveRight</span><span class="punc">(</span><span class="num">2</span><span class="punc">)</span>    <span class="cmt"># 顺序执行 → 第3个执行的语句</span>
+<span class="obj">hero</span><span class="punc">.</span><span class="fn">moveDown</span><span class="punc">(</span><span class="num">3</span><span class="punc">)</span>     <span class="cmt"># 不同方向的方法 → 向下走3步</span>
+<span class="obj">hero</span><span class="punc">.</span><span class="fn">moveLeft</span><span class="punc">(</span><span class="num">1</span><span class="punc">)</span>     <span class="cmt"># moveLeft方法 → 向左走1步</span>
+<span class="obj">hero</span><span class="punc">.</span><span class="fn">moveUp</span><span class="punc">(</span><span class="num">2</span><span class="punc">)</span>       <span class="cmt"># 参数优化 → 比写2行更简洁</span>
+<span class="obj">hero</span><span class="punc">.</span><span class="fn">moveRight</span><span class="punc">(</span><span class="num">3</span><span class="punc">)</span>    <span class="cmt"># 7条语句完成！低于8条限制 🎉</span></pre>
+    </div>
+
+    <table class="styled-table">
+        <thead><tr><th>核心概念</th><th>关键代码</th><th>首次出现</th></tr></thead>
+        <tbody>
+            <tr><td>对象与方法</td><td><code>hero.moveRight()</code></td><td>英雄觉醒</td></tr>
+            <tr><td>点表示法</td><td><code>对象.方法()</code></td><td>英雄觉醒</td></tr>
+            <tr><td>四个移动方法</td><td><code>moveRight/Left/Up/Down</code></td><td>英雄觉醒</td></tr>
+            <tr><td>顺序执行</td><td>代码从上到下逐行执行</td><td>英雄觉醒</td></tr>
+            <tr><td>参数的使用</td><td><code>hero.moveRight(3)</code></td><td>凌波微步概念/火中取宝正式</td></tr>
+            <tr><td>整数参数</td><td><code>1, 2, 3</code></td><td>凌波微步</td></tr>
+            <tr><td>负数=反方向</td><td><code>hero.moveDown(-1)</code>=向上</td><td>概念扩展</td></tr>
+            <tr><td>代码优化</td><td>用参数减少语句数</td><td>火中取宝 / 漫长脚步</td></tr>
+            <tr><td>问题分解</td><td>大问题 → 小步骤</td><td>暗度陈仓 / 细心脚步</td></tr>
+            <tr><td>路径规划与时机</td><td>避障、选择时机</td><td>暗度陈仓 / 逆时针回转 / 狭路相逢</td></tr>
+        </tbody>
+    </table>
+
+    <p style="text-align: center; margin-top: 20px; font-size: 1.1em;">
+        安雅和塔林正在地牢中等着你的下一步指令。<br>
+        准备好了吗？让我们继续前往<strong>第二单元</strong>，学习字符串、攻击方法和调试吧！🗡️
+    </p>
+</div>
+
+
+<div class="member-promo" style="background: linear-gradient(135deg,#fff3e0 0%,#fff 100%); border: 2px solid #f59e0b; border-radius: 14px; padding: 24px 28px; margin: 30px 0; text-align: center;">
+    <h3 style="color: #d35400; border: none; margin-top: 0; font-size: 1.3em;">🎮 想在 CodeCombat 中实战这些关卡吗？</h3>
+    <p style="margin: 10px 0; font-size: 1.05em;">加入 <strong>CodeCombat（codecombat.cn）</strong> 会员，即可解锁全部编程关卡，跟随英雄安雅和塔林在真实游戏环境中边玩边学！通过实战闯关巩固本单元所学的每一个知识点，让编程学习不再枯燥。</p>
+
+</div>
+
+
+
+</div><!-- end page-wrapper -->
+
+<script>
+// 点击导航链接后在移动端自动关闭侧边栏
+document.querySelectorAll('.sidebar-nav a').forEach(link => {
+    link.addEventListener('click', () => {
+        if (window.innerWidth <= 1024) {
+            document.querySelector('.sidebar-nav').classList.remove('active');
+        }
+    });
+});
+</script>
+
+
+<div data-info-wiki-backlink style="text-align:center;padding:18px 12px;color:#64748b;font:13px/1.6 -apple-system,BlinkMacSystemFont,'Segoe UI','Microsoft YaHei',sans-serif"><a href="../index.html" style="color:#4f46e5;text-decoration:none;font-weight:700">← 返回 CodeCombat 信息百科</a></div>
+</body>
+</html>

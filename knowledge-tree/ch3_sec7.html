@@ -1,0 +1,913 @@
+﻿<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>第七单元：函数参数 | CodeCombat 编程知识</title>
+    <style>
+        /* ===== 基础重置与变量 ===== */
+        :root {
+            --primary: #2E9E5B;
+            --primary-light: #4FBF7C;
+            --primary-lighter: #E8F7EE;
+            --primary-dark: #1F7A44;
+            --dark: #14241a;
+            --dark-code: #1e2a22;
+            --dark-code-border: #314538;
+            --text: #2d2d2d;
+            --text-light: #555;
+            --text-lighter: #888;
+            --bg: #ffffff;
+            --bg-alt: #f7faf8;
+            --bg-card: #ffffff;
+            --border: #e3ece6;
+            --success: #4CAF50;
+            --warning: #FFC107;
+            --error: #f44336;
+            --info: #2196F3;
+            --code-keyword: #c678dd;
+            --code-string: #98c379;
+            --code-comment: #5c8a6f;
+            --code-function: #61afef;
+            --code-number: #d19a66;
+            --code-text: #b6c2ba;
+            --code-punctuation: #b6c2ba;
+            --code-object: #e5c07b;
+            --sidebar-width: 270px;
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'PingFang SC', 'Hiragino Sans GB', 'Microsoft YaHei', sans-serif;
+            line-height: 1.8;
+            color: var(--text);
+            background: var(--bg);
+            font-size: 16px;
+        }
+
+        /* ===== 左侧导航栏 ===== */
+        .sidebar-nav {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: var(--sidebar-width);
+            height: 100vh;
+            background: #14241a;
+            overflow-y: auto;
+            padding: 20px 0;
+            z-index: 1000;
+            border-right: 3px solid var(--primary);
+            transition: transform 0.3s ease;
+        }
+
+        .sidebar-nav::-webkit-scrollbar { width: 4px; }
+        .sidebar-nav::-webkit-scrollbar-thumb { background: var(--primary); border-radius: 4px; }
+        .sidebar-nav::-webkit-scrollbar-track { background: #1f3a29; }
+
+        .sidebar-nav .nav-title {
+            color: var(--primary-light);
+            font-size: 0.95em;
+            font-weight: 700;
+            padding: 8px 18px;
+            margin-bottom: 5px;
+            letter-spacing: 1px;
+        }
+
+        .sidebar-nav a {
+            display: block;
+            color: #cdd8d0;
+            text-decoration: none;
+            padding: 6px 18px;
+            font-size: 0.82em;
+            line-height: 1.5;
+            border-left: 3px solid transparent;
+            transition: all 0.2s ease;
+        }
+
+        .sidebar-nav a:hover {
+            color: #fff;
+            background: rgba(46, 158, 91, 0.15);
+            border-left-color: var(--primary);
+        }
+
+        .sidebar-nav a.nav-section {
+            color: var(--primary-light);
+            font-weight: 600;
+            font-size: 0.88em;
+            margin-top: 12px;
+            padding-top: 10px;
+            border-top: 1px solid #23402e;
+        }
+
+        .sidebar-nav a.nav-section:first-of-type {
+            border-top: none;
+            margin-top: 0;
+        }
+
+        .sidebar-nav a.nav-sub {
+            padding-left: 30px;
+            color: #a7b8ad;
+            font-size: 0.78em;
+        }
+
+        .sidebar-nav a.nav-sub:hover { color: #fff; }
+
+        .nav-toggle {
+            display: none;
+            position: fixed;
+            top: 15px;
+            left: 15px;
+            z-index: 1100;
+            background: var(--primary);
+            color: white;
+            border: none;
+            border-radius: 8px;
+            padding: 8px 12px;
+            font-size: 1.2em;
+            cursor: pointer;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.2);
+        }
+
+        .page-wrapper { margin-left: var(--sidebar-width); }
+
+        /* ===== 头部横幅 ===== */
+        .hero-banner {
+            background: linear-gradient(135deg, var(--primary) 0%, var(--primary-dark) 100%);
+            color: white;
+            padding: 60px 20px;
+            text-align: center;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .hero-banner::before {
+            content: '';
+            position: absolute;
+            top: -50%;
+            left: -50%;
+            width: 200%;
+            height: 200%;
+            background: radial-gradient(circle, rgba(255,255,255,0.12) 0%, transparent 60%);
+            animation: pulse 8s ease-in-out infinite;
+        }
+
+        @keyframes pulse {
+            0%, 100% { transform: scale(1); }
+            50% { transform: scale(1.1); }
+        }
+
+        .hero-banner h1 { font-size: 2.5em; margin-bottom: 10px; position: relative; z-index: 1; }
+        .hero-banner .subtitle { font-size: 1.2em; opacity: 0.92; position: relative; z-index: 1; }
+        .hero-banner .badge {
+            display: inline-block;
+            background: rgba(255,255,255,0.2);
+            padding: 5px 15px;
+            border-radius: 20px;
+            margin-top: 15px;
+            font-size: 0.9em;
+            position: relative;
+            z-index: 1;
+        }
+
+        .container { max-width: 900px; margin: 0 auto; padding: 40px 20px; }
+
+        /* ===== 章节标题 ===== */
+        .section-header {
+            background: var(--primary-lighter);
+            border-left: 5px solid var(--primary);
+            padding: 20px 25px;
+            margin: 50px 0 30px;
+            border-radius: 0 12px 12px 0;
+        }
+
+        .section-header h2 { color: var(--primary-dark); font-size: 1.8em; margin-bottom: 5px; }
+        .section-header .en-title { color: var(--text-light); font-size: 0.95em; font-style: italic; }
+
+        h3 {
+            color: var(--primary);
+            font-size: 1.4em;
+            margin: 40px 0 15px;
+            padding-bottom: 8px;
+            border-bottom: 2px solid var(--primary-lighter);
+        }
+
+        h4 {
+            color: var(--text);
+            font-size: 1.15em;
+            margin: 30px 0 12px;
+            padding-left: 12px;
+            border-left: 3px solid var(--primary-light);
+        }
+
+        h4 .en {
+            display: block;
+            font-size: 0.8em;
+            color: var(--text-lighter);
+            font-weight: normal;
+            margin-top: 2px;
+        }
+
+        p { margin: 12px 0; text-align: justify; }
+
+        .keyword {
+            background: var(--primary-lighter);
+            color: var(--primary-dark);
+            padding: 2px 6px;
+            border-radius: 4px;
+            font-weight: 600;
+            white-space: nowrap;
+        }
+
+        .keyword-en {
+            background: #e8f4fd;
+            color: #1565c0;
+            padding: 2px 6px;
+            border-radius: 4px;
+            font-weight: 600;
+            font-family: 'SF Mono', 'Fira Code', 'Consolas', monospace;
+            font-size: 0.9em;
+            white-space: nowrap;
+        }
+
+        .keyword-green {
+            background: #e8f5e9;
+            color: #2e7d32;
+            padding: 2px 6px;
+            border-radius: 4px;
+            font-weight: 600;
+            white-space: nowrap;
+        }
+
+        code {
+            background: #eef2ef;
+            color: #c2185b;
+            padding: 2px 7px;
+            border-radius: 4px;
+            font-family: 'SF Mono', 'Fira Code', 'Consolas', 'Courier New', monospace;
+            font-size: 0.88em;
+            white-space: nowrap;
+        }
+
+        .code-block {
+            background: var(--dark-code);
+            border: 1px solid var(--dark-code-border);
+            border-radius: 10px;
+            padding: 20px 24px;
+            margin: 16px 0;
+            overflow-x: auto;
+            position: relative;
+        }
+
+        .code-block::before {
+            content: 'Python';
+            position: absolute;
+            top: 8px;
+            right: 12px;
+            font-size: 0.7em;
+            color: #6b8a76;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+        }
+
+        .code-block .dots { display: flex; gap: 6px; margin-bottom: 14px; }
+        .code-block .dots span { width: 10px; height: 10px; border-radius: 50%; }
+        .code-block .dots .red { background: #ff5f57; }
+        .code-block .dots .yellow { background: #febc2e; }
+        .code-block .dots .green { background: #28c840; }
+
+        .code-block pre {
+            margin: 0;
+            font-family: 'SF Mono', 'Fira Code', 'Consolas', 'Courier New', monospace;
+            font-size: 0.9em;
+            line-height: 1.7;
+            color: var(--code-text);
+        }
+
+        .code-block .kw { color: var(--code-keyword); }
+        .code-block .str { color: var(--code-string); }
+        .code-block .cmt { color: var(--code-comment); font-style: italic; }
+        .code-block .fn { color: var(--code-function); }
+        .code-block .num { color: var(--code-number); }
+        .code-block .obj { color: var(--code-object); }
+        .code-block .punc { color: var(--code-punctuation); }
+        .code-block .err { color: var(--error); text-decoration: line-through; }
+        .code-block .hl { background: rgba(255, 193, 7, 0.18); border-radius: 3px; padding: 0 2px; }
+
+        .tip-box {
+            background: #fff8e1;
+            border-left: 4px solid var(--warning);
+            padding: 14px 18px;
+            margin: 16px 0;
+            border-radius: 0 8px 8px 0;
+            font-size: 0.95em;
+        }
+        .tip-box .tip-label { font-weight: 700; color: #f57f17; margin-right: 6px; }
+
+        .info-box {
+            background: #e3f2fd;
+            border-left: 4px solid var(--info);
+            padding: 14px 18px;
+            margin: 16px 0;
+            border-radius: 0 8px 8px 0;
+            font-size: 0.95em;
+        }
+        .info-box .info-label { font-weight: 700; color: #1565c0; margin-right: 6px; }
+
+        .remember-box {
+            background: var(--primary-lighter);
+            border-left: 4px solid var(--primary);
+            padding: 14px 18px;
+            margin: 16px 0;
+            border-radius: 0 8px 8px 0;
+            font-size: 0.95em;
+        }
+        .remember-box .remember-label { font-weight: 700; color: var(--primary-dark); margin-right: 6px; }
+
+        .warn-box {
+            background: #fdecea;
+            border-left: 4px solid var(--error);
+            padding: 14px 18px;
+            margin: 16px 0;
+            border-radius: 0 8px 8px 0;
+            font-size: 0.95em;
+        }
+        .warn-box .warn-label { font-weight: 700; color: #c62828; margin-right: 6px; }
+
+        .figure { margin: 24px 0; text-align: center; }
+        .figure img {
+            max-width: 100%;
+            height: auto;
+            border-radius: 10px;
+            box-shadow: 0 4px 20px rgba(0,0,0,0.08);
+            border: 1px solid var(--border);
+        }
+        .figure .caption { font-size: 0.85em; color: var(--text-lighter); margin-top: 8px; font-style: italic; }
+
+        .styled-table {
+            width: 100%;
+            border-collapse: collapse;
+            margin: 16px 0;
+            border-radius: 10px;
+            overflow: hidden;
+            box-shadow: 0 2px 12px rgba(0,0,0,0.06);
+        }
+        .styled-table thead { background: var(--primary); color: white; }
+        .styled-table th { padding: 12px 16px; text-align: left; font-weight: 600; }
+        .styled-table td { padding: 10px 16px; border-bottom: 1px solid var(--border); }
+        .styled-table tbody tr:nth-child(even) { background: var(--bg-alt); }
+        .styled-table tbody tr:hover { background: var(--primary-lighter); }
+
+        .summary-card {
+            background: linear-gradient(135deg, var(--primary-lighter) 0%, #fff 100%);
+            border: 2px solid var(--primary-light);
+            border-radius: 14px;
+            padding: 30px;
+            margin: 40px 0;
+        }
+        .summary-card h3 { color: var(--primary-dark); border: none; margin-top: 0; }
+
+        .text-illustration {
+            background: linear-gradient(135deg, #f4f8f5 0%, #fff 100%);
+            border: 1px dashed var(--primary-light);
+            border-radius: 10px;
+            padding: 18px 22px;
+            margin: 16px 0;
+            font-size: 0.93em;
+            color: var(--text-light);
+        }
+        .text-illustration .illus-title {
+            font-weight: 700;
+            color: var(--primary);
+            margin-bottom: 6px;
+            font-size: 0.95em;
+        }
+
+        /* ===== 流程图 / 解剖图（纯 SVG） ===== */
+        .flow-demo {
+            background: var(--bg-alt);
+            border: 1px solid var(--border);
+            border-radius: 10px;
+            padding: 20px;
+            margin: 20px 0;
+            text-align: center;
+        }
+        .flow-demo svg { max-width: 100%; height: auto; }
+
+        .anatomy {
+            background: var(--dark-code);
+            border: 1px solid var(--dark-code-border);
+            border-radius: 10px;
+            padding: 24px;
+            margin: 20px 0;
+            text-align: center;
+        }
+        .anatomy svg { max-width: 100%; height: auto; }
+
+        @media (max-width: 1024px) {
+            .sidebar-nav { transform: translateX(-100%); }
+            .sidebar-nav.active { transform: translateX(0); }
+            .nav-toggle { display: block; }
+            .page-wrapper { margin-left: 0; }
+        }
+
+        @media (max-width: 768px) {
+            .hero-banner h1 { font-size: 1.8em; }
+            .container { padding: 20px 15px; }
+            .section-header h2 { font-size: 1.4em; }
+            .code-block { padding: 14px 16px; }
+            .styled-table { font-size: 0.9em; }
+        }
+    </style>
+</head>
+<body>
+
+<button class="nav-toggle" onclick="document.querySelector('.sidebar-nav').classList.toggle('active')">☰</button>
+
+<nav class="sidebar-nav">
+    <div class="nav-title">边际森林-第七单元</div>
+
+    <a href="#section-7-1" class="nav-section">7.1 为什么需要参数</a>
+    <a href="#sec-7-1-1" class="nav-sub">7.1.1 无参函数的局限</a>
+    <a href="#sec-7-1-2" class="nav-sub">7.1.2 参数带来灵活性</a>
+    <a href="#sec-7-1-3" class="nav-sub">7.1.3 你早就在传参数</a>
+
+    <a href="#section-7-2" class="nav-section">7.2 形参与实参</a>
+    <a href="#sec-7-2-1" class="nav-sub">7.2.1 两个核心概念</a>
+    <a href="#sec-7-2-2" class="nav-sub">7.2.2 形参就是变量</a>
+    <a href="#sec-7-2-3" class="nav-sub">7.2.3 实参传给形参</a>
+
+    <a href="#section-7-3" class="nav-section">7.3 参数语法详解</a>
+    <a href="#sec-7-3-1" class="nav-sub">7.3.1 定义带参函数</a>
+    <a href="#sec-7-3-2" class="nav-sub">7.3.2 调用时传实参</a>
+    <a href="#sec-7-3-3" class="nav-sub">7.3.3 同一对象两个名</a>
+
+    <a href="#section-7-4" class="nav-section">7.4 用好参数</a>
+    <a href="#sec-7-4-1" class="nav-sub">7.4.1 形参当变量用</a>
+    <a href="#sec-7-4-2" class="nav-sub">7.4.2 加入额外指令</a>
+    <a href="#sec-7-4-3" class="nav-sub">7.4.3 一个函数多次调用</a>
+
+    <a href="#section-7-5" class="nav-section">7.5 实战关卡精讲</a>
+    <a href="#sec-7-5-1" class="nav-sub">7.5.1 边地之叉</a>
+    <a href="#sec-7-5-2" class="nav-sub">7.5.2 盗墓者</a>
+    <a href="#sec-7-5-3" class="nav-sub">7.5.3 墓地阴魂</a>
+    <a href="#sec-7-5-4" class="nav-sub">7.5.4 捉迷藏</a>
+    <a href="#sec-7-5-5" class="nav-sub">7.5.5 森林矿工</a>
+    <a href="#sec-7-5-6" class="nav-sub">7.5.6 交给劈斩</a>
+    <a href="#sec-7-5-7" class="nav-sub">7.5.7 林地陷阱</a>
+
+    <a href="#section-7-6" class="nav-section">7.6 常见错误</a>
+    <a href="#sec-7-6-1" class="nav-sub">7.6.1 易错点清单</a>
+
+    <a href="#section-summary" class="nav-section">📋 本单元小结</a>
+</nav>
+
+<div class="page-wrapper">
+
+<div class="hero-banner">
+    <h1>第七单元：函数参数</h1>
+    <div class="subtitle">Unit 7: Function Parameters &amp; Arguments</div>
+    <div class="badge">计算机科学 2 · 边际森林 Border Forest · 边地之叉 → 林地陷阱</div>
+</div>
+
+<div class="container">
+
+<!-- ==================== 7.1 ==================== -->
+<div class="section-header" id="section-7-1">
+    <h2>7.1 为什么需要参数</h2>
+    <div class="en-title">Why We Need Parameters</div>
+</div>
+
+<h3 id="sec-7-1-1">7.1.1 无参函数的局限（The Limits of Parameter-less Functions）</h3>
+
+<h4>7.1.1.1 函数也想"听指挥"
+    <span class="en">Functions want instructions too</span>
+</h4>
+
+<p>上一单元你学会了定义函数，把"找敌人并攻击"打包成 <code>findAndAttackEnemy()</code>。但这种函数有个小遗憾：它每次只能<strong>自己在内部重新找敌人</strong>，外面没办法告诉它"这次请打<strong>这个</strong>敌人"。如果你已经在外面找好了一个特定目标，想交给函数去处理，无参函数就接不住了。</p>
+
+<p>这正是本单元要解决的问题。关卡"边地之叉"开门见山：<strong>"函数通常需要参数。参数让函数具有更多灵活性，且不妨碍函数优化和简化代码的作用。"</strong></p>
+
+<h3 id="sec-7-1-2">7.1.2 参数带来灵活性（Parameters Bring Flexibility）</h3>
+
+<h4>7.1.2.1 同一个函数，处理不同的对象
+    <span class="en">One function, different targets</span>
+</h4>
+
+<p><span class="keyword">参数（Parameter）</span>就像函数的"输入口"——调用时把信息从这个口子递进去，函数就能针对你递进来的<strong>不同对象</strong>做同样的事。比如一个 <code>checkAndAttack(target)</code> 函数，这次递给它顶部的敌人就打顶部，下次递给它底部的敌人就打底部。一份代码，应付千变万化的目标。</p>
+
+<table class="styled-table">
+    <thead><tr><th>对比</th><th>无参函数</th><th>带参函数</th></tr></thead>
+    <tbody>
+        <tr><td>处理对象</td><td>固定（内部自己找）</td><td>灵活（外部传进来）</td></tr>
+        <tr><td>写法</td><td><code>checkAndAttack()</code></td><td><code>checkAndAttack(target)</code></td></tr>
+        <tr><td>灵活度</td><td>较低</td><td>高，一函数应万变</td></tr>
+    </tbody>
+</table>
+
+<h3 id="sec-7-1-3">7.1.3 你早就在传参数（You've Been Passing Arguments）</h3>
+
+<h4>7.1.3.1 say、attack 都吃参数
+    <span class="en">say and attack already take arguments</span>
+</h4>
+
+<p>其实参数你早就用过了。"交给劈斩"关卡点破了真相：<strong>"在使用 hero.say('Hello!') 时，你将字符串 'Hello!' 作为参数传给了函数 say。"</strong> 同样，<code>hero.attack(enemy)</code> 里的 <code>enemy</code>、<code>hero.moveXY(35, 34)</code> 里的 <code>35</code> 和 <code>34</code>，都是参数。本单元的新本领是：<strong>给你自己定义的函数也加上参数。</strong></p>
+
+<!-- ==================== 7.2 ==================== -->
+<div class="section-header" id="section-7-2">
+    <h2>7.2 形参与实参</h2>
+    <div class="en-title">Parameters vs. Arguments</div>
+</div>
+
+<h3 id="sec-7-2-1">7.2.1 两个核心概念（Two Key Concepts）</h3>
+
+<h4>7.2.1.1 形参和实参的分工
+    <span class="en">The roles of parameters and arguments</span>
+</h4>
+
+<div class="figure">
+    <img src="https://assets.koudashijie.com/knowledge/7-2-1-1_param_arg.png" alt="形参与实参示意图">
+    <div class="caption">图1：实参在调用时传入，形参在函数内部接住——同一份信息的两个名字</div>
+</div>
+
+<p>关卡把两个关键词讲得很清楚：</p>
+
+<table class="styled-table">
+    <thead><tr><th>术语</th><th>英文</th><th>在哪里</th><th>是什么</th></tr></thead>
+    <tbody>
+        <tr><td>形参（形式参数）</td><td>Parameter</td><td>函数<strong>定义</strong>时，括号里</td><td>一个预定义的变量，用来接住传入的信息</td></tr>
+        <tr><td>实参（实际参数）</td><td>Argument</td><td>函数<strong>调用</strong>时，括号里</td><td>真正传进去的具体信息</td></tr>
+    </tbody>
+</table>
+
+<p>用关卡原话总结：<strong>"实参（实际参数）是函数调用时 () 内包含的信息。形参（形式参数）则是传入函数的信息在函数内所使用的变量。"</strong></p>
+
+<h3 id="sec-7-2-2">7.2.2 形参就是变量（A Parameter is Just a Variable）</h3>
+
+<h4>7.2.2.1 别被"形参"吓到
+    <span class="en">Don't be scared by the word</span>
+</h4>
+
+<p>"形参"听起来高深，其实关卡反复安慰你：<strong>"形式参数 'target' 只是一个变量！"</strong> 它和你之前用过的 <code>enemy</code>、<code>distance</code> 这些变量没有任何区别——可以在函数体里随意使用。唯一特别的是：它的值<strong>不是你赋的，而是调用时自动从外面"灌"进来的</strong>。</p>
+
+<div class="text-illustration">
+    <div class="illus-title">💡 形参像一个空盒子，等着被装满</div>
+    <p>定义函数时，形参 <code>target</code> 是个贴好标签的<strong>空盒子</strong>。当你调用 <code>checkAndAttack(topEnemy)</code>，系统就把 <code>topEnemy</code> 装进 <code>target</code> 这个盒子里。于是在函数内部，<code>target</code> 就代表着 <code>topEnemy</code>。下次调用 <code>checkAndAttack(bottomEnemy)</code>，同一个盒子又装进了 <code>bottomEnemy</code>。</p>
+</div>
+
+<h3 id="sec-7-2-3">7.2.3 实参传给形参（Arguments Fill Parameters）</h3>
+
+<h4>7.2.3.1 一一对应的"对接"
+    <span class="en">A one-to-one match</span>
+</h4>
+
+<p>关卡强调：<strong>"被调用时的实际参数，在函数定义时同形式参数对应。"</strong> 也就是说，调用括号里写什么，函数定义括号里的形参就接住什么——它们按位置一一对接。</p>
+
+<div class="anatomy">
+    <svg viewBox="0 0 560 180" width="560" role="img" aria-label="实参传给形参示意">
+        <!-- 调用行 -->
+        <text x="30" y="45" font-size="18" font-family="monospace" fill="#61afef">checkAndAttack</text>
+        <text x="205" y="45" font-size="18" font-family="monospace" fill="#b6c2ba">(</text>
+        <text x="218" y="45" font-size="18" font-family="monospace" fill="#e5c07b">topEnemy</text>
+        <text x="320" y="45" font-size="18" font-family="monospace" fill="#b6c2ba">)</text>
+        <text x="360" y="45" font-size="13" font-family="sans-serif" fill="#888">← 调用：传入实参</text>
+        <!-- 箭头 -->
+        <line x1="260" y1="58" x2="200" y2="118" stroke="#2E9E5B" stroke-width="2.5"/>
+        <polygon points="200,118 203,106 211,114" fill="#2E9E5B"/>
+        <text x="280" y="95" font-size="12" font-family="sans-serif" fill="#2E9E5B">实参装进形参</text>
+        <!-- 定义行 -->
+        <text x="30" y="145" font-size="18" font-family="monospace" fill="#c678dd">def</text>
+        <text x="78" y="145" font-size="18" font-family="monospace" fill="#61afef">checkAndAttack</text>
+        <text x="253" y="145" font-size="18" font-family="monospace" fill="#b6c2ba">(</text>
+        <text x="266" y="145" font-size="18" font-family="monospace" fill="#e5c07b">target</text>
+        <text x="340" y="145" font-size="18" font-family="monospace" fill="#b6c2ba">):</text>
+        <text x="380" y="145" font-size="13" font-family="sans-serif" fill="#888">← 定义：声明形参</text>
+    </svg>
+</div>
+
+<!-- ==================== 7.3 ==================== -->
+<div class="section-header" id="section-7-3">
+    <h2>7.3 参数语法详解</h2>
+    <div class="en-title">Parameter Syntax in Detail</div>
+</div>
+
+<h3 id="sec-7-3-1">7.3.1 定义带参函数（Defining with Parameters）</h3>
+
+<h4>7.3.1.1 在括号里写下形参名
+    <span class="en">Write the parameter name in the parentheses</span>
+</h4>
+
+<p>定义带参数的函数，只需在 <code>def</code> 的圆括号里写上形参的名字。然后在函数体里，就能像用普通变量一样使用它：</p>
+
+<div class="code-block">
+    <div class="dots"><span class="red"></span><span class="yellow"></span><span class="green"></span></div>
+<pre><span class="cmt"># 这个函数有一个形式参数 target</span>
+<span class="kw">def</span> <span class="fn">checkAndAttack</span><span class="punc">(</span><span class="hl">target</span><span class="punc">):</span>
+    <span class="kw">if</span> target<span class="punc">:</span>                 <span class="cmt"># 把 target 当变量用</span>
+        <span class="obj">hero</span><span class="punc">.</span><span class="fn">attack</span><span class="punc">(</span>target<span class="punc">)</span>
+    <span class="obj">hero</span><span class="punc">.</span><span class="fn">moveXY</span><span class="punc">(</span><span class="num">43</span><span class="punc">,</span> <span class="num">34</span><span class="punc">)</span>    <span class="cmt"># 还可加与形参无关的指令</span></pre>
+</div>
+
+<h3 id="sec-7-3-2">7.3.2 调用时传实参（Passing Arguments）</h3>
+
+<h4>7.3.2.1 把准备好的信息递进去
+    <span class="en">Hand in the prepared information</span>
+</h4>
+
+<p>调用时，把你准备好的具体值（实参）写进括号。典型流程是：先在外面找好目标存进变量，再把这个变量当实参传给函数。</p>
+
+<div class="code-block">
+    <div class="dots"><span class="red"></span><span class="yellow"></span><span class="green"></span></div>
+<pre><span class="obj">hero</span><span class="punc">.</span><span class="fn">moveXY</span><span class="punc">(</span><span class="num">58</span><span class="punc">,</span> <span class="num">52</span><span class="punc">)</span>
+topEnemy = <span class="obj">hero</span><span class="punc">.</span><span class="fn">findNearestEnemy</span><span class="punc">()</span>   <span class="cmt"># 先找好目标</span>
+<span class="fn">checkAndAttack</span><span class="punc">(</span><span class="hl">topEnemy</span><span class="punc">)</span>          <span class="cmt"># 把 topEnemy 作为实参传入</span></pre>
+</div>
+
+<h3 id="sec-7-3-3">7.3.3 同一对象，两个名字（Same Object, Two Names）</h3>
+
+<h4>7.3.3.1 外面叫 enemy，里面叫 target
+    <span class="en">enemy outside, target inside</span>
+</h4>
+
+<p>这是最值得品味的一点。"交给劈斩"关卡讲得极妙：<strong>"enemy 是函数外敌人的名称，而 target 是函数内敌人的名称。这两个变量都指向同一个食人魔！"</strong></p>
+
+<div class="code-block">
+    <div class="dots"><span class="red"></span><span class="yellow"></span><span class="green"></span></div>
+<pre><span class="kw">def</span> <span class="fn">cleaveWhenClose</span><span class="punc">(</span><span class="hl">target</span><span class="punc">):</span>      <span class="cmt"># 函数内：这个敌人叫 target</span>
+    <span class="kw">if</span> <span class="obj">hero</span><span class="punc">.</span><span class="fn">distanceTo</span><span class="punc">(</span>target<span class="punc">)</span> &lt; <span class="num">5</span><span class="punc">:</span>
+        <span class="obj">hero</span><span class="punc">.</span><span class="fn">attack</span><span class="punc">(</span>target<span class="punc">)</span>
+
+enemy = <span class="obj">hero</span><span class="punc">.</span><span class="fn">findNearestEnemy</span><span class="punc">()</span>  <span class="cmt"># 函数外：同一个敌人叫 enemy</span>
+<span class="fn">cleaveWhenClose</span><span class="punc">(</span><span class="hl">enemy</span><span class="punc">)</span>          <span class="cmt"># enemy 被传进去，变成 target</span></pre>
+</div>
+
+<div class="remember-box">
+    <span class="remember-label">关键洞察：</span>同一个食人魔，在函数外用 <code>enemy</code> 这个名字称呼，进了函数就改用 <code>target</code> 称呼。名字变了，指的还是同一个家伙。这就是参数"传递"的本质——传的是同一份信息，只是换了个内部代号。
+</div>
+
+<!-- ==================== 7.4 ==================== -->
+<div class="section-header" id="section-7-4">
+    <h2>7.4 用好参数</h2>
+    <div class="en-title">Making the Most of Parameters</div>
+</div>
+
+<h3 id="sec-7-4-1">7.4.1 形参当变量用（Use the Parameter as a Variable）</h3>
+
+<h4>7.4.1.1 想怎么用就怎么用
+    <span class="en">Use it however you like</span>
+</h4>
+
+<p>关卡反复提醒：<strong>"target 可以像其他变量一样使用！"</strong> 你可以拿它去判断（<code>if target:</code>）、去攻击（<code>hero.attack(target)</code>）、去测距离（<code>hero.distanceTo(target)</code>），甚至读取它的位置（<code>target.pos.x</code>）。它就是个普通变量，只不过值来自外部。</p>
+
+<h3 id="sec-7-4-2">7.4.2 加入额外指令（Adding Extra Instructions）</h3>
+
+<h4>7.4.2.1 函数里不止能用形参
+    <span class="en">A function can do more than use its parameter</span>
+</h4>
+
+<p>"捉迷藏"关卡指出：<strong>"你可以在函数内将形参作为变量使用。当然，你也可以添加与形参无关的额外指令。"</strong> 比如下面这个函数，先用形参 <code>item</code> 去捡东西，再做一件和 <code>item</code> 无关的事——回到营地中央躲起来：</p>
+
+<div class="code-block">
+    <div class="dots"><span class="red"></span><span class="yellow"></span><span class="green"></span></div>
+<pre><span class="kw">def</span> <span class="fn">checkTakeHide</span><span class="punc">(</span><span class="hl">item</span><span class="punc">):</span>
+    <span class="kw">if</span> item<span class="punc">:</span>
+        <span class="obj">hero</span><span class="punc">.</span><span class="fn">moveXY</span><span class="punc">(</span>item<span class="punc">.</span>pos<span class="punc">.</span>x<span class="punc">,</span> item<span class="punc">.</span>pos<span class="punc">.</span>y<span class="punc">)</span>  <span class="cmt"># 用形参：去捡发光石</span>
+        <span class="obj">hero</span><span class="punc">.</span><span class="fn">moveXY</span><span class="punc">(</span><span class="num">40</span><span class="punc">,</span> <span class="num">34</span><span class="punc">)</span>               <span class="cmt"># 额外指令：躲到营地中央</span></pre>
+</div>
+
+<h3 id="sec-7-4-3">7.4.3 一个函数，多次调用（Call It as Many Times as You Want）</h3>
+
+<h4>7.4.3.1 复用，是参数的最大价值
+    <span class="en">Reuse is the greatest value</span>
+</h4>
+
+<p>"捉迷藏"还强调：<strong>"同一个函数可以调用任意多次。"</strong> 这正是参数威力的集中体现——定义一次 <code>checkTakeHide(item)</code>，在右上角、左上角、各个搜索点反复调用，每次传入当地搜到的发光石。一份逻辑，覆盖整张地图。</p>
+
+<!-- ==================== 7.5 ==================== -->
+<div class="section-header" id="section-7-5">
+    <h2>7.5 实战关卡精讲</h2>
+    <div class="en-title">Level Strategy &amp; Analysis</div>
+</div>
+
+<p>这一节聚焦每一关的<strong>策略、思路与算法设计</strong>，看懂"为什么这样传参"，你就能自己写出完整解法。</p>
+
+<h3 id="sec-7-5-1">7.5.1 边地之叉（Backwoods Fork）</h3>
+
+<h4>7.5.1.1 策略：一个函数守两个路口
+    <span class="en">Strategy: one function guards two forks</span>
+</h4>
+
+<div class="figure">
+    <img src="https://assets.koudashijie.com/knowledge/7-5-1-1_backwoods_fork.png" alt="边地之叉关卡">
+    <div class="caption">图2：边地之叉——同一个 checkAndAttack 函数，分别处理上、下两路敌人</div>
+</div>
+
+<p>这是你第一次<strong>定义带参数的函数</strong>。地图有上、下两个路口，难点在于<strong>意识到两处的逻辑完全一样，只是目标敌人不同</strong>——这正是参数的用武之地。算法思路是：把"如果目标存在就攻击，然后回防"封进 <code>checkAndAttack(target)</code>，主循环里走到上路口找好 <code>topEnemy</code> 传进去，再走到下路口找好 <code>bottomEnemy</code> 传进去。</p>
+
+<div class="info-box">
+    <span class="info-label">思路要点：</span>注意函数体最后那句"回到 (43, 34)"是<strong>与参数无关的额外指令</strong>——无论打没打到敌人，都要回防中点。这体现了"形参 + 固定动作"的组合设计。
+</div>
+
+<h3 id="sec-7-5-2">7.5.2 盗墓者（Grave Robber）</h3>
+
+<h4>7.5.2.1 策略：用 if/else 给参数"分流"
+    <span class="en">Strategy: branch on the parameter with if/else</span>
+</h4>
+
+<div class="figure">
+    <img src="https://assets.koudashijie.com/knowledge/7-5-2-1_grave_robber.png" alt="盗墓者关卡">
+    <div class="caption">图3：盗墓者——有敌人就打敌人,没敌人就专心砸门</div>
+</div>
+
+<p>这一关把参数和 <code>if/else</code> 结合得很巧。任务是<strong>边防御食人魔、边开墓门</strong>。算法思路是写一个 <code>checkToDefend(target)</code>:如果 <code>target</code> 存在就攻击它,否则(没敌人时)就去攻击 <code>"Door"</code>。换句话说,函数根据传入参数<strong>是否为空</strong>,自动在"打敌人"和"砸门"之间切换。</p>
+
+<div class="code-block">
+    <div class="dots"><span class="red"></span><span class="yellow"></span><span class="green"></span></div>
+<pre><span class="kw">def</span> <span class="fn">checkToDefend</span><span class="punc">(</span>target<span class="punc">):</span>
+    <span class="kw">if</span> target<span class="punc">:</span>
+        <span class="obj">hero</span><span class="punc">.</span><span class="fn">attack</span><span class="punc">(</span>target<span class="punc">)</span>     <span class="cmt"># 有敌人 → 打敌人</span>
+    <span class="kw">else</span><span class="punc">:</span>
+        <span class="obj">hero</span><span class="punc">.</span><span class="fn">attack</span><span class="punc">(</span><span class="str">"Door"</span><span class="punc">)</span>   <span class="cmt"># 没敌人 → 砸门(注意用字符串)</span></pre>
+</div>
+
+<div class="tip-box">
+    <span class="tip-label">算法妙处：</span><code>attack</code> 既能接收一个敌人对象(<code>target</code>),也能接收一个字符串名字(<code>"Door"</code>)。让函数在"没目标"时去做另一件有意义的事,是高效利用每一次循环的好策略。
+</div>
+
+<p style="margin: 10px 0; color: #555;">立即访问 <a href="https://codecombat.cn" target="_blank" style="color: #1F7A44; font-weight: 700; text-decoration: none;">codecombat.cn</a> 开启你的 CodeCombat 编程冒险之旅！</p>
+
+<h3 id="sec-7-5-3">7.5.3 墓地阴魂（Tomb of the Forgotten）</h3>
+
+<h4>7.5.3.1 策略：打完就撤，攻击与走位结合
+    <span class="en">Strategy: hit and retreat</span>
+</h4>
+
+<div class="figure">
+    <img src="https://assets.koudashijie.com/knowledge/7-5-3-1_tomb_ghost.png" alt="墓地阴魂关卡">
+    <div class="caption">图4：墓地阴魂——攻击一下立刻退回红色标记躲避骷髅怪</div>
+</div>
+
+<p>这一关的战术核心是<strong>"打了就跑"</strong>:出口被堵,还有骷髅怪在游荡,不能恋战。算法思路是写一个 <code>hitOrHide(target)</code>:如果 <code>target</code> 存在,就攻击它,<strong>然后立刻移动到红色安全标记</strong>。攻击和走位被绑成一个动作,确保英雄出手后马上脱离危险。</p>
+
+<div class="remember-box">
+    <span class="remember-label">设计思想：</span>这又是"形参 + 额外指令"的经典模式——形参 <code>target</code> 负责"攻击谁",而紧随其后的 <code>moveXY</code> 是与参数无关的固定走位。把"攻击 + 撤退"打包,一次调用就完成一轮安全输出。
+</div>
+
+<h3 id="sec-7-5-4">7.5.4 捉迷藏（Hide and Seek）</h3>
+
+<h4>7.5.4.1 策略：收集型任务的参数化
+    <span class="en">Strategy: parameterize a collection task</span>
+</h4>
+
+<div class="figure">
+    <img src="https://assets.koudashijie.com/knowledge/7-5-4-1_hide_and_seek.png" alt="捉迷藏关卡">
+    <div class="caption">图5：捉迷藏——每到一个 X 标记搜发光石,捡到就躲回中央</div>
+</div>
+
+<p>任务是收集 4 颗发光石,且每次捡到后都要躲回营地中央。算法思路是:定义 <code>checkTakeHide(item)</code>——若 <code>item</code> 存在,先移动到它的位置捡起,再回到中央 <code>(40, 34)</code> 躲藏。主循环里,英雄逐个走到各 X 标记,在每处 <code>findNearestItem()</code> 搜一颗石头,把结果作为实参传给同一个函数。</p>
+
+<div class="info-box">
+    <span class="info-label">关键算法点：</span>每到一个新地点,都要<strong>重新</strong> <code>findNearestItem()</code> 并把新结果传进去。这样同一个函数被反复调用、每次处理不同的石头,完美诠释了"一个函数调用多次"的复用思想。
+</div>
+
+<h3 id="sec-7-5-5">7.5.5 森林矿工（Woodland Cleaver Mine）</h3>
+
+<h4>7.5.5.1 策略：用参数判断"该打还是该喊话"
+    <span class="en">Strategy: attack or call workers</span>
+</h4>
+
+<div class="figure">
+    <img src="https://assets.koudashijie.com/knowledge/7-5-5-1_forest_miner.png" alt="森林矿工关卡">
+    <div class="caption">图6：森林矿工——安全时喊农民来挖矿,有敌人时先清剿</div>
+</div>
+
+<p>这一关要保护矿工。算法巧思在于:<strong>只在没有敌人时才呼叫农民</strong>,否则贸然喊话会暴露并引来攻击。思路是写 <code>checkEnemyOrSafe(target)</code>:如果 <code>target</code> 存在就攻击,否则用 <code>hero.say("All clear!")</code> 喊农民开工。和"盗墓者"如出一辙——根据参数是否为空,在两种行为间分流。</p>
+
+<div class="tip-box">
+    <span class="tip-label">举一反三:</span>关卡只给了右上角 X 标记的范例代码,要你<strong>照着写左下角的</strong>。模式完全一致:移动 → <code>findNearestEnemy()</code> 存入变量 → 把变量传给 <code>checkEnemyOrSafe</code>。改坐标、换变量名即可。
+</div>
+
+<h3 id="sec-7-5-6">7.5.6 交给劈斩（Leave It to Cleaver）</h3>
+
+<h4>7.5.6.1 策略：参数 + 距离 + 技能三重判断
+    <span class="en">Strategy: parameter + distance + skill check</span>
+</h4>
+
+<div class="figure">
+    <img src="https://assets.koudashijie.com/knowledge/7-5-6-1_leave_to_cleaver.png" alt="交给劈斩关卡">
+    <div class="caption">图7：交给劈斩——等敌人靠近,劈斩就绪时放大招,否则普攻</div>
+</div>
+
+<p>这一关把前几个单元的本领全串了起来。算法思路是写 <code>cleaveWhenClose(target)</code>:先用 <code>hero.distanceTo(target)</code> 判断目标是否靠近(小于 5 米),近了再嵌套判断 <code>isReady("cleave")</code>——技能好了就 <code>cleave</code>,没好就普通 <code>attack(target)</code>。参数、距离比较、嵌套 if/else、技能冷却,四样齐上阵。</p>
+
+<div class="code-block">
+    <div class="dots"><span class="red"></span><span class="yellow"></span><span class="green"></span></div>
+<pre><span class="kw">def</span> <span class="fn">cleaveWhenClose</span><span class="punc">(</span>target<span class="punc">):</span>
+    <span class="kw">if</span> <span class="obj">hero</span><span class="punc">.</span><span class="fn">distanceTo</span><span class="punc">(</span>target<span class="punc">)</span> &lt; <span class="num">5</span><span class="punc">:</span>   <span class="cmt"># 用形参测距</span>
+        <span class="kw">if</span> <span class="obj">hero</span><span class="punc">.</span><span class="fn">isReady</span><span class="punc">(</span><span class="str">"cleave"</span><span class="punc">)</span><span class="punc">:</span>
+            <span class="obj">hero</span><span class="punc">.</span><span class="fn">cleave</span><span class="punc">()</span>
+        <span class="kw">else</span><span class="punc">:</span>
+            <span class="obj">hero</span><span class="punc">.</span><span class="fn">attack</span><span class="punc">(</span>target<span class="punc">)</span>        <span class="cmt"># 还是用形参攻击</span></pre>
+</div>
+
+<div class="remember-box">
+    <span class="remember-label">调用前先检查:</span>主循环里调用前,记得先 <code>if enemy:</code> 确认敌人存在再 <code>cleaveWhenClose(enemy)</code>。否则把空值传进去测距离会出错。
+</div>
+
+<h3 id="sec-7-5-7">7.5.7 林地陷阱（概念挑战 · Forest Trap）</h3>
+
+<h4>7.5.7.1 策略：用距离过滤"该不该打"
+    <span class="en">Strategy: filter targets by distance</span>
+</h4>
+
+<p>这是<strong>概念挑战</strong>,要求自己定义一个带参数的函数。战术核心是:<strong>只打靠近的食人魔,放过远处的投矛手</strong>——因为去碰远处的投矛手会引来一大群敌人。算法思路与"交给劈斩"几乎一致:<code>cleaveWhenClose(target)</code> 用 <code>distanceTo</code> 把距离当成"过滤器",只有近到一定范围(如 5 米内)的目标才出手,并优先用 <code>cleave</code> 防止敌人聚团。</p>
+
+<div class="info-box">
+    <span class="info-label">算法本质:</span>关卡提示"确保不攻击投矛手的最简单办法是检查 distanceTo 小于特定数值"。这说明<strong>距离判断可以充当一道筛选条件</strong>——参数传进来后,先用它算距离,决定这个目标值不值得打。这是一种非常实用的目标筛选思路。
+</div>
+
+<!-- ==================== 7.6 ==================== -->
+<div class="section-header" id="section-7-6">
+    <h2>7.6 常见错误</h2>
+    <div class="en-title">Common Mistakes</div>
+</div>
+
+<h3 id="sec-7-6-1">7.6.1 新手最容易踩的坑（Pitfalls for Beginners）</h3>
+
+<h4>7.6.1.1 参数环节的典型问题
+    <span class="en">Typical issues with parameters</span>
+</h4>
+
+<div class="figure">
+    <img src="https://assets.koudashijie.com/knowledge/7-6-1-1_common_errors.png" alt="参数常见错误示意">
+    <div class="caption">图8：忘记传实参、形参名写错,是参数环节最常见的失误</div>
+</div>
+
+<div class="warn-box">
+    <span class="warn-label">易错点清单：</span>
+    <ul style="margin: 8px 0 0 20px;">
+        <li>定义了形参却忘记传实参——调用时括号空着，函数收不到信息。</li>
+        <li>形参名前后不一致——定义时叫 <code>target</code>，函数体里却写成了 <code>enemy</code>。</li>
+        <li>把空值当实参传入——没先 <code>if</code> 检查就传，导致测距离、攻击时出错。</li>
+        <li>给自定义函数误加 <code>hero.</code>——调用 <code>cleaveWhenClose(enemy)</code> 不要写 <code>hero.</code>。</li>
+        <li>实参顺序错位——多个参数时，传入顺序要和形参顺序一一对应。</li>
+        <li>误以为改形参就能改外部变量——形参只是同一对象的内部代号。</li>
+    </ul>
+</div>
+
+<!-- ==================== 小结 ==================== -->
+<div class="summary-card" id="section-summary">
+<h3>本单元小结 ✨</h3>
+
+    <p>恭喜你完成边际森林第七单元！你的函数从"只会干固定的活"升级到了"听从指挥、灵活处理不同目标"。这是迈向真正模块化编程的关键一步。来回顾一下核心概念：</p>
+
+    <table class="styled-table">
+        <thead><tr><th>核心概念</th><th>关键点</th><th>对应关卡</th></tr></thead>
+        <tbody>
+            <tr><td>参数</td><td>给函数传信息，带来灵活性</td><td>全部</td></tr>
+            <tr><td>形参 Parameter</td><td>定义时括号里的变量</td><td>边地之叉</td></tr>
+            <tr><td>实参 Argument</td><td>调用时括号里的具体信息</td><td>边地之叉</td></tr>
+            <tr><td>形参就是变量</td><td>可像普通变量一样使用</td><td>盗墓者</td></tr>
+            <tr><td>同一对象两个名</td><td>外 enemy，内 target</td><td>交给劈斩</td></tr>
+            <tr><td>额外指令</td><td>函数里可做与形参无关的事</td><td>墓地阴魂、捉迷藏</td></tr>
+            <tr><td>多次调用</td><td>一函数处理多个目标</td><td>捉迷藏、森林矿工</td></tr>
+            <tr><td>参数 + if/else</td><td>按参数是否为空分流</td><td>盗墓者、森林矿工</td></tr>
+            <tr><td>参数 + 距离过滤</td><td>用距离筛选该不该打</td><td>交给劈斩、林地陷阱</td></tr>
+        </tbody>
+    </table>
+
+    <p style="text-align: center; margin-top: 20px; font-size: 1.1em;">
+        会传参、懂复用的英雄，才是真正灵活机变的英雄。<br>
+        继续守护边际森林吧，勇敢的程序员！🌲🛡️🎯
+    </p>
+</div>
+
+
+<div class="member-promo" style="background: linear-gradient(135deg,#e8f5e9 0%,#fff 100%); border: 2px solid #2E9E5B; border-radius: 14px; padding: 24px 28px; margin: 30px 0; text-align: center;">
+    <h3 style="color: #1F7A44; border: none; margin-top: 0; font-size: 1.3em;">🎮 想在 CodeCombat 中实战这些关卡吗？</h3>
+    <p style="margin: 10px 0; font-size: 1.05em;">加入 <strong>CodeCombat（codecombat.cn）</strong> 会员，即可解锁全部编程关卡，跟随英雄安雅和塔林在真实游戏环境中边玩边学！通过实战闯关巩固本单元所学的每一个知识点，让编程学习不再枯燥。</p>
+    
+</div>
+
+
+
+</div><!-- end page-wrapper -->
+
+<script>
+document.querySelectorAll('.sidebar-nav a').forEach(link => {
+    link.addEventListener('click', () => {
+        if (window.innerWidth <= 1024) {
+            document.querySelector('.sidebar-nav').classList.remove('active');
+        }
+    });
+});
+</script>
+
+
+<div data-info-wiki-backlink style="text-align:center;padding:18px 12px;color:#64748b;font:13px/1.6 -apple-system,BlinkMacSystemFont,'Segoe UI','Microsoft YaHei',sans-serif"><a href="../index.html" style="color:#4f46e5;text-decoration:none;font-weight:700">← 返回 CodeCombat 信息百科</a></div>
+</body>
+</html>
