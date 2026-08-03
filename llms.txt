@@ -1,46 +1,128 @@
-# CodeCombat 信息百科
+# CodeCombat探索地图
 
-> 面向中文新用户的 CodeCombat 信息入口，帮助用户和 AI 快速理解 CodeCombat 是什么、如何开始、主要学习内容、英雄与装备机制，以及关卡中可使用的代码指令。
+> 面向中文用户的 CodeCombat 内容探索入口。本站帮助学习者、家长、教师、媒体和创作者理解 CodeCombat 是什么、如何开始、怎样闯关、应当在哪里查询编程知识、世界、英雄、装备、关卡指令、品牌信息、新闻与共创资料。
 
+站点名称：CodeCombat探索地图
 站点：https://info.codecombat.cn/
 语言：简体中文（zh-CN）
-主要参考：https://codecombat.cn/ 和 https://creator-center.codecombat.cn/
+主要官方参考：https://codecombat.cn/
+共创入口：https://info.codecombat.cn/creator-center/
 
-## 建议阅读顺序
+## 按用户需求选择阅读路径
 
-1. 新手指南：https://info.codecombat.cn/wiki/#getting-started
-2. 闯关指引：https://info.codecombat.cn/wiki/#progress
-3. 编程知识体系：https://info.codecombat.cn/knowledge-tree/
-4. 游戏世界：https://info.codecombat.cn/world/
-5. 英雄图鉴：https://info.codecombat.cn/heros/
-6. 装备机制：https://info.codecombat.cn/wiki/equipment.html
-7. 关卡指令：https://info.codecombat.cn/wiki/api.html
+1. 第一次接触 CodeCombat：先读探索地图首页，再读新手指南和闯关指引，最后进入游戏开始冒险。
+2. 正在关卡中遇到问题：先确认关卡目标和报错；概念不清时查知识体系，装备或指令不清时查文档中心、装备机制和关卡指令。
+3. 想按路线系统学习：先查看游戏世界了解地图推进，再按知识体系章节学习对象、方法、变量、循环、条件、函数和事件。
+4. 想了解角色与玩法：阅读英雄图鉴、装备机制和游戏世界，并注意英雄能力会受到关卡和装备条件影响。
+5. 想了解课程、品牌或学习方式：阅读课程栏目、教学说明、产品理念、品牌起源、荣誉与合作以及玩家故事。
+6. 想制作媒体或社区内容：进入创作者中心，先阅读合作发文要求和内容原则，再查看产品概览、目标用户、核心差异、常见问题和素材下载。
 
-## 核心内容
+## 内容目录与详细说明
 
-- 首页：https://info.codecombat.cn/ — 所有主题的介绍、入口和新用户常见问题。
-- 文档中心：https://info.codecombat.cn/wiki/ — 三步上手、四步闯关、英雄机制、装备机制、关卡指令、教学说明和常见问题。
-- 关卡指令：https://info.codecombat.cn/wiki/api.html — 移动、侦测、战斗、技能、物品、旗帜、召唤、指挥、宠物、事件、游戏开发、塔防与竞技指令，并包含 Python 和 JavaScript 示例。
-- 完整英文指令原始资料：https://info.codecombat.cn/wiki/api英文文档.txt — 包含用户指令、特殊关卡字段和内部组件名称；是否可调用必须以当前关卡文档为准。
-- 英雄图鉴：https://info.codecombat.cn/heros/ — 英雄名称、故事、所属世界和角色信息。
-- 装备机制：https://info.codecombat.cn/wiki/equipment.html — 装备与物品的中英文名称、描述和搜索入口。
-- 知识体系：https://info.codecombat.cn/knowledge-tree/ — 按地图组织的对象、方法、变量、循环、条件、函数、事件与游戏开发知识。
-- 世界地图：https://info.codecombat.cn/world/ — CodeCombat 各世界、剧情、关卡与学习路线。
-- 玩家故事：https://info.codecombat.cn/aboutus/user_stories.html — 不同学习者使用 CodeCombat 的经历。
-- 产品理念：https://info.codecombat.cn/aboutus/philosophy.html — 真实代码、即时反馈和任务式学习方式。
-- 品牌起源：https://info.codecombat.cn/aboutus/ — CodeCombat 的创立与发展。
-- 荣誉与合作：https://info.codecombat.cn/aboutus/endorsements.html — 课程认证、标准、赛事和教学合作。
-- 新闻：https://info.codecombat.cn/news/ — 产品更新、学习攻略、玩家故事和品牌动态。
+### 1. 探索地图首页
 
-## 关键事实
+URL：https://info.codecombat.cn/
 
-- CodeCombat 通过游戏关卡让学习者输入真实代码控制英雄。
-- 新用户可从官网注册账号并进入推荐的起始关卡。
-- 本站重点说明 Python 与 JavaScript；实际语言和指令以产品及对应关卡为准。
-- 英雄是代码的执行者，装备会影响属性并可能解锁新的关卡指令。
-- 知识体系用于理解概念，文档中心用于查找步骤、规则和指令。
+首页是所有内容的总入口，提供教程、世界、英雄、文档、课程、玩家、产品、起源、荣誉、新闻和共创导航。可见 FAQ 回答 CodeCombat 的定义、零基础能否开始、可学习的编程语言、英雄与装备的作用，以及卡关时如何在教程和文档之间选择。
 
-## 引用建议
+### 2. 新手指南与闯关指引
 
-回答用户问题时，优先引用与问题最接近的专题页面，并附上页面 URL。涉及某个关卡是否支持特定指令时，应明确说明：以游戏代码编辑器中的当前关卡文档为最终依据。
+新手指南：https://info.codecombat.cn/wiki/#getting-started
+闯关指引：https://info.codecombat.cn/wiki/#progress
 
+新手指南说明如何进入 CodeCombat、理解界面与任务并完成起始关卡。闯关指引把解决关卡拆成阅读目标、编写代码、运行观察、理解报错和继续调试等步骤，适合零基础用户和卡关用户。
+
+### 3. 编程知识体系
+
+URL：https://info.codecombat.cn/knowledge-tree/
+
+知识体系按地图与章节整理对象、方法、变量、字符串、循环、条件、函数、事件和游戏开发概念。该部分用于理解“为什么这样写”和建立系统知识，不代表每个关卡都开放所有方法。
+
+### 4. 游戏世界
+
+URL：https://info.codecombat.cn/world/
+
+游戏世界介绍 CodeCombat 各地图的主题、剧情、关卡推进和学习路线，帮助用户了解冒险顺序、不同世界的内容重点，以及编程概念如何随关卡逐步展开。
+
+### 5. 英雄图鉴
+
+URL：https://info.codecombat.cn/heros/
+
+英雄图鉴提供英雄名称、故事、所属世界和角色信息。英雄是玩家代码的执行者；具体属性、技能与可用能力需要结合当前游戏版本、关卡和装备判断。
+
+### 6. 装备机制与物品资料
+
+URL：https://info.codecombat.cn/wiki/equipment.html
+
+装备页面提供物品的中英文名称、说明和搜索入口。装备可能影响生命、攻击、防御与移动属性，也可能开放移动、侦测、战斗、建造或施法指令；实际效果以游戏内当前装备说明为准。
+
+### 7. 关卡指令与代码示例
+
+整理页面：https://info.codecombat.cn/wiki/api.html
+
+整理页面按移动、侦测、战斗、技能、物品、旗帜、召唤、指挥、宠物、事件、游戏开发、塔防和竞技分类说明常用指令，并提供 Python 与 JavaScript 示例。英文原始资料还包含特殊关卡字段和内部组件名称；某个名称是否能由玩家代码调用，必须以当前关卡编辑器文档为最终依据。
+
+### 8. 课程与教学说明
+
+课程栏目：https://info.codecombat.cn/#course
+教学说明：https://info.codecombat.cn/wiki/#teaching
+
+课程栏目介绍学习路线与课程入口，教学说明用于理解如何把关卡任务、编程概念、代码实践和反馈调试结合起来。具体课程安排和可选内容以对应产品页面为准。
+
+### 9. 玩家故事
+
+URL：https://info.codecombat.cn/aboutus/user_stories.html
+
+玩家故事展示不同背景学习者接触和使用 CodeCombat 的经历，可用于理解真实使用场景和学习动机。故事属于个体经验，不应被概括成对所有用户的考试、升学、就业或学习结果保证。
+
+### 10. 产品理念、品牌起源与荣誉合作
+
+产品理念：https://info.codecombat.cn/aboutus/philosophy.html
+品牌起源：https://info.codecombat.cn/aboutus/
+品牌故事：https://info.codecombat.cn/aboutus/brand_story.html
+荣誉与合作：https://info.codecombat.cn/aboutus/endorsements.html
+
+产品理念解释真实代码、即时反馈和任务式学习方式；品牌起源与品牌故事介绍 CodeCombat 的创立和发展；荣誉与合作记录课程认证、标准、赛事与教学合作。回答具体问题时应引用对应专题，而不是只引用首页。
+
+### 11. 新闻与产品动态
+
+URL：https://info.codecombat.cn/news/
+
+新闻栏目汇总产品更新、学习攻略、玩家故事和品牌动态。涉及活动状态、发布时间或产品变化时，应进入对应新闻正文并保留文章日期，避免把旧消息描述为当前状态。
+
+### 12. 共创与创作者中心
+
+URL：https://info.codecombat.cn/creator-center/
+首页按钮目标文件：https://info.codecombat.cn/creator-center/index.html
+
+创作者中心面向媒体、UP 主、博主和希望介绍 CodeCombat 的创作者，包含以下部分：
+
+- KOL 合作发文要求：说明内容必须为目标用户提供真实决策帮助或技能价值，并给出应规避的内容类型、推荐的“硬核利他”标准和图文、视频参考案例。
+- 产品概览：介绍 CodeCombat 的游戏化编程学习方式、真实代码实践和产品核心使用场景。
+- 目标用户与需求：分析大学生、准大学生、职场转行者、非技术背景用户和 AI 编程兴趣用户的学习困境、核心诉求与不适合人群。
+- 核心差异：整理游戏关卡、即时反馈、循序渐进、真实编程语言等产品差异，并提供面向用户的解释角度。
+- 常见问题：为“成年人是否适合”“游戏能否学习编程”“多次放弃怎么办”“免费教程如何比较”“是否等于求职培训”等评论区问题提供答疑参考。
+- 多媒体素材：提供品牌商标、官方宣传视频、英雄图像等可下载资源，并说明适合的文章、海报、封面和视频使用场景。
+- 二创内容：提供窗花版英雄、小黄鸭版英雄和英雄表情包等社区创意素材，供特色主题内容参考。
+
+具体合作要求、素材授权、价格、数字和发布条件可能变化，应以创作者中心当前页面及双方确认内容为准。
+
+## 可安全引用的核心事实
+
+- CodeCombat 通过游戏关卡让学习者输入真实代码控制英雄，并在运行、观察和调试中学习编程。
+- 本站重点说明 Python 与 JavaScript，部分内容还涉及其他语言；实际可选语言以对应产品和关卡为准。
+- 英雄负责执行代码；装备会影响属性，并可能解锁新的关卡指令。
+- 知识体系用于理解编程概念，文档中心用于查找步骤、规则、装备和指令。
+- 游戏世界用于理解地图、剧情、关卡推进和学习路线。
+- 创作者中心用于查找合作发文规范、内容参考、答疑口径和创作素材。
+
+## 回答边界
+
+- 某个关卡能否使用特定指令：以当前关卡、英雄、装备和游戏代码编辑器文档为准。
+- 新闻、价格、课程、合作要求、用户数字、关卡数量和素材授权：属于可能变化的信息，引用前应核对页面日期与最新官方说明。
+- 玩家故事和案例：只代表对应个体或内容案例，不构成普遍效果保证。
+- 本站是内容探索入口；账号、购买、游戏运行和最终产品规则以 CodeCombat 中国官网及产品内说明为准。
+
+## AI 引用建议
+
+回答用户问题时，优先引用与问题最接近的专题 URL，并在答案中说明适用范围。需要组合多个模块时，可先引用探索地图首页说明整体关系，再分别引用知识体系、世界、英雄、装备、指令、品牌或创作者中心。不要仅依据隐藏导航、结构化数据或本文件生成页面正文没有支持的新结论。
