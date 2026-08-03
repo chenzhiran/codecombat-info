@@ -1,0 +1,775 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>边际森林知识挑战 - 函数的定义与调用</title>
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;600&family=Fira+Code&display=swap" rel="stylesheet">
+    <style>
+        /* --- 基础设置 (边际森林主题绿) --- */
+        :root {
+            --primary-color: #2E9E5B; 
+            --secondary-color: #4FBF7C;
+            --bg-color: #f7faf8;     
+            --card-bg: #FFFFFF;
+            --text-color: #14241a;   
+            --en-text-color: #6b8a76; 
+            --correct-color: #28c840;
+            --wrong-color: #ff5f57;  
+            --accent-yellow: #febc2e;
+            
+            /* 代码高亮颜色 */
+            --code-bg: #1e2a22;
+            --code-text: #b6c2ba;
+        }
+
+        body {
+            font-family: 'Poppins', 'Microsoft YaHei', sans-serif;
+            background-color: var(--bg-color);
+            background-image: radial-gradient(#d5e5d9 10%, transparent 10%);
+            background-size: 20px 20px;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            min-height: 100vh;
+            margin: 0;
+            padding: 40px 20px;
+            box-sizing: border-box;
+        }
+
+        /* --- 游戏容器 --- */
+        .game-container {
+            background: var(--card-bg);
+            width: 100%;
+            max-width: 900px; 
+            border-radius: 25px;
+            box-shadow: 0 15px 35px rgba(46,158,91,0.15);
+            padding: 40px 50px;
+            text-align: center;
+            position: relative;
+            border: 4px solid var(--secondary-color);
+            overflow: hidden; 
+        }
+
+        /* --- 顶部状态栏 --- */
+        .header-stats {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 25px;
+            font-size: 1.1rem;
+            font-weight: 600;
+            color: var(--primary-color);
+        }
+
+        .score-box {
+            background: var(--accent-yellow);
+            padding: 8px 20px;
+            border-radius: 30px;
+            color: #fff;
+            text-shadow: 1px 1px 2px rgba(0,0,0,0.2);
+            box-shadow: 0 4px 0 #d99e22;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        /* --- 进度条 --- */
+        .progress-container {
+            width: 100%;
+            height: 12px;
+            background-color: #e3ece6;
+            border-radius: 10px;
+            margin-bottom: 35px;
+            overflow: hidden;
+            box-shadow: inset 0 2px 5px rgba(0,0,0,0.05);
+        }
+        .progress-bar {
+            height: 100%;
+            width: 0%;
+            background: linear-gradient(90deg, var(--secondary-color), var(--primary-color));
+            transition: width 0.6s cubic-bezier(0.34, 1.56, 0.64, 1);
+        }
+
+        /* --- 题目区域 --- */
+        .question-area {
+            text-align: left;
+            margin-bottom: 30px;
+        }
+        
+        .question-title {
+            color: var(--text-color);
+            font-size: 1.4rem;
+            line-height: 1.6;
+            margin-bottom: 5px;
+            font-weight: bold;
+        }
+
+        .en-text {
+            display: block;
+            font-size: 1.05rem;
+            color: var(--en-text-color);
+            margin-bottom: 15px;
+            font-weight: normal;
+            line-height: 1.5;
+        }
+
+        /* --- 专属代码样式 --- */
+        .question-title code, .en-text code {
+            background-color: #e8f7ee; 
+            font-family: 'YouYuan', '幼圆', monospace;
+            font-weight: bold; 
+            color: var(--primary-color); 
+            padding: 3px 8px;
+            border-radius: 6px;
+            font-size: 1.15rem;
+            margin: 0 2px;
+            box-shadow: inset 0 1px 3px rgba(0,0,0,0.05);
+        }
+
+        /* --- 选项按钮 --- */
+        .options-grid {
+            display: grid;
+            grid-template-columns: 1fr; 
+            gap: 15px;
+        }
+
+        .option-btn {
+            background: white;
+            border: 3px solid #e3ece6;
+            padding: 15px 25px;
+            border-radius: 18px;
+            font-family: inherit;
+            cursor: pointer;
+            transition: all 0.2s cubic-bezier(0.25, 0.8, 0.25, 1);
+            color: var(--text-color);
+            text-align: left;
+            position: relative;
+            top: 0;
+            box-shadow: 0 5px 0 #c4d4c9;
+            display: flex;
+            flex-direction: column; 
+            gap: 4px;
+        }
+
+        .opt-zh {
+            font-size: 1.15rem;
+            font-weight: 600;
+        }
+
+        .opt-en {
+            font-size: 0.95rem;
+            color: var(--en-text-color);
+            font-weight: normal;
+        }
+
+        .option-code {
+            font-family: 'Fira Code', monospace;
+            background: var(--code-bg);
+            color: var(--code-text);
+            padding: 12px;
+            border-radius: 8px;
+            margin-top: 8px;
+            width: 100%;
+            border: 1px solid #314538;
+            white-space: pre-wrap; 
+            line-height: 1.5;
+            box-sizing: border-box;
+            text-align: left;
+        }
+
+        .option-btn.correct .opt-en, .option-btn.wrong .opt-en {
+            color: rgba(255,255,255,0.85); 
+        }
+        .option-btn.correct .option-code, .option-btn.wrong .option-code {
+            background: rgba(0,0,0,0.25);
+            border-color: transparent;
+            color: white;
+        }
+
+        .option-btn:hover:not([disabled]) {
+            border-color: var(--secondary-color);
+            transform: translateY(-3px);
+            box-shadow: 0 8px 0 #95b8a0;
+        }
+
+        .option-btn:active:not([disabled]) {
+            top: 5px;
+            box-shadow: 0 0 0 #bdc3c7;
+        }
+        
+        .option-btn[disabled] {
+            cursor: default;
+        }
+
+        .option-btn.correct {
+            background-color: var(--correct-color);
+            color: white;
+            border-color: var(--correct-color);
+            box-shadow: 0 5px 0 #1f9c31;
+        }
+
+        .option-btn.wrong {
+            background-color: var(--wrong-color);
+            color: white;
+            border-color: var(--wrong-color);
+            box-shadow: 0 5px 0 #c24640;
+            animation: shake 0.5s;
+        }
+
+        /* --- 解析区域 --- */
+        .feedback-section {
+            display: none; 
+            text-align: left;
+            background: #e8f7ee;
+            padding: 25px;
+            border-radius: 18px;
+            margin-top: 30px;
+            border-left: 6px solid;
+            animation: slideUp 0.4s ease-out;
+        }
+        .feedback-section.correct { border-color: var(--correct-color); background: #eafaf1;}
+        .feedback-section.wrong { border-color: var(--wrong-color); background: #fceaea; }
+
+        .feedback-title {
+            font-weight: 600;
+            font-size: 1.2rem;
+            margin-bottom: 10px;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+        .correct .feedback-title { color: var(--correct-color); }
+        .wrong .feedback-title { color: var(--wrong-color); }
+
+        .explanation-text {
+            color: var(--text-color);
+            line-height: 1.6;
+            font-size: 1.05rem;
+        }
+
+        .next-btn {
+            background: var(--primary-color);
+            color: white;
+            border: none;
+            padding: 12px 35px;
+            border-radius: 50px;
+            font-size: 1.1rem;
+            font-family: inherit;
+            font-weight: 600;
+            cursor: pointer;
+            margin-top: 20px;
+            box-shadow: 0 5px 0 #1F7A44;
+            transition: all 0.2s;
+            float: right; 
+        }
+        .next-btn:hover { filter: brightness(1.1); transform: translateY(-2px); }
+        .next-btn:active { transform: translateY(5px); box-shadow: none; }
+
+        /* --- 结算画面 --- */
+        .end-screen {
+            display: none;
+            padding: 20px 0;
+        }
+        .end-title { font-size: 2.2rem; color: var(--primary-color); margin-bottom: 10px; }
+        .end-score-box {
+            background: var(--accent-yellow);
+            color: white;
+            padding: 20px 40px;
+            border-radius: 25px;
+            display: inline-block;
+            margin: 30px 0;
+            box-shadow: 0 8px 0 #d99e22;
+        }
+        .end-score { font-size: 3.5rem; font-weight: bold; line-height: 1; }
+        .end-desc { color: var(--en-text-color); font-size: 1.1rem; margin-bottom: 30px; }
+        
+        .perfect-score-text {
+            background: linear-gradient(45deg, #FFD700, #FF8C00);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            font-weight: 800;
+        }
+
+        /* --- 动画 --- */
+        @keyframes shake {
+            0%, 100% { transform: translateX(0); }
+            20%, 60% { transform: translateX(-8px); }
+            40%, 80% { transform: translateX(8px); }
+        }
+        @keyframes slideUp {
+            from { opacity: 0; transform: translateY(20px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+        .confetti {
+            position: absolute;
+            width: 12px; height: 12px;
+            background-color: #f00;
+            border-radius: 3px;
+            animation: fall linear forwards;
+            z-index: 10;
+        }
+        @keyframes fall {
+            to { transform: translateY(100vh) rotate(720deg); opacity: 0; }
+        }
+
+    </style>
+</head>
+<body>
+
+    <div class="game-container">
+        <div id="quiz-view">
+            <div class="header-stats">
+                <span id="level-indicator">Level 1 / 20</span>
+                <div class="score-box">⭐ <span id="score">0</span></div>
+            </div>
+
+            <div class="progress-container">
+                <div class="progress-bar" id="progress-bar"></div>
+            </div>
+
+            <div class="question-area" id="question-container">
+            </div>
+
+            <div class="options-grid" id="options-container">
+            </div>
+
+            <div class="feedback-section" id="feedback-area">
+                <div class="feedback-title" id="feedback-title"></div>
+                <div class="explanation-text" id="explanation-text"></div>
+                <div style="overflow: hidden;"> 
+                    <button class="next-btn" onclick="nextQuestion()">下一题 ➔</button>
+                </div>
+            </div>
+        </div>
+
+        <div id="end-screen" class="end-screen">
+        </div>
+    </div>
+
+    <script>
+        // --- 题目数据 (完整20题，完美结合 Unit 6: 函数的定义与调用) ---
+        const quizData = [
+            {
+                qZh: "1. 在“乡村巡游者”关卡中，提到在村庄中巡逻最大的痛点是什么？",
+                qEn: "In the 'Village Rover' level, what is mentioned as the biggest pain point of patrolling the village?",
+                options: [
+                    { zh: "A. 敌人的数量太多", en: "Too many enemies" },
+                    { zh: "B. 每次巡逻都需要很长时间", en: "Every patrol takes a long time" },
+                    { zh: "C. 在村庄中巡逻是很无聊的重复工作", en: "Patrolling is boring repetition" },
+                    { zh: "D. 武器造成的伤害太低", en: "Weapon damage is too low" }
+                ],
+                correct: 2, 
+                descZh: "解析：关卡一开始就点出了痛点：“在村庄中巡逻是很无聊的重复工作。”。每到一个巡逻点，都要重复写同样的代码。",
+                descEn: "Explanation: The level points out the pain point right away: 'Patrolling is boring repetition.'. At every patrol point, you have to repeat the same code."
+            },
+            {
+                qZh: "2. 使用函数能够一次性带来哪三大好处？",
+                qEn: "What are the three main benefits of using functions?",
+                options: [
+                    { zh: "A. 增加金币、恢复血量、提升速度", en: "Gain gold, restore health, increase speed" },
+                    { zh: "B. 浓缩代码、避免重复、提升可读性", en: "Condense code, avoid repetition, improve readability" },
+                    { zh: "C. 自动寻找敌人、自动建造、自动寻路", en: "Auto-find enemies, auto-build, auto-pathfind" },
+                    { zh: "D. 隐藏错误、加快运行、防止崩溃", en: "Hide errors, run faster, prevent crashes" }
+                ],
+                correct: 1,
+                descZh: "解析：函数之所以重要，是因为它能浓缩代码、避免重复，并且通过有意义的名字提升代码的可读性。",
+                descEn: "Explanation: Functions are important because they condense code, avoid repetition, and improve readability through meaningful names."
+            },
+            {
+                qZh: "3. 关于英雄每天都在使用的 `attack` 命令，以下哪种说法是正确的？",
+                qEn: "Which of the following statements is true about the `attack` command the hero uses every day?",
+                options: [
+                    { zh: "A. 它是 Python 特有的关键字", en: "It is a Python-specific keyword" },
+                    { zh: "B. 它是一个变量", en: "It is a variable" },
+                    { zh: "C. 它实际上就是一个已经被定义好的函数，你只是在调用它", en: "It is actually a pre-defined function, and you are just calling it" },
+                    { zh: "D. 它是一种特殊的数据类型", en: "It is a special data type" }
+                ],
+                correct: 2,
+                descZh: "解析：当你写 `hero.attack(enemy)` 时，这是在调用（calling 或者说 invoking）一个函数，名为 attack。",
+                descEn: "Explanation: When you write `hero.attack(enemy)`, you are calling (or invoking) a function named attack."
+            },
+            {
+                qZh: "4. “函数”在编程中的定义究竟是什么？",
+                qEn: "What exactly is the definition of a 'Function' in programming?",
+                options: [
+                    { zh: "A. 一段被命名、可以重复使用的代码", en: "A named, reusable block of code" },
+                    { zh: "B. 只能用于计算数字的公式", en: "A formula used only for calculating numbers" },
+                    { zh: "C. 专门用来寻找敌人的代码", en: "Code specifically used to find enemies" },
+                    { zh: "D. 程序的结束标志", en: "The end marker of a program" }
+                ],
+                correct: 0,
+                descZh: "解析：函数（Function）是一段被命名、可以重复使用的代码。你把若干行代码“打包”在一起，给这个包起个名字。",
+                descEn: "Explanation: A function is a named, reusable block of code. You 'package' several lines of code together and give it a name."
+            },
+            {
+                qZh: "5. 一个完整的函数包含哪两个必不可少的组成部分？",
+                qEn: "A complete function consists of which two essential parts?",
+                options: [
+                    { zh: "A. 函数变量 和 函数循环", en: "Function variable and function loop" },
+                    { zh: "B. 函数头 和 函数尾", en: "Function head and function tail" },
+                    { zh: "C. 函数名 和 函数体", en: "Function Name and Function Body" },
+                    { zh: "D. 函数参数 和 函数返回值", en: "Function parameter and function return value" }
+                ],
+                correct: 2,
+                descZh: "解析：定义一个函数，它含有两部分：函数名和函数体。函数名用来调用，函数体是实际执行的代码。",
+                descEn: "Explanation: Defining a function involves two parts: the Function Name and the Function Body. The name is for calling it, and the body is the code executed."
+            },
+            {
+                qZh: "6. 如果把函数比作一台机器（黑箱比喻），那么函数名和函数体分别相当于什么？",
+                qEn: "If a function is compared to a machine (the Black Box metaphor), what do the function name and function body correspond to?",
+                options: [
+                    { zh: "A. 名字是燃料，函数体是烟囱", en: "Name is fuel, body is the chimney" },
+                    { zh: "B. 名字是机器外贴的标签/按钮，函数体是机器内部运转的零件和工序", en: "Name is the label/button on the outside, body is the internal parts and processes" },
+                    { zh: "C. 名字是说明书，函数体是保修卡", en: "Name is the manual, body is the warranty card" },
+                    { zh: "D. 名字是外壳，函数体是电源线", en: "Name is the casing, body is the power cord" }
+                ],
+                correct: 1,
+                descZh: "解析：机器外面贴着名字（函数名），机器内部装着一整套零件和工序（函数体）。按下名字按钮，机器就会完成整套工作。",
+                descEn: "Explanation: The machine has a name label on the outside (function name), and internal parts/processes (function body). Pressing the button runs the whole process."
+            },
+            {
+                qZh: "7. 在 Python 中，开启一个函数定义必须使用哪个关键字？",
+                qEn: "In Python, which keyword must be used to start a function definition?",
+                options: [
+                    { zh: "A. `define`", en: "" },
+                    { zh: "B. `func`", en: "" },
+                    { zh: "C. `function`", en: "" },
+                    { zh: "D. `def`", en: "" }
+                ],
+                correct: 3,
+                descZh: "解析：在 Python 里，定义函数要用关键字 `def`（define 的缩写，意为“定义”）。",
+                descEn: "Explanation: In Python, defining a function uses the keyword `def` (short for define)."
+            },
+            {
+                qZh: "8. 根据函数的语法解剖规则，以下哪一种定义格式是完全正确的？",
+                qEn: "According to the anatomy of function syntax, which of the following definition formats is completely correct?",
+                options: [
+                    { zh: "A.", en: "", code: "def attackEnemy" },
+                    { zh: "B.", en: "", code: "def attackEnemy():" },
+                    { zh: "C.", en: "", code: "def attackEnemy() {" },
+                    { zh: "D.", en: "", code: "def attackEnemy:" }
+                ],
+                correct: 1,
+                descZh: "解析：正确的语法骨架是由四个部分组成：关键字 `def`、一个函数名、一对圆括号 `()` 加冒号 `:`。选项B完全正确。",
+                descEn: "Explanation: The correct syntax consists of four parts: the `def` keyword, a function name, parentheses `()`, and a colon `:`. Option B is correct."
+            },
+            {
+                qZh: "9. 关于函数的“定义”和“调用”，最大的区别是什么？",
+                qEn: "What is the biggest difference between 'defining' and 'calling' a function?",
+                options: [
+                    { zh: "A. 定义只能写一次，调用也只能写一次", en: "Defining can only be done once, and calling can only be done once" },
+                    { zh: "B. 定义是把代码存起来暂不执行，调用是立即执行函数体里的代码", en: "Defining saves the code without running it, while calling immediately executes the code in the function body" },
+                    { zh: "C. 定义需要加括号，调用不需要", en: "Defining requires parentheses, calling does not" },
+                    { zh: "D. 没有任何区别，它们是同一个意思", en: "No difference, they mean the same thing" }
+                ],
+                correct: 1,
+                descZh: "解析：定义函数只是把代码“存”起来，并不会立刻运行。就像写好一份菜谱，要等你照着做（调用）时才会执行。",
+                descEn: "Explanation: Defining a function simply 'saves' the code without running it. It's like writing a recipe, it only executes when you follow it (call it)."
+            },
+            {
+                qZh: "10. 如果你要调用你自己刚刚定义好的 `findAndAttackEnemy` 函数，正确的写法是哪一个？",
+                qEn: "If you want to call your newly defined `findAndAttackEnemy` function, which is the correct syntax?",
+                options: [
+                    { zh: "A.", en: "", code: "findAndAttackEnemy" },
+                    { zh: "B.", en: "", code: "hero.findAndAttackEnemy()" },
+                    { zh: "C.", en: "", code: "findAndAttackEnemy()" },
+                    { zh: "D.", en: "", code: "def findAndAttackEnemy()" }
+                ],
+                correct: 2,
+                descZh: "解析：调用函数时，写下函数名，后面跟一对圆括号即可，如 `findAndAttackEnemy()`。不要漏掉括号，也不要加 `hero.`。",
+                descEn: "Explanation: To call a function, write the function name followed by parentheses, like `findAndAttackEnemy()`. Do not omit the parentheses or add `hero.`."
+            },
+            {
+                qZh: "11. 为什么在调用自己写的 `findAndAttackEnemy()` 时，前面不能加 `hero.`？",
+                qEn: "Why shouldn't you add the `hero.` prefix when calling your custom `findAndAttackEnemy()` function?",
+                options: [
+                    { zh: "A. 因为加了 hero 会让函数运行变慢", en: "Because adding hero slows down the function" },
+                    { zh: "B. 因为调用函数时不要加 hero，因为函数由你定义，而不是英雄自带的本领", en: "Because the function is defined by you, not a built-in ability of the hero" },
+                    { zh: "C. 因为 hero 不在村庄里", en: "Because the hero is not in the village" },
+                    { zh: "D. 因为函数名太长了", en: "Because the function name is too long" }
+                ],
+                correct: 1,
+                descZh: "解析：调用函数时不要加 hero，因为函数由你定义，而不是英雄。`attack` 等是英雄的本领要加，自己 def 的直接喊名字。",
+                descEn: "Explanation: Do not add hero when calling because the function is defined by you, not the hero. Built-in abilities need it, custom functions don't."
+            },
+            {
+                qZh: "12. 在“乡村巡游者”关卡中，`def findAndAttackEnemy():` 这个定义代码块应该放在哪里最合适？",
+                qEn: "In the 'Village Rover' level, where is the most appropriate place to put the `def findAndAttackEnemy():` definition block?",
+                options: [
+                    { zh: "A. 放在 `while True:` 循环的内部最后一行", en: "At the very last line inside the `while True:` loop" },
+                    { zh: "B. 放在文件顶部，并在调用它之前定义", en: "At the top of the file, defined before it is called" },
+                    { zh: "C. 放在整个代码的最后一行", en: "At the very last line of the entire code" },
+                    { zh: "D. 写在敌人的生成代码里", en: "Inside the enemy spawning code" }
+                ],
+                correct: 1,
+                descZh: "解析：`def` 定义要写在调用之前（通常放在文件顶部）。函数定义部分不在 `while` 循环里——它独立存在。",
+                descEn: "Explanation: `def` definitions must be written before they are called (usually at the top of the file). The definition is not inside the `while` loop."
+            },
+            {
+                qZh: "13. “村庄守卫”关卡教给我们一个重要的战术，是什么？",
+                qEn: "What important tactic does the 'Village Guard' level teach us?",
+                options: [
+                    { zh: "A. 函数只能定义一个，不能定义第二个", en: "You can only define one function, never a second one" },
+                    { zh: "B. 同时定义并使用多个函数（如普通攻击和劈斩函数），让它们各司其职", en: "Define and use multiple functions simultaneously (like attack and cleave functions) so each performs its specific role" },
+                    { zh: "C. 放弃使用普通攻击，只使用劈斩", en: "Abandon normal attacks and only use cleave" },
+                    { zh: "D. 让农民代替英雄去攻击", en: "Let the peasants attack instead of the hero" }
+                ],
+                correct: 1,
+                descZh: "解析：这一关教你同时定义并使用多个函数：`findAndAttackEnemy` 负责普通攻击，`findAndCleaveEnemy` 负责劈斩。",
+                descEn: "Explanation: This level teaches you to define and use multiple functions simultaneously, delegating specific roles to each."
+            },
+            {
+                qZh: "14. 在“村庄守护神”关卡中，`cleaveOrAttack()` 函数的内部包含了什么核心语法知识？",
+                qEn: "In the 'Village Champion' level, what core syntax concept is contained inside the `cleaveOrAttack()` function?",
+                options: [
+                    { zh: "A. 一连串的字符串拼接", en: "A series of string concatenations" },
+                    { zh: "B. 将上一个单元学的嵌套 if/else 整个融合进了函数体", en: "The entire nested if/else logic learned in the previous unit is integrated into the function body" },
+                    { zh: "C. 三层 while 循环嵌套", en: "Three layers of nested while loops" },
+                    { zh: "D. 只包含了一行移动代码", en: "Only one line of movement code" }
+                ],
+                correct: 1,
+                descZh: "解析：要把第五单元学的嵌套 if/else 融进函数体。有敌人时，如果 cleave 就绪就劈斩，否则就普通攻击。",
+                descEn: "Explanation: It integrates the nested if/else learned in the previous unit into the function body. If there's an enemy, check if cleave is ready, else attack."
+            },
+            {
+                qZh: "15. 在“造币厂”关卡中，你写好了 `def attackEnemy():` 的全部代码，但英雄经过敌人时却没有攻击。最可能是因为什么？",
+                qEn: "In 'The Mint', you wrote all the code for `def attackEnemy():`, but the hero ignores enemies. What is the most likely reason?",
+                options: [
+                    { zh: "A. 你忘了在主循环中取消 `attackEnemy()` 的注释，导致只定义没调用", en: "You forgot to uncomment `attackEnemy()` in the main loop, so it was defined but never called" },
+                    { zh: "B. 敌人是隐身的", en: "The enemies are invisible" },
+                    { zh: "C. 硬币把敌人挡住了", en: "The coins blocked the enemies" },
+                    { zh: "D. `attackEnemy` 这个名字不合法", en: "The name `attackEnemy` is invalid" }
+                ],
+                correct: 0,
+                descZh: "解析：造币厂关卡提醒你：写好 `attackEnemy` 函数后，记得取消 `attackEnemy()` 那行的注释，否则它不会生效。这是只定义不调用的典型错误。",
+                descEn: "Explanation: The Mint level reminds you: after writing the function, remember to uncomment the `attackEnemy()` line, or it won't run. This is the error of defining without calling."
+            },
+            {
+                qZh: "16. 概念挑战“寂静市”的终极要求是什么？",
+                qEn: "What is the ultimate requirement of the concept challenge 'Silent City'?",
+                options: [
+                    { zh: "A. 必须全程保持隐身状态", en: "Must remain invisible the entire time" },
+                    { zh: "B. 必须定义一个函数，并且主 `while True` 循环里只能有一条调用语句", en: "Must define a function, and the main `while True` loop can only contain a single call statement" },
+                    { zh: "C. 绝对不能使用函数", en: "Absolutely no functions can be used" },
+                    { zh: "D. 函数里不能使用 if 判断", en: "If statements cannot be used inside functions" }
+                ],
+                correct: 1,
+                descZh: "解析：必须定义一个函数，并且 `while True` 循环里只能有一条语句。强制你把全部逻辑都封装进一个函数。",
+                descEn: "Explanation: You must define a function, and the `while True` loop can only have one statement. This forces you to encapsulate all logic within the function."
+            },
+            {
+                qZh: "17. 下列哪种写法会导致函数运行时发生“缩进错误”（IndentationError）？",
+                qEn: "Which of the following will cause an 'IndentationError' when running a function?",
+                options: [
+                    { zh: "A. 调用函数时忘记加括号", en: "Forgetting parentheses when calling" },
+                    { zh: "B. 函数体内的代码没有统一向右缩进", en: "The code inside the function body is not uniformly indented to the right" },
+                    { zh: "C. 函数名中包含大写字母", en: "The function name contains uppercase letters" },
+                    { zh: "D. 在 while 循环中调用了两次同一个函数", en: "Calling the same function twice in a while loop" }
+                ],
+                correct: 1,
+                descZh: "解析：易错点清单指出：属于函数的代码必须统一向右缩进。如果没有正确缩进，Python 无法识别它属于这个函数，会报错。",
+                descEn: "Explanation: The pitfall checklist states that code belonging to the function must be indented to the right. Without it, Python throws an error."
+            },
+            {
+                qZh: "18. 关于函数命名规则，以下哪个名字是规范推荐的？",
+                qEn: "Regarding function naming rules, which name is recommended by convention?",
+                options: [
+                    { zh: "A.", en: "", code: "123attack" },
+                    { zh: "B.", en: "", code: "find And Attack" },
+                    { zh: "C.", en: "", code: "checkEnemy" },
+                    { zh: "D.", en: "", code: "HEROATTACK" }
+                ],
+                correct: 2,
+                descZh: "解析：命名建议：用动词 + 名词描述函数“做什么事”，常用驼峰命名法（如 `checkEnemy`）。名字里不能有空格，也不能用数字开头。",
+                descEn: "Explanation: Naming suggestion: use verb + noun in camelCase (like `checkEnemy`). Names cannot contain spaces or start with numbers."
+            },
+            {
+                qZh: "19. 如果你在 `def findEnemy()` 的下一行直接顶格写了 `hero.attack(enemy)`，会发生什么？",
+                qEn: "If you write `hero.attack(enemy)` completely flush left on the next line after `def findEnemy()`, what will happen?",
+                options: [
+                    { zh: "A. 英雄会立刻执行攻击", en: "The hero will execute the attack immediately" },
+                    { zh: "B. 程序会报错，因为函数体缺少了缩进，Python 认为你的函数是空的", en: "The program throws an error because the body lacks indentation, making Python think the function is empty" },
+                    { zh: "C. 会自动帮你补齐缩进", en: "It automatically fixes the indentation for you" },
+                    { zh: "D. 函数名会被自动更改", en: "The function name is automatically changed" }
+                ],
+                correct: 1,
+                descZh: "解析：属于函数的代码必须统一向右缩进。顶格写意味着它不属于这个函数，导致该函数变成“空壳”，程序会抛出缩进错误。",
+                descEn: "Explanation: Code belonging to a function must be indented. Writing flush left means it's not in the function, causing an error."
+            },
+            {
+                qZh: "20. 综合复习：我们为什么要花这么多时间学习“函数的定义与调用”？",
+                qEn: "Comprehensive review: Why do we spend so much time learning 'Defining and Calling Functions'?",
+                options: [
+                    { zh: "A. 只是为了应付考试要求", en: "Just to meet exam requirements" },
+                    { zh: "B. 因为英雄只有用了自定义函数才能升级武器", en: "Because the hero can only upgrade weapons using custom functions" },
+                    { zh: "C. 把复杂封装起来，让主程序读起来像一句简单的话，使代码能被高度复用", en: "To encapsulate complexity, making the main program read simply and allowing code to be highly reusable" },
+                    { zh: "D. 为了让代码跑得更慢，方便观察", en: "To make the code run slower for easier observation" }
+                ],
+                correct: 2,
+                descZh: "解析：本单元小结提到：这完美展示了函数的终极意义，把复杂封装起来，让主程序读起来像一句简单的话，从此代码可以浓缩、复用、变得清晰易读。",
+                descEn: "Explanation: The unit summary states the ultimate meaning of functions is to encapsulate complexity, making the main program read simply, ensuring code is condensed, reusable, and readable."
+            }
+        ];
+
+        let currentQuestion = 0;
+        let score = 0;
+        let answered = false; 
+
+        const quizView = document.getElementById('quiz-view');
+        const endScreen = document.getElementById('end-screen');
+        const questionContainer = document.getElementById('question-container');
+        const optionsContainer = document.getElementById('options-container');
+        const levelIndicator = document.getElementById('level-indicator');
+        const scoreDisplay = document.getElementById('score');
+        const progressBar = document.getElementById('progress-bar');
+        const feedbackArea = document.getElementById('feedback-area');
+        const feedbackTitle = document.getElementById('feedback-title');
+        const explanationText = document.getElementById('explanation-text');
+
+        function highlightCode(codeStr) {
+            if (!codeStr) return '';
+            return escapeHtml(codeStr); 
+        }
+
+        function loadQuestion() {
+            answered = false; 
+            feedbackArea.style.display = 'none'; 
+            
+            const data = quizData[currentQuestion];
+            
+            levelIndicator.innerText = `Level ${currentQuestion + 1} / ${quizData.length}`;
+            progressBar.style.width = `${((currentQuestion) / quizData.length) * 100}%`;
+            scoreDisplay.innerText = score;
+            
+            let html = `
+                <div class="question-title">${highlightDescCode(data.qZh)}</div>
+                <div class="en-text">${highlightDescCode(data.qEn)}</div>
+            `;
+            questionContainer.innerHTML = html;
+            
+            optionsContainer.innerHTML = '';
+            data.options.forEach((opt, index) => {
+                const btn = document.createElement('button');
+                btn.classList.add('option-btn');
+                
+                let btnHtml = `<span class="opt-zh">${highlightDescCode(opt.zh)}</span>`;
+                if (opt.en) {
+                    btnHtml += `<span class="opt-en">${highlightDescCode(opt.en)}</span>`;
+                }
+                if (opt.code) {
+                    btnHtml += `<div class="option-code">${highlightCode(opt.code)}</div>`;
+                }
+
+                btn.innerHTML = btnHtml;
+                btn.onclick = () => checkAnswer(index, btn);
+                optionsContainer.appendChild(btn);
+            });
+        }
+
+        function checkAnswer(selectedIndex, btnElement) {
+            if (answered) return; 
+            answered = true;
+
+            const data = quizData[currentQuestion];
+            const allBtns = optionsContainer.querySelectorAll('.option-btn');
+            
+            allBtns.forEach(btn => btn.setAttribute('disabled', 'true'));
+            
+            const fullDesc = `
+                <div style="margin-bottom:8px;">${highlightDescCode(data.descZh)}</div>
+                <div class="en-text">${highlightDescCode(data.descEn)}</div>
+            `;
+
+            if (selectedIndex === data.correct) {
+                btnElement.classList.add('correct');
+                score += 100; 
+                scoreDisplay.innerText = score;
+                createConfetti(); 
+                showFeedback(true, "🎉 回答正确！ Correct!", fullDesc);
+            } else {
+                btnElement.classList.add('wrong');
+                setTimeout(() => {
+                   allBtns[data.correct].classList.add('correct');
+                }, 400);
+                
+                const rightOptStr = String.fromCharCode(65 + data.correct); 
+                showFeedback(false, `❌ 回答错误。正确答案是 / Correct answer is: ${rightOptStr}`, fullDesc);
+            }
+        }
+
+        function highlightDescCode(text) {
+            return text.replace(/`([^`]+)`/g, '<code style="background-color:#e8f7ee; font-family:\'YouYuan\', \'幼圆\', monospace; font-weight:bold; color:#1F7A44; padding:3px 8px; border-radius:6px; font-size:1.15rem; margin:0 2px;">$1</code>');
+        }
+
+        function showFeedback(isCorrect, title, desc) {
+            feedbackArea.classList.remove('correct', 'wrong');
+            feedbackArea.classList.add(isCorrect ? 'correct' : 'wrong');
+            feedbackTitle.innerHTML = title;
+            explanationText.innerHTML = desc;
+            feedbackArea.style.display = 'block';
+            setTimeout(() => {
+                feedbackArea.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
+            }, 100);
+        }
+
+        function nextQuestion() {
+            currentQuestion++;
+            if (currentQuestion < quizData.length) {
+                loadQuestion();
+            } else {
+                showEndScreen();
+            }
+        }
+
+        function showEndScreen() {
+            quizView.style.display = 'none';
+            endScreen.style.display = 'block';
+            progressBar.parentElement.style.display = 'none'; 
+
+            const totalScore = quizData.length * 100;
+            const isPerfect = (score === totalScore);
+            
+            let html = '';
+            if (isPerfect) {
+                for(let i=0; i<6; i++) setTimeout(createConfetti, i*350);
+                html += `<div class="end-title">🎉 完美的封装大师！<br><span class="en-text" style="font-size: 1.2rem;">Perfect Encapsulation Master!</span>🎉</div>`;
+                html += `<div class="end-score-box">总得分 Total Score<br><div class="end-score perfect-score-text">${score}</div></div>`;
+                html += `<div class="end-desc">太棒了！你已经完全掌握了函数的定义与调用，你的代码变得无比优雅、高效！<br><span class="en-text">Amazing! You've completely mastered defining and calling functions. Your code is now incredibly elegant and efficient!</span></div>`;
+            } else {
+                html += `<div class="end-title">挑战完成！<br><span class="en-text" style="font-size: 1.2rem;">Challenge Completed!</span></div>`;
+                html += `<div class="end-score-box">总得分 Total Score<br><div class="end-score">${score} / ${totalScore}</div></div>`;
+                html += `<div class="end-desc">做得不错！多留意一下定义和调用的语法细节，下次一定拿满分！<br><span class="en-text">Good job! Pay closer attention to the syntax details of defining and calling, and aim for a perfect score next time!</span></div>`;
+            }
+            html += `<button class="next-btn" onclick="location.reload()" style="float:none; font-size:1.2rem; padding: 15px 40px; margin-top:20px;">🔄 再玩一次 Play Again</button>`;
+            
+            endScreen.innerHTML = html;
+        }
+
+        function createConfetti() {
+            const colors = ['#ff7675', '#74b9ff', '#55efc4', '#ffeaa7', '#a29bfe', '#fdcb6e'];
+            const container = document.querySelector('.game-container');
+            for (let i = 0; i < 45; i++) {
+                const confetti = document.createElement('div');
+                confetti.classList.add('confetti');
+                confetti.style.backgroundColor = colors[Math.floor(Math.random() * colors.length)];
+                confetti.style.left = Math.random() * 100 + '%';
+                confetti.style.top = '-20px';
+                const scale = Math.random() * 0.6 + 0.4;
+                confetti.style.transform = `scale(${scale}) rotate(${Math.random()*360}deg)`;
+                confetti.style.animationDuration = (Math.random() * 1.5 + 1.2) + 's';
+                confetti.style.animationDelay = Math.random() * 0.5 + 's';
+                
+                container.appendChild(confetti);
+                setTimeout(() => confetti.remove(), 3000);
+            }
+        }
+
+        function escapeHtml(text) {
+            return text.replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;");
+        }
+
+        loadQuestion();
+    </script>
+</body>
+</html>

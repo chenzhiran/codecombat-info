@@ -1,0 +1,775 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>边际森林知识挑战 - 函数参数</title>
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;600&family=Fira+Code&display=swap" rel="stylesheet">
+    <style>
+        /* --- 基础设置 (边际森林主题绿) --- */
+        :root {
+            --primary-color: #2E9E5B; 
+            --secondary-color: #4FBF7C;
+            --bg-color: #f7faf8;     
+            --card-bg: #FFFFFF;
+            --text-color: #14241a;   
+            --en-text-color: #6b8a76; 
+            --correct-color: #28c840;
+            --wrong-color: #ff5f57;  
+            --accent-yellow: #febc2e;
+            
+            /* 代码高亮颜色 */
+            --code-bg: #1e2a22;
+            --code-text: #b6c2ba;
+        }
+
+        body {
+            font-family: 'Poppins', 'Microsoft YaHei', sans-serif;
+            background-color: var(--bg-color);
+            background-image: radial-gradient(#d5e5d9 10%, transparent 10%);
+            background-size: 20px 20px;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            min-height: 100vh;
+            margin: 0;
+            padding: 40px 20px;
+            box-sizing: border-box;
+        }
+
+        /* --- 游戏容器 --- */
+        .game-container {
+            background: var(--card-bg);
+            width: 100%;
+            max-width: 900px; 
+            border-radius: 25px;
+            box-shadow: 0 15px 35px rgba(46,158,91,0.15);
+            padding: 40px 50px;
+            text-align: center;
+            position: relative;
+            border: 4px solid var(--secondary-color);
+            overflow: hidden; 
+        }
+
+        /* --- 顶部状态栏 --- */
+        .header-stats {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 25px;
+            font-size: 1.1rem;
+            font-weight: 600;
+            color: var(--primary-color);
+        }
+
+        .score-box {
+            background: var(--accent-yellow);
+            padding: 8px 20px;
+            border-radius: 30px;
+            color: #fff;
+            text-shadow: 1px 1px 2px rgba(0,0,0,0.2);
+            box-shadow: 0 4px 0 #d99e22;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        /* --- 进度条 --- */
+        .progress-container {
+            width: 100%;
+            height: 12px;
+            background-color: #e3ece6;
+            border-radius: 10px;
+            margin-bottom: 35px;
+            overflow: hidden;
+            box-shadow: inset 0 2px 5px rgba(0,0,0,0.05);
+        }
+        .progress-bar {
+            height: 100%;
+            width: 0%;
+            background: linear-gradient(90deg, var(--secondary-color), var(--primary-color));
+            transition: width 0.6s cubic-bezier(0.34, 1.56, 0.64, 1);
+        }
+
+        /* --- 题目区域 --- */
+        .question-area {
+            text-align: left;
+            margin-bottom: 30px;
+        }
+        
+        .question-title {
+            color: var(--text-color);
+            font-size: 1.4rem;
+            line-height: 1.6;
+            margin-bottom: 5px;
+            font-weight: bold;
+        }
+
+        .en-text {
+            display: block;
+            font-size: 1.05rem;
+            color: var(--en-text-color);
+            margin-bottom: 15px;
+            font-weight: normal;
+            line-height: 1.5;
+        }
+
+        /* --- 专属代码样式 --- */
+        .question-title code, .en-text code {
+            background-color: #e8f7ee; 
+            font-family: 'YouYuan', '幼圆', monospace;
+            font-weight: bold; 
+            color: var(--primary-color); 
+            padding: 3px 8px;
+            border-radius: 6px;
+            font-size: 1.15rem;
+            margin: 0 2px;
+            box-shadow: inset 0 1px 3px rgba(0,0,0,0.05);
+        }
+
+        /* --- 选项按钮 --- */
+        .options-grid {
+            display: grid;
+            grid-template-columns: 1fr; 
+            gap: 15px;
+        }
+
+        .option-btn {
+            background: white;
+            border: 3px solid #e3ece6;
+            padding: 15px 25px;
+            border-radius: 18px;
+            font-family: inherit;
+            cursor: pointer;
+            transition: all 0.2s cubic-bezier(0.25, 0.8, 0.25, 1);
+            color: var(--text-color);
+            text-align: left;
+            position: relative;
+            top: 0;
+            box-shadow: 0 5px 0 #c4d4c9;
+            display: flex;
+            flex-direction: column; 
+            gap: 4px;
+        }
+
+        .opt-zh {
+            font-size: 1.15rem;
+            font-weight: 600;
+        }
+
+        .opt-en {
+            font-size: 0.95rem;
+            color: var(--en-text-color);
+            font-weight: normal;
+        }
+
+        .option-code {
+            font-family: 'Fira Code', monospace;
+            background: var(--code-bg);
+            color: var(--code-text);
+            padding: 12px;
+            border-radius: 8px;
+            margin-top: 8px;
+            width: 100%;
+            border: 1px solid #314538;
+            white-space: pre-wrap; 
+            line-height: 1.5;
+            box-sizing: border-box;
+            text-align: left;
+        }
+
+        .option-btn.correct .opt-en, .option-btn.wrong .opt-en {
+            color: rgba(255,255,255,0.85); 
+        }
+        .option-btn.correct .option-code, .option-btn.wrong .option-code {
+            background: rgba(0,0,0,0.25);
+            border-color: transparent;
+            color: white;
+        }
+
+        .option-btn:hover:not([disabled]) {
+            border-color: var(--secondary-color);
+            transform: translateY(-3px);
+            box-shadow: 0 8px 0 #95b8a0;
+        }
+
+        .option-btn:active:not([disabled]) {
+            top: 5px;
+            box-shadow: 0 0 0 #bdc3c7;
+        }
+        
+        .option-btn[disabled] {
+            cursor: default;
+        }
+
+        .option-btn.correct {
+            background-color: var(--correct-color);
+            color: white;
+            border-color: var(--correct-color);
+            box-shadow: 0 5px 0 #1f9c31;
+        }
+
+        .option-btn.wrong {
+            background-color: var(--wrong-color);
+            color: white;
+            border-color: var(--wrong-color);
+            box-shadow: 0 5px 0 #c24640;
+            animation: shake 0.5s;
+        }
+
+        /* --- 解析区域 --- */
+        .feedback-section {
+            display: none; 
+            text-align: left;
+            background: #e8f7ee;
+            padding: 25px;
+            border-radius: 18px;
+            margin-top: 30px;
+            border-left: 6px solid;
+            animation: slideUp 0.4s ease-out;
+        }
+        .feedback-section.correct { border-color: var(--correct-color); background: #eafaf1;}
+        .feedback-section.wrong { border-color: var(--wrong-color); background: #fceaea; }
+
+        .feedback-title {
+            font-weight: 600;
+            font-size: 1.2rem;
+            margin-bottom: 10px;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+        .correct .feedback-title { color: var(--correct-color); }
+        .wrong .feedback-title { color: var(--wrong-color); }
+
+        .explanation-text {
+            color: var(--text-color);
+            line-height: 1.6;
+            font-size: 1.05rem;
+        }
+
+        .next-btn {
+            background: var(--primary-color);
+            color: white;
+            border: none;
+            padding: 12px 35px;
+            border-radius: 50px;
+            font-size: 1.1rem;
+            font-family: inherit;
+            font-weight: 600;
+            cursor: pointer;
+            margin-top: 20px;
+            box-shadow: 0 5px 0 #1F7A44;
+            transition: all 0.2s;
+            float: right; 
+        }
+        .next-btn:hover { filter: brightness(1.1); transform: translateY(-2px); }
+        .next-btn:active { transform: translateY(5px); box-shadow: none; }
+
+        /* --- 结算画面 --- */
+        .end-screen {
+            display: none;
+            padding: 20px 0;
+        }
+        .end-title { font-size: 2.2rem; color: var(--primary-color); margin-bottom: 10px; }
+        .end-score-box {
+            background: var(--accent-yellow);
+            color: white;
+            padding: 20px 40px;
+            border-radius: 25px;
+            display: inline-block;
+            margin: 30px 0;
+            box-shadow: 0 8px 0 #d99e22;
+        }
+        .end-score { font-size: 3.5rem; font-weight: bold; line-height: 1; }
+        .end-desc { color: var(--en-text-color); font-size: 1.1rem; margin-bottom: 30px; }
+        
+        .perfect-score-text {
+            background: linear-gradient(45deg, #FFD700, #FF8C00);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            font-weight: 800;
+        }
+
+        /* --- 动画 --- */
+        @keyframes shake {
+            0%, 100% { transform: translateX(0); }
+            20%, 60% { transform: translateX(-8px); }
+            40%, 80% { transform: translateX(8px); }
+        }
+        @keyframes slideUp {
+            from { opacity: 0; transform: translateY(20px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+        .confetti {
+            position: absolute;
+            width: 12px; height: 12px;
+            background-color: #f00;
+            border-radius: 3px;
+            animation: fall linear forwards;
+            z-index: 10;
+        }
+        @keyframes fall {
+            to { transform: translateY(100vh) rotate(720deg); opacity: 0; }
+        }
+
+    </style>
+</head>
+<body>
+
+    <div class="game-container">
+        <div id="quiz-view">
+            <div class="header-stats">
+                <span id="level-indicator">Level 1 / 20</span>
+                <div class="score-box">⭐ <span id="score">0</span></div>
+            </div>
+
+            <div class="progress-container">
+                <div class="progress-bar" id="progress-bar"></div>
+            </div>
+
+            <div class="question-area" id="question-container">
+            </div>
+
+            <div class="options-grid" id="options-container">
+            </div>
+
+            <div class="feedback-section" id="feedback-area">
+                <div class="feedback-title" id="feedback-title"></div>
+                <div class="explanation-text" id="explanation-text"></div>
+                <div style="overflow: hidden;"> 
+                    <button class="next-btn" onclick="nextQuestion()">下一题 ➔</button>
+                </div>
+            </div>
+        </div>
+
+        <div id="end-screen" class="end-screen">
+        </div>
+    </div>
+
+    <script>
+        // --- 题目数据 (结合 Unit 7: 函数参数) ---
+        const quizData = [
+            {
+                qZh: "1. 根据“边地之叉”关卡的描述，无参数函数（如 <code>findAndAttackEnemy()</code>）的一个明显局限是什么？",
+                qEn: "According to the 'Backwoods Fork' level, what is a clear limitation of a parameter-less function (like <code>findAndAttackEnemy()</code>)?",
+                options: [
+                    { zh: "A. 运行速度太慢", en: "It runs too slowly" },
+                    { zh: "B. 每次只能自己在内部重新找敌人，无法处理外面指定的目标", en: "It can only find enemies internally each time, and cannot process externally specified targets" },
+                    { zh: "C. 无法被调用超过两次", en: "It cannot be called more than twice" },
+                    { zh: "D. 不能包含 if 语句", en: "It cannot contain if statements" }
+                ],
+                correct: 1, 
+                descZh: "解析：无参函数每次只能自己在内部重新找敌人，外面没办法告诉它“这次请打这个敌人”。",
+                descEn: "Explanation: A parameter-less function can only find enemies internally each time; the outside cannot tell it 'please hit this specific enemy this time'."
+            },
+            {
+                qZh: "2. 在函数中引入“参数（Parameter）”能带来什么最大的好处？",
+                qEn: "What is the biggest benefit of introducing 'Parameters' into functions?",
+                options: [
+                    { zh: "A. 增加武器伤害", en: "Increases weapon damage" },
+                    { zh: "B. 让代码自动排版", en: "Automatically formats code" },
+                    { zh: "C. 让同一个函数能针对不同的传入对象做同样的事，一份代码应付万变", en: "Allows the same function to do the same thing for different passed objects, handling many situations with one code block" },
+                    { zh: "D. 避免写循环", en: "Avoids writing loops" }
+                ],
+                correct: 2,
+                descZh: "解析：参数让函数具有更多灵活性。同一个函数，这次递给它顶部的敌人就打顶部，下次递给它底部的敌人就打底部。",
+                descEn: "Explanation: Parameters give functions more flexibility. The same function can hit the top enemy when given the top enemy, and the bottom enemy when given the bottom enemy."
+            },
+            {
+                qZh: "3. 当你写下 <code>hero.say('Hello!')</code> 时，字符串 <code>'Hello!'</code> 扮演了什么角色？",
+                qEn: "When you write <code>hero.say('Hello!')</code>, what role does the string <code>'Hello!'</code> play?",
+                options: [
+                    { zh: "A. 函数名", en: "Function name" },
+                    { zh: "B. 循环条件", en: "Loop condition" },
+                    { zh: "C. 变量", en: "Variable" },
+                    { zh: "D. 作为参数（实参）传给了 say 函数", en: "Passed as an argument to the say function" }
+                ],
+                correct: 3,
+                descZh: "解析：“交给劈斩”关卡指出，在使用 hero.say('Hello!') 时，你将字符串 'Hello!' 作为参数传给了函数 say。",
+                descEn: "Explanation: The 'Leave It to Cleaver' level points out that when using hero.say('Hello!'), you passed the string 'Hello!' as a parameter to the say function."
+            },
+            {
+                qZh: "4. “形参（Parameter）”和“实参（Argument）”分别出现在代码的哪里？",
+                qEn: "Where do 'Parameters' and 'Arguments' appear in the code respectively?",
+                options: [
+                    { zh: "A. 形参在函数定义时，实参在函数调用时", en: "Parameter during definition, Argument during call" },
+                    { zh: "B. 实参在函数定义时，形参在函数调用时", en: "Argument during definition, Parameter during call" },
+                    { zh: "C. 都在函数调用时", en: "Both during call" },
+                    { zh: "D. 都在函数定义时", en: "Both during definition" }
+                ],
+                correct: 0,
+                descZh: "解析：实参是函数调用时括号内包含的信息；形参则是传入函数的信息在函数内所使用的变量（函数定义时）。",
+                descEn: "Explanation: An argument is the information in the parentheses when calling; a parameter is the variable used inside the function for the passed information (during definition)."
+            },
+            {
+                qZh: "5. 在函数定义的内部，“形参”的本质是什么？",
+                qEn: "Inside a function definition, what is the essence of a 'parameter'?",
+                options: [
+                    { zh: "A. 一种特殊的数字", en: "A special number" },
+                    { zh: "B. 一个只能读取一次的常量", en: "A constant that can only be read once" },
+                    { zh: "C. 只是一个预定义的变量，用来接住传入的信息", en: "Just a pre-defined variable used to catch passed information" },
+                    { zh: "D. 一个隐藏的函数", en: "A hidden function" }
+                ],
+                correct: 2,
+                descZh: "解析：形式参数 'target' 只是一个变量！它和你之前用过的变量没有任何区别，唯一特别的是它的值是调用时自动从外面灌进来的。",
+                descEn: "Explanation: The formal parameter 'target' is just a variable! It's no different from variables you've used, except its value is automatically poured in from the outside during the call."
+            },
+            {
+                qZh: "6. 当函数外定义了 <code>enemy</code> 并将其作为实参传给带有形参 <code>target</code> 的函数时，这两个名字之间的关系是什么？",
+                qEn: "When <code>enemy</code> is defined outside and passed as an argument to a function with parameter <code>target</code>, what is the relationship between these two names?",
+                options: [
+                    { zh: "A. 它们是两个完全不同的食人魔", en: "They are two completely different ogres" },
+                    { zh: "B. target 是 enemy 的克隆体", en: "target is a clone of enemy" },
+                    { zh: "C. 它们都指向同一个食人魔，只是在函数内外的代号不同", en: "They both point to the same ogre, just with different names inside and outside the function" },
+                    { zh: "D. enemy 会自动改名为 target", en: "enemy is automatically renamed to target" }
+                ],
+                correct: 2,
+                descZh: "解析：enemy 是函数外敌人的名称，而 target 是函数内敌人的名称。这两个变量都指向同一个食人魔！",
+                descEn: "Explanation: enemy is the enemy's name outside the function, and target is its name inside. Both variables point to the same ogre!"
+            },
+            {
+                qZh: "7. 下列哪种语法是定义带参数函数的正确格式？",
+                qEn: "Which syntax is the correct format for defining a parameterized function?",
+                options: [
+                    { zh: "A.", en: "", code: "def checkAndAttack target:" },
+                    { zh: "B.", en: "", code: "def checkAndAttack(target):" },
+                    { zh: "C.", en: "", code: "checkAndAttack(target):" },
+                    { zh: "D.", en: "", code: "function checkAndAttack[target]" }
+                ],
+                correct: 1,
+                descZh: "解析：定义带参数的函数，只需在 def 的圆括号里写上形参的名字，并以冒号结尾，例如 <code>def checkAndAttack(target):</code>。",
+                descEn: "Explanation: To define a parameterized function, write the parameter name inside def's parentheses and end with a colon, e.g., <code>def checkAndAttack(target):</code>."
+            },
+            {
+                qZh: "8. 为什么在调用你自己定义的 <code>checkAndAttack(enemy)</code> 函数时，前面绝对不能加 <code>hero.</code>？",
+                qEn: "Why must you NEVER add <code>hero.</code> when calling your custom <code>checkAndAttack(enemy)</code> function?",
+                options: [
+                    { zh: "A. 因为英雄不喜欢这个函数", en: "Because the hero doesn't like this function" },
+                    { zh: "B. 因为该函数由你定义，而不是英雄自带的本领", en: "Because the function is defined by you, not a built-in ability of the hero" },
+                    { zh: "C. 因为加了会改变参数的值", en: "Because adding it changes the parameter's value" },
+                    { zh: "D. 因为 hero. 只能用于 say 命令", en: "Because hero. is only for the say command" }
+                ],
+                correct: 1,
+                descZh: "解析：调用函数时不要加 hero，因为函数由你定义，而不是英雄。误加 hero. 属于参数环节的常见错误之一。",
+                descEn: "Explanation: Do not add hero when calling because the function is defined by you, not the hero. Wrongly adding hero. is a common parameter mistake."
+            },
+            {
+                qZh: "9. 在带参数的函数内部，只能编写使用该参数的指令吗？",
+                qEn: "Inside a parameterized function, can you only write instructions that use that parameter?",
+                options: [
+                    { zh: "A. 是的，不能包含其他无关指令", en: "Yes, you cannot include unrelated instructions" },
+                    { zh: "B. 不是，你可以添加与形参无关的额外指令（如固定的走位）", en: "No, you can add extra instructions unrelated to the parameter (like fixed movement)" },
+                    { zh: "C. 是的，否则会报错", en: "Yes, otherwise it throws an error" },
+                    { zh: "D. 这取决于参数的名字", en: "It depends on the parameter's name" }
+                ],
+                correct: 1,
+                descZh: "解析：“捉迷藏”关卡指出：你可以在函数内将形参作为变量使用。当然，你也可以添加与形参无关的额外指令（比如回到营地中央）。",
+                descEn: "Explanation: The 'Hide and Seek' level notes: you can use the parameter as a variable inside. Of course, you can also add extra instructions unrelated to the parameter (like returning to camp center)."
+            },
+            {
+                qZh: "10. “边地之叉”关卡展示了带参函数的什么典型战术策略？",
+                qEn: "What typical tactical strategy for parameterized functions does the 'Backwoods Fork' level demonstrate?",
+                options: [
+                    { zh: "A. 一个函数守两个路口：把相同的逻辑封进函数，通过传入上路和下路的不同敌人来重复利用", en: "One function guards two forks: encapsulate the same logic into a function and reuse it by passing different enemies from the top and bottom paths" },
+                    { zh: "B. 用多个函数守一个路口", en: "Use multiple functions to guard one fork" },
+                    { zh: "C. 放弃防守直接进攻", en: "Abandon defense and attack directly" },
+                    { zh: "D. 不断更换英雄的武器", en: "Constantly change the hero's weapon" }
+                ],
+                correct: 0,
+                descZh: "解析：地图有上、下两个路口，难点在于两处的逻辑完全一样，只是目标敌人不同。思路是把逻辑封进函数，分别传入上路和下路的敌人。",
+                descEn: "Explanation: The map has top and bottom paths; the challenge is the logic is identical, only the target enemies differ. The idea is encapsulating logic and passing top/bottom enemies."
+            },
+            {
+                qZh: "11. 在“盗墓者”关卡中，如果 <code>checkToDefend(target)</code> 发现传入的 <code>target</code> 是空值（没有敌人），它会去做什么？",
+                qEn: "In 'Grave Robber', if <code>checkToDefend(target)</code> finds the passed <code>target</code> is null (no enemy), what will it do?",
+                options: [
+                    { zh: "A. 报错停止", en: "Throw an error and stop" },
+                    { zh: "B. 回到起点", en: "Return to the starting point" },
+                    { zh: "C. 去攻击 \"Door\"（砸门）", en: "Attack the \"Door\" (break the door)" },
+                    { zh: "D. 使用治疗药水", en: "Use a healing potion" }
+                ],
+                correct: 2,
+                descZh: "解析：如果 target 存在就攻击它，否则(没敌人时)就去攻击 \"Door\"。函数根据传入参数是否为空，自动在打敌人和砸门间切换。",
+                descEn: "Explanation: If target exists, attack it; else (no enemy), attack the \"Door\". The function automatically switches between hitting enemies and breaking doors based on if the parameter is null."
+            },
+            {
+                qZh: "12. 在“墓地阴魂”关卡中，<code>hitOrHide(target)</code> 函数是如何实现“打完就撤”的？",
+                qEn: "In 'Tomb of the Forgotten', how does <code>hitOrHide(target)</code> implement 'hit and retreat'?",
+                options: [
+                    { zh: "A. 攻击后自动隐身", en: "Auto-hide after attacking" },
+                    { zh: "B. 攻击后立刻用 moveXY 移动到红色安全标记", en: "Immediately use moveXY to move to the red safe mark after attacking" },
+                    { zh: "C. 放下陷阱然后攻击", en: "Lay a trap then attack" },
+                    { zh: "D. 把敌人推开", en: "Push the enemy away" }
+                ],
+                correct: 1,
+                descZh: "解析：如果 target 存在，就攻击它，然后立刻移动到红色安全标记。这是“形参 + 额外指令”的经典模式。",
+                descEn: "Explanation: If target exists, attack it, then immediately move to the red safe mark. This is the classic 'parameter + extra instruction' pattern."
+            },
+            {
+                qZh: "13. “捉迷藏”关卡完美诠释了参数的哪一项最大价值？",
+                qEn: "What greatest value of parameters is perfectly illustrated in the 'Hide and Seek' level?",
+                options: [
+                    { zh: "A. 提升英雄攻击力", en: "Increases hero attack power" },
+                    { zh: "B. 自动生成地图", en: "Automatically generates maps" },
+                    { zh: "C. 一个函数多次调用复用：在不同搜索点搜到发光石后，传给同一个函数处理", en: "Multiple call reuse of one function: pass glowing stones found at different search points to the same function" },
+                    { zh: "D. 改变游戏背景音乐", en: "Changes the game background music" }
+                ],
+                correct: 2,
+                descZh: "解析：同一个函数可以调用任意多次。在各个搜索点反复调用，每次传入当地搜到的发光石，完美诠释了复用的思想。",
+                descEn: "Explanation: The same function can be called any number of times. Calling it repeatedly at different points with found stones perfectly illustrates the reuse concept."
+            },
+            {
+                qZh: "14. 在“森林矿工”关卡中，为什么只有在 <code>target</code> 不存在时才呼叫农民（<code>say(\"All clear!\")</code>）？",
+                qEn: "In 'Woodland Cleaver Mine', why call the peasants (<code>say(\"All clear!\")</code>) ONLY when the <code>target</code> does not exist?",
+                options: [
+                    { zh: "A. 因为代码行数不够了", en: "Because there aren't enough lines of code" },
+                    { zh: "B. 因为农民跑得慢", en: "Because peasants run slowly" },
+                    { zh: "C. 因为贸然喊话会暴露并引来敌人的攻击", en: "Because blindly calling out will expose the hero and attract enemy attacks" },
+                    { zh: "D. 农民只听得懂特定的口令", en: "Peasants only understand specific commands" }
+                ],
+                correct: 2,
+                descZh: "解析：只在没有敌人时才呼叫农民，否则贸然喊话会暴露并引来攻击。通过判断参数是否为空来实现分流。",
+                descEn: "Explanation: Call peasants only when there are no enemies, otherwise blindly shouting will expose you and attract attacks. It branches based on whether the parameter is null."
+            },
+            {
+                qZh: "15. 在“交给劈斩”关卡中，进入 <code>cleaveWhenClose(target)</code> 函数后，第一步判断的是什么？",
+                qEn: "In 'Leave It to Cleaver', what is the very first check inside the <code>cleaveWhenClose(target)</code> function?",
+                options: [
+                    { zh: "A. 技能是否冷却完毕", en: "If the skill cooldown is finished" },
+                    { zh: "B. 敌人的血量是否大于 100", en: "If the enemy's health is greater than 100" },
+                    { zh: "C. 判断英雄与 target 的距离是否小于 5（等敌人靠近）", en: "Check if the distance between the hero and target is less than 5 (wait for the enemy to get close)" },
+                    { zh: "D. target 的名字是不是食人魔", en: "If the target's name is ogre" }
+                ],
+                correct: 2,
+                descZh: "解析：先用 <code>hero.distanceTo(target)</code> 判断目标是否靠近(小于 5 米)，近了再嵌套判断 <code>isReady(\"cleave\")</code>。",
+                descEn: "Explanation: First use <code>hero.distanceTo(target)</code> to check if the target is close (under 5 meters), then nest the <code>isReady(\"cleave\")</code> check."
+            },
+            {
+                qZh: "16. 概念挑战“林地陷阱”指出，确保不攻击远处投矛手的最简单算法本质是什么？",
+                qEn: "The 'Forest Trap' challenge points out the simplest algorithmic essence to avoid attacking distant spear-throwers. What is it?",
+                options: [
+                    { zh: "A. 隐身躲避", en: "Hide and dodge" },
+                    { zh: "B. 用 distanceTo 把距离当成“过滤器”，只打一定范围内的目标", en: "Use distanceTo as a 'filter', only attacking targets within a certain range" },
+                    { zh: "C. 快速跑过他们", en: "Run past them quickly" },
+                    { zh: "D. 把投矛手变成盟友", en: "Turn spear-throwers into allies" }
+                ],
+                correct: 1,
+                descZh: "解析：确保不攻击投矛手的最简单办法是检查 distanceTo 小于特定数值。这说明距离判断可以充当一道筛选条件，把距离当成过滤器。",
+                descEn: "Explanation: The simplest way to ensure not attacking spear-throwers is checking if distanceTo is under a specific number. This shows distance checks can act as a screening condition, a filter."
+            },
+            {
+                qZh: "17. 新手使用函数时，如果在定义了形参后“调用时括号空着忘记传实参”，会导致什么后果？",
+                qEn: "If a beginner defines a parameter but 'leaves the parentheses empty and forgets to pass the argument' during the call, what is the consequence?",
+                options: [
+                    { zh: "A. Python 会自动随机挑选一个敌人", en: "Python automatically picks a random enemy" },
+                    { zh: "B. 函数收不到信息，内部用到形参的地方会报错失效", en: "The function receives no info, and areas using the parameter inside will error and fail" },
+                    { zh: "C. 函数会自动跳过不执行", en: "The function automatically skips execution" },
+                    { zh: "D. 英雄会自动防守", en: "The hero automatically defends" }
+                ],
+                correct: 1,
+                descZh: "解析：定义了形参却忘记传实参——调用时括号空着，函数收不到信息，这属于参数环节的典型错误。",
+                descEn: "Explanation: Defining a parameter but forgetting to pass an argument—leaving parentheses empty during a call—means the function receives no information. This is a typical parameter error."
+            },
+            {
+                qZh: "18. 在函数定义为 <code>def checkAndAttack(target):</code> 后，如果在函数体内部写成了 <code>hero.attack(enemy)</code>，这是犯了什么错误？",
+                qEn: "After defining <code>def checkAndAttack(target):</code>, if you write <code>hero.attack(enemy)</code> inside the function body, what mistake was made?",
+                options: [
+                    { zh: "A. 忘记使用 return 语句", en: "Forgot to use the return statement" },
+                    { zh: "B. enemy 是特殊关键字不能用", en: "enemy is a special keyword and cannot be used" },
+                    { zh: "C. 形参名前后不一致，定义时叫 target，体内却用了不存在的 enemy", en: "Inconsistent parameter name: defined as target, but used the non-existent enemy inside" },
+                    { zh: "D. attack 拼写错误", en: "attack is misspelled" }
+                ],
+                correct: 2,
+                descZh: "解析：形参名前后不一致——定义时叫 target，函数体里却写成了 enemy。这也是易错点清单中强调的问题。",
+                descEn: "Explanation: Inconsistent parameter name—called target during definition, but written as enemy in the function body. This is highlighted in the common mistakes list."
+            },
+            {
+                qZh: "19. 如果你想将左路的敌人传给函数处理，下列哪一套代码逻辑是完全正确的？",
+                qEn: "If you want to pass the left enemy to the function, which set of code logic is completely correct?",
+                options: [
+                    { zh: "A.", en: "", code: "def func(target): attack(target)\nfunc()" },
+                    { zh: "B. 移动到左路 -> 寻找左路最近敌人并存入变量 -> 将该变量放入括号调用函数", en: "Move to left path -> Find nearest left enemy and store in variable -> Put that variable in parentheses to call the function" },
+                    { zh: "C. 将函数改名为 leftFunc()", en: "Rename the function to leftFunc()" },
+                    { zh: "D. 把敌人的坐标设为负数", en: "Set the enemy's coordinates to negative" }
+                ],
+                correct: 1,
+                descZh: "解析：调用时传实参的典型流程是：先在外面找好目标存进变量，再把这个变量当实参传给函数（如寻找并传入 topEnemy）。",
+                descEn: "Explanation: The typical flow for passing arguments during a call is: first find the target outside and store it in a variable, then pass this variable as an argument to the function (like finding and passing topEnemy)."
+            },
+            {
+                qZh: "20. 总结：在编程中，为什么我们要把信息装进参数里传递，而不是让函数自己在内部写死？",
+                qEn: "Summary: In programming, why do we pass information into parameters instead of hardcoding it inside the function?",
+                options: [
+                    { zh: "A. 只是因为代码规范要求", en: "Just because code conventions require it" },
+                    { zh: "B. 避免每次都写重复的寻找代码，让同一份逻辑能自如应对千变万化的具体对象，实现真正的代码复用", en: "To avoid rewriting finding code, letting the same logic effortlessly handle ever-changing specific objects, achieving true code reuse" },
+                    { zh: "C. 这样可以绕过安全检查", en: "This allows bypassing security checks" },
+                    { zh: "D. 会让代码看起来更长更厉害", en: "It makes the code look longer and cooler" }
+                ],
+                correct: 1,
+                descZh: "解析：参数让函数具有更多灵活性，且不妨碍函数优化和简化代码的作用；一份代码，应付千变万化的目标。",
+                descEn: "Explanation: Parameters give functions more flexibility without hindering their ability to optimize and simplify code; one piece of code handles ever-changing targets."
+            }
+        ];
+
+        let currentQuestion = 0;
+        let score = 0;
+        let answered = false; 
+
+        const quizView = document.getElementById('quiz-view');
+        const endScreen = document.getElementById('end-screen');
+        const questionContainer = document.getElementById('question-container');
+        const optionsContainer = document.getElementById('options-container');
+        const levelIndicator = document.getElementById('level-indicator');
+        const scoreDisplay = document.getElementById('score');
+        const progressBar = document.getElementById('progress-bar');
+        const feedbackArea = document.getElementById('feedback-area');
+        const feedbackTitle = document.getElementById('feedback-title');
+        const explanationText = document.getElementById('explanation-text');
+
+        function highlightCode(codeStr) {
+            if (!codeStr) return '';
+            return escapeHtml(codeStr); 
+        }
+
+        function loadQuestion() {
+            answered = false; 
+            feedbackArea.style.display = 'none'; 
+            
+            const data = quizData[currentQuestion];
+            
+            levelIndicator.innerText = `Level ${currentQuestion + 1} / ${quizData.length}`;
+            progressBar.style.width = `${((currentQuestion) / quizData.length) * 100}%`;
+            scoreDisplay.innerText = score;
+            
+            let html = `
+                <div class="question-title">${highlightDescCode(data.qZh)}</div>
+                <div class="en-text">${highlightDescCode(data.qEn)}</div>
+            `;
+            questionContainer.innerHTML = html;
+            
+            optionsContainer.innerHTML = '';
+            data.options.forEach((opt, index) => {
+                const btn = document.createElement('button');
+                btn.classList.add('option-btn');
+                
+                let btnHtml = `<span class="opt-zh">${highlightDescCode(opt.zh)}</span>`;
+                if (opt.en) {
+                    btnHtml += `<span class="opt-en">${highlightDescCode(opt.en)}</span>`;
+                }
+                if (opt.code) {
+                    btnHtml += `<div class="option-code">${highlightCode(opt.code)}</div>`;
+                }
+
+                btn.innerHTML = btnHtml;
+                btn.onclick = () => checkAnswer(index, btn);
+                optionsContainer.appendChild(btn);
+            });
+        }
+
+        function checkAnswer(selectedIndex, btnElement) {
+            if (answered) return; 
+            answered = true;
+
+            const data = quizData[currentQuestion];
+            const allBtns = optionsContainer.querySelectorAll('.option-btn');
+            
+            allBtns.forEach(btn => btn.setAttribute('disabled', 'true'));
+            
+            const fullDesc = `
+                <div style="margin-bottom:8px;">${highlightDescCode(data.descZh)}</div>
+                <div class="en-text">${highlightDescCode(data.descEn)}</div>
+            `;
+
+            if (selectedIndex === data.correct) {
+                btnElement.classList.add('correct');
+                score += 100; 
+                scoreDisplay.innerText = score;
+                createConfetti(); 
+                showFeedback(true, "🎉 回答正确！ Correct!", fullDesc);
+            } else {
+                btnElement.classList.add('wrong');
+                setTimeout(() => {
+                   allBtns[data.correct].classList.add('correct');
+                }, 400);
+                
+                const rightOptStr = String.fromCharCode(65 + data.correct); 
+                showFeedback(false, `❌ 回答错误。正确答案是 / Correct answer is: ${rightOptStr}`, fullDesc);
+            }
+        }
+
+        function highlightDescCode(text) {
+            return text.replace(/`([^`]+)`/g, '<code style="background-color:#e8f7ee; font-family:\'YouYuan\', \'幼圆\', monospace; font-weight:bold; color:#1F7A44; padding:3px 8px; border-radius:6px; font-size:1.15rem; margin:0 2px;">$1</code>');
+        }
+
+        function showFeedback(isCorrect, title, desc) {
+            feedbackArea.classList.remove('correct', 'wrong');
+            feedbackArea.classList.add(isCorrect ? 'correct' : 'wrong');
+            feedbackTitle.innerHTML = title;
+            explanationText.innerHTML = desc;
+            feedbackArea.style.display = 'block';
+            setTimeout(() => {
+                feedbackArea.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
+            }, 100);
+        }
+
+        function nextQuestion() {
+            currentQuestion++;
+            if (currentQuestion < quizData.length) {
+                loadQuestion();
+            } else {
+                showEndScreen();
+            }
+        }
+
+        function showEndScreen() {
+            quizView.style.display = 'none';
+            endScreen.style.display = 'block';
+            progressBar.parentElement.style.display = 'none'; 
+
+            const totalScore = quizData.length * 100;
+            const isPerfect = (score === totalScore);
+            
+            let html = '';
+            if (isPerfect) {
+                for(let i=0; i<6; i++) setTimeout(createConfetti, i*350);
+                html += `<div class="end-title">🎉 完美的参数大师！<br><span class="en-text" style="font-size: 1.2rem;">Perfect Parameter Master!</span>🎉</div>`;
+                html += `<div class="end-score-box">总得分 Total Score<br><div class="end-score perfect-score-text">${score}</div></div>`;
+                html += `<div class="end-desc">太棒了！你已经完全掌握了如何利用函数参数进行战术分配，这份灵活性将让你在编程的道路上所向披靡！<br><span class="en-text">Amazing! You've completely mastered using function parameters for tactical distribution. This flexibility will make you invincible in programming!</span></div>`;
+            } else {
+                html += `<div class="end-title">挑战完成！<br><span class="en-text" style="font-size: 1.2rem;">Challenge Completed!</span></div>`;
+                html += `<div class="end-score-box">总得分 Total Score<br><div class="end-score">${score} / ${totalScore}</div></div>`;
+                html += `<div class="end-desc">做得不错！多留意一下形参与实参对应的细节，下次一定拿满分！<br><span class="en-text">Good job! Pay closer attention to how parameters match with arguments, and aim for a perfect score next time!</span></div>`;
+            }
+            html += `<button class="next-btn" onclick="location.reload()" style="float:none; font-size:1.2rem; padding: 15px 40px; margin-top:20px;">🔄 再玩一次 Play Again</button>`;
+            
+            endScreen.innerHTML = html;
+        }
+
+        function createConfetti() {
+            const colors = ['#ff7675', '#74b9ff', '#55efc4', '#ffeaa7', '#a29bfe', '#fdcb6e'];
+            const container = document.querySelector('.game-container');
+            for (let i = 0; i < 45; i++) {
+                const confetti = document.createElement('div');
+                confetti.classList.add('confetti');
+                confetti.style.backgroundColor = colors[Math.floor(Math.random() * colors.length)];
+                confetti.style.left = Math.random() * 100 + '%';
+                confetti.style.top = '-20px';
+                const scale = Math.random() * 0.6 + 0.4;
+                confetti.style.transform = `scale(${scale}) rotate(${Math.random()*360}deg)`;
+                confetti.style.animationDuration = (Math.random() * 1.5 + 1.2) + 's';
+                confetti.style.animationDelay = Math.random() * 0.5 + 's';
+                
+                container.appendChild(confetti);
+                setTimeout(() => confetti.remove(), 3000);
+            }
+        }
+
+        function escapeHtml(text) {
+            return text.replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;");
+        }
+
+        loadQuestion();
+    </script>
+</body>
+</html>

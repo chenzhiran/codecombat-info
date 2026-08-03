@@ -1,0 +1,775 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>边际森林知识挑战 - if-else双分支结构</title>
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;600&family=Fira+Code&display=swap" rel="stylesheet">
+    <style>
+        /* --- 基础设置 (边际森林主题绿) --- */
+        :root {
+            --primary-color: #2E9E5B; 
+            --secondary-color: #4FBF7C;
+            --bg-color: #f7faf8;     
+            --card-bg: #FFFFFF;
+            --text-color: #14241a;   
+            --en-text-color: #6b8a76; 
+            --correct-color: #28c840;
+            --wrong-color: #ff5f57;  
+            --accent-yellow: #febc2e;
+            
+            /* 代码高亮颜色 */
+            --code-bg: #1e2a22;
+            --code-text: #b6c2ba;
+        }
+
+        body {
+            font-family: 'Poppins', 'Microsoft YaHei', sans-serif;
+            background-color: var(--bg-color);
+            background-image: radial-gradient(#d5e5d9 10%, transparent 10%);
+            background-size: 20px 20px;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            min-height: 100vh;
+            margin: 0;
+            padding: 40px 20px;
+            box-sizing: border-box;
+        }
+
+        /* --- 游戏容器 --- */
+        .game-container {
+            background: var(--card-bg);
+            width: 100%;
+            max-width: 900px; 
+            border-radius: 25px;
+            box-shadow: 0 15px 35px rgba(46,158,91,0.15);
+            padding: 40px 50px;
+            text-align: center;
+            position: relative;
+            border: 4px solid var(--secondary-color);
+            overflow: hidden; 
+        }
+
+        /* --- 顶部状态栏 --- */
+        .header-stats {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 25px;
+            font-size: 1.1rem;
+            font-weight: 600;
+            color: var(--primary-color);
+        }
+
+        .score-box {
+            background: var(--accent-yellow);
+            padding: 8px 20px;
+            border-radius: 30px;
+            color: #fff;
+            text-shadow: 1px 1px 2px rgba(0,0,0,0.2);
+            box-shadow: 0 4px 0 #d99e22;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        /* --- 进度条 --- */
+        .progress-container {
+            width: 100%;
+            height: 12px;
+            background-color: #e3ece6;
+            border-radius: 10px;
+            margin-bottom: 35px;
+            overflow: hidden;
+            box-shadow: inset 0 2px 5px rgba(0,0,0,0.05);
+        }
+        .progress-bar {
+            height: 100%;
+            width: 0%;
+            background: linear-gradient(90deg, var(--secondary-color), var(--primary-color));
+            transition: width 0.6s cubic-bezier(0.34, 1.56, 0.64, 1);
+        }
+
+        /* --- 题目区域 --- */
+        .question-area {
+            text-align: left;
+            margin-bottom: 30px;
+        }
+        
+        .question-title {
+            color: var(--text-color);
+            font-size: 1.4rem;
+            line-height: 1.6;
+            margin-bottom: 5px;
+            font-weight: bold;
+        }
+
+        .en-text {
+            display: block;
+            font-size: 1.05rem;
+            color: var(--en-text-color);
+            margin-bottom: 15px;
+            font-weight: normal;
+            line-height: 1.5;
+        }
+
+        /* --- 专属代码样式 --- */
+        .question-title code, .en-text code {
+            background-color: #e8f7ee; 
+            font-family: 'YouYuan', '幼圆', monospace;
+            font-weight: bold; 
+            color: var(--primary-color); 
+            padding: 3px 8px;
+            border-radius: 6px;
+            font-size: 1.15rem;
+            margin: 0 2px;
+            box-shadow: inset 0 1px 3px rgba(0,0,0,0.05);
+        }
+
+        /* --- 选项按钮 --- */
+        .options-grid {
+            display: grid;
+            grid-template-columns: 1fr; 
+            gap: 15px;
+        }
+
+        .option-btn {
+            background: white;
+            border: 3px solid #e3ece6;
+            padding: 15px 25px;
+            border-radius: 18px;
+            font-family: inherit;
+            cursor: pointer;
+            transition: all 0.2s cubic-bezier(0.25, 0.8, 0.25, 1);
+            color: var(--text-color);
+            text-align: left;
+            position: relative;
+            top: 0;
+            box-shadow: 0 5px 0 #c4d4c9;
+            display: flex;
+            flex-direction: column; 
+            gap: 4px;
+        }
+
+        .opt-zh {
+            font-size: 1.15rem;
+            font-weight: 600;
+        }
+
+        .opt-en {
+            font-size: 0.95rem;
+            color: var(--en-text-color);
+            font-weight: normal;
+        }
+
+        .option-code {
+            font-family: 'Fira Code', monospace;
+            background: var(--code-bg);
+            color: var(--code-text);
+            padding: 12px;
+            border-radius: 8px;
+            margin-top: 8px;
+            width: 100%;
+            border: 1px solid #314538;
+            white-space: pre-wrap; 
+            line-height: 1.5;
+            box-sizing: border-box;
+            text-align: left;
+        }
+
+        .option-btn.correct .opt-en, .option-btn.wrong .opt-en {
+            color: rgba(255,255,255,0.85); 
+        }
+        .option-btn.correct .option-code, .option-btn.wrong .option-code {
+            background: rgba(0,0,0,0.25);
+            border-color: transparent;
+            color: white;
+        }
+
+        .option-btn:hover:not([disabled]) {
+            border-color: var(--secondary-color);
+            transform: translateY(-3px);
+            box-shadow: 0 8px 0 #95b8a0;
+        }
+
+        .option-btn:active:not([disabled]) {
+            top: 5px;
+            box-shadow: 0 0 0 #bdc3c7;
+        }
+        
+        .option-btn[disabled] {
+            cursor: default;
+        }
+
+        .option-btn.correct {
+            background-color: var(--correct-color);
+            color: white;
+            border-color: var(--correct-color);
+            box-shadow: 0 5px 0 #1f9c31;
+        }
+
+        .option-btn.wrong {
+            background-color: var(--wrong-color);
+            color: white;
+            border-color: var(--wrong-color);
+            box-shadow: 0 5px 0 #c24640;
+            animation: shake 0.5s;
+        }
+
+        /* --- 解析区域 --- */
+        .feedback-section {
+            display: none; 
+            text-align: left;
+            background: #e8f7ee;
+            padding: 25px;
+            border-radius: 18px;
+            margin-top: 30px;
+            border-left: 6px solid;
+            animation: slideUp 0.4s ease-out;
+        }
+        .feedback-section.correct { border-color: var(--correct-color); background: #eafaf1;}
+        .feedback-section.wrong { border-color: var(--wrong-color); background: #fceaea; }
+
+        .feedback-title {
+            font-weight: 600;
+            font-size: 1.2rem;
+            margin-bottom: 10px;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+        .correct .feedback-title { color: var(--correct-color); }
+        .wrong .feedback-title { color: var(--wrong-color); }
+
+        .explanation-text {
+            color: var(--text-color);
+            line-height: 1.6;
+            font-size: 1.05rem;
+        }
+
+        .next-btn {
+            background: var(--primary-color);
+            color: white;
+            border: none;
+            padding: 12px 35px;
+            border-radius: 50px;
+            font-size: 1.1rem;
+            font-family: inherit;
+            font-weight: 600;
+            cursor: pointer;
+            margin-top: 20px;
+            box-shadow: 0 5px 0 #1F7A44;
+            transition: all 0.2s;
+            float: right; 
+        }
+        .next-btn:hover { filter: brightness(1.1); transform: translateY(-2px); }
+        .next-btn:active { transform: translateY(5px); box-shadow: none; }
+
+        /* --- 结算画面 --- */
+        .end-screen {
+            display: none;
+            padding: 20px 0;
+        }
+        .end-title { font-size: 2.2rem; color: var(--primary-color); margin-bottom: 10px; }
+        .end-score-box {
+            background: var(--accent-yellow);
+            color: white;
+            padding: 20px 40px;
+            border-radius: 25px;
+            display: inline-block;
+            margin: 30px 0;
+            box-shadow: 0 8px 0 #d99e22;
+        }
+        .end-score { font-size: 3.5rem; font-weight: bold; line-height: 1; }
+        .end-desc { color: var(--en-text-color); font-size: 1.1rem; margin-bottom: 30px; }
+        
+        .perfect-score-text {
+            background: linear-gradient(45deg, #FFD700, #FF8C00);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            font-weight: 800;
+        }
+
+        /* --- 动画 --- */
+        @keyframes shake {
+            0%, 100% { transform: translateX(0); }
+            20%, 60% { transform: translateX(-8px); }
+            40%, 80% { transform: translateX(8px); }
+        }
+        @keyframes slideUp {
+            from { opacity: 0; transform: translateY(20px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+        .confetti {
+            position: absolute;
+            width: 12px; height: 12px;
+            background-color: #f00;
+            border-radius: 3px;
+            animation: fall linear forwards;
+            z-index: 10;
+        }
+        @keyframes fall {
+            to { transform: translateY(100vh) rotate(720deg); opacity: 0; }
+        }
+
+    </style>
+</head>
+<body>
+
+    <div class="game-container">
+        <div id="quiz-view">
+            <div class="header-stats">
+                <span id="level-indicator">Level 1 / 20</span>
+                <div class="score-box">⭐ <span id="score">0</span></div>
+            </div>
+
+            <div class="progress-container">
+                <div class="progress-bar" id="progress-bar"></div>
+            </div>
+
+            <div class="question-area" id="question-container">
+            </div>
+
+            <div class="options-grid" id="options-container">
+            </div>
+
+            <div class="feedback-section" id="feedback-area">
+                <div class="feedback-title" id="feedback-title"></div>
+                <div class="explanation-text" id="explanation-text"></div>
+                <div style="overflow: hidden;"> 
+                    <button class="next-btn" onclick="nextQuestion()">下一题 ➔</button>
+                </div>
+            </div>
+        </div>
+
+        <div id="end-screen" class="end-screen">
+        </div>
+    </div>
+
+    <script>
+        // --- 题目数据 (修复了双引号未转义导致的语法错误) ---
+        const quizData = [
+            {
+                qZh: "1. 单分支 `if` 结构在处理敌人时有一个明显的局限，这是什么？",
+                qEn: "What is the obvious limitation of the single-branch `if` structure when dealing with enemies?",
+                options: [
+                    { zh: "A. 它只能攻击一次", en: "It can only attack once" },
+                    { zh: "B. 它不能识别食人魔", en: "It cannot recognize ogres" },
+                    { zh: "C. 当条件不成立（没有敌人）时，程序什么都不做，英雄只会原地发呆", en: "When the condition is false (no enemy), the program does nothing and the hero just idles" },
+                    { zh: "D. 它会让代码运行变慢", en: "It makes the code run slower" }
+                ],
+                correct: 2, 
+                descZh: "解析：单分支的局限在于当条件不成立时，程序什么都不做。如果我们需要英雄在没敌人时回防，就需要双分支结构。",
+                descEn: "Explanation: The limit of a single branch is that it does nothing when the condition is false. If we want the hero to defend when there are no enemies, we need a two-way branch."
+            },
+            {
+                qZh: "2. 双分支结构（if-else）的核心逻辑是什么？",
+                qEn: "What is the core logic of the two-way branch (if-else) structure?",
+                options: [
+                    { zh: "A. 如果条件成立，做A；否则，做B", en: "If the condition is true, do A; otherwise, do B" },
+                    { zh: "B. 先做A，然后如果条件成立，再做B", en: "Do A first, then if the condition is true, do B" },
+                    { zh: "C. 同时执行A和B两条路线", en: "Execute both routes A and B simultaneously" },
+                    { zh: "D. 随机在A和B中选择一个执行", en: "Randomly choose to execute either A or B" }
+                ],
+                correct: 0,
+                descZh: "解析：双分支的逻辑是“如果条件成立，做 A；否则，做 B。” 两条分支必定会走其中一条，绝不会两条都走。",
+                descEn: "Explanation: The logic is 'If the condition is true, do A; otherwise, do B'. Exactly one of the two branches will be taken."
+            },
+            {
+                qZh: "3. 在编写 `else` 语句时，下面哪种写法是正确的？",
+                qEn: "When writing an `else` statement, which of the following is the correct syntax?",
+                options: [
+                    { zh: "A.", en: "", code: "else enemy:" },
+                    { zh: "B.", en: "", code: "else distance < 10:" },
+                    { zh: "C.", en: "", code: "else:" },
+                    { zh: "D.", en: "", code: "else" }
+                ],
+                correct: 2,
+                descZh: "解析：`else` 后面没有条件，直接跟一个冒号 `:`。因为它代表的就是“除了 if 条件成立之外的所有情况”，不需要再写条件。",
+                descEn: "Explanation: `else` has no condition and is followed directly by a colon `:`. It represents 'everything outside the if', so no condition is needed."
+            },
+            {
+                qZh: "4. 如何准确理解 `else` 所包含的情况？",
+                qEn: "How do you accurately understand the cases covered by `else`?",
+                options: [
+                    { zh: "A. 只有发生错误时的情况", en: "Only cases where an error occurs" },
+                    { zh: "B. if 语句条件以外的所有情况", en: "All cases outside the condition of the if statement" },
+                    { zh: "C. 只有在循环结束时的情况", en: "Only cases when the loop finishes" },
+                    { zh: "D. 必须手动指定的特定情况", en: "Specific cases that must be manually assigned" }
+                ],
+                correct: 1,
+                descZh: "解析：else 在 if 语句条件不成立时执行动作。可以这样认为，else 的情况也就是 if 语句以外的所有情况。",
+                descEn: "Explanation: `else` runs when the `if` condition is false. The `else` cases are essentially all cases outside the `if` statement."
+            },
+            {
+                qZh: "5. 关于 `if-else` 的缩进规则，以下哪项描述是正确的？",
+                qEn: "Regarding the indentation rules for `if-else`, which description is correct?",
+                options: [
+                    { zh: "A. else 必须比 if 多缩进一次", en: "else must be indented one more time than if" },
+                    { zh: "B. else 可以写在任意位置", en: "else can be written anywhere" },
+                    { zh: "C. else 关键字要和它配对的 if 处在同一缩进层级（左边对齐）", en: "The else keyword must be at the same indentation level as its paired if (left-aligned)" },
+                    { zh: "D. else 和它下面的代码块都不需要缩进", en: "Neither else nor its code block needs indentation" }
+                ],
+                correct: 2,
+                descZh: "解析：书写 if-else 时，`else` 关键字要和它配对的 `if` 处在同一缩进层级（左边对齐）。同时各自的代码块都要向右缩进。",
+                descEn: "Explanation: When writing if-else, the `else` keyword must be at the exact same indentation level as its paired `if` (aligned on the left)."
+            },
+            {
+                qZh: "6. if-else 具有“互斥”的特性，“互斥”在这里意味着什么？",
+                qEn: "The if-else structure is 'mutually exclusive'. What does 'mutually exclusive' mean here?",
+                options: [
+                    { zh: "A. if 块和 else 块会互相攻击", en: "The if block and else block will attack each other" },
+                    { zh: "B. if 块和 else 块不可能同时执行，每次只走一条", en: "The if block and else block cannot execute at the same time; only one path is taken" },
+                    { zh: "C. 它们必须在不同的文件中写", en: "They must be written in different files" },
+                    { zh: "D. else 会阻止 if 运行", en: "else prevents if from running" }
+                ],
+                correct: 1,
+                descZh: "解析：互斥指的是 if 块和 else 块不可能同时执行，每次只走一条。if-else 是一道“二选一”的门，不多走、不少走。",
+                descEn: "Explanation: Mutually exclusive means the `if` block and `else` block cannot run simultaneously; only one is executed per check."
+            },
+            {
+                qZh: "7. 在 Python 中，可以只写一个孤零零的 `else:` 吗？",
+                qEn: "In Python, can you write a standalone `else:`?",
+                options: [
+                    { zh: "A. 可以，它会自动找到最近的循环", en: "Yes, it automatically finds the nearest loop" },
+                    { zh: "B. 可以，这表示无条件执行", en: "Yes, this means unconditional execution" },
+                    { zh: "C. 不可以，else 只能与相应的 if 语句配对使用", en: "No, else must be paired with a corresponding if statement" },
+                    { zh: "D. 不可以，除非加了引号", en: "No, unless it is in quotes" }
+                ],
+                correct: 2,
+                descZh: "解析：else 只能与相应的 if 语句配对使用。你不能写一个孤零零的 else，它必须紧跟在某个 if（及其代码块）之后。",
+                descEn: "Explanation: `else` can only be used paired with a corresponding `if` statement. It cannot stand alone and must follow an `if` block."
+            },
+            {
+                qZh: "8. 英雄的新技能 `hero.distanceTo(enemy)` 的作用是什么？",
+                qEn: "What is the function of the hero's new skill `hero.distanceTo(enemy)`?",
+                options: [
+                    { zh: "A. 让英雄瞬间移动到敌人身边", en: "Teleports the hero to the enemy instantly" },
+                    { zh: "B. 测量英雄与目标之间的距离（单位是米）", en: "Measures the distance between the hero and the target (in meters)" },
+                    { zh: "C. 增加武器的攻击距离", en: "Increases the attack range of the weapon" },
+                    { zh: "D. 将敌人推开", en: "Pushes the enemy away" }
+                ],
+                correct: 1,
+                descZh: "解析：`distanceTo()` 技能能测量英雄与某个目标（或坐标）之间的距离，单位是米。",
+                descEn: "Explanation: The `distanceTo()` skill measures the distance between the hero and a target (or coordinate) in meters."
+            },
+            {
+                qZh: "9. 在判断条件 `if distance < 10:` 中，当 `distance` 的值为 15 时，结果是什么？",
+                qEn: "In the condition `if distance < 10:`, when the value of `distance` is 15, what is the result?",
+                options: [
+                    { zh: "A. True（执行 if 分支）", en: "True (executes the if branch)" },
+                    { zh: "B. False（执行 else 分支）", en: "False (executes the else branch)" },
+                    { zh: "C. None", en: "None" },
+                    { zh: "D. 程序会报错", en: "The program throws an error" }
+                ],
+                correct: 1,
+                descZh: "解析：当距离为 15 时，`15 < 10` 的比较结果是不成立的，也就是 `False`，因此程序会执行 `else` 分支。",
+                descEn: "Explanation: When distance is 15, `15 < 10` is false. The result is `False`, and the `else` branch is executed."
+            },
+            {
+                qZh: "10. 为什么在使用劈斩技能前，必须先使用 `if hero.isReady(\"cleave\"):` 检查？",
+                qEn: "Why must you check with `if hero.isReady('cleave'):` before using the cleave skill?",
+                options: [
+                    { zh: "A. 因为劈斩需要消耗大量金币", en: "Because cleaving costs a lot of gold" },
+                    { zh: "B. 因为 cleave 等特殊技能有冷却时间，必须检查是否准备好了", en: "Because special skills like cleave have cooldowns and you must check if they are ready" },
+                    { zh: "C. 为了防止劈斩伤到自己", en: "To prevent cleave from hurting the hero" },
+                    { zh: "D. 只是为了让代码显得更专业", en: "Just to make the code look more professional" }
+                ],
+                correct: 1,
+                descZh: "解析：`cleave()` 这样的强力技能不能连续使用，它有冷却时间。所以使用前必须先用 `isReady()` 方法检查它是否准备好了。",
+                descEn: "Explanation: Powerful skills like `cleave()` cannot be used continuously due to cooldown times. You must use `isReady()` to check if it's available."
+            },
+            {
+                qZh: "11. 在“攻击或撤防”模式中，`else` 分支（即没有敌人时）通常用来做什么？",
+                qEn: "In the 'Attack or Defend' pattern, what is the `else` branch (when there are no enemies) typically used for?",
+                options: [
+                    { zh: "A. 原地发呆", en: "Idling in place" },
+                    { zh: "B. 跑去敌人的营地", en: "Running to the enemy's camp" },
+                    { zh: "C. 用 moveXY 回到防守点保护队友", en: "Using moveXY to return to the defense point to protect allies" },
+                    { zh: "D. 丢掉武器", en: "Dropping weapons" }
+                ],
+                correct: 2,
+                descZh: "解析：在“攻击或撤防”的基础模式中，条件是“是否有敌人”。if 攻击敌人，else 使用 `moveXY` 回到防守位置保护村民或农民。",
+                descEn: "Explanation: In the 'Attack or Defend' pattern, the `else` branch uses `moveXY` to return to the defense point to protect villagers."
+            },
+            {
+                qZh: "12. 在“食人魔营地”关卡中，如何实现“战斗优先，间隙开箱”的策略？",
+                qEn: "In the 'Ogre Encampment' level, how do you implement the 'fight first, loot in gaps' strategy?",
+                options: [
+                    { zh: "A. 一直攻击宝箱，不管食人魔", en: "Always attack the chest, ignoring ogres" },
+                    { zh: "B. 把“有敌人”作为条件，if 分支反击敌人，else 分支攻击宝箱", en: "Use 'has enemy' as condition: if branch attacks enemies, else branch attacks the chest" },
+                    { zh: "C. 每次打完一个敌人就立刻逃跑", en: "Run away immediately after hitting an enemy once" },
+                    { zh: "D. 让食人魔帮你开箱", en: "Let the ogres open the chest for you" }
+                ],
+                correct: 1,
+                descZh: "解析：把“有敌人”作为条件，if 分支反击敌人，else 分支攻击宝箱。这样英雄只要还有食人魔就先打它们，一旦清场就抓紧时间凿宝箱。",
+                descEn: "Explanation: By using 'has enemy' as the condition, the `if` attacks enemies and the `else` attacks the chest. This ensures combat is prioritized."
+            },
+            {
+                qZh: "13. 当 `cleave` 技能还在 10 秒冷却期间时，最聪明的做法是什么？",
+                qEn: "When the `cleave` skill is still on its 10-second cooldown, what is the smartest approach?",
+                options: [
+                    { zh: "A. 用 else 在冷却期间发动普通攻击，不浪费每一秒", en: "Use else to launch basic attacks during the cooldown, wasting no seconds" },
+                    { zh: "B. 站在原地等 10 秒", en: "Stand still and wait for 10 seconds" },
+                    { zh: "C. 用 say() 跟矮人聊天", en: "Chat with dwarves using say()" },
+                    { zh: "D. 马上用 moveXY 跑开", en: "Run away immediately using moveXY" }
+                ],
+                correct: 0,
+                descZh: "解析：用 else 在冷却期间发动普通攻击，能让英雄“不浪费每一秒”——劈斩好了就劈斩，没好就普攻，火力永不停歇。",
+                descEn: "Explanation: Using `else` to perform basic attacks during cooldown ensures the hero's firepower never stops, maximizing output."
+            },
+            {
+                qZh: "14. 在“贴身护卫”关卡中，判断是否出击保护农民的最佳依据是什么？",
+                qEn: "In the 'Close Protection' level, what is the best criterion to decide whether to strike to protect the peasant?",
+                options: [
+                    { zh: "A. 敌人的颜色", en: "The enemy's color" },
+                    { zh: "B. 敌人的名字", en: "The enemy's name" },
+                    { zh: "C. 测出与最近敌人的距离，如果距离小于 10 就攻击", en: "Measure distance to the nearest enemy, attack if distance is less than 10" },
+                    { zh: "D. 只要有敌人就直接追过去", en: "Chase the enemy immediately as long as one exists" }
+                ],
+                correct: 2,
+                descZh: "解析：要护卫脆弱的农民，英雄不能见敌人就追。判断标准变成了“敌人离得够不够近”。如果 `distance < 10` 就攻击，否则回到农民身边。",
+                descEn: "Explanation: The hero shouldn't chase every enemy. The criterion is distance: attack if `distance < 10`, else return to the peasant."
+            },
+            {
+                qZh: "15. 在使用 `hero.distanceTo(enemy)` 测距前，为什么一定要先用 `if enemy:` 检查是否有敌人？",
+                qEn: "Before using `hero.distanceTo(enemy)` to measure distance, why must you first check `if enemy:` to see if an enemy exists?",
+                options: [
+                    { zh: "A. 为了加快测距速度", en: "To speed up the distance measurement" },
+                    { zh: "B. 因为如果场上没有敌人，变量会是 None，对 None 调用 distanceTo 会导致程序出错崩溃", en: "Because if there's no enemy, the variable is None, and calling distanceTo on None crashes the program" },
+                    { zh: "C. 为了获得敌人的名字", en: "To get the enemy's name" },
+                    { zh: "D. 没有原因，这是多余的一步", en: "No reason, it's a redundant step" }
+                ],
+                correct: 1,
+                descZh: "解析：如果场上没有敌人，`findNearestEnemy()` 返回 `None`，对 `None` 调用 `distanceTo` 会出错。外层的 `if enemy` 就是一道“安全锁”。",
+                descEn: "Explanation: If no enemy is found, the value is `None`. Calling `distanceTo` on `None` causes an error. The `if enemy` acts as a safety lock."
+            },
+            {
+                qZh: "16. 在编程中，“嵌套”（Nesting）指的是什么？",
+                qEn: "In programming, what does 'Nesting' refer to?",
+                options: [
+                    { zh: "A. 在 if 代码块里面再套入一个 if-else 结构", en: "Putting an if-else structure inside another if code block" },
+                    { zh: "B. 把所有代码写在一行里", en: "Writing all code on a single line" },
+                    { zh: "C. 使用鸟巢来挡住攻击", en: "Using a bird's nest to block attacks" },
+                    { zh: "D. 删掉所有的 else", en: "Deleting all else statements" }
+                ],
+                correct: 0,
+                descZh: "解析：嵌套（Nesting）是指在一个 `if` 的内部再放一个 `if-else`。这种双层判断能做到“先大类判断，再细分决策”。",
+                descEn: "Explanation: Nesting refers to placing an `if-else` inside another `if`. This allows for hierarchical, double-layer decision making."
+            },
+            {
+                qZh: "17. 以下哪一段代码格式是正确的双分支结构？",
+                qEn: "Which of the following code formats represents a correct two-way branch structure?",
+                options: [
+                    { zh: "A.", en: "", code: "if enemy:\nhero.attack(enemy)\nelse:\nhero.moveXY(40, 34)" },
+                    { zh: "B.", en: "", code: "if enemy:\n    hero.attack(enemy)\nelse:\n    hero.moveXY(40, 34)" },
+                    { zh: "C.", en: "", code: "if enemy:\n    hero.attack(enemy)\n    else:\n    hero.moveXY(40, 34)" },
+                    { zh: "D.", en: "", code: "if enemy\n    hero.attack(enemy)\nelse\n    hero.moveXY(40, 34)" }
+                ],
+                correct: 1,
+                descZh: "解析：正确的格式是 `if` 和 `else` 顶格对齐并带有冒号，而它们各自执行的代码块需要向右缩进。选项B完全符合规范。",
+                descEn: "Explanation: The correct format requires `if` and `else` to be aligned left with colons, and their respective code blocks to be indented. Option B is correct."
+            },
+            {
+                qZh: "18. 在“背靠背”关卡中，如果把 `else` 写成了与 `hero.attack` 相同的缩进层级，会报什么错？",
+                qEn: "In the 'Back to Back' level, if you indent `else` to the same level as `hero.attack`, what error will occur?",
+                options: [
+                    { zh: "A. 武器损坏", en: "Weapon broken" },
+                    { zh: "B. IndentationError（缩进错误），因为 else 没和 if 对齐", en: "IndentationError, because else is not aligned with if" },
+                    { zh: "C. 内存溢出", en: "Memory overflow" },
+                    { zh: "D. 敌人变得无敌", en: "Enemies become invincible" }
+                ],
+                correct: 1,
+                descZh: "解析：缩进层级不一致会报错。`else` 必须与配对的 `if` 处在同一缩进层级，不能向右缩进。",
+                descEn: "Explanation: Inconsistent indentation causes an IndentationError. `else` must be aligned with its paired `if` and cannot be indented further."
+            },
+            {
+                qZh: "19. 在需要使用技能清场的关卡中，如何用一行代码检查 `cleave` 技能是否就绪？",
+                qEn: "In levels requiring a skill to clear the field, how do you check if the `cleave` skill is ready in one line of code?",
+                options: [
+                    { zh: "A.", en: "", code: "if hero.cleave(ready):" },
+                    { zh: "B.", en: "", code: "if hero.isReady(\"cleave\"):" },
+                    { zh: "C.", en: "", code: "if cleave == True:" },
+                    { zh: "D.", en: "", code: "if hero.readyCleave:" }
+                ],
+                correct: 1,
+                descZh: "解析：使用前必须先用日晷腕表的 `isReady()` 方法检查它是否准备好了。正确的语法是 `if hero.isReady(\"cleave\"):`。",
+                descEn: "Explanation: You must use the `isReady()` method to check if the skill is available. The correct syntax is `if hero.isReady(\"cleave\"):`."
+            },
+            {
+                qZh: "20. 如果你粗心把判断距离的 `<` (小于) 写反成了 `>` (大于)（比如写成了 `if distance > 10`），英雄的行为会发生什么灾难性的变化？",
+                qEn: "If you carelessly reverse the `<` (less than) into `>` (greater than) when checking distance (e.g., `if distance > 10`), what disastrous change happens to the hero's behavior?",
+                options: [
+                    { zh: "A. 没有任何变化", en: "No change at all" },
+                    { zh: "B. 逻辑完全相反：敌人靠近了英雄不打，反而会追出去打远处的敌人，导致阵地失守", en: "The logic reverses completely: the hero ignores nearby enemies and chases distant ones, losing the defense position" },
+                    { zh: "C. 英雄会自动换一把剑", en: "The hero automatically switches swords" },
+                    { zh: "D. 英雄的移动速度变快", en: "The hero moves faster" }
+                ],
+                correct: 1,
+                descZh: "解析：把 `<` 写反成 `>`，逻辑就完全相反了。原本用来防守近身敌人的逻辑变成了只打远处的敌人，直接违背了护卫的目的。",
+                descEn: "Explanation: Reversing `<` to `>` completely reverses the logic. Instead of defending against close threats, the hero abandons the post to chase distant ones."
+            }
+        ];
+
+        let currentQuestion = 0;
+        let score = 0;
+        let answered = false; 
+
+        const quizView = document.getElementById('quiz-view');
+        const endScreen = document.getElementById('end-screen');
+        const questionContainer = document.getElementById('question-container');
+        const optionsContainer = document.getElementById('options-container');
+        const levelIndicator = document.getElementById('level-indicator');
+        const scoreDisplay = document.getElementById('score');
+        const progressBar = document.getElementById('progress-bar');
+        const feedbackArea = document.getElementById('feedback-area');
+        const feedbackTitle = document.getElementById('feedback-title');
+        const explanationText = document.getElementById('explanation-text');
+
+        function highlightCode(codeStr) {
+            if (!codeStr) return '';
+            return escapeHtml(codeStr); 
+        }
+
+        function loadQuestion() {
+            answered = false; 
+            feedbackArea.style.display = 'none'; 
+            
+            const data = quizData[currentQuestion];
+            
+            levelIndicator.innerText = `Level ${currentQuestion + 1} / ${quizData.length}`;
+            progressBar.style.width = `${((currentQuestion) / quizData.length) * 100}%`;
+            scoreDisplay.innerText = score;
+            
+            let html = `
+                <div class="question-title">${highlightDescCode(data.qZh)}</div>
+                <div class="en-text">${highlightDescCode(data.qEn)}</div>
+            `;
+            questionContainer.innerHTML = html;
+            
+            optionsContainer.innerHTML = '';
+            data.options.forEach((opt, index) => {
+                const btn = document.createElement('button');
+                btn.classList.add('option-btn');
+                
+                let btnHtml = `<span class="opt-zh">${highlightDescCode(opt.zh)}</span>`;
+                if (opt.en) {
+                    btnHtml += `<span class="opt-en">${highlightDescCode(opt.en)}</span>`;
+                }
+                if (opt.code) {
+                    btnHtml += `<div class="option-code">${highlightCode(opt.code)}</div>`;
+                }
+
+                btn.innerHTML = btnHtml;
+                btn.onclick = () => checkAnswer(index, btn);
+                optionsContainer.appendChild(btn);
+            });
+        }
+
+        function checkAnswer(selectedIndex, btnElement) {
+            if (answered) return; 
+            answered = true;
+
+            const data = quizData[currentQuestion];
+            const allBtns = optionsContainer.querySelectorAll('.option-btn');
+            
+            allBtns.forEach(btn => btn.setAttribute('disabled', 'true'));
+            
+            const fullDesc = `
+                <div style="margin-bottom:8px;">${highlightDescCode(data.descZh)}</div>
+                <div class="en-text">${highlightDescCode(data.descEn)}</div>
+            `;
+
+            if (selectedIndex === data.correct) {
+                btnElement.classList.add('correct');
+                score += 100; 
+                scoreDisplay.innerText = score;
+                createConfetti(); 
+                showFeedback(true, "🎉 回答正确！ Correct!", fullDesc);
+            } else {
+                btnElement.classList.add('wrong');
+                setTimeout(() => {
+                   allBtns[data.correct].classList.add('correct');
+                }, 400);
+                
+                const rightOptStr = String.fromCharCode(65 + data.correct); 
+                showFeedback(false, `❌ 回答错误。正确答案是 / Correct answer is: ${rightOptStr}`, fullDesc);
+            }
+        }
+
+        function highlightDescCode(text) {
+            return text.replace(/`([^`]+)`/g, '<code style="background-color:#e8f7ee; font-family:\'YouYuan\', \'幼圆\', monospace; font-weight:bold; color:#1F7A44; padding:3px 8px; border-radius:6px; font-size:1.15rem; margin:0 2px;">$1</code>');
+        }
+
+        function showFeedback(isCorrect, title, desc) {
+            feedbackArea.classList.remove('correct', 'wrong');
+            feedbackArea.classList.add(isCorrect ? 'correct' : 'wrong');
+            feedbackTitle.innerHTML = title;
+            explanationText.innerHTML = desc;
+            feedbackArea.style.display = 'block';
+            setTimeout(() => {
+                feedbackArea.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
+            }, 100);
+        }
+
+        function nextQuestion() {
+            currentQuestion++;
+            if (currentQuestion < quizData.length) {
+                loadQuestion();
+            } else {
+                showEndScreen();
+            }
+        }
+
+        function showEndScreen() {
+            quizView.style.display = 'none';
+            endScreen.style.display = 'block';
+            progressBar.parentElement.style.display = 'none'; 
+
+            const totalScore = quizData.length * 100;
+            const isPerfect = (score === totalScore);
+            
+            let html = '';
+            if (isPerfect) {
+                for(let i=0; i<6; i++) setTimeout(createConfetti, i*350);
+                html += `<div class="end-title">🎉 完美的决策大师！<br><span class="en-text" style="font-size: 1.2rem;">Perfect Decision Master!</span>🎉</div>`;
+                html += `<div class="end-score-box">总得分 Total Score<br><div class="end-score perfect-score-text">${score}</div></div>`;
+                html += `<div class="end-desc">太棒了！你已经完全掌握了 if-else 双分支结构，懂得如何在危急关头做出最完美的取舍！<br><span class="en-text">Amazing! You've mastered the if-else structure and know exactly how to make the perfect choices in critical situations!</span></div>`;
+            } else {
+                html += `<div class="end-title">挑战完成！<br><span class="en-text" style="font-size: 1.2rem;">Challenge Completed!</span></div>`;
+                html += `<div class="end-score-box">总得分 Total Score<br><div class="end-score">${score} / ${totalScore}</div></div>`;
+                html += `<div class="end-desc">做得不错！复习一下错题里的语法细节，下次一定拿满分！<br><span class="en-text">Good job! Review the syntax details in your mistakes, and aim for a perfect score next time!</span></div>`;
+            }
+            html += `<button class="next-btn" onclick="location.reload()" style="float:none; font-size:1.2rem; padding: 15px 40px; margin-top:20px;">🔄 再玩一次 Play Again</button>`;
+            
+            endScreen.innerHTML = html;
+        }
+
+        function createConfetti() {
+            const colors = ['#ff7675', '#74b9ff', '#55efc4', '#ffeaa7', '#a29bfe', '#fdcb6e'];
+            const container = document.querySelector('.game-container');
+            for (let i = 0; i < 45; i++) {
+                const confetti = document.createElement('div');
+                confetti.classList.add('confetti');
+                confetti.style.backgroundColor = colors[Math.floor(Math.random() * colors.length)];
+                confetti.style.left = Math.random() * 100 + '%';
+                confetti.style.top = '-20px';
+                const scale = Math.random() * 0.6 + 0.4;
+                confetti.style.transform = `scale(${scale}) rotate(${Math.random()*360}deg)`;
+                confetti.style.animationDuration = (Math.random() * 1.5 + 1.2) + 's';
+                confetti.style.animationDelay = Math.random() * 0.5 + 's';
+                
+                container.appendChild(confetti);
+                setTimeout(() => confetti.remove(), 3000);
+            }
+        }
+
+        function escapeHtml(text) {
+            return text.replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;");
+        }
+
+        loadQuestion();
+    </script>
+</body>
+</html>
