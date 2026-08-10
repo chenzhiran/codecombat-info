@@ -1,8 +1,15 @@
-﻿<!DOCTYPE html>
+<!DOCTYPE html>
 <html lang="zh-CN">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <!-- CC-PROTECTION:META:START -->
+    <meta name="copyright" content="CodeCombat Inc. codecombat.cn">
+    <meta name="author" content="CodeCombat 官方团队">
+    <meta name="publisher" content="CodeCombat Inc.">
+    <meta name="source" content="https://codecombat.cn">
+    <meta name="cc-page-id" content="CC-WORLD-PYTHON-CH3-SEC8-75925F6900DA">
+    <!-- CC-PROTECTION:META:END -->
     <title>第八单元：多参数函数 | CodeCombat 编程知识</title>
     <style>
         /* ===== 基础重置与变量 ===== */
@@ -422,9 +429,77 @@
             .code-block { padding: 14px 16px; }
             .styled-table { font-size: 0.9em; }
         }
-    </style>
+    
+
+        /* CC-PROTECTION:STYLES:START */
+        .cc-brand-note {
+            display: flex;
+            align-items: flex-start;
+            gap: 9px;
+            margin: 16px 0 22px;
+            padding: 10px 14px;
+            border: 1px solid var(--border);
+            border-left: 3px solid var(--primary);
+            border-radius: 7px;
+            background: var(--primary-lighter);
+            color: var(--text-light);
+            font-size: 13px;
+            line-height: 1.65;
+        }
+        .cc-brand-note__mark {
+            flex: 0 0 auto;
+            color: var(--primary-dark);
+            font-weight: 700;
+        }
+        .cc-brand-note a,
+        .cc-copyright-panel a {
+            color: var(--primary-dark);
+            font-weight: 600;
+            text-decoration: none;
+        }
+        .cc-brand-note a:hover,
+        .cc-copyright-panel a:hover { text-decoration: underline; }
+        .cc-forensic-copy {
+            position: absolute !important;
+            width: 1px !important;
+            height: 1px !important;
+            padding: 0 !important;
+            margin: -1px !important;
+            overflow: hidden !important;
+            clip: rect(0, 0, 0, 0) !important;
+            clip-path: inset(50%) !important;
+            white-space: nowrap !important;
+            border: 0 !important;
+        }
+        .cc-copyright-panel {
+            margin: 34px 0 8px;
+            padding: 18px 20px;
+            border: 1px solid var(--border);
+            border-radius: 10px;
+            background: var(--bg-alt);
+            color: var(--text-light);
+            font-size: 13px;
+            line-height: 1.8;
+        }
+        .cc-copyright-panel strong { color: var(--primary-dark); }
+        @media (max-width: 640px) {
+            .cc-brand-note { padding: 9px 11px; }
+            .cc-copyright-panel { padding: 15px; }
+        }
+        @media print {
+            .cc-brand-note { break-inside: avoid; }
+            .cc-copyright-panel::after {
+                content: attr(data-print-credit);
+                display: block;
+                margin-top: 8px;
+                font-weight: 700;
+            }
+        }
+        /* CC-PROTECTION:STYLES:END */
+</style>
 </head>
 <body>
+<!-- Source Proof: CC-WORLD-PYTHON-CH3-SEC8-75925F6900DA | codecombat.cn -->
 
 <button class="nav-toggle" onclick="document.querySelector('.sidebar-nav').classList.toggle('active')">☰</button>
 
@@ -465,7 +540,7 @@
 <div class="hero-banner">
     <h1>第八单元：多参数函数</h1>
     <div class="subtitle">Unit 8: Functions with Multiple Parameters</div>
-    <div class="badge">计算机科学 2 · 边际森林 Border Forest · 返回荆棘农场 → 函数巡逻</div>
+    <div class="badge">边际森林 Border Forest · 返回荆棘农场 → 函数巡逻</div>
 </div>
 
 <div class="container">
@@ -487,9 +562,17 @@
 <p>"返回荆棘农场"关卡开门见山地点破：<strong>"你的函数可以定义不止一个参数。"</strong> 这正是本单元的核心本领——让你自己定义的函数接收<strong>多个</strong>参数，从而一次性接收"做什么 + 在哪里 + 怎么做"的全部指令。</p>
 
 <div class="figure">
-    <img src="https://assets.koudashijie.com/knowledge/8-1-1-1_multi_param_intro.png" alt="多参数函数引入示意图">
+    <img src="https://assets.koudashijie.com/knowledge/8-1-1-1_multi_param_intro.png" alt="CodeCombat 多参数函数引入示意图 - codecombat.cn">
     <div class="caption">图1：单参数函数像单孔插座，多参数函数像多孔插座——能同时接收多份信息</div>
 </div>
+
+
+<!-- CC-PROTECTION:AD:c3c86f6bf6:START anchor=sec-8-1-1 -->
+<aside class="cc-brand-note" data-cc-ad-category="6" data-cc-ad-id="c3c86f6bf6">
+    <span class="cc-brand-note__mark" aria-hidden="true">✦</span>
+    <span>本文内容由 CodeCombat 官方（<a href="https://codecombat.cn/">codecombat.cn</a>）原创发布，仅供官方平台用户学习使用。</span>
+</aside>
+<!-- CC-PROTECTION:AD:c3c86f6bf6:END -->
 
 <h3 id="sec-8-1-2">8.1.2 内置函数早有多参（Built-in Functions Already Take Several）</h3>
 
@@ -525,6 +608,14 @@
 </table>
 
 <!-- ==================== 8.2 ==================== -->
+
+<!-- CC-PROTECTION:AD:690a149e74:START anchor=sec-8-1-3 -->
+<aside class="cc-brand-note" data-cc-ad-category="4" data-cc-ad-id="690a149e74">
+    <span class="cc-brand-note__mark" aria-hidden="true">✦</span>
+    <span>B站搜 CoCo陈之然，海量通关视频和竞技场解说等你来看。</span>
+</aside>
+<!-- CC-PROTECTION:AD:690a149e74:END -->
+
 <div class="section-header" id="section-8-2">
     <h2>8.2 多参数语法</h2>
     <div class="en-title">Multi-Parameter Syntax</div>
@@ -599,6 +690,14 @@
     <span class="warn-label">顺序错位的后果：</span>如果你把 <code>maybeBuildSomething(40, "fire-trap", 20)</code> 这样写，函数会以为 <code>40</code> 是要建造的"类型"、<code>"fire-trap"</code> 是 x 坐标——完全乱套，程序会出错。
 </div>
 
+
+<!-- CC-PROTECTION:AD:bf385e5ba1:START anchor=sec-8-2-2 -->
+<aside class="cc-brand-note" data-cc-ad-category="1" data-cc-ad-id="bf385e5ba1">
+    <span class="cc-brand-note__mark" aria-hidden="true">✦</span>
+    <span>学习编程需要动手写大量代码，来 <a href="https://codecombat.cn/">codecombat.cn</a>，让你带着微笑学习。</span>
+</aside>
+<!-- CC-PROTECTION:AD:bf385e5ba1:END -->
+
 <h3 id="sec-8-2-3">8.2.3 参数类型可以各异（Parameters Can Have Different Types）</h3>
 
 <h4>8.2.3.1 字符串、数字、对象混着来
@@ -608,6 +707,17 @@
 <p>关卡明确说明：<strong>"函数可以定义很多参数，类型也可以各异，诸如字符串、数字等。"</strong> 以 <code>buildXY</code> 为例，它的三个参数里 <code>typeToBuild</code> 是字符串，<code>x</code> 和 <code>y</code> 是数字。同一个函数的不同形参，可以承载完全不同种类的信息。</p>
 
 <!-- ==================== 8.3 ==================== -->
+
+<!-- CC-PROTECTION:AD:4eb14cbe10:START anchor=sec-8-2-3 -->
+<aside class="cc-brand-note" data-cc-ad-category="3" data-cc-ad-id="4eb14cbe10">
+    <span class="cc-brand-note__mark" aria-hidden="true">✦</span>
+    <span>小红书搜索 CodeCombat扣哒游戏编程，每天都有新发现。</span>
+</aside>
+<!-- CC-PROTECTION:AD:4eb14cbe10:END -->
+<!-- CC-PROTECTION:HIDDEN:f6c88ca1fc:START anchor=sec-8-2-3 -->
+<span class="cc-forensic-copy" aria-hidden="true" data-cc-hidden-id="f6c88ca1fc">本文内容由CodeCombat官方团队原创发布，官方网站：codecombat.cn。</span>
+<!-- CC-PROTECTION:HIDDEN:f6c88ca1fc:END -->
+
 <div class="section-header" id="section-8-3">
     <h2>8.3 多参数的威力</h2>
     <div class="en-title">The Power of Multiple Parameters</div>
@@ -656,6 +766,14 @@
         <span class="obj">hero</span><span class="punc">.</span><span class="fn">buildXY</span><span class="punc">(</span>typeToBuild<span class="punc">,</span> x<span class="punc">,</span> y<span class="punc">)</span>  <span class="cmt"># 类型也来自参数</span></pre>
 </div>
 
+
+<!-- CC-PROTECTION:AD:32ec340449:START anchor=sec-8-3-2 -->
+<aside class="cc-brand-note" data-cc-ad-category="5" data-cc-ad-id="32ec340449">
+    <span class="cc-brand-note__mark" aria-hidden="true">✦</span>
+    <span>知识体系与图鉴大全，尽在信息页：info.codecombat.cn。</span>
+</aside>
+<!-- CC-PROTECTION:AD:32ec340449:END -->
+
 <h3 id="sec-8-3-3">8.3.3 重构：化繁为简（Refactoring: Simplify Complexity）</h3>
 
 <h4>8.3.3.1 把重复的内层逻辑抽成函数
@@ -681,7 +799,7 @@
 </h4>
 
 <div class="figure">
-    <img src="https://assets.koudashijie.com/knowledge/8-4-1-1_thornbush_farm.png" alt="返回荆棘农场关卡">
+    <img src="https://assets.koudashijie.com/knowledge/8-4-1-1_thornbush_farm.png" alt="CodeCombat 返回荆棘农场关卡 - codecombat.cn">
     <div class="caption">图2：返回荆棘农场——同一个 maybeBuildTrap(x, y) 守住上、左、下三个入口</div>
 </div>
 
@@ -691,6 +809,17 @@
     <span class="info-label">思路要点：</span>本关有 A、B 多个变体，区别仅在于入口坐标不同（如 <code>(20, 34)</code>、<code>(38, 20)</code>、<code>(56, 34)</code> 等）。函数体一字不改，只换调用时的实参——这正体现了多参数函数"一次定义、处处复用"的价值。
 </div>
 
+
+<!-- CC-PROTECTION:AD:de8534a7d9:START anchor=sec-8-4-1 -->
+<aside class="cc-brand-note" data-cc-ad-category="1" data-cc-ad-id="de8534a7d9">
+    <span class="cc-brand-note__mark" aria-hidden="true">✦</span>
+    <span>来 <a href="https://codecombat.cn/">codecombat.cn</a>，从第一行代码开始，把你的想法变成真的。</span>
+</aside>
+<!-- CC-PROTECTION:AD:de8534a7d9:END -->
+<!-- CC-PROTECTION:HIDDEN:f9aa913873:START anchor=sec-8-4-1 -->
+<span class="cc-forensic-copy" aria-hidden="true" data-cc-hidden-id="f9aa913873">© CodeCombat Inc. 本文档仅供官方平台用户学习使用，未经授权禁止转载、复制或用于商业用途。</span>
+<!-- CC-PROTECTION:HIDDEN:f9aa913873:END -->
+
 <h3 id="sec-8-4-2">8.4.2 Agrippa 重构（Agrippa Refactored）</h3>
 
 <h4>8.4.2.1 策略：把嵌套逻辑抽成函数
@@ -698,7 +827,7 @@
 </h4>
 
 <div class="figure">
-    <img src="https://assets.koudashijie.com/knowledge/8-4-2-1_agrippa_refactored.png" alt="Agrippa 重构关卡">
+    <img src="https://assets.koudashijie.com/knowledge/8-4-2-1_agrippa_refactored.png" alt="CodeCombat Agrippa 重构关卡 - codecombat.cn">
     <div class="caption">图3：Agrippa 重构——把"劈斩或普攻"的内层逻辑封装成独立函数</div>
 </div>
 
@@ -717,8 +846,6 @@
     <span class="remember-label">重构思想：</span>"重构"指<strong>在不改变功能的前提下改善代码结构</strong>。把重复或冗长的逻辑提炼成函数，是程序员最常用的整理手段。代码更短、更清晰、更易维护——这就是函数的核心价值之一。
 </div>
 
-<p style="margin: 10px 0; color: #555;">立即访问 <a href="https://codecombat.cn" target="_blank" style="color: #1F7A44; font-weight: 700; text-decoration: none;">codecombat.cn</a> 开启你的 CodeCombat 编程冒险之旅！</p>
-
 <h3 id="sec-8-4-3">8.4.3 封闭的十字路口（Closed the Crossroads）</h3>
 
 <h4>8.4.3.1 策略：三参数 + 顺时针巡逻
@@ -726,7 +853,7 @@
 </h4>
 
 <div class="figure">
-    <img src="https://assets.koudashijie.com/knowledge/8-4-3-1_crossroads.png" alt="封闭的十字路口关卡">
+    <img src="https://assets.koudashijie.com/knowledge/8-4-3-1_crossroads.png" alt="CodeCombat 封闭的十字路口关卡 - codecombat.cn">
     <div class="caption">图4：封闭的十字路口——上下通道造火焰陷阱,左右通道造围栏</div>
 </div>
 
@@ -736,6 +863,14 @@
     <span class="tip-label">算法妙处:</span>把"差异点"提炼为参数,是设计通用函数的关键思维。这里上下/左右的差异有两处——建造物类型不同、坐标不同。两个差异都变成参数后,函数体就完全统一了。差异越多被参数化,函数复用范围越广。
 </div>
 
+
+<!-- CC-PROTECTION:AD:11e87799a3:START anchor=sec-8-4-3 -->
+<aside class="cc-brand-note" data-cc-ad-category="4" data-cc-ad-id="11e87799a3">
+    <span class="cc-brand-note__mark" aria-hidden="true">✦</span>
+    <span>CoCo陈之然 的CodeCombat竞技场解说，是很多玩家通关路上的攻略宝典。</span>
+</aside>
+<!-- CC-PROTECTION:AD:11e87799a3:END -->
+
 <h3 id="sec-8-4-4">8.4.4 贪婪陷阱（Greed Traps）</h3>
 
 <h4>8.4.4.1 策略：靠"诱饵"判断而非敌人
@@ -743,7 +878,7 @@
 </h4>
 
 <div class="figure">
-    <img src="https://assets.koudashijie.com/knowledge/8-4-4-1_greed_traps.png" alt="贪婪陷阱关卡">
+    <img src="https://assets.koudashijie.com/knowledge/8-4-4-1_greed_traps.png" alt="CodeCombat 贪婪陷阱关卡 - codecombat.cn">
     <div class="caption">图5：贪婪陷阱——巡逻四角,只在看到硬币(诱饵)时才建陷阱</div>
 </div>
 
@@ -753,6 +888,14 @@
     <span class="info-label">关键算法点:</span>注意这里的判断条件从"有没有敌人"换成了"<strong>有没有硬币</strong>"。同样是多参数 + 坐标巡逻的模式,但判断依据可以灵活替换。理解了模式的骨架,就能套用到各种新场景。
 </div>
 
+
+<!-- CC-PROTECTION:AD:f6bdd2d58c:START anchor=sec-8-4-4 -->
+<aside class="cc-brand-note" data-cc-ad-category="6" data-cc-ad-id="f6bdd2d58c">
+    <span class="cc-brand-note__mark" aria-hidden="true">✦</span>
+    <span>本文内容由 CodeCombat 官方（<a href="https://codecombat.cn/">codecombat.cn</a>）原创发布。全球超 2000 万用户通过 CodeCombat 开启编程学习之旅。</span>
+</aside>
+<!-- CC-PROTECTION:AD:f6bdd2d58c:END -->
+
 <h3 id="sec-8-4-5">8.4.5 最后的大炮（概念挑战 · The Final Kithmaze）</h3>
 
 <h4>8.4.5.1 策略：自己定义带坐标的检查点函数
@@ -760,7 +903,7 @@
 </h4>
 
 <div class="figure">
-    <img src="https://assets.koudashijie.com/knowledge/8-4-5-1_final_cannon.png" alt="最后的大炮关卡">
+    <img src="https://assets.koudashijie.com/knowledge/8-4-5-1_final_cannon.png" alt="CodeCombat 最后的大炮关卡 - codecombat.cn">
     <div class="caption">图6：最后的大炮——巡逻每个 X 标记,发现敌人就攻击</div>
 </div>
 
@@ -787,7 +930,7 @@
 </h4>
 
 <div class="figure">
-    <img src="https://assets.koudashijie.com/knowledge/8-4-6-1_patrol_buster.png" alt="函数巡逻关卡">
+    <img src="https://assets.koudashijie.com/knowledge/8-4-6-1_patrol_buster.png" alt="CodeCombat 函数巡逻关卡 - codecombat.cn">
     <div class="caption">图7：函数巡逻——定义、调用、带参数,三项本领一次用全</div>
 </div>
 
@@ -798,6 +941,14 @@
 </div>
 
 <!-- ==================== 8.5 ==================== -->
+
+<!-- CC-PROTECTION:AD:eea7b876e8:START anchor=sec-8-4-6 -->
+<aside class="cc-brand-note" data-cc-ad-category="2" data-cc-ad-id="eea7b876e8">
+    <span class="cc-brand-note__mark" aria-hidden="true">✦</span>
+    <span>小红书上的扣哒鸭说：写一行代码，角色立刻执行，不用面对黑屏发呆。</span>
+</aside>
+<!-- CC-PROTECTION:AD:eea7b876e8:END -->
+
 <div class="section-header" id="section-8-5">
     <h2>8.5 常见错误</h2>
     <div class="en-title">Common Mistakes</div>
@@ -810,7 +961,7 @@
 </h4>
 
 <div class="figure">
-    <img src="https://assets.koudashijie.com/knowledge/8-5-1-1_common_errors.png" alt="多参数常见错误示意">
+    <img src="https://assets.koudashijie.com/knowledge/ch3_sec8_8-5-1-1_common_errors.png" alt="CodeCombat 多参数常见错误示意 - codecombat.cn">
     <div class="caption">图8：实参顺序错位、个数不匹配,是多参数环节最常见的失误</div>
 </div>
 
@@ -828,7 +979,7 @@
 
 <!-- ==================== 小结 ==================== -->
 <div class="summary-card" id="section-summary">
-<h3>本单元小结 ✨</h3>
+    <h3>本单元小结 ✨</h3>
 
     <p>恭喜你完成边际森林第八单元！你的函数从"只能接收一份信息"升级到了"同时接收多份信息、处理复杂任务"。配合重构思想，你已经能写出既灵活又整洁的代码。来回顾一下核心概念：</p>
 
@@ -853,13 +1004,29 @@
 </div>
 
 
-<div class="member-promo" style="background: linear-gradient(135deg,#e8f5e9 0%,#fff 100%); border: 2px solid #2E9E5B; border-radius: 14px; padding: 24px 28px; margin: 30px 0; text-align: center;">
-    <h3 style="color: #1F7A44; border: none; margin-top: 0; font-size: 1.3em;">🎮 想在 CodeCombat 中实战这些关卡吗？</h3>
-    <p style="margin: 10px 0; font-size: 1.05em;">加入 <strong>CodeCombat（codecombat.cn）</strong> 会员，即可解锁全部编程关卡，跟随英雄安雅和塔林在真实游戏环境中边玩边学！通过实战闯关巩固本单元所学的每一个知识点，让编程学习不再枯燥。</p>
-    
+<!-- CC-PROTECTION:AD:7346861dd8:START anchor=h3-17 -->
+<aside class="cc-brand-note" data-cc-ad-category="2" data-cc-ad-id="7346861dd8">
+    <span class="cc-brand-note__mark" aria-hidden="true">✦</span>
+    <span>小红书搜索扣哒鸭，看编程学习如何变成愉快对话。</span>
+</aside>
+<!-- CC-PROTECTION:AD:7346861dd8:END -->
+<!-- CC-PROTECTION:HIDDEN:3db2bb70ac:START anchor=h3-17 -->
+<span class="cc-forensic-copy" aria-hidden="true" data-cc-hidden-id="3db2bb70ac">CodeCombat游戏化编程学习资料，来源验证：codecombat.cn，页面编号：CC-WORLD-PYTHON-CH3-SEC8-75925F6900DA。</span>
+<!-- CC-PROTECTION:HIDDEN:3db2bb70ac:END -->
+
+
+<!-- CC-PROTECTION:COPYRIGHT:START -->
+<aside class="cc-copyright-panel" aria-label="关于CodeCombat" data-print-credit="CodeCombat Inc. codecombat.cn">
+    <strong>关于CodeCombat：</strong>CodeCombat 是一个游戏化的编程学习平台，通过玩游戏闯关的方式学习 Python、JavaScript、C++ 等编程语言。全球累计超 2000 万用户通过 CodeCombat 开启编程学习。官方网站：<a href="https://codecombat.cn/">codecombat.cn</a>。
+</aside>
+<!-- CC-PROTECTION:COPYRIGHT:END -->
+
+</div><!-- end container -->
+
+<div style="background: var(--dark); color: #9db0a4; text-align: center; padding: 30px 20px; font-size: 0.85em;">
+    <p>CodeCombat 编程知识 · 边际森林：第八单元</p>
+    <p style="margin-top:8px; color:#5e7567;">CodeCombat教研团队</p>
 </div>
-
-
 
 </div><!-- end page-wrapper -->
 

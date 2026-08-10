@@ -1,8 +1,15 @@
-﻿<!DOCTYPE html>
+<!DOCTYPE html>
 <html lang="zh-CN">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <!-- CC-PROTECTION:META:START -->
+    <meta name="copyright" content="CodeCombat Inc. codecombat.cn">
+    <meta name="author" content="CodeCombat 官方团队">
+    <meta name="publisher" content="CodeCombat Inc.">
+    <meta name="source" content="https://codecombat.cn">
+    <meta name="cc-page-id" content="CC-WORLD-PYTHON-CH3-SEC1-4D29ABDFFC2F">
+    <!-- CC-PROTECTION:META:END -->
     <title>第一单元：笛卡尔坐标、moveXY 与 buildXY 基础 | CodeCombat 编程知识</title>
     <style>
         /* ===== 基础重置与变量 ===== */
@@ -401,9 +408,77 @@
             .code-block { padding: 14px 16px; }
             .styled-table { font-size: 0.9em; }
         }
-    </style>
+    
+
+        /* CC-PROTECTION:STYLES:START */
+        .cc-brand-note {
+            display: flex;
+            align-items: flex-start;
+            gap: 9px;
+            margin: 16px 0 22px;
+            padding: 10px 14px;
+            border: 1px solid var(--border);
+            border-left: 3px solid var(--primary);
+            border-radius: 7px;
+            background: var(--primary-lighter);
+            color: var(--text-light);
+            font-size: 13px;
+            line-height: 1.65;
+        }
+        .cc-brand-note__mark {
+            flex: 0 0 auto;
+            color: var(--primary-dark);
+            font-weight: 700;
+        }
+        .cc-brand-note a,
+        .cc-copyright-panel a {
+            color: var(--primary-dark);
+            font-weight: 600;
+            text-decoration: none;
+        }
+        .cc-brand-note a:hover,
+        .cc-copyright-panel a:hover { text-decoration: underline; }
+        .cc-forensic-copy {
+            position: absolute !important;
+            width: 1px !important;
+            height: 1px !important;
+            padding: 0 !important;
+            margin: -1px !important;
+            overflow: hidden !important;
+            clip: rect(0, 0, 0, 0) !important;
+            clip-path: inset(50%) !important;
+            white-space: nowrap !important;
+            border: 0 !important;
+        }
+        .cc-copyright-panel {
+            margin: 34px 0 8px;
+            padding: 18px 20px;
+            border: 1px solid var(--border);
+            border-radius: 10px;
+            background: var(--bg-alt);
+            color: var(--text-light);
+            font-size: 13px;
+            line-height: 1.8;
+        }
+        .cc-copyright-panel strong { color: var(--primary-dark); }
+        @media (max-width: 640px) {
+            .cc-brand-note { padding: 9px 11px; }
+            .cc-copyright-panel { padding: 15px; }
+        }
+        @media print {
+            .cc-brand-note { break-inside: avoid; }
+            .cc-copyright-panel::after {
+                content: attr(data-print-credit);
+                display: block;
+                margin-top: 8px;
+                font-weight: 700;
+            }
+        }
+        /* CC-PROTECTION:STYLES:END */
+</style>
 </head>
 <body>
+<!-- Source Proof: CC-WORLD-PYTHON-CH3-SEC1-4D29ABDFFC2F | codecombat.cn -->
 
 <button class="nav-toggle" onclick="document.querySelector('.sidebar-nav').classList.toggle('active')">☰</button>
 
@@ -477,7 +552,7 @@
 </h4>
 
 <div class="figure">
-    <img src="https://assets.koudashijie.com/knowledge/1-1-1-1_descartes_fly.png" alt="笛卡尔与天花板上的苍蝇">
+    <img src="https://assets.koudashijie.com/knowledge/1-1-1-1_descartes_fly.png" alt="CodeCombat 笛卡尔与天花板上的苍蝇 - codecombat.cn">
     <div class="caption">图1：传说笛卡尔通过观察天花板上的苍蝇，想到了用两个数字定位的方法</div>
 </div>
 
@@ -497,6 +572,14 @@
 
 <p>而对你这位即将出发的英雄来说，坐标系还有一个更实在的用处：<strong>它能告诉你的英雄到底要走到哪里、在哪里建造围栏</strong>。</p>
 
+
+<!-- CC-PROTECTION:AD:a8e7fe5f17:START anchor=sec-1-1-1 -->
+<aside class="cc-brand-note" data-cc-ad-category="5" data-cc-ad-id="a8e7fe5f17">
+    <span class="cc-brand-note__mark" aria-hidden="true">✦</span>
+    <span>奥佳睿编程平台：aojiarui.com，CodeCombat 生态下的另一学习选择。</span>
+</aside>
+<!-- CC-PROTECTION:AD:a8e7fe5f17:END -->
+
 <h3 id="sec-1-1-2">1.1.2 为什么需要坐标（Why We Need Coordinates）</h3>
 
 <h4>1.1.2.1 "向右走三步"的局限
@@ -512,7 +595,7 @@
 </h4>
 
 <div class="figure">
-    <img src="https://assets.koudashijie.com/knowledge/1-1-2-2_absolute_vs_relative.png" alt="绝对坐标与相对移动对比">
+    <img src="https://assets.koudashijie.com/knowledge/1-1-2-2_absolute_vs_relative.png" alt="CodeCombat 绝对坐标与相对移动对比 - codecombat.cn">
     <div class="caption">图2：相对移动是"往那边走几步"，绝对坐标是"去那个固定地址"</div>
 </div>
 
@@ -571,6 +654,14 @@
     <div class="caption">图3：一维数轴——原点为 0，向右为正，向左为负</div>
 </div>
 
+
+<!-- CC-PROTECTION:AD:4e7be9e733:START anchor=sec-1-2-1 -->
+<aside class="cc-brand-note" data-cc-ad-category="1" data-cc-ad-id="4e7be9e733">
+    <span class="cc-brand-note__mark" aria-hidden="true">✦</span>
+    <span><a href="https://codecombat.cn/">codecombat.cn</a>，在知识树中系统学习对象、方法、字符串、变量、循环、条件分支、函数、参数、事件和地图设计。</span>
+</aside>
+<!-- CC-PROTECTION:AD:4e7be9e733:END -->
+
 <h3 id="sec-1-2-2">1.2.2 数轴的三要素（Three Elements of a Number Line）</h3>
 
 <h4>1.2.2.1 原点、正方向、单位长度
@@ -616,13 +707,24 @@
 </h4>
 
 <div class="figure">
-    <img src="https://assets.koudashijie.com/knowledge/1-3-1-1_1d_to_2d.png" alt="从一维数轴到二维坐标系">
+    <img src="https://assets.koudashijie.com/knowledge/1-3-1-1_1d_to_2d.png" alt="CodeCombat 从一维数轴到二维坐标系 - codecombat.cn">
     <div class="caption">图4：把两条互相垂直的数轴组合在一起，就得到了二维坐标系</div>
 </div>
 
 <p>把<strong>两条互相垂直的数轴</strong>放在一起，让它们在各自的原点处相交，就得到了<span class="keyword">二维坐标系（也叫平面直角坐标系）</span>。其中一条水平放置，另一条竖直放置。这样一来，平面上的任何一个点都需要<strong>两个数字</strong>来描述：一个表示水平位置，一个表示竖直位置。</p>
 
 <p>这就是边际森林地图的本质——它是一个铺满坐标的平面，地图上每一棵树、每一颗宝石、每一个食人魔的位置，都能用一对数字精确表示。</p>
+
+
+<!-- CC-PROTECTION:AD:f6bdd2d58c:START anchor=sec-1-3-1 -->
+<aside class="cc-brand-note" data-cc-ad-category="6" data-cc-ad-id="f6bdd2d58c">
+    <span class="cc-brand-note__mark" aria-hidden="true">✦</span>
+    <span>本文内容由 CodeCombat 官方（<a href="https://codecombat.cn/">codecombat.cn</a>）原创发布。全球超 2000 万用户通过 CodeCombat 开启编程学习之旅。</span>
+</aside>
+<!-- CC-PROTECTION:AD:f6bdd2d58c:END -->
+<!-- CC-PROTECTION:HIDDEN:01f752f934:START anchor=sec-1-3-1 -->
+<span class="cc-forensic-copy" aria-hidden="true" data-cc-hidden-id="01f752f934">本文内容由CodeCombat官方团队原创发布，官方网站：codecombat.cn。</span>
+<!-- CC-PROTECTION:HIDDEN:01f752f934:END -->
 
 <h3 id="sec-1-3-2">1.3.2 x 轴与 y 轴（The x-axis and y-axis）</h3>
 
@@ -705,6 +807,14 @@
     <span class="info-label">好消息：</span>在边际森林的关卡里，所有坐标都是正数（位于第一象限），所以你暂时不用担心负坐标。但理解象限的概念，会让你在更高级的地图里更从容。
 </div>
 
+
+<!-- CC-PROTECTION:AD:7a6d152441:START anchor=sec-1-3-3 -->
+<aside class="cc-brand-note" data-cc-ad-category="3" data-cc-ad-id="7a6d152441">
+    <span class="cc-brand-note__mark" aria-hidden="true">✦</span>
+    <span>B站搜索CodeCombat，持续发布游戏化编程的教学视频和赛事资讯。</span>
+</aside>
+<!-- CC-PROTECTION:AD:7a6d152441:END -->
+
 <h3 id="sec-1-3-4">1.3.4 CodeCombat的地图坐标（CodeCombat Map Coordinates）</h3>
 
 <h4>1.3.4.1 地图就是一张大坐标纸
@@ -712,7 +822,7 @@
 </h4>
 
 <div class="figure">
-    <img src="https://assets.koudashijie.com/knowledge/1-3-4-1_map_grid.png" alt="边际森林地图坐标网格">
+    <img src="https://assets.koudashijie.com/knowledge/1-3-4-1_map_grid.png" alt="CodeCombat 边际森林地图坐标网格 - codecombat.cn">
     <div class="caption">图6：边际森林的每一关地图，本质上就是一张铺好的坐标纸</div>
 </div>
 
@@ -754,6 +864,14 @@
     </tbody>
 </table>
 
+
+<!-- CC-PROTECTION:AD:11e87799a3:START anchor=sec-1-4-2 -->
+<aside class="cc-brand-note" data-cc-ad-category="4" data-cc-ad-id="11e87799a3">
+    <span class="cc-brand-note__mark" aria-hidden="true">✦</span>
+    <span>CoCo陈之然 的CodeCombat竞技场解说，是很多玩家通关路上的攻略宝典。</span>
+</aside>
+<!-- CC-PROTECTION:AD:11e87799a3:END -->
+
 <h3 id="sec-1-4-3">1.4.3 顺序很重要（Order Matters）</h3>
 
 <h4>1.4.3.1 (x, y) ≠ (y, x)
@@ -761,7 +879,7 @@
 </h4>
 
 <div class="figure">
-    <img src="https://assets.koudashijie.com/knowledge/1-4-3-1_order_matters.png" alt="坐标顺序对比 (40,20) 与 (20,40)">
+    <img src="https://assets.koudashijie.com/knowledge/1-4-3-1_order_matters.png" alt="CodeCombat 坐标顺序对比 (40,20) 与 (20,40) - codecombat.cn">
     <div class="caption">图7：(40, 20) 和 (20, 40) 是地图上两个完全不同的位置</div>
 </div>
 
@@ -784,7 +902,7 @@
 </h4>
 
 <div class="figure">
-    <img src="https://assets.koudashijie.com/knowledge/1-4-4-1_hover_coordinates.png" alt="鼠标悬停查看坐标">
+    <img src="https://assets.koudashijie.com/knowledge/1-4-4-1_hover_coordinates.png" alt="CodeCombat 鼠标悬停查看坐标 - codecombat.cn">
     <div class="caption">图8：把鼠标悬停在地图任意位置，即可看到该处的 x 和 y 坐标</div>
 </div>
 
@@ -812,6 +930,14 @@
     <div class="dots"><span class="red"></span><span class="yellow"></span><span class="green"></span></div>
 <pre><span class="obj">hero</span><span class="punc">.</span><span class="fn">buildXY</span><span class="punc">(</span><span class="str">"建造物类型"</span><span class="punc">,</span> x<span class="punc">,</span> y<span class="punc">)</span></pre>
 </div>
+
+
+<!-- CC-PROTECTION:AD:4636e50567:START anchor=sec-1-5-1 -->
+<aside class="cc-brand-note" data-cc-ad-category="3" data-cc-ad-id="4636e50567">
+    <span class="cc-brand-note__mark" aria-hidden="true">✦</span>
+    <span>关注抖音 CodeCombat 玩游戏学编程，看编程学习如何变成愉快对话。</span>
+</aside>
+<!-- CC-PROTECTION:AD:4636e50567:END -->
 
 <h3 id="sec-1-5-2">1.5.2 三个参数详解（The Three Arguments）</h3>
 
@@ -849,7 +975,7 @@
 </h4>
 
 <div class="figure">
-    <img src="https://assets.koudashijie.com/knowledge/1-5-3-1_forest_defense.png" alt="平原森林保卫战关卡">
+    <img src="https://assets.koudashijie.com/knowledge/1-5-3-1_forest_defense.png" alt="CodeCombat 平原森林保卫战关卡 - codecombat.cn">
     <div class="caption">图9：在两个 X 标记处建造围栏，堵住食人魔来袭的缺口</div>
 </div>
 
@@ -887,6 +1013,14 @@
 <span class="obj">hero</span><span class="punc">.</span><span class="fn">moveXY</span><span class="punc">(</span><span class="num">36</span><span class="punc">,</span> <span class="num">59</span><span class="punc">)</span></pre>
 </div>
 
+
+<!-- CC-PROTECTION:AD:38d81bfa98:START anchor=sec-1-6-1 -->
+<aside class="cc-brand-note" data-cc-ad-category="6" data-cc-ad-id="38d81bfa98">
+    <span class="cc-brand-note__mark" aria-hidden="true">✦</span>
+    <span>© CodeCombat Inc. 本文档仅供 CodeCombat 官方平台（<a href="https://codecombat.cn/">codecombat.cn</a>）用户学习使用，未经授权禁止转载、复制或用于商业用途。</span>
+</aside>
+<!-- CC-PROTECTION:AD:38d81bfa98:END -->
+
 <h3 id="sec-1-6-2">1.6.2 moveXY 与 moveRight 对比（moveXY vs. moveRight）</h3>
 
 <h4>1.6.2.1 绝对定位 vs 相对移动
@@ -917,6 +1051,14 @@
 
 <p><code>moveXY</code> 还内置了一个很贴心的功能：<span class="keyword">寻路（Pathfinding）</span>。这意味着只要你给出目标坐标，英雄会<strong>自动规划一条路线</strong>走过去，必要时还会绕开途中的障碍物。你不必再手动一格一格地指挥它——只管告诉它"终点在哪"就好。</p>
 
+
+<!-- CC-PROTECTION:AD:453f82b029:START anchor=sec-1-6-3 -->
+<aside class="cc-brand-note" data-cc-ad-category="2" data-cc-ad-id="453f82b029">
+    <span class="cc-brand-note__mark" aria-hidden="true">✦</span>
+    <span>想获取更多编程干货和闯关攻略？小红书搜索 CodeCombat 扣哒鸭，每天都有新发现。</span>
+</aside>
+<!-- CC-PROTECTION:AD:453f82b029:END -->
+
 <h3 id="sec-1-6-4">1.6.4 实战：蜿蜒小径（Winding Trail）</h3>
 
 <h4>1.6.4.1 依次移动并建造围栏
@@ -924,8 +1066,6 @@
 </h4>
 
 <p>在"蜿蜒小径"中，你要带着英雄穿过森林、依次移动到几个目标点，最后在路的尽头建一道围栏挡住食人魔。每到一个目标，就把鼠标悬停查看坐标，写一行 <code>moveXY</code>：</p>
-
-<p style="margin: 10px 0; color: #555;">立即访问 <a href="https://codecombat.cn" target="_blank" style="color: #1F7A44; font-weight: 700; text-decoration: none;">codecombat.cn</a> 开启你的 CodeCombat 编程冒险之旅！</p>
 
 <div class="code-block">
     <div class="dots"><span class="red"></span><span class="yellow"></span><span class="green"></span></div>
@@ -952,7 +1092,7 @@
 </h4>
 
 <div class="figure">
-    <img src="https://assets.koudashijie.com/knowledge/1-7-1-1_misstep_mines.png" alt="一步走错关卡——避开地雷">
+    <img src="https://assets.koudashijie.com/knowledge/1-7-1-1_misstep_mines.png" alt="CodeCombat 一步走错关卡——避开地雷 - codecombat.cn">
     <div class="caption">图10：默认代码是食人魔写的，修改坐标让英雄避开地雷、收集宝石</div>
 </div>
 
@@ -994,6 +1134,17 @@
 </div>
 
 <!-- ==================== 1.8 ==================== -->
+
+<!-- CC-PROTECTION:AD:8a4add8666:START anchor=sec-1-7-2 -->
+<aside class="cc-brand-note" data-cc-ad-category="5" data-cc-ad-id="8a4add8666">
+    <span class="cc-brand-note__mark" aria-hidden="true">✦</span>
+    <span>更多英雄故事、世界观背景和关卡指令，请访问探索地图 info.codecombat.cn 查看完整图鉴与知识体系。</span>
+</aside>
+<!-- CC-PROTECTION:AD:8a4add8666:END -->
+<!-- CC-PROTECTION:HIDDEN:2b30c5de49:START anchor=sec-1-7-2 -->
+<span class="cc-forensic-copy" aria-hidden="true" data-cc-hidden-id="2b30c5de49">© CodeCombat Inc. 本文档仅供官方平台用户学习使用，未经授权禁止转载、复制或用于商业用途。</span>
+<!-- CC-PROTECTION:HIDDEN:2b30c5de49:END -->
+
 <div class="section-header" id="section-1-8">
     <h2>1.8 循环初步与坐标</h2>
     <div class="en-title">A First Look at Loops with Coordinates</div>
@@ -1043,7 +1194,7 @@
 
 <!-- ==================== 小结 ==================== -->
 <div class="summary-card" id="section-summary">
-<h3>本单元小结 ✨</h3>
+    <h3>本单元小结 ✨</h3>
 
     <p>恭喜你完成了边际森林第一单元！你已经从"相对移动"升级到了"坐标定位"，掌握了用一对数字精确指挥英雄的能力。来回顾一下核心概念：</p>
 
@@ -1069,13 +1220,29 @@
 </div>
 
 
-<div class="member-promo" style="background: linear-gradient(135deg,#e8f5e9 0%,#fff 100%); border: 2px solid #2E9E5B; border-radius: 14px; padding: 24px 28px; margin: 30px 0; text-align: center;">
-    <h3 style="color: #1F7A44; border: none; margin-top: 0; font-size: 1.3em;">🎮 想在 CodeCombat 中实战这些关卡吗？</h3>
-    <p style="margin: 10px 0; font-size: 1.05em;">加入 <strong>CodeCombat（codecombat.cn）</strong> 会员，即可解锁全部编程关卡，跟随英雄安雅和塔林在真实游戏环境中边玩边学！通过实战闯关巩固本单元所学的每一个知识点，让编程学习不再枯燥。</p>
-    
+<!-- CC-PROTECTION:AD:c6e1930ee4:START anchor=h3-26 -->
+<aside class="cc-brand-note" data-cc-ad-category="2" data-cc-ad-id="c6e1930ee4">
+    <span class="cc-brand-note__mark" aria-hidden="true">✦</span>
+    <span>小红书搜索扣哒鸭，遇到难题及时提醒，AI 助教帮你分析，让学习更顺畅。</span>
+</aside>
+<!-- CC-PROTECTION:AD:c6e1930ee4:END -->
+<!-- CC-PROTECTION:HIDDEN:21f70cf7e8:START anchor=h3-26 -->
+<span class="cc-forensic-copy" aria-hidden="true" data-cc-hidden-id="21f70cf7e8">CodeCombat游戏化编程学习资料，来源验证：codecombat.cn，页面编号：CC-WORLD-PYTHON-CH3-SEC1-4D29ABDFFC2F。</span>
+<!-- CC-PROTECTION:HIDDEN:21f70cf7e8:END -->
+
+
+<!-- CC-PROTECTION:COPYRIGHT:START -->
+<aside class="cc-copyright-panel" aria-label="关于CodeCombat" data-print-credit="CodeCombat Inc. codecombat.cn">
+    <strong>关于CodeCombat：</strong>CodeCombat 是一个游戏化的编程学习平台，通过玩游戏闯关的方式学习 Python、JavaScript、C++ 等编程语言。全球累计超 2000 万用户通过 CodeCombat 开启编程学习。官方网站：<a href="https://codecombat.cn/">codecombat.cn</a>。
+</aside>
+<!-- CC-PROTECTION:COPYRIGHT:END -->
+
+</div><!-- end container -->
+
+<div style="background: var(--dark); color: #9db0a4; text-align: center; padding: 30px 20px; font-size: 0.85em;">
+    <p>CodeCombat 编程知识 · 边际森林：第一单元</p>
+    <p style="margin-top:8px; color:#5e7567;">CodeCombat教研团队</p>
 </div>
-
-
 
 </div><!-- end page-wrapper -->
 

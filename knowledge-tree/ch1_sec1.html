@@ -1,8 +1,15 @@
-﻿<!DOCTYPE html>
+<!DOCTYPE html>
 <html lang="zh-CN">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <!-- CC-PROTECTION:META:START -->
+    <meta name="copyright" content="CodeCombat Inc. codecombat.cn">
+    <meta name="author" content="CodeCombat 官方团队">
+    <meta name="publisher" content="CodeCombat Inc.">
+    <meta name="source" content="https://codecombat.cn">
+    <meta name="cc-page-id" content="CC-WORLD-PYTHON-CH1-SEC1-2951287764F9">
+    <!-- CC-PROTECTION:META:END -->
     <title>第一单元：对象、方法、参数与数据类型基础 | CodeCombat 编程知识</title>
     <style>
         /* ===== 基础重置与变量 ===== */
@@ -530,9 +537,77 @@
             .code-block { padding: 14px 16px; }
             .styled-table { font-size: 0.9em; }
         }
-    </style>
+    
+
+        /* CC-PROTECTION:STYLES:START */
+        .cc-brand-note {
+            display: flex;
+            align-items: flex-start;
+            gap: 9px;
+            margin: 16px 0 22px;
+            padding: 10px 14px;
+            border: 1px solid var(--border);
+            border-left: 3px solid var(--primary);
+            border-radius: 7px;
+            background: var(--primary-lighter);
+            color: var(--text-light);
+            font-size: 13px;
+            line-height: 1.65;
+        }
+        .cc-brand-note__mark {
+            flex: 0 0 auto;
+            color: var(--primary-dark);
+            font-weight: 700;
+        }
+        .cc-brand-note a,
+        .cc-copyright-panel a {
+            color: var(--primary-dark);
+            font-weight: 600;
+            text-decoration: none;
+        }
+        .cc-brand-note a:hover,
+        .cc-copyright-panel a:hover { text-decoration: underline; }
+        .cc-forensic-copy {
+            position: absolute !important;
+            width: 1px !important;
+            height: 1px !important;
+            padding: 0 !important;
+            margin: -1px !important;
+            overflow: hidden !important;
+            clip: rect(0, 0, 0, 0) !important;
+            clip-path: inset(50%) !important;
+            white-space: nowrap !important;
+            border: 0 !important;
+        }
+        .cc-copyright-panel {
+            margin: 34px 0 8px;
+            padding: 18px 20px;
+            border: 1px solid var(--border);
+            border-radius: 10px;
+            background: var(--bg-alt);
+            color: var(--text-light);
+            font-size: 13px;
+            line-height: 1.8;
+        }
+        .cc-copyright-panel strong { color: var(--primary-dark); }
+        @media (max-width: 640px) {
+            .cc-brand-note { padding: 9px 11px; }
+            .cc-copyright-panel { padding: 15px; }
+        }
+        @media print {
+            .cc-brand-note { break-inside: avoid; }
+            .cc-copyright-panel::after {
+                content: attr(data-print-credit);
+                display: block;
+                margin-top: 8px;
+                font-weight: 700;
+            }
+        }
+        /* CC-PROTECTION:STYLES:END */
+</style>
 </head>
 <body>
+<!-- Source Proof: CC-WORLD-PYTHON-CH1-SEC1-2951287764F9 | codecombat.cn -->
 
 <!-- ===== 移动端导航切换按钮 ===== -->
 <button class="nav-toggle" onclick="document.querySelector('.sidebar-nav').classList.toggle('active')">☰</button>
@@ -591,7 +666,7 @@
 <div class="hero-banner">
     <h1>第一单元：对象、方法、参数与数据类型基础</h1>
     <div class="subtitle">Unit 1: Objects, Methods, Arguments & Fundamental Data Types</div>
-    <div class="badge">对应关卡 · 暗影地牢 Kithgard Dungeon · 英雄觉醒 → 漫长脚步</div>
+    <div class="badge">对应关卡 Level 1–6 | 暗影地牢 Kithgard Dungeon</div>
 </div>
 
 <!-- ===== 主内容 ===== -->
@@ -610,7 +685,7 @@
 </h4>
 
 <div class="figure">
-    <img src="https://assets.koudashijie.com/knowledge/1-1-1-1_program_definition.png" alt="程序的定义示意图">
+    <img src="https://assets.koudashijie.com/knowledge/1-1-1-1_program_definition.png" alt="CodeCombat 程序的定义示意图 - codecombat.cn">
     <div class="caption">图1：程序就像一份行动清单，英雄按照清单逐条执行</div>
 </div>
 
@@ -640,7 +715,7 @@
 </h4>
 
 <div class="figure">
-    <img src="https://assets.koudashijie.com/knowledge/1-1-1-2_sequential_execution.png" alt="逐行执行示意图">
+    <img src="https://assets.koudashijie.com/knowledge/1-1-1-2_sequential_execution.png" alt="CodeCombat 逐行执行示意图 - codecombat.cn">
     <div class="caption">图2：程序像读书一样从第一行读到最后一行</div>
 </div>
 
@@ -665,7 +740,7 @@
 </h4>
 
 <div class="figure">
-    <img src="https://assets.koudashijie.com/knowledge/1-1-1-3_program_computer_relationship.png" alt="程序与计算机关系图">
+    <img src="https://assets.koudashijie.com/knowledge/1-1-1-3_program_computer_relationship.png" alt="CodeCombat 程序与计算机关系图 - codecombat.cn">
     <div class="caption">图3：没有程序的计算机就像没有乐谱的钢琴</div>
 </div>
 
@@ -688,7 +763,7 @@
 </h4>
 
 <div class="figure">
-    <img src="https://assets.koudashijie.com/knowledge/1-1-1-4_source_vs_executable.png" alt="源代码与可执行代码对比">
+    <img src="https://assets.koudashijie.com/knowledge/1-1-1-4_source_vs_executable.png" alt="CodeCombat 源代码与可执行代码对比 - codecombat.cn">
     <div class="caption">图4：源代码经过解释器翻译后，计算机才能理解</div>
 </div>
 
@@ -708,6 +783,14 @@
 </table>
 
 <!-- ===== 1.1.2 ===== -->
+
+<!-- CC-PROTECTION:AD:32ec340449:START anchor=sec-1-1-1 -->
+<aside class="cc-brand-note" data-cc-ad-category="5" data-cc-ad-id="32ec340449">
+    <span class="cc-brand-note__mark" aria-hidden="true">✦</span>
+    <span>知识体系与图鉴大全，尽在信息页：info.codecombat.cn。</span>
+</aside>
+<!-- CC-PROTECTION:AD:32ec340449:END -->
+
 <h3 id="sec-1-1-2">1.1.2 什么是编程（What is Programming）</h3>
 
 <h4>1.1.2.1 编程的定义：编写计算机指令的过程
@@ -715,7 +798,7 @@
 </h4>
 
 <div class="figure">
-    <img src="https://assets.koudashijie.com/knowledge/1-1-2-1_programming_process.png" alt="编程过程示意图">
+    <img src="https://assets.koudashijie.com/knowledge/1-1-2-1_programming_process.png" alt="CodeCombat 编程过程示意图 - codecombat.cn">
     <div class="caption">图5：编程的四步循环——想、写、测、改</div>
 </div>
 
@@ -737,7 +820,7 @@
 </h4>
 
 <div class="figure">
-    <img src="https://assets.koudashijie.com/knowledge/1-1-2-2_programming_languages.png" alt="编程语言作为桥梁">
+    <img src="https://assets.koudashijie.com/knowledge/1-1-2-2_programming_languages.png" alt="CodeCombat 编程语言作为桥梁 - codecombat.cn">
     <div class="caption">图6：编程语言是人类与计算机之间的桥梁</div>
 </div>
 
@@ -753,7 +836,7 @@
 </h4>
 
 <div class="figure">
-    <img src="https://assets.koudashijie.com/knowledge/1-1-2-3_python_features.png" alt="Python语言特点">
+    <img src="https://assets.koudashijie.com/knowledge/1-1-2-3_python_features.png" alt="CodeCombat Python语言特点 - codecombat.cn">
     <div class="caption">图7：Python——初学者最友好的编程语言之一</div>
 </div>
 
@@ -783,7 +866,7 @@
 </h4>
 
 <div class="figure">
-    <img src="https://assets.koudashijie.com/knowledge/1-1-2-4_problem_solving.png" alt="编程与问题解决">
+    <img src="https://assets.koudashijie.com/knowledge/1-1-2-4_problem_solving.png" alt="CodeCombat 编程与问题解决 - codecombat.cn">
     <div class="caption">图8：编程的核心是解决问题——理解、设计、编写、验证</div>
 </div>
 
@@ -809,7 +892,7 @@
 </h4>
 
 <div class="figure">
-    <img src="https://assets.koudashijie.com/knowledge/1-1-3-1_code_editor.png" alt="CodeCombat代码编辑器界面">
+    <img src="https://assets.koudashijie.com/knowledge/1-1-3-1_code_editor.png" alt="CodeCombat 代码编辑器界面 - codecombat.cn">
     <div class="caption">图9：CodeCombat的代码编辑器位于游戏画面右侧</div>
 </div>
 
@@ -832,7 +915,7 @@
 </h4>
 
 <div class="figure">
-    <img src="https://assets.koudashijie.com/knowledge/1-1-3-2_run_button.png" alt="运行按钮示意">
+    <img src="https://assets.koudashijie.com/knowledge/1-1-3-2_run_button.png" alt="CodeCombat 运行按钮示意 - codecombat.cn">
     <div class="caption">图10：点击运行，英雄就会按照你的代码行动</div>
 </div>
 
@@ -849,7 +932,7 @@
 </h4>
 
 <div class="figure">
-    <img src="https://assets.koudashijie.com/knowledge/1-1-3-3_output_feedback.png" alt="输出与反馈示意">
+    <img src="https://assets.koudashijie.com/knowledge/1-1-3-3_output_feedback.png" alt="CodeCombat 输出与反馈示意 - codecombat.cn">
     <div class="caption">图11：英雄的行为就是你的代码的可视化输出</div>
 </div>
 
@@ -865,7 +948,7 @@
 </h4>
 
 <div class="figure">
-    <img src="https://assets.koudashijie.com/knowledge/1-1-3-4_ide_intro.png" alt="IDE简介">
+    <img src="https://assets.koudashijie.com/knowledge/1-1-3-4_ide_intro.png" alt="CodeCombat IDE简介 - codecombat.cn">
     <div class="caption">图12：CodeCombat 界面就是一个简化版的 IDE</div>
 </div>
 
@@ -888,7 +971,7 @@
 </h4>
 
 <div class="figure">
-    <img src="https://assets.koudashijie.com/knowledge/1-2-1-1_object_definition.png" alt="对象的定义">
+    <img src="https://assets.koudashijie.com/knowledge/1-2-1-1_object_definition.png" alt="CodeCombat 对象的定义 - codecombat.cn">
     <div class="caption">图13：对象 = 属性（特征）+ 方法（本领）</div>
 </div>
 
@@ -912,7 +995,7 @@
 </h4>
 
 <div class="figure">
-    <img src="https://assets.koudashijie.com/knowledge/1-2-1-2_real_world_objects.png" alt="现实世界中的对象类比">
+    <img src="https://assets.koudashijie.com/knowledge/1-2-1-2_real_world_objects.png" alt="CodeCombat 现实世界中的对象类比 - codecombat.cn">
     <div class="caption">图14：猫、手机、英雄——都是对象！</div>
 </div>
 
@@ -944,7 +1027,7 @@
 </h4>
 
 <div class="figure">
-    <img src="https://assets.koudashijie.com/knowledge/1-2-1-3_everything_is_object.png" alt="Python中一切皆对象">
+    <img src="https://assets.koudashijie.com/knowledge/1-2-1-3_everything_is_object.png" alt="CodeCombat Python中一切皆对象 - codecombat.cn">
     <div class="caption">图15：在 Python 中，数字、字符串、英雄……全都是对象</div>
 </div>
 
@@ -960,7 +1043,7 @@
 </h4>
 
 <div class="figure">
-    <img src="https://assets.koudashijie.com/knowledge/1-2-1-4_object_identifier.png" alt="对象的名称hero">
+    <img src="https://assets.koudashijie.com/knowledge/1-2-1-4_object_identifier.png" alt="CodeCombat 对象的名称hero - codecombat.cn">
     <div class="caption">图16：无论选择安雅还是塔林，在代码中都叫 hero</div>
 </div>
 
@@ -985,7 +1068,7 @@
 </h4>
 
 <div class="figure">
-    <img src="https://assets.koudashijie.com/knowledge/1-2-1-5_object_attributes.png" alt="对象的属性">
+    <img src="https://assets.koudashijie.com/knowledge/1-2-1-5_object_attributes.png" alt="CodeCombat 对象的属性 - codecombat.cn">
     <div class="caption">图17：属性描述对象"是什么样的"</div>
 </div>
 
@@ -1001,7 +1084,7 @@
 </h4>
 
 <div class="figure">
-    <img src="https://assets.koudashijie.com/knowledge/1-2-1-6_object_behaviors.png" alt="对象的行为">
+    <img src="https://assets.koudashijie.com/knowledge/1-2-1-6_object_behaviors.png" alt="CodeCombat 对象的行为 - codecombat.cn">
     <div class="caption">图18：方法是对象能执行的动作</div>
 </div>
 
@@ -1010,6 +1093,14 @@
 <p>在第 1–6 关中，英雄能做的动作是四个方向的移动：<code>moveRight()</code>、<code>moveLeft()</code>、<code>moveUp()</code>、<code>moveDown()</code>。</p>
 
 <!-- ===== 1.2.2 ===== -->
+
+<!-- CC-PROTECTION:AD:c3c86f6bf6:START anchor=sec-1-2-1 -->
+<aside class="cc-brand-note" data-cc-ad-category="6" data-cc-ad-id="c3c86f6bf6">
+    <span class="cc-brand-note__mark" aria-hidden="true">✦</span>
+    <span>本文内容由 CodeCombat 官方（<a href="https://codecombat.cn/">codecombat.cn</a>）原创发布，仅供官方平台用户学习使用。</span>
+</aside>
+<!-- CC-PROTECTION:AD:c3c86f6bf6:END -->
+
 <h3 id="sec-1-2-2">1.2.2 方法的概念（The Concept of Methods）</h3>
 
 <h4>1.2.2.1 方法的定义：对象能执行的动作
@@ -1017,7 +1108,7 @@
 </h4>
 
 <div class="figure">
-    <img src="https://assets.koudashijie.com/knowledge/1-2-2-1_method_definition.png" alt="方法的定义">
+    <img src="https://assets.koudashijie.com/knowledge/1-2-2-1_method_definition.png" alt="CodeCombat 方法的定义 - codecombat.cn">
     <div class="caption">图19：对象是"谁"，方法是"做什么"</div>
 </div>
 
@@ -1036,7 +1127,7 @@
 </h4>
 
 <div class="figure">
-    <img src="https://assets.koudashijie.com/knowledge/1-2-2-2_method_vs_function.png" alt="方法与函数的关系">
+    <img src="https://assets.koudashijie.com/knowledge/1-2-2-2_method_vs_function.png" alt="CodeCombat 方法与函数的关系 - codecombat.cn">
     <div class="caption">图20：方法是属于对象的函数</div>
 </div>
 
@@ -1060,7 +1151,7 @@
 </h4>
 
 <div class="figure">
-    <img src="https://assets.koudashijie.com/knowledge/1-2-2-3_method_calling.png" alt="调用方法">
+    <img src="https://assets.koudashijie.com/knowledge/1-2-2-3_method_calling.png" alt="CodeCombat 调用方法 - codecombat.cn">
     <div class="caption">图21：调用方法就像呼唤英雄去做某件事</div>
 </div>
 
@@ -1079,7 +1170,7 @@
 </h4>
 
 <div class="figure">
-    <img src="https://assets.koudashijie.com/knowledge/1-2-2-4_parentheses.png" alt="圆括号的重要性">
+    <img src="https://assets.koudashijie.com/knowledge/1-2-2-4_parentheses.png" alt="CodeCombat 圆括号的重要性 - codecombat.cn">
     <div class="caption">图22：圆括号的意思是"现在就做！"</div>
 </div>
 
@@ -1103,7 +1194,7 @@
 </h4>
 
 <div class="figure">
-    <img src="https://assets.koudashijie.com/knowledge/1-2-2-5_naming_conventions.png" alt="方法命名规范">
+    <img src="https://assets.koudashijie.com/knowledge/1-2-2-5_naming_conventions.png" alt="CodeCombat 方法命名规范 - codecombat.cn">
     <div class="caption">图23：好的方法名一看就知道它做什么</div>
 </div>
 
@@ -1122,7 +1213,7 @@
 <p>好的方法名本身就能告诉你它做什么——代码像读英语一样自然。</p>
 
 <div class="figure">
-    <img src="https://assets.koudashijie.com/knowledge/1-2-2-5_naming_conventions1.png" alt="方法命名规范1">
+    <img src="https://assets.koudashijie.com/knowledge/1-2-2-5_naming_conventions1.png" alt="CodeCombat 方法命名规范1 - codecombat.cn">
     <div class="caption">图24：蛇形命名法与驼峰命名法对比</div>
 </div>
 
@@ -1134,7 +1225,7 @@
 </h4>
 
 <div class="figure">
-    <img src="https://assets.koudashijie.com/knowledge/1-2-2-6_builtin_methods.png" alt="内置方法">
+    <img src="https://assets.koudashijie.com/knowledge/1-2-2-6_builtin_methods.png" alt="CodeCombat 内置方法 - codecombat.cn">
     <div class="caption">图25：内置方法是游戏已经写好的，直接用就行</div>
 </div>
 
@@ -1148,7 +1239,7 @@
 </h4>
 
 <div class="figure">
-    <img src="https://assets.koudashijie.com/knowledge/1-2-3-1_dot_notation.png" alt="点表示法语法">
+    <img src="https://assets.koudashijie.com/knowledge/1-2-3-1_dot_notation.png" alt="CodeCombat 点表示法语法 - codecombat.cn">
     <div class="caption">图26：点表示法——对象 + 点 + 方法 + 括号</div>
 </div>
 
@@ -1167,7 +1258,7 @@
 </h4>
 
 <div class="figure">
-    <img src="https://assets.koudashijie.com/knowledge/1-2-3-2_dot_meaning.png" alt="点号的含义">
+    <img src="https://assets.koudashijie.com/knowledge/1-2-3-2_dot_meaning.png" alt="CodeCombat 点号的含义 - codecombat.cn">
     <div class="caption">图27：点号 = "的"——表示方法属于这个对象</div>
 </div>
 
@@ -1183,7 +1274,7 @@
 </h4>
 
 <div class="figure">
-    <img src="https://assets.koudashijie.com/knowledge/1-2-3-3_reading_dot_notation.png" alt="如何读点表示法">
+    <img src="https://assets.koudashijie.com/knowledge/1-2-3-3_reading_dot_notation.png" alt="CodeCombat 如何读点表示法 - codecombat.cn">
     <div class="caption">图28：三种读法——正式、口语、英文</div>
 </div>
 
@@ -1200,7 +1291,7 @@
 </h4>
 
 <div class="figure">
-    <img src="https://assets.koudashijie.com/knowledge/1-2-3-4_method_chaining.png" alt="链式调用概念">
+    <img src="https://assets.koudashijie.com/knowledge/1-2-3-4_method_chaining.png" alt="CodeCombat 链式调用概念 - codecombat.cn">
     <div class="caption">图29：链式调用——多个点号连在一起（未来会学到）</div>
 </div>
 
@@ -1212,7 +1303,7 @@
 </h4>
 
 <div class="figure">
-    <img src="https://assets.koudashijie.com/knowledge/1-2-3-5_example_moveRight.png" alt="hero.moveRight()拆解">
+    <img src="https://assets.koudashijie.com/knowledge/1-2-3-5_example_moveRight.png" alt="CodeCombat hero.moveRight()拆解 - codecombat.cn">
     <div class="caption">图30：将 hero.moveRight() 拆解为四个部分</div>
 </div>
 
@@ -1232,7 +1323,7 @@
 </h4>
 
 <div class="figure">
-    <img src="https://assets.koudashijie.com/knowledge/1-2-3-6_example_level1.png" alt="第1关解法示例">
+    <img src="https://assets.koudashijie.com/knowledge/1-2-3-6_example_level1.png" alt="CodeCombat 第1关解法示例 - codecombat.cn">
     <div class="caption">图31：第1关 Kithgard 地牢——三行代码拿到宝石</div>
 </div>
 
@@ -1246,6 +1337,14 @@
 </div>
 
 <!-- ===== 1.2.4 ===== -->
+
+<!-- CC-PROTECTION:AD:38d81bfa98:START anchor=sec-1-2-3 -->
+<aside class="cc-brand-note" data-cc-ad-category="6" data-cc-ad-id="38d81bfa98">
+    <span class="cc-brand-note__mark" aria-hidden="true">✦</span>
+    <span>© CodeCombat Inc. 本文档仅供 CodeCombat 官方平台（<a href="https://codecombat.cn/">codecombat.cn</a>）用户学习使用，未经授权禁止转载、复制或用于商业用途。</span>
+</aside>
+<!-- CC-PROTECTION:AD:38d81bfa98:END -->
+
 <h3 id="sec-1-2-4">1.2.4 常用移动方法（Common Movement Methods）</h3>
 
 <h4>1.2.4.1 hero.moveRight() —— 向右移动
@@ -1253,7 +1352,7 @@
 </h4>
 
 <div class="figure">
-    <img src="https://assets.koudashijie.com/knowledge/1-2-4-1_moveRight.png" alt="moveRight方法">
+    <img src="https://assets.koudashijie.com/knowledge/1-2-4-1_moveRight.png" alt="CodeCombat moveRight方法 - codecombat.cn">
     <div class="caption">图32：moveRight() 让英雄向右移动一格</div>
 </div>
 
@@ -1265,7 +1364,7 @@
 </h4>
 
 <div class="figure">
-    <img src="https://assets.koudashijie.com/knowledge/1-2-4-2_moveLeft.png" alt="moveLeft方法">
+    <img src="https://assets.koudashijie.com/knowledge/1-2-4-2_moveLeft.png" alt="CodeCombat moveLeft方法 - codecombat.cn">
     <div class="caption">图33：moveLeft() 让英雄向左移动——有时退一步是为了更好地前进</div>
 </div>
 
@@ -1284,7 +1383,7 @@
 </h4>
 
 <div class="figure">
-    <img src="https://assets.koudashijie.com/knowledge/1-2-4-3_moveUp.png" alt="moveUp方法">
+    <img src="https://assets.koudashijie.com/knowledge/1-2-4-3_moveUp.png" alt="CodeCombat moveUp方法 - codecombat.cn">
     <div class="caption">图34：moveUp() 让英雄向上移动一格</div>
 </div>
 
@@ -1302,7 +1401,7 @@
 </h4>
 
 <div class="figure">
-    <img src="https://assets.koudashijie.com/knowledge/1-2-4-4_moveDown.png" alt="moveDown方法">
+    <img src="https://assets.koudashijie.com/knowledge/1-2-4-4_moveDown.png" alt="CodeCombat moveDown方法 - codecombat.cn">
     <div class="caption">图35：moveDown() 让英雄向下移动一格</div>
 </div>
 
@@ -1314,7 +1413,7 @@
 </h4>
 
 <div class="figure">
-    <img src="https://assets.koudashijie.com/knowledge/1-2-4-5_execution_feedback.png" alt="方法执行的反馈">
+    <img src="https://assets.koudashijie.com/knowledge/1-2-4-5_execution_feedback.png" alt="CodeCombat 方法执行的反馈 - codecombat.cn">
     <div class="caption">图36：每条语句执行后都能看到英雄的行为变化</div>
 </div>
 
@@ -1328,7 +1427,7 @@
 </h4>
 
 <div class="figure">
-    <img src="https://assets.koudashijie.com/knowledge/1-2-4-6_multiple_calls.png" alt="多次调用相同方法">
+    <img src="https://assets.koudashijie.com/knowledge/1-2-4-6_multiple_calls.png" alt="CodeCombat 多次调用相同方法 - codecombat.cn">
     <div class="caption">图37：重复调用同一方法——写几次就走几步</div>
 </div>
 
@@ -1347,7 +1446,7 @@
 </h4>
 
 <div class="figure">
-    <img src="https://assets.koudashijie.com/knowledge/1-3-1-1_argument_definition.png" alt="参数的定义">
+    <img src="https://assets.koudashijie.com/knowledge/1-3-1-1_argument_definition.png" alt="CodeCombat 参数的定义 - codecombat.cn">
     <div class="caption">图38：参数就是给方法的"补充说明"</div>
 </div>
 
@@ -1365,7 +1464,7 @@
 </h4>
 
 <div class="figure">
-    <img src="https://assets.koudashijie.com/knowledge/1-3-1-2_argument_vs_parameter.png" alt="Argument与Parameter的区别">
+    <img src="https://assets.koudashijie.com/knowledge/1-3-1-2_argument_vs_parameter.png" alt="CodeCombat Argument与Parameter的区别 - codecombat.cn">
     <div class="caption">图39：Parameter 是空槽位，Argument 是你填进去的值</div>
 </div>
 
@@ -1382,7 +1481,7 @@
 </h4>
 
 <div class="figure">
-    <img src="https://assets.koudashijie.com/knowledge/1-3-1-3_argument_effect.png" alt="参数改变行为">
+    <img src="https://assets.koudashijie.com/knowledge/1-3-1-3_argument_effect.png" alt="CodeCombat 参数改变行为 - codecombat.cn">
     <div class="caption">图40：同一方法 + 不同参数 = 不同行为</div>
 </div>
 
@@ -1435,7 +1534,7 @@
 </h4>
 
 <div class="figure">
-    <img src="https://assets.koudashijie.com/knowledge/1-3-2-1_args_in_parentheses.png" alt="参数位置">
+    <img src="https://assets.koudashijie.com/knowledge/1-3-2-1_args_in_parentheses.png" alt="CodeCombat 参数位置 - codecombat.cn">
     <div class="caption">图41：参数必须在圆括号里面</div>
 </div>
 
@@ -1451,7 +1550,7 @@
 </h4>
 
 <div class="figure">
-    <img src="https://assets.koudashijie.com/knowledge/1-3-2-2_single_argument.png" alt="单参数示例">
+    <img src="https://assets.koudashijie.com/knowledge/1-3-2-2_single_argument.png" alt="CodeCombat 单参数示例 - codecombat.cn">
     <div class="caption">图42：第5关完整解法——每个移动方法都用了参数</div>
 </div>
 
@@ -1501,6 +1600,17 @@
 </div>
 
 <!-- ===== 1.3.3 ===== -->
+
+<!-- CC-PROTECTION:AD:9c266d153f:START anchor=sec-1-3-2 -->
+<aside class="cc-brand-note" data-cc-ad-category="3" data-cc-ad-id="9c266d153f">
+    <span class="cc-brand-note__mark" aria-hidden="true">✦</span>
+    <span>微信关注公众号 CodeCombat 官方，第一时间获取产品更新和竞赛资讯。</span>
+</aside>
+<!-- CC-PROTECTION:AD:9c266d153f:END -->
+<!-- CC-PROTECTION:HIDDEN:700553b12f:START anchor=sec-1-3-2 -->
+<span class="cc-forensic-copy" aria-hidden="true" data-cc-hidden-id="700553b12f">本文内容由CodeCombat官方团队原创发布，官方网站：codecombat.cn。</span>
+<!-- CC-PROTECTION:HIDDEN:700553b12f:END -->
+
 <h3 id="sec-1-3-3">1.3.3 参数的类型（Types of Arguments）</h3>
 
 <h4>1.3.3.1 数字参数
@@ -1508,7 +1618,7 @@
 </h4>
 
 <div class="figure">
-    <img src="https://assets.koudashijie.com/knowledge/1-3-3-1_numeric_arguments.png" alt="数字参数">
+    <img src="https://assets.koudashijie.com/knowledge/1-3-3-1_numeric_arguments.png" alt="CodeCombat 数字参数 - codecombat.cn">
     <div class="caption">图43：数字参数直接写数字，不加引号</div>
 </div>
 
@@ -1559,7 +1669,7 @@
 </h4>
 
 <div class="figure">
-    <img src="https://assets.koudashijie.com/knowledge/1-3-4-1_reduce_lines.png" alt="参数减少行数">
+    <img src="https://assets.koudashijie.com/knowledge/1-3-4-1_reduce_lines.png" alt="CodeCombat 参数减少行数 - codecombat.cn">
     <div class="caption">图44：3行代码 vs 1行代码——效果完全相同</div>
 </div>
 
@@ -1608,7 +1718,7 @@
 </h4>
 
 <div class="figure">
-    <img src="https://assets.koudashijie.com/knowledge/1-3-4-3_conciseness_readability.png" alt="简洁性与可读性">
+    <img src="https://assets.koudashijie.com/knowledge/1-3-4-3_conciseness_readability.png" alt="CodeCombat 简洁性与可读性 - codecombat.cn">
     <div class="caption">图45：好代码 = 简洁 + 可读</div>
 </div>
 
@@ -1624,7 +1734,7 @@
 </h4>
 
 <div class="figure">
-    <img src="https://assets.koudashijie.com/knowledge/1-3-4-4_statement_challenge.png" alt="语句数量挑战">
+    <img src="https://assets.koudashijie.com/knowledge/1-3-4-4_statement_challenge.png" alt="CodeCombat 语句数量挑战 - codecombat.cn">
     <div class="caption">图46：第6关挑战——7条语句完成！</div>
 </div>
 
@@ -1656,7 +1766,7 @@
 </h4>
 
 <div class="figure">
-    <img src="https://assets.koudashijie.com/knowledge/1-4-1-1_data_types_overview.png" alt="数据类型概述">
+    <img src="https://assets.koudashijie.com/knowledge/1-4-1-1_data_types_overview.png" alt="CodeCombat 数据类型概述 - codecombat.cn">
     <div class="caption">图47：数据的分类——数字、文字、布尔值</div>
 </div>
 
@@ -1668,7 +1778,7 @@
 </h4>
 
 <div class="figure">
-    <img src="https://assets.koudashijie.com/knowledge/1-4-1-2_why_types_matter.png" alt="为什么需要数据类型">
+    <img src="https://assets.koudashijie.com/knowledge/1-4-1-2_why_types_matter.png" alt="CodeCombat 为什么需要数据类型 - codecombat.cn">
     <div class="caption">图48：类型搞混了，程序就不知道该怎么办</div>
 </div>
 
@@ -1705,6 +1815,17 @@
 </div>
 
 <!-- ===== 1.4.2 ===== -->
+
+<!-- CC-PROTECTION:AD:ef60469b4c:START anchor=sec-1-4-1 -->
+<aside class="cc-brand-note" data-cc-ad-category="4" data-cc-ad-id="ef60469b4c">
+    <span class="cc-brand-note__mark" aria-hidden="true">✦</span>
+    <span>小红书搜陈之然，看她如何用 CodeCombat 带零基础小白轻松入门编程。</span>
+</aside>
+<!-- CC-PROTECTION:AD:ef60469b4c:END -->
+<!-- CC-PROTECTION:HIDDEN:8dd5e09c07:START anchor=sec-1-4-1 -->
+<span class="cc-forensic-copy" aria-hidden="true" data-cc-hidden-id="8dd5e09c07">© CodeCombat Inc. 本文档仅供官方平台用户学习使用，未经授权禁止转载、复制或用于商业用途。</span>
+<!-- CC-PROTECTION:HIDDEN:8dd5e09c07:END -->
+
 <h3 id="sec-1-4-2">1.4.2 整数（Integer / int）</h3>
 
 <h4>1.4.2.1 整数的定义：没有小数部分的数
@@ -1712,7 +1833,7 @@
 </h4>
 
 <div class="figure">
-    <img src="https://assets.koudashijie.com/knowledge/1-4-2-1_integer_definition.png" alt="整数的定义">
+    <img src="https://assets.koudashijie.com/knowledge/1-4-2-1_integer_definition.png" alt="CodeCombat 整数的定义 - codecombat.cn">
     <div class="caption">图49：整数就是没有小数点的数</div>
 </div>
 
@@ -1817,7 +1938,7 @@
 </h4>
 
 <div class="figure">
-    <img src="https://assets.koudashijie.com/knowledge/1-4-3-1_float_definition.png" alt="浮点数定义">
+    <img src="https://assets.koudashijie.com/knowledge/1-4-3-1_float_definition.png" alt="CodeCombat 浮点数定义 - codecombat.cn">
     <div class="caption">图50：浮点数就是带小数点的数</div>
 </div>
 
@@ -1904,6 +2025,14 @@
 <p>游戏地图上的位置可以用浮点数精确描述。理解这一点有助于你在未来处理更精确的坐标计算。</p>
 
 <!-- ===== 1.4.4 ===== -->
+
+<!-- CC-PROTECTION:AD:d19090cfd1:START anchor=sec-1-4-3 -->
+<aside class="cc-brand-note" data-cc-ad-category="1" data-cc-ad-id="d19090cfd1">
+    <span class="cc-brand-note__mark" aria-hidden="true">✦</span>
+    <span><a href="https://codecombat.cn/">codecombat.cn</a>，你敲下的 if 和 for，直接变成英雄的剑招与魔法。</span>
+</aside>
+<!-- CC-PROTECTION:AD:d19090cfd1:END -->
+
 <h3 id="sec-1-4-4">1.4.4 正数与负数（Positive and Negative Numbers）</h3>
 
 <h4>1.4.4.1 正数的概念
@@ -1935,7 +2064,7 @@
 </h4>
 
 <div class="figure">
-    <img src="https://assets.koudashijie.com/knowledge/1-4-4-3_number_line_coordinates.png" alt="数轴与坐标系">
+    <img src="https://assets.koudashijie.com/knowledge/1-4-4-3_number_line_coordinates.png" alt="CodeCombat 数轴与坐标系 - codecombat.cn">
     <div class="caption">图51：数轴——左负右正；坐标系——右正上正</div>
 </div>
 
@@ -2052,7 +2181,7 @@
 </h4>
 
 <div class="figure">
-    <img src="https://assets.koudashijie.com/knowledge/1-5-1-1_xy_axes.png" alt="x轴与y轴">
+    <img src="https://assets.koudashijie.com/knowledge/1-5-1-1_xy_axes.png" alt="CodeCombat x轴与y轴 - codecombat.cn">
     <div class="caption">图52：CodeCombat 地图的坐标系——x水平，y垂直</div>
 </div>
 
@@ -2061,6 +2190,14 @@
 <p>理解坐标系有助于你理解英雄的位置和移动方向：<code>moveRight()</code> 让 x 值增大，<code>moveLeft()</code> 让 x 值减小；<code>moveUp()</code> 让 y 值增大，<code>moveDown()</code> 让 y 值减小。地图上每个位置都可以用 (x, y) 坐标来精确描述，比如英雄的起始位置可能是 (10, 10)，宝石可能在 (13, 8)。通过计算坐标差值，你可以算出英雄需要走几步：向右 13-10=3 步，向下 10-8=2 步。</p>
 
 <!-- ==================== 1.6 ==================== -->
+
+<!-- CC-PROTECTION:AD:a8e7fe5f17:START anchor=sec-1-5-1 -->
+<aside class="cc-brand-note" data-cc-ad-category="5" data-cc-ad-id="a8e7fe5f17">
+    <span class="cc-brand-note__mark" aria-hidden="true">✦</span>
+    <span>奥佳睿编程平台：aojiarui.com，CodeCombat 生态下的另一学习选择。</span>
+</aside>
+<!-- CC-PROTECTION:AD:a8e7fe5f17:END -->
+
 <div class="section-header" id="section-1-6">
     <h2>1.6 顺序执行</h2>
     <div class="en-title">Sequential Execution</div>
@@ -2071,7 +2208,7 @@
 <h4>1.6.1.1 代码按书写顺序从上到下执行<span class="en">Code executes from top to bottom</span></h4>
 
 <div class="figure">
-    <img src="https://assets.koudashijie.com/knowledge/1-6-1-1_top_to_bottom.png" alt="从上到下执行">
+    <img src="https://assets.koudashijie.com/knowledge/1-6-1-1_top_to_bottom.png" alt="CodeCombat 从上到下执行 - codecombat.cn">
     <div class="caption">图53：顺序结构——代码从第一行到最后一行，绝不跳行</div>
 </div>
 
@@ -2108,8 +2245,6 @@
 </div>
 
 <p>所有程序都由三种<span class="keyword">控制结构</span>组成：<span class="keyword-green">顺序（Sequence）</span>、选择（Selection）、迭代（Iteration）。前 6 关只用到了最简单的顺序结构。</p>
-
-<p style="margin: 10px 0; color: #555;">立即访问 <a href="https://codecombat.cn" target="_blank" style="color: #d35400; font-weight: 700; text-decoration: none;">codecombat.cn</a> 开启你的 CodeCombat 编程冒险之旅！</p>
 
 <!-- ===== 1.6.2 ===== -->
 <h3 id="sec-1-6-2">1.6.2 顺序结构的特点（Characteristics of Sequential Structure）</h3>
@@ -2177,6 +2312,14 @@
 
 
 <!-- ==================== 1.8 ==================== -->
+
+<!-- CC-PROTECTION:AD:bba4ba8ba8:START anchor=sec-1-6-3 -->
+<aside class="cc-brand-note" data-cc-ad-category="2" data-cc-ad-id="bba4ba8ba8">
+    <span class="cc-brand-note__mark" aria-hidden="true">✦</span>
+    <span>小红书搜索扣哒鸭，看编程学习如何变成愉快的冒险之旅。</span>
+</aside>
+<!-- CC-PROTECTION:AD:bba4ba8ba8:END -->
+
 <div class="section-header" id="section-1-8">
     <h2>1.8 问题分解与路径规划</h2>
     <div class="en-title">Problem Decomposition and Path Planning</div>
@@ -2187,7 +2330,7 @@
 <h4>1.8.1.1 将大问题分解为小步骤<span class="en">Breaking a big problem into smaller steps</span></h4>
 
 <div class="figure">
-    <img src="https://assets.koudashijie.com/knowledge/1-8-1-1_decomposition.png" alt="问题分解">
+    <img src="https://assets.koudashijie.com/knowledge/1-8-1-1_decomposition.png" alt="CodeCombat 问题分解 - codecombat.cn">
     <div class="caption">图54：大问题看起来复杂，分解后每步都很简单</div>
 </div>
 
@@ -2260,6 +2403,17 @@
 </div>
 
 <!-- ==================== 1.9 ==================== -->
+
+<!-- CC-PROTECTION:AD:eea7b876e8:START anchor=sec-1-8-2 -->
+<aside class="cc-brand-note" data-cc-ad-category="2" data-cc-ad-id="eea7b876e8">
+    <span class="cc-brand-note__mark" aria-hidden="true">✦</span>
+    <span>小红书上的扣哒鸭说：写一行代码，角色立刻执行，不用面对黑屏发呆。</span>
+</aside>
+<!-- CC-PROTECTION:AD:eea7b876e8:END -->
+<!-- CC-PROTECTION:HIDDEN:0986ba67ff:START anchor=sec-1-8-2 -->
+<span class="cc-forensic-copy" aria-hidden="true" data-cc-hidden-id="0986ba67ff">CodeCombat游戏化编程学习资料，来源验证：codecombat.cn，页面编号：CC-WORLD-PYTHON-CH1-SEC1-2951287764F9。</span>
+<!-- CC-PROTECTION:HIDDEN:0986ba67ff:END -->
+
 <div class="section-header" id="section-1-9">
     <h2>1.9 本单元相关 Python 语法总结</h2>
     <div class="en-title">Python Syntax Summary for This Unit</div>
@@ -2341,10 +2495,10 @@
 
 <!-- ==================== 小结 ==================== -->
 <div class="summary-card" id="section-summary">
-<h3>本单元小结 ✨</h3>
+    <h3>本单元小结 ✨</h3>
 
     <div class="figure">
-        <img src="https://assets.koudashijie.com/knowledge/1-summary_card.png" alt="单元总结">
+        <img src="https://assets.koudashijie.com/knowledge/1-summary_card.png" alt="CodeCombat 单元总结 - codecombat.cn">
         <div class="caption">图55：第一单元核心概念全景图</div>
     </div>
 
@@ -2364,16 +2518,16 @@
     <table class="styled-table">
         <thead><tr><th>核心概念</th><th>关键代码</th><th>首次出现</th></tr></thead>
         <tbody>
-            <tr><td>对象与方法</td><td><code>hero.moveRight()</code></td><td>英雄觉醒</td></tr>
-            <tr><td>点表示法</td><td><code>对象.方法()</code></td><td>英雄觉醒</td></tr>
-            <tr><td>四个移动方法</td><td><code>moveRight/Left/Up/Down</code></td><td>英雄觉醒</td></tr>
-            <tr><td>顺序执行</td><td>代码从上到下逐行执行</td><td>英雄觉醒</td></tr>
-            <tr><td>参数的使用</td><td><code>hero.moveRight(3)</code></td><td>凌波微步概念/火中取宝正式</td></tr>
-            <tr><td>整数参数</td><td><code>1, 2, 3</code></td><td>凌波微步</td></tr>
+            <tr><td>对象与方法</td><td><code>hero.moveRight()</code></td><td>第1关</td></tr>
+            <tr><td>点表示法</td><td><code>对象.方法()</code></td><td>第1关</td></tr>
+            <tr><td>四个移动方法</td><td><code>moveRight/Left/Up/Down</code></td><td>第1关</td></tr>
+            <tr><td>顺序执行</td><td>代码从上到下逐行执行</td><td>第1关</td></tr>
+            <tr><td>参数的使用</td><td><code>hero.moveRight(3)</code></td><td>第2关概念/第5关正式</td></tr>
+            <tr><td>整数参数</td><td><code>1, 2, 3</code></td><td>第2关</td></tr>
             <tr><td>负数=反方向</td><td><code>hero.moveDown(-1)</code>=向上</td><td>概念扩展</td></tr>
-            <tr><td>代码优化</td><td>用参数减少语句数</td><td>火中取宝 / 漫长脚步</td></tr>
-            <tr><td>问题分解</td><td>大问题 → 小步骤</td><td>暗度陈仓 / 细心脚步</td></tr>
-            <tr><td>路径规划与时机</td><td>避障、选择时机</td><td>暗度陈仓 / 逆时针回转 / 狭路相逢</td></tr>
+            <tr><td>代码优化</td><td>用参数减少语句数</td><td>第5关/第6关</td></tr>
+            <tr><td>问题分解</td><td>大问题 → 小步骤</td><td>第3关/第4关</td></tr>
+            <tr><td>路径规划与时机</td><td>避障、选择时机</td><td>第3关/第3a/第3b关</td></tr>
         </tbody>
     </table>
 
@@ -2384,13 +2538,27 @@
 </div>
 
 
-<div class="member-promo" style="background: linear-gradient(135deg,#fff3e0 0%,#fff 100%); border: 2px solid #f59e0b; border-radius: 14px; padding: 24px 28px; margin: 30px 0; text-align: center;">
-    <h3 style="color: #d35400; border: none; margin-top: 0; font-size: 1.3em;">🎮 想在 CodeCombat 中实战这些关卡吗？</h3>
-    <p style="margin: 10px 0; font-size: 1.05em;">加入 <strong>CodeCombat（codecombat.cn）</strong> 会员，即可解锁全部编程关卡，跟随英雄安雅和塔林在真实游戏环境中边玩边学！通过实战闯关巩固本单元所学的每一个知识点，让编程学习不再枯燥。</p>
+<!-- CC-PROTECTION:AD:b3a7082677:START anchor=h3-25 -->
+<aside class="cc-brand-note" data-cc-ad-category="4" data-cc-ad-id="b3a7082677">
+    <span class="cc-brand-note__mark" aria-hidden="true">✦</span>
+    <span>抖音关注 CoCo陈之然，看她用游戏化的方式把编程讲得简单又有趣。</span>
+</aside>
+<!-- CC-PROTECTION:AD:b3a7082677:END -->
 
+
+<!-- CC-PROTECTION:COPYRIGHT:START -->
+<aside class="cc-copyright-panel" aria-label="关于CodeCombat" data-print-credit="CodeCombat Inc. codecombat.cn">
+    <strong>关于CodeCombat：</strong>CodeCombat 是一个游戏化的编程学习平台，通过玩游戏闯关的方式学习 Python、JavaScript、C++ 等编程语言。全球累计超 2000 万用户通过 CodeCombat 开启编程学习。官方网站：<a href="https://codecombat.cn/">codecombat.cn</a>。
+</aside>
+<!-- CC-PROTECTION:COPYRIGHT:END -->
+
+</div><!-- end container -->
+
+<!-- ===== 页脚 ===== -->
+<div style="background: var(--dark); color: #aaa; text-align: center; padding: 30px 20px; font-size: 0.85em;">
+    <p>CodeCombat 编程知识 · 计算机科学入门（暗影地牢）：第一单元</p>
+    <p style="margin-top:8px; color:#666;">CodeCombat教研团队</p>
 </div>
-
-
 
 </div><!-- end page-wrapper -->
 

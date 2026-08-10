@@ -67,6 +67,20 @@
   }
   .sidebar.collapsed .sidebar-title .title-text { display: none; }
   .sidebar.collapsed .sidebar-title .bar { display: none; }
+  .sidebar-title .title-text {
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    white-space: nowrap;
+  }
+  .brand-logo-link { display: inline-flex; align-items: center; }
+  .brand-logo {
+    display: block;
+    width: 110px;
+    height: auto;
+    max-height: 30px;
+    object-fit: contain;
+  }
   .sidebar-title .bar {
     width: 5px; height: 22px; border-radius: 3px;
     background: linear-gradient(180deg, var(--brand), var(--brand-deep));
@@ -108,7 +122,16 @@
     content: '◀';
   }
 
-  .map-group { margin-bottom: 4px; }
+  .map-group {
+    --map-color: var(--brand);
+    --map-soft: var(--brand-soft);
+    margin-bottom: 4px;
+  }
+  .map-ch1 { --map-color: #ff6b35; --map-soft: #fff0e8; }
+  .map-ch3 { --map-color: #22b573; --map-soft: #eaf9f1; }
+  .map-ch4 { --map-color: #d99a23; --map-soft: #fff6df; }
+  .map-ch5 { --map-color: #4f8edc; --map-soft: #edf5ff; }
+  .map-ch6 { --map-color: #20a8c5; --map-soft: #e9f9fc; }
 
   .map-header {
     display: flex; align-items: center; gap: 12px;
@@ -117,7 +140,7 @@
     border-left: 4px solid transparent;
   }
   .map-header:hover { background: #f6f9fe; }
-  .map-header.active-map { border-left-color: var(--brand); background: var(--brand-soft); }
+  .map-header.active-map { border-left-color: var(--map-color); background: var(--map-soft); }
 
   .sidebar.collapsed .map-header {
     padding: 10px 8px;
@@ -127,7 +150,7 @@
     position: relative;
   }
   .sidebar.collapsed .map-header.active-map {
-    background: var(--brand-soft);
+    background: var(--map-soft);
     border-radius: 8px;
   }
   .sidebar.collapsed .map-header .map-name,
@@ -169,8 +192,8 @@
   }
   .unit-item:hover { color: var(--text); background: #f6f9fe; }
   .unit-item.active {
-    color: var(--brand-deep); background: var(--brand-soft);
-    border-left-color: var(--brand); font-weight: 600;
+    color: var(--map-color); background: var(--map-soft);
+    border-left-color: var(--map-color); font-weight: 600;
   }
   .unit-item .unit-no {
     width: 22px; height: 22px; border-radius: 7px; flex-shrink: 0;
@@ -178,7 +201,7 @@
     display: flex; align-items: center; justify-content: center; font-size: 11px;
     transition: all 0.16s;
   }
-  .unit-item.active .unit-no { background: var(--brand); color: #fff; }
+  .unit-item.active .unit-no { background: var(--map-color); color: #fff; }
 
   .map-desc {
     padding: 6px 20px 6px 30px;
@@ -242,67 +265,113 @@
 <script>
 const MAPS = [
   {
-    id: "ch1", name: "暗影地牢", cls: "map-ch1", available: true,
+    id: "shadow-dungeon", name: "暗影地牢", cls: "map-ch1", available: true,
     icon: "icon_ch1.png",
+    range: "ch1 · sec1–sec4",
     units: [
-      { file: "ch1_sec1.html", title: "第一单元：对象、方法、参数与数据类型基础" },
-      { file: "ch1_sec2.html", title: "第二单元：程序、编程、注释、字符串与调试" },
-      { file: "ch1_sec3.html", title: "第三单元：循环结构 —— while True 无限循环" },
-      { file: "ch1_sec4.html", title: "第四单元：变量与赋值" },
+      { file: "ch1_sec1.html", label: "1", title: "第一单元：对象、方法、参数与数据类型基础" },
+      { file: "ch1_sec2.html", label: "2", title: "第二单元：程序、编程、注释、字符串与调试" },
+      { file: "ch1_sec3.html", label: "3", title: "第三单元：循环结构——while True 无限循环" },
+      { file: "ch1_sec4.html", label: "4", title: "第四单元：变量与赋值" },
     ]
   },
   {
-    id: "ch3", name: "边际森林", cls: "map-ch3", available: true,
+    id: "backwoods-forest", name: "边际森林", cls: "map-ch3", available: true,
     icon: "icon_ch3.png",
+    range: "ch3 · sec1–sec9；ch5 · sec1–sec8",
     units: [
-      { file: "ch3_sec1.html", title: "第一单元：笛卡尔坐标、moveXY 与 buildXY 基础" },
-      { file: "ch3_sec2.html", title: "第二单元：if 语句与打敌人三件套" },
-      { file: "ch3_sec3.html", title: "第三单元：if-else 双分支选择结构" },
-      { file: "ch3_sec4.html", title: "第四单元：if-elif-else 多分支选择结构" },
-      { file: "ch3_sec5.html", title: "第五单元：嵌套选择结构" },
-      { file: "ch3_sec6.html", title: "第六单元：函数的定义与调用" },
-      { file: "ch3_sec7.html", title: "第七单元：函数参数" },
-      { file: "ch3_sec8.html", title: "第八单元：多参数函数" },
-      { file: "ch3_sec9.html", title: "第九单元：事件与事件处理机制" },
+      { file: "ch3_sec1.html", label: "1", title: "第一单元：笛卡尔坐标、moveXY 与 buildXY 基础" },
+      { file: "ch3_sec2.html", label: "2", title: "第二单元：if 语句与打敌人三件套" },
+      { file: "ch3_sec3.html", label: "3", title: "第三单元：if-else 双分支选择结构" },
+      { file: "ch3_sec4.html", label: "4", title: "第四单元：if-elif-else 多分支选择结构" },
+      { file: "ch3_sec5.html", label: "5", title: "第五单元：嵌套选择结构" },
+      { file: "ch3_sec6.html", label: "6", title: "第六单元：函数的定义与调用" },
+      { file: "ch3_sec7.html", label: "7", title: "第七单元：函数参数" },
+      { file: "ch3_sec8.html", label: "8", title: "第八单元：多参数函数" },
+      { file: "ch3_sec9.html", label: "9", title: "第九单元：事件与事件处理机制" },
+      { file: "ch5_sec1.html", label: "10", title: "第十单元：字符串运算" },
+      { file: "ch5_sec2.html", label: "11", title: "第十一单元：坐标计算与位置属性" },
+      { file: "ch5_sec3.html", label: "12", title: "第十二单元：类型属性与相等运算符" },
+      { file: "ch5_sec4.html", label: "13", title: "第十三单元：函数的返回值" },
+      { file: "ch5_sec5.html", label: "14", title: "第十四单元：不等于运算符" },
+      { file: "ch5_sec6.html", label: "15", title: "第十五单元：逻辑运算符 or" },
+      { file: "ch5_sec7.html", label: "16", title: "第十六单元：逻辑运算符 and" },
+      { file: "ch5_sec8.html", label: "17", title: "第十七单元：逻辑运算 not" },
     ]
   },
   {
-    id: "ch4", name: "流金沙漠", cls: "map-ch4", available: false,
+    id: "sarven-desert", name: "流金沙漠", cls: "map-ch4", available: true,
     icon: "icon_ch4.png",
+    range: "ch5 · sec9–sec12；ch7 · sec1–sec9",
     units: [
-      { file: "ch4_sec1.html", title: "第一单元：算术运算符与运算优先级" },
-      { file: "ch4_sec2.html", title: "第二单元：布尔值与比较运算符" },
-      { file: "ch4_sec3.html", title: "第三单元：逻辑运算符 and / or / not" },
-      { file: "ch4_sec4.html", title: "第四单元：变量递增、累加器与计数器" },
-      { file: "ch4_sec5.html", title: "第五单元：函数返回值 return" },
-      { file: "ch4_sec6.html", title: "第六单元：break 与 continue" },
-      { file: "ch4_sec7.html", title: "第七单元：数组长度 len 与索引访问" },
-      { file: "ch4_sec8.html", title: "第八单元：while 循环遍历数组" },
+      { file: "ch5_sec9.html", label: "1", title: "第一单元：方向与坐标变化" },
+      { file: "ch5_sec10.html", label: "2", title: "第二单元：生命、时间、价值、金币属性" },
+      { file: "ch5_sec11.html", label: "3", title: "第三单元：循环控制" },
+      { file: "ch5_sec12.html", label: "4", title: "第四单元：事件处理机制" },
+      { file: "ch7_sec1.html", label: "5", title: "第五单元：认识 while 循环" },
+      { file: "ch7_sec2.html", label: "6", title: "第六单元：练习 while 循环" },
+      { file: "ch7_sec3.html", label: "7", title: "第七单元：一维数组（列表）" },
+      { file: "ch7_sec4.html", label: "8", title: "第八单元：单元复习" },
+      { file: "ch7_sec5.html", label: "9", title: "第九单元：认识嵌套循环" },
+      { file: "ch7_sec6.html", label: "10", title: "第十单元：练习嵌套循环" },
+      { file: "ch7_sec7.html", label: "11", title: "第十一单元：数组迭代与极值搜索" },
+      { file: "ch7_sec8.html", label: "12", title: "第十二单元：数组迭代与函数化搜索" },
+      { file: "ch7_sec9.html", label: "13", title: "第十三单元：单元复习·求和与综合应用" },
     ]
   },
   {
-    id: "ch5", name: "安息云峰", cls: "map-ch5", available: false,
+    id: "cloudrip-mountain", name: "安息云峰", cls: "map-ch5", available: true,
     icon: "icon_ch5.png",
+    range: "ch7 · sec10–sec14；ch8 · sec1–sec18；ch9 · sec1–sec3",
     units: [
-      { file: "ch5_sec1.html", title: "第一单元：for 循环与 range 遍历" },
-      { file: "ch5_sec2.html", title: "第二单元：对象字面量与属性访问" },
-      { file: "ch5_sec3.html", title: "第三单元：线性查找与极值（max/min）" },
-      { file: "ch5_sec4.html", title: "第四单元：哨兵值模式与累加求和" },
-      { file: "ch5_sec5.html", title: "第五单元：单位指挥 summon 与 command" },
-      { file: "ch5_sec6.html", title: "第六单元：多单位协同与动态目标选择" },
+      { file: "ch7_sec10.html", label: "1", title: "第一单元：认识字典" },
+      { file: "ch7_sec11.html", label: "2", title: "第二单元：练习字典·召唤与指挥" },
+      { file: "ch7_sec12.html", label: "3", title: "第三单元：认识 for 循环·统率千军" },
+      { file: "ch7_sec13.html", label: "4", title: "第四单元：练习 for 循环·狩猎与阵型" },
+      { file: "ch7_sec14.html", label: "5", title: "第五单元：单元复习·借刀杀敌" },
+      { file: "ch8_sec1.html", label: "6", title: "第六单元：函数综合应用·封装你的行为" },
+      { file: "ch8_sec2.html", label: "7", title: "第七单元：参数传递·给函数递东西" },
+      { file: "ch8_sec3.html", label: "8", title: "第八单元：分支策略·让程序学会做决定" },
+      { file: "ch8_sec4.html", label: "9", title: "第九单元：模运算·让索引优雅地循环" },
+      { file: "ch8_sec5.html", label: "10", title: "第十单元：最值算法·从数组中找出“之最”" },
+      { file: "ch8_sec6.html", label: "11", title: "第十一单元：绘制与函数·用代码画出图形" },
+      { file: "ch8_sec7.html", label: "12", title: "第十二单元：字符遍历·字符串就是字符的数组" },
+      { file: "ch8_sec8.html", label: "13", title: "第十三单元：子串匹配·在字符串里搜寻踪迹" },
+      { file: "ch8_sec9.html", label: "14", title: "第十四单元：循环步长·让循环大步流星" },
+      { file: "ch8_sec10.html", label: "15", title: "第十五单元：过滤筛选·把数据分门别类" },
+      { file: "ch8_sec11.html", label: "16", title: "第十六单元：配对查找·用嵌套循环找出成双成对" },
+      { file: "ch8_sec12.html", label: "17", title: "第十七单元：最近距离·找出距离最小的一对" },
+      { file: "ch8_sec13.html", label: "18", title: "第十八单元：坐标遍历·用嵌套循环扫遍二维网格" },
+      { file: "ch8_sec14.html", label: "19", title: "第十九单元：二维数组（列表）·网格里的世界" },
+      { file: "ch8_sec15.html", label: "20", title: "第二十单元：越界防护·安全访问二维数组" },
+      { file: "ch8_sec16.html", label: "21", title: "第二十一单元：状态数组·追踪与更新元素" },
+      { file: "ch8_sec17.html", label: "22", title: "第二十二单元：几何计算·周长面积与近似比较" },
+      { file: "ch8_sec18.html", label: "23", title: "第二十三单元：进制转换·除基取余算法" },
+      { file: "ch9_sec1.html", label: "24", title: "第二十四单元：最优目标·协作指挥与价值决策" },
+      { file: "ch9_sec2.html", label: "25", title: "第二十五单元：反转操作·倒序遍历与反向匹配" },
+      { file: "ch9_sec3.html", label: "26", title: "第二十六单元：均值筛选·求和平均与多条件选优" },
     ]
   },
   {
-    id: "ch6", name: "封神冰川", cls: "map-ch6", available: false,
+    id: "kelvintaph-glacier", name: "封神冰川", cls: "map-ch6", available: true,
     icon: "icon_ch6.png",
+    range: "ch9 · sec4–sec18",
     units: [
-      { file: "ch6_sec1.html", title: "第一单元：向量运算 Vector" },
-      { file: "ch6_sec2.html", title: "第二单元：栈、队列与链表" },
-      { file: "ch6_sec3.html", title: "第三单元：哈希函数与碰撞处理" },
-      { file: "ch6_sec4.html", title: "第四单元：选择排序与二分查找" },
-      { file: "ch6_sec5.html", title: "第五单元：递归与分形绘制" },
-      { file: "ch6_sec6.html", title: "第六单元：迷宫寻路 DFS / BFS" },
-      { file: "ch6_sec7.html", title: "第七单元：动态规划与最优路径" },
+      { file: "ch9_sec4.html", label: "1", title: "第一单元：向量运算·方向合成与智能避障" },
+      { file: "ch9_sec5.html", label: "2", title: "第二单元：递归分形·自相似与雪花绘制" },
+      { file: "ch9_sec6.html", label: "3", title: "第三单元：字符串算法·解码部署命令" },
+      { file: "ch9_sec7.html", label: "4", title: "第四单元：二分查找·猜数博弈与折半逼近" },
+      { file: "ch9_sec8.html", label: "5", title: "第五单元：选择排序·每轮择弱与队形整编" },
+      { file: "ch9_sec9.html", label: "6", title: "第六单元：队列操作·先进先出与任务调度" },
+      { file: "ch9_sec10.html", label: "7", title: "第七单元：栈操作·后进先出与物品调度" },
+      { file: "ch9_sec11.html", label: "8", title: "第八单元：链表操作·节点、遍历与链接维护" },
+      { file: "ch9_sec12.html", label: "9", title: "第九单元：哈希函数·键到索引的映射魔术" },
+      { file: "ch9_sec13.html", label: "10", title: "第十单元：图遍历·深度优先搜索与连通路径" },
+      { file: "ch9_sec14.html", label: "11", title: "第十一单元：动态规划·最优子结构与路径决策" },
+      { file: "ch9_sec15.html", label: "12", title: "第十二单元：汉诺塔·递归思想与栈的堆叠" },
+      { file: "ch9_sec16.html", label: "13", title: "第十三单元：迷宫算法·左手定则与深度优先搜索" },
+      { file: "ch9_sec17.html", label: "14", title: "第十四单元：圆形迷宫·陷阱规避与几何路径规划" },
+      { file: "ch9_sec18.html", label: "15", title: "第十五单元：三角函数·反正切与角度计算" },
     ]
   }
 ];
@@ -313,7 +382,7 @@ const content = document.getElementById('content');
 function buildSidebar() {
   const title = document.createElement('div');
   title.className = 'sidebar-title';
-  title.innerHTML = '<span class="bar"></span><span class="title-text">CodeCombat知识体系 <span style="font-size:0.7em;font-weight:500;">官网链接</span> <a href="https://codecombat.cn" style="color:#3b82f6;text-decoration:none;font-size:0.7em;font-weight:500;" target="_blank">codecombat.cn</a></span><button class="sidebar-toggle" onclick="toggleSidebar()" title="折叠/展开侧栏"></button>';
+  title.innerHTML = '<span class="bar"></span><span class="title-text"><a class="brand-logo-link" href="https://codecombat.cn" target="_blank" rel="noopener noreferrer" title="访问 CodeCombat 官网"><img class="brand-logo" src="https://codecombat.cn/images/pages/base/logo.webp" alt="CodeCombat"></a><span>知识体系</span></span><button class="sidebar-toggle" onclick="toggleSidebar()" title="折叠/展开侧栏"></button>';
   sidebar.appendChild(title);
 
   MAPS.forEach((map) => {
@@ -333,10 +402,6 @@ function buildSidebar() {
     list.className = 'unit-list';
 
     if (map.available) {
-      const desc = document.createElement('div');
-      desc.className = 'map-desc ready';
-      desc.textContent = '关卡与教程已就绪，立即开始';
-      list.appendChild(desc);
       map.units.forEach((unit, ui) => {
         const item = document.createElement('div');
         item.className = 'unit-item';
@@ -445,17 +510,6 @@ const groups = sidebar.querySelectorAll('.map-group');
   }
 });
 selectUnit(MAPS[0], 0);
-
-const footer = document.createElement('div');
-footer.style.cssText = 'position:fixed;bottom:0;left:300px;right:0;background:linear-gradient(90deg,#1a1a2e,#2c3344);color:#ccc;text-align:center;padding:8px 20px;font-size:13px;z-index:50;border-top:2px solid #f59e0b;';
-footer.innerHTML = '⭐ CodeCombat 编程学习平台 · 官网 codecombat.cn · 加入会员 解锁全部关卡，边玩边学编程！';
-document.body.appendChild(footer);
-
-document.getElementById('sidebar').addEventListener('transitionend', function(e) {
-  if (e.propertyName === 'width') {
-    footer.style.left = getComputedStyle(this).width;
-  }
-});
 </script>
 </body>
 </html>

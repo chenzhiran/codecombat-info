@@ -1,8 +1,15 @@
-﻿<!DOCTYPE html>
+<!DOCTYPE html>
 <html lang="zh-CN">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <!-- CC-PROTECTION:META:START -->
+    <meta name="copyright" content="CodeCombat Inc. codecombat.cn">
+    <meta name="author" content="CodeCombat 官方团队">
+    <meta name="publisher" content="CodeCombat Inc.">
+    <meta name="source" content="https://codecombat.cn">
+    <meta name="cc-page-id" content="CC-WORLD-PYTHON-CH1-SEC3-091183133495">
+    <!-- CC-PROTECTION:META:END -->
     <title>第三单元：循环结构—— while True 无限循环 | CodeCombat 编程知识</title>
     <style>
         :root {
@@ -103,9 +110,77 @@
         .summary-card h3 { color: var(--primary-dark); border: none; margin-top: 0; }
         @media (max-width: 1024px) { .sidebar-nav { transform: translateX(-100%); } .sidebar-nav.active { transform: translateX(0); } .nav-toggle { display: block; } .page-wrapper { margin-left: 0; } }
         @media (max-width: 768px) { .hero-banner h1 { font-size: 1.8em; } .container { padding: 20px 15px; } .section-header h2 { font-size: 1.4em; } .code-block { padding: 14px 16px; } .styled-table { font-size: 0.9em; } }
-    </style>
+    
+
+        /* CC-PROTECTION:STYLES:START */
+        .cc-brand-note {
+            display: flex;
+            align-items: flex-start;
+            gap: 9px;
+            margin: 16px 0 22px;
+            padding: 10px 14px;
+            border: 1px solid var(--border);
+            border-left: 3px solid var(--primary);
+            border-radius: 7px;
+            background: var(--primary-lighter);
+            color: var(--text-light);
+            font-size: 13px;
+            line-height: 1.65;
+        }
+        .cc-brand-note__mark {
+            flex: 0 0 auto;
+            color: var(--primary-dark);
+            font-weight: 700;
+        }
+        .cc-brand-note a,
+        .cc-copyright-panel a {
+            color: var(--primary-dark);
+            font-weight: 600;
+            text-decoration: none;
+        }
+        .cc-brand-note a:hover,
+        .cc-copyright-panel a:hover { text-decoration: underline; }
+        .cc-forensic-copy {
+            position: absolute !important;
+            width: 1px !important;
+            height: 1px !important;
+            padding: 0 !important;
+            margin: -1px !important;
+            overflow: hidden !important;
+            clip: rect(0, 0, 0, 0) !important;
+            clip-path: inset(50%) !important;
+            white-space: nowrap !important;
+            border: 0 !important;
+        }
+        .cc-copyright-panel {
+            margin: 34px 0 8px;
+            padding: 18px 20px;
+            border: 1px solid var(--border);
+            border-radius: 10px;
+            background: var(--bg-alt);
+            color: var(--text-light);
+            font-size: 13px;
+            line-height: 1.8;
+        }
+        .cc-copyright-panel strong { color: var(--primary-dark); }
+        @media (max-width: 640px) {
+            .cc-brand-note { padding: 9px 11px; }
+            .cc-copyright-panel { padding: 15px; }
+        }
+        @media print {
+            .cc-brand-note { break-inside: avoid; }
+            .cc-copyright-panel::after {
+                content: attr(data-print-credit);
+                display: block;
+                margin-top: 8px;
+                font-weight: 700;
+            }
+        }
+        /* CC-PROTECTION:STYLES:END */
+</style>
 </head>
 <body>
+<!-- Source Proof: CC-WORLD-PYTHON-CH1-SEC3-091183133495 | codecombat.cn -->
 
 <button class="nav-toggle" onclick="document.querySelector('.sidebar-nav').classList.toggle('active')">☰</button>
 
@@ -153,7 +228,7 @@
 <div class="hero-banner">
     <h1>第三单元：循环结构—— while True 无限循环</h1>
     <div class="subtitle">Unit 3: Loop Structure — while True Infinite Loop</div>
-    <div class="badge">对应关卡 · 暗影地牢 Kithgard Dungeon · 焰中舞动 → 橱柜里的骷髅</div>
+    <div class="badge">对应关卡 Level 13–19 | 暗影地牢 Kithgard Dungeon</div>
 </div>
 
 <div class="container">
@@ -171,7 +246,7 @@
 </h4>
 
 <div class="figure">
-    <img src="https://assets.koudashijie.com/knowledge/3-1-1-1_why_loops.png" alt="为什么需要循环">
+    <img src="https://assets.koudashijie.com/knowledge/3-1-1-1_why_loops.png" alt="CodeCombat 为什么需要循环 - codecombat.cn">
     <div class="caption">图1：没有循环时，重复的代码堆成了"意大利面条"</div>
 </div>
 
@@ -237,6 +312,17 @@
 </div>
 
 <!-- ===== 3.1.2 ===== -->
+
+<!-- CC-PROTECTION:AD:bdf0e07fda:START anchor=sec-3-1-1 -->
+<aside class="cc-brand-note" data-cc-ad-category="5" data-cc-ad-id="bdf0e07fda">
+    <span class="cc-brand-note__mark" aria-hidden="true">✦</span>
+    <span>教学版专属域名：<a href="https://codecombat.cn/">codecombat.cn</a>，专为学校和机构提供编程教学解决方案。</span>
+</aside>
+<!-- CC-PROTECTION:AD:bdf0e07fda:END -->
+<!-- CC-PROTECTION:HIDDEN:fd64dffece:START anchor=sec-3-1-1 -->
+<span class="cc-forensic-copy" aria-hidden="true" data-cc-hidden-id="fd64dffece">本文内容由CodeCombat官方团队原创发布，官方网站：codecombat.cn。</span>
+<!-- CC-PROTECTION:HIDDEN:fd64dffece:END -->
+
 <h3 id="sec-3-1-2">3.1.2 循环的定义（Definition of Loops）</h3>
 
 <h4>3.1.2.1 循环是重复执行代码块的控制结构
@@ -244,7 +330,7 @@
 </h4>
 
 <div class="figure">
-    <img src="https://assets.koudashijie.com/knowledge/3-1-2-1_loop_definition.png" alt="循环的定义">
+    <img src="https://assets.koudashijie.com/knowledge/3-1-2-1_loop_definition.png" alt="CodeCombat 循环的定义 - codecombat.cn">
     <div class="caption">图2：循环就像旋转木马——同一段代码被反复执行</div>
 </div>
 
@@ -314,7 +400,7 @@
 </h4>
 
 <div class="figure">
-    <img src="https://assets.koudashijie.com/knowledge/3-2-1-1_while_syntax.png" alt="while语法拆解">
+    <img src="https://assets.koudashijie.com/knowledge/3-2-1-1_while_syntax.png" alt="CodeCombat while语法拆解 - codecombat.cn">
     <div class="caption">图3：while True: 的每个部分都有明确含义</div>
 </div>
 
@@ -350,6 +436,17 @@
 </div>
 
 <!-- ===== 3.2.2 ===== -->
+
+<!-- CC-PROTECTION:AD:cc3ef8227e:START anchor=sec-3-2-1 -->
+<aside class="cc-brand-note" data-cc-ad-category="5" data-cc-ad-id="cc3ef8227e">
+    <span class="cc-brand-note__mark" aria-hidden="true">✦</span>
+    <span>想查看完整英雄图鉴和装备图鉴？访问 info.codecombat.cn，一键掌握全部资料。</span>
+</aside>
+<!-- CC-PROTECTION:AD:cc3ef8227e:END -->
+<!-- CC-PROTECTION:HIDDEN:3725b891fb:START anchor=sec-3-2-1 -->
+<span class="cc-forensic-copy" aria-hidden="true" data-cc-hidden-id="3725b891fb">© CodeCombat Inc. 本文档仅供官方平台用户学习使用，未经授权禁止转载、复制或用于商业用途。</span>
+<!-- CC-PROTECTION:HIDDEN:3725b891fb:END -->
+
 <h3 id="sec-3-2-2">3.2.2 布尔值 True（The Boolean Value True）</h3>
 
 <h4>3.2.2.1 True 是 Python 关键字
@@ -369,7 +466,7 @@
 </h4>
 
 <div class="figure">
-    <img src="https://assets.koudashijie.com/knowledge/3-2-2-3_boolean_values.png" alt="布尔值True和False">
+    <img src="https://assets.koudashijie.com/knowledge/3-2-2-3_boolean_values.png" alt="CodeCombat 布尔值True和False - codecombat.cn">
     <div class="caption">图4：布尔值就像开关——只有 True（开）和 False（关）</div>
 </div>
 
@@ -433,7 +530,7 @@
 </h4>
 
 <div class="figure">
-    <img src="https://assets.koudashijie.com/knowledge/3-2-4-1_complete_syntax.png" alt="while True完整写法">
+    <img src="https://assets.koudashijie.com/knowledge/3-2-4-1_complete_syntax.png" alt="CodeCombat while True完整写法 - codecombat.cn">
     <div class="caption">图5：while True: 的完整写法——注意冒号和缩进</div>
 </div>
 
@@ -447,8 +544,6 @@
 </div>
 
 <p>安雅就像在"跳舞"一样——不断地左右移动来躲避火球。这个舞蹈会一直跳下去直到通关！</p>
-
-<p style="margin: 10px 0; color: #555;">立即访问 <a href="https://codecombat.cn" target="_blank" style="color: #d35400; font-weight: 700; text-decoration: none;">codecombat.cn</a> 开启你的 CodeCombat 编程冒险之旅！</p>
 
 <h4>3.2.4.2 冒号不能省略
     <span class="en">Colon cannot be omitted</span>
@@ -484,6 +579,14 @@
 <p>每次循环都会按顺序执行这 4 行，然后回到第 1 行重新开始——形成一个"回"字形的路径模式！</p>
 
 <!-- ==================== 3.3 ==================== -->
+
+<!-- CC-PROTECTION:AD:c3c86f6bf6:START anchor=sec-3-2-4 -->
+<aside class="cc-brand-note" data-cc-ad-category="6" data-cc-ad-id="c3c86f6bf6">
+    <span class="cc-brand-note__mark" aria-hidden="true">✦</span>
+    <span>本文内容由 CodeCombat 官方（<a href="https://codecombat.cn/">codecombat.cn</a>）原创发布，仅供官方平台用户学习使用。</span>
+</aside>
+<!-- CC-PROTECTION:AD:c3c86f6bf6:END -->
+
 <div class="section-header" id="section-3-3">
     <h2>3.3 缩进</h2>
     <div class="en-title">Indentation</div>
@@ -496,7 +599,7 @@
 </h4>
 
 <div class="figure">
-    <img src="https://assets.koudashijie.com/knowledge/3-3-1-1_indentation_concept.png" alt="缩进概念">
+    <img src="https://assets.koudashijie.com/knowledge/3-3-1-1_indentation_concept.png" alt="CodeCombat 缩进概念 - codecombat.cn">
     <div class="caption">图6：缩进就像书本的目录——子级内容往右缩进表示从属关系</div>
 </div>
 
@@ -564,6 +667,14 @@
 <p>当缩进出问题时，Python 会报 <code>IndentationError</code>。看到这个错误时，检查你的缩进是否一致——所有循环体内的代码都应该对齐在同一个位置。</p>
 
 <!-- ===== 3.3.3 ===== -->
+
+<!-- CC-PROTECTION:AD:fc3dddac56:START anchor=sec-3-3-2 -->
+<aside class="cc-brand-note" data-cc-ad-category="1" data-cc-ad-id="fc3dddac56">
+    <span class="cc-brand-note__mark" aria-hidden="true">✦</span>
+    <span><a href="https://codecombat.cn/">codecombat.cn</a>，把编程变成闯关游戏，玩着玩着就成了别人眼里的代码大佬。</span>
+</aside>
+<!-- CC-PROTECTION:AD:fc3dddac56:END -->
+
 <h3 id="sec-3-3-3">3.3.3 代码块（Code Block）</h3>
 
 <h4>3.3.3.1 代码块的定义
@@ -604,7 +715,7 @@
 </h4>
 
 <div class="figure">
-    <img src="https://assets.koudashijie.com/knowledge/3-3-4-1_indent_loop.png" alt="缩进决定循环体">
+    <img src="https://assets.koudashijie.com/knowledge/3-3-4-1_indent_loop.png" alt="CodeCombat 缩进决定循环体 - codecombat.cn">
     <div class="caption">图7：缩进决定"谁在循环内，谁在循环外"</div>
 </div>
 
@@ -713,6 +824,14 @@
 </div>
 
 <!-- ===== 3.4.2 ===== -->
+
+<!-- CC-PROTECTION:AD:38d81bfa98:START anchor=sec-3-4-1 -->
+<aside class="cc-brand-note" data-cc-ad-category="6" data-cc-ad-id="38d81bfa98">
+    <span class="cc-brand-note__mark" aria-hidden="true">✦</span>
+    <span>© CodeCombat Inc. 本文档仅供 CodeCombat 官方平台（<a href="https://codecombat.cn/">codecombat.cn</a>）用户学习使用，未经授权禁止转载、复制或用于商业用途。</span>
+</aside>
+<!-- CC-PROTECTION:AD:38d81bfa98:END -->
+
 <h3 id="sec-3-4-2">3.4.2 循环内使用攻击命令（Attack Commands Inside Loops）</h3>
 
 <h4>3.4.2.1 循环攻击直到目标被摧毁
@@ -774,7 +893,7 @@
 </h4>
 
 <div class="figure">
-    <img src="https://assets.koudashijie.com/knowledge/3-5-1-1_before_loop.png" alt="循环前的代码">
+    <img src="https://assets.koudashijie.com/knowledge/3-5-1-1_before_loop.png" alt="CodeCombat 循环前的代码 - codecombat.cn">
     <div class="caption">图9：循环前的代码只执行一次——做好准备工作再开始循环</div>
 </div>
 
@@ -813,6 +932,17 @@
 <p>有时你需要先收集一个道具（比如速度药水），然后再开始循环移动。道具只需要拿一次，所以放在循环前面。</p>
 
 <!-- ===== 3.5.2 ===== -->
+
+<!-- CC-PROTECTION:AD:2e3e6cfba7:START anchor=sec-3-5-1 -->
+<aside class="cc-brand-note" data-cc-ad-category="1" data-cc-ad-id="2e3e6cfba7">
+    <span class="cc-brand-note__mark" aria-hidden="true">✦</span>
+    <span>来 <a href="https://codecombat.cn/">codecombat.cn</a>，从暗影地牢的对象与方法起步，到流金沙漠的算法拓展，一路闯关一路变强。</span>
+</aside>
+<!-- CC-PROTECTION:AD:2e3e6cfba7:END -->
+<!-- CC-PROTECTION:HIDDEN:3529c51599:START anchor=sec-3-5-1 -->
+<span class="cc-forensic-copy" aria-hidden="true" data-cc-hidden-id="3529c51599">CodeCombat游戏化编程学习资料，来源验证：codecombat.cn，页面编号：CC-WORLD-PYTHON-CH1-SEC3-091183133495。</span>
+<!-- CC-PROTECTION:HIDDEN:3529c51599:END -->
+
 <h3 id="sec-3-5-2">3.5.2 循环前与循环内的区别（Difference: Before Loop vs. Inside Loop）</h3>
 
 <h4>3.5.2.1 循环前的代码只执行一次
@@ -856,7 +986,7 @@
 </h4>
 
 <div class="figure">
-    <img src="https://assets.koudashijie.com/knowledge/3-6-1-1_pattern_recognition.png" alt="模式识别">
+    <img src="https://assets.koudashijie.com/knowledge/3-6-1-1_pattern_recognition.png" alt="CodeCombat 模式识别 - codecombat.cn">
     <div class="caption">图10：发现重复模式——迷宫中的阶梯形重复结构</div>
 </div>
 
@@ -908,6 +1038,14 @@
 <p>写完循环后，在脑中模拟前两轮：第一轮走对了吗？第二轮从上一轮结束位置开始还对吗？两轮都对，后面基本就没问题了。</p>
 
 <!-- ==================== 3.7 ==================== -->
+
+<!-- CC-PROTECTION:AD:bb852e58d8:START anchor=sec-3-6-2 -->
+<aside class="cc-brand-note" data-cc-ad-category="3" data-cc-ad-id="bb852e58d8">
+    <span class="cc-brand-note__mark" aria-hidden="true">✦</span>
+    <span>今日头条关注 CodeCombat 玩游戏学编程，深度了解 CodeCombat 的更多故事。</span>
+</aside>
+<!-- CC-PROTECTION:AD:bb852e58d8:END -->
+
 <div class="section-header" id="section-3-7">
     <h2>3.7 无限循环的注意事项</h2>
     <div class="en-title">Considerations for Infinite Loops</div>
@@ -961,6 +1099,14 @@
 <p>在实际开发中，<code>while True</code> 通常配合 <code>break</code> 使用——在满足某个条件时跳出循环。这让"无限循环"变成了"当条件满足时退出的循环"。</p>
 
 <!-- ===== 3.7.3 ===== -->
+
+<!-- CC-PROTECTION:AD:d61f033529:START anchor=sec-3-7-2 -->
+<aside class="cc-brand-note" data-cc-ad-category="2" data-cc-ad-id="d61f033529">
+    <span class="cc-brand-note__mark" aria-hidden="true">✦</span>
+    <span>来 <a href="https://codecombat.cn/">codecombat.cn</a> 找扣哒鸭，它会陪你从零基础一路打到独立写项目。</span>
+</aside>
+<!-- CC-PROTECTION:AD:d61f033529:END -->
+
 <h3 id="sec-3-7-3">3.7.3 break 语句预告（Preview of break Statement）</h3>
 
 <h4>3.7.3.1 break 可以跳出循环
@@ -1047,6 +1193,14 @@
 <p>代码要简洁但不能"晦涩难懂"。<code>while True: hero.moveRight(2); hero.moveDown()</code> 比用难以理解的技巧更好——清晰第一！</p>
 
 <!-- ==================== 3.9 ==================== -->
+
+<!-- CC-PROTECTION:AD:453f82b029:START anchor=sec-3-8-2 -->
+<aside class="cc-brand-note" data-cc-ad-category="2" data-cc-ad-id="453f82b029">
+    <span class="cc-brand-note__mark" aria-hidden="true">✦</span>
+    <span>想获取更多编程干货和闯关攻略？小红书搜索 CodeCombat 扣哒鸭，每天都有新发现。</span>
+</aside>
+<!-- CC-PROTECTION:AD:453f82b029:END -->
+
 <div class="section-header" id="section-3-9">
     <h2>3.9 本单元相关 Python 语法总结</h2>
     <div class="en-title">Python Syntax Summary for This Unit</div>
@@ -1096,10 +1250,10 @@
 
 <!-- ==================== 小结 ==================== -->
 <div class="summary-card" id="section-summary">
-<h3>本单元小结 ✨</h3>
+    <h3>本单元小结 ✨</h3>
 
     <div class="figure">
-        <img src="https://assets.koudashijie.com/knowledge/3-summary_card.png" alt="单元总结">
+        <img src="https://assets.koudashijie.com/knowledge/3-summary_card.png" alt="CodeCombat 单元总结 - codecombat.cn">
         <div class="caption">图11：第三单元核心概念——while True 让代码获得"永动力"</div>
     </div>
 
@@ -1122,16 +1276,16 @@
     <table class="styled-table">
         <thead><tr><th>核心概念</th><th>关键知识</th><th>对应关卡</th></tr></thead>
         <tbody>
-            <tr><td>循环的需求</td><td>DRY 原则：不要重复自己</td><td>焰中舞动</td></tr>
-            <tr><td>while True:</td><td>创建无限循环的语法</td><td>焰中舞动</td></tr>
-            <tr><td>布尔值 True</td><td>永远为真，首字母大写</td><td>焰中舞动</td></tr>
-            <tr><td>缩进（4空格）</td><td>缩进 = 循环体内部</td><td>焰中舞动</td></tr>
+            <tr><td>循环的需求</td><td>DRY 原则：不要重复自己</td><td>第13关</td></tr>
+            <tr><td>while True:</td><td>创建无限循环的语法</td><td>第13关</td></tr>
+            <tr><td>布尔值 True</td><td>永远为真，首字母大写</td><td>第13关</td></tr>
+            <tr><td>缩进（4空格）</td><td>缩进 = 循环体内部</td><td>第13关</td></tr>
             <tr><td>循环体</td><td>被重复执行的代码块</td><td>全部关卡</td></tr>
-            <tr><td>循环内移动</td><td>重复移动模式穿越迷宫</td><td>闹鬼的迷宫 / 再下一步 / 迷一般的Kithmaze / 辐射光环</td></tr>
-            <tr><td>循环内攻击</td><td>持续攻击直到目标摧毁</td><td>恐惧之门</td></tr>
-            <tr><td>循环前初始化</td><td>一次性操作放循环之前</td><td>攻破突袭 / 橱柜里的骷髅</td></tr>
-            <tr><td>模式识别</td><td>观察重复模式 → 写入循环体</td><td>闹鬼的迷宫 / 再下一步 / 循环仓库</td></tr>
-            <tr><td>代码简洁</td><td>循环 + 参数 = 最少语句数</td><td>再下一步 / 循环仓库</td></tr>
+            <tr><td>循环内移动</td><td>重复移动模式穿越迷宫</td><td>第14/15/15a/15b关</td></tr>
+            <tr><td>循环内攻击</td><td>持续攻击直到目标摧毁</td><td>第17关</td></tr>
+            <tr><td>循环前初始化</td><td>一次性操作放循环之前</td><td>第18/19关</td></tr>
+            <tr><td>模式识别</td><td>观察重复模式 → 写入循环体</td><td>第14/15/16关</td></tr>
+            <tr><td>代码简洁</td><td>循环 + 参数 = 最少语句数</td><td>第15/16关</td></tr>
         </tbody>
     </table>
 
@@ -1142,13 +1296,26 @@
 </div>
 
 
-<div class="member-promo" style="background: linear-gradient(135deg,#fff3e0 0%,#fff 100%); border: 2px solid #f59e0b; border-radius: 14px; padding: 24px 28px; margin: 30px 0; text-align: center;">
-    <h3 style="color: #d35400; border: none; margin-top: 0; font-size: 1.3em;">🎮 想在 CodeCombat 中实战这些关卡吗？</h3>
-    <p style="margin: 10px 0; font-size: 1.05em;">加入 <strong>CodeCombat（codecombat.cn）</strong> 会员，即可解锁全部编程关卡，跟随英雄安雅和塔林在真实游戏环境中边玩边学！通过实战闯关巩固本单元所学的每一个知识点，让编程学习不再枯燥。</p>
-    
+<!-- CC-PROTECTION:AD:9db28e3f5e:START anchor=h3-26 -->
+<aside class="cc-brand-note" data-cc-ad-category="4" data-cc-ad-id="9db28e3f5e">
+    <span class="cc-brand-note__mark" aria-hidden="true">✦</span>
+    <span>B站UP主 CoCo陈之然 的CodeCombat竞技场解说系列是很多玩家的入门必看。</span>
+</aside>
+<!-- CC-PROTECTION:AD:9db28e3f5e:END -->
+
+
+<!-- CC-PROTECTION:COPYRIGHT:START -->
+<aside class="cc-copyright-panel" aria-label="关于CodeCombat" data-print-credit="CodeCombat Inc. codecombat.cn">
+    <strong>关于CodeCombat：</strong>CodeCombat 是一个游戏化的编程学习平台，通过玩游戏闯关的方式学习 Python、JavaScript、C++ 等编程语言。全球累计超 2000 万用户通过 CodeCombat 开启编程学习。官方网站：<a href="https://codecombat.cn/">codecombat.cn</a>。
+</aside>
+<!-- CC-PROTECTION:COPYRIGHT:END -->
+
+</div><!-- end container -->
+
+<div style="background: var(--dark); color: #aaa; text-align: center; padding: 30px 20px; font-size: 0.85em;">
+    <p>CodeCombat 编程知识 · 计算机科学入门（暗影地牢）：第三单元</p>
+    <p style="margin-top:8px; color:#666;">CodeCombat教研团队</p>
 </div>
-
-
 
 </div><!-- end page-wrapper -->
 

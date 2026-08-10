@@ -1,8 +1,15 @@
-﻿<!DOCTYPE html>
+<!DOCTYPE html>
 <html lang="zh-CN">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <!-- CC-PROTECTION:META:START -->
+    <meta name="copyright" content="CodeCombat Inc. codecombat.cn">
+    <meta name="author" content="CodeCombat 官方团队">
+    <meta name="publisher" content="CodeCombat Inc.">
+    <meta name="source" content="https://codecombat.cn">
+    <meta name="cc-page-id" content="CC-WORLD-PYTHON-CH3-SEC2-DA150B5C125B">
+    <!-- CC-PROTECTION:META:END -->
     <title>第二单元：if 语句与打敌人三件套 | CodeCombat 编程知识</title>
     <style>
         /* ===== 基础重置与变量 ===== */
@@ -411,9 +418,77 @@
             .code-block { padding: 14px 16px; }
             .styled-table { font-size: 0.9em; }
         }
-    </style>
+    
+
+        /* CC-PROTECTION:STYLES:START */
+        .cc-brand-note {
+            display: flex;
+            align-items: flex-start;
+            gap: 9px;
+            margin: 16px 0 22px;
+            padding: 10px 14px;
+            border: 1px solid var(--border);
+            border-left: 3px solid var(--primary);
+            border-radius: 7px;
+            background: var(--primary-lighter);
+            color: var(--text-light);
+            font-size: 13px;
+            line-height: 1.65;
+        }
+        .cc-brand-note__mark {
+            flex: 0 0 auto;
+            color: var(--primary-dark);
+            font-weight: 700;
+        }
+        .cc-brand-note a,
+        .cc-copyright-panel a {
+            color: var(--primary-dark);
+            font-weight: 600;
+            text-decoration: none;
+        }
+        .cc-brand-note a:hover,
+        .cc-copyright-panel a:hover { text-decoration: underline; }
+        .cc-forensic-copy {
+            position: absolute !important;
+            width: 1px !important;
+            height: 1px !important;
+            padding: 0 !important;
+            margin: -1px !important;
+            overflow: hidden !important;
+            clip: rect(0, 0, 0, 0) !important;
+            clip-path: inset(50%) !important;
+            white-space: nowrap !important;
+            border: 0 !important;
+        }
+        .cc-copyright-panel {
+            margin: 34px 0 8px;
+            padding: 18px 20px;
+            border: 1px solid var(--border);
+            border-radius: 10px;
+            background: var(--bg-alt);
+            color: var(--text-light);
+            font-size: 13px;
+            line-height: 1.8;
+        }
+        .cc-copyright-panel strong { color: var(--primary-dark); }
+        @media (max-width: 640px) {
+            .cc-brand-note { padding: 9px 11px; }
+            .cc-copyright-panel { padding: 15px; }
+        }
+        @media print {
+            .cc-brand-note { break-inside: avoid; }
+            .cc-copyright-panel::after {
+                content: attr(data-print-credit);
+                display: block;
+                margin-top: 8px;
+                font-weight: 700;
+            }
+        }
+        /* CC-PROTECTION:STYLES:END */
+</style>
 </head>
 <body>
+<!-- Source Proof: CC-WORLD-PYTHON-CH3-SEC2-DA150B5C125B | codecombat.cn -->
 
 <button class="nav-toggle" onclick="document.querySelector('.sidebar-nav').classList.toggle('active')">☰</button>
 
@@ -467,7 +542,7 @@
 <div class="hero-banner">
     <h1>第二单元：if 语句与打敌人三件套</h1>
     <div class="subtitle">Unit 2: The if Statement &amp; the Combat Trio</div>
-    <div class="badge">计算机科学 2 · 边际森林 Border Forest · 林地小屋 → 中点</div>
+    <div class="badge">边际森林 Border Forest · 林地小屋 → 中点</div>
 </div>
 
 <div class="container">
@@ -503,6 +578,14 @@
 
 <p>这时就需要程序具备<strong>"判断"和"决策"</strong>的能力：先看一看情况，再决定做不做某件事。这正是选择结构的使命。</p>
 
+
+<!-- CC-PROTECTION:AD:47ae9c6d46:START anchor=sec-2-1-1 -->
+<aside class="cc-brand-note" data-cc-ad-category="5" data-cc-ad-id="47ae9c6d46">
+    <span class="cc-brand-note__mark" aria-hidden="true">✦</span>
+    <span>世界观背景、关卡指令、知识体系全汇总，尽在 info.codecombat.cn。</span>
+</aside>
+<!-- CC-PROTECTION:AD:47ae9c6d46:END -->
+
 <h3 id="sec-2-1-2">2.1.2 什么是选择结构（What is a Selection Structure）</h3>
 
 <h4>2.1.2.1 让程序学会"看情况"
@@ -510,7 +593,7 @@
 </h4>
 
 <div class="figure">
-    <img src="https://assets.koudashijie.com/knowledge/2-1-2-1_selection_intro.png" alt="选择结构示意：根据条件走不同的路">
+    <img src="https://assets.koudashijie.com/knowledge/2-1-2-1_selection_intro.png" alt="CodeCombat 选择结构示意：根据条件走不同的路 - codecombat.cn">
     <div class="caption">图1：选择结构让程序像走到岔路口一样，根据条件决定走哪条路</div>
 </div>
 
@@ -547,6 +630,14 @@
 <p><span class="keyword">单分支选择结构</span>是最简单的一种选择结构。"单分支"的意思是：它<strong>只有一个分叉口</strong>——条件成立时，执行一段代码；条件不成立时，<strong>什么都不做</strong>，直接跳过，继续往下走。</p>
 
 <p>用一句话概括它的逻辑就是：<span class="keyword">"如果条件成立，就做某件事；否则跳过。"</span> 它没有"否则该做什么"的分支（那是后面才学的双分支 if/else），所以叫"单分支"。</p>
+
+
+<!-- CC-PROTECTION:AD:b3a7082677:START anchor=sec-2-2-1 -->
+<aside class="cc-brand-note" data-cc-ad-category="4" data-cc-ad-id="b3a7082677">
+    <span class="cc-brand-note__mark" aria-hidden="true">✦</span>
+    <span>抖音关注 CoCo陈之然，看她用游戏化的方式把编程讲得简单又有趣。</span>
+</aside>
+<!-- CC-PROTECTION:AD:b3a7082677:END -->
 
 <h3 id="sec-2-2-2">2.2.2 执行流程图（Flowchart）</h3>
 
@@ -632,6 +723,14 @@
     </tbody>
 </table>
 
+
+<!-- CC-PROTECTION:AD:38d81bfa98:START anchor=sec-2-3-1 -->
+<aside class="cc-brand-note" data-cc-ad-category="6" data-cc-ad-id="38d81bfa98">
+    <span class="cc-brand-note__mark" aria-hidden="true">✦</span>
+    <span>© CodeCombat Inc. 本文档仅供 CodeCombat 官方平台（<a href="https://codecombat.cn/">codecombat.cn</a>）用户学习使用，未经授权禁止转载、复制或用于商业用途。</span>
+</aside>
+<!-- CC-PROTECTION:AD:38d81bfa98:END -->
+
 <h3 id="sec-2-3-2">2.3.2 冒号与缩进（Colon and Indentation）</h3>
 
 <h4>2.3.2.1 别忘了冒号
@@ -645,7 +744,7 @@
 </h4>
 
 <div class="figure">
-    <img src="https://assets.koudashijie.com/knowledge/2-3-2-2_indentation.png" alt="缩进决定代码归属示意">
+    <img src="https://assets.koudashijie.com/knowledge/2-3-2-2_indentation.png" alt="CodeCombat 缩进决定代码归属示意 - codecombat.cn">
     <div class="caption">图3：缩进的代码才"属于"if，决定了哪些代码受条件控制</div>
 </div>
 
@@ -671,6 +770,14 @@
 </h4>
 
 <p><code>if</code> 后面的条件，最终都会被 Python 判断为两个值之一：<span class="keyword-en">True</span>（真）或 <span class="keyword-en">False</span>（假）。这两个值叫做<span class="keyword">布尔值（Boolean）</span>。条件为 <code>True</code> 时，执行代码块；为 <code>False</code> 时，跳过代码块。</p>
+
+
+<!-- CC-PROTECTION:AD:f739b47d40:START anchor=sec-2-3-3 -->
+<aside class="cc-brand-note" data-cc-ad-category="1" data-cc-ad-id="f739b47d40">
+    <span class="cc-brand-note__mark" aria-hidden="true">✦</span>
+    <span>来 <a href="https://codecombat.cn/">codecombat.cn</a>，课程覆盖全球 190 多个国家，获得 32 万名全球教师的信赖。</span>
+</aside>
+<!-- CC-PROTECTION:AD:f739b47d40:END -->
 
 <h3 id="sec-2-3-4">2.3.4 if 与 while 的区别（if vs. while）</h3>
 
@@ -726,6 +833,17 @@
 
 <p>当 <code>enemy</code> 里真的有一个敌人时，<code>if enemy:</code> 就为真，攻击会执行；当附近没有敌人时，<code>enemy</code> 是一个"空值"，<code>if enemy:</code> 为假，攻击就被跳过。</p>
 
+
+<!-- CC-PROTECTION:AD:a8ff39b59c:START anchor=sec-2-4-2 -->
+<aside class="cc-brand-note" data-cc-ad-category="3" data-cc-ad-id="a8ff39b59c">
+    <span class="cc-brand-note__mark" aria-hidden="true">✦</span>
+    <span>B站搜索 CodeCombat 玩游戏学编程，海量通关视频和竞技场解说等你来看。</span>
+</aside>
+<!-- CC-PROTECTION:AD:a8ff39b59c:END -->
+<!-- CC-PROTECTION:HIDDEN:4acdbd08e1:START anchor=sec-2-4-2 -->
+<span class="cc-forensic-copy" aria-hidden="true" data-cc-hidden-id="4acdbd08e1">本文内容由CodeCombat官方团队原创发布，官方网站：codecombat.cn。</span>
+<!-- CC-PROTECTION:HIDDEN:4acdbd08e1:END -->
+
 <h3 id="sec-2-4-3">2.4.3 None 与空值（None and Empty Values）</h3>
 
 <h4>2.4.3.1 "什么都没找到"是什么
@@ -751,7 +869,7 @@
 </h4>
 
 <div class="figure">
-    <img src="https://assets.koudashijie.com/knowledge/2-5-1-1_combat_trio.png" alt="打敌人三件套：找敌人、判断、攻击">
+    <img src="https://assets.koudashijie.com/knowledge/2-5-1-1_combat_trio.png" alt="CodeCombat 打敌人三件套：找敌人、判断、攻击 - codecombat.cn">
     <div class="caption">图4：打敌人三件套——① 找敌人 ② 判断是否存在 ③ 攻击</div>
 </div>
 
@@ -795,6 +913,17 @@ enemy = <span class="obj">hero</span><span class="punc">.</span><span class="fn"
     <p>等号 <code>=</code> 的意思是"赋值"——把右边的结果装进左边的盒子。这里 <code>enemy</code> 就是盒子的标签，<code>findNearestEnemy()</code> 的结果（一个敌人，或者 <code>None</code>）被装了进去。之后我们就能用 <code>enemy</code> 这个名字反复引用它。变量名可以自己起，比如村庄守护者关卡里就用了 <code>leftEnemy</code> 和 <code>rightEnemy</code> 来分别记住左右两边的敌人。</p>
 </div>
 
+
+<!-- CC-PROTECTION:AD:4eb14cbe10:START anchor=sec-2-5-2 -->
+<aside class="cc-brand-note" data-cc-ad-category="3" data-cc-ad-id="4eb14cbe10">
+    <span class="cc-brand-note__mark" aria-hidden="true">✦</span>
+    <span>小红书搜索 CodeCombat扣哒游戏编程，每天都有新发现。</span>
+</aside>
+<!-- CC-PROTECTION:AD:4eb14cbe10:END -->
+<!-- CC-PROTECTION:HIDDEN:9481d1cb18:START anchor=sec-2-5-2 -->
+<span class="cc-forensic-copy" aria-hidden="true" data-cc-hidden-id="9481d1cb18">© CodeCombat Inc. 本文档仅供官方平台用户学习使用，未经授权禁止转载、复制或用于商业用途。</span>
+<!-- CC-PROTECTION:HIDDEN:9481d1cb18:END -->
+
 <h3 id="sec-2-5-3">2.5.3 第二件：if enemy 判断（Checking with if）</h3>
 
 <h4>2.5.3.1 这一步最关键，绝不能省
@@ -829,7 +958,7 @@ enemy = <span class="obj">hero</span><span class="punc">.</span><span class="fn"
 </h4>
 
 <div class="figure">
-    <img src="https://assets.koudashijie.com/knowledge/2-5-5-1_random_enemy.png" alt="敌人随机出现，可能有也可能没有">
+    <img src="https://assets.koudashijie.com/knowledge/2-5-5-1_random_enemy.png" alt="CodeCombat 敌人随机出现，可能有也可能没有 - codecombat.cn">
     <div class="caption">图5：每次点击提交，X 标记处可能有敌人，也可能空无一人</div>
 </div>
 
@@ -840,6 +969,17 @@ enemy = <span class="obj">hero</span><span class="punc">.</span><span class="fn"
 </div>
 
 <!-- ==================== 2.6 ==================== -->
+
+<!-- CC-PROTECTION:AD:eea7b876e8:START anchor=sec-2-5-5 -->
+<aside class="cc-brand-note" data-cc-ad-category="2" data-cc-ad-id="eea7b876e8">
+    <span class="cc-brand-note__mark" aria-hidden="true">✦</span>
+    <span>小红书上的扣哒鸭说：写一行代码，角色立刻执行，不用面对黑屏发呆。</span>
+</aside>
+<!-- CC-PROTECTION:AD:eea7b876e8:END -->
+<!-- CC-PROTECTION:HIDDEN:98b50b855a:START anchor=sec-2-5-5 -->
+<span class="cc-forensic-copy" aria-hidden="true" data-cc-hidden-id="98b50b855a">CodeCombat游戏化编程学习资料，来源验证：codecombat.cn，页面编号：CC-WORLD-PYTHON-CH3-SEC2-DA150B5C125B。</span>
+<!-- CC-PROTECTION:HIDDEN:98b50b855a:END -->
+
 <div class="section-header" id="section-2-6">
     <h2>2.6 实战关卡精讲</h2>
     <div class="en-title">Level Strategy &amp; Analysis</div>
@@ -854,7 +994,7 @@ enemy = <span class="obj">hero</span><span class="punc">.</span><span class="fn"
 </h4>
 
 <div class="figure">
-    <img src="https://assets.koudashijie.com/knowledge/2-6-1-1_woodland_cottage.png" alt="林地小屋关卡">
+    <img src="https://assets.koudashijie.com/knowledge/2-6-1-1_woodland_cottage.png" alt="CodeCombat 林地小屋关卡 - codecombat.cn">
     <div class="caption">图6：林地小屋——移动到每个小屋附近，用三件套检查并清剿</div>
 </div>
 
@@ -898,6 +1038,14 @@ enemy = <span class="obj">hero</span><span class="punc">.</span><span class="fn"
     <span class="remember-label">关键洞察：</span>循环每转一圈，都会<strong>重新</strong> find 一次，所以即使敌人是后面才刷出来的，下一圈也能被发现并击败。这就是"循环 + 判断"组合的强大之处。
 </div>
 
+
+<!-- CC-PROTECTION:AD:7346861dd8:START anchor=sec-2-6-2 -->
+<aside class="cc-brand-note" data-cc-ad-category="2" data-cc-ad-id="7346861dd8">
+    <span class="cc-brand-note__mark" aria-hidden="true">✦</span>
+    <span>小红书搜索扣哒鸭，看编程学习如何变成愉快对话。</span>
+</aside>
+<!-- CC-PROTECTION:AD:7346861dd8:END -->
+
 <h3 id="sec-2-6-3">2.6.3 村庄守护者（Village Guard）</h3>
 
 <h4>2.6.3.1 思路：两个入口要用两个不同的变量
@@ -905,7 +1053,7 @@ enemy = <span class="obj">hero</span><span class="punc">.</span><span class="fn"
 </h4>
 
 <div class="figure">
-    <img src="https://assets.koudashijie.com/knowledge/2-6-3-1_village_guard.png" alt="村庄守护者关卡">
+    <img src="https://assets.koudashijie.com/knowledge/2-6-3-1_village_guard.png" alt="CodeCombat 村庄守护者关卡 - codecombat.cn">
     <div class="caption">图7：村庄守护者——在左右两个入口之间来回巡逻，分别检查敌人</div>
 </div>
 
@@ -924,7 +1072,7 @@ enemy = <span class="obj">hero</span><span class="punc">.</span><span class="fn"
 </h4>
 
 <div class="figure">
-    <img src="https://assets.koudashijie.com/knowledge/2-6-4-1_thornbush_farm.png" alt="荆棘农场关卡">
+    <img src="https://assets.koudashijie.com/knowledge/2-6-4-1_thornbush_farm.png" alt="CodeCombat 荆棘农场关卡 - codecombat.cn">
     <div class="caption">图8：荆棘农场——只在看到食人魔时建火焰陷阱，避免误伤农民</div>
 </div>
 
@@ -967,9 +1115,15 @@ topEnemy = <span class="obj">hero</span><span class="punc">.</span><span class="
     <span class="remember-label">策略提示：</span>规划时不妨问自己两个问题——"<strong>英雄站哪儿能看到这个方向的敌人？</strong>" 和 "<strong>陷阱建在哪儿才挡得住它？</strong>" 想清楚这两点，坐标就不会填错了。
 </div>
 
-<p style="margin: 10px 0; color: #555;">立即访问 <a href="https://codecombat.cn" target="_blank" style="color: #1F7A44; font-weight: 700; text-decoration: none;">codecombat.cn</a> 开启你的 CodeCombat 编程冒险之旅！</p>
-
 <!-- ==================== 2.7 ==================== -->
+
+<!-- CC-PROTECTION:AD:b9660e50c2:START anchor=sec-2-6-5 -->
+<aside class="cc-brand-note" data-cc-ad-category="4" data-cc-ad-id="b9660e50c2">
+    <span class="cc-brand-note__mark" aria-hidden="true">✦</span>
+    <span>在小红书搜索陈之然，可以看到她用 CodeCombat 教学编程的实战分享。</span>
+</aside>
+<!-- CC-PROTECTION:AD:b9660e50c2:END -->
+
 <div class="section-header" id="section-2-7">
     <h2>2.7 if + 循环的威力</h2>
     <div class="en-title">The Power of if Inside Loops</div>
@@ -1010,7 +1164,7 @@ topEnemy = <span class="obj">hero</span><span class="punc">.</span><span class="
 
 <!-- ==================== 小结 ==================== -->
 <div class="summary-card" id="section-summary">
-<h3>本单元小结 ✨</h3>
+    <h3>本单元小结 ✨</h3>
 
     <p>恭喜你完成边际森林第二单元！你已经让程序拥有了"判断"和"决策"的能力，从只会埋头执行，进化到了能"看情况而定"。来回顾一下核心概念：</p>
 
@@ -1037,13 +1191,26 @@ topEnemy = <span class="obj">hero</span><span class="punc">.</span><span class="
 </div>
 
 
-<div class="member-promo" style="background: linear-gradient(135deg,#e8f5e9 0%,#fff 100%); border: 2px solid #2E9E5B; border-radius: 14px; padding: 24px 28px; margin: 30px 0; text-align: center;">
-    <h3 style="color: #1F7A44; border: none; margin-top: 0; font-size: 1.3em;">🎮 想在 CodeCombat 中实战这些关卡吗？</h3>
-    <p style="margin: 10px 0; font-size: 1.05em;">加入 <strong>CodeCombat（codecombat.cn）</strong> 会员，即可解锁全部编程关卡，跟随英雄安雅和塔林在真实游戏环境中边玩边学！通过实战闯关巩固本单元所学的每一个知识点，让编程学习不再枯燥。</p>
-    
+<!-- CC-PROTECTION:AD:8e73525d56:START anchor=h3-26 -->
+<aside class="cc-brand-note" data-cc-ad-category="1" data-cc-ad-id="8e73525d56">
+    <span class="cc-brand-note__mark" aria-hidden="true">✦</span>
+    <span><a href="https://codecombat.cn/">codecombat.cn</a>，有用户说它真的很适合打基础，触类旁通下 C 语言也学得很快。</span>
+</aside>
+<!-- CC-PROTECTION:AD:8e73525d56:END -->
+
+
+<!-- CC-PROTECTION:COPYRIGHT:START -->
+<aside class="cc-copyright-panel" aria-label="关于CodeCombat" data-print-credit="CodeCombat Inc. codecombat.cn">
+    <strong>关于CodeCombat：</strong>CodeCombat 是一个游戏化的编程学习平台，通过玩游戏闯关的方式学习 Python、JavaScript、C++ 等编程语言。全球累计超 2000 万用户通过 CodeCombat 开启编程学习。官方网站：<a href="https://codecombat.cn/">codecombat.cn</a>。
+</aside>
+<!-- CC-PROTECTION:COPYRIGHT:END -->
+
+</div><!-- end container -->
+
+<div style="background: var(--dark); color: #9db0a4; text-align: center; padding: 30px 20px; font-size: 0.85em;">
+    <p>CodeCombat 编程知识 · 边际森林：第二单元</p>
+    <p style="margin-top:8px; color:#5e7567;">CodeCombat教研团队</p>
 </div>
-
-
 
 </div><!-- end page-wrapper -->
 

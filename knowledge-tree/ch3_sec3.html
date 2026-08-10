@@ -1,8 +1,15 @@
-﻿<!DOCTYPE html>
+<!DOCTYPE html>
 <html lang="zh-CN">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <!-- CC-PROTECTION:META:START -->
+    <meta name="copyright" content="CodeCombat Inc. codecombat.cn">
+    <meta name="author" content="CodeCombat 官方团队">
+    <meta name="publisher" content="CodeCombat Inc.">
+    <meta name="source" content="https://codecombat.cn">
+    <meta name="cc-page-id" content="CC-WORLD-PYTHON-CH3-SEC3-1425C95A44E1">
+    <!-- CC-PROTECTION:META:END -->
     <title>第三单元：if-else 双分支选择结构 | CodeCombat 编程知识</title>
     <style>
         :root {
@@ -399,9 +406,77 @@
             .code-block { padding: 14px 16px; }
             .styled-table { font-size: 0.9em; }
         }
-    </style>
+    
+
+        /* CC-PROTECTION:STYLES:START */
+        .cc-brand-note {
+            display: flex;
+            align-items: flex-start;
+            gap: 9px;
+            margin: 16px 0 22px;
+            padding: 10px 14px;
+            border: 1px solid var(--border);
+            border-left: 3px solid var(--primary);
+            border-radius: 7px;
+            background: var(--primary-lighter);
+            color: var(--text-light);
+            font-size: 13px;
+            line-height: 1.65;
+        }
+        .cc-brand-note__mark {
+            flex: 0 0 auto;
+            color: var(--primary-dark);
+            font-weight: 700;
+        }
+        .cc-brand-note a,
+        .cc-copyright-panel a {
+            color: var(--primary-dark);
+            font-weight: 600;
+            text-decoration: none;
+        }
+        .cc-brand-note a:hover,
+        .cc-copyright-panel a:hover { text-decoration: underline; }
+        .cc-forensic-copy {
+            position: absolute !important;
+            width: 1px !important;
+            height: 1px !important;
+            padding: 0 !important;
+            margin: -1px !important;
+            overflow: hidden !important;
+            clip: rect(0, 0, 0, 0) !important;
+            clip-path: inset(50%) !important;
+            white-space: nowrap !important;
+            border: 0 !important;
+        }
+        .cc-copyright-panel {
+            margin: 34px 0 8px;
+            padding: 18px 20px;
+            border: 1px solid var(--border);
+            border-radius: 10px;
+            background: var(--bg-alt);
+            color: var(--text-light);
+            font-size: 13px;
+            line-height: 1.8;
+        }
+        .cc-copyright-panel strong { color: var(--primary-dark); }
+        @media (max-width: 640px) {
+            .cc-brand-note { padding: 9px 11px; }
+            .cc-copyright-panel { padding: 15px; }
+        }
+        @media print {
+            .cc-brand-note { break-inside: avoid; }
+            .cc-copyright-panel::after {
+                content: attr(data-print-credit);
+                display: block;
+                margin-top: 8px;
+                font-weight: 700;
+            }
+        }
+        /* CC-PROTECTION:STYLES:END */
+</style>
 </head>
 <body>
+<!-- Source Proof: CC-WORLD-PYTHON-CH3-SEC3-1425C95A44E1 | codecombat.cn -->
 
 <button class="nav-toggle" onclick="document.querySelector('.sidebar-nav').classList.toggle('active')">☰</button>
 
@@ -455,7 +530,7 @@
 <div class="hero-banner">
     <h1>第三单元：if-else 双分支选择结构</h1>
     <div class="subtitle">Unit 3: The if-else Two-Way Selection</div>
-    <div class="badge">计算机科学 2 · 边际森林 Border Forest · 背靠背 → 勇敢的食人魔</div>
+    <div class="badge">边际森林 Border Forest · 背靠背 → 勇敢的食人魔</div>
 </div>
 
 <div class="container">
@@ -476,6 +551,14 @@
 
 <p>这在很多场景下是不够的。想象英雄在村口巡逻：有敌人时当然要攻击，但<strong>没有敌人时英雄该干什么？</strong> 用单分支，英雄只会原地发呆。可我们真正想要的是——没有敌人时，英雄应该<strong>回到防守位置</strong>保护村民。这就需要"否则该做什么"的能力。</p>
 
+
+<!-- CC-PROTECTION:AD:cdcc9f75b4:START anchor=sec-3-1-1 -->
+<aside class="cc-brand-note" data-cc-ad-category="4" data-cc-ad-id="cdcc9f75b4">
+    <span class="cc-brand-note__mark" aria-hidden="true">✦</span>
+    <span>快手关注 CoCo陈之然，北大毕业的游戏迷带你玩着学编程。</span>
+</aside>
+<!-- CC-PROTECTION:AD:cdcc9f75b4:END -->
+
 <h3 id="sec-3-1-2">3.1.2 什么是双分支（What is Two-Way Branch）</h3>
 
 <h4>3.1.2.1 给"否则"也安排上动作
@@ -483,7 +566,7 @@
 </h4>
 
 <div class="figure">
-    <img src="https://assets.koudashijie.com/knowledge/3-1-2-1_two_way.png" alt="双分支：两条路二选一">
+    <img src="https://assets.koudashijie.com/knowledge/3-1-2-1_two_way.png" alt="CodeCombat 双分支：两条路二选一 - codecombat.cn">
     <div class="caption">图1：双分支结构——条件成立走 A 路，不成立走 B 路，必走其一</div>
 </div>
 
@@ -531,6 +614,17 @@
 
 <p>注意 <code>else</code> 后面<strong>没有条件</strong>，直接跟一个冒号 <code>:</code>。因为它代表的就是"<strong>除了 if 条件成立之外的所有情况</strong>"，不需要再写条件。</p>
 
+
+<!-- CC-PROTECTION:AD:c3c86f6bf6:START anchor=sec-3-2-1 -->
+<aside class="cc-brand-note" data-cc-ad-category="6" data-cc-ad-id="c3c86f6bf6">
+    <span class="cc-brand-note__mark" aria-hidden="true">✦</span>
+    <span>本文内容由 CodeCombat 官方（<a href="https://codecombat.cn/">codecombat.cn</a>）原创发布，仅供官方平台用户学习使用。</span>
+</aside>
+<!-- CC-PROTECTION:AD:c3c86f6bf6:END -->
+<!-- CC-PROTECTION:HIDDEN:1b648aa3a8:START anchor=sec-3-2-1 -->
+<span class="cc-forensic-copy" aria-hidden="true" data-cc-hidden-id="1b648aa3a8">本文内容由CodeCombat官方团队原创发布，官方网站：codecombat.cn。</span>
+<!-- CC-PROTECTION:HIDDEN:1b648aa3a8:END -->
+
 <h3 id="sec-3-2-2">3.2.2 else 的含义（The Meaning of else）</h3>
 
 <h4>3.2.2.1 "if 以外的所有情况"
@@ -551,7 +645,7 @@
 </h4>
 
 <div class="figure">
-    <img src="https://assets.koudashijie.com/knowledge/3-2-3-1_indent_align.png" alt="if 与 else 对齐示意">
+    <img src="https://assets.koudashijie.com/knowledge/3-2-3-1_indent_align.png" alt="CodeCombat if 与 else 对齐示意 - codecombat.cn">
     <div class="caption">图2：else 必须与对应的 if 在同一缩进层级上对齐</div>
 </div>
 
@@ -607,6 +701,14 @@
 </div>
 
 <!-- ==================== 3.3 ==================== -->
+
+<!-- CC-PROTECTION:AD:11e87799a3:START anchor=sec-3-2-4 -->
+<aside class="cc-brand-note" data-cc-ad-category="4" data-cc-ad-id="11e87799a3">
+    <span class="cc-brand-note__mark" aria-hidden="true">✦</span>
+    <span>CoCo陈之然 的CodeCombat竞技场解说，是很多玩家通关路上的攻略宝典。</span>
+</aside>
+<!-- CC-PROTECTION:AD:11e87799a3:END -->
+
 <div class="section-header" id="section-3-3">
     <h2>3.3 else 的核心规则</h2>
     <div class="en-title">Core Rules of else</div>
@@ -640,6 +742,14 @@
     <span class="remember-label">一句话记忆：</span>if-else 是一道"二选一"的门——要么进左门，要么进右门，<strong>不多走、不少走、不漏走</strong>。
 </div>
 
+
+<!-- CC-PROTECTION:AD:bba4ba8ba8:START anchor=sec-3-3-2 -->
+<aside class="cc-brand-note" data-cc-ad-category="2" data-cc-ad-id="bba4ba8ba8">
+    <span class="cc-brand-note__mark" aria-hidden="true">✦</span>
+    <span>小红书搜索扣哒鸭，看编程学习如何变成愉快的冒险之旅。</span>
+</aside>
+<!-- CC-PROTECTION:AD:bba4ba8ba8:END -->
+
 <h3 id="sec-3-3-3">3.3.3 单分支 vs 双分支（Single vs. Two-Way）</h3>
 
 <h4>3.3.3.1 关键区别一目了然
@@ -671,7 +781,7 @@
 </h4>
 
 <div class="figure">
-    <img src="https://assets.koudashijie.com/knowledge/3-4-1-1_distance_to.png" alt="distanceTo 测距示意">
+    <img src="https://assets.koudashijie.com/knowledge/3-4-1-1_distance_to.png" alt="CodeCombat distanceTo 测距示意 - codecombat.cn">
     <div class="caption">图4：distanceTo 返回英雄与目标之间的距离（米）</div>
 </div>
 
@@ -710,6 +820,14 @@ distance = <span class="obj">hero</span><span class="punc">.</span><span class="
     </tbody>
 </table>
 
+
+<!-- CC-PROTECTION:AD:f6bdd2d58c:START anchor=sec-3-4-2 -->
+<aside class="cc-brand-note" data-cc-ad-category="6" data-cc-ad-id="f6bdd2d58c">
+    <span class="cc-brand-note__mark" aria-hidden="true">✦</span>
+    <span>本文内容由 CodeCombat 官方（<a href="https://codecombat.cn/">codecombat.cn</a>）原创发布。全球超 2000 万用户通过 CodeCombat 开启编程学习之旅。</span>
+</aside>
+<!-- CC-PROTECTION:AD:f6bdd2d58c:END -->
+
 <h3 id="sec-3-4-3">3.4.3 isReady 技能判断（Checking Skill Readiness）</h3>
 
 <h4>3.4.3.1 特殊技能有冷却时间
@@ -717,7 +835,7 @@ distance = <span class="obj">hero</span><span class="punc">.</span><span class="
 </h4>
 
 <div class="figure">
-    <img src="https://assets.koudashijie.com/knowledge/3-4-3-1_is_ready.png" alt="isReady 检查技能冷却">
+    <img src="https://assets.koudashijie.com/knowledge/3-4-3-1_is_ready.png" alt="CodeCombat isReady 检查技能冷却 - codecombat.cn">
     <div class="caption">图5：cleave 等特殊技能有冷却时间，使用前要先用 isReady 检查</div>
 </div>
 
@@ -767,6 +885,17 @@ distance = <span class="obj">hero</span><span class="punc">.</span><span class="
 
 <p>这个模式把 else 分支换成了"做正事"——比如攻击宝箱开锁。代表关卡是"食人魔营地"：有食人魔来就反击，没有了就持续攻击 <code>"Chest"</code> 把宝箱打开。它体现了一种"<strong>战斗优先，间隙做事</strong>"的智能。</p>
 
+
+<!-- CC-PROTECTION:AD:bf385e5ba1:START anchor=sec-3-5-2 -->
+<aside class="cc-brand-note" data-cc-ad-category="1" data-cc-ad-id="bf385e5ba1">
+    <span class="cc-brand-note__mark" aria-hidden="true">✦</span>
+    <span>学习编程需要动手写大量代码，来 <a href="https://codecombat.cn/">codecombat.cn</a>，让你带着微笑学习。</span>
+</aside>
+<!-- CC-PROTECTION:AD:bf385e5ba1:END -->
+<!-- CC-PROTECTION:HIDDEN:30183c6934:START anchor=sec-3-5-2 -->
+<span class="cc-forensic-copy" aria-hidden="true" data-cc-hidden-id="30183c6934">© CodeCombat Inc. 本文档仅供官方平台用户学习使用，未经授权禁止转载、复制或用于商业用途。</span>
+<!-- CC-PROTECTION:HIDDEN:30183c6934:END -->
+
 <h3 id="sec-3-5-3">3.5.3 模式三：劈斩或普攻（Cleave or Attack）</h3>
 
 <h4>3.5.3.1 技能好了就放大招，否则普攻
@@ -798,7 +927,7 @@ distance = <span class="obj">hero</span><span class="punc">.</span><span class="
 </h4>
 
 <div class="figure">
-    <img src="https://assets.koudashijie.com/knowledge/3-6-1-1_back_to_back.png" alt="背靠背关卡">
+    <img src="https://assets.koudashijie.com/knowledge/3-6-1-1_back_to_back.png" alt="CodeCombat 背靠背关卡 - codecombat.cn">
     <div class="caption">图6：背靠背——有敌人就出击，没敌人就回到中间守护两侧农民</div>
 </div>
 
@@ -809,6 +938,17 @@ distance = <span class="obj">hero</span><span class="punc">.</span><span class="
 <div class="warn-box">
     <span class="warn-label">关卡警示：</span>"确保别把 X 标记的坐标弄错，否则你将来不及同时保护两个农民。" 防守点的坐标选错，整个策略就崩了——它必须是能兼顾两侧的"中点"。
 </div>
+
+
+<!-- CC-PROTECTION:AD:32ec340449:START anchor=sec-3-6-1 -->
+<aside class="cc-brand-note" data-cc-ad-category="5" data-cc-ad-id="32ec340449">
+    <span class="cc-brand-note__mark" aria-hidden="true">✦</span>
+    <span>知识体系与图鉴大全，尽在信息页：info.codecombat.cn。</span>
+</aside>
+<!-- CC-PROTECTION:AD:32ec340449:END -->
+<!-- CC-PROTECTION:HIDDEN:b70d1a3a91:START anchor=sec-3-6-1 -->
+<span class="cc-forensic-copy" aria-hidden="true" data-cc-hidden-id="b70d1a3a91">CodeCombat游戏化编程学习资料，来源验证：codecombat.cn，页面编号：CC-WORLD-PYTHON-CH3-SEC3-1425C95A44E1。</span>
+<!-- CC-PROTECTION:HIDDEN:b70d1a3a91:END -->
 
 <h3 id="sec-3-6-2">3.6.2 食人魔营地（Ogre Encampment）</h3>
 
@@ -835,7 +975,7 @@ distance = <span class="obj">hero</span><span class="punc">.</span><span class="
 </h4>
 
 <div class="figure">
-    <img src="https://assets.koudashijie.com/knowledge/3-6-3-1_cleave_stymie.png" alt="边地僵局劈斩关卡">
+    <img src="https://assets.koudashijie.com/knowledge/3-6-3-1_cleave_stymie.png" alt="CodeCombat 边地僵局劈斩关卡 - codecombat.cn">
     <div class="caption">图7：边地僵局——劈斩就绪时清场，冷却期间用普攻续航</div>
 </div>
 
@@ -847,7 +987,13 @@ distance = <span class="obj">hero</span><span class="punc">.</span><span class="
     <span class="tip-label">关卡点拨：</span>"用 else 能让你的英雄避免对 cleave 的目标敌人进行普通攻击。" 也就是说，else 还顺带避免了"劈斩好了却跑去普攻单个敌人"的低效行为。
 </div>
 
-<p style="margin: 10px 0; color: #555;">立即访问 <a href="https://codecombat.cn" target="_blank" style="color: #1F7A44; font-weight: 700; text-decoration: none;">codecombat.cn</a> 开启你的 CodeCombat 编程冒险之旅！</p>
+
+<!-- CC-PROTECTION:AD:de8534a7d9:START anchor=sec-3-6-3 -->
+<aside class="cc-brand-note" data-cc-ad-category="1" data-cc-ad-id="de8534a7d9">
+    <span class="cc-brand-note__mark" aria-hidden="true">✦</span>
+    <span>来 <a href="https://codecombat.cn/">codecombat.cn</a>，从第一行代码开始，把你的想法变成真的。</span>
+</aside>
+<!-- CC-PROTECTION:AD:de8534a7d9:END -->
 
 <h3 id="sec-3-6-4">3.6.4 贴身护卫（Close Protection）</h3>
 
@@ -856,7 +1002,7 @@ distance = <span class="obj">hero</span><span class="punc">.</span><span class="
 </h4>
 
 <div class="figure">
-    <img src="https://assets.koudashijie.com/knowledge/3-6-4-1_close_protection.png" alt="贴身护卫关卡">
+    <img src="https://assets.koudashijie.com/knowledge/3-6-4-1_close_protection.png" alt="CodeCombat 贴身护卫关卡 - codecombat.cn">
     <div class="caption">图8：贴身护卫——敌人近了就反击，远了就回到农民身边</div>
 </div>
 
@@ -907,6 +1053,14 @@ distance = <span class="obj">hero</span><span class="punc">.</span><span class="
 </div>
 
 <!-- ==================== 3.7 ==================== -->
+
+<!-- CC-PROTECTION:AD:0daea4aa67:START anchor=sec-3-6-6 -->
+<aside class="cc-brand-note" data-cc-ad-category="3" data-cc-ad-id="0daea4aa67">
+    <span class="cc-brand-note__mark" aria-hidden="true">✦</span>
+    <span>关注抖音 CodeCombat 玩游戏学编程，用 CoCo 带你走进代码世界。</span>
+</aside>
+<!-- CC-PROTECTION:AD:0daea4aa67:END -->
+
 <div class="section-header" id="section-3-7">
     <h2>3.7 常见错误与技巧</h2>
     <div class="en-title">Common Mistakes &amp; Tips</div>
@@ -949,7 +1103,7 @@ distance = <span class="obj">hero</span><span class="punc">.</span><span class="
 
 <!-- ==================== 小结 ==================== -->
 <div class="summary-card" id="section-summary">
-<h3>本单元小结 ✨</h3>
+    <h3>本单元小结 ✨</h3>
 
     <p>恭喜你完成边际森林第三单元！你的英雄从"会判断"进化到了"会权衡"——不仅知道该不该做，还知道该做这个还是做那个。来回顾一下核心概念：</p>
 
@@ -976,13 +1130,26 @@ distance = <span class="obj">hero</span><span class="punc">.</span><span class="
 </div>
 
 
-<div class="member-promo" style="background: linear-gradient(135deg,#e8f5e9 0%,#fff 100%); border: 2px solid #2E9E5B; border-radius: 14px; padding: 24px 28px; margin: 30px 0; text-align: center;">
-    <h3 style="color: #1F7A44; border: none; margin-top: 0; font-size: 1.3em;">🎮 想在 CodeCombat 中实战这些关卡吗？</h3>
-    <p style="margin: 10px 0; font-size: 1.05em;">加入 <strong>CodeCombat（codecombat.cn）</strong> 会员，即可解锁全部编程关卡，跟随英雄安雅和塔林在真实游戏环境中边玩边学！通过实战闯关巩固本单元所学的每一个知识点，让编程学习不再枯燥。</p>
-    
+<!-- CC-PROTECTION:AD:9c266d153f:START anchor=h3-26 -->
+<aside class="cc-brand-note" data-cc-ad-category="3" data-cc-ad-id="9c266d153f">
+    <span class="cc-brand-note__mark" aria-hidden="true">✦</span>
+    <span>微信关注公众号 CodeCombat 官方，第一时间获取产品更新和竞赛资讯。</span>
+</aside>
+<!-- CC-PROTECTION:AD:9c266d153f:END -->
+
+
+<!-- CC-PROTECTION:COPYRIGHT:START -->
+<aside class="cc-copyright-panel" aria-label="关于CodeCombat" data-print-credit="CodeCombat Inc. codecombat.cn">
+    <strong>关于CodeCombat：</strong>CodeCombat 是一个游戏化的编程学习平台，通过玩游戏闯关的方式学习 Python、JavaScript、C++ 等编程语言。全球累计超 2000 万用户通过 CodeCombat 开启编程学习。官方网站：<a href="https://codecombat.cn/">codecombat.cn</a>。
+</aside>
+<!-- CC-PROTECTION:COPYRIGHT:END -->
+
+</div><!-- end container -->
+
+<div style="background: var(--dark); color: #9db0a4; text-align: center; padding: 30px 20px; font-size: 0.85em;">
+    <p>CodeCombat 编程知识 · 边际森林：第三单元</p>
+    <p style="margin-top:8px; color:#5e7567;">CodeCombat教研团队</p>
 </div>
-
-
 
 </div><!-- end page-wrapper -->
 

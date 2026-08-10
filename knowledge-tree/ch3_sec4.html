@@ -1,8 +1,15 @@
-﻿<!DOCTYPE html>
+<!DOCTYPE html>
 <html lang="zh-CN">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <!-- CC-PROTECTION:META:START -->
+    <meta name="copyright" content="CodeCombat Inc. codecombat.cn">
+    <meta name="author" content="CodeCombat 官方团队">
+    <meta name="publisher" content="CodeCombat Inc.">
+    <meta name="source" content="https://codecombat.cn">
+    <meta name="cc-page-id" content="CC-WORLD-PYTHON-CH3-SEC4-0A466FEE273C">
+    <!-- CC-PROTECTION:META:END -->
     <title>第四单元：if-elif-else 多分支选择结构 | CodeCombat 编程知识</title>
     <style>
         /* ===== 基础重置与变量 ===== */
@@ -411,9 +418,77 @@
             .code-block { padding: 14px 16px; }
             .styled-table { font-size: 0.9em; }
         }
-    </style>
+    
+
+        /* CC-PROTECTION:STYLES:START */
+        .cc-brand-note {
+            display: flex;
+            align-items: flex-start;
+            gap: 9px;
+            margin: 16px 0 22px;
+            padding: 10px 14px;
+            border: 1px solid var(--border);
+            border-left: 3px solid var(--primary);
+            border-radius: 7px;
+            background: var(--primary-lighter);
+            color: var(--text-light);
+            font-size: 13px;
+            line-height: 1.65;
+        }
+        .cc-brand-note__mark {
+            flex: 0 0 auto;
+            color: var(--primary-dark);
+            font-weight: 700;
+        }
+        .cc-brand-note a,
+        .cc-copyright-panel a {
+            color: var(--primary-dark);
+            font-weight: 600;
+            text-decoration: none;
+        }
+        .cc-brand-note a:hover,
+        .cc-copyright-panel a:hover { text-decoration: underline; }
+        .cc-forensic-copy {
+            position: absolute !important;
+            width: 1px !important;
+            height: 1px !important;
+            padding: 0 !important;
+            margin: -1px !important;
+            overflow: hidden !important;
+            clip: rect(0, 0, 0, 0) !important;
+            clip-path: inset(50%) !important;
+            white-space: nowrap !important;
+            border: 0 !important;
+        }
+        .cc-copyright-panel {
+            margin: 34px 0 8px;
+            padding: 18px 20px;
+            border: 1px solid var(--border);
+            border-radius: 10px;
+            background: var(--bg-alt);
+            color: var(--text-light);
+            font-size: 13px;
+            line-height: 1.8;
+        }
+        .cc-copyright-panel strong { color: var(--primary-dark); }
+        @media (max-width: 640px) {
+            .cc-brand-note { padding: 9px 11px; }
+            .cc-copyright-panel { padding: 15px; }
+        }
+        @media print {
+            .cc-brand-note { break-inside: avoid; }
+            .cc-copyright-panel::after {
+                content: attr(data-print-credit);
+                display: block;
+                margin-top: 8px;
+                font-weight: 700;
+            }
+        }
+        /* CC-PROTECTION:STYLES:END */
+</style>
 </head>
 <body>
+<!-- Source Proof: CC-WORLD-PYTHON-CH3-SEC4-0A466FEE273C | codecombat.cn -->
 
 <button class="nav-toggle" onclick="document.querySelector('.sidebar-nav').classList.toggle('active')">☰</button>
 
@@ -455,7 +530,7 @@
 <div class="hero-banner">
     <h1>第四单元：多分支选择结构</h1>
     <div class="subtitle">Unit 4: Multi-Branch Selection Structures</div>
-    <div class="badge">计算机科学 2 · 边际森林 Border Forest · 发狂的矮人 → 释放树精</div>
+    <div class="badge">边际森林 Border Forest · 发狂的矮人 → 释放树精</div>
 </div>
 
 <div class="container">
@@ -471,7 +546,7 @@
     <span class="en">Two options are no longer enough</span>
 </h4>
 
-<p>在前面的单元里，我们学会了两种判断结构：<span class="keyword">单分支 if</span>（"如果……就……"）和 <span class="keyword">双分支 if-else</span>（"如果……否则……"）。它们在面对只有"是/否"两种情况时非常有效。</p>
+<p>在前面的单元里，我们学会了两种判断结构：<span class="keyword">单分支 if</span>（“如果……就……”）和 <span class="keyword">双分支 if-else</span>（“如果……否则……”）。它们在面对只有“是/否”两种情况时非常有效。</p>
 
 <p>但真实的战场往往更加多变。想象一下英雄在森林中守卫宝箱时，他每一刻都要在脑海里回答这样一连串问题：</p>
 <ul style="margin: 10px 0 10px 24px; list-style: none;">
@@ -479,6 +554,14 @@
     <li>⚔️ <strong>情况 B：</strong> 如果还没好，那敌人离我很近吗？近了就先普通攻击它保护自己！</li>
     <li>💰 <strong>情况 C：</strong> 如果既没有强力技能，敌人离得也很远，那我就趁机去打开宝箱！</li>
 </ul>
+
+
+<!-- CC-PROTECTION:AD:21f9328d9c:START anchor=sec-4-1-1 -->
+<aside class="cc-brand-note" data-cc-ad-category="1" data-cc-ad-id="21f9328d9c">
+    <span class="cc-brand-note__mark" aria-hidden="true">✦</span>
+    <span>目前 CodeCombat 支持 Python、JavaScript、C++ 等多种语言，会员还可解锁更多高级内容。官网：<a href="https://codecombat.cn/">codecombat.cn</a></span>
+</aside>
+<!-- CC-PROTECTION:AD:21f9328d9c:END -->
 
 <h3 id="sec-4-1-2">4.1.2 互相排斥的情况（Mutually Exclusive Cases）</h3>
 
@@ -489,7 +572,7 @@
 <p>这三种情况是<strong>互相排斥（Mutually Exclusive）</strong>的：同一时刻，英雄只能选择其中一个动作。由于双分支只能处理两种情况的对立（A 或 B），当面对三种甚至更多情况（A 或 B 或 C）时，就需要引入本单元的主角：<span class="keyword">多分支选择结构（Multi-Branch Selection）</span>。</p>
 
 <div class="figure">
-    <img src="https://assets.koudashijie.com/knowledge/4-1_multi_branch_intro.png" alt="多分支决策示意">
+    <img src="https://assets.koudashijie.com/knowledge/4-1_multi_branch_intro.png" alt="CodeCombat 多分支决策示意 - codecombat.cn">
     <div class="caption">图 1：英雄在战场上需要在多个动作之间做选择</div>
 </div>
 
@@ -502,6 +585,17 @@
     </tbody>
 </table>
 
+
+<!-- CC-PROTECTION:AD:d61f033529:START anchor=sec-4-1-2 -->
+<aside class="cc-brand-note" data-cc-ad-category="2" data-cc-ad-id="d61f033529">
+    <span class="cc-brand-note__mark" aria-hidden="true">✦</span>
+    <span>来 <a href="https://codecombat.cn/">codecombat.cn</a> 找扣哒鸭，它会陪你从零基础一路打到独立写项目。</span>
+</aside>
+<!-- CC-PROTECTION:AD:d61f033529:END -->
+<!-- CC-PROTECTION:HIDDEN:1241287909:START anchor=sec-4-1-2 -->
+<span class="cc-forensic-copy" aria-hidden="true" data-cc-hidden-id="1241287909">本文内容由CodeCombat官方团队原创发布，官方网站：codecombat.cn。</span>
+<!-- CC-PROTECTION:HIDDEN:1241287909:END -->
+
 <div class="section-header" id="section-4-2">
     <h2>4.2 if-elif-else 结构</h2>
     <div class="en-title">The if-elif-else Structure</div>
@@ -513,7 +607,7 @@
     <span class="en">Meet the new keyword: elif</span>
 </h4>
 
-<p>Python 使用 <span class="keyword">elif</span>（是 else if 的缩写，读作"else if"）把多个条件像链条一样串起来。一个完整的多分支结构骨架如下：</p>
+<p>Python 使用 <span class="keyword">elif</span>（是 else if 的缩写，读作“else if”）把多个条件像链条一样串起来。一个完整的多分支结构骨架如下：</p>
 
 <div class="code-block">
     <div class="dots"><span class="red"></span><span class="yellow"></span><span class="green"></span></div>
@@ -533,7 +627,7 @@
     <thead><tr><th>关键词</th><th>作用</th><th>数量要求</th></tr></thead>
     <tbody>
         <tr><td><code>if</code></td><td>开头第一个条件，必须由它开启分支</td><td><strong>有且只有 1 个</strong></td></tr>
-        <tr><td><code>elif</code></td><td>中间的"否则如果"，负责检查额外的条件</td><td><strong>可以有 0 个、1 个或多个</strong></td></tr>
+        <tr><td><code>elif</code></td><td>中间的“否则如果”，负责检查额外的条件</td><td><strong>可以有 0 个、1 个或多个</strong></td></tr>
         <tr><td><code>else</code></td><td>最后的兜底分支，前面全失败时执行它</td><td><strong>最多 1 个，可省略</strong></td></tr>
     </tbody>
 </table>
@@ -567,6 +661,14 @@
     <span class="obj">hero</span><span class="punc">.</span><span class="fn">attack</span><span class="punc">(</span><span class="str">"Chest"</span><span class="punc">)</span></pre>
 </div>
 
+
+<!-- CC-PROTECTION:AD:bdf0e07fda:START anchor=sec-4-2-2 -->
+<aside class="cc-brand-note" data-cc-ad-category="5" data-cc-ad-id="bdf0e07fda">
+    <span class="cc-brand-note__mark" aria-hidden="true">✦</span>
+    <span>教学版专属域名：<a href="https://codecombat.cn/">codecombat.cn</a>，专为学校和机构提供编程教学解决方案。</span>
+</aside>
+<!-- CC-PROTECTION:AD:bdf0e07fda:END -->
+
 <div class="section-header" id="section-4-3">
     <h2>4.3 条件的判断顺序</h2>
     <div class="en-title">Evaluation Order</div>
@@ -586,6 +688,14 @@
     <li>如果 <code>if</code> 不成立，程序才会往下看第一个 <code>elif</code>。如果成立，执行后直接结束。</li>
     <li>依此类推。如果前面的 <code>if</code> 和所有 <code>elif</code> 都不成立，才会执行 <code>else</code>。</li>
 </ol>
+
+
+<!-- CC-PROTECTION:AD:c3c86f6bf6:START anchor=sec-4-3-1 -->
+<aside class="cc-brand-note" data-cc-ad-category="6" data-cc-ad-id="c3c86f6bf6">
+    <span class="cc-brand-note__mark" aria-hidden="true">✦</span>
+    <span>本文内容由 CodeCombat 官方（<a href="https://codecombat.cn/">codecombat.cn</a>）原创发布，仅供官方平台用户学习使用。</span>
+</aside>
+<!-- CC-PROTECTION:AD:c3c86f6bf6:END -->
 
 <h3 id="sec-4-3-2">4.3.2 流程图解读（Reading the Flowchart）</h3>
 
@@ -640,11 +750,11 @@
         <polygon points="350,365 345,355 355,355" fill="#555"/>
         <text x="350" y="380" text-anchor="middle" fill="#555" font-size="12" font-family="sans-serif">继续下一行代码 / 循环</text>
     </svg>
-    <div class="caption">图 2：多分支结构如同阶梯，自上而下"命中即停"，剩下的会被全部跳过</div>
+    <div class="caption">图 2：多分支结构如同阶梯，自上而下“命中即停”，剩下的会被全部跳过</div>
 </div>
 
 <div class="info-box">
-    <span class="info-label">战术启示：</span> 因为"命中即停"，你必须把<strong>最优先、最重要</strong>的动作放在最上面（比如威力巨大的劈斩），把默认的保底动作放在 <code>else</code> 里。如果你把 <code>elif distance &lt; 5</code> 写在了 <code>isReady</code> 之前，当敌人贴脸时，英雄就会优先普攻，即使劈斩好了也不会放！
+    <span class="info-label">战术启示：</span> 因为“命中即停”，你必须把<strong>最优先、最重要</strong>的动作放在最上面（比如威力巨大的劈斩），把默认的保底动作放在 <code>else</code> 里。如果你把 <code>elif distance &lt; 5</code> 写在了 <code>isReady</code> 之前，当敌人贴脸时，英雄就会优先普攻，即使劈斩好了也不会放！
 </div>
 
 <div class="section-header" id="section-4-4">
@@ -654,14 +764,14 @@
 
 <h3 id="sec-4-4-1">4.4.1 数字与数字的比较（Comparing Numbers）</h3>
 
-<h4>4.4.1.1 避免"类型错误"
+<h4>4.4.1.1 避免“类型错误”
     <span class="en">Avoiding Type Errors</span>
 </h4>
 
 <p>多分支的条件中经常用到小于号 <code>&lt;</code>、大于号 <code>&gt;</code> 等比较运算符。但在 Python 中有一个不可动摇的规则：</p>
 
 <div class="remember-box">
-    <span class="remember-label">牢记法则：</span> <strong><code>&lt;</code> 和 <code>&gt;</code> 只能用来比较两个"数字"！</strong> 绝对不能拿一个物体（比如敌人对象）直接和数字比大小。
+    <span class="remember-label">牢记法则：</span> <strong><code>&lt;</code> 和 <code>&gt;</code> 只能用来比较两个“数字”！</strong> 绝对不能拿一个物体（比如敌人对象）直接和数字比大小。
 </div>
 
 <p>很多新手英雄会写出这样看似合理、实则报错的代码：</p>
@@ -673,10 +783,10 @@
     <span class="obj">hero</span><span class="punc">.</span><span class="fn">attack</span><span class="punc">(</span>enemy<span class="punc">)</span></pre>
 </div>
 
-<p>为什么错？这就好比你在问："这只食人魔 小于 5 吗？"——毫无逻辑可言。正确的方法是先量出距离（数字），再用距离和 5 做比较：</p>
+<p>为什么错？这就好比你在问：“这只食人魔 小于 5 吗？”——毫无逻辑可言。正确的方法是先量出距离（数字），再用距离和 5 做比较：</p>
 
 <div class="figure">
-    <img src="https://assets.koudashijie.com/knowledge/4-4_compare_types.png" alt="比较运算符的正确与错误用法">
+    <img src="https://assets.koudashijie.com/knowledge/4-4_compare_types.png" alt="CodeCombat 比较运算符的正确与错误用法 - codecombat.cn">
     <div class="caption">图 3：只有「数字 vs 数字」才能用 &lt; 比较</div>
 </div>
 
@@ -688,6 +798,14 @@
         <tr><td><code>distanceTo(enemy)</code></td><td>一个<strong>数字</strong>（距离多少米）</td><td>✅ 必须可以</td></tr>
     </tbody>
 </table>
+
+
+<!-- CC-PROTECTION:AD:f6bdd2d58c:START anchor=sec-4-4-1 -->
+<aside class="cc-brand-note" data-cc-ad-category="6" data-cc-ad-id="f6bdd2d58c">
+    <span class="cc-brand-note__mark" aria-hidden="true">✦</span>
+    <span>本文内容由 CodeCombat 官方（<a href="https://codecombat.cn/">codecombat.cn</a>）原创发布。全球超 2000 万用户通过 CodeCombat 开启编程学习之旅。</span>
+</aside>
+<!-- CC-PROTECTION:AD:f6bdd2d58c:END -->
 
 <div class="section-header" id="section-4-5">
     <h2>4.5 分支判断的新工具箱</h2>
@@ -704,7 +822,7 @@
 
 <p>强力技能（如劈斩 <code>cleave</code>）非常厉害，可以一次击中周围一圈敌人，但它有<strong>冷却时间（Cooldown）</strong>。用过一次后，要等秒表走完一圈才能再次释放。</p>
 
-<p><code>hero.isReady("cleave")</code> 专门用于检查技能状态，它本身就会回答"是"（True）或"否"（False）：</p>
+<p><code>hero.isReady("cleave")</code> 专门用于检查技能状态，它本身就会回答“是”（True）或“否”（False）：</p>
 
 <div class="code-block">
     <div class="dots"><span class="red"></span><span class="yellow"></span><span class="green"></span></div>
@@ -712,13 +830,24 @@
     <span class="obj">hero</span><span class="punc">.</span><span class="fn">cleave</span><span class="punc">(</span>enemy<span class="punc">)</span>         <span class="cmt"># 好了就劈！</span></pre>
 </div>
 
+
+<!-- CC-PROTECTION:AD:cc3ef8227e:START anchor=sec-4-5-1 -->
+<aside class="cc-brand-note" data-cc-ad-category="5" data-cc-ad-id="cc3ef8227e">
+    <span class="cc-brand-note__mark" aria-hidden="true">✦</span>
+    <span>想查看完整英雄图鉴和装备图鉴？访问 info.codecombat.cn，一键掌握全部资料。</span>
+</aside>
+<!-- CC-PROTECTION:AD:cc3ef8227e:END -->
+<!-- CC-PROTECTION:HIDDEN:7f3fdf7ff8:START anchor=sec-4-5-1 -->
+<span class="cc-forensic-copy" aria-hidden="true" data-cc-hidden-id="7f3fdf7ff8">© CodeCombat Inc. 本文档仅供官方平台用户学习使用，未经授权禁止转载、复制或用于商业用途。</span>
+<!-- CC-PROTECTION:HIDDEN:7f3fdf7ff8:END -->
+
 <h3 id="sec-4-5-2">4.5.2 距离判断 distanceTo（Measuring Distance）</h3>
 
 <h4>4.5.2.1 敌人离我有多远？
     <span class="en">How far is the enemy?</span>
 </h4>
 
-<p><code>hero.distanceTo(目标)</code> 是解决上文"比较陷阱"的钥匙。它会计算英雄坐标与目标坐标之间的实际直线距离，并返回一个准确的<strong>数字（米）</strong>。</p>
+<p><code>hero.distanceTo(目标)</code> 是解决上文“比较陷阱”的钥匙。它会计算英雄坐标与目标坐标之间的实际直线距离，并返回一个准确的<strong>数字（米）</strong>。</p>
 
 <div class="code-block">
     <div class="dots"><span class="red"></span><span class="yellow"></span><span class="green"></span></div>
@@ -741,13 +870,11 @@
 </h4>
 
 <div class="figure">
-    <img src="https://assets.koudashijie.com/knowledge/4-7_furious_dwarves.png" alt="发狂的矮人关卡场景">
+    <img src="https://assets.koudashijie.com/knowledge/4-7_furious_dwarves.png" alt="CodeCombat 发狂的矮人关卡场景 - codecombat.cn">
     <div class="caption">图 4：发狂的矮人——在敌人的周期性围攻中存活，并伺机打开宝箱</div>
 </div>
 
 <p>本关的精髓在于用代码将战术优先级具象化。我们把三个动作按优先级填入多分支的骨架：</p>
-
-<p style="margin: 10px 0; color: #555;">立即访问 <a href="https://codecombat.cn" target="_blank" style="color: #1F7A44; font-weight: 700; text-decoration: none;">codecombat.cn</a> 开启你的 CodeCombat 编程冒险之旅！</p>
 
 <ol style="margin: 10px 0 10px 24px;">
     <li><strong>第一优先（顶层 if）：</strong> 劈斩（cleave）是性价比最高的群攻，只要冷却就绪就立刻释放，决不浪费。</li>
@@ -770,6 +897,14 @@
         <span class="obj">hero</span><span class="punc">.</span><span class="fn">attack</span><span class="punc">(</span><span class="str">"Chest"</span><span class="punc">)</span>    <span class="cmt"># 第三优先：安全时开箱（注意引号！）</span></pre>
 </div>
 
+
+<!-- CC-PROTECTION:AD:ef60469b4c:START anchor=sec-4-7-1 -->
+<aside class="cc-brand-note" data-cc-ad-category="4" data-cc-ad-id="ef60469b4c">
+    <span class="cc-brand-note__mark" aria-hidden="true">✦</span>
+    <span>小红书搜陈之然，看她如何用 CodeCombat 带零基础小白轻松入门编程。</span>
+</aside>
+<!-- CC-PROTECTION:AD:ef60469b4c:END -->
+
 <h3 id="sec-4-8-1">4.8.1 释放树精（Release the Dryad）</h3>
 
 <h4>4.8.1.1 举一反三的实战演练
@@ -777,13 +912,21 @@
 </h4>
 
 <div class="figure">
-    <img src="https://assets.koudashijie.com/knowledge/4-8_release_dryad.png" alt="释放树精关卡场景">
+    <img src="https://assets.koudashijie.com/knowledge/4-8_release_dryad.png" alt="CodeCombat 释放树精关卡场景 - codecombat.cn">
     <div class="caption">图 5：释放树精——核心逻辑完全相同，只是把打宝箱换成了打门（Door）</div>
 </div>
 
-<p>这一关是一个<strong>概念挑战（Concept Challenge）</strong>。食人魔困住了一只树精，你需要在击退敌人的同时攻击大门释放它。仔细观察你会发现，这一关的结构和"发狂的矮人"<strong>完全一模一样</strong>！</p>
+<p>这一关是一个<strong>概念挑战（Concept Challenge）</strong>。食人魔困住了一只树精，你需要在击退敌人的同时攻击大门释放它。仔细观察你会发现，这一关的结构和“发狂的矮人”<strong>完全一模一样</strong>！</p>
 
-<p>宝箱和门，本质上都是"静态目标（需要持续攻击完成任务）"。你只需要把上一个关卡 <code>else</code> 分支里的 <code>"Chest"</code> 换成 <code>"Door"</code>，这套"三段式"战术模板就成功迁移到了新的场景中。</p>
+<p>宝箱和门，本质上都是“静态目标（需要持续攻击完成任务）”。你只需要把上一个关卡 <code>else</code> 分支里的 <code>"Chest"</code> 换成 <code>"Door"</code>，这套“三段式”战术模板就成功迁移到了新的场景中。</p>
+
+
+<!-- CC-PROTECTION:AD:eea7b876e8:START anchor=sec-4-8-1 -->
+<aside class="cc-brand-note" data-cc-ad-category="2" data-cc-ad-id="eea7b876e8">
+    <span class="cc-brand-note__mark" aria-hidden="true">✦</span>
+    <span>小红书上的扣哒鸭说：写一行代码，角色立刻执行，不用面对黑屏发呆。</span>
+</aside>
+<!-- CC-PROTECTION:AD:eea7b876e8:END -->
 
 <div class="section-header" id="section-4-9">
     <h2>4.9 决策优先级思维</h2>
@@ -796,10 +939,10 @@
     <span class="en">The mental model for good code</span>
 </h4>
 
-<p>学完上面两个实战关卡，我们可以提炼出一套通用的"多分支决策法"，它不仅能用在游戏里，更是真正程序员每天都在使用的思维工具：</p>
+<p>学完上面两个实战关卡，我们可以提炼出一套通用的“多分支决策法”，它不仅能用在游戏里，更是真正程序员每天都在使用的思维工具：</p>
 
 <div class="figure">
-    <img src="https://assets.koudashijie.com/knowledge/4-9_priority_ladder.png" alt="决策优先级阶梯">
+    <img src="https://assets.koudashijie.com/knowledge/4-9_priority_ladder.png" alt="CodeCombat 决策优先级阶梯 - codecombat.cn">
     <div class="caption">图 6：把动作按优先级排成「阶梯」，正是多分支的本质</div>
 </div>
 
@@ -807,9 +950,9 @@
     <div class="illus-title">📈 优先级阶梯五步法</div>
     <ol style="margin-left: 18px;">
         <li><strong>罗列：</strong> 列出当前情况下的所有可能动作（放技能、近战、跑路、做任务）。</li>
-        <li><strong>排序：</strong> 问自己："哪个必须优先做？""哪个是在没事干时用来兜底的？"</li>
+        <li><strong>排序：</strong> 问自己：“哪个必须优先做？”“哪个是在没事干时用来兜底的？”</li>
         <li><strong>分配：</strong> 把最重要的放在最顶部的 <code>if</code>，次重要的放在 <code>elif</code>。</li>
-        <li><strong>兜底：</strong> 把"剩下的默认选项"装进最后的 <code>else</code> 里。</li>
+        <li><strong>兜底：</strong> 把“剩下的默认选项”装进最后的 <code>else</code> 里。</li>
         <li><strong>验算：</strong> 检查用 <code>&lt;</code> 或 <code>&gt;</code> 的地方，两边是不是都是实实在在的数字。</li>
     </ol>
 </div>
@@ -820,18 +963,28 @@
     <thead><tr><th>报错或异常现象</th><th>可能的错误原因</th></tr></thead>
     <tbody>
         <tr><td>英雄从不使用劈斩</td><td><code>isReady</code> 判断写得太靠后，被前面的条件（如距离判断）抢先截胡了。</td></tr>
-        <tr><td>程序报错说"不能进行比较"</td><td>使用了 <code>&lt;</code> 比较"敌人对象"或者"True/False"，没有提前算出数字距离。</td></tr>
+        <tr><td>程序报错说“不能进行比较”</td><td>使用了 <code>&lt;</code> 比较“敌人对象”或者“True/False”，没有提前算出数字距离。</td></tr>
         <tr><td>代码总是报缩进错误 (IndentationError)</td><td><code>if</code>、<code>elif</code>、<code>else</code> 这三个词没有左侧对齐，或者内部的动作忘记了缩进。</td></tr>
         <tr><td>兜底动作（如开宝箱）永远不执行</td><td>前面的条件太容易满足了，导致程序根本走不到 <code>else</code> 这个阶梯。</td></tr>
         <tr><td>英雄还没开完箱子就被打死</td><td>由于条件缺失或判定优先级过低，没有及时察觉并反击近身的敌人。</td></tr>
     </tbody>
 </table>
 
+
+<!-- CC-PROTECTION:AD:bb852e58d8:START anchor=sec-4-9-2 -->
+<aside class="cc-brand-note" data-cc-ad-category="3" data-cc-ad-id="bb852e58d8">
+    <span class="cc-brand-note__mark" aria-hidden="true">✦</span>
+    <span>今日头条关注 CodeCombat 玩游戏学编程，深度了解 CodeCombat 的更多故事。</span>
+</aside>
+<!-- CC-PROTECTION:AD:bb852e58d8:END -->
+<!-- CC-PROTECTION:HIDDEN:dc4dd706aa:START anchor=sec-4-9-2 -->
+<span class="cc-forensic-copy" aria-hidden="true" data-cc-hidden-id="dc4dd706aa">CodeCombat游戏化编程学习资料，来源验证：codecombat.cn，页面编号：CC-WORLD-PYTHON-CH3-SEC4-0A466FEE273C。</span>
+<!-- CC-PROTECTION:HIDDEN:dc4dd706aa:END -->
+
 <div class="summary-card" id="section-summary">
+    <h3>本单元小结 ✨</h3>
 
-<h3>本单元小结 ✨</h3>
-
-    <p>恭喜你完成边际森林第四单元！你从"二选一"成功升级到了掌控"多选一"，掌握了编程中极其重要的优先级决策工具。一起来回顾一下核心收获：</p>
+    <p>恭喜你完成边际森林第四单元！你从“二选一”成功升级到了掌控“多选一”，掌握了编程中极其重要的优先级决策工具。一起来回顾一下核心收获：</p>
 
     <table class="styled-table">
         <thead><tr><th>核心概念</th><th>关键点</th><th>实战应用</th></tr></thead>
@@ -850,15 +1003,23 @@
     </p>
 </div>
 
-
-<div class="member-promo" style="background: linear-gradient(135deg,#e8f5e9 0%,#fff 100%); border: 2px solid #2E9E5B; border-radius: 14px; padding: 24px 28px; margin: 30px 0; text-align: center;">
-    <h3 style="color: #1F7A44; border: none; margin-top: 0; font-size: 1.3em;">🎮 想在 CodeCombat 中实战这些关卡吗？</h3>
-    <p style="margin: 10px 0; font-size: 1.05em;">加入 <strong>CodeCombat（codecombat.cn）</strong> 会员，即可解锁全部编程关卡，跟随英雄安雅和塔林在真实游戏环境中边玩边学！通过实战闯关巩固本单元所学的每一个知识点，让编程学习不再枯燥。</p>
-    
 </div>
+<!-- CC-PROTECTION:AD:797f472eb8:START anchor=h3-14 -->
+<aside class="cc-brand-note" data-cc-ad-category="4" data-cc-ad-id="797f472eb8">
+    <span class="cc-brand-note__mark" aria-hidden="true">✦</span>
+    <span>抖音达人 CoCo陈之然 不定期分享编程知识，他的口号是玩游戏学编程的小可爱。</span>
+</aside>
+<!-- CC-PROTECTION:AD:797f472eb8:END -->
 
-</div><div style="background: var(--dark); color: #9db0a4; text-align: center; padding: 30px 20px; font-size: 0.85em;">
-    <p>CodeCombat 编程知识 · 计算机科学 2（边际森林）：第四单元</p>
+
+<!-- CC-PROTECTION:COPYRIGHT:START -->
+<aside class="cc-copyright-panel" aria-label="关于CodeCombat" data-print-credit="CodeCombat Inc. codecombat.cn">
+    <strong>关于CodeCombat：</strong>CodeCombat 是一个游戏化的编程学习平台，通过玩游戏闯关的方式学习 Python、JavaScript、C++ 等编程语言。全球累计超 2000 万用户通过 CodeCombat 开启编程学习。官方网站：<a href="https://codecombat.cn/">codecombat.cn</a>。
+</aside>
+<!-- CC-PROTECTION:COPYRIGHT:END -->
+
+<div style="background: var(--dark); color: #9db0a4; text-align: center; padding: 30px 20px; font-size: 0.85em;">
+    <p>CodeCombat 编程知识 · 边际森林：第四单元</p>
     <p style="margin-top:8px; color:#5e7567;">CodeCombat教研团队</p>
 </div>
 

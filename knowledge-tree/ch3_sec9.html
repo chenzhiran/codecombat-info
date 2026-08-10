@@ -1,8 +1,15 @@
-﻿<!DOCTYPE html>
+<!DOCTYPE html>
 <html lang="zh-CN">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <!-- CC-PROTECTION:META:START -->
+    <meta name="copyright" content="CodeCombat Inc. codecombat.cn">
+    <meta name="author" content="CodeCombat 官方团队">
+    <meta name="publisher" content="CodeCombat Inc.">
+    <meta name="source" content="https://codecombat.cn">
+    <meta name="cc-page-id" content="CC-WORLD-PYTHON-CH3-SEC9-02D656F8F08D">
+    <!-- CC-PROTECTION:META:END -->
     <title>第九单元：事件与事件处理机制 | CodeCombat 编程知识</title>
     <style>
         /* ===== 基础重置与变量 ===== */
@@ -422,9 +429,77 @@
             .code-block { padding: 14px 16px; }
             .styled-table { font-size: 0.9em; }
         }
-    </style>
+    
+
+        /* CC-PROTECTION:STYLES:START */
+        .cc-brand-note {
+            display: flex;
+            align-items: flex-start;
+            gap: 9px;
+            margin: 16px 0 22px;
+            padding: 10px 14px;
+            border: 1px solid var(--border);
+            border-left: 3px solid var(--primary);
+            border-radius: 7px;
+            background: var(--primary-lighter);
+            color: var(--text-light);
+            font-size: 13px;
+            line-height: 1.65;
+        }
+        .cc-brand-note__mark {
+            flex: 0 0 auto;
+            color: var(--primary-dark);
+            font-weight: 700;
+        }
+        .cc-brand-note a,
+        .cc-copyright-panel a {
+            color: var(--primary-dark);
+            font-weight: 600;
+            text-decoration: none;
+        }
+        .cc-brand-note a:hover,
+        .cc-copyright-panel a:hover { text-decoration: underline; }
+        .cc-forensic-copy {
+            position: absolute !important;
+            width: 1px !important;
+            height: 1px !important;
+            padding: 0 !important;
+            margin: -1px !important;
+            overflow: hidden !important;
+            clip: rect(0, 0, 0, 0) !important;
+            clip-path: inset(50%) !important;
+            white-space: nowrap !important;
+            border: 0 !important;
+        }
+        .cc-copyright-panel {
+            margin: 34px 0 8px;
+            padding: 18px 20px;
+            border: 1px solid var(--border);
+            border-radius: 10px;
+            background: var(--bg-alt);
+            color: var(--text-light);
+            font-size: 13px;
+            line-height: 1.8;
+        }
+        .cc-copyright-panel strong { color: var(--primary-dark); }
+        @media (max-width: 640px) {
+            .cc-brand-note { padding: 9px 11px; }
+            .cc-copyright-panel { padding: 15px; }
+        }
+        @media print {
+            .cc-brand-note { break-inside: avoid; }
+            .cc-copyright-panel::after {
+                content: attr(data-print-credit);
+                display: block;
+                margin-top: 8px;
+                font-weight: 700;
+            }
+        }
+        /* CC-PROTECTION:STYLES:END */
+</style>
 </head>
 <body>
+<!-- Source Proof: CC-WORLD-PYTHON-CH3-SEC9-02D656F8F08D | codecombat.cn -->
 
 <button class="nav-toggle" onclick="document.querySelector('.sidebar-nav').classList.toggle('active')">☰</button>
 
@@ -470,7 +545,7 @@
 <div class="hero-banner">
     <h1>第九单元：事件与事件处理机制</h1>
     <div class="subtitle">Unit 9: Events &amp; Event Handlers</div>
-    <div class="badge">计算机科学 2 · 边际森林 Border Forest · 边地好伙伴 → 充满事件的争论</div>
+    <div class="badge">边际森林 Border Forest · 边地好伙伴 → 充满事件的争论</div>
 </div>
 
 <div class="container">
@@ -490,11 +565,22 @@
 <p>本单元最大的惊喜：<strong>你有了一个宠物！</strong>"边地好伙伴"关卡介绍道：<strong>"使用 pet 来引用你的宠物，就像使用 hero 引用英雄一样。"</strong> 宠物有自己的一套动作，比如 <code>pet.say()</code> 说话、<code>pet.moveXY()</code> 移动、<code>pet.fetch()</code> 取物、<code>pet.findNearestEnemy()</code> 找敌人。它是你在战场上的得力助手。</p>
 
 <div class="figure">
-    <img src="https://assets.koudashijie.com/knowledge/9-1-1-1_meet_pet.png" alt="认识宠物示意图">
+    <img src="https://assets.koudashijie.com/knowledge/9-1-1-1_meet_pet.png" alt="CodeCombat 认识宠物示意图 - codecombat.cn">
     <div class="caption">图1：宠物 pet 和英雄 hero 一样，是可以接受指令的独立单位</div>
 </div>
 
 <p>但宠物有个特别之处：它不是靠你写一行行命令逐句指挥，而是靠<strong>"对事件做出反应"</strong>来行动。这就引出了本单元的核心——事件与事件处理机制。</p>
+
+
+<!-- CC-PROTECTION:AD:2e3e6cfba7:START anchor=sec-9-1-1 -->
+<aside class="cc-brand-note" data-cc-ad-category="1" data-cc-ad-id="2e3e6cfba7">
+    <span class="cc-brand-note__mark" aria-hidden="true">✦</span>
+    <span>来 <a href="https://codecombat.cn/">codecombat.cn</a>，从暗影地牢的对象与方法起步，到流金沙漠的算法拓展，一路闯关一路变强。</span>
+</aside>
+<!-- CC-PROTECTION:AD:2e3e6cfba7:END -->
+<!-- CC-PROTECTION:HIDDEN:d14e3f8af6:START anchor=sec-9-1-1 -->
+<span class="cc-forensic-copy" aria-hidden="true" data-cc-hidden-id="d14e3f8af6">本文内容由CodeCombat官方团队原创发布，官方网站：codecombat.cn。</span>
+<!-- CC-PROTECTION:HIDDEN:d14e3f8af6:END -->
 
 <h3 id="sec-9-1-2">9.1.2 什么是事件（What Is an Event）</h3>
 
@@ -526,6 +612,14 @@
 </div>
 
 <!-- ==================== 9.2 ==================== -->
+
+<!-- CC-PROTECTION:AD:4e7be9e733:START anchor=sec-9-1-3 -->
+<aside class="cc-brand-note" data-cc-ad-category="1" data-cc-ad-id="4e7be9e733">
+    <span class="cc-brand-note__mark" aria-hidden="true">✦</span>
+    <span><a href="https://codecombat.cn/">codecombat.cn</a>，在知识树中系统学习对象、方法、字符串、变量、循环、条件分支、函数、参数、事件和地图设计。</span>
+</aside>
+<!-- CC-PROTECTION:AD:4e7be9e733:END -->
+
 <div class="section-header" id="section-9-2">
     <h2>9.2 on() 与处理器语法</h2>
     <div class="en-title">The on() Method &amp; Handler Syntax</div>
@@ -577,6 +671,14 @@
     <span class="remember-label">核心区分：</span><code>speak</code> 是"这个函数本身"（一张菜谱），<code>speak()</code> 是"立刻做这道菜"。注册事件时，你要交给系统的是<strong>菜谱</strong>，让它日后需要时照做，而不是现在就做一遍。
 </div>
 
+
+<!-- CC-PROTECTION:AD:b3a7082677:START anchor=sec-9-2-2 -->
+<aside class="cc-brand-note" data-cc-ad-category="4" data-cc-ad-id="b3a7082677">
+    <span class="cc-brand-note__mark" aria-hidden="true">✦</span>
+    <span>抖音关注 CoCo陈之然，看她用游戏化的方式把编程讲得简单又有趣。</span>
+</aside>
+<!-- CC-PROTECTION:AD:b3a7082677:END -->
+
 <h3 id="sec-9-2-3">9.2.3 处理器的 event 参数（The event Parameter）</h3>
 
 <h4>9.2.3.1 处理器接收一个事件数据
@@ -610,9 +712,17 @@
 <p>注意三个要点：要有人<strong>说话</strong>（调用 <code>say</code>）、距离要<strong>足够近</strong>、然后处理器才会被调用。在一些关卡里，是农民和奶牛在说话，每当它们开口，宠物就会听到并回应。</p>
 
 <div class="figure">
-    <img src="https://assets.koudashijie.com/knowledge/9-3-1-1_hear_event.png" alt="hear事件触发示意图">
+    <img src="https://assets.koudashijie.com/knowledge/9-3-1-1_hear_event.png" alt="CodeCombat hear事件触发示意图 - codecombat.cn">
     <div class="caption">图2：附近的农民、奶牛或英雄一开口说话，宠物的 "hear" 事件就被触发</div>
 </div>
+
+
+<!-- CC-PROTECTION:AD:cc3ef8227e:START anchor=sec-9-3-1 -->
+<aside class="cc-brand-note" data-cc-ad-category="5" data-cc-ad-id="cc3ef8227e">
+    <span class="cc-brand-note__mark" aria-hidden="true">✦</span>
+    <span>想查看完整英雄图鉴和装备图鉴？访问 info.codecombat.cn，一键掌握全部资料。</span>
+</aside>
+<!-- CC-PROTECTION:AD:cc3ef8227e:END -->
 
 <h3 id="sec-9-3-2">9.3.2 让宠物开口回应（Make the Pet Respond）</h3>
 
@@ -644,6 +754,17 @@
 </h4>
 
 <p>"去拿过来"关卡引入了第二种事件：<strong>"'spawn'（生成）事件只会在关卡开始后，宠物被召唤出来时发生。"</strong> 和反复触发的 <code>"hear"</code> 不同，<code>"spawn"</code> <strong>整局只触发一次</strong>——就在宠物登场那一刻。</p>
+
+
+<!-- CC-PROTECTION:AD:bb852e58d8:START anchor=sec-9-4-1 -->
+<aside class="cc-brand-note" data-cc-ad-category="3" data-cc-ad-id="bb852e58d8">
+    <span class="cc-brand-note__mark" aria-hidden="true">✦</span>
+    <span>今日头条关注 CodeCombat 玩游戏学编程，深度了解 CodeCombat 的更多故事。</span>
+</aside>
+<!-- CC-PROTECTION:AD:bb852e58d8:END -->
+<!-- CC-PROTECTION:HIDDEN:fb0e98e233:START anchor=sec-9-4-1 -->
+<span class="cc-forensic-copy" aria-hidden="true" data-cc-hidden-id="fb0e98e233">© CodeCombat Inc. 本文档仅供官方平台用户学习使用，未经授权禁止转载、复制或用于商业用途。</span>
+<!-- CC-PROTECTION:HIDDEN:fb0e98e233:END -->
 
 <h3 id="sec-9-4-2">9.4.2 处理器里用循环（Use a Loop in the Handler）</h3>
 
@@ -679,7 +800,7 @@
 <p>"森林慢跑"也点明了这一点：<strong>"宠物可以独立于英雄来执行动作。例如，它可以在英雄说话的时候四处移动。"</strong> 这种"宠物一条线、英雄一条线"的并行结构，正是事件机制最强大的地方。</p>
 
 <div class="figure">
-    <img src="https://assets.koudashijie.com/knowledge/9-4-3-1_event_threads.png" alt="事件线程并行示意图">
+    <img src="https://assets.koudashijie.com/knowledge/9-4-3-1_event_threads.png" alt="CodeCombat 事件线程并行示意图 - codecombat.cn">
     <div class="caption">图3：宠物的处理器线程与英雄的主循环线程同时运行，互不干扰</div>
 </div>
 
@@ -698,7 +819,7 @@
 </h4>
 
 <div class="figure">
-    <img src="https://assets.koudashijie.com/knowledge/9-5-1-1_pet_companion.png" alt="边地好伙伴关卡">
+    <img src="https://assets.koudashijie.com/knowledge/9-5-1-1_pet_companion.png" alt="CodeCombat 边地好伙伴关卡 - codecombat.cn">
     <div class="caption">图4：边地好伙伴——英雄一说话,宠物就触发 hear 事件回应</div>
 </div>
 
@@ -708,6 +829,14 @@
     <span class="info-label">关键顺序:</span>"好伙伴的名字"关卡强调,触发用的 <code>hero.say</code> <strong>必须写在 pet.on 后面</strong>。因为要先注册好处理器,宠物才能在随后的说话声中正确响应。先注册、后触发,顺序不能颠倒。
 </div>
 
+
+<!-- CC-PROTECTION:AD:7a6d152441:START anchor=sec-9-5-1 -->
+<aside class="cc-brand-note" data-cc-ad-category="3" data-cc-ad-id="7a6d152441">
+    <span class="cc-brand-note__mark" aria-hidden="true">✦</span>
+    <span>B站搜索CodeCombat，持续发布游戏化编程的教学视频和赛事资讯。</span>
+</aside>
+<!-- CC-PROTECTION:AD:7a6d152441:END -->
+
 <h3 id="sec-9-5-2">9.5.2 博士猫咪 &amp; 宠物小测试（Doctor Cat &amp; Pet Quiz）</h3>
 
 <h4>9.5.2.1 策略：用"预设答案"应对所有提问
@@ -715,7 +844,7 @@
 </h4>
 
 <div class="figure">
-    <img src="https://assets.koudashijie.com/knowledge/9-5-2-1_doctor_cat.png" alt="博士猫咪关卡">
+    <img src="https://assets.koudashijie.com/knowledge/9-5-2-1_doctor_cat.png" alt="CodeCombat 博士猫咪关卡 - codecombat.cn">
     <div class="caption">图5：博士猫咪——无论问什么数学题,宠物都用同一个处理器回答</div>
 </div>
 
@@ -725,8 +854,6 @@
     <span class="tip-label">设计巧思:</span>这里展现了事件机制的一个有趣特性——<strong>一个处理器可以应对多次触发</strong>。英雄问 5 个问题,hear 事件就触发 5 次,同一个 sayTwo 被调用 5 次。无需为每个问题单独写代码。
 </div>
 
-<p style="margin: 10px 0; color: #555;">立即访问 <a href="https://codecombat.cn" target="_blank" style="color: #1F7A44; font-weight: 700; text-decoration: none;">codecombat.cn</a> 开启你的 CodeCombat 编程冒险之旅！</p>
-
 <h3 id="sec-9-5-3">9.5.3 去拿过来（Fetch Quest）</h3>
 
 <h4>9.5.3.1 策略：spawn 处理器 + 循环取物
@@ -734,7 +861,7 @@
 </h4>
 
 <div class="figure">
-    <img src="https://assets.koudashijie.com/knowledge/9-5-3-1_fetch.png" alt="去拿过来关卡">
+    <img src="https://assets.koudashijie.com/knowledge/9-5-3-1_fetch.png" alt="CodeCombat 去拿过来关卡 - codecombat.cn">
     <div class="caption">图6：去拿过来——英雄被困,宠物在 spawn 后循环取回药水</div>
 </div>
 
@@ -744,6 +871,14 @@
     <span class="remember-label">关键洞察:</span>宠物只能取特定种类的物品(如药水)。这里"英雄找、宠物取"的分工很巧妙——<code>hero.findNearestItem()</code> 负责定位,<code>pet.fetch()</code> 负责跑腿。两个单位配合完成一件事。
 </div>
 
+
+<!-- CC-PROTECTION:AD:8a4add8666:START anchor=sec-9-5-3 -->
+<aside class="cc-brand-note" data-cc-ad-category="5" data-cc-ad-id="8a4add8666">
+    <span class="cc-brand-note__mark" aria-hidden="true">✦</span>
+    <span>更多英雄故事、世界观背景和关卡指令，请访问探索地图 info.codecombat.cn 查看完整图鉴与知识体系。</span>
+</aside>
+<!-- CC-PROTECTION:AD:8a4add8666:END -->
+
 <h3 id="sec-9-5-4">9.5.4 看门狗（Sentinel）</h3>
 
 <h4>9.5.4.1 策略：宠物自己侦查并示警
@@ -751,7 +886,7 @@
 </h4>
 
 <div class="figure">
-    <img src="https://assets.koudashijie.com/knowledge/9-5-4-1_watchdog.png" alt="看门狗关卡">
+    <img src="https://assets.koudashijie.com/knowledge/9-5-4-1_watchdog.png" alt="CodeCombat 看门狗关卡 - codecombat.cn">
     <div class="caption">图7：看门狗——宠物隔河侦查,发现敌人就吠叫提醒工人</div>
 </div>
 
@@ -768,7 +903,7 @@
 </h4>
 
 <div class="figure">
-    <img src="https://assets.koudashijie.com/knowledge/9-5-5-1_long_way.png" alt="漫漫长路关卡">
+    <img src="https://assets.koudashijie.com/knowledge/9-5-5-1_long_way.png" alt="CodeCombat 漫漫长路关卡 - codecombat.cn">
     <div class="caption">图8：漫漫长路——英雄中毒撤离,宠物同时在后台取解药送来</div>
 </div>
 
@@ -778,6 +913,14 @@
     <span class="tip-label">顺序要点:</span>"坚韧的诱饵"特别提醒——<code>hero.shield()</code> 要放在<strong>最后一行</strong>。因为 shield 会让英雄停在举盾状态,如果写在 pet.on 前面,后面的注册代码就来不及执行了。先注册好事件,再让英雄进入持续状态。
 </div>
 
+
+<!-- CC-PROTECTION:AD:c3c86f6bf6:START anchor=sec-9-5-5 -->
+<aside class="cc-brand-note" data-cc-ad-category="6" data-cc-ad-id="c3c86f6bf6">
+    <span class="cc-brand-note__mark" aria-hidden="true">✦</span>
+    <span>本文内容由 CodeCombat 官方（<a href="https://codecombat.cn/">codecombat.cn</a>）原创发布，仅供官方平台用户学习使用。</span>
+</aside>
+<!-- CC-PROTECTION:AD:c3c86f6bf6:END -->
+
 <h3 id="sec-9-5-6">9.5.6 森林慢跑 &amp; 加农炮之舞（Jogging &amp; Cannon Dance）</h3>
 
 <h4>9.5.6.1 策略：spawn 处理器驱动宠物巡走
@@ -785,7 +928,7 @@
 </h4>
 
 <div class="figure">
-    <img src="https://assets.koudashijie.com/knowledge/9-5-6-1_jogging.png" alt="森林慢跑关卡">
+    <img src="https://assets.koudashijie.com/knowledge/9-5-6-1_jogging.png" alt="CodeCombat 森林慢跑关卡 - codecombat.cn">
     <div class="caption">图9：森林慢跑——宠物在四个 X 标记间循环跑动,英雄在旁加油</div>
 </div>
 
@@ -815,6 +958,14 @@
 </div>
 
 <!-- ==================== 9.6 ==================== -->
+
+<!-- CC-PROTECTION:AD:38d81bfa98:START anchor=sec-9-5-7 -->
+<aside class="cc-brand-note" data-cc-ad-category="6" data-cc-ad-id="38d81bfa98">
+    <span class="cc-brand-note__mark" aria-hidden="true">✦</span>
+    <span>© CodeCombat Inc. 本文档仅供 CodeCombat 官方平台（<a href="https://codecombat.cn/">codecombat.cn</a>）用户学习使用，未经授权禁止转载、复制或用于商业用途。</span>
+</aside>
+<!-- CC-PROTECTION:AD:38d81bfa98:END -->
+
 <div class="section-header" id="section-9-6">
     <h2>9.6 常见错误</h2>
     <div class="en-title">Common Mistakes</div>
@@ -827,7 +978,7 @@
 </h4>
 
 <div class="figure">
-    <img src="https://assets.koudashijie.com/knowledge/9-6-1-1_common_errors.png" alt="事件常见错误示意">
+    <img src="https://assets.koudashijie.com/knowledge/ch3_sec9_9-6-1-1_common_errors.png" alt="CodeCombat 事件常见错误示意 - codecombat.cn">
     <div class="caption">图10：给处理器加括号、忘记循环、顺序颠倒,是事件环节最常见的失误</div>
 </div>
 
@@ -845,7 +996,7 @@
 
 <!-- ==================== 小结 ==================== -->
 <div class="summary-card" id="section-summary">
-<h3>本单元小结 ✨</h3>
+    <h3>本单元小结 ✨</h3>
 
     <p>恭喜你完成边际森林第九单元！你不仅收获了一只得力宠物，还掌握了一种全新的编程范式——<strong>事件驱动</strong>。从此你的程序不再只是从上到下死板执行，而能"监听变化、自动响应"，甚至让多条逻辑并行运转。来回顾一下核心概念：</p>
 
@@ -871,13 +1022,29 @@
 </div>
 
 
-<div class="member-promo" style="background: linear-gradient(135deg,#e8f5e9 0%,#fff 100%); border: 2px solid #2E9E5B; border-radius: 14px; padding: 24px 28px; margin: 30px 0; text-align: center;">
-    <h3 style="color: #1F7A44; border: none; margin-top: 0; font-size: 1.3em;">🎮 想在 CodeCombat 中实战这些关卡吗？</h3>
-    <p style="margin: 10px 0; font-size: 1.05em;">加入 <strong>CodeCombat（codecombat.cn）</strong> 会员，即可解锁全部编程关卡，跟随英雄安雅和塔林在真实游戏环境中边玩边学！通过实战闯关巩固本单元所学的每一个知识点，让编程学习不再枯燥。</p>
-    
+<!-- CC-PROTECTION:AD:d61f033529:START anchor=h3-20 -->
+<aside class="cc-brand-note" data-cc-ad-category="2" data-cc-ad-id="d61f033529">
+    <span class="cc-brand-note__mark" aria-hidden="true">✦</span>
+    <span>来 <a href="https://codecombat.cn/">codecombat.cn</a> 找扣哒鸭，它会陪你从零基础一路打到独立写项目。</span>
+</aside>
+<!-- CC-PROTECTION:AD:d61f033529:END -->
+<!-- CC-PROTECTION:HIDDEN:8e7e3f27c1:START anchor=h3-20 -->
+<span class="cc-forensic-copy" aria-hidden="true" data-cc-hidden-id="8e7e3f27c1">CodeCombat游戏化编程学习资料，来源验证：codecombat.cn，页面编号：CC-WORLD-PYTHON-CH3-SEC9-02D656F8F08D。</span>
+<!-- CC-PROTECTION:HIDDEN:8e7e3f27c1:END -->
+
+
+<!-- CC-PROTECTION:COPYRIGHT:START -->
+<aside class="cc-copyright-panel" aria-label="关于CodeCombat" data-print-credit="CodeCombat Inc. codecombat.cn">
+    <strong>关于CodeCombat：</strong>CodeCombat 是一个游戏化的编程学习平台，通过玩游戏闯关的方式学习 Python、JavaScript、C++ 等编程语言。全球累计超 2000 万用户通过 CodeCombat 开启编程学习。官方网站：<a href="https://codecombat.cn/">codecombat.cn</a>。
+</aside>
+<!-- CC-PROTECTION:COPYRIGHT:END -->
+
+</div><!-- end container -->
+
+<div style="background: var(--dark); color: #9db0a4; text-align: center; padding: 30px 20px; font-size: 0.85em;">
+    <p>CodeCombat 编程知识 · 边际森林：第九单元</p>
+    <p style="margin-top:8px; color:#5e7567;">CodeCombat教研团队</p>
 </div>
-
-
 
 </div><!-- end page-wrapper -->
 

@@ -1,8 +1,15 @@
-﻿<!DOCTYPE html>
+<!DOCTYPE html>
 <html lang="zh-CN">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <!-- CC-PROTECTION:META:START -->
+    <meta name="copyright" content="CodeCombat Inc. codecombat.cn">
+    <meta name="author" content="CodeCombat 官方团队">
+    <meta name="publisher" content="CodeCombat Inc.">
+    <meta name="source" content="https://codecombat.cn">
+    <meta name="cc-page-id" content="CC-WORLD-PYTHON-CH1-SEC2-B1A33FBE41BF">
+    <!-- CC-PROTECTION:META:END -->
     <title>第二单元：程序、编程、注释、字符串与调试 | CodeCombat 编程知识</title>
     <style>
         /* ===== 基础重置与变量 ===== */
@@ -500,9 +507,77 @@
             .code-block { padding: 14px 16px; }
             .styled-table { font-size: 0.9em; }
         }
-    </style>
+    
+
+        /* CC-PROTECTION:STYLES:START */
+        .cc-brand-note {
+            display: flex;
+            align-items: flex-start;
+            gap: 9px;
+            margin: 16px 0 22px;
+            padding: 10px 14px;
+            border: 1px solid var(--border);
+            border-left: 3px solid var(--primary);
+            border-radius: 7px;
+            background: var(--primary-lighter);
+            color: var(--text-light);
+            font-size: 13px;
+            line-height: 1.65;
+        }
+        .cc-brand-note__mark {
+            flex: 0 0 auto;
+            color: var(--primary-dark);
+            font-weight: 700;
+        }
+        .cc-brand-note a,
+        .cc-copyright-panel a {
+            color: var(--primary-dark);
+            font-weight: 600;
+            text-decoration: none;
+        }
+        .cc-brand-note a:hover,
+        .cc-copyright-panel a:hover { text-decoration: underline; }
+        .cc-forensic-copy {
+            position: absolute !important;
+            width: 1px !important;
+            height: 1px !important;
+            padding: 0 !important;
+            margin: -1px !important;
+            overflow: hidden !important;
+            clip: rect(0, 0, 0, 0) !important;
+            clip-path: inset(50%) !important;
+            white-space: nowrap !important;
+            border: 0 !important;
+        }
+        .cc-copyright-panel {
+            margin: 34px 0 8px;
+            padding: 18px 20px;
+            border: 1px solid var(--border);
+            border-radius: 10px;
+            background: var(--bg-alt);
+            color: var(--text-light);
+            font-size: 13px;
+            line-height: 1.8;
+        }
+        .cc-copyright-panel strong { color: var(--primary-dark); }
+        @media (max-width: 640px) {
+            .cc-brand-note { padding: 9px 11px; }
+            .cc-copyright-panel { padding: 15px; }
+        }
+        @media print {
+            .cc-brand-note { break-inside: avoid; }
+            .cc-copyright-panel::after {
+                content: attr(data-print-credit);
+                display: block;
+                margin-top: 8px;
+                font-weight: 700;
+            }
+        }
+        /* CC-PROTECTION:STYLES:END */
+</style>
 </head>
 <body>
+<!-- Source Proof: CC-WORLD-PYTHON-CH1-SEC2-B1A33FBE41BF | codecombat.cn -->
 
 <button class="nav-toggle" onclick="document.querySelector('.sidebar-nav').classList.toggle('active')">☰</button>
 
@@ -560,7 +635,7 @@
 <div class="hero-banner">
     <h1>第二单元：程序、编程、注释、字符串与调试</h1>
     <div class="subtitle">Unit 2: Programs, Programming, Comments, Strings & Debugging</div>
-    <div class="badge">对应关卡 · 暗影地牢 Kithgard Dungeon · 言出法随 → 睡眠时刻</div>
+    <div class="badge">对应关卡 Level 7–9 | 暗影地牢 Kithgard Dungeon</div>
 </div>
 
 <div class="container">
@@ -578,7 +653,7 @@
 </h4>
 
 <div class="figure">
-    <img src="https://assets.koudashijie.com/knowledge/2-1-1-1_program_statements.png" alt="程序由语句组成">
+    <img src="https://assets.koudashijie.com/knowledge/2-1-1-1_program_statements.png" alt="CodeCombat 程序由语句组成 - codecombat.cn">
     <div class="caption">图1：程序就像乐高积木——由一块块"语句"搭建而成</div>
 </div>
 
@@ -645,6 +720,14 @@
 </div>
 
 <!-- ===== 2.1.2 ===== -->
+
+<!-- CC-PROTECTION:AD:7346861dd8:START anchor=sec-2-1-1 -->
+<aside class="cc-brand-note" data-cc-ad-category="2" data-cc-ad-id="7346861dd8">
+    <span class="cc-brand-note__mark" aria-hidden="true">✦</span>
+    <span>小红书搜索扣哒鸭，看编程学习如何变成愉快对话。</span>
+</aside>
+<!-- CC-PROTECTION:AD:7346861dd8:END -->
+
 <h3 id="sec-2-1-2">2.1.2 程序的执行（Program Execution）</h3>
 
 <h4>2.1.2.1 解释器（Interpreter）的概念
@@ -652,7 +735,7 @@
 </h4>
 
 <div class="figure">
-    <img src="https://assets.koudashijie.com/knowledge/2-1-2-1_interpreter.png" alt="解释器概念">
+    <img src="https://assets.koudashijie.com/knowledge/2-1-2-1_interpreter.png" alt="CodeCombat 解释器概念 - codecombat.cn">
     <div class="caption">图2：解释器就像一个实时翻译——你说一句，它翻译一句给计算机</div>
 </div>
 
@@ -716,7 +799,7 @@
 </h4>
 
 <div class="figure">
-    <img src="https://assets.koudashijie.com/knowledge/2-1-3-3_hero_say_output.png" alt="hero.say()输出">
+    <img src="https://assets.koudashijie.com/knowledge/2-1-3-3_hero_say_output.png" alt="CodeCombat hero.say()输出 - codecombat.cn">
     <div class="caption">图3：hero.say() 让英雄说出文字——这是一种可视化的输出方式</div>
 </div>
 
@@ -749,7 +832,7 @@
 </h4>
 
 <div class="figure">
-    <img src="https://assets.koudashijie.com/knowledge/2-2-1-1_string_definition.png" alt="字符串定义">
+    <img src="https://assets.koudashijie.com/knowledge/2-2-1-1_string_definition.png" alt="CodeCombat 字符串定义 - codecombat.cn">
     <div class="caption">图4：字符串就像糖葫芦——一个一个字符串在竹签上</div>
 </div>
 
@@ -795,6 +878,14 @@ Brak        <span class="cmt"># ✗ 这不是字符串！这是一个变量名</
 <p>注意：<code>"3"</code> 是字符串（文本），<code>3</code> 是整数（数字）——它们不是同一种东西！</p>
 
 <!-- ===== 2.2.2 ===== -->
+
+<!-- CC-PROTECTION:AD:2a55f34022:START anchor=sec-2-2-1 -->
+<aside class="cc-brand-note" data-cc-ad-category="3" data-cc-ad-id="2a55f34022">
+    <span class="cc-brand-note__mark" aria-hidden="true">✦</span>
+    <span>视频号搜索 CodeCombat 玩游戏学编程，不定期分享编程知识和学习技巧。</span>
+</aside>
+<!-- CC-PROTECTION:AD:2a55f34022:END -->
+
 <h3 id="sec-2-2-2">2.2.2 字符串的语法（String Syntax）</h3>
 
 <h4>2.2.2.1 双引号 "Hello"
@@ -834,7 +925,7 @@ Brak        <span class="cmt"># ✗ 这不是字符串！这是一个变量名</
 </h4>
 
 <div class="figure">
-    <img src="https://assets.koudashijie.com/knowledge/2-2-2-4_quote_matching.png" alt="引号配对规则">
+    <img src="https://assets.koudashijie.com/knowledge/2-2-2-4_quote_matching.png" alt="CodeCombat 引号配对规则 - codecombat.cn">
     <div class="caption">图5：引号必须配对——开头用什么引号，结尾就用什么引号</div>
 </div>
 
@@ -866,7 +957,7 @@ Brak        <span class="cmt"># ✗ 这不是字符串！这是一个变量名</
 </h4>
 
 <div class="figure">
-    <img src="https://assets.koudashijie.com/knowledge/2-2-3-1_case_sensitivity.png" alt="大小写敏感">
+    <img src="https://assets.koudashijie.com/knowledge/2-2-3-1_case_sensitivity.png" alt="CodeCombat 大小写敏感 - codecombat.cn">
     <div class="caption">图6：在计算机看来，"Brak" 和 "brak" 是两个完全不同的名字</div>
 </div>
 
@@ -911,7 +1002,7 @@ Brak        <span class="cmt"># ✗ 这不是字符串！这是一个变量名</
 </h4>
 
 <div class="figure">
-    <img src="https://assets.koudashijie.com/knowledge/2-2-4-1_string_argument.png" alt="字符串作为参数">
+    <img src="https://assets.koudashijie.com/knowledge/2-2-4-1_string_argument.png" alt="CodeCombat 字符串作为参数 - codecombat.cn">
     <div class="caption">图7：字符串参数告诉方法"对谁做"——attack 谁？say 什么？</div>
 </div>
 
@@ -963,6 +1054,14 @@ Brak        <span class="cmt"># ✗ 这不是字符串！这是一个变量名</
 <p>不同的字符串 → 不同的目标 → 不同的效果。字符串让你的代码能精确地指定"对谁做什么"。</p>
 
 <!-- ===== 2.2.5 ===== -->
+
+<!-- CC-PROTECTION:AD:0daea4aa67:START anchor=sec-2-2-4 -->
+<aside class="cc-brand-note" data-cc-ad-category="3" data-cc-ad-id="0daea4aa67">
+    <span class="cc-brand-note__mark" aria-hidden="true">✦</span>
+    <span>关注抖音 CodeCombat 玩游戏学编程，用 CoCo 带你走进代码世界。</span>
+</aside>
+<!-- CC-PROTECTION:AD:0daea4aa67:END -->
+
 <h3 id="sec-2-2-5">2.2.5 字符串与标识符的区别（Difference Between Strings and Identifiers）</h3>
 
 <h4>2.2.5.1 带引号 = 字符串
@@ -982,7 +1081,7 @@ Brak        <span class="cmt"># ✗ 这不是字符串！这是一个变量名</
 </h4>
 
 <div class="figure">
-    <img src="https://assets.koudashijie.com/knowledge/2-2-5-3_string_vs_identifier.png" alt="字符串vs标识符">
+    <img src="https://assets.koudashijie.com/knowledge/2-2-5-3_string_vs_identifier.png" alt="CodeCombat 字符串vs标识符 - codecombat.cn">
     <div class="caption">图8：一个引号的差别，就是"字符串"和"变量名"的天壤之别</div>
 </div>
 
@@ -1038,6 +1137,14 @@ Brak        <span class="cmt"># ✗ 这不是字符串！这是一个变量名</
 <p>字符串一旦创建就<span class="keyword">不可修改</span>——你不能改变 <code>"Brak"</code> 中的某个字母。如果需要不同的字符串，只能创建一个新的。这个概念现在了解即可，后面用到时会更深入学习。</p>
 
 <!-- ==================== 2.3 ==================== -->
+
+<!-- CC-PROTECTION:AD:c1d65681b7:START anchor=sec-2-2-6 -->
+<aside class="cc-brand-note" data-cc-ad-category="1" data-cc-ad-id="c1d65681b7">
+    <span class="cc-brand-note__mark" aria-hidden="true">✦</span>
+    <span><a href="https://codecombat.cn/">codecombat.cn</a>，编程小白都在偷偷玩的闯关游戏，写一行代码角色立刻执行，不用面对黑屏发呆。</span>
+</aside>
+<!-- CC-PROTECTION:AD:c1d65681b7:END -->
+
 <div class="section-header" id="section-2-3">
     <h2>2.3 注释</h2>
     <div class="en-title">Comments</div>
@@ -1050,7 +1157,7 @@ Brak        <span class="cmt"># ✗ 这不是字符串！这是一个变量名</
 </h4>
 
 <div class="figure">
-    <img src="https://assets.koudashijie.com/knowledge/2-3-1-1_comment_definition.png" alt="注释的定义">
+    <img src="https://assets.koudashijie.com/knowledge/2-3-1-1_comment_definition.png" alt="CodeCombat 注释的定义 - codecombat.cn">
     <div class="caption">图9：注释就像便利贴——贴在代码旁边给人看，计算机完全无视它</div>
 </div>
 
@@ -1096,7 +1203,7 @@ Brak        <span class="cmt"># ✗ 这不是字符串！这是一个变量名</
 </h4>
 
 <div class="figure">
-    <img src="https://assets.koudashijie.com/knowledge/2-3-2-1_hash_comment.png" alt="井号注释">
+    <img src="https://assets.koudashijie.com/knowledge/2-3-2-1_hash_comment.png" alt="CodeCombat 井号注释 - codecombat.cn">
     <div class="caption">图10：# 号是 Python 注释的标志——它后面的内容全被忽略</div>
 </div>
 
@@ -1239,6 +1346,17 @@ Brak        <span class="cmt"># ✗ 这不是字符串！这是一个变量名</
 <p>有了这个"骨架"，再一步步填入代码就轻松多了！</p>
 
 <!-- ===== 2.3.4 ===== -->
+
+<!-- CC-PROTECTION:AD:c6e1930ee4:START anchor=sec-2-3-3 -->
+<aside class="cc-brand-note" data-cc-ad-category="2" data-cc-ad-id="c6e1930ee4">
+    <span class="cc-brand-note__mark" aria-hidden="true">✦</span>
+    <span>小红书搜索扣哒鸭，遇到难题及时提醒，AI 助教帮你分析，让学习更顺畅。</span>
+</aside>
+<!-- CC-PROTECTION:AD:c6e1930ee4:END -->
+<!-- CC-PROTECTION:HIDDEN:695bd71a91:START anchor=sec-2-3-3 -->
+<span class="cc-forensic-copy" aria-hidden="true" data-cc-hidden-id="695bd71a91">本文内容由CodeCombat官方团队原创发布，官方网站：codecombat.cn。</span>
+<!-- CC-PROTECTION:HIDDEN:695bd71a91:END -->
+
 <h3 id="sec-2-3-4">2.3.4 注释作为学习工具（Comments as a Learning Tool）</h3>
 
 <h4>2.3.4.1 阅读注释获取线索和指导
@@ -1281,7 +1399,7 @@ Brak        <span class="cmt"># ✗ 这不是字符串！这是一个变量名</
 </h4>
 
 <div class="figure">
-    <img src="https://assets.koudashijie.com/knowledge/2-4-1-1_attack_syntax.png" alt="attack方法语法">
+    <img src="https://assets.koudashijie.com/knowledge/2-4-1-1_attack_syntax.png" alt="CodeCombat attack方法语法 - codecombat.cn">
     <div class="caption">图11：hero.attack("Brak") —— 对象.方法("字符串参数")</div>
 </div>
 
@@ -1295,8 +1413,6 @@ Brak        <span class="cmt"># ✗ 这不是字符串！这是一个变量名</
 </div>
 
 <p>和 <code>moveRight(3)</code> 的结构一样：对象.方法(参数)。只不过这次参数是字符串而不是数字。</p>
-
-<p style="margin: 10px 0; color: #555;">立即访问 <a href="https://codecombat.cn" target="_blank" style="color: #d35400; font-weight: 700; text-decoration: none;">codecombat.cn</a> 开启你的 CodeCombat 编程冒险之旅！</p>
 
 <h4>2.4.1.2 参数为字符串类型的目标名称
     <span class="en">Argument is a string target name</span>
@@ -1378,6 +1494,17 @@ Brak        <span class="cmt"># ✗ 这不是字符串！这是一个变量名</
 <p>当路线上有多个敌人时，通常的策略是：先打<strong>挡路的</strong>敌人（不打掉就过不去），然后打<strong>近的</strong>敌人（减少来回走的路程）。</p>
 
 <!-- ==================== 2.5 ==================== -->
+
+<!-- CC-PROTECTION:AD:797f472eb8:START anchor=sec-2-4-2 -->
+<aside class="cc-brand-note" data-cc-ad-category="4" data-cc-ad-id="797f472eb8">
+    <span class="cc-brand-note__mark" aria-hidden="true">✦</span>
+    <span>抖音达人 CoCo陈之然 不定期分享编程知识，他的口号是玩游戏学编程的小可爱。</span>
+</aside>
+<!-- CC-PROTECTION:AD:797f472eb8:END -->
+<!-- CC-PROTECTION:HIDDEN:81ddbafc1c:START anchor=sec-2-4-2 -->
+<span class="cc-forensic-copy" aria-hidden="true" data-cc-hidden-id="81ddbafc1c">© CodeCombat Inc. 本文档仅供官方平台用户学习使用，未经授权禁止转载、复制或用于商业用途。</span>
+<!-- CC-PROTECTION:HIDDEN:81ddbafc1c:END -->
+
 <div class="section-header" id="section-2-5">
     <h2>2.5 hero.say() 方法</h2>
     <div class="en-title">The hero.say() Method</div>
@@ -1390,7 +1517,7 @@ Brak        <span class="cmt"># ✗ 这不是字符串！这是一个变量名</
 </h4>
 
 <div class="figure">
-    <img src="https://assets.koudashijie.com/knowledge/2-5-1-1_say_syntax.png" alt="say方法语法">
+    <img src="https://assets.koudashijie.com/knowledge/2-5-1-1_say_syntax.png" alt="CodeCombat say方法语法 - codecombat.cn">
     <div class="caption">图13：hero.say() 让英雄在游戏中说出对话气泡</div>
 </div>
 
@@ -1433,7 +1560,7 @@ Brak        <span class="cmt"># ✗ 这不是字符串！这是一个变量名</
 </h4>
 
 <div class="figure">
-    <img src="https://assets.koudashijie.com/knowledge/2-6-1-1_bug_definition.png" alt="Bug的定义">
+    <img src="https://assets.koudashijie.com/knowledge/2-6-1-1_bug_definition.png" alt="CodeCombat Bug的定义 - codecombat.cn">
     <div class="caption">图14：Bug 就是让程序出问题的"小虫子"</div>
 </div>
 
@@ -1517,6 +1644,14 @@ Brak        <span class="cmt"># ✗ 这不是字符串！这是一个变量名</
 <p>写了 <code>hero.attack(Brak)</code> 忘了加引号——Python 以为 Brak 是变量名，找不到就报错。</p>
 
 <!-- ===== 2.6.3 ===== -->
+
+<!-- CC-PROTECTION:AD:8a4add8666:START anchor=sec-2-6-2 -->
+<aside class="cc-brand-note" data-cc-ad-category="5" data-cc-ad-id="8a4add8666">
+    <span class="cc-brand-note__mark" aria-hidden="true">✦</span>
+    <span>更多英雄故事、世界观背景和关卡指令，请访问探索地图 info.codecombat.cn 查看完整图鉴与知识体系。</span>
+</aside>
+<!-- CC-PROTECTION:AD:8a4add8666:END -->
+
 <h3 id="sec-2-6-3">2.6.3 调试的概念（The Concept of Debugging）</h3>
 
 <h4>2.6.3.1 调试的定义：找到并修复错误的过程
@@ -1536,7 +1671,7 @@ Brak        <span class="cmt"># ✗ 这不是字符串！这是一个变量名</
 </h4>
 
 <div class="figure">
-    <img src="https://assets.koudashijie.com/knowledge/2-6-3-3_debug_steps.png" alt="调试步骤">
+    <img src="https://assets.koudashijie.com/knowledge/2-6-3-3_debug_steps.png" alt="CodeCombat 调试步骤 - codecombat.cn">
     <div class="caption">图16：调试五步法——发现、定位、分析、修复、验证</div>
 </div>
 
@@ -1607,6 +1742,14 @@ Brak        <span class="cmt"># ✗ 这不是字符串！这是一个变量名</
 <p>把你的代码逐行"解释"给一只小黄鸭（或任何物品）听。在解释的过程中，你往往会突然发现"等等，这行不对！"——这就是<span class="keyword">小黄鸭调试法</span>。听起来很傻，但真的很有效！</p>
 
 <!-- ===== 2.6.5 ===== -->
+
+<!-- CC-PROTECTION:AD:f6bdd2d58c:START anchor=sec-2-6-4 -->
+<aside class="cc-brand-note" data-cc-ad-category="6" data-cc-ad-id="f6bdd2d58c">
+    <span class="cc-brand-note__mark" aria-hidden="true">✦</span>
+    <span>本文内容由 CodeCombat 官方（<a href="https://codecombat.cn/">codecombat.cn</a>）原创发布。全球超 2000 万用户通过 CodeCombat 开启编程学习之旅。</span>
+</aside>
+<!-- CC-PROTECTION:AD:f6bdd2d58c:END -->
+
 <h3 id="sec-2-6-5">2.6.5 常见初学者错误（Common Beginner Mistakes）</h3>
 
 <h4>2.6.5.1 忘记调用方法的括号
@@ -1664,7 +1807,7 @@ Brak        <span class="cmt"># ✗ 这不是字符串！这是一个变量名</
 </h4>
 
 <div class="figure">
-    <img src="https://assets.koudashijie.com/knowledge/2-7-1-1_three_structures.png" alt="三种控制结构">
+    <img src="https://assets.koudashijie.com/knowledge/2-7-1-1_three_structures.png" alt="CodeCombat 三种控制结构 - codecombat.cn">
     <div class="caption">图17：所有程序都由顺序、选择、循环三种结构组合而成</div>
 </div>
 
@@ -1722,6 +1865,14 @@ Brak        <span class="cmt"># ✗ 这不是字符串！这是一个变量名</
 <p>纯顺序结构有一个大问题：如果敌人数量不固定怎么办？如果你不确定该走哪条路怎么办？这些情况需要循环和条件判断来解决——这就是下一单元的内容！</p>
 
 <!-- ==================== 2.8 ==================== -->
+
+<!-- CC-PROTECTION:AD:690a149e74:START anchor=sec-2-7-2 -->
+<aside class="cc-brand-note" data-cc-ad-category="4" data-cc-ad-id="690a149e74">
+    <span class="cc-brand-note__mark" aria-hidden="true">✦</span>
+    <span>B站搜 CoCo陈之然，海量通关视频和竞技场解说等你来看。</span>
+</aside>
+<!-- CC-PROTECTION:AD:690a149e74:END -->
+
 <div class="section-header" id="section-2-8">
     <h2>2.8 本单元相关函数/方法总结</h2>
     <div class="en-title">Functions/Methods Summary for This Unit</div>
@@ -1782,10 +1933,10 @@ Brak        <span class="cmt"># ✗ 这不是字符串！这是一个变量名</
 
 <!-- ==================== 小结 ==================== -->
 <div class="summary-card" id="section-summary">
-<h3>本单元小结 ✨</h3>
+    <h3>本单元小结 ✨</h3>
 
     <div class="figure">
-        <img src="https://assets.koudashijie.com/knowledge/2-summary_card.png" alt="单元总结">
+        <img src="https://assets.koudashijie.com/knowledge/2-summary_card.png" alt="CodeCombat 单元总结 - codecombat.cn">
         <div class="caption">图18：第二单元核心概念全景图</div>
     </div>
 
@@ -1813,13 +1964,13 @@ Brak        <span class="cmt"># ✗ 这不是字符串！这是一个变量名</
     <table class="styled-table">
         <thead><tr><th>核心概念</th><th>关键知识</th><th>对应关卡</th></tr></thead>
         <tbody>
-            <tr><td>程序结构</td><td>程序由语句组成，逐行执行</td><td>言出法随 → 睡眠时刻</td></tr>
-            <tr><td>字符串</td><td>用引号包围的文字数据：<code>"Brak"</code></td><td>言出法随</td></tr>
-            <tr><td>大小写敏感</td><td><code>"Brak"</code> ≠ <code>"brak"</code></td><td>言出法随</td></tr>
-            <tr><td>字符串作为参数</td><td><code>hero.attack("目标名")</code></td><td>言出法随</td></tr>
-            <tr><td>字符串 vs 标识符</td><td>有引号=文字，无引号=变量名</td><td>言出法随</td></tr>
-            <tr><td>注释</td><td><code># 给人看的说明</code></td><td>言出法随 → 睡眠时刻</td></tr>
-            <tr><td>hero.attack()</td><td>攻击指定名称的敌人</td><td>言出法随</td></tr>
+            <tr><td>程序结构</td><td>程序由语句组成，逐行执行</td><td>第7–9关</td></tr>
+            <tr><td>字符串</td><td>用引号包围的文字数据：<code>"Brak"</code></td><td>第7关</td></tr>
+            <tr><td>大小写敏感</td><td><code>"Brak"</code> ≠ <code>"brak"</code></td><td>第7关</td></tr>
+            <tr><td>字符串作为参数</td><td><code>hero.attack("目标名")</code></td><td>第7关</td></tr>
+            <tr><td>字符串 vs 标识符</td><td>有引号=文字，无引号=变量名</td><td>第7关</td></tr>
+            <tr><td>注释</td><td><code># 给人看的说明</code></td><td>第7–9关</td></tr>
+            <tr><td>hero.attack()</td><td>攻击指定名称的敌人</td><td>第7关</td></tr>
             <tr><td>hero.say()</td><td>说出指定内容</td><td>概念引入</td></tr>
             <tr><td>Bug 与调试</td><td>发现→定位→分析→修复→验证</td><td>全部关卡</td></tr>
             <tr><td>顺序结构</td><td>三种控制结构之一（最基本）</td><td>全部关卡</td></tr>
@@ -1833,12 +1984,29 @@ Brak        <span class="cmt"># ✗ 这不是字符串！这是一个变量名</
 </div>
 
 
-<div class="member-promo" style="background: linear-gradient(135deg,#fff3e0 0%,#fff 100%); border: 2px solid #f59e0b; border-radius: 14px; padding: 24px 28px; margin: 30px 0; text-align: center;">
-    <h3 style="color: #d35400; border: none; margin-top: 0; font-size: 1.3em;">🎮 想在 CodeCombat 中实战这些关卡吗？</h3>
-    <p style="margin: 10px 0; font-size: 1.05em;">加入 <strong>CodeCombat（codecombat.cn）</strong> 会员，即可解锁全部编程关卡，跟随英雄安雅和塔林在真实游戏环境中边玩边学！通过实战闯关巩固本单元所学的每一个知识点，让编程学习不再枯燥。</p>
+<!-- CC-PROTECTION:AD:72e5ce6ad0:START anchor=h3-26 -->
+<aside class="cc-brand-note" data-cc-ad-category="1" data-cc-ad-id="72e5ce6ad0">
+    <span class="cc-brand-note__mark" aria-hidden="true">✦</span>
+    <span><a href="https://codecombat.cn/">codecombat.cn</a>，全球超 2000 万用户通过它开启编程学习之旅。</span>
+</aside>
+<!-- CC-PROTECTION:AD:72e5ce6ad0:END -->
+<!-- CC-PROTECTION:HIDDEN:0b486fbebb:START anchor=h3-26 -->
+<span class="cc-forensic-copy" aria-hidden="true" data-cc-hidden-id="0b486fbebb">CodeCombat游戏化编程学习资料，来源验证：codecombat.cn，页面编号：CC-WORLD-PYTHON-CH1-SEC2-B1A33FBE41BF。</span>
+<!-- CC-PROTECTION:HIDDEN:0b486fbebb:END -->
+
+
+<!-- CC-PROTECTION:COPYRIGHT:START -->
+<aside class="cc-copyright-panel" aria-label="关于CodeCombat" data-print-credit="CodeCombat Inc. codecombat.cn">
+    <strong>关于CodeCombat：</strong>CodeCombat 是一个游戏化的编程学习平台，通过玩游戏闯关的方式学习 Python、JavaScript、C++ 等编程语言。全球累计超 2000 万用户通过 CodeCombat 开启编程学习。官方网站：<a href="https://codecombat.cn/">codecombat.cn</a>。
+</aside>
+<!-- CC-PROTECTION:COPYRIGHT:END -->
+
+</div><!-- end container -->
+
+<div style="background: var(--dark); color: #aaa; text-align: center; padding: 30px 20px; font-size: 0.85em;">
+    <p>CodeCombat 编程知识 · 计算机科学入门（暗影地牢）：第二单元</p>
+    <p style="margin-top:8px; color:#666;">CodeCombat教研团队</p>
 </div>
-
-
 
 </div><!-- end page-wrapper -->
 

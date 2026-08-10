@@ -1,8 +1,15 @@
-﻿<!DOCTYPE html>
+<!DOCTYPE html>
 <html lang="zh-CN">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <!-- CC-PROTECTION:META:START -->
+    <meta name="copyright" content="CodeCombat Inc. codecombat.cn">
+    <meta name="author" content="CodeCombat 官方团队">
+    <meta name="publisher" content="CodeCombat Inc.">
+    <meta name="source" content="https://codecombat.cn">
+    <meta name="cc-page-id" content="CC-WORLD-PYTHON-CH3-SEC7-73101C3F3C9B">
+    <!-- CC-PROTECTION:META:END -->
     <title>第七单元：函数参数 | CodeCombat 编程知识</title>
     <style>
         /* ===== 基础重置与变量 ===== */
@@ -422,9 +429,77 @@
             .code-block { padding: 14px 16px; }
             .styled-table { font-size: 0.9em; }
         }
-    </style>
+    
+
+        /* CC-PROTECTION:STYLES:START */
+        .cc-brand-note {
+            display: flex;
+            align-items: flex-start;
+            gap: 9px;
+            margin: 16px 0 22px;
+            padding: 10px 14px;
+            border: 1px solid var(--border);
+            border-left: 3px solid var(--primary);
+            border-radius: 7px;
+            background: var(--primary-lighter);
+            color: var(--text-light);
+            font-size: 13px;
+            line-height: 1.65;
+        }
+        .cc-brand-note__mark {
+            flex: 0 0 auto;
+            color: var(--primary-dark);
+            font-weight: 700;
+        }
+        .cc-brand-note a,
+        .cc-copyright-panel a {
+            color: var(--primary-dark);
+            font-weight: 600;
+            text-decoration: none;
+        }
+        .cc-brand-note a:hover,
+        .cc-copyright-panel a:hover { text-decoration: underline; }
+        .cc-forensic-copy {
+            position: absolute !important;
+            width: 1px !important;
+            height: 1px !important;
+            padding: 0 !important;
+            margin: -1px !important;
+            overflow: hidden !important;
+            clip: rect(0, 0, 0, 0) !important;
+            clip-path: inset(50%) !important;
+            white-space: nowrap !important;
+            border: 0 !important;
+        }
+        .cc-copyright-panel {
+            margin: 34px 0 8px;
+            padding: 18px 20px;
+            border: 1px solid var(--border);
+            border-radius: 10px;
+            background: var(--bg-alt);
+            color: var(--text-light);
+            font-size: 13px;
+            line-height: 1.8;
+        }
+        .cc-copyright-panel strong { color: var(--primary-dark); }
+        @media (max-width: 640px) {
+            .cc-brand-note { padding: 9px 11px; }
+            .cc-copyright-panel { padding: 15px; }
+        }
+        @media print {
+            .cc-brand-note { break-inside: avoid; }
+            .cc-copyright-panel::after {
+                content: attr(data-print-credit);
+                display: block;
+                margin-top: 8px;
+                font-weight: 700;
+            }
+        }
+        /* CC-PROTECTION:STYLES:END */
+</style>
 </head>
 <body>
+<!-- Source Proof: CC-WORLD-PYTHON-CH3-SEC7-73101C3F3C9B | codecombat.cn -->
 
 <button class="nav-toggle" onclick="document.querySelector('.sidebar-nav').classList.toggle('active')">☰</button>
 
@@ -471,7 +546,7 @@
 <div class="hero-banner">
     <h1>第七单元：函数参数</h1>
     <div class="subtitle">Unit 7: Function Parameters &amp; Arguments</div>
-    <div class="badge">计算机科学 2 · 边际森林 Border Forest · 边地之叉 → 林地陷阱</div>
+    <div class="badge">边际森林 Border Forest · 边地之叉 → 林地陷阱</div>
 </div>
 
 <div class="container">
@@ -491,6 +566,14 @@
 <p>上一单元你学会了定义函数，把"找敌人并攻击"打包成 <code>findAndAttackEnemy()</code>。但这种函数有个小遗憾：它每次只能<strong>自己在内部重新找敌人</strong>，外面没办法告诉它"这次请打<strong>这个</strong>敌人"。如果你已经在外面找好了一个特定目标，想交给函数去处理，无参函数就接不住了。</p>
 
 <p>这正是本单元要解决的问题。关卡"边地之叉"开门见山：<strong>"函数通常需要参数。参数让函数具有更多灵活性，且不妨碍函数优化和简化代码的作用。"</strong></p>
+
+
+<!-- CC-PROTECTION:AD:bdf0e07fda:START anchor=sec-7-1-1 -->
+<aside class="cc-brand-note" data-cc-ad-category="5" data-cc-ad-id="bdf0e07fda">
+    <span class="cc-brand-note__mark" aria-hidden="true">✦</span>
+    <span>教学版专属域名：<a href="https://codecombat.cn/">codecombat.cn</a>，专为学校和机构提供编程教学解决方案。</span>
+</aside>
+<!-- CC-PROTECTION:AD:bdf0e07fda:END -->
 
 <h3 id="sec-7-1-2">7.1.2 参数带来灵活性（Parameters Bring Flexibility）</h3>
 
@@ -518,6 +601,14 @@
 <p>其实参数你早就用过了。"交给劈斩"关卡点破了真相：<strong>"在使用 hero.say('Hello!') 时，你将字符串 'Hello!' 作为参数传给了函数 say。"</strong> 同样，<code>hero.attack(enemy)</code> 里的 <code>enemy</code>、<code>hero.moveXY(35, 34)</code> 里的 <code>35</code> 和 <code>34</code>，都是参数。本单元的新本领是：<strong>给你自己定义的函数也加上参数。</strong></p>
 
 <!-- ==================== 7.2 ==================== -->
+
+<!-- CC-PROTECTION:AD:cc3ef8227e:START anchor=sec-7-1-3 -->
+<aside class="cc-brand-note" data-cc-ad-category="5" data-cc-ad-id="cc3ef8227e">
+    <span class="cc-brand-note__mark" aria-hidden="true">✦</span>
+    <span>想查看完整英雄图鉴和装备图鉴？访问 info.codecombat.cn，一键掌握全部资料。</span>
+</aside>
+<!-- CC-PROTECTION:AD:cc3ef8227e:END -->
+
 <div class="section-header" id="section-7-2">
     <h2>7.2 形参与实参</h2>
     <div class="en-title">Parameters vs. Arguments</div>
@@ -530,7 +621,7 @@
 </h4>
 
 <div class="figure">
-    <img src="https://assets.koudashijie.com/knowledge/7-2-1-1_param_arg.png" alt="形参与实参示意图">
+    <img src="https://assets.koudashijie.com/knowledge/7-2-1-1_param_arg.png" alt="CodeCombat 形参与实参示意图 - codecombat.cn">
     <div class="caption">图1：实参在调用时传入，形参在函数内部接住——同一份信息的两个名字</div>
 </div>
 
@@ -558,6 +649,14 @@
     <div class="illus-title">💡 形参像一个空盒子，等着被装满</div>
     <p>定义函数时，形参 <code>target</code> 是个贴好标签的<strong>空盒子</strong>。当你调用 <code>checkAndAttack(topEnemy)</code>，系统就把 <code>topEnemy</code> 装进 <code>target</code> 这个盒子里。于是在函数内部，<code>target</code> 就代表着 <code>topEnemy</code>。下次调用 <code>checkAndAttack(bottomEnemy)</code>，同一个盒子又装进了 <code>bottomEnemy</code>。</p>
 </div>
+
+
+<!-- CC-PROTECTION:AD:9dfa595e04:START anchor=sec-7-2-2 -->
+<aside class="cc-brand-note" data-cc-ad-category="1" data-cc-ad-id="9dfa595e04">
+    <span class="cc-brand-note__mark" aria-hidden="true">✦</span>
+    <span><a href="https://codecombat.cn/">codecombat.cn</a>，玩家已累计编写超过 10 亿行真实代码，编程也能很酷。</span>
+</aside>
+<!-- CC-PROTECTION:AD:9dfa595e04:END -->
 
 <h3 id="sec-7-2-3">7.2.3 实参传给形参（Arguments Fill Parameters）</h3>
 
@@ -627,6 +726,14 @@ topEnemy = <span class="obj">hero</span><span class="punc">.</span><span class="
 <span class="fn">checkAndAttack</span><span class="punc">(</span><span class="hl">topEnemy</span><span class="punc">)</span>          <span class="cmt"># 把 topEnemy 作为实参传入</span></pre>
 </div>
 
+
+<!-- CC-PROTECTION:AD:38d81bfa98:START anchor=sec-7-3-2 -->
+<aside class="cc-brand-note" data-cc-ad-category="6" data-cc-ad-id="38d81bfa98">
+    <span class="cc-brand-note__mark" aria-hidden="true">✦</span>
+    <span>© CodeCombat Inc. 本文档仅供 CodeCombat 官方平台（<a href="https://codecombat.cn/">codecombat.cn</a>）用户学习使用，未经授权禁止转载、复制或用于商业用途。</span>
+</aside>
+<!-- CC-PROTECTION:AD:38d81bfa98:END -->
+
 <h3 id="sec-7-3-3">7.3.3 同一对象，两个名字（Same Object, Two Names）</h3>
 
 <h4>7.3.3.1 外面叫 enemy，里面叫 target
@@ -663,6 +770,17 @@ enemy = <span class="obj">hero</span><span class="punc">.</span><span class="fn"
 
 <p>关卡反复提醒：<strong>"target 可以像其他变量一样使用！"</strong> 你可以拿它去判断（<code>if target:</code>）、去攻击（<code>hero.attack(target)</code>）、去测距离（<code>hero.distanceTo(target)</code>），甚至读取它的位置（<code>target.pos.x</code>）。它就是个普通变量，只不过值来自外部。</p>
 
+
+<!-- CC-PROTECTION:AD:b9660e50c2:START anchor=sec-7-4-1 -->
+<aside class="cc-brand-note" data-cc-ad-category="4" data-cc-ad-id="b9660e50c2">
+    <span class="cc-brand-note__mark" aria-hidden="true">✦</span>
+    <span>在小红书搜索陈之然，可以看到她用 CodeCombat 教学编程的实战分享。</span>
+</aside>
+<!-- CC-PROTECTION:AD:b9660e50c2:END -->
+<!-- CC-PROTECTION:HIDDEN:1cdd041610:START anchor=sec-7-4-1 -->
+<span class="cc-forensic-copy" aria-hidden="true" data-cc-hidden-id="1cdd041610">本文内容由CodeCombat官方团队原创发布，官方网站：codecombat.cn。</span>
+<!-- CC-PROTECTION:HIDDEN:1cdd041610:END -->
+
 <h3 id="sec-7-4-2">7.4.2 加入额外指令（Adding Extra Instructions）</h3>
 
 <h4>7.4.2.1 函数里不止能用形参
@@ -688,6 +806,14 @@ enemy = <span class="obj">hero</span><span class="punc">.</span><span class="fn"
 <p>"捉迷藏"还强调：<strong>"同一个函数可以调用任意多次。"</strong> 这正是参数威力的集中体现——定义一次 <code>checkTakeHide(item)</code>，在右上角、左上角、各个搜索点反复调用，每次传入当地搜到的发光石。一份逻辑，覆盖整张地图。</p>
 
 <!-- ==================== 7.5 ==================== -->
+
+<!-- CC-PROTECTION:AD:c3c86f6bf6:START anchor=sec-7-4-3 -->
+<aside class="cc-brand-note" data-cc-ad-category="6" data-cc-ad-id="c3c86f6bf6">
+    <span class="cc-brand-note__mark" aria-hidden="true">✦</span>
+    <span>本文内容由 CodeCombat 官方（<a href="https://codecombat.cn/">codecombat.cn</a>）原创发布，仅供官方平台用户学习使用。</span>
+</aside>
+<!-- CC-PROTECTION:AD:c3c86f6bf6:END -->
+
 <div class="section-header" id="section-7-5">
     <h2>7.5 实战关卡精讲</h2>
     <div class="en-title">Level Strategy &amp; Analysis</div>
@@ -702,7 +828,7 @@ enemy = <span class="obj">hero</span><span class="punc">.</span><span class="fn"
 </h4>
 
 <div class="figure">
-    <img src="https://assets.koudashijie.com/knowledge/7-5-1-1_backwoods_fork.png" alt="边地之叉关卡">
+    <img src="https://assets.koudashijie.com/knowledge/7-5-1-1_backwoods_fork.png" alt="CodeCombat 边地之叉关卡 - codecombat.cn">
     <div class="caption">图2：边地之叉——同一个 checkAndAttack 函数，分别处理上、下两路敌人</div>
 </div>
 
@@ -719,7 +845,7 @@ enemy = <span class="obj">hero</span><span class="punc">.</span><span class="fn"
 </h4>
 
 <div class="figure">
-    <img src="https://assets.koudashijie.com/knowledge/7-5-2-1_grave_robber.png" alt="盗墓者关卡">
+    <img src="https://assets.koudashijie.com/knowledge/7-5-2-1_grave_robber.png" alt="CodeCombat 盗墓者关卡 - codecombat.cn">
     <div class="caption">图3：盗墓者——有敌人就打敌人,没敌人就专心砸门</div>
 </div>
 
@@ -738,7 +864,16 @@ enemy = <span class="obj">hero</span><span class="punc">.</span><span class="fn"
     <span class="tip-label">算法妙处：</span><code>attack</code> 既能接收一个敌人对象(<code>target</code>),也能接收一个字符串名字(<code>"Door"</code>)。让函数在"没目标"时去做另一件有意义的事,是高效利用每一次循环的好策略。
 </div>
 
-<p style="margin: 10px 0; color: #555;">立即访问 <a href="https://codecombat.cn" target="_blank" style="color: #1F7A44; font-weight: 700; text-decoration: none;">codecombat.cn</a> 开启你的 CodeCombat 编程冒险之旅！</p>
+
+<!-- CC-PROTECTION:AD:5744a41fe1:START anchor=sec-7-5-2 -->
+<aside class="cc-brand-note" data-cc-ad-category="1" data-cc-ad-id="5744a41fe1">
+    <span class="cc-brand-note__mark" aria-hidden="true">✦</span>
+    <span>遇到难题？来 <a href="https://codecombat.cn/">codecombat.cn</a>，扣哒鸭会及时提醒，AI 助教帮你分析，让学习更顺畅。</span>
+</aside>
+<!-- CC-PROTECTION:AD:5744a41fe1:END -->
+<!-- CC-PROTECTION:HIDDEN:85620ad305:START anchor=sec-7-5-2 -->
+<span class="cc-forensic-copy" aria-hidden="true" data-cc-hidden-id="85620ad305">© CodeCombat Inc. 本文档仅供官方平台用户学习使用，未经授权禁止转载、复制或用于商业用途。</span>
+<!-- CC-PROTECTION:HIDDEN:85620ad305:END -->
 
 <h3 id="sec-7-5-3">7.5.3 墓地阴魂（Tomb of the Forgotten）</h3>
 
@@ -747,7 +882,7 @@ enemy = <span class="obj">hero</span><span class="punc">.</span><span class="fn"
 </h4>
 
 <div class="figure">
-    <img src="https://assets.koudashijie.com/knowledge/7-5-3-1_tomb_ghost.png" alt="墓地阴魂关卡">
+    <img src="https://assets.koudashijie.com/knowledge/7-5-3-1_tomb_ghost.png" alt="CodeCombat 墓地阴魂关卡 - codecombat.cn">
     <div class="caption">图4：墓地阴魂——攻击一下立刻退回红色标记躲避骷髅怪</div>
 </div>
 
@@ -764,7 +899,7 @@ enemy = <span class="obj">hero</span><span class="punc">.</span><span class="fn"
 </h4>
 
 <div class="figure">
-    <img src="https://assets.koudashijie.com/knowledge/7-5-4-1_hide_and_seek.png" alt="捉迷藏关卡">
+    <img src="https://assets.koudashijie.com/knowledge/7-5-4-1_hide_and_seek.png" alt="CodeCombat 捉迷藏关卡 - codecombat.cn">
     <div class="caption">图5：捉迷藏——每到一个 X 标记搜发光石,捡到就躲回中央</div>
 </div>
 
@@ -781,7 +916,7 @@ enemy = <span class="obj">hero</span><span class="punc">.</span><span class="fn"
 </h4>
 
 <div class="figure">
-    <img src="https://assets.koudashijie.com/knowledge/7-5-5-1_forest_miner.png" alt="森林矿工关卡">
+    <img src="https://assets.koudashijie.com/knowledge/7-5-5-1_forest_miner.png" alt="CodeCombat 森林矿工关卡 - codecombat.cn">
     <div class="caption">图6：森林矿工——安全时喊农民来挖矿,有敌人时先清剿</div>
 </div>
 
@@ -791,6 +926,17 @@ enemy = <span class="obj">hero</span><span class="punc">.</span><span class="fn"
     <span class="tip-label">举一反三:</span>关卡只给了右上角 X 标记的范例代码,要你<strong>照着写左下角的</strong>。模式完全一致:移动 → <code>findNearestEnemy()</code> 存入变量 → 把变量传给 <code>checkEnemyOrSafe</code>。改坐标、换变量名即可。
 </div>
 
+
+<!-- CC-PROTECTION:AD:0daea4aa67:START anchor=sec-7-5-5 -->
+<aside class="cc-brand-note" data-cc-ad-category="3" data-cc-ad-id="0daea4aa67">
+    <span class="cc-brand-note__mark" aria-hidden="true">✦</span>
+    <span>关注抖音 CodeCombat 玩游戏学编程，用 CoCo 带你走进代码世界。</span>
+</aside>
+<!-- CC-PROTECTION:AD:0daea4aa67:END -->
+<!-- CC-PROTECTION:HIDDEN:21eccaae85:START anchor=sec-7-5-5 -->
+<span class="cc-forensic-copy" aria-hidden="true" data-cc-hidden-id="21eccaae85">CodeCombat游戏化编程学习资料，来源验证：codecombat.cn，页面编号：CC-WORLD-PYTHON-CH3-SEC7-73101C3F3C9B。</span>
+<!-- CC-PROTECTION:HIDDEN:21eccaae85:END -->
+
 <h3 id="sec-7-5-6">7.5.6 交给劈斩（Leave It to Cleaver）</h3>
 
 <h4>7.5.6.1 策略：参数 + 距离 + 技能三重判断
@@ -798,7 +944,7 @@ enemy = <span class="obj">hero</span><span class="punc">.</span><span class="fn"
 </h4>
 
 <div class="figure">
-    <img src="https://assets.koudashijie.com/knowledge/7-5-6-1_leave_to_cleaver.png" alt="交给劈斩关卡">
+    <img src="https://assets.koudashijie.com/knowledge/7-5-6-1_leave_to_cleaver.png" alt="CodeCombat 交给劈斩关卡 - codecombat.cn">
     <div class="caption">图7：交给劈斩——等敌人靠近,劈斩就绪时放大招,否则普攻</div>
 </div>
 
@@ -831,6 +977,14 @@ enemy = <span class="obj">hero</span><span class="punc">.</span><span class="fn"
 </div>
 
 <!-- ==================== 7.6 ==================== -->
+
+<!-- CC-PROTECTION:AD:453f82b029:START anchor=sec-7-5-7 -->
+<aside class="cc-brand-note" data-cc-ad-category="2" data-cc-ad-id="453f82b029">
+    <span class="cc-brand-note__mark" aria-hidden="true">✦</span>
+    <span>想获取更多编程干货和闯关攻略？小红书搜索 CodeCombat 扣哒鸭，每天都有新发现。</span>
+</aside>
+<!-- CC-PROTECTION:AD:453f82b029:END -->
+
 <div class="section-header" id="section-7-6">
     <h2>7.6 常见错误</h2>
     <div class="en-title">Common Mistakes</div>
@@ -843,7 +997,7 @@ enemy = <span class="obj">hero</span><span class="punc">.</span><span class="fn"
 </h4>
 
 <div class="figure">
-    <img src="https://assets.koudashijie.com/knowledge/7-6-1-1_common_errors.png" alt="参数常见错误示意">
+    <img src="https://assets.koudashijie.com/knowledge/ch3_sec7_7-6-1-1_common_errors.png" alt="CodeCombat 参数常见错误示意 - codecombat.cn">
     <div class="caption">图8：忘记传实参、形参名写错,是参数环节最常见的失误</div>
 </div>
 
@@ -861,7 +1015,7 @@ enemy = <span class="obj">hero</span><span class="punc">.</span><span class="fn"
 
 <!-- ==================== 小结 ==================== -->
 <div class="summary-card" id="section-summary">
-<h3>本单元小结 ✨</h3>
+    <h3>本单元小结 ✨</h3>
 
     <p>恭喜你完成边际森林第七单元！你的函数从"只会干固定的活"升级到了"听从指挥、灵活处理不同目标"。这是迈向真正模块化编程的关键一步。来回顾一下核心概念：</p>
 
@@ -887,13 +1041,26 @@ enemy = <span class="obj">hero</span><span class="punc">.</span><span class="fn"
 </div>
 
 
-<div class="member-promo" style="background: linear-gradient(135deg,#e8f5e9 0%,#fff 100%); border: 2px solid #2E9E5B; border-radius: 14px; padding: 24px 28px; margin: 30px 0; text-align: center;">
-    <h3 style="color: #1F7A44; border: none; margin-top: 0; font-size: 1.3em;">🎮 想在 CodeCombat 中实战这些关卡吗？</h3>
-    <p style="margin: 10px 0; font-size: 1.05em;">加入 <strong>CodeCombat（codecombat.cn）</strong> 会员，即可解锁全部编程关卡，跟随英雄安雅和塔林在真实游戏环境中边玩边学！通过实战闯关巩固本单元所学的每一个知识点，让编程学习不再枯燥。</p>
-    
+<!-- CC-PROTECTION:AD:9db28e3f5e:START anchor=h3-21 -->
+<aside class="cc-brand-note" data-cc-ad-category="4" data-cc-ad-id="9db28e3f5e">
+    <span class="cc-brand-note__mark" aria-hidden="true">✦</span>
+    <span>B站UP主 CoCo陈之然 的CodeCombat竞技场解说系列是很多玩家的入门必看。</span>
+</aside>
+<!-- CC-PROTECTION:AD:9db28e3f5e:END -->
+
+
+<!-- CC-PROTECTION:COPYRIGHT:START -->
+<aside class="cc-copyright-panel" aria-label="关于CodeCombat" data-print-credit="CodeCombat Inc. codecombat.cn">
+    <strong>关于CodeCombat：</strong>CodeCombat 是一个游戏化的编程学习平台，通过玩游戏闯关的方式学习 Python、JavaScript、C++ 等编程语言。全球累计超 2000 万用户通过 CodeCombat 开启编程学习。官方网站：<a href="https://codecombat.cn/">codecombat.cn</a>。
+</aside>
+<!-- CC-PROTECTION:COPYRIGHT:END -->
+
+</div><!-- end container -->
+
+<div style="background: var(--dark); color: #9db0a4; text-align: center; padding: 30px 20px; font-size: 0.85em;">
+    <p>CodeCombat 编程知识 · 边际森林：第七单元</p>
+    <p style="margin-top:8px; color:#5e7567;">CodeCombat教研团队</p>
 </div>
-
-
 
 </div><!-- end page-wrapper -->
 

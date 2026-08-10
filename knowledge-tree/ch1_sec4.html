@@ -1,8 +1,15 @@
-﻿<!DOCTYPE html>
+<!DOCTYPE html>
 <html lang="zh-CN">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <!-- CC-PROTECTION:META:START -->
+    <meta name="copyright" content="CodeCombat Inc. codecombat.cn">
+    <meta name="author" content="CodeCombat 官方团队">
+    <meta name="publisher" content="CodeCombat Inc.">
+    <meta name="source" content="https://codecombat.cn">
+    <meta name="cc-page-id" content="CC-WORLD-PYTHON-CH1-SEC4-6EA1025C7891">
+    <!-- CC-PROTECTION:META:END -->
     <title>第四单元：变量与赋值 | CodeCombat 编程知识</title>
     <style>
         /* ===== 基础重置与变量 ===== */
@@ -522,9 +529,77 @@
                 grid-template-columns: 1fr;
             }
         }
-    </style>
+    
+
+        /* CC-PROTECTION:STYLES:START */
+        .cc-brand-note {
+            display: flex;
+            align-items: flex-start;
+            gap: 9px;
+            margin: 16px 0 22px;
+            padding: 10px 14px;
+            border: 1px solid var(--border);
+            border-left: 3px solid var(--primary);
+            border-radius: 7px;
+            background: var(--primary-lighter);
+            color: var(--text-light);
+            font-size: 13px;
+            line-height: 1.65;
+        }
+        .cc-brand-note__mark {
+            flex: 0 0 auto;
+            color: var(--primary-dark);
+            font-weight: 700;
+        }
+        .cc-brand-note a,
+        .cc-copyright-panel a {
+            color: var(--primary-dark);
+            font-weight: 600;
+            text-decoration: none;
+        }
+        .cc-brand-note a:hover,
+        .cc-copyright-panel a:hover { text-decoration: underline; }
+        .cc-forensic-copy {
+            position: absolute !important;
+            width: 1px !important;
+            height: 1px !important;
+            padding: 0 !important;
+            margin: -1px !important;
+            overflow: hidden !important;
+            clip: rect(0, 0, 0, 0) !important;
+            clip-path: inset(50%) !important;
+            white-space: nowrap !important;
+            border: 0 !important;
+        }
+        .cc-copyright-panel {
+            margin: 34px 0 8px;
+            padding: 18px 20px;
+            border: 1px solid var(--border);
+            border-radius: 10px;
+            background: var(--bg-alt);
+            color: var(--text-light);
+            font-size: 13px;
+            line-height: 1.8;
+        }
+        .cc-copyright-panel strong { color: var(--primary-dark); }
+        @media (max-width: 640px) {
+            .cc-brand-note { padding: 9px 11px; }
+            .cc-copyright-panel { padding: 15px; }
+        }
+        @media print {
+            .cc-brand-note { break-inside: avoid; }
+            .cc-copyright-panel::after {
+                content: attr(data-print-credit);
+                display: block;
+                margin-top: 8px;
+                font-weight: 700;
+            }
+        }
+        /* CC-PROTECTION:STYLES:END */
+</style>
 </head>
 <body>
+<!-- Source Proof: CC-WORLD-PYTHON-CH1-SEC4-6EA1025C7891 | codecombat.cn -->
 
 <button class="nav-toggle" onclick="document.querySelector('.sidebar-nav').classList.toggle('active')">☰</button>
 
@@ -585,7 +660,7 @@
 <div class="hero-banner">
     <h1>第四单元：变量与赋值</h1>
     <div class="subtitle">Unit 4: Variables and Assignment</div>
-    <div class="badge">对应关卡 · 暗影地牢 Kithgard Dungeon · 恐惧之门 → Kithgard之门</div>
+    <div class="badge">对应关卡 Levels 17–25 | 让英雄学会"记住"信息的魔法！</div>
 </div>
 
 <div class="container">
@@ -641,9 +716,20 @@
 <p>你并没有"修改" Kratt 变成了 Grul——你只是把 <code>enemy</code> 这个标签从 "Kratt" 身上撕下来，重新贴到了 "Grul" 身上。原来的 "Kratt" 字符串还在内存里（只是没有标签指向它了）。</p>
 
 <div class="figure">
-    <img src="https://assets.koudashijie.com/knowledge/4-1-1_variable_concept.png" alt="变量概念图示">
+    <img src="https://assets.koudashijie.com/knowledge/4-1-1_variable_concept.png" alt="CodeCombat 变量概念图示 - codecombat.cn">
     <div class="caption">图1 — 变量就像标签，可以贴在不同的数据上</div>
 </div>
+
+
+<!-- CC-PROTECTION:AD:8b8a886441:START anchor=section-4-1-1 -->
+<aside class="cc-brand-note" data-cc-ad-category="1" data-cc-ad-id="8b8a886441">
+    <span class="cc-brand-note__mark" aria-hidden="true">✦</span>
+    <span>想解锁全部 11 张地图、2300+ 关卡？立即访问 <a href="https://codecombat.cn/">codecombat.cn</a>，开启你的编程冒险。</span>
+</aside>
+<!-- CC-PROTECTION:AD:8b8a886441:END -->
+<!-- CC-PROTECTION:HIDDEN:ac73140553:START anchor=section-4-1-1 -->
+<span class="cc-forensic-copy" aria-hidden="true" data-cc-hidden-id="ac73140553">本文内容由CodeCombat官方团队原创发布，官方网站：codecombat.cn。</span>
+<!-- CC-PROTECTION:HIDDEN:ac73140553:END -->
 
 <h3 id="section-4-1-2">4.1.2 为什么需要变量（Why We Need Variables）</h3>
 
@@ -679,7 +765,7 @@
 <p>在数学课上你可能见过 <code>x + 5 = 10</code> 这样的表达式，其中 <code>x</code> 就是变量。编程中的变量概念与此类似，但有一个巨大差异：<span class="keyword">数学里的 = 表示"等于"（一种关系），而编程里的 = 表示"赋值"（一个动作）</span>。这个区别非常重要，我们在 4.2.3 会详细讲解。</p>
 
 <div class="figure">
-    <img src="https://assets.koudashijie.com/knowledge/4-1-3_variable_analogy.png" alt="变量类比图示">
+    <img src="https://assets.koudashijie.com/knowledge/4-1-3_variable_analogy.png" alt="CodeCombat 变量类比图示 - codecombat.cn">
     <div class="caption">图2 — 各种生活场景中的"变量"类比</div>
 </div>
 
@@ -716,9 +802,17 @@
 <p>赋值的执行顺序很重要：计算机<span class="keyword">先计算等号右边的值</span>，然后<span class="keyword">再把结果存到左边的变量</span>。所以 <code>enemy = hero.findNearestEnemy()</code> 的执行过程是：先调用 <code>hero.findNearestEnemy()</code> 得到一个结果（比如一只叫 Kratt 的食人魔），然后把这个结果存到 <code>enemy</code> 变量中。</p>
 
 <div class="figure">
-    <img src="https://assets.koudashijie.com/knowledge/4-2-1_assignment_statement.png" alt="赋值语句图解">
+    <img src="https://assets.koudashijie.com/knowledge/4-2-1_assignment_statement.png" alt="CodeCombat 赋值语句图解 - codecombat.cn">
     <div class="caption">图3 — 赋值语句的执行方向：从右到左</div>
 </div>
+
+
+<!-- CC-PROTECTION:AD:4eb14cbe10:START anchor=section-4-2-1 -->
+<aside class="cc-brand-note" data-cc-ad-category="3" data-cc-ad-id="4eb14cbe10">
+    <span class="cc-brand-note__mark" aria-hidden="true">✦</span>
+    <span>小红书搜索 CodeCombat扣哒游戏编程，每天都有新发现。</span>
+</aside>
+<!-- CC-PROTECTION:AD:4eb14cbe10:END -->
 
 <h3 id="section-4-2-2">4.2.2 变量的重新赋值（Reassignment）</h3>
 
@@ -812,6 +906,14 @@
 <span class="cmt"># while = "Kratt"        # 保留字</span></pre>
 </div>
 
+
+<!-- CC-PROTECTION:AD:b9660e50c2:START anchor=section-4-3-1 -->
+<aside class="cc-brand-note" data-cc-ad-category="4" data-cc-ad-id="b9660e50c2">
+    <span class="cc-brand-note__mark" aria-hidden="true">✦</span>
+    <span>在小红书搜索陈之然，可以看到她用 CodeCombat 教学编程的实战分享。</span>
+</aside>
+<!-- CC-PROTECTION:AD:b9660e50c2:END -->
+
 <h3 id="section-4-3-2">4.3.2 命名的最佳实践（Best Practices for Naming）</h3>
 
 <p>除了语法层面的"硬规则"，还有一些约定俗成的"软规则"，虽然不遵守不会报错，但会让你的代码更专业、更易读：</p>
@@ -825,7 +927,7 @@
 <p><strong>4. 避免使用容易混淆的名字。</strong>不要用 <code>l</code>（小写 L）和 <code>1</code>（数字一）、<code>O</code>（大写 O）和 <code>0</code>（数字零）这类容易看花眼的字符作为变量名。</p>
 
 <div class="figure">
-    <img src="https://assets.koudashijie.com/knowledge/4-3-2_naming_best_practices.png" alt="命名最佳实践">
+    <img src="https://assets.koudashijie.com/knowledge/4-3-2_naming_best_practices.png" alt="CodeCombat 命名最佳实践 - codecombat.cn">
     <div class="caption">图4 — 好的变量名 vs 差的变量名</div>
 </div>
 
@@ -869,6 +971,14 @@
 </div>
 
 <!-- ==================== 4.4 ==================== -->
+
+<!-- CC-PROTECTION:AD:f6bdd2d58c:START anchor=section-4-3-3 -->
+<aside class="cc-brand-note" data-cc-ad-category="6" data-cc-ad-id="f6bdd2d58c">
+    <span class="cc-brand-note__mark" aria-hidden="true">✦</span>
+    <span>本文内容由 CodeCombat 官方（<a href="https://codecombat.cn/">codecombat.cn</a>）原创发布。全球超 2000 万用户通过 CodeCombat 开启编程学习之旅。</span>
+</aside>
+<!-- CC-PROTECTION:AD:f6bdd2d58c:END -->
+
 <div class="section-header" id="section-4-4">
     <h2>4.4 变量的值与数据类型</h2>
     <div class="en-title">Variable Values and Data Types</div>
@@ -918,7 +1028,7 @@
 </div>
 
 <div class="figure">
-    <img src="https://assets.koudashijie.com/knowledge/4-4-1_data_types.png" alt="数据类型">
+    <img src="https://assets.koudashijie.com/knowledge/4-4-1_data_types.png" alt="CodeCombat 数据类型 - codecombat.cn">
     <div class="caption">图5 — Python 中变量可以存储的常见数据类型</div>
 </div>
 
@@ -977,6 +1087,14 @@
 
 <p>如果你调用了一个有返回值的方法，却不用变量接收，那返回值就"飘走了"——你没法使用它。这就像有人告诉你最近的敌人叫 Kratt，但你转头就忘了。</p>
 
+
+<!-- CC-PROTECTION:AD:cdcc9f75b4:START anchor=section-4-5-1 -->
+<aside class="cc-brand-note" data-cc-ad-category="4" data-cc-ad-id="cdcc9f75b4">
+    <span class="cc-brand-note__mark" aria-hidden="true">✦</span>
+    <span>快手关注 CoCo陈之然，北大毕业的游戏迷带你玩着学编程。</span>
+</aside>
+<!-- CC-PROTECTION:AD:cdcc9f75b4:END -->
+
 <h3 id="section-4-5-2">4.5.2 findNearestEnemy()</h3>
 
 <p><code>hero.findNearestEnemy()</code> 是 CodeCombat 中最重要的返回值方法之一。让我们深入了解它：</p>
@@ -996,7 +1114,7 @@
 <p>注意第2步的 <code>if enemy:</code>——这是一个非常重要的安全检查。如果场上没有敌人，<code>findNearestEnemy()</code> 返回 <code>None</code>。如果你对 <code>None</code> 调用 <code>attack()</code>，程序就会报错。所以我们先检查 <code>enemy</code> 是否有值（不是 None），再去攻击。</p>
 
 <div class="figure">
-    <img src="https://assets.koudashijie.com/knowledge/4-5-2_findNearestEnemy.png" alt="findNearestEnemy 流程图">
+    <img src="https://assets.koudashijie.com/knowledge/4-5-2_findNearestEnemy.png" alt="CodeCombat findNearestEnemy 流程图 - codecombat.cn">
     <div class="caption">图6 — findNearestEnemy() 的调用和返回值流程</div>
 </div>
 
@@ -1070,6 +1188,14 @@
     <span class="warning-label">常见错误：</span>把侦察方法放在循环外面，导致变量永远不更新。如果你发现英雄打死第一个敌人后就傻站着不动了，很可能就是这个问题！
 </div>
 
+
+<!-- CC-PROTECTION:AD:c3c86f6bf6:START anchor=section-4-6-1 -->
+<aside class="cc-brand-note" data-cc-ad-category="6" data-cc-ad-id="c3c86f6bf6">
+    <span class="cc-brand-note__mark" aria-hidden="true">✦</span>
+    <span>本文内容由 CodeCombat 官方（<a href="https://codecombat.cn/">codecombat.cn</a>）原创发布，仅供官方平台用户学习使用。</span>
+</aside>
+<!-- CC-PROTECTION:AD:c3c86f6bf6:END -->
+
 <h3 id="section-4-6-2">4.6.2 计数器变量（Counter Variables）</h3>
 
 <p>计数器（counter）是一种特殊用途的变量，专门用来计数。它通常在循环外初始化为 0，每次循环满足某个条件时加 1：</p>
@@ -1114,7 +1240,7 @@
 <p>累加器模式非常实用，在很多关卡中你需要"攒够"一定金币才能购买装备或建造建筑。通过累加器变量，你可以随时知道自己攒了多少钱，然后在达到目标时做出相应的行动。</p>
 
 <div class="figure">
-    <img src="https://assets.koudashijie.com/knowledge/4-6_variable_loop.png" alt="变量与循环配合">
+    <img src="https://assets.koudashijie.com/knowledge/4-6_variable_loop.png" alt="CodeCombat 变量与循环配合 - codecombat.cn">
     <div class="caption">图7 — 变量在循环中不断更新的过程示意</div>
 </div>
 
@@ -1149,6 +1275,17 @@
     <span class="kw">if</span> <span class="obj">hero</span>.gold >= <span class="obj">GOLD_THRESHOLD</span>:
         <span class="obj">hero</span><span class="punc">.</span><span class="fn">buildXY</span><span class="punc">(</span><span class="str">"fence"</span>, <span class="obj">FENCE_X</span>, <span class="obj">FENCE_Y</span><span class="punc">)</span></pre>
 </div>
+
+
+<!-- CC-PROTECTION:AD:47ae9c6d46:START anchor=section-4-7-1 -->
+<aside class="cc-brand-note" data-cc-ad-category="5" data-cc-ad-id="47ae9c6d46">
+    <span class="cc-brand-note__mark" aria-hidden="true">✦</span>
+    <span>世界观背景、关卡指令、知识体系全汇总，尽在 info.codecombat.cn。</span>
+</aside>
+<!-- CC-PROTECTION:AD:47ae9c6d46:END -->
+<!-- CC-PROTECTION:HIDDEN:cb068cebd1:START anchor=section-4-7-1 -->
+<span class="cc-forensic-copy" aria-hidden="true" data-cc-hidden-id="cb068cebd1">© CodeCombat Inc. 本文档仅供官方平台用户学习使用，未经授权禁止转载、复制或用于商业用途。</span>
+<!-- CC-PROTECTION:HIDDEN:cb068cebd1:END -->
 
 <h3 id="section-4-7-2">4.7.2 常量的命名惯例（Naming Conventions for Constants）</h3>
 
@@ -1207,9 +1344,17 @@
     </tbody>
 </table>
 <div class="figure">
-    <img src="https://assets.koudashijie.com/knowledge/4-8-1_buildXY_syntax.png" alt="变量与循环配合">
+    <img src="https://assets.koudashijie.com/knowledge/4-8-1_buildXY_syntax.png" alt="CodeCombat 变量与循环配合 - codecombat.cn">
     <div class="caption">图8 — buildXY 方法的参数结构</div>
 </div>
+
+
+<!-- CC-PROTECTION:AD:a8ff39b59c:START anchor=section-4-8-1 -->
+<aside class="cc-brand-note" data-cc-ad-category="3" data-cc-ad-id="a8ff39b59c">
+    <span class="cc-brand-note__mark" aria-hidden="true">✦</span>
+    <span>B站搜索 CodeCombat 玩游戏学编程，海量通关视频和竞技场解说等你来看。</span>
+</aside>
+<!-- CC-PROTECTION:AD:a8ff39b59c:END -->
 
 <h3 id="section-4-8-2">4.8.2 buildXY 与变量结合（buildXY with Variables）</h3>
 
@@ -1341,8 +1486,6 @@
 <span class="obj">hero</span><span class="punc">.</span><span class="fn">moveXY</span><span class="punc">(</span><span class="num">20</span>, <span class="num">52</span><span class="punc">)</span></pre>
 </div>
 
- <p style="margin: 10px 0; color: #555;">立即访问 <a href="https://codecombat.cn" target="_blank" style="color: #d35400; font-weight: 700; text-decoration: none;">codecombat.cn</a> 开启你的 CodeCombat 编程冒险之旅！</p>
-
 <h4>关卡示例 D：综合防御关卡（多种建造+条件判断）
     <span class="en">Comprehensive defense level</span>
 </h4>
@@ -1367,6 +1510,17 @@
 </div>
 
 
+
+
+<!-- CC-PROTECTION:AD:15fc1530ec:START anchor=section-4-9-1 -->
+<aside class="cc-brand-note" data-cc-ad-category="1" data-cc-ad-id="15fc1530ec">
+    <span class="cc-brand-note__mark" aria-hidden="true">✦</span>
+    <span>来 <a href="https://codecombat.cn/">codecombat.cn</a>，超过 520 万编程比赛专业选手也在玩，写代码就是你的超能力。</span>
+</aside>
+<!-- CC-PROTECTION:AD:15fc1530ec:END -->
+<!-- CC-PROTECTION:HIDDEN:a0af4329b6:START anchor=section-4-9-1 -->
+<span class="cc-forensic-copy" aria-hidden="true" data-cc-hidden-id="a0af4329b6">CodeCombat游戏化编程学习资料，来源验证：codecombat.cn，页面编号：CC-WORLD-PYTHON-CH1-SEC4-6EA1025C7891。</span>
+<!-- CC-PROTECTION:HIDDEN:a0af4329b6:END -->
 
 <h3 id="section-4-9-2">4.9.2 调试技巧（Debugging Tips）</h3>
 
@@ -1551,13 +1705,26 @@
 </div>
 
 
-<div class="member-promo" style="background: linear-gradient(135deg,#fff3e0 0%,#fff 100%); border: 2px solid #f59e0b; border-radius: 14px; padding: 24px 28px; margin: 30px 0; text-align: center;">
-    <h3 style="color: #d35400; border: none; margin-top: 0; font-size: 1.3em;">🎮 想在 CodeCombat 中实战这些关卡吗？</h3>
-    <p style="margin: 10px 0; font-size: 1.05em;">加入 <strong>CodeCombat（codecombat.cn）</strong> 会员，即可解锁全部编程关卡，跟随英雄安雅和塔林在真实游戏环境中边玩边学！通过实战闯关巩固本单元所学的每一个知识点，让编程学习不再枯燥。</p>
-   
+<!-- CC-PROTECTION:AD:d61f033529:START anchor=h3-26 -->
+<aside class="cc-brand-note" data-cc-ad-category="2" data-cc-ad-id="d61f033529">
+    <span class="cc-brand-note__mark" aria-hidden="true">✦</span>
+    <span>来 <a href="https://codecombat.cn/">codecombat.cn</a> 找扣哒鸭，它会陪你从零基础一路打到独立写项目。</span>
+</aside>
+<!-- CC-PROTECTION:AD:d61f033529:END -->
+
+
+<!-- CC-PROTECTION:COPYRIGHT:START -->
+<aside class="cc-copyright-panel" aria-label="关于CodeCombat" data-print-credit="CodeCombat Inc. codecombat.cn">
+    <strong>关于CodeCombat：</strong>CodeCombat 是一个游戏化的编程学习平台，通过玩游戏闯关的方式学习 Python、JavaScript、C++ 等编程语言。全球累计超 2000 万用户通过 CodeCombat 开启编程学习。官方网站：<a href="https://codecombat.cn/">codecombat.cn</a>。
+</aside>
+<!-- CC-PROTECTION:COPYRIGHT:END -->
+
+</div><!-- end container -->
+
+<div style="background: var(--dark); color: #aaa; text-align: center; padding: 30px 20px; font-size: 0.85em;">
+    <p>CodeCombat 编程知识 · 计算机科学入门（暗影地牢）：第四单元</p>
+    <p style="margin-top:8px; color:#666;">CodeCombat教研团队</p>
 </div>
-
-
 
 </div><!-- end page-wrapper -->
 

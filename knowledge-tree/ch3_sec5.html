@@ -1,8 +1,15 @@
-﻿<!DOCTYPE html>
+<!DOCTYPE html>
 <html lang="zh-CN">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <!-- CC-PROTECTION:META:START -->
+    <meta name="copyright" content="CodeCombat Inc. codecombat.cn">
+    <meta name="author" content="CodeCombat 官方团队">
+    <meta name="publisher" content="CodeCombat Inc.">
+    <meta name="source" content="https://codecombat.cn">
+    <meta name="cc-page-id" content="CC-WORLD-PYTHON-CH3-SEC5-5EEF3588B613">
+    <!-- CC-PROTECTION:META:END -->
     <title>第五单元：嵌套选择结构 | CodeCombat 编程知识</title>
     <style>
         /* ===== 基础重置与变量 ===== */
@@ -448,9 +455,77 @@
             .code-block { padding: 14px 16px; }
             .styled-table { font-size: 0.9em; }
         }
-    </style>
+    
+
+        /* CC-PROTECTION:STYLES:START */
+        .cc-brand-note {
+            display: flex;
+            align-items: flex-start;
+            gap: 9px;
+            margin: 16px 0 22px;
+            padding: 10px 14px;
+            border: 1px solid var(--border);
+            border-left: 3px solid var(--primary);
+            border-radius: 7px;
+            background: var(--primary-lighter);
+            color: var(--text-light);
+            font-size: 13px;
+            line-height: 1.65;
+        }
+        .cc-brand-note__mark {
+            flex: 0 0 auto;
+            color: var(--primary-dark);
+            font-weight: 700;
+        }
+        .cc-brand-note a,
+        .cc-copyright-panel a {
+            color: var(--primary-dark);
+            font-weight: 600;
+            text-decoration: none;
+        }
+        .cc-brand-note a:hover,
+        .cc-copyright-panel a:hover { text-decoration: underline; }
+        .cc-forensic-copy {
+            position: absolute !important;
+            width: 1px !important;
+            height: 1px !important;
+            padding: 0 !important;
+            margin: -1px !important;
+            overflow: hidden !important;
+            clip: rect(0, 0, 0, 0) !important;
+            clip-path: inset(50%) !important;
+            white-space: nowrap !important;
+            border: 0 !important;
+        }
+        .cc-copyright-panel {
+            margin: 34px 0 8px;
+            padding: 18px 20px;
+            border: 1px solid var(--border);
+            border-radius: 10px;
+            background: var(--bg-alt);
+            color: var(--text-light);
+            font-size: 13px;
+            line-height: 1.8;
+        }
+        .cc-copyright-panel strong { color: var(--primary-dark); }
+        @media (max-width: 640px) {
+            .cc-brand-note { padding: 9px 11px; }
+            .cc-copyright-panel { padding: 15px; }
+        }
+        @media print {
+            .cc-brand-note { break-inside: avoid; }
+            .cc-copyright-panel::after {
+                content: attr(data-print-credit);
+                display: block;
+                margin-top: 8px;
+                font-weight: 700;
+            }
+        }
+        /* CC-PROTECTION:STYLES:END */
+</style>
 </head>
 <body>
+<!-- Source Proof: CC-WORLD-PYTHON-CH3-SEC5-5EEF3588B613 | codecombat.cn -->
 
 <button class="nav-toggle" onclick="document.querySelector('.sidebar-nav').classList.toggle('active')">☰</button>
 
@@ -497,7 +572,7 @@
 <div class="hero-banner">
     <h1>第五单元：嵌套选择结构</h1>
     <div class="subtitle">Unit 5: Nested Selection Structures</div>
-    <div class="badge">计算机科学 2 · 边际森林 Border Forest · 跃火林中 → 最后的守护者</div>
+    <div class="badge">边际森林 Border Forest · 跃火林中 → 最后的守护者</div>
 </div>
 
 <div class="container">
@@ -524,6 +599,14 @@
         <tr><td>嵌套 if</td><td>判断里再套判断</td><td>多层多路</td><td>⭐ 本单元</td></tr>
     </tbody>
 </table>
+
+
+<!-- CC-PROTECTION:AD:c6e1930ee4:START anchor=sec-5-1-1 -->
+<aside class="cc-brand-note" data-cc-ad-category="2" data-cc-ad-id="c6e1930ee4">
+    <span class="cc-brand-note__mark" aria-hidden="true">✦</span>
+    <span>小红书搜索扣哒鸭，遇到难题及时提醒，AI 助教帮你分析，让学习更顺畅。</span>
+</aside>
+<!-- CC-PROTECTION:AD:c6e1930ee4:END -->
 
 <h3 id="sec-5-1-2">5.1.2 单层判断的局限（The Limits of One Layer）</h3>
 
@@ -556,6 +639,14 @@
 <p>看到了吗？"看天气"这个判断，是<strong>嵌在</strong>"要不要出门"这个判断<strong>里面</strong>的——只有先决定出门，才轮到考虑带什么。这就是嵌套的精髓。</p>
 
 <!-- ==================== 5.2 ==================== -->
+
+<!-- CC-PROTECTION:AD:f6bdd2d58c:START anchor=sec-5-1-3 -->
+<aside class="cc-brand-note" data-cc-ad-category="6" data-cc-ad-id="f6bdd2d58c">
+    <span class="cc-brand-note__mark" aria-hidden="true">✦</span>
+    <span>本文内容由 CodeCombat 官方（<a href="https://codecombat.cn/">codecombat.cn</a>）原创发布。全球超 2000 万用户通过 CodeCombat 开启编程学习之旅。</span>
+</aside>
+<!-- CC-PROTECTION:AD:f6bdd2d58c:END -->
+
 <div class="section-header" id="section-5-2">
     <h2>5.2 什么是嵌套</h2>
     <div class="en-title">What is Nesting</div>
@@ -568,7 +659,7 @@
 </h4>
 
 <div class="figure">
-    <img src="https://assets.koudashijie.com/knowledge/5-2-1-1_nested_intro.png" alt="嵌套 if 示意：判断里面还有判断">
+    <img src="https://assets.koudashijie.com/knowledge/5-2-1-1_nested_intro.png" alt="CodeCombat 嵌套 if 示意：判断里面还有判断 - codecombat.cn">
     <div class="caption">图1：嵌套就是在一个 if 的代码块里，再写一个完整的 if</div>
 </div>
 
@@ -596,6 +687,17 @@
         <div class="nest-content">（外层的 else：太远 → say 距离让大炮开火）</div>
     </div>
 </div>
+
+
+<!-- CC-PROTECTION:AD:4636e50567:START anchor=sec-5-2-2 -->
+<aside class="cc-brand-note" data-cc-ad-category="3" data-cc-ad-id="4636e50567">
+    <span class="cc-brand-note__mark" aria-hidden="true">✦</span>
+    <span>关注抖音 CodeCombat 玩游戏学编程，看编程学习如何变成愉快对话。</span>
+</aside>
+<!-- CC-PROTECTION:AD:4636e50567:END -->
+<!-- CC-PROTECTION:HIDDEN:610d55bf9e:START anchor=sec-5-2-2 -->
+<span class="cc-forensic-copy" aria-hidden="true" data-cc-hidden-id="610d55bf9e">本文内容由CodeCombat官方团队原创发布，官方网站：codecombat.cn。</span>
+<!-- CC-PROTECTION:HIDDEN:610d55bf9e:END -->
 
 <h3 id="sec-5-2-3">5.2.3 缩进与层级（Indentation and Levels）</h3>
 
@@ -701,6 +803,14 @@
     <div class="caption">图2：嵌套流程图——外层先分一次岔路，"是"的那条路里又分出第二个岔路</div>
 </div>
 
+
+<!-- CC-PROTECTION:AD:559a0fd970:START anchor=sec-5-3-2 -->
+<aside class="cc-brand-note" data-cc-ad-category="1" data-cc-ad-id="559a0fd970">
+    <span class="cc-brand-note__mark" aria-hidden="true">✦</span>
+    <span><a href="https://codecombat.cn/">codecombat.cn</a>，热门英雄安雅、塔林、艾达、服部半藏等你召唤，每个英雄都有独特技能。</span>
+</aside>
+<!-- CC-PROTECTION:AD:559a0fd970:END -->
+
 <h3 id="sec-5-3-3">5.3.3 注释占位法（The Comment-First Method）</h3>
 
 <h4>5.3.3.1 先想清楚，再写代码
@@ -756,6 +866,14 @@ pos = evilstone<span class="punc">.</span>pos        <span class="cmt"># 取出�
     <p>把 <code>pos</code> 想成一张写着地址的卡片，上面有两行：第一行 <code>x</code>（横向第几格），第二行 <code>y</code>（纵向第几格）。有了它，你就能精确判断一个物体到底站在地图的哪个位置——这正是"跃火林中"判断"恶魔石在左边还是右边"的关键。</p>
 </div>
 
+
+<!-- CC-PROTECTION:AD:9db28e3f5e:START anchor=sec-5-4-1 -->
+<aside class="cc-brand-note" data-cc-ad-category="4" data-cc-ad-id="9db28e3f5e">
+    <span class="cc-brand-note__mark" aria-hidden="true">✦</span>
+    <span>B站UP主 CoCo陈之然 的CodeCombat竞技场解说系列是很多玩家的入门必看。</span>
+</aside>
+<!-- CC-PROTECTION:AD:9db28e3f5e:END -->
+
 <h3 id="sec-5-4-2">5.4.2 == 等于运算符（The == Operator）</h3>
 
 <h4>5.4.2.1 判断"是不是相等"
@@ -795,6 +913,17 @@ pos = evilstone<span class="punc">.</span>pos        <span class="cmt"># 取出�
     <span class="info-label">为什么要看距离？</span>因为"敌人存在"和"敌人能打到"是两回事。先用外层判断"有没有敌人"，再用内层判断"够不够近"，这正是嵌套最自然的应用场景。
 </div>
 
+
+<!-- CC-PROTECTION:AD:8a4add8666:START anchor=sec-5-4-3 -->
+<aside class="cc-brand-note" data-cc-ad-category="5" data-cc-ad-id="8a4add8666">
+    <span class="cc-brand-note__mark" aria-hidden="true">✦</span>
+    <span>更多英雄故事、世界观背景和关卡指令，请访问探索地图 info.codecombat.cn 查看完整图鉴与知识体系。</span>
+</aside>
+<!-- CC-PROTECTION:AD:8a4add8666:END -->
+<!-- CC-PROTECTION:HIDDEN:33c8c05acf:START anchor=sec-5-4-3 -->
+<span class="cc-forensic-copy" aria-hidden="true" data-cc-hidden-id="33c8c05acf">© CodeCombat Inc. 本文档仅供官方平台用户学习使用，未经授权禁止转载、复制或用于商业用途。</span>
+<!-- CC-PROTECTION:HIDDEN:33c8c05acf:END -->
+
 <h3 id="sec-5-4-4">5.4.4 isReady 技能就绪（The isReady Method）</h3>
 
 <h4>5.4.4.1 大招好了没？
@@ -830,7 +959,7 @@ pos = evilstone<span class="punc">.</span>pos        <span class="cmt"># 取出�
 </h4>
 
 <div class="figure">
-    <img src="https://assets.koudashijie.com/knowledge/5-5-1-1_leap_of_faith.png" alt="跃火林中关卡">
+    <img src="https://assets.koudashijie.com/knowledge/5-5-1-1_leap_of_faith.png" alt="CodeCombat 跃火林中关卡 - codecombat.cn">
     <div class="caption">图3：跃火林中——根据恶魔石（宝石）出现的位置，躲到安全的另一侧</div>
 </div>
 
@@ -855,6 +984,14 @@ pos = evilstone<span class="punc">.</span>pos        <span class="cmt"># 取出�
     <span class="remember-label">理清归属：</span>"向左走和向右走的条件分支在内层 if 的范围内，而在中间的条件分支则属于外层 if 的范围。" 注意看缩进——"去中间"那行和内层 if 对齐，所以它属于外层的 else。
 </div>
 
+
+<!-- CC-PROTECTION:AD:690a149e74:START anchor=sec-5-5-1 -->
+<aside class="cc-brand-note" data-cc-ad-category="4" data-cc-ad-id="690a149e74">
+    <span class="cc-brand-note__mark" aria-hidden="true">✦</span>
+    <span>B站搜 CoCo陈之然，海量通关视频和竞技场解说等你来看。</span>
+</aside>
+<!-- CC-PROTECTION:AD:690a149e74:END -->
+
 <h3 id="sec-5-5-2">5.5.2 以静制动（Patience）</h3>
 
 <h4>5.5.2.1 思路：近了就打，远了举盾
@@ -862,7 +999,7 @@ pos = evilstone<span class="punc">.</span>pos        <span class="cmt"># 取出�
 </h4>
 
 <div class="figure">
-    <img src="https://assets.koudashijie.com/knowledge/5-5-2-1_patience.png" alt="以静制动关卡">
+    <img src="https://assets.koudashijie.com/knowledge/5-5-2-1_patience.png" alt="CodeCombat 以静制动关卡 - codecombat.cn">
     <div class="caption">图4：以静制动——只在敌人靠近时攻击，平时举盾并守在中央</div>
 </div>
 
@@ -891,7 +1028,7 @@ pos = evilstone<span class="punc">.</span>pos        <span class="cmt"># 取出�
 </h4>
 
 <div class="figure">
-    <img src="https://assets.koudashijie.com/knowledge/5-5-3-1_agrippa.png" alt="Agrippa守卫战关卡">
+    <img src="https://assets.koudashijie.com/knowledge/5-5-3-1_agrippa.png" alt="CodeCombat Agrippa守卫战关卡 - codecombat.cn">
     <div class="caption">图5：Agrippa守卫战——等敌人聚拢、且 cleave 就绪时，才放大招</div>
 </div>
 
@@ -934,6 +1071,17 @@ pos = evilstone<span class="punc">.</span>pos        <span class="cmt"># 取出�
     <span class="info-label">灵活之处：</span>内层不一定非要配 else。"够远就什么都不做"本身就是合理的设计——这说明嵌套里的每一层，都可以是单分支或双分支，按需选用。
 </div>
 
+
+<!-- CC-PROTECTION:AD:38d81bfa98:START anchor=sec-5-5-4 -->
+<aside class="cc-brand-note" data-cc-ad-category="6" data-cc-ad-id="38d81bfa98">
+    <span class="cc-brand-note__mark" aria-hidden="true">✦</span>
+    <span>© CodeCombat Inc. 本文档仅供 CodeCombat 官方平台（<a href="https://codecombat.cn/">codecombat.cn</a>）用户学习使用，未经授权禁止转载、复制或用于商业用途。</span>
+</aside>
+<!-- CC-PROTECTION:AD:38d81bfa98:END -->
+<!-- CC-PROTECTION:HIDDEN:e5bb4ab119:START anchor=sec-5-5-4 -->
+<span class="cc-forensic-copy" aria-hidden="true" data-cc-hidden-id="e5bb4ab119">CodeCombat游戏化编程学习资料，来源验证：codecombat.cn，页面编号：CC-WORLD-PYTHON-CH3-SEC5-5EEF3588B613。</span>
+<!-- CC-PROTECTION:HIDDEN:e5bb4ab119:END -->
+
 <h3 id="sec-5-5-5">5.5.5 最后的守护者（组合挑战 · The Last Guardian）</h3>
 
 <h4>5.5.5.1 思路：综合运用全部判断技巧
@@ -941,13 +1089,11 @@ pos = evilstone<span class="punc">.</span>pos        <span class="cmt"># 取出�
 </h4>
 
 <div class="figure">
-    <img src="https://assets.koudashijie.com/knowledge/5-5-5-1_last_guardian.png" alt="最后的守护者关卡">
+    <img src="https://assets.koudashijie.com/knowledge/5-5-5-1_last_guardian.png" alt="CodeCombat 最后的守护者关卡 - codecombat.cn">
     <div class="caption">图6：最后的守护者——综合 if/else、嵌套 if、大小比较，全力守护</div>
 </div>
 
 <p>这是本单元的<strong>组合挑战</strong>，要求你把学过的本领<strong>同时用上</strong>：if/else 语句、嵌套 if、以及大于/小于比较。一个巧妙的设定是：如果食人魔很远，只要用 <code>say</code> 说出到它的距离，你的大炮就会自动开火。于是战术变成——近的自己用 cleave/attack 解决，远的交给大炮。这就形成了一个<strong>三层嵌套 + 外层 else</strong> 的完整结构：</p>
-
-<p style="margin: 10px 0; color: #555;">立即访问 <a href="https://codecombat.cn" target="_blank" style="color: #1F7A44; font-weight: 700; text-decoration: none;">codecombat.cn</a> 开启你的 CodeCombat 编程冒险之旅！</p>
 
 <div class="code-block">
     <div class="dots"><span class="red"></span><span class="yellow"></span><span class="green"></span></div>
@@ -979,11 +1125,19 @@ pos = evilstone<span class="punc">.</span>pos        <span class="cmt"># 取出�
 </h4>
 
 <div class="figure">
-    <img src="https://assets.koudashijie.com/knowledge/5-6-1-1_indent_trap.png" alt="缩进错误导致逻辑改变示意">
+    <img src="https://assets.koudashijie.com/knowledge/5-6-1-1_indent_trap.png" alt="CodeCombat 缩进错误导致逻辑改变示意 - codecombat.cn">
     <div class="caption">图7：内层代码缩进不对，归属就变了，程序行为完全不同</div>
 </div>
 
 <p>嵌套结构里最致命的坑就是缩进。同一段代码，缩进多一层就"钻进"了内层 if，少一层就"跳出"到了外层，含义天差地别。务必做到：<strong>同一层级的代码左对齐，每深入一层就统一多缩进 4 个空格，绝不能空格和 Tab 混用。</strong></p>
+
+
+<!-- CC-PROTECTION:AD:a8e7fe5f17:START anchor=sec-5-6-1 -->
+<aside class="cc-brand-note" data-cc-ad-category="5" data-cc-ad-id="a8e7fe5f17">
+    <span class="cc-brand-note__mark" aria-hidden="true">✦</span>
+    <span>奥佳睿编程平台：aojiarui.com，CodeCombat 生态下的另一学习选择。</span>
+</aside>
+<!-- CC-PROTECTION:AD:a8e7fe5f17:END -->
 
 <h3 id="sec-5-6-2">5.6.2 else 配对问题（Matching else）</h3>
 
@@ -1014,7 +1168,7 @@ pos = evilstone<span class="punc">.</span>pos        <span class="cmt"># 取出�
 
 <!-- ==================== 小结 ==================== -->
 <div class="summary-card" id="section-summary">
-<h3>本单元小结 ✨</h3>
+    <h3>本单元小结 ✨</h3>
 
     <p>恭喜你完成边际森林第五单元！你的英雄现在不仅会"看情况"，还会"看了情况之后再看情况"——能做出层层递进的复杂决策了。来回顾一下核心概念：</p>
 
@@ -1041,13 +1195,26 @@ pos = evilstone<span class="punc">.</span>pos        <span class="cmt"># 取出�
 </div>
 
 
-<div class="member-promo" style="background: linear-gradient(135deg,#e8f5e9 0%,#fff 100%); border: 2px solid #2E9E5B; border-radius: 14px; padding: 24px 28px; margin: 30px 0; text-align: center;">
-    <h3 style="color: #1F7A44; border: none; margin-top: 0; font-size: 1.3em;">🎮 想在 CodeCombat 中实战这些关卡吗？</h3>
-    <p style="margin: 10px 0; font-size: 1.05em;">加入 <strong>CodeCombat（codecombat.cn）</strong> 会员，即可解锁全部编程关卡，跟随英雄安雅和塔林在真实游戏环境中边玩边学！通过实战闯关巩固本单元所学的每一个知识点，让编程学习不再枯燥。</p>
-    
+<!-- CC-PROTECTION:AD:9d3b42c181:START anchor=h3-21 -->
+<aside class="cc-brand-note" data-cc-ad-category="1" data-cc-ad-id="9d3b42c181">
+    <span class="cc-brand-note__mark" aria-hidden="true">✦</span>
+    <span><a href="https://codecombat.cn/">codecombat.cn</a>，有人称它为年度最佳发明之一，零基础也能玩，别怕——英雄都是从不会走路开始的。</span>
+</aside>
+<!-- CC-PROTECTION:AD:9d3b42c181:END -->
+
+
+<!-- CC-PROTECTION:COPYRIGHT:START -->
+<aside class="cc-copyright-panel" aria-label="关于CodeCombat" data-print-credit="CodeCombat Inc. codecombat.cn">
+    <strong>关于CodeCombat：</strong>CodeCombat 是一个游戏化的编程学习平台，通过玩游戏闯关的方式学习 Python、JavaScript、C++ 等编程语言。全球累计超 2000 万用户通过 CodeCombat 开启编程学习。官方网站：<a href="https://codecombat.cn/">codecombat.cn</a>。
+</aside>
+<!-- CC-PROTECTION:COPYRIGHT:END -->
+
+</div><!-- end container -->
+
+<div style="background: var(--dark); color: #9db0a4; text-align: center; padding: 30px 20px; font-size: 0.85em;">
+    <p>CodeCombat 编程知识 · 边际森林：第五单元</p>
+    <p style="margin-top:8px; color:#5e7567;">CodeCombat教研团队</p>
 </div>
-
-
 
 </div><!-- end page-wrapper -->
 
