@@ -1,0 +1,1234 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="copyright" content="CodeCombat Inc. codecombat.cn">
+<meta name="author" content="CodeCombat 官方团队">
+<title>扣哒考级 · CodeCombat 扣哒世界 · CCF GESP 考纲配套</title>
+<style>
+  :root{
+    --bg-page:#eef2f9; --panel:#ffffff; --line:#e3e9f4;
+    --brand:#ff6b35; --brand-2:#ff8f5e;
+    --python:#2e9e5b; --cpp:#2563eb; --scratch:#8b5cf6; --exam:#0891b2;
+    --text:#232b3d; --dim:#7c8aa3; --dim2:#9aa8bd;
+    --shadow:0 10px 34px rgba(38,62,120,.10);
+  }
+  *{margin:0;padding:0;box-sizing:border-box}
+  html,body{height:100%}
+  body{
+    font-family:"PingFang SC","Microsoft YaHei","Segoe UI",-apple-system,sans-serif;
+    background:var(--bg-page);color:var(--text);overflow:hidden;font-size:14px;
+  }
+  .layout{display:flex;height:100vh}
+
+  /* ============ 侧边栏 ============ */
+  .sidebar{
+    width:330px;flex-shrink:0;background:var(--panel);border-right:1px solid var(--line);
+    display:flex;flex-direction:column;box-shadow:4px 0 24px rgba(40,60,120,.05);z-index:20;
+    transition:width .28s ease;
+  }
+  .sidebar.collapsed{width:64px}
+  .sidebar.collapsed .brand-text,
+  .sidebar.collapsed .brand-slogan,
+  .sidebar.collapsed .search-wrap,
+  .sidebar.collapsed .board-body,
+  .sidebar.collapsed .foot{display:none}
+  .sidebar.collapsed .brand{padding:12px 8px;justify-content:center;gap:0}
+  .sidebar.collapsed .logo-link{display:flex;margin:0 auto}
+  .sidebar.collapsed .logo-img{height:auto;width:46px}   /* 宽幅 logo 在 64px 窄栏中按宽度收缩 */
+  .sidebar.collapsed .toggle{display:none}
+  .sidebar.collapsed .board-head{justify-content:center;padding:12px 8px;position:relative}
+  .sidebar.collapsed .board-head:hover{background:var(--soft)}
+  .sidebar.collapsed .board-head .b-name,
+  .sidebar.collapsed .board-head .b-sub,
+  .sidebar.collapsed .board-head .chev{display:none}
+
+
+
+  .brand{
+    padding:12px 16px 12px;border-bottom:1px solid var(--line);
+    background:linear-gradient(135deg,#fff8f4,#ffffff);
+  }
+  .brand-row{display:flex;align-items:center;gap:11px}
+  .brand .logo-link{display:flex;align-items:center;flex-shrink:0;transition:.2s}
+  .brand .logo-link:hover{transform:scale(1.04)}
+  /* logo.webp 原始尺寸 358×84（约 4.26 : 1 的宽幅），只定高度、宽度自适应，绝不拉成方形 */
+  .brand .logo-img{height:29px;width:auto;display:block}
+  .brand-text{flex:1;min-width:0}
+  .brand-text h1{font-size:17px;font-weight:800;letter-spacing:1.2px;white-space:nowrap;color:var(--text)}
+  /* 一句话独占一行，放在 logo 与标题下方，字号小一档，避免与宽幅 logo 抢空间 */
+  .brand-slogan{
+    font-size:11px;color:var(--dim);line-height:1.55;margin-top:9px;letter-spacing:.2px;
+  }
+  .toggle{
+    width:26px;height:26px;border:1px solid var(--line);border-radius:8px;background:#fff;
+    color:var(--dim);cursor:pointer;font-size:11px;flex-shrink:0;transition:.2s;line-height:1;
+  }
+  .toggle:hover{border-color:var(--brand);color:var(--brand);background:#fff6f2}
+
+  .search-wrap{padding:12px 16px 8px}
+  .search-wrap input{
+    width:100%;padding:9px 13px;border:1px solid var(--line);border-radius:10px;
+    font-size:12.5px;background:#f8fafd;outline:none;transition:.2s;font-family:inherit;
+  }
+  .search-wrap input:focus{border-color:var(--brand);background:#fff;box-shadow:0 0 0 3px rgba(255,107,53,.10)}
+
+  .nav{flex:1;overflow-y:auto;padding:6px 0 40px}
+  .nav::-webkit-scrollbar{width:7px}
+  .nav::-webkit-scrollbar-thumb{background:#dae2ef;border-radius:4px}
+
+  .board{--c:var(--brand);--soft:rgba(255,107,53,.09);margin-bottom:6px}
+  .board.py{--c:var(--python);--soft:rgba(46,158,91,.09)}
+  .board.cpp{--c:var(--cpp);--soft:rgba(37,99,235,.09)}
+  .board.scratch{--c:var(--scratch);--soft:rgba(139,92,246,.09)}
+  .board.exam{--c:var(--exam);--soft:rgba(8,145,178,.09)}
+
+  .board-head{
+    display:flex;align-items:center;gap:11px;padding:12px 18px;cursor:pointer;user-select:none;
+    border-left:4px solid transparent;transition:.18s;
+  }
+  .board-head:hover{background:#f7f9fd}
+  .board-head.open{border-left-color:var(--c);background:var(--soft)}
+  .board-dot{
+    width:30px;height:30px;border-radius:9px;flex-shrink:0;display:flex;align-items:center;justify-content:center;
+    background:var(--c);color:#fff;font-size:13px;font-weight:800;box-shadow:0 4px 12px rgba(0,0,0,.13);
+  }
+  .b-name{font-size:13.5px;font-weight:800;white-space:nowrap}
+  .b-sub{font-size:10.5px;color:var(--dim2);font-weight:500;margin-left:auto;white-space:nowrap}
+  .chev{font-size:9px;color:var(--dim2);transition:transform .25s;margin-left:6px}
+  .board-head.open .chev{transform:rotate(90deg)}
+
+  .board-body{overflow:hidden;max-height:0;transition:max-height .45s ease}
+  /* 默认全展开：一个板块要装下"全部级别 × 每级全部单元"，所以要给足上限 */
+  .board-body.open{max-height:40000px}
+
+  .level{border-left:4px solid transparent}
+  .level-head{
+    display:flex;align-items:center;gap:9px;padding:9px 18px 9px 28px;cursor:pointer;user-select:none;
+    transition:.16s;
+  }
+  .level-head:hover{background:#f7f9fd}
+  .level-head.open{background:var(--soft)}
+  .lv-badge{
+    font-size:10px;font-weight:800;padding:2.5px 8px;border-radius:20px;flex-shrink:0;
+    background:#fff;border:1px solid var(--c);color:var(--c);
+  }
+  .level-head .lv-title{font-size:12.5px;font-weight:800;color:var(--text);white-space:nowrap}
+  .level-head .lv-world{font-size:10px;color:var(--dim2);margin-left:auto;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+  .level-head .chev{margin-left:2px}
+
+  .units{overflow:hidden;max-height:0;transition:max-height .4s ease}
+  .units.open{max-height:4000px}
+  .unit{
+    display:flex;align-items:flex-start;gap:9px;padding:7px 16px 7px 30px;cursor:pointer;
+    border-left:4px solid transparent;transition:.15s;
+  }
+  .unit:hover{background:#f7f9fd}
+  .unit.active{background:var(--soft);border-left-color:var(--c)}
+  .unit .no{
+    width:22px;height:20px;border-radius:6px;flex-shrink:0;background:#eef2f8;color:var(--dim2);
+    display:flex;align-items:center;justify-content:center;font-size:9.5px;font-weight:800;margin-top:2px;
+    letter-spacing:-.3px;
+  }
+  .unit.active .no{background:var(--c);color:#fff}
+  .unit.ready .no{background:#dcf5e7;color:var(--python)}
+  .unit.active.ready .no{background:var(--c);color:#fff}
+  .unit .u-txt{flex:1;min-width:0}
+  .unit .u-g{font-size:12.5px;color:#4a5a72;font-weight:600;line-height:1.4}
+  .unit.active .u-g{color:var(--c);font-weight:800}
+  .unit .u-k{font-size:10.5px;color:var(--dim2);line-height:1.45;margin-top:1px}
+  .unit .u-tag{
+    display:inline-block;font-size:9px;padding:1px 6px;border-radius:5px;margin-left:5px;
+    background:#e2f7ec;color:#1f8c4d;font-weight:700;vertical-align:1px;white-space:nowrap;
+  }
+
+  .foot{padding:11px 18px;border-top:1px solid var(--line);font-size:10.5px;color:var(--dim2);line-height:1.7;background:#fbfcfe}
+  .foot a{color:var(--brand);text-decoration:none;font-weight:700}
+  .foot a:hover{text-decoration:underline}
+
+  /* ============ 内容区 ============ */
+  .content{flex:1;position:relative;display:flex;flex-direction:column;min-width:0}
+  .frame-wrap{flex:1;position:relative}
+  iframe.unit-frame{width:100%;height:100%;border:none;background:#fff;display:block}
+
+  .welcome{position:absolute;inset:0;overflow-y:auto;padding:38px 46px 60px}
+  .welcome::-webkit-scrollbar{width:8px}
+  .welcome::-webkit-scrollbar-thumb{background:#d3dcec;border-radius:4px}
+  .hero-card{
+    position:relative;border-radius:22px;padding:40px 44px;overflow:hidden;color:#fff;
+    background:linear-gradient(120deg,#16202f 0%,#2b3a52 44%,#a8431c 132%);
+    box-shadow:0 20px 50px rgba(28,42,70,.28);
+  }
+  .hero-card::after{
+    content:"";position:absolute;right:-60px;bottom:-90px;width:340px;height:340px;border-radius:50%;
+    background:radial-gradient(circle,rgba(255,140,80,.5),transparent 68%);
+  }
+  .hero-card .kicker{font-size:11px;letter-spacing:3px;color:#ffb894;font-weight:700;margin-bottom:12px}
+  .hero-card h2{font-size:31px;font-weight:800;letter-spacing:1px;margin-bottom:14px;line-height:1.3}
+  .hero-card p{font-size:13.5px;line-height:2;color:#d8e0ef;max-width:780px}
+  .hero-card .hl{color:#ffb894;font-weight:700}
+  .hero-card .hero-tag{
+    display:inline-flex;align-items:center;gap:7px;padding:6px 15px;border-radius:20px;margin-bottom:16px;
+    background:rgba(255,255,255,.15);border:1px solid rgba(255,255,255,.3);
+    font-size:11.5px;font-weight:800;color:#ffd9c4;letter-spacing:.8px;position:relative;z-index:2;
+  }
+
+  .stat-row{display:grid;grid-template-columns:repeat(4,1fr);gap:16px;margin:26px 0 30px}
+  .stat{background:#fff;border:1px solid var(--line);border-radius:16px;padding:18px 20px;box-shadow:var(--shadow)}
+  .stat b{display:block;font-size:26px;font-weight:800;letter-spacing:.5px}
+  .stat span{font-size:11.5px;color:var(--dim);margin-top:5px;display:block}
+  .stat.s1 b{color:var(--python)} .stat.s2 b{color:var(--cpp)} .stat.s3 b{color:var(--scratch)} .stat.s4 b{color:var(--exam)}
+
+  .sec-title{font-size:16px;font-weight:800;margin:6px 0 16px;display:flex;align-items:center;gap:9px}
+  .sec-title::before{content:"";width:5px;height:18px;border-radius:3px;background:var(--brand)}
+
+  .cards{display:grid;grid-template-columns:repeat(4,1fr);gap:16px;margin-bottom:30px}
+  .card{
+    background:#fff;border:1px solid var(--line);border-radius:18px;padding:22px 20px;cursor:pointer;
+    transition:.22s;position:relative;overflow:hidden;box-shadow:var(--shadow);
+  }
+  .card:hover{transform:translateY(-4px);border-color:var(--c);box-shadow:0 18px 40px rgba(38,62,120,.16)}
+  .card::before{content:"";position:absolute;left:0;top:0;width:100%;height:4px;background:var(--c)}
+  .card .ico{
+    width:44px;height:44px;border-radius:13px;display:flex;align-items:center;justify-content:center;
+    font-size:20px;font-weight:800;color:#fff;background:var(--c);margin-bottom:14px;
+    box-shadow:0 8px 20px rgba(0,0,0,.16);
+  }
+  .card h3{font-size:15.5px;font-weight:800;margin-bottom:7px}
+  .card .meta{font-size:11.5px;color:var(--c);font-weight:700;margin-bottom:11px}
+  .card p{font-size:12.5px;color:var(--dim);line-height:1.85}
+
+  .road{background:#fff;border:1px solid var(--line);border-radius:18px;padding:26px 28px;box-shadow:var(--shadow)}
+  .road-item{display:flex;gap:16px;padding:13px 0;border-bottom:1px dashed var(--line)}
+  .road-item:last-child{border-bottom:none}
+  .road-no{
+    width:34px;height:34px;border-radius:11px;flex-shrink:0;display:flex;align-items:center;justify-content:center;
+    font-size:13px;font-weight:800;color:#fff;background:var(--c);
+  }
+  .road-txt h4{font-size:13.5px;font-weight:800;margin-bottom:4px}
+  .road-txt p{font-size:12px;color:var(--dim);line-height:1.8}
+  .road-txt .lv{font-size:11px;color:var(--c);font-weight:700}
+
+  .placeholder{display:flex;flex-direction:column;align-items:center;justify-content:center;height:100%;text-align:center;padding:40px}
+  .ph-badge{
+    width:92px;height:92px;border-radius:26px;display:flex;align-items:center;justify-content:center;
+    font-size:34px;font-weight:800;color:#fff;margin-bottom:24px;
+    background:linear-gradient(135deg,#ffb56b,#ff6b35);box-shadow:0 14px 34px rgba(255,107,53,.35);
+    animation:float 3s ease-in-out infinite;
+  }
+  @keyframes float{0%,100%{transform:translateY(0)}50%{transform:translateY(-12px)}}
+  .placeholder h2{font-size:22px;margin-bottom:12px}
+  .placeholder p{color:var(--dim);font-size:13.5px;max-width:480px;line-height:2}
+  .placeholder .dev-text{margin-top:20px;font-size:11px;color:var(--dim2);letter-spacing:2.5px}
+
+  /* ============ 家长页（首页）============ */
+  .p-sec{margin-bottom:34px}
+  .p-note{font-size:12.5px;color:var(--dim);line-height:1.95;margin:-6px 0 16px}
+  .p-note b{color:var(--brand)}
+  .tbl{width:100%;border-collapse:collapse;background:#fff;border:1px solid var(--line);border-radius:14px;overflow:hidden;box-shadow:var(--shadow);font-size:12.5px}
+  .tbl th,.tbl td{padding:11px 14px;text-align:left;border-bottom:1px solid var(--line);line-height:1.8;vertical-align:top}
+  .tbl th{background:#f7f9fd;font-weight:800;color:#40506b;font-size:12px;white-space:nowrap}
+  .tbl tr:last-child td{border-bottom:none}
+  .tbl td b{color:var(--brand)}
+  .tbl-lv td:nth-child(2){white-space:nowrap}
+  .sp16{height:16px}
+  .faq{background:#fff;border:1px solid var(--line);border-radius:16px;overflow:hidden;box-shadow:var(--shadow)}
+  .faq details{border-bottom:1px solid var(--line)}
+  .faq details:last-child{border-bottom:none}
+  .faq summary{cursor:pointer;list-style:none;padding:15px 18px;font-size:13.5px;font-weight:800;color:#33415c;display:flex;gap:10px;align-items:flex-start;transition:.16s}
+  .faq summary::-webkit-details-marker{display:none}
+  .faq summary:hover{background:#f8fafd}
+  .faq summary::before{
+    content:"Q";flex-shrink:0;width:20px;height:20px;border-radius:6px;background:var(--brand);color:#fff;
+    font-size:11px;font-weight:800;display:flex;align-items:center;justify-content:center;margin-top:1px;
+  }
+  .faq .a{padding:0 18px 16px 48px;font-size:12.5px;color:var(--dim);line-height:2}
+  .faq .a b{color:var(--text)}
+  .trust{display:grid;grid-template-columns:repeat(4,1fr);gap:14px}
+  .trust .t{background:#fff;border:1px solid var(--line);border-left:4px solid var(--brand);border-radius:12px;padding:15px 16px;box-shadow:var(--shadow)}
+  .trust .t b{display:block;font-size:13px;font-weight:800;margin-bottom:6px}
+  .trust .t span{font-size:11.5px;color:var(--dim);line-height:1.8}
+  .quick{background:#16202f;color:#fff;border-radius:18px;padding:24px 28px;line-height:2.15;font-size:12.5px}
+  .quick b{color:#ffb894}
+  .hero-btns{display:flex;gap:12px;margin-top:24px;flex-wrap:wrap;position:relative;z-index:2}
+  .btn{display:inline-flex;align-items:center;gap:8px;padding:12px 22px;border-radius:12px;font-size:13.5px;font-weight:800;cursor:pointer;border:none;transition:.2s;font-family:inherit}
+  .btn-main{background:linear-gradient(135deg,#ff8f5e,#ff6b35);color:#fff;box-shadow:0 10px 26px rgba(255,107,53,.35)}
+  .btn-main:hover{transform:translateY(-2px)}
+  .btn-ghost{background:rgba(255,255,255,.14);color:#fff;border:1px solid rgba(255,255,255,.35)}
+  .btn-ghost:hover{background:rgba(255,255,255,.24)}
+  .promo-wide{
+    display:flex;gap:28px;align-items:center;background:linear-gradient(135deg,#fff8f4,#ffffff);
+    border:1px solid #ffe0cf;border-radius:20px;padding:28px 30px;box-shadow:0 14px 36px rgba(255,107,53,.12);
+  }
+  .promo-wide .pw-txt{flex:1;min-width:0}
+  .promo-wide h3{font-size:17px;font-weight:800;color:#c2410c;margin-bottom:12px}
+  .promo-wide p{font-size:12.5px;color:#5c6a82;line-height:2;margin-bottom:10px}
+  .promo-wide .pw-qr{flex-shrink:0;text-align:center}
+  .promo-wide .pw-qr img{width:150px;height:150px;border-radius:12px;background:#fff;box-shadow:0 6px 20px rgba(0,0,0,.10)}
+  .promo-wide .pw-qr span{display:block;font-size:11px;color:var(--dim);margin-top:9px}
+  .promo-wide a{color:var(--brand);font-weight:800;text-decoration:none}
+
+  /* ============ 家长页：卡片 / 台阶 / 时间轴 ============ */
+  .tips{display:grid;gap:12px;grid-template-columns:repeat(3,1fr)}
+  .tips .tip{background:#fff;border:1px solid var(--line);border-top:3px solid var(--brand);border-radius:14px;padding:16px 18px;box-shadow:var(--shadow)}
+  .tips .tip b{display:block;font-size:13.5px;font-weight:800;margin-bottom:8px}
+  .tips .tip span{display:block;font-size:12px;color:#4a5a72;line-height:1.85}
+  .tips .tip em{display:block;font-style:normal;font-size:11.5px;color:var(--dim);line-height:1.8;margin-top:9px;padding-top:9px;border-top:1px dashed var(--line)}
+  .pick{background:#fff;border:1px solid var(--line);border-radius:16px;overflow:hidden;box-shadow:var(--shadow);margin-top:16px}
+  .pick-row{display:flex;gap:16px;align-items:flex-start;padding:14px 18px;border-bottom:1px solid var(--line)}
+  .pick-row:last-child{border-bottom:none}
+  .pick-age{
+    flex-shrink:0;width:126px;padding:6px 0;border-radius:9px;text-align:center;
+    font-size:11.5px;font-weight:800;color:#fff;background:var(--brand);
+  }
+  .pick-txt h4{font-size:13.5px;font-weight:800;margin-bottom:4px}
+  .pick-txt p{font-size:12px;color:var(--dim);line-height:1.75}
+  .pace{display:grid;grid-template-columns:repeat(2,1fr);gap:16px}
+  .pace-card{position:relative;background:#fff;border:1px solid var(--line);border-radius:16px;padding:20px 22px;box-shadow:var(--shadow)}
+  .pace-card.main{border-color:#ffd0b8;box-shadow:0 14px 34px rgba(255,107,53,.14)}
+  .pace-card .pc-tag{position:absolute;top:-1px;right:20px;background:var(--brand);color:#fff;font-size:10.5px;font-weight:800;padding:3px 11px;border-radius:0 0 9px 9px}
+  .pace-card h4{font-size:15px;font-weight:800;margin-bottom:14px}
+  .pace-card .pc-row{display:flex;align-items:baseline;gap:12px;padding:8px 0;border-bottom:1px dashed var(--line)}
+  .pace-card .pc-row:last-of-type{border-bottom:none}
+  .pace-card .pc-row b{font-size:15px;font-weight:800;color:var(--brand);min-width:86px}
+  .pace-card .pc-row span{font-size:11.5px;color:var(--dim)}
+  .pace-card > p{font-size:11.5px;color:var(--dim);line-height:1.8;margin-top:12px;padding-top:12px;border-top:1px solid var(--line)}
+  .steps{background:#fff;border:1px solid var(--line);border-radius:16px;padding:8px 20px;box-shadow:var(--shadow);margin-top:16px}
+  .steps .step{display:flex;gap:14px;padding:15px 0;border-bottom:1px dashed var(--line)}
+  .steps .step:last-child{border-bottom:none}
+  .steps .step i{
+    flex-shrink:0;width:26px;height:26px;border-radius:50%;background:var(--brand);color:#fff;
+    font-style:normal;font-size:12px;font-weight:800;display:flex;align-items:center;justify-content:center;margin-top:1px;
+  }
+  .steps .step b{display:block;font-size:13px;font-weight:800;margin-bottom:4px}
+  .steps .step p{font-size:12px;color:var(--dim);line-height:1.8}
+  .sidebar.collapsed .side-qr{display:none}
+  .side-qr{
+    margin:14px 16px 6px;padding:13px 12px 11px;border-radius:14px;text-align:center;
+    background:linear-gradient(160deg,#fff8f4,#ffffff);border:1px solid #ffe0cf;
+  }
+  .side-qr img{width:110px;height:110px;border-radius:10px;background:#fff;display:block;margin:0 auto 9px}
+  .side-qr span{font-size:11px;color:#c2410c;font-weight:800;line-height:1.5}
+
+  @media(max-width:1420px){.cards{grid-template-columns:repeat(2,1fr)}}
+  @media(max-width:1180px){.tips,.pace{grid-template-columns:1fr}}
+  @media(max-width:1420px){.trust{grid-template-columns:repeat(2,1fr)}}
+  @media(max-width:1180px){.promo-wide{flex-direction:column;align-items:flex-start}}
+  @media(max-width:1080px){.stat-row{grid-template-columns:repeat(2,1fr)}}
+</style>
+</head>
+<body>
+<div class="layout">
+  <aside class="sidebar" id="sidebar">
+    <div class="brand">
+      <div class="brand-row">
+        <a class="logo-link" href="https://codecombat.cn/" target="_blank" rel="noopener" title="访问 CodeCombat 扣哒世界官网">
+          <img class="logo-img" src="assets/logo.webp" alt="CodeCombat 扣哒世界">
+        </a>
+        <div class="brand-text">
+          <h1>扣哒考级</h1>
+        </div>
+        <button class="toggle" onclick="toggleSidebar()" title="折叠 / 展开">◀</button>
+      </div>
+      <div class="brand-slogan">先学后练再模考，GESP 一至八级在家也能通关</div>
+    </div>
+    <div class="search-wrap">
+      <input id="searchInput" type="text" placeholder="搜索单元 / 知识点（如：循环、位运算、排序）">
+    </div>
+    <nav class="nav" id="nav"></nav>
+    <div class="foot">
+      依据 CCF GESP 认证标准编制<br>
+      Python 1–8 级 · C++ 1–8 级 · 图形化 1–4 级<br>
+      <a href="https://codecombat.cn/" target="_blank" rel="noopener">codecombat.cn</a>
+    </div>
+  </aside>
+
+  <main class="content" id="content"></main>
+</div>
+
+<script>
+/* ==================== 数据层 ==================== */
+
+/* 语言板块：每个等级 = 一个秘境区域；每个单元 = 游戏化名(g) + 知识点名(k) */
+const BOARDS = [
+  {
+    id:"py", prefix:"py", name:"Python 编程", sub:"1–8 级", icon:"Py",
+    levels:[
+      { lv:1, region:"烛火岗哨", world:"Candlewatch Outpost", units:[
+        {g:"哨火初燃", k:"计算机基础与开发环境"},
+        {g:"会记事的木箱", k:"变量、常量与数据类型"},
+        {g:"炼金配方台", k:"运算符与表达式"},
+        {g:"潮汐升降梯", k:"顺序结构与输入输出"},
+        {g:"岔路口的抉择", k:"分支结构：做选择"},
+        {g:"永不熄的齿轮", k:"循环结构：重复执行"},
+        {g:"迷雾中的脚印", k:"注释、调试与综合项目"}
+      ]},
+      { lv:2, region:"回声溪谷", world:"Echostream Valley", units:[
+        {g:"溪谷的耳语", k:"计算机存储与网络"},
+        {g:"会画画的羊皮纸", k:"程序设计语言与流程图"},
+        {g:"密文石桥", k:"ASCII 编码与数据类型转换"},
+        {g:"双岔迷宫", k:"多层分支结构"},
+        {g:"漩涡阶梯", k:"多层循环结构"},
+        {g:"溪谷量尺", k:"常用数学函数"}
+      ]},
+      { lv:3, region:"符文矿坑", world:"Runemark Mine", units:[
+        {g:"暗河下的符文", k:"数据编码：原码、反码、补码"},
+        {g:"七进制水晶", k:"进制转换"},
+        {g:"光栅闸门", k:"位运算"},
+        {g:"矿道图纸", k:"算法与描述"},
+        {g:"矿车编队", k:"数据结构：数组与列表"},
+        {g:"石碑上的密语", k:"字符串及其函数"},
+        {g:"穷举矿灯", k:"算法：枚举法与模拟法"}
+      ]},
+      { lv:4, region:"齿轮高台", world:"Gearwatch Terrace", units:[
+        {g:"传送带枢纽", k:"复合数据类型的嵌套"},
+        {g:"立体货架", k:"二维及多维数组"},
+        {g:"零件装配台", k:"数据组织：字典与结构化数据"},
+        {g:"模块化车间", k:"函数与模块化编程"},
+        {g:"参数输送管", k:"参数传递与变量作用域"},
+        {g:"齿轮传动链", k:"递推算法"},
+        {g:"队列整编台", k:"排序算法与复杂度"},
+        {g:"档案库与安全阀", k:"文件操作与异常处理"}
+      ]},
+      { lv:5, region:"星砂绿洲", world:"Stardust Oasis", units:[
+        {g:"绿洲密码", k:"初等数论基础"},
+        {g:"泉眼筛网", k:"欧几里得算法与素数筛法"},
+        {g:"巨钟计数师", k:"大整数与高精度应用"},
+        {g:"商队铁链", k:"链表"},
+        {g:"折半寻宝", k:"二分查找与二分答案"},
+        {g:"回音螺旋", k:"递归算法"},
+        {g:"分沙术", k:"分治算法"},
+        {g:"最省水的路线", k:"贪心算法与复杂度估算"}
+      ]},
+      { lv:6, region:"云髓天阶", world:"Cloudmarrow Steps", units:[
+        {g:"天阶枝桠", k:"树的基础与遍历"},
+        {g:"云叶密钥", k:"哈夫曼树与基于树的编码"},
+        {g:"双路侦骑", k:"搜索算法：DFS 与 BFS"},
+        {g:"云梯补给", k:"简单动态规划"},
+        {g:"造物工坊", k:"面向对象思想与类的创建"},
+        {g:"双塔栈队", k:"栈、队列与循环队列"}
+      ]},
+      { lv:7, region:"雷鸣高塔", world:"Thunderspire", units:[
+        {g:"塔顶星图", k:"数学库常用函数"},
+        {g:"交织雷网", k:"复杂动态规划"},
+        {g:"塔身回廊", k:"图的概念与遍历"},
+        {g:"雷池漫灌", k:"图论算法实战：泛洪"},
+        {g:"铭牌索引库", k:"哈希表"}
+      ]},
+      { lv:8, region:"寂灭王座", world:"Silent Throne", units:[
+        {g:"王座前的岔数", k:"计数原理"},
+        {g:"王冠的排列", k:"排列与组合"},
+        {g:"三角回音壁", k:"杨辉三角"},
+        {g:"跃迁阶梯", k:"倍增法"},
+        {g:"机关几何室", k:"代数与平面几何"},
+        {g:"王国交通网", k:"图论算法及综合应用"},
+        {g:"秤与沙漏", k:"算法的时间与空间效率分析"},
+        {g:"王座终试", k:"算法优化"}
+      ]}
+    ]
+  },
+  {
+    id:"cpp", prefix:"cpp", name:"C++ 编程", sub:"1–8 级", icon:"C+",
+    levels:[
+      { lv:1, region:"烛火岗哨", world:"Candlewatch Outpost", units:[
+        {g:"哨火初燃", k:"计算机基础与开发环境"},
+        {g:"会记事的木箱", k:"变量、常量与数据类型"},
+        {g:"炼金配方台", k:"运算符与表达式"},
+        {g:"潮汐升降梯", k:"顺序结构与输入输出"},
+        {g:"岔路口的抉择", k:"分支结构：做选择"},
+        {g:"永不熄的齿轮", k:"循环结构：重复执行"},
+        {g:"迷雾中的脚印", k:"注释、调试与综合项目"}
+      ]},
+      { lv:2, region:"回声溪谷", world:"Echostream Valley", units:[
+        {g:"溪谷的耳语", k:"计算机存储与网络"},
+        {g:"会画画的羊皮纸", k:"程序设计语言与流程图"},
+        {g:"密文石桥", k:"ASCII 编码与数据类型转换"},
+        {g:"双岔迷宫", k:"多层分支结构"},
+        {g:"漩涡阶梯", k:"多层循环结构"},
+        {g:"溪谷量尺", k:"常用数学函数"}
+      ]},
+      { lv:3, region:"符文矿坑", world:"Runemark Mine", units:[
+        {g:"暗河下的符文", k:"数据编码：原码、反码、补码"},
+        {g:"七进制水晶", k:"进制转换"},
+        {g:"光栅闸门", k:"位运算"},
+        {g:"矿道图纸", k:"算法与描述"},
+        {g:"矿车编队", k:"数据结构：一维数组"},
+        {g:"石碑上的密语", k:"字符串及其函数"},
+        {g:"穷举矿灯", k:"算法：枚举法与模拟法"}
+      ]},
+      { lv:4, region:"齿轮高台", world:"Gearwatch Terrace", units:[
+        {g:"传送带枢纽", k:"指针与复合数据类型"},
+        {g:"立体货架", k:"二维及多维数组"},
+        {g:"零件装配台", k:"结构体"},
+        {g:"模块化车间", k:"函数与模块化编程"},
+        {g:"参数输送管", k:"参数传递与变量作用域"},
+        {g:"齿轮传动链", k:"递推算法"},
+        {g:"队列整编台", k:"排序算法与复杂度"},
+        {g:"档案库与安全阀", k:"文件操作与异常处理"}
+      ]},
+      { lv:5, region:"星砂绿洲", world:"Stardust Oasis", units:[
+        {g:"绿洲密码", k:"初等数论基础"},
+        {g:"泉眼筛网", k:"欧几里得算法与素数筛法"},
+        {g:"巨钟计数师", k:"高精度运算：数组模拟"},
+        {g:"商队铁链", k:"链表"},
+        {g:"折半寻宝", k:"二分查找与二分答案"},
+        {g:"回音螺旋", k:"递归算法"},
+        {g:"分沙术", k:"分治算法"},
+        {g:"最省水的路线", k:"贪心算法与复杂度估算"}
+      ]},
+      { lv:6, region:"云髓天阶", world:"Cloudmarrow Steps", units:[
+        {g:"天阶枝桠", k:"树的基础与遍历"},
+        {g:"云叶密钥", k:"哈夫曼树与基于树的编码"},
+        {g:"双路侦骑", k:"搜索算法：DFS 与 BFS"},
+        {g:"云梯补给", k:"简单动态规划"},
+        {g:"造物工坊", k:"面向对象思想与类的创建"},
+        {g:"双塔栈队", k:"栈、队列与循环队列"}
+      ]},
+      { lv:7, region:"雷鸣高塔", world:"Thunderspire", units:[
+        {g:"塔顶星图", k:"数学库常用函数"},
+        {g:"交织雷网", k:"复杂动态规划"},
+        {g:"塔身回廊", k:"图的概念与遍历"},
+        {g:"雷池漫灌", k:"图论算法实战：泛洪"},
+        {g:"铭牌索引库", k:"哈希表"}
+      ]},
+      { lv:8, region:"寂灭王座", world:"Silent Throne", units:[
+        {g:"王座前的岔数", k:"计数原理"},
+        {g:"王冠的排列", k:"排列与组合"},
+        {g:"三角回音壁", k:"杨辉三角"},
+        {g:"跃迁阶梯", k:"倍增法"},
+        {g:"机关几何室", k:"代数与平面几何"},
+        {g:"王国交通网", k:"图论算法及综合应用"},
+        {g:"秤与沙漏", k:"算法的时间与空间效率分析"},
+        {g:"王座终试", k:"算法优化"}
+      ]}
+    ]
+  },
+  {
+    id:"scratch", prefix:"scratch", name:"图形化编程", sub:"1–4 级", icon:"◈",
+    levels:[
+      { lv:1, region:"积木花园", world:"Blockbloom Garden", units:[
+        {g:"花园的第一块积木", k:"走进图形化编程：计算机基础与平台操作"},
+        {g:"换装小屋", k:"舞台、角色与背景"},
+        {g:"花径漫步", k:"坐标、角度与运动"},
+        {g:"会听懂话的喷泉", k:"事件触发与侦测"},
+        {g:"排队浇水", k:"顺序结构与程序思维"},
+        {g:"分岔的花篱", k:"分支结构：如果……那么"},
+        {g:"循环灌溉器", k:"循环结构：重复执行"}
+      ]},
+      { lv:2, region:"彩虹集市", world:"Rainbow Bazaar", units:[
+        {g:"集市广播塔", k:"计算机网络与 Internet"},
+        {g:"摊主的流程图", k:"程序流程图"},
+        {g:"旋转木马", k:"循环与分支的进阶"},
+        {g:"分身魔术摊", k:"克隆"},
+        {g:"彩绘师", k:"画笔"},
+        {g:"传声筒", k:"广播与变量"},
+        {g:"算盘小铺", k:"数据运算与逻辑判断"}
+      ]},
+      { lv:3, region:"魔法绘本馆", world:"Storyloom Library", units:[
+        {g:"会对话的书签", k:"输入与输出"},
+        {g:"文字魔法", k:"字符串处理"},
+        {g:"书页清单", k:"列表"},
+        {g:"分身图书馆", k:"克隆的综合应用"},
+        {g:"套娃书架", k:"复杂的嵌套结构"},
+        {g:"谜题锁孔", k:"复杂的逻辑判断"},
+        {g:"穷举之钥", k:"算法初步：枚举法与模拟法"}
+      ]},
+      { lv:4, region:"机械乐园", world:"Cogwheel Park", units:[
+        {g:"万能机械臂", k:"函数"},
+        {g:"多轴机械臂", k:"多参函数"},
+        {g:"图纸工坊", k:"算法的复杂应用"},
+        {g:"大小秤", k:"排序的概念与稳定性"},
+        {g:"排队过山车", k:"经典排序：冒泡 / 插入 / 选择"},
+        {g:"乐园总调度", k:"综合应用"}
+      ]}
+    ]
+  }
+];
+
+/* 已下线板块的历史数据（不再渲染，仅为保持脚本兼容而保留）*/
+const EXAMS = [
+  {
+    ym:"2026-09", label:"2026 年 9 月认证", date:"2026 / 09",
+    groups:[
+      { key:"py",      name:"Python 编程", prefix:"py",      levels:[1,2,3,4,5,6,8] },
+      { key:"cpp",     name:"C++ 编程",    prefix:"cpp",     levels:[1,2,3,4,5,6,7,8] },
+      { key:"scratch", name:"图形化编程",   prefix:"scratch", levels:[1,2,3,4] }
+    ]
+  }
+];
+
+/* 已完成页面 */
+const READY = {
+  "cpp-1-01": true,
+  "cpp-1-02": true,
+  "cpp-1-03": true,
+  "cpp-1-04": true,
+  "cpp-1-05": true,
+  "cpp-1-06": true,
+  "cpp-1-07": true,
+  "cpp-2-01": true,
+  "cpp-2-02": true,
+  "cpp-2-03": true,
+  "cpp-2-04": true,
+  "cpp-2-05": true,
+  "cpp-2-06": true,
+  "cpp-3-01": true,
+  "cpp-3-02": true,
+  "cpp-3-03": true,
+  "cpp-3-04": true,
+  "cpp-3-05": true,
+  "cpp-3-06": true,
+  "cpp-3-07": true,
+  "cpp-4-01": true,
+  "cpp-4-02": true,
+  "cpp-4-03": true,
+  "cpp-4-04": true,
+  "cpp-4-05": true,
+  "cpp-4-06": true,
+  "cpp-4-07": true,
+  "cpp-4-08": true,
+  "cpp-5-01": true,
+  "cpp-5-02": true,
+  "cpp-5-03": true,
+  "cpp-5-04": true,
+  "cpp-5-05": true,
+  "cpp-5-06": true,
+  "cpp-5-07": true,
+  "cpp-5-08": true,
+  "cpp-6-01": true,
+  "cpp-6-02": true,
+  "cpp-6-03": true,
+  "cpp-6-04": true,
+  "cpp-6-05": true,
+  "cpp-6-06": true,
+  "cpp-7-01": true,
+  "cpp-7-02": true,
+  "cpp-7-03": true,
+  "cpp-7-04": true,
+  "cpp-7-05": true,
+  "cpp-8-01": true,
+  "cpp-8-02": true,
+  "cpp-8-03": true,
+  "cpp-8-04": true,
+  "cpp-8-05": true,
+  "cpp-8-06": true,
+  "cpp-8-07": true,
+  "cpp-8-08": true,
+  "py-1-01": true,
+  "py-1-02": true,
+  "py-1-03": true,
+  "py-1-04": true,
+  "py-1-05": true,
+  "py-1-06": true,
+  "py-1-07": true,
+  "py-2-01": true,
+  "py-2-02": true,
+  "py-2-03": true,
+  "py-2-04": true,
+  "py-2-05": true,
+  "py-2-06": true,
+  "py-3-01": true,
+  "py-3-02": true,
+  "py-3-03": true,
+  "py-3-04": true,
+  "py-3-05": true,
+  "py-3-06": true,
+  "py-3-07": true,
+  "py-4-01": true,
+  "py-4-02": true,
+  "py-4-03": true,
+  "py-4-04": true,
+  "py-4-05": true,
+  "py-4-06": true,
+  "py-4-07": true,
+  "py-4-08": true,
+  "py-5-01": true,
+  "py-5-02": true,
+  "py-5-03": true,
+  "py-5-04": true,
+  "py-5-05": true,
+  "py-5-06": true,
+  "py-5-07": true,
+  "py-5-08": true,
+  "py-6-01": true,
+  "py-6-02": true,
+  "py-6-03": true,
+  "py-6-04": true,
+  "py-6-05": true,
+  "py-6-06": true,
+  "py-7-01": true,
+  "py-7-02": true,
+  "py-7-03": true,
+  "py-7-04": true,
+  "py-7-05": true,
+  "py-8-01": true,
+  "py-8-02": true,
+  "py-8-03": true,
+  "py-8-04": true,
+  "py-8-05": true,
+  "py-8-06": true,
+  "py-8-07": true,
+  "py-8-08": true,
+  "scratch-1-01": true,
+  "scratch-1-02": true,
+  "scratch-1-03": true,
+  "scratch-1-04": true,
+  "scratch-1-05": true,
+  "scratch-1-06": true,
+  "scratch-1-07": true,
+  "scratch-2-01": true,
+  "scratch-2-02": true,
+  "scratch-2-03": true,
+  "scratch-2-04": true,
+  "scratch-2-05": true,
+  "scratch-2-06": true,
+  "scratch-2-07": true,
+  "scratch-3-01": true,
+  "scratch-3-02": true,
+  "scratch-3-03": true,
+  "scratch-3-04": true,
+  "scratch-3-05": true,
+  "scratch-3-06": true,
+  "scratch-3-07": true,
+  "scratch-4-01": true,
+  "scratch-4-02": true,
+  "scratch-4-03": true,
+  "scratch-4-04": true,
+  "scratch-4-05": true,
+  "scratch-4-06": true
+};
+const READY_EXAM = {
+  "2026-09-cpp-1": true,
+  "2026-09-cpp-2": true,
+  "2026-09-cpp-3": true,
+  "2026-09-cpp-4": true,
+  "2026-09-cpp-5": true,
+  "2026-09-cpp-6": true,
+  "2026-09-cpp-7": true,
+  "2026-09-cpp-8": true,
+  "2026-09-py-1": true,
+  "2026-09-py-2": true,
+  "2026-09-py-3": true,
+  "2026-09-py-4": true,
+  "2026-09-py-5": true,
+  "2026-09-py-6": true,
+  "2026-09-py-8": true,
+  "2026-09-scratch-1": true,
+  "2026-09-scratch-2": true,
+  "2026-09-scratch-3": true,
+  "2026-09-scratch-4": true
+};
+
+const sidebar = document.getElementById('sidebar');
+const nav     = document.getElementById('nav');
+const content = document.getElementById('content');
+
+/* 左侧目录的位置记忆：折叠时目录内容被隐藏、滚动位置会被清零，
+   所以要在折叠前把位置存下来，展开后还原到"当前正在看的那个单元"。 */
+let navScrollMemo = 0;
+
+function rememberNavScroll(){
+  if (nav) navScrollMemo = nav.scrollTop;
+}
+
+function restoreNavScroll(){
+  if (!nav) return;
+  requestAnimationFrame(() => {
+    const act = nav.querySelector('.unit.active');
+    if (act) act.scrollIntoView({block:'center'});
+    else nav.scrollTop = navScrollMemo;
+  });
+}
+
+function unitFile(b, lv, idx){ return `units/${b.prefix}-${lv}-${String(idx+1).padStart(2,'0')}.html`; }
+function unitKey(b, lv, idx){ return `${b.prefix}-${lv}-${String(idx+1).padStart(2,'0')}`; }
+function examFile(ym, prefix, lv){ return `exams/${ym}-${prefix}-${lv}.html`; }
+function examKey(ym, prefix, lv){ return `${ym}-${prefix}-${lv}`; }
+
+function buildNav(){
+  /* ---- 三大语言板块 ---- */
+  BOARDS.forEach((b, bi) => {
+    const board = document.createElement('div');
+    board.className = 'board ' + b.id;
+
+    const head = document.createElement('div');
+    head.className = 'board-head open';        // 默认全展开
+    head.innerHTML = `<span class="board-dot">${b.icon}</span>
+      <span class="b-name">${b.name}</span>
+      <span class="b-sub">${b.sub}</span>
+      <span class="chev">▶</span>`;
+
+    const body = document.createElement('div');
+    body.className = 'board-body open';        // 默认全展开
+
+    b.levels.forEach((lvNode) => {
+      const lvWrap = document.createElement('div');
+      lvWrap.className = 'level';
+
+      const lvHead = document.createElement('div');
+      lvHead.className = 'level-head open';    // 默认全展开
+      lvHead.innerHTML = `<span class="lv-badge">${lvNode.lv} 级</span>
+        <span class="lv-title">${lvNode.region}</span>
+        <span class="lv-world">${lvNode.world}</span>
+        <span class="chev">▶</span>`;
+
+      const unitsWrap = document.createElement('div');
+      unitsWrap.className = 'units open';      // 默认全展开
+
+      lvNode.units.forEach((u, ui) => {
+        const key = unitKey(b, lvNode.lv, ui);
+        const ready = !!READY[key];
+        const item = document.createElement('div');
+        item.className = 'unit' + (ready ? ' ready' : '');
+        item.dataset.key = key;
+        item.dataset.search = (u.g + ' ' + u.k + ' ' + b.name + lvNode.region + lvNode.lv + '级').toLowerCase();
+        item.innerHTML = `<span class="no">${ui+1}</span>
+          <span class="u-txt">
+            <span class="u-g">${u.g}${ready ? '<span class="u-tag">已上线</span>' : ''}</span>
+            <span class="u-k">${u.k}</span>
+          </span>`;
+        item.onclick = (e) => { e.stopPropagation(); openUnit(b, lvNode, ui, item); };
+        unitsWrap.appendChild(item);
+      });
+
+      bindLevel(lvHead, unitsWrap);
+      lvWrap.appendChild(lvHead);
+      lvWrap.appendChild(unitsWrap);
+      body.appendChild(lvWrap);
+    });
+
+    bindBoard(head, body);
+    board.appendChild(head);
+    board.appendChild(body);
+    nav.appendChild(board);
+  });
+
+  /* ---- 目录最下方：辅导班咨询二维码（侧栏收起时自动隐藏）---- */
+  const sideQr = document.createElement('div');
+  sideQr.className = 'side-qr';
+  sideQr.innerHTML = `<img src="assets/qr-class.png" alt="辅导班咨询二维码">
+    <span>需要老师带着学？扫码咨询</span>`;
+  nav.appendChild(sideQr);
+
+
+  /* 现在默认就是全部展开，这条"只展开第一级"的兜底逻辑已不需要 */
+}
+
+/* ==================== 内容区 ==================== */
+function collapseOuter(){
+  if (!sidebar.classList.contains('collapsed')) {
+    rememberNavScroll();
+    sidebar.classList.add('collapsed');
+    const t = sidebar.querySelector('.toggle');
+    if (t) t.textContent = '▶';
+  }
+}
+
+function expandSidebar(restore = true){
+  sidebar.classList.remove('collapsed');
+  const t = sidebar.querySelector('.toggle');
+  if (t) t.textContent = '◀';
+  if (restore) restoreNavScroll();
+}
+
+/* 折叠状态下点击板块 / 等级，先展开侧栏再展开该分组 */
+function bindBoard(head, body){
+  head.onclick = () => {
+    if (sidebar.classList.contains('collapsed')) {
+      expandSidebar(false);
+      body.classList.add('open');
+      head.classList.add('open');
+      head.scrollIntoView({behavior:'smooth', block:'nearest'});
+      return;
+    }
+    const open = body.classList.toggle('open');
+    head.classList.toggle('open', open);
+  };
+}
+
+function bindLevel(lvHead, unitsWrap){
+  lvHead.onclick = () => {
+    if (sidebar.classList.contains('collapsed')) {
+      expandSidebar(false);
+      unitsWrap.classList.add('open');
+      lvHead.classList.add('open');
+      lvHead.scrollIntoView({behavior:'smooth', block:'nearest'});
+      return;
+    }
+    const open = unitsWrap.classList.toggle('open');
+    lvHead.classList.toggle('open', open);
+  };
+}
+
+function openUnit(b, lvNode, ui, el, keepSidebar){
+  const key = unitKey(b, lvNode.lv, ui);
+  nav.querySelectorAll('.unit').forEach(x => x.classList.remove('active'));
+  if (el) el.classList.add('active');
+
+  if (!READY[key]) {
+    content.innerHTML = `
+      <div class="placeholder">
+        <div class="ph-badge">${lvNode.lv}</div>
+        <h2>${lvNode.region} · 第 ${ui+1} 单元</h2>
+        <p><strong>${lvNode.units[ui].g}</strong><br>
+        <span style="font-size:12.5px">${lvNode.units[ui].k}</span><br><br>
+        这个单元正在由教研组编写中，很快就能与你见面。</p>
+        <div class="dev-text">COMING SOON</div>
+      </div>`;
+    return;
+  }
+
+  content.innerHTML = `<div class="frame-wrap">
+      <iframe class="unit-frame" src="${unitFile(b, lvNode.lv, ui)}" title="${lvNode.units[ui].g}"></iframe>
+    </div>`;
+  if (!keepSidebar) collapseOuter();   // 首次进入时不收起侧栏，方便看目录
+}
+
+function openExam(ex, gp, lv, el){
+  const key = examKey(ex.ym, gp.prefix, lv);
+  nav.querySelectorAll('.unit').forEach(x => x.classList.remove('active'));
+  if (el) el.classList.add('active');
+
+  if (!READY_EXAM[key]) {
+    content.innerHTML = `
+      <div class="placeholder">
+        <div class="ph-badge">卷</div>
+        <h2>${ex.label} · ${gp.name} ${lv} 级</h2>
+        <p>这份试卷的题目与详解正在整理中。<br>
+        先看看已上线的 <strong>2026 年 9 月认证 · Python 一级</strong> 吧。</p>
+        <div class="dev-text">COMING SOON</div>
+      </div>`;
+    return;
+  }
+
+  content.innerHTML = `<div class="frame-wrap">
+      <iframe class="unit-frame" src="${examFile(ex.ym, gp.prefix, lv)}" title="${ex.label} ${gp.name} ${lv} 级"></iframe>
+    </div>`;
+  collapseOuter();
+}
+
+function showWelcome(){
+  nav.querySelectorAll('.unit').forEach(x => x.classList.remove('active'));
+  content.innerHTML = `
+  <div class="welcome">
+
+    <!-- 1 主视觉：先说人话，再说卖点 -->
+    <div class="hero-card">
+      <div class="hero-tag">137 个单元 · 完全免费 · 已全部上线</div>
+      <h2>孩子零基础也能学<br>学一级，考一级，在家走完 GESP 一至八级</h2>
+      <p>6–7 岁从图形化积木起步，<span class="hl">8 岁以上可以直接学 Python</span>。
+      每一级 5–8 个单元，<span class="hl">每周 1 个单元</span>，学完一级就报名考一级——
+      不用等"全部学完"，家长也不需要懂编程。</p>
+      <div class="hero-btns">
+        <button class="btn btn-main" onclick="openFirstUnit()">免费开始学第一单元</button>
+        <button class="btn btn-ghost" onclick="jumpTo('p-age')">看看孩子能不能学</button>
+      </div>
+    </div>
+
+    <!-- 2 四条家长最在意的 -->
+    <div class="stat-row">
+      <div class="stat s1"><b>免费</b><span>137 个单元全部免费，不用付费解锁</span></div>
+      <div class="stat s2"><b>4 次</b><span>每年考期：3 / 6 / 9 / 12 月</span></div>
+      <div class="stat s3"><b>8 级</b><span>Python / C++ 一至八级 + 图形化一至四级</span></div>
+      <div class="stat s4"><b>30 分钟</b><span>一次学习只需专注这么久，低负担</span></div>
+    </div>
+
+    <!-- 3 能不能学 -->
+    <div class="p-sec" id="p-age">
+      <div class="sec-title">我家孩子能学吗？其实只看三件事</div>
+      <p class="p-note">年龄只是参考。这三件事都达标，就可以直接从第 1 单元开始。</p>
+      <div class="tips">
+        <div class="tip">
+          <b>能读懂题目吗</b>
+          <span>达标：能独立读懂一段 5–8 行的题目描述</span>
+          <em>还没达标：先用图形化练"读指令、按顺序执行"</em>
+        </div>
+        <div class="tip">
+          <b>能看着键盘打字吗</b>
+          <span>达标：认识 26 个字母与数字，能输入短句</span>
+          <em>还没达标：用图形化过渡 1–2 个月，别硬上文本语言</em>
+        </div>
+        <div class="tip">
+          <b>能坐住 30 分钟吗</b>
+          <span>达标：一次能专注 30 分钟以上</span>
+          <em>还没达标：把一次学习拆成两段，各 20 分钟</em>
+        </div>
+      </div>
+      <div class="pick">
+        <div class="pick-row">
+          <b class="pick-age">6–7 岁 · 1 年级</b>
+          <div class="pick-txt"><h4>从图形化 1 级开始</h4><p>拖积木、不用打字，先建立"我能让电脑听话"的信心</p></div>
+        </div>
+        <div class="pick-row">
+          <b class="pick-age">8 岁以上 · 2–3 年级</b>
+          <div class="pick-txt"><h4>直接从 Python 1 级开始</h4><p>能读题、能打字，直接学文本语言不浪费兴趣期</p></div>
+        </div>
+        <div class="pick-row">
+          <b class="pick-age">8–10 岁 · 玩过 Scratch</b>
+          <div class="pick-txt"><h4>图形化 2–3 级，或直接试 Python 1 级</h4><p>事件、循环的概念已经会了，可以跳级</p></div>
+        </div>
+        <div class="pick-row">
+          <b class="pick-age">10 岁以上 · 4 年级+</b>
+          <div class="pick-txt"><h4>Python 1 级</h4><p>与图形化 1 级知识点基本对应，衔接平滑</p></div>
+        </div>
+        <div class="pick-row">
+          <b class="pick-age">12 岁以上 · 6 年级+</b>
+          <div class="pick-txt"><h4>C++ 1 级</h4><p>目标信奥 / 长期竞赛，C++ 是 NOI 系列的语言基础</p></div>
+        </div>
+      </div>
+    </div>
+
+    <!-- 4 怎么学 -->
+    <div class="p-sec" id="p-plan">
+      <div class="sec-title">一周要花多少时间？家长要做什么？</div>
+      <p class="p-note">按 <b>每周 1 个单元、每周 2–3 小时</b> 走就够：一个级别 5–8 个单元，约 <b>8–10 周</b> 走完。
+      家长不用懂编程——每个单元页都写了"单元目标"和"本单元小结"，照着念就能检查进度。</p>
+      <div class="pace">
+        <div class="pace-card main">
+          <span class="pc-tag">推荐</span>
+          <h4>A · 稳进型</h4>
+          <div class="pc-row"><b>1 个单元</b><span>每周学几个</span></div>
+          <div class="pc-row"><b>2–3 小时</b><span>每周总时间（分 2–3 次）</span></div>
+          <div class="pc-row"><b>8–10 周</b><span>走完一个级别</span></div>
+          <div class="pc-row"><b>2–3 级</b><span>一年可以考</span></div>
+          <p>适合 8–10 岁、校内课业正常的孩子。</p>
+        </div>
+        <div class="pace-card">
+          <h4>B · 进阶型</h4>
+          <div class="pc-row"><b>2 个单元</b><span>每周学几个</span></div>
+          <div class="pc-row"><b>4–6 小时</b><span>每周总时间（分 3–4 次）</span></div>
+          <div class="pc-row"><b>5–6 周</b><span>走完一个级别</span></div>
+          <div class="pc-row"><b>最多 4 级</b><span>一年可以考</span></div>
+          <p>适合 11 岁以上、时间充裕、目标明确的孩子。</p>
+        </div>
+      </div>
+      <div class="steps">
+        <div class="step"><i>1</i><div><b>第 1–6 周 · 每周 1 个单元</b><p>读单元目标 → 看图文讲解 → 对着代码示例自己敲一遍 → 做本单元习题</p></div></div>
+        <div class="step"><i>2</i><div><b>第 7 周 · 串一遍</b><p>把 6 个单元的"本单元小结"连起来读，让孩子用自己的话说出这一级学了什么</p></div></div>
+        <div class="step"><i>3</i><div><b>第 8 周 · 阶段自测</b><p>限时 120 分钟做一套完整的模拟卷（100 分），拿到真实分数并记下错题</p></div></div>
+        <div class="step"><i>4</i><div><b>第 9–10 周 · 订正补漏</b><p>把错题归到具体单元、回去重做，错题第二次要全对</p></div></div>
+        <div class="step"><i>5</i><div><b>第 11–12 周 · 报名下一考期</b><p>再自测一遍，分数更高且过了合格线，就可以报名，同时开始下一级</p></div></div>
+      </div>
+      <div class="tips">
+        <div class="tip">
+          <b>习题正确率不到一半</b>
+          <span>连着两个单元这样，就停新课、回上一单元重做</span>
+          <em>多半是前一级某个概念没吃透</em>
+        </div>
+        <div class="tip">
+          <b>自测分数连续偏低</b>
+          <span>这次先不报名，把复习期从 2 周拉长到 4–6 周</span>
+          <em>基础不牢时，补漏比赶考期划算</em>
+        </div>
+        <div class="tip">
+          <b>明显抗拒打开页面</b>
+          <span>换科目试试（Python ↔ 图形化），或降一级找回自信</span>
+          <em>兴趣比进度重要</em>
+        </div>
+      </div>
+    </div>
+
+    <!-- 5 三条路线 -->
+    <div class="p-sec">
+      <div class="sec-title">三条路线，选一条走</div>
+      <p class="p-note">已经会一点的孩子可以直接跳级：先做一套完整试卷自测，
+      明显低于合格线就从这一级学起，接近或超过就学下一级。</p>
+      <div class="cards" style="grid-template-columns:repeat(3,1fr)">
+        <div class="card" style="--c:var(--scratch)" onclick="jumpBoard('scratch')">
+          <div class="ico">◈</div>
+          <h3>图形化编程</h3>
+          <div class="meta">1–4 级 · 27 个单元 · 6–7 岁起步</div>
+          <p>全程拖拽积木、不用打字，四座秘境从积木花园走到机械乐园，学完能无缝衔接 Python。</p>
+        </div>
+        <div class="card" style="--c:var(--python)" onclick="jumpBoard('py')">
+          <div class="ico">Py</div>
+          <h3>Python 编程</h3>
+          <div class="meta">1–8 级 · 55 个单元 · 8 岁以上</div>
+          <p>八座秘境，从"什么是变量"走到动态规划与图论，每个单元配图文讲解、可运行代码与习题。</p>
+        </div>
+        <div class="card" style="--c:var(--cpp)" onclick="jumpBoard('cpp')">
+          <div class="ico">C+</div>
+          <h3>C++ 编程</h3>
+          <div class="meta">1–8 级 · 55 个单元 · 目标信奥</div>
+          <p>与 Python 的 1–8 级知识点一一对应，含指针、结构体、高精度运算等 C++ 专属考点。</p>
+        </div>
+      </div>
+    </div>
+
+    <!-- 6 学到什么水平 -->
+    <div class="p-sec" id="p-level">
+      <div class="sec-title">学完之后，孩子会什么</div>
+      <p class="p-note">学完 <b>4 级</b>，孩子能独立写出带函数、能排序、能读写文件的完整小程序；
+      学完 <b>8 级</b>，等于把大学《数据结构与算法》的入门内容走了一遍。</p>
+      <table class="tbl tbl-lv">
+        <tr><th>级别</th><th>秘境</th><th>学完会什么（单元考点）</th></tr>
+        <tr><td><b>1 级</b></td><td>烛火岗哨</td><td>计算机基础与开发环境；变量、常量与数据类型；运算符与表达式；顺序结构与输入输出；<b>分支结构</b>与<b>循环结构</b>；注释、调试与综合项目（7 单元）</td></tr>
+        <tr><td><b>2 级</b></td><td>回声溪谷</td><td>计算机存储与网络；程序设计语言与流程图；<b>ASCII 编码与数据类型转换</b>；多层分支结构；多层循环结构；常用数学函数（6 单元）</td></tr>
+        <tr><td><b>3 级</b></td><td>符文矿坑</td><td>数据编码：<b>原码、反码、补码</b>；进制转换；位运算；算法与描述；<b>一维数组</b>；字符串及其函数；枚举法与模拟法（7 单元）</td></tr>
+        <tr><td><b>4 级</b></td><td>齿轮高台</td><td>复合数据类型的嵌套；二维及多维数组；字典 / 结构体；<b>函数与模块化编程</b>；参数传递与变量作用域；递推算法；<b>排序算法与复杂度</b>；文件操作与异常处理（8 单元）</td></tr>
+        <tr><td><b>5 级</b></td><td>星砂绿洲</td><td>初等数论基础；欧几里得算法与<b>素数筛法</b>；高精度运算；<b>链表</b>；二分查找与<b>二分答案</b>；递归算法；分治算法；贪心算法与复杂度估算（8 单元）</td></tr>
+        <tr><td><b>6 级</b></td><td>云髓天阶</td><td><b>树的基础与遍历</b>；哈夫曼树与基于树的编码；<b>DFS 与 BFS</b>；简单动态规划；面向对象思想与类的创建；栈、队列与循环队列（6 单元）</td></tr>
+        <tr><td><b>7 级</b></td><td>雷鸣高塔</td><td>数学库常用函数；<b>复杂动态规划</b>；图的概念与遍历；图论算法实战（泛洪）；<b>哈希表</b>（5 单元）</td></tr>
+        <tr><td><b>8 级</b></td><td>寂灭王座</td><td>计数原理；<b>排列与组合</b>；杨辉三角；倍增法；代数与平面几何；图论算法及综合应用；<b>算法的时间与空间效率分析</b>；算法优化（8 单元）</td></tr>
+      </table>
+      <div class="sp16"></div>
+      <table class="tbl tbl-lv">
+        <tr><th>图形化</th><th>秘境</th><th>学完会什么（单元考点）</th></tr>
+        <tr><td><b>1 级</b></td><td>积木花园</td><td>平台操作；舞台、角色与背景；坐标、角度与运动；事件触发与侦测；顺序结构；分支与循环（7 单元）</td></tr>
+        <tr><td><b>2 级</b></td><td>彩虹集市</td><td>计算机网络与 Internet；程序流程图；<b>克隆</b>、<b>画笔</b>、<b>广播与变量</b>；数据运算与逻辑判断（7 单元）</td></tr>
+        <tr><td><b>3 级</b></td><td>魔法绘本馆</td><td>输入与输出；字符串处理；<b>列表</b>；克隆的综合应用；复杂的嵌套结构；复杂的逻辑判断；枚举法与模拟法（7 单元）</td></tr>
+        <tr><td><b>4 级</b></td><td>机械乐园</td><td><b>函数与多参函数</b>；算法的复杂应用；排序的概念与稳定性；经典排序：冒泡 / 插入 / 选择；综合应用（6 单元）</td></tr>
+      </table>
+    </div>
+
+    <!-- 7 什么时候考、考哪一级 -->
+    <div class="p-sec" id="p-exam">
+      <div class="sec-title">什么时候考？考哪一级？</div>
+      <table class="tbl">
+        <tr><th>关于考级</th><th>说明</th></tr>
+        <tr><td>考期</td><td>CCF GESP 认证一般<b>每年 3 月、6 月、9 月、12 月</b>各一次，<b>一年 4 次机会</b>（以官网当期公告为准）</td></tr>
+        <tr><td>考试形式</td><td>试卷 120 分钟，共 27 题、满分 100 分（单选 15 + 判断 10 + 编程 2）</td></tr>
+        <tr><td><b>建议节奏</b></td><td><b>1–4 级每年考 2–3 级</b>（进度快的一年可考 4 级）；<b>5–8 级每年考 1–2 级</b></td></tr>
+        <tr><td>一年至少考 1 次</td><td>考级是给孩子一个明确节点，比"一直学、不检验"有效得多</td></tr>
+        <tr><td>不建议</td><td>为赶考期而跳级报考。基础不牢时，多花 4 周补漏比多考一次划算</td></tr>
+      </table>
+      <div class="sp16"></div>
+      <table class="tbl">
+        <tr><th>孩子的情况</th><th>建议考哪一级</th></tr>
+        <tr><td>6–7 岁 / 零基础</td><td><b>图形化 1 级</b>（积木上手快，先建立信心）</td></tr>
+        <tr><td>8 岁以上 / 零基础</td><td><b>Python 1 级</b>（知识点与图形化 1 级高度对应）</td></tr>
+        <tr><td>玩过 Scratch</td><td>图形化 2–3 级，或直接试 Python 1 级</td></tr>
+        <tr><td>已会 Python 变量循环</td><td>从 2 级开始（1 级内容已覆盖）</td></tr>
+        <tr><td>目标信奥 / 升学</td><td>从 <b>C++ 1 级</b>稳步走</td></tr>
+      </table>
+    </div>
+
+    <!-- 8 家长 12 问 -->
+    <div class="p-sec" id="p-faq">
+      <div class="sec-title">家长最常问的 12 个问题</div>
+      <div class="faq">
+        <details><summary>真的免费吗？会不会学一半让付费？</summary>
+          <div class="a"><b>学习内容全部免费</b>：137 个单元、全部级别都可以直接打开学习，不需要付费解锁、也没有隐藏关卡。
+          只有"赛前辅导班"是<b>按需付费</b>的额外服务，不参加也完全不影响自学。</div></details>
+        <details><summary>几岁能开始学？</summary>
+          <div class="a"><b>6–7 岁走图形化；8 岁以上可以直接从 Python 一级开始。</b>
+          关键看三件事：能不能独立读题、能不能看着键盘打字、能不能专注 30 分钟。</div></details>
+        <details><summary>学完要多久？</summary>
+          <div class="a">图形化 1–4 级约 <b>8–10 个月</b>；Python 或 C++ 1–8 级约 <b>2–3 年</b>（学一级考一级）。
+          按"每周 1 个单元"的稳进节奏估算。</div></details>
+        <details><summary>一周要学几个单元？</summary>
+          <div class="a">推荐<b>每周 1 个单元、每周 2–3 小时</b>；时间充裕可以每周 2 个单元。
+          一个级别 5–8 个单元，所以一级大约 8–10 周走完（含 2 周复习自测）。</div></details>
+        <details><summary>一年考几次？</summary>
+          <div class="a">官方考期是 <b>3 / 6 / 9 / 12 月，一年 4 次</b>。建议
+          <b>1–4 级每年考 2–3 级，5–8 级每年考 1–2 级</b>；最低要求是一年至少考 1 次。</div></details>
+        <details><summary>该学 Python 还是 C++？</summary>
+          <div class="a">兴趣启蒙与应试选 <b>Python</b>；目标信奥 / 长期竞赛选 <b>C++</b>。
+          两者 <b>1–8 级知识点一一对应</b>，先学哪个都不会白学——换语言主要是语法成本。</div></details>
+        <details><summary>图形化学完能接语言吗？</summary>
+          <div class="a">能。图形化 1–4 级与语言类 1–4 级知识点<b>基本对应</b>：
+          图形化的"克隆、列表、函数、排序概念"到了 Python 就是"循环、列表、函数、排序算法"。</div></details>
+        <details><summary>家长要陪着学吗？</summary>
+          <div class="a">6–8 岁建议陪"按顺序学、到点休息"；4 级以后孩子基本能独立操作。
+          家长不需要懂编程——每个单元页都写了"单元目标"和"本单元小结"，照着念就能检查。</div></details>
+        <details><summary>会不会学完就忘？</summary>
+          <div class="a">每个单元都有<b>本单元小结与习题</b>，计划里还设了降速机制：
+          习题正确率不达标就回上一单元重做。宁可放慢，不要"学完就忘"。</div></details>
+        <details><summary>一定要考级吗？</summary>
+          <div class="a">不必须。考级的价值是<b>给孩子一个明确的阶段目标</b>，学一级考一级最不容易半途而废。
+          如果暂时不考，也可以只用单元页按顺序学。</div></details>
+        <details><summary>内容和考试对得上吗？会不会超纲？</summary>
+          <div class="a">内容按 <b>CCF GESP 考纲</b>编制，每个单元页都有"考纲对照"小节，知识点逐条对得上；
+          1–8 级对应考纲上限，<b>不涉及超纲内容</b>。</div></details>
+        <details><summary>报名、费用、证书在哪里办？</summary>
+          <div class="a"><b>请以 CCF GESP 官网当期公告为准</b>，本站只提供学习内容与学习计划，
+          不代办报名。如果需要老师带着学，可以看下方的辅导班咨询方式。</div></details>
+      </div>
+    </div>
+
+    <!-- 9 为什么可以放心 -->
+    <div class="p-sec">
+      <div class="sec-title">为什么可以放心让孩子用</div>
+      <div class="trust">
+        <div class="t"><b>全部免费</b><span>137 个单元不设付费墙，打开就能学，孩子随时可以回头复习。</span></div>
+        <div class="t"><b>按考纲编制</b><span>每个单元页都有"考纲对照"小节，知识点逐条对得上，不夹带超纲内容。</span></div>
+        <div class="t"><b>进度看得见</b><span>每单元都有小结与习题；家长照着"单元小结"就能检查学没学会。</span></div>
+        <div class="t"><b>节奏写得明明白白</b><span>给出 12 周样板计划与"可以报名的信号"，不靠催更、不制造焦虑。</span></div>
+      </div>
+    </div>
+
+    <!-- 11 需要老师带着学 -->
+    <div class="p-sec" id="p-class">
+      <div class="sec-title">需要老师带着学？</div>
+      <div class="promo-wide">
+        <div class="pw-txt">
+          <h3>学习内容全部免费，辅导班按需付费</h3>
+          <p>如果希望有老师带着按考期倒排进度、考前集中讲考点与易错点、安排限时模考，
+          可以联系我们参加<b>赛前辅导班</b>（付费，不参加不影响自学）。</p>
+          <p>扫码说明孩子的<b>年级</b>与<b>目标级别</b>，我们会给出对应的班级安排。</p>
+        </div>
+        <div class="pw-qr">
+          <img src="assets/qr-class.png" alt="辅导班咨询二维码">
+          <span>微信扫码 · 咨询赛前辅导班</span>
+        </div>
+      </div>
+    </div>
+
+    <!-- 12 说明 -->
+    <p class="p-note" style="text-align:center;margin-top:8px;font-size:11.5px">
+      本站学习内容依据 CCF GESP 考纲编制，供学习使用。GESP 认证由 CCF 主办，
+      报名、考期与证书请以 CCF GESP 官网公告为准；本站与 CCF 无隶属关系。
+    </p>
+
+  </div>`;
+}
+
+/* 首页内的锚点跳转 */
+function jumpTo(id){
+  const el = content.querySelector('#' + id);
+  if (el) el.scrollIntoView({behavior:'smooth', block:'start'});
+}
+function jumpBoard(id){
+  const sel = id === 'exam' ? '.board.exam' : '.board.' + id;
+  const board = nav.querySelector(sel);
+  if (!board) return;
+  board.querySelector('.board-body').classList.add('open');
+  board.querySelector('.board-head').classList.add('open');
+  const first = board.querySelector('.units');
+  if (first) { first.classList.add('open'); first.previousElementSibling.classList.add('open'); }
+  board.scrollIntoView({behavior:'smooth', block:'start'});
+}
+
+function toggleSidebar(){
+  const c = sidebar.classList.toggle('collapsed');
+  sidebar.querySelector('.toggle').textContent = c ? '▶' : '◀';
+  if (c) rememberNavScroll();     // 折叠前记下目录位置
+  else   restoreNavScroll();      // 展开后回到那个位置
+}
+
+document.getElementById('searchInput').addEventListener('input', function(){
+  const kw = this.value.trim().toLowerCase();
+  nav.querySelectorAll('.unit').forEach(u => {
+    u.style.display = (!kw || u.dataset.search.includes(kw)) ? '' : 'none';
+  });
+  if (kw){
+    nav.querySelectorAll('.board-body').forEach(b => b.classList.add('open'));
+    nav.querySelectorAll('.board-head').forEach(h => h.classList.add('open'));
+    nav.querySelectorAll('.units').forEach(g => g.classList.add('open'));
+    nav.querySelectorAll('.level-head').forEach(h => h.classList.add('open'));
+  }
+});
+
+buildNav();
+
+/* 打开先看面向家长的首页；点"从 Python 一级第 1 单元开始"再进单元 */
+function openFirstUnit(){
+  const b = BOARDS[0], lvNode = b.levels[0];
+  const el = nav.querySelector(`.unit[data-key="${unitKey(b, lvNode.lv, 0)}"]`);
+  openUnit(b, lvNode, 0, el, true);   // 第 5 个参数 true = 不自动收起侧栏
+}
+showWelcome();
+</script>
+</body>
+</html>
