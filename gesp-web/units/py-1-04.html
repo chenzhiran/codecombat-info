@@ -1,0 +1,1122 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="copyright" content="CodeCombat Inc. codecombat.cn">
+<title>潮汐升降梯 · 顺序结构与输入输出 | 扣哒考级 · GESP Python 一级</title>
+<style>
+  :root{
+    --primary:#2e9e5b; --primary-light:#4fbf7c; --primary-lighter:#e9f8ef; --primary-dark:#1f7a44;
+    --brand:#ff6b35; --brand-dark:#e8541f; --brand-soft:#fff3ec;
+    --night:#131c2b; --night-2:#1e2a3a; --gold:#f5b301;
+    --text:#26302a; --dim:#63756b; --dim2:#8d9d94;
+    --bg:#ffffff; --bg-soft:#f7fbf8; --line:#e2ece6; --sidebar:274px;
+    --code-bg:#1b2a21; --code-tx:#c9d6cd;
+    --code-kw:#c678dd; --code-st:#98c379; --code-nu:#d19a66; --code-cm:#6b7f72; --code-fn:#61afef;
+  }
+  *{margin:0;padding:0;box-sizing:border-box}
+  html{scroll-behavior:smooth}
+  body{font-family:"PingFang SC","Microsoft YaHei","Segoe UI",-apple-system,sans-serif;line-height:1.9;color:var(--text);background:var(--bg);font-size:15.5px}
+  .sidebar-nav{position:fixed;top:0;left:0;width:var(--sidebar);height:100vh;overflow-y:auto;background:linear-gradient(180deg,#101a26,#182636);padding:14px 0 40px;z-index:100;border-right:3px solid var(--brand);transition:transform .3s ease}
+  .sidebar-nav::-webkit-scrollbar{width:5px}
+  .sidebar-nav::-webkit-scrollbar-thumb{background:var(--brand);border-radius:4px}
+  .sb-brand{display:flex;align-items:center;gap:10px;padding:10px 13px 12px;border-bottom:1px solid #26384c;margin-bottom:8px}
+  .sidebar-nav a.sb-logo{display:flex;align-items:center;justify-content:center;flex-shrink:0;padding:0;border-left:none;transition:.2s}
+  .sb-logo:hover{transform:scale(1.08)}
+  .sb-logo img{height:34px;width:34px;display:block;object-fit:contain;border-radius:8px}
+  .sb-brand b{color:#f2f6fa;font-size:14px;letter-spacing:.5px;display:block;line-height:1.4}
+  .sb-brand span{color:#7f95ab;font-size:11.5px;display:block;line-height:1.4}
+  .nav-title{color:#ffb894;font-size:12px;font-weight:800;padding:10px 18px 6px;letter-spacing:1.2px}
+  .sidebar-nav a{display:block;color:#c3d0dc;text-decoration:none;padding:6px 18px;font-size:12.5px;line-height:1.55;border-left:3px solid transparent;transition:.18s}
+  .sidebar-nav a:hover{color:#fff;background:rgba(255,107,53,.16);border-left-color:var(--brand)}
+  .sidebar-nav a.nav-section{color:#ffb894;font-weight:700;font-size:13px;margin-top:11px;padding-top:10px;border-top:1px solid #26384c}
+  .sidebar-nav a.nav-section:first-of-type{border-top:none;margin-top:0;padding-top:6px}
+  .sidebar-nav a.nav-sub{padding-left:30px;color:#93a8bc;font-size:12px}
+  .sidebar-nav a.nav-sub:hover{color:#fff}
+  .sb-back{margin:16px 14px 0;display:block;text-align:center;padding:9px;border-radius:9px;background:#22344a;color:#a9c0d6 !important;font-size:12px;font-weight:700;border-left:none !important}
+  .sb-back:hover{background:var(--brand) !important;color:#fff !important}
+  .nav-toggle{display:none;position:fixed;top:14px;left:14px;z-index:120;background:var(--brand);color:#fff;border:none;border-radius:9px;padding:9px 13px;font-size:15px;cursor:pointer;box-shadow:0 4px 14px rgba(0,0,0,.25)}
+  .page{margin-left:var(--sidebar)}
+  .hero{position:relative;overflow:hidden;padding:44px 52px;color:#fff;background:linear-gradient(125deg,#0e1724 0%,#1b2b3f 46%,#8a3a16 132%)}
+  .hero::after{content:"";position:absolute;right:-90px;top:-110px;width:400px;height:400px;border-radius:50%;background:radial-gradient(circle,rgba(245,179,1,.30),transparent 68%)}
+  .hero-top{display:flex;gap:36px;align-items:center;position:relative;z-index:2}
+  .hero-txt{flex:1;min-width:0}
+  .hero .crumb{font-size:11.5px;color:#ffb894;letter-spacing:1.5px;font-weight:700;margin-bottom:14px}
+  .hero h1{font-size:31px;font-weight:800;line-height:1.3;letter-spacing:.6px;margin-bottom:8px}
+  .hero h1 .sub{display:block;font-size:18px;font-weight:700;color:#ffd2b3;margin-top:6px;letter-spacing:.3px}
+  .hero .en{font-size:13px;color:#9db4c8;font-style:italic;margin-bottom:18px}
+  .hero .tags{display:flex;flex-wrap:wrap;gap:8px}
+  .tag{font-size:11.5px;padding:4px 12px;border-radius:20px;background:rgba(255,255,255,.12);border:1px solid rgba(255,255,255,.22);color:#e8f0f6;font-weight:600}
+  .tag.hot{background:rgba(255,107,53,.92);border-color:transparent;color:#fff}
+  .hero-card{flex-shrink:0;width:200px;text-align:center}
+  .hero-card .ava{width:148px;height:148px;border-radius:50%;object-fit:cover;object-position:top center;border:4px solid rgba(255,180,140,.6);box-shadow:0 14px 34px rgba(0,0,0,.45);background:#24344a}
+  .hero-card .nm{font-size:15px;font-weight:800;color:#fff;margin-top:10px}
+  .hero-card .ti{font-size:11.5px;color:#ffb894;margin-top:2px}
+  .container{max-width:1080px;margin:0 auto;padding:38px 52px 70px}
+  .lead{font-size:15.5px;line-height:2.05;color:#38453d;background:linear-gradient(120deg,#fff8f3,#f7fbf8);border-left:5px solid var(--brand);border-radius:0 14px 14px 0;padding:22px 26px;margin-bottom:32px}
+  .lead b{color:var(--brand-dark)}
+  .cast{display:flex;gap:16px;align-items:flex-start;border-radius:16px;padding:18px 22px;margin:24px 0}
+  .cast .ava{width:72px;height:72px;border-radius:50%;object-fit:cover;object-position:top center;flex-shrink:0;background:#e8eef5}
+  .cast .bubble{position:relative;font-size:14px;line-height:1.95;padding-top:2px;flex:1}
+  .cast .who{font-size:12px;font-weight:800;margin-bottom:5px;letter-spacing:.5px}
+  .cast.anya{background:var(--brand-soft);border:1px solid #ffdcc9}
+  .cast.anya .who{color:var(--brand-dark)}
+  .cast.anya .bubble{color:#5c4636}
+  .cast.duck{background:#fff5f5;border:1px solid #fbd5d5}
+  .cast.duck .who{color:#b91c1c}
+  .cast.duck .bubble{color:#5c4141}
+  .cast.teacher{background:linear-gradient(120deg,#f4f7fb,#ffffff);border:1px solid #dbe4f0}
+  .cast.teacher .who{color:#1e293b}
+  .cast.teacher .bubble{color:#3c4a5a}
+  .goal-grid{display:grid;grid-template-columns:1fr 1fr;gap:16px;margin-bottom:36px}
+  .goal{border:1px solid var(--line);border-radius:15px;padding:19px 21px;background:#fff;box-shadow:0 4px 16px rgba(31,122,68,.05)}
+  .goal h4{font-size:14px;font-weight:800;margin-bottom:11px;display:flex;align-items:center;gap:8px;color:var(--primary-dark)}
+  .goal h4 .ic{width:22px;height:22px;border-radius:7px;background:var(--primary-lighter);display:flex;align-items:center;justify-content:center;font-size:12px}
+  .goal ul{list-style:none}
+  .goal li{font-size:13.5px;color:#4b5a52;line-height:1.9;padding-left:18px;position:relative}
+  .goal li::before{content:"▸";position:absolute;left:0;color:var(--primary);font-weight:800}
+  .goal.syllabus li::before{content:"✓"}
+  .section-header{margin:52px 0 24px;padding-bottom:12px;border-bottom:3px solid var(--brand);display:flex;align-items:baseline;gap:14px;flex-wrap:wrap}
+  .section-header h2{font-size:22px;font-weight:800;color:var(--night);letter-spacing:.4px}
+  .section-header .en-title{font-size:12px;color:var(--dim2);font-style:italic}
+  h3{font-size:17.5px;font-weight:800;margin:34px 0 14px;color:var(--night);display:flex;align-items:center;gap:10px}
+  h3::before{content:"";width:5px;height:17px;border-radius:3px;background:var(--brand);flex-shrink:0}
+  h4{font-size:15px;font-weight:800;margin:24px 0 10px;color:#33513f}
+  p{margin:12px 0;color:#3c4a42;line-height:2}
+  strong{color:var(--primary-dark)}
+  code.inline{background:var(--primary-lighter);color:var(--primary-dark);padding:2px 7px;border-radius:6px;font-family:"SFMono-Regular",Consolas,Menlo,monospace;font-size:.9em;font-weight:600}
+  .figure{margin:24px 0;text-align:center}
+  .figure svg.diagram{max-width:100%;height:auto;background:#fff;border:1px solid var(--line);border-radius:14px;padding:10px}
+  .figure .caption{font-size:12.5px;color:var(--dim2);margin-top:9px}
+  .pic{margin:26px 0;text-align:center}
+  .pic img{max-width:100%;border-radius:16px;box-shadow:0 10px 28px rgba(30,60,45,.15);display:block;margin:0 auto}
+  .pic figcaption{font-size:12.5px;color:var(--dim2);margin-top:9px}
+  .pic .ph{display:none}
+  .pic.missing img{display:none}
+  .pic.missing .ph{display:flex;flex-direction:column;align-items:center;justify-content:center;gap:9px;border:2px dashed #c9d9e8;border-radius:16px;background:linear-gradient(135deg,#f8fbfe,#eef6ff);padding:40px 26px;color:#7a8fa8}
+  .pic.missing .ph .fn{font-family:Consolas,monospace;font-size:12.5px;color:#2563eb;font-weight:700;word-break:break-all}
+  .pic.missing .ph .ds{font-size:12.5px;line-height:1.8;max-width:560px}
+  .box{border-radius:13px;padding:16px 20px;margin:20px 0;font-size:14px;line-height:1.95}
+  .box .lb{font-weight:800;margin-right:6px}
+  .info{background:#eef6ff;border-left:5px solid #3b82f6;color:#274768}
+  .info .lb{color:#1d4ed8}
+  .tip{background:#fff9ec;border-left:5px solid #f59e0b;color:#6b4e13}
+  .tip .lb{color:#b45309}
+  .remember{background:var(--primary-lighter);border-left:5px solid var(--primary);color:#1f5033}
+  .remember .lb{color:var(--primary-dark)}
+  .warn{background:#fef2f2;border-left:5px solid #ef4444;color:#7f2b2b}
+  .warn .lb{color:#b91c1c}
+  .code-card{margin:20px 0;border-radius:14px;overflow:hidden;box-shadow:0 10px 28px rgba(20,40,28,.20)}
+  .code-head{display:flex;align-items:center;gap:9px;background:#243126;padding:9px 14px}
+  .code-head .dot{width:10px;height:10px;border-radius:50%}
+  .code-head .d1{background:#ff5f57}.code-head .d2{background:#febc2e}.code-head .d3{background:#28c840}
+  .code-head .file{color:#95ab9c;font-size:11.5px;font-family:Consolas,monospace;margin-left:6px}
+  .code-head .lang{margin-left:auto;font-size:10.5px;font-weight:800;color:#0f2016;background:#4fbf7c;padding:2px 9px;border-radius:6px;letter-spacing:.4px}
+  .code-card pre{background:var(--code-bg);padding:18px 20px;overflow-x:auto;margin:0;font-family:"SFMono-Regular",Consolas,"Courier New",monospace;font-size:13.5px;line-height:1.85}
+  .code-card pre::-webkit-scrollbar{height:8px}
+  .code-card pre::-webkit-scrollbar-thumb{background:#3a5544;border-radius:4px}
+  .code-card code{color:var(--code-tx);white-space:pre}
+  .kw{color:var(--code-kw);font-weight:600}
+  .st{color:var(--code-st)}
+  .nu{color:var(--code-nu)}
+  .cm{color:var(--code-cm);font-style:italic}
+  .fn{color:var(--code-fn)}
+  .out{background:#16211a;color:#8fd6a8;font-family:Consolas,monospace;font-size:13px;padding:12px 20px;border-top:1px solid #2b3d31}
+  .out b{color:#c9d6cd;font-weight:600;font-size:11.5px;letter-spacing:1px}
+  table.styled{width:100%;border-collapse:collapse;margin:20px 0;font-size:13.5px;border-radius:12px;overflow:hidden;box-shadow:0 4px 16px rgba(31,122,68,.07)}
+  table.styled thead{background:var(--brand)}
+  table.styled th{color:#fff;padding:11px 14px;text-align:left;font-weight:700;font-size:13px}
+  table.styled td{padding:10px 14px;border-bottom:1px solid var(--line);color:#46564d;vertical-align:top}
+  table.styled tbody tr:nth-child(even){background:var(--bg-soft)}
+  table.styled tbody tr:last-child td{border-bottom:none}
+  .level-card{border:1px solid var(--line);border-radius:16px;overflow:hidden;margin:22px 0;box-shadow:0 6px 22px rgba(31,122,68,.07)}
+  .level-card .lc-head{background:linear-gradient(100deg,#17283a,#8a3a16);color:#fff;padding:15px 22px;display:flex;align-items:center;gap:12px;flex-wrap:wrap}
+  .level-card .lc-head .n{font-size:12px;font-weight:800;background:rgba(255,255,255,.2);padding:3px 10px;border-radius:20px}
+  .level-card .lc-head h4{margin:0;color:#fff;font-size:16px}
+  .level-card .lc-head .go{margin-left:auto;font-size:11.5px;color:#ffd2b3}
+  .level-card .lc-body{padding:20px 24px;background:#fff}
+  .level-card .story{background:#f9fbfd;border-left:4px solid #93c5fd;border-radius:0 10px 10px 0;padding:13px 18px;margin:0 0 16px;font-size:14px;line-height:1.95;color:#3f5163}
+  .level-card .story b{color:#1d4ed8}
+  .btn-go{display:inline-flex;align-items:center;gap:8px;background:linear-gradient(135deg,var(--brand),var(--brand-dark));color:#fff;text-decoration:none;font-weight:800;font-size:13.5px;padding:10px 22px;border-radius:11px;box-shadow:0 8px 20px rgba(255,107,53,.32);transition:.2s}
+  .btn-go:hover{transform:translateY(-2px);box-shadow:0 12px 26px rgba(255,107,53,.42)}
+  .pit{border:1px solid #f6dede;border-radius:14px;overflow:hidden;margin:16px 0;background:#fff}
+  .pit .pt{display:flex;gap:12px;padding:14px 18px;background:#fffafa;align-items:flex-start}
+  .pit .x{width:26px;height:26px;border-radius:9px;background:#fee;color:#dc2626;display:flex;align-items:center;justify-content:center;font-weight:800;flex-shrink:0;font-size:13px}
+  .pit .t{font-size:13.5px;line-height:1.9;color:#5c4a4a;flex:1}
+  .pit .t b{color:#b91c1c}
+  .pit .duck{display:flex;gap:12px;padding:13px 18px;background:#fff5f5;border-top:1px dashed #f3d0d0;align-items:flex-start}
+  .pit .duck img{width:48px;height:48px;object-fit:contain;flex-shrink:0;margin-top:2px}
+  .pit .duck .dt{font-size:13.5px;line-height:1.9;color:#7a3b3b}
+  .pit .duck .dt b{color:#b91c1c}
+  .pit .fix{padding:12px 18px;background:#f2fbf5;border-top:1px dashed #cfe7d8;font-size:13.5px;color:#1f5033}
+  .pit .fix b{color:var(--primary-dark)}
+  .exam{border:1px solid #dfe7f5;border-radius:15px;margin:16px 0;overflow:hidden;background:#fff;box-shadow:0 4px 16px rgba(38,62,120,.06)}
+  .exam .eh{display:flex;align-items:center;gap:10px;padding:11px 18px;background:linear-gradient(100deg,#eef4ff,#f7faff);border-bottom:1px solid #e3ebf8;flex-wrap:wrap}
+  .exam .eh .src{font-size:11px;font-weight:800;color:#fff;background:#2563eb;padding:2.5px 10px;border-radius:20px}
+  .exam .eh .src.ori{background:#8b5cf6}
+  .exam .eh .tp{font-size:11.5px;color:#5b7ba8;font-weight:700}
+  .exam .eb{padding:16px 20px}
+  .exam .q{font-weight:700;font-size:14px;color:#2c3c33;line-height:1.9;margin-bottom:10px}
+  .exam .opt{font-size:13.5px;color:#4b5a52;line-height:2.05;padding-left:6px}
+  .exam .opt i{font-style:normal;font-weight:800;color:var(--primary-dark);margin-right:7px}
+  .exam pre{margin:12px 0;background:#1b2a21;border-radius:10px;padding:14px 16px;overflow-x:auto;font-family:Consolas,monospace;font-size:13px;line-height:1.8;color:var(--code-tx)}
+  .exam details{margin-top:10px;border-top:1px dashed var(--line);padding-top:10px}
+  .exam summary{cursor:pointer;font-size:12.5px;font-weight:800;color:#2563eb;outline:none;user-select:none}
+  .exam details .ans{font-size:13.5px;color:#3c4a42;line-height:1.95;margin-top:9px;background:var(--bg-soft);padding:13px 16px;border-radius:10px}
+  .exam details .ans b{color:var(--primary-dark)}
+  .exam details .ans .tagline{display:inline-block;font-size:11px;background:#e0f2fe;color:#0e7490;padding:1.5px 8px;border-radius:6px;font-weight:700;margin-right:6px}
+  .summary{margin:40px 0 20px;border-radius:18px;padding:26px 30px;background:linear-gradient(130deg,#fff8f3,#ffffff);border:1px solid #ffe0cf}
+  .summary h3{margin-top:0}
+  .summary ul{list-style:none;margin-top:10px}
+  .summary li{font-size:14px;line-height:2;color:#41524a;padding-left:24px;position:relative}
+  .summary li::before{content:"◆";position:absolute;left:0;color:var(--brand);font-size:11px;top:6px}
+  .pager{display:flex;gap:14px;margin-top:30px;flex-wrap:wrap}
+  .pager a{flex:1;min-width:200px;text-decoration:none;border:1px solid var(--line);border-radius:14px;padding:16px 20px;background:#fff;transition:.2s;display:block}
+  .pager a:hover{border-color:var(--brand);box-shadow:0 10px 26px rgba(255,107,53,.14);transform:translateY(-2px)}
+  .pager a .k{font-size:11px;color:var(--dim2);font-weight:700;letter-spacing:1px}
+  .pager a .v{font-size:14px;font-weight:800;color:var(--night);margin-top:5px}
+  .pager a.back{background:var(--brand-soft);border-color:transparent;text-align:center}
+  .pager a.back .v{color:var(--brand-dark)}
+  .cta{margin-top:26px;border-radius:20px;padding:30px 34px;color:#fff;position:relative;overflow:hidden;background:linear-gradient(120deg,#16202f,#2b3a52 46%,#a8431c 132%)}
+  .cta::after{content:"";position:absolute;right:-70px;bottom:-90px;width:280px;height:280px;border-radius:50%;background:radial-gradient(circle,rgba(255,140,80,.45),transparent 68%)}
+  .cta h3{color:#fff;margin:0 0 10px;position:relative;z-index:2}
+  .cta h3::before{background:var(--brand)}
+  .cta p{color:#d8e0ef;font-size:13.5px;margin:0 0 18px;position:relative;z-index:2;max-width:640px}
+  .cta .btn-go{position:relative;z-index:2}
+  @media(max-width:900px){
+    .sidebar-nav{transform:translateX(-100%)}
+    .sidebar-nav.active{transform:translateX(0)}
+    .nav-toggle{display:block}
+    .page{margin-left:0}
+    .hero{padding:70px 22px 34px}
+    .hero-top{flex-direction:column-reverse;text-align:center}
+    .hero-card{width:auto}
+    .container{padding:26px 20px 60px}
+    .goal-grid{grid-template-columns:1fr}
+  }
+</style>
+</head>
+<body>
+
+<button class="nav-toggle" onclick="document.querySelector('.sidebar-nav').classList.toggle('active')">☰</button>
+
+<nav class="sidebar-nav">
+  <div class="sb-brand">
+    <a class="sb-logo" href="https://codecombat.cn/" target="_blank" rel="noopener" title="访问 CodeCombat 扣哒世界官网">
+      <img src="../assets/logo.png" alt="CodeCombat 扣哒世界">
+    </a>
+    <div><b>潮汐升降梯</b><span>烛火岗哨 · Python 一级 第 4 单元</span></div>
+  </div>
+  <div class="nav-title">本单元目录</div>
+
+  <a href="#s0" class="nav-section">0　单元导语与目标</a>
+  <a href="#s1" class="nav-section">1　顺序结构</a>
+  <a href="#s2" class="nav-section">2　输出：print</a>
+  <a href="#s2-1" class="nav-sub">2.1 输出多个值</a>
+  <a href="#s2-2" class="nav-sub">2.2 sep 与 end</a>
+  <a href="#s2-3" class="nav-sub">2.3 f-string 格式化</a>
+  <a href="#s2-4" class="nav-sub">2.4 宽度对齐 :3 与保留小数</a>
+  <a href="#s3" class="nav-section">3　输入：input</a>
+  <a href="#s3-1" class="nav-sub">3.1 input 拿到的是字符串</a>
+  <a href="#s3-2" class="nav-sub">3.2 数字输入要转换</a>
+  <a href="#s4" class="nav-section">4　输入—处理—输出</a>
+  <a href="#s5" class="nav-section">5　拓展：turtle 的坐标与抬笔</a>
+  <a href="#s6" class="nav-section">6　代码实战</a>
+  <a href="#s7" class="nav-section">7　常见陷阱</a>
+  <a href="#s8" class="nav-section">8　题目练习</a>
+  <a href="#s9" class="nav-section">9　本单元小结</a>
+
+  <a href="../index.html" target="_top" class="sb-back">返回考纲之路</a>
+</nav>
+
+<div class="page">
+
+<div class="hero">
+  <div class="hero-top">
+    <div class="hero-txt">
+      <div class="crumb">扣哒考级 · GESP PYTHON 一级 · 第 4 单元　|　烛火岗哨 CANDLEWATCH OUTPOST</div>
+      <h1>潮汐升降梯
+        <span class="sub">顺序结构与输入输出</span>
+      </h1>
+      <div class="en">Sequence, Input &amp; Output</div>
+      <div class="tags">
+        <span class="tag hot">考纲 · 输入输出</span>
+        <span class="tag">顺序结构</span>
+        <span class="tag">print / sep / end</span>
+        <span class="tag">f-string</span>
+        <span class="tag">input</span>
+      </div>
+    </div>
+    <div class="hero-card">
+      <img class="ava" src="../assets/avatars/anya.webp" alt="安雅" onerror="this.style.background='#24344a';this.src='../assets/heroes/anya.webp'">
+      <div class="nm">安雅</div>
+      <div class="ti">红发队长 · 你的旅伴</div>
+    </div>
+  </div>
+</div>
+
+<div class="container">
+
+<div class="lead">
+  岗哨靠海，塔的背面装着一台<b>潮汐升降梯</b>：海水涨上来，把吊篮一层层往上顶；
+  退潮时它再一层层落回去。整台机器只有一件事——<b>照着顺序，一层接一层地走</b>。<br>
+  程序默认也是这么跑的。安雅按下一层的按钮，<b>你写下的每一行，它都从上到下、一条不落地执行。</b>
+  这就是三大结构里最简单的那个——<b>顺序结构</b>。
+</div>
+
+<div class="cast anya">
+  <img class="ava" src="../assets/avatars/anya.webp" alt="安雅" onerror="this.style.display='none'">
+  <div class="bubble">
+    <div class="who">安雅 · 红发队长</div>
+    顺序结构太简单，所以今天我们把重点放在<strong>输入与输出</strong>上——
+    怎么把话写在屏幕上（<code>print</code>），怎么把外面的数据收进来（<code>input</code>）。
+    这两件事学会，你的程序才算真的'活'了。
+  </div>
+</div>
+
+<!-- ============ 0 ============ -->
+<figure class="pic">
+  <img src="../assets/illustrations/py-L1-04-00_tidal_platform.webp" alt="开篇场景图：崖边的潮汐升降梯"
+       onerror="this.closest('.pic').classList.add('missing')">
+  <div class="ph">
+    <div class="fn">assets/illustrations/py-L1-04-00_tidal_platform.webp</div>
+    <div class="ds">【配图位】烛火岗哨外侧的悬崖：一座由铁链与木轮驱动的升降梯贴着崖壁上下移动，梯台正随涨潮缓缓升起，水花在平台边缘溅成一道白线；崖顶的信号员挥旗示意放行，英雄站在梯台上抓紧铁链。</div>
+  </div>
+  <figcaption>图 1：烛火岗哨的潮汐升降梯——今天要从这里开始</figcaption>
+</figure>
+
+<div class="section-header" id="s0">
+  <h2>0　单元导语与目标</h2>
+  <div class="en-title">Unit Overview</div>
+</div>
+
+<div class="goal-grid">
+  <div class="goal">
+    <h4><span class="ic">1</span>学完这个单元，你将能……</h4>
+    <ul>
+      <li>说清"顺序结构"的含义，并知道它是三大结构的基础</li>
+      <li>用 <code class="inline">print()</code> 输出一个或多个值</li>
+      <li>用 <code class="inline">sep</code> 和 <code class="inline">end</code> 控制分隔与换行</li>
+      <li>用 f-string 把变量嵌进句子里</li>
+      <li>用 <code class="inline">input()</code> 接收用户输入，并转成需要的类型</li>
+      <li>写出完整的"输入—处理—输出"程序</li>
+    </ul>
+  </div>
+  <div class="goal syllabus">
+    <h4><span class="ic">2</span>对标 GESP 考纲（Python 一级）</h4>
+    <ul>
+      <li>（5）理解并掌握"输入、处理、输出"程序编写方法，掌握 Python 编码规范</li>
+      <li>（11）掌握输入输出语句 input 和 print</li>
+      <li>（7）了解程序的顺序结构、选择结构、循环结构</li>
+      <li>考核目标：能独立创建完整的编程文件并运行通过</li>
+    </ul>
+  </div>
+</div>
+
+<!-- ============ 1 ============ -->
+<div class="section-header" id="s1">
+  <h2>1　顺序结构</h2>
+  <div class="en-title">Sequence Structure</div>
+</div>
+
+<p><strong>顺序结构</strong>是程序最基本的执行方式：<strong>代码从上往下，一行接一行地执行，不跳步、不回头</strong>。
+岗哨的升降梯是这样，你写的每一段 Python 代码默认也是这样。</p>
+
+<figure class="figure">
+  <svg class="diagram" viewBox="0 0 820 300" role="img" aria-label="顺序结构执行示意">
+    <text x="24" y="34" font-size="14" font-weight="bold" fill="#1f2937">顺序结构：从上到下，一条不落</text>
+
+    <rect x="60" y="60" width="200" height="44" rx="10" fill="#eef6ff" stroke="#3b82f6" stroke-width="2"/>
+    <text x="160" y="88" text-anchor="middle" font-size="13" fill="#1d4ed8" font-weight="bold">第 1 行：接收输入</text>
+    <rect x="60" y="120" width="200" height="44" rx="10" fill="#eef6ff" stroke="#3b82f6" stroke-width="2"/>
+    <text x="160" y="148" text-anchor="middle" font-size="13" fill="#1d4ed8" font-weight="bold">第 2 行：处理数据</text>
+    <rect x="60" y="180" width="200" height="44" rx="10" fill="#eef6ff" stroke="#3b82f6" stroke-width="2"/>
+    <text x="160" y="208" text-anchor="middle" font-size="13" fill="#1d4ed8" font-weight="bold">第 3 行：输出结果</text>
+
+    <line x1="160" y1="104" x2="160" y2="116" stroke="#3b82f6" stroke-width="2.4"/>
+    <polygon points="160,118 154,106 166,106" fill="#3b82f6"/>
+    <line x1="160" y1="164" x2="160" y2="176" stroke="#3b82f6" stroke-width="2.4"/>
+    <polygon points="160,178 154,166 166,166" fill="#3b82f6"/>
+
+    <rect x="320" y="60" width="460" height="164" rx="12" fill="#1b2a21"/>
+    <text x="344" y="94" font-family="Consolas,monospace" font-size="13.5" fill="#c9d6cd">name = </text>
+    <text x="410" y="94" font-family="Consolas,monospace" font-size="13.5" fill="#61afef">input</text>
+    <text x="452" y="94" font-family="Consolas,monospace" font-size="13.5" fill="#c9d6cd">(</text>
+    <text x="460" y="94" font-family="Consolas,monospace" font-size="13.5" fill="#98c379">"你叫什么？"</text>
+    <text x="562" y="94" font-family="Consolas,monospace" font-size="13.5" fill="#c9d6cd">)</text>
+
+    <text x="344" y="128" font-family="Consolas,monospace" font-size="13.5" fill="#c9d6cd">greet = </text>
+    <text x="412" y="128" font-family="Consolas,monospace" font-size="13.5" fill="#98c379">"你好，"</text>
+    <text x="480" y="128" font-family="Consolas,monospace" font-size="13.5" fill="#c9d6cd"> + name</text>
+
+    <text x="344" y="162" font-family="Consolas,monospace" font-size="13.5" fill="#61afef">print</text>
+    <text x="386" y="162" font-family="Consolas,monospace" font-size="13.5" fill="#c9d6cd">(greet)</text>
+
+    <text x="344" y="200" font-size="12" fill="#8fa499">三行代码，依次执行：收 → 算 → 说</text>
+
+    <text x="24" y="266" font-size="12" fill="#8d9d94">顺序结构不需要任何特殊语法——你按顺序写，它就按顺序跑</text>
+  </svg>
+  <div class="caption">图 2（SVG）：顺序结构——从上到下，依次执行</div>
+</figure>
+
+<div class="box remember">
+  <span class="lb">重要观念：</span>三种基本结构是——<strong>顺序、分支、循环</strong>。
+  其中<strong>顺序结构是基础</strong>：分支是"跳过某些行"，循环是"回头再来几遍"，
+  但它们内部仍然是一条条按顺序执行的语句。
+</div>
+
+<div class="box tip">
+  <span class="lb">写代码的顺序很重要：</span>电脑执行代码时一条条往下走，
+  <strong>变量必须先赋值、后使用</strong>。把 <code class="inline">print(a)</code> 写在 <code class="inline">a = 1</code> 前面，程序就会报错。
+</div>
+
+<!-- ============ 2 ============ -->
+<div class="cast anya">
+  <img class="ava" src="../assets/avatars/anya.webp" alt="安雅" onerror="this.style.display='none'">
+  <div class="bubble">
+    <div class="who">安雅 · 红发队长</div>
+    你发现没有？写程序和我们守夜一模一样：<strong>先接哨、再巡墙、最后报更</strong>。<br>
+    顺序要是反了呢？先报更再去巡墙——队长一听就知道你在梦里巡的。<br>
+    <strong>顺序结构，就是"按正确的顺序，把该做的事一件件做完"。</strong>
+  </div>
+</div>
+
+<div class="section-header" id="s2">
+  <h2>2　输出：print</h2>
+  <div class="en-title">Output with print</div>
+</div>
+
+<h3 id="s2-1">2.1 输出多个值</h3>
+<p><code class="inline">print()</code> 是我们最早认识的函数。它不只输出一个值，还可以一次输出好几个，
+中间自动用<strong>空格</strong>隔开：</p>
+
+<div class="code-card">
+  <div class="code-head">
+    <span class="dot d1"></span><span class="dot d2"></span><span class="dot d3"></span>
+    <span class="file">输出多个值</span>
+    <span class="lang">Python</span>
+  </div>
+  <pre><code>a = 3
+b = 4
+
+print(a)
+print(a, b)
+print("和为", a + b)
+print("哨火" , "不熄")</code></pre>
+  <div class="out"><b>OUTPUT</b>　3<br>3 4<br>和为 7<br>哨火 不熄</div>
+</div>
+
+<p>要注意：<code class="inline">print(a, b)</code> 里的逗号是"分隔符"，
+它会在两个值之间<strong>自动补一个空格</strong>。所以输出是 <code class="inline">3 4</code>，而不是 <code class="inline">34</code>。</p>
+
+<h3 id="s2-2">2.2 sep 与 end</h3>
+<p>这两个参数是<strong>真题的高频考点</strong>，一定要分清楚：</p>
+
+<table class="styled">
+  <thead><tr><th>参数</th><th>作用</th><th>默认值</th><th>例子</th><th>输出</th></tr></thead>
+  <tbody>
+    <tr><td><code class="inline">sep</code></td><td>多个值<strong>之间</strong>用什么隔开</td><td>一个空格</td><td><code class="inline">print(3, 4, sep="#")</code></td><td><code class="inline">3#4</code></td></tr>
+    <tr><td><code class="inline">end</code></td><td>输出<strong>结束</strong>后用什么收尾</td><td>换行符 <code class="inline">\n</code></td><td><code class="inline">print(3, end="-")</code></td><td><code class="inline">3-</code>（不换行）</td></tr>
+  </tbody>
+</table>
+
+<figure class="figure">
+  <svg class="diagram" viewBox="0 0 820 270" role="img" aria-label="sep 与 end 的作用位置">
+    <text x="24" y="34" font-size="14" font-weight="bold" fill="#1f2937">sep 管"中间"，end 管"结尾"</text>
+
+    <rect x="60" y="70" width="700" height="60" rx="12" fill="#eef6ff" stroke="#3b82f6" stroke-width="2"/>
+    <text x="86" y="108" font-family="Consolas,monospace" font-size="15" fill="#1d4ed8">print( 3 , 4 , sep="#" )</text>
+
+    <path d="M196 138 L196 168" stroke="#ff6b35" stroke-width="2.4"/>
+    <polygon points="196,172 190,160 202,160" fill="#ff6b35"/>
+    <text x="204" y="164" font-size="12.5" fill="#c1440e" font-weight="bold">这里放 #</text>
+
+    <text x="86" y="204" font-family="Consolas,monospace" font-size="17" fill="#1f7a44" font-weight="bold">输出：3#4</text>
+
+    <line x1="60" y1="228" x2="760" y2="228" stroke="#e2ece6" stroke-width="1.4"/>
+
+    <rect x="60" y="236" width="700" height="0" rx="12" fill="none"/>
+    <text x="440" y="258" text-anchor="middle" font-size="12.5" fill="#8d9d94">而 end 决定这一行结束时是换行、还是接上下一次输出</text>
+  </svg>
+  <div class="caption">图 3（SVG）：<code class="inline">sep</code> 出现在值之间，<code class="inline">end</code> 出现在整行的末尾</div>
+</figure>
+
+<div class="code-card">
+  <div class="code-head">
+    <span class="dot d1"></span><span class="dot d2"></span><span class="dot d3"></span>
+    <span class="file">sep 与 end 实例</span>
+    <span class="lang">Python</span>
+  </div>
+  <pre><code>print(3, 4, sep="#")            # 分隔符换成 #
+print(3, 4)                     # 默认用空格
+
+print("A", end="")              # 不换行
+print("B", end="")              # 继续接在后面
+print("C")
+
+print(1, 2, 3, sep="-", end="!")   # 两个参数可以一起用</code></pre>
+  <div class="out"><b>OUTPUT</b>　3#4<br>3 4<br>ABC<br>1-2-3!</div>
+</div>
+
+<div class="box info">
+  <span class="lb">记住：</span><code class="inline">sep</code> 只影响<strong>同一个 print 里多个值之间</strong>；
+  <code class="inline">end</code> 影响的是<strong>这次输出结束后</strong>的动作——默认换行，改成别的就接在后面。
+</div>
+
+<h3 id="s2-3">2.3 f-string 格式化</h3>
+<p>想把变量的值嵌进一句话里，最方便的写法是 <strong>f-string</strong>：在引号前加一个 <code class="inline">f</code>，
+然后在花括号里直接写变量或表达式。</p>
+
+<figure class="figure">
+  <svg class="diagram" viewBox="0 0 820 260" role="img" aria-label="f-string 结构拆解">
+    <text x="24" y="34" font-size="14" font-weight="bold" fill="#1f2937">f-string 的三个部分</text>
+
+    <rect x="70" y="80" width="60" height="56" rx="10" fill="#fff6ec" stroke="#ff6b35" stroke-width="2.2"/>
+    <text x="100" y="116" text-anchor="middle" font-size="26" fill="#c1440e" font-weight="bold">f</text>
+    <text x="100" y="162" text-anchor="middle" font-size="12" fill="#a85728">① 前缀</text>
+
+    <rect x="150" y="80" width="74" height="56" rx="10" fill="#e9f8ef" stroke="#2e9e5b" stroke-width="2.2"/>
+    <text x="187" y="118" text-anchor="middle" font-size="24" fill="#1f7a44" font-weight="bold">"</text>
+    <text x="187" y="162" text-anchor="middle" font-size="12" fill="#3b7c5b">② 引号</text>
+
+    <rect x="240" y="80" width="360" height="56" rx="10" fill="#eef6ff" stroke="#3b82f6" stroke-width="2.2"/>
+    <text x="420" y="116" text-anchor="middle" font-size="15" font-family="Consolas,monospace" fill="#1d4ed8">a+2={a+2}</text>
+    <text x="420" y="162" text-anchor="middle" font-size="12" fill="#3b6ea8">③ 普通文字 + 花括号里的表达式（会被算出来替换掉）</text>
+
+    <rect x="620" y="80" width="60" height="56" rx="10" fill="#e9f8ef" stroke="#2e9e5b" stroke-width="2.2"/>
+    <text x="650" y="118" text-anchor="middle" font-size="24" fill="#1f7a44" font-weight="bold">"</text>
+    <text x="650" y="162" text-anchor="middle" font-size="12" fill="#3b7c5b">收尾引号</text>
+
+    <text x="410" y="212" text-anchor="middle" font-size="12.5" fill="#8d9d94">若 a = 4，则输出为：a+2=6　（花括号里的内容会被替换成计算结果）</text>
+  </svg>
+  <div class="caption">图 4（SVG）：f-string 的写法与替换规则</div>
+</figure>
+
+<div class="code-card">
+  <div class="code-head">
+    <span class="dot d1"></span><span class="dot d2"></span><span class="dot d3"></span>
+    <span class="file">f-string 实例</span>
+    <span class="lang">Python</span>
+  </div>
+  <pre><code>a = 4
+name = "安雅"
+
+print(f"a+2={a+2}")                    # 花括号里可以放表达式
+print(f"{name} 有 {3} 支火把")           # 也可以放变量和数字
+print(f"{name}的血量是 {100}")</code></pre>
+  <div class="out"><b>OUTPUT</b>　a+2=6<br>安雅 有 3 支火把<br>安雅的血量是 100</div>
+</div>
+
+<div class="box warn">
+  <span class="lb">别忘了那个 f：</span>如果没有写 <code class="inline">f</code>，
+  花括号里的内容<strong>不会被替换</strong>，会原样输出 <code class="inline">{a+2}</code>。
+  这是真题考过的一个点。
+</div>
+
+<h3 id="s2-4">2.4 宽度对齐 :3 与保留小数</h3>
+<p>f-string 的花括号里还可以加"格式说明"，用来控制输出的样子。最常用的两个：</p>
+
+<table class="styled">
+  <thead><tr><th>写法</th><th>含义</th><th>例子（N = 35）</th><th>输出</th></tr></thead>
+  <tbody>
+    <tr><td><code class="inline">{N:3}</code></td><td>占 <strong>3 个字符宽度</strong>，不足的左边补空格</td><td><code class="inline">f"{N:3}"</code></td><td><code class="inline"> 35</code></td></tr>
+    <tr><td><code class="inline">{N:03}</code></td><td>占 3 位，不足的前面<strong>补 0</strong></td><td><code class="inline">f"{N:03}"</code></td><td><code class="inline">035</code></td></tr>
+    <tr><td><code class="inline">{x:.2f}</code></td><td>保留<strong>两位小数</strong></td><td><code class="inline">f"{3.14159:.2f}"</code></td><td><code class="inline">3.14</code></td></tr>
+  </tbody>
+</table>
+
+<div class="code-card">
+  <div class="code-head">
+    <span class="dot d1"></span><span class="dot d2"></span><span class="dot d3"></span>
+    <span class="file">对齐与保留小数</span>
+    <span class="lang">Python</span>
+  </div>
+  <pre><code>print(f"{35:3}")         # 宽度 3
+print(f"{5:3}")          # 宽度 3，左边补空格
+print(f"{5:03}")         # 宽度 3，左边补 0
+
+pi = 3.14159
+print(f"{pi:.2f}")       # 保留两位小数</code></pre>
+  <div class="out"><b>OUTPUT</b>　 35<br>  5<br>005<br>3.14</div>
+</div>
+
+<div class="box info">
+  <span class="lb">还有老式写法：</span>你也可能见到 <code class="inline">"%.2f" % pi</code> 这种写法，
+  它的效果和 <code class="inline">f"{pi:.2f}"</code> 一样（保留两位小数）。
+  两种都认识即可，自己写建议用 f-string，更清楚。
+</div>
+
+<div class="cast hero">
+  <img class="ava" src="../assets/avatars/omarn.webp" alt="欧曼" onerror="this.style.display='none'">
+  <div class="bubble">
+    <div class="who">欧曼 · 传奇巫师</div>
+    我被关在地牢牢房那些年，唯一能说话的对象就是墙上的暗语。<br>
+    <strong>程序也一样——它不会读心术，你得把话说出来它才知道。</strong><br>
+    想让它把外面的数收进来，用 <code>input()</code>；想让它开口告诉你结果，用 <code>print()</code>。
+  </div>
+</div>
+
+<div class="section-header" id="s3">
+  <h2>3　输入：input</h2>
+  <div class="en-title">Input</div>
+</div>
+
+<h3 id="s3-1">3.1 input 拿到的是字符串</h3>
+
+<p><code class="inline">input()</code> 会让程序<strong>停下来等你打字</strong>，你按下回车后，
+它会把你打的<strong>那一整行</strong>作为结果返回。括号里可以写一句提示文字：</p>
+
+<div class="code-card">
+  <div class="code-head">
+    <span class="dot d1"></span><span class="dot d2"></span><span class="dot d3"></span>
+    <span class="file">第一个输入程序</span>
+    <span class="lang">Python</span>
+  </div>
+  <pre><code>name = input("请输入你的名字：")
+print("你好，" + name)</code></pre>
+  <div class="out"><b>运行过程</b>　请输入你的名字：<em>安雅</em>　（用户输入后回车）<br><b>OUTPUT</b>　你好，安雅</div>
+</div>
+
+<div class="box warn">
+  <span class="lb">最关键的一点：</span>
+  <strong><code class="inline">input()</code> 拿到的永远是字符串（str）</strong>，
+  哪怕你输入的是 <code class="inline">123</code>，它拿到的也是文字 <code class="inline">"123"</code>，不是数字 123。
+</div>
+
+<h3 id="s3-2">3.2 数字输入要转换</h3>
+<p>所以，想做算术就必须先转换类型。标准写法是<strong>把 int() 或 float() 套在 input() 外面</strong>：</p>
+
+<div class="code-card">
+  <div class="code-head">
+    <span class="dot d1"></span><span class="dot d2"></span><span class="dot d3"></span>
+    <span class="file">接收数字</span>
+    <span class="lang">Python</span>
+  </div>
+  <pre><code># 写法一：一步到位（最常用）
+a = int(input("请输入第一个数："))
+b = int(input("请输入第二个数："))
+
+print("两数之和是：", a + b)</code></pre>
+  <div class="out"><b>运行过程</b>　请输入第一个数：<em>7</em><br>请输入第二个数：<em>5</em><br><b>OUTPUT</b>　两数之和是： 12</div>
+</div>
+
+<div class="code-card">
+  <div class="code-head">
+    <span class="dot d1"></span><span class="dot d2"></span><span class="dot d3"></span>
+    <span class="file">写法二：先收再转（效果一样）</span>
+    <span class="lang">Python</span>
+  </div>
+  <pre><code>a = input("请输入第一个数：")   # 此时 a 是字符串 "7"
+a = int(a)                     # 转换之后才是数字 7
+
+print(type(a))</code></pre>
+  <div class="out"><b>OUTPUT</b>　&lt;class 'int'&gt;</div>
+</div>
+
+<div class="box tip">
+  <span class="lb">小数怎么办？</span>如果输入可能是小数（比如 3.5），要用 <code class="inline">float()</code>：
+  <code class="inline">x = float(input())</code>。
+  用 <code class="inline">int()</code> 去转 <code class="inline">"3.5"</code> 会直接报错。
+</div>
+
+<!-- ============ 4 ============ -->
+<div class="section-header" id="s4">
+  <h2>4　输入—处理—输出</h2>
+  <div class="en-title">Input · Process · Output</div>
+</div>
+
+<p>这是考纲里明确要求的"程序编写方法"，也是所有程序最基本的骨架。我们写一个完整的例子：</p>
+
+<figure class="figure">
+  <svg class="diagram" viewBox="0 0 820 240" role="img" aria-label="输入处理输出三段式">
+    <text x="24" y="34" font-size="14" font-weight="bold" fill="#1f2937">任何程序都逃不出这三步</text>
+
+    <rect x="46" y="70" width="216" height="110" rx="14" fill="#eef6ff" stroke="#3b82f6" stroke-width="2.2"/>
+    <text x="154" y="104" text-anchor="middle" font-size="15" fill="#1d4ed8" font-weight="bold">① 输入</text>
+    <text x="154" y="130" text-anchor="middle" font-size="12.5" fill="#3b6ea8">input() 把数据收进来</text>
+    <text x="154" y="154" text-anchor="middle" font-size="12" font-family="Consolas,monospace" fill="#64748b">int(input())</text>
+
+    <rect x="292" y="70" width="236" height="110" rx="14" fill="#fff6ec" stroke="#ff6b35" stroke-width="2.2"/>
+    <text x="410" y="104" text-anchor="middle" font-size="15" fill="#c1440e" font-weight="bold">② 处理</text>
+    <text x="410" y="130" text-anchor="middle" font-size="12.5" fill="#a85728">用运算符算出结果</text>
+    <text x="410" y="154" text-anchor="middle" font-size="12" font-family="Consolas,monospace" fill="#64748b">total = a + b</text>
+
+    <rect x="558" y="70" width="216" height="110" rx="14" fill="#e9f8ef" stroke="#2e9e5b" stroke-width="2.2"/>
+    <text x="666" y="104" text-anchor="middle" font-size="15" fill="#1f7a44" font-weight="bold">③ 输出</text>
+    <text x="666" y="130" text-anchor="middle" font-size="12.5" fill="#3b7c5b">print() 把结果送出去</text>
+    <text x="666" y="154" text-anchor="middle" font-size="12" font-family="Consolas,monospace" fill="#64748b">print(total)</text>
+
+    <line x1="264" y1="125" x2="288" y2="125" stroke="#cbd5e1" stroke-width="2.6"/>
+    <polygon points="290,125 278,119 278,131" fill="#cbd5e1"/>
+    <line x1="530" y1="125" x2="554" y2="125" stroke="#cbd5e1" stroke-width="2.6"/>
+    <polygon points="556,125 544,119 544,131" fill="#cbd5e1"/>
+
+    <text x="410" y="212" text-anchor="middle" font-size="12" fill="#8d9d94">顺序结构让这三步依次发生；分支与循环，只是给这三步加上"选择"与"重复"</text>
+  </svg>
+  <div class="caption">图 5（SVG）：输入 → 处理 → 输出，程序的基本骨架</div>
+</figure>
+
+<div class="code-card">
+  <div class="code-head">
+    <span class="dot d1"></span><span class="dot d2"></span><span class="dot d3"></span>
+    <span class="file">完整例子：算总价</span>
+    <span class="lang">Python</span>
+  </div>
+  <pre><code># ① 输入
+price = float(input("请输入单价："))
+count = int(input("请输入数量："))
+
+# ② 处理
+total = price * count
+
+# ③ 输出
+print(f"总价是 {total:.2f} 元")</code></pre>
+  <div class="out"><b>运行过程</b>　请输入单价：<em>3.5</em><br>请输入数量：<em>4</em><br><b>OUTPUT</b>　总价是 14.00 元</div>
+</div>
+
+<div class="box remember">
+  <span class="lb">写程序的固定思路：</span>
+  <strong>先问"数据从哪来"（输入）→ 再问"要怎么算"（处理）→ 最后问"结果给谁看"（输出）</strong>。
+  把这三维想清楚，代码自然就写出来了。
+</div>
+
+<figure class="pic">
+  <img src="../assets/illustrations/py-L1-04-01_tidal_lift.webp" alt="潮汐升降梯"
+       onerror="this.closest('.pic').classList.add('missing')">
+  <div class="ph">
+    <div class="fn">assets/illustrations/py-L1-04-01_tidal_lift.webp</div>
+    <div class="ds">【配图位】海边岗哨背面的潮汐升降梯：石制吊篮被上涨的海水逐层顶起，每一层石壁上刻着一条发光指令符文；一名新兵站在吊篮里向上张望，下方是翻涌的白色浪花。</div>
+  </div>
+  <figcaption>图 6：一层接一层往上走——这就是顺序结构</figcaption>
+</figure>
+
+<!-- ============ 5 ============ -->
+<div class="section-header" id="s5">
+  <h2>5　拓展：turtle 的坐标与抬笔</h2>
+  <div class="en-title">Turtle: Coordinates &amp; Pen Control</div>
+</div>
+
+<p>上一单元认识了海龟怎么走，这一节再补两个重要工具——<strong>坐标定位</strong>和<strong>抬笔落笔</strong>。</p>
+
+<div class="code-card">
+  <div class="code-head">
+    <span class="dot d1"></span><span class="dot d2"></span><span class="dot d3"></span>
+    <span class="file">抬笔与落笔</span>
+    <span class="lang">Python</span>
+  </div>
+  <pre><code>import turtle
+
+turtle.forward(100)     # 会画出一条线
+
+turtle.penup()          # 抬笔：之后移动不留痕迹
+turtle.forward(50)      # 这一段是空白
+
+turtle.pendown()        # 落笔：恢复画线
+turtle.forward(100)     # 又画出一条线
+
+turtle.done()</code></pre>
+  <div class="out"><b>效果</b>　画出两条线段，中间空了一段</div>
+</div>
+
+<div class="code-card">
+  <div class="code-head">
+    <span class="dot d1"></span><span class="dot d2"></span><span class="dot d3"></span>
+    <span class="file">坐标与回家</span>
+    <span class="lang">Python</span>
+  </div>
+  <pre><code>import turtle
+
+turtle.goto(100, 100)   # 移动到坐标 (100, 100)，过程中画线
+turtle.goto(100, 0)     # 再到 (100, 0)
+turtle.home()           # 回到原点 (0, 0)，同样会画线
+
+turtle.done()</code></pre>
+  <div class="out"><b>效果</b>　一共画出 3 条线（起点→(100,100)→(100,0)→原点）</div>
+</div>
+
+<div class="box warn">
+  <span class="lb">真题陷阱：</span><code class="inline">goto()</code> 和 <code class="inline">home()</code>
+  <strong>都会在移动过程中画线</strong>（除非之前抬了笔）。
+  数"一共画了几条线"时，一定要把<strong>起点到第一个 goto 之间的那段</strong>也算进去，
+  而且 <code class="inline">home()</code> 这一段也别忘了。
+</div>
+
+<figure class="pic">
+  <img src="../assets/illustrations/py-L1-04-02_input_output_gate.webp" alt="输入输出大门"
+       onerror="this.closest('.pic').classList.add('missing')">
+  <div class="ph">
+    <div class="fn">assets/illustrations/py-L1-04-02_input_output_gate.webp</div>
+    <div class="ds">【配图位】岗哨的城门：一侧是漏斗状的"收货口"（输入），外部的补给袋被吸入；另一侧是滑道状的"出货口"（输出），发光的成果牌被送出来；一只机械鸭守在操纵杆旁。</div>
+  </div>
+  <figcaption>图 7：输入是收进来，输出是送出去</figcaption>
+</figure>
+
+<!-- ============ 6 ============ -->
+<div class="section-header" id="s6">
+  <h2>6　代码实战</h2>
+  <div class="en-title">Level Practice</div>
+</div>
+
+<div class="level-card">
+  <div class="lc-head"><span class="n">关卡</span><h4>凌波微步</h4><span class="go">进入关卡 →</span></div>
+  <div class="lc-body">
+    <div class="story">
+      <b>故事：</b>地牢越来越深，通道变得更长，宝石散落各处。
+      你正想快步穿行，身后却传来脚步声——<b>再磨蹭，麻烦就找上门了</b>。<br>
+      要像"凌波微步"一样穿行，你得学会一件事：<b>一次指令，走多步</b>。
+    </div>
+    <figure class="pic">
+      <img src="../assets/stages/py-L1-04-stage1_swift_steps.webp" alt="凌波微步 关卡截图"
+           onerror="this.closest('.pic').classList.add('missing')">
+      <div class="ph">
+        <div class="fn">assets/stages/py-L1-04-stage1_swift_steps.webp</div>
+        <div class="ds">【关卡截图位】请把《凌波微步》的游戏画面截图放到此处（放入 assets/stages/ 目录，文件名为 py-L1-04-stage1_swift_steps.webp）。</div>
+      </div>
+      <figcaption>关卡实况：凌波微步</figcaption>
+    </figure>
+    <p><strong>思路：</strong>看上面的关卡实况——宝石就在正上方两格的地方，答案短得离谱。
+    不过在写下它之前，我们先看看"笨办法"长什么样，你才知道它妙在哪里。</p>
+    <div class="code-card">
+      <div class="code-head">
+        <span class="dot d1"></span><span class="dot d2"></span><span class="dot d3"></span>
+        <span class="file">笨办法：同一条指令写两遍</span>
+        <span class="lang">Python</span>
+      </div>
+      <pre><code>hero.moveUp()
+hero.moveUp()</code></pre>
+      <div class="out"><b>结果</b>　向上走 2 格 —— 写了两行，其实只做了一件事</div>
+    </div>
+    <div class="code-card">
+      <div class="code-head">
+        <span class="dot d1"></span><span class="dot d2"></span><span class="dot d3"></span>
+        <span class="file">重点示例：把数字放进括号</span>
+        <span class="lang">Python</span>
+      </div>
+      <pre><code>hero.moveUp(2)</code></pre>
+      <div class="out"><b>结果</b>　一样向上走 2 格，只写了一行</div>
+    </div>
+    <div class="box remember">
+      <span class="lb">括号里的数字叫"参数"（Argument）：</span>
+      它会给方法补充一条信息，改变它的行为——<b>把"走 1 格"变成"走 2 格"</b>。<br>
+      语法就是：<code>对象.方法(参数)</code>。这个格式你已经很熟了吧？对，就是 <code>print("你好")</code> 那个括号。
+    </div>
+    <div class="box info">
+      <span class="lb">和"输入"连起来看：</span>
+      <code class="inline">input()</code> 是你从键盘<b>收</b>数据，
+      <code class="inline">moveUp(2)</code> 是你把数据<b>交</b>给方法。
+      方向相反，但都是"在括号里传递信息"。
+    </div>
+    <a class="btn-go" href="https://codecombat.cn/" target="_blank" rel="noopener">去扣哒世界闯这一关 →</a>
+  </div>
+</div>
+
+<!-- ============ 7 ============ -->
+<div class="section-header" id="s7">
+  <h2>7　常见陷阱</h2>
+  <div class="en-title">Common Pitfalls &amp; Debugging</div>
+</div>
+
+<div class="cast duck">
+  <img class="ava" src="../assets/ducks/duck_naria.webp" alt="扣哒鸭" onerror="this.style.display='none'">
+  <div class="bubble">
+    <div class="who">扣哒鸭 · 调试官</div>
+    输入输出这章的错，十个里有七个是<strong>"忘了转换类型"</strong>。
+    你先看下面这五条，看完就知道我为什么这么说了。
+  </div>
+</div>
+
+<div class="pit">
+  <div class="pt">
+    <div class="x">1</div>
+    <div class="t"><b>忘了转换类型。</b>写 <code class="inline">a = input()</code> 之后直接 <code class="inline">a + 1</code>，程序报错。</div>
+  </div>
+  <div class="duck">
+    <img src="../assets/ducks/duck_zana.webp" alt="扣哒鸭" onerror="this.style.display='none'">
+    <div class="dt"><b>扣哒鸭：</b><code>input()</code> 给你的是<strong>字符串</strong>，不是数字。
+    你对着一串文字做加法，它当然不干。要么写 <code>a = int(input())</code>，要么事后 <code>a = int(a)</code>。</div>
+  </div>
+  <div class="fix"><b>正确写法：</b><code class="inline">a = int(input())</code></div>
+</div>
+
+<div class="pit">
+  <div class="pt">
+    <div class="x">2</div>
+    <div class="t"><b>把 sep 和 end 记反了。</b>想控制中间的分隔符，却用了 <code class="inline">end</code>。</div>
+  </div>
+  <div class="duck">
+    <img src="../assets/ducks/duck_hattori.webp" alt="扣哒鸭" onerror="this.style.display='none'">
+    <div class="dt"><b>扣哒鸭：</b><strong>sep 管中间，end 管结尾</strong>。
+    想变成 <code>3#4</code> 用 <code>sep="#"</code>；想不换行接下去用 <code>end=""</code>。
+    </div>
+  </div>
+  <div class="fix"><b>正确写法：</b><code class="inline">print(3, 4, sep="#")</code>；<code class="inline">print("A", end="")</code></div>
+</div>
+
+<div class="pit">
+  <div class="pt">
+    <div class="x">3</div>
+    <div class="t"><b>f-string 忘了写 f。</b>写 <code class="inline">print("{a}来了")</code>，输出的是 <code class="inline">{a}来了</code>。</div>
+  </div>
+  <div class="duck">
+    <img src="../assets/ducks/duck_senick.webp" alt="扣哒鸭" onerror="this.style.display='none'">
+    <div class="dt"><b>扣哒鸭：</b><strong>引号前面那个 f 才是开关</strong>。没有 f，花括号就是普通字符，
+    不会被替换。少写一个字母，结果差一整句话。</div>
+  </div>
+  <div class="fix"><b>正确写法：</b><code class="inline">print(f"{a}来了")</code></div>
+</div>
+
+<div class="pit">
+  <div class="pt">
+    <div class="x">4</div>
+    <div class="t"><b>用 int() 去转小数。</b>写 <code class="inline">int(input())</code>，用户输入 <code class="inline">3.5</code> 就报错。</div>
+  </div>
+  <div class="duck">
+    <img src="../assets/ducks/duck_usara.webp" alt="扣哒鸭" onerror="this.style.display='none'">
+    <div class="dt"><b>扣哒鸭：</b><code>int("3.5")</code> 会报错，因为 <code>"3.5"</code> 不是合法整数。
+    输入可能是小数时，请用 <code>float()</code>，别硬来。</div>
+  </div>
+  <div class="fix"><b>正确写法：</b><code class="inline">x = float(input())</code></div>
+</div>
+
+<div class="pit">
+  <div class="pt">
+    <div class="x">5</div>
+    <div class="t"><b>提示文字塞进了括号外面。</b>写 <code class="inline">print(input("请输入："))</code> 与
+    <code class="inline">input(print("请输入："))</code> 混着用。</div>
+  </div>
+  <div class="duck">
+    <img src="../assets/ducks/duck_illia.webp" alt="扣哒鸭" onerror="this.style.display='none'">
+    <div class="dt"><b>扣哒鸭：</b>提示语要写在 <code>input()</code> 的<strong>括号里面</strong>，
+    用引号包好：<code>input("请输入：")</code>。
+    别把 <code>print</code> 和 <code>input</code> 套在一起，那样只会输出一个空值。</div>
+  </div>
+  <div class="fix"><b>正确写法：</b><code class="inline">name = input("请输入你的名字：")</code></div>
+</div>
+
+<!-- ============ 8 ============ -->
+<div class="section-header" id="s8">
+  <h2>8　题目练习</h2>
+  <div class="en-title">Practice</div>
+</div>
+
+<p>下面 7 道题中，前 4 道<strong>改编自 GESP 真题</strong>，后 3 道为<strong>原创练习题</strong>。</p>
+
+<div class="exam">
+  <div class="eh"><span class="src">改编自 2026 年 9 月 · Python 一级 · 第 3 题</span><span class="tp">单选题</span></div>
+  <div class="eb">
+    <div class="q">下列 Python 代码执行后，其输出是（　　）。</div>
+    <pre>1  a = 4
+2  print(f"a+2={a+2}")</pre>
+    <div class="opt"><i>A.</i>a+2=6　　<i>B.</i>a+2={a+2}　　<i>C.</i>6=6　　<i>D.</i>4+2=6</div>
+    <details><summary>查看答案与详解</summary>
+      <div class="ans"><b>答案：A</b>。f-string 中花括号里的内容会被<strong>求值后替换</strong>：
+      <code class="inline">{a+2}</code> 变成 4+2 的结果 6；花括号外面的 <code class="inline">a+2=</code> 是普通文本，原样输出。<br>
+      B 项是很多人会选的——只要花括号被正确配对，它就一定会求值。<br>
+      <span class="tagline">对应小节</span>2.3 f-string 格式化。</div>
+    </details>
+  </div>
+</div>
+
+<div class="exam">
+  <div class="eh"><span class="src">改编自 2026 年 9 月 · Python 一级 · 第 5 题</span><span class="tp">单选题</span></div>
+  <div class="eb">
+    <div class="q">下列 Python 代码执行后，其输出是（　　）。</div>
+    <pre>1  a = 3
+2  b = 4
+3  print(a, b, sep = "#")</pre>
+    <div class="opt"><i>A.</i>3 4　　<i>B.</i>3#4　　<i>C.</i>3 # 4　　<i>D.</i>分两行输出 3 和 4</div>
+    <details><summary>查看答案与详解</summary>
+      <div class="ans"><b>答案：B</b>。<code class="inline">sep</code> 把多个输出项之间的分隔符从空格换成了 <code class="inline">#</code>。
+      分隔符只出现在两个值<strong>之间</strong>，不会出现在句首或句尾（所以 C 项多出的空格是错的）。<br>
+      <b>补充：</b>控制换行要用 <code class="inline">end</code>，两个参数不要记混。<br>
+      <span class="tagline">对应小节</span>2.2 sep 与 end。</div>
+    </details>
+  </div>
+</div>
+
+<div class="exam">
+  <div class="eh"><span class="src">改编自 2026 年 9 月 · Python 一级 · 判断题第 1 题</span><span class="tp">判断题</span></div>
+  <div class="eb">
+    <div class="q">Python 程序执行 input() 函数时通常是使用键盘等输入设备来输入某个变量的值。（　　）</div>
+    <details><summary>查看答案与详解</summary>
+      <div class="ans"><b>答案：正确（√）</b>。<code class="inline">input()</code> 会在程序运行时等待用户输入，
+      最常见的输入设备正是键盘。注意输入得到的内容是<strong>字符串</strong>，当数字用要转换。<br>
+      <span class="tagline">对应小节</span>3.1 input 拿到的是字符串。</div>
+    </details>
+  </div>
+</div>
+
+<div class="exam">
+  <div class="eh"><span class="src">改编自 2026 年 9 月 · Python 一级 · 判断题第 4 题</span><span class="tp">判断题</span></div>
+  <div class="eb">
+    <div class="q">下列 Python 代码执行时如果先后输入 10 和 10，则将输出 <code class="inline">10小于等于10</code>。（　　）</div>
+    <pre>1  N = int(input())
+2  M = int(input())
+3
+4  if N &gt; M:
+5      print(f"{N}大于{M}")
+6  else:
+7      print(f"{N}小于等于{M}")</pre>
+    <details><summary>查看答案与详解</summary>
+      <div class="ans"><b>答案：正确（√）</b>。N = 10、M = 10，<code class="inline">10 &gt; 10</code> 不成立 → 走 else 分支，
+      输出 <code class="inline">10小于等于10</code>。<br>
+      <b>说明：</b>本题融合了 <code class="inline">input</code>、类型转换、分支与 f-string 四个考点，
+      是真题里"综合小题"的典型形式。<br>
+      <span class="tagline">对应小节</span>3 输入；2.3 f-string。</div>
+    </details>
+  </div>
+</div>
+
+<div class="exam">
+  <div class="eh"><span class="src ori">原创练习题</span><span class="tp">单选题</span></div>
+  <div class="eb">
+    <div class="q">下列 Python 代码执行后，输出的结果是（　　）。</div>
+    <pre>1  a = "5"
+2  a = int(a)
+3  print(a + 5)</pre>
+    <div class="opt"><i>A.</i>55　　<i>B.</i>10　　<i>C.</i>"55"　　<i>D.</i>程序报错</div>
+    <details><summary>查看答案与详解</summary>
+      <div class="ans"><b>答案：B</b>。<code class="inline">a</code> 先是字符串 <code class="inline">"5"</code>，
+      经 <code class="inline">int(a)</code> 转换后变成数字 5，5 + 5 = <strong>10</strong>。<br>
+      <b>易错点：</b>若不转换，<code class="inline">"5" + 5</code> 会报错，
+      而 <code class="inline">"5" + "5"</code> 会得到字符串 <code class="inline">"55"</code>。<br>
+      <span class="tagline">对应小节</span>3.2 数字输入要转换。</div>
+    </details>
+  </div>
+</div>
+
+<div class="exam">
+  <div class="eh"><span class="src ori">原创练习题</span><span class="tp">单选题</span></div>
+  <div class="eb">
+    <div class="q">下列 Python 代码执行后，输出的结果是（　　）。</div>
+    <pre>1  print("A", end="")
+2  print("B", end="")
+3  print("C")</pre>
+    <div class="opt"><i>A.</i>分三行输出 A B C<br><i>B.</i>一行输出 A B C（带空格）<br><i>C.</i>一行输出 ABC<br><i>D.</i>只输出最后一行 C</div>
+    <details><summary>查看答案与详解</summary>
+      <div class="ans"><b>答案：C</b>。<code class="inline">end=""</code> 表示输出结束后<strong>什么都不加</strong>（不换行、不加空格），
+      所以前两次输出会紧贴在一起；最后一次没有设 <code class="inline">end</code>，按默认换行。<br>
+      因此输出为一行 <code class="inline">ABC</code>。<br>
+      <span class="tagline">对应小节</span>2.2 sep 与 end。</div>
+    </details>
+  </div>
+</div>
+
+<div class="exam">
+  <div class="eh"><span class="src ori">原创练习题</span><span class="tp">编程题</span></div>
+  <div class="eb">
+    <div class="q">题目要求：编写程序，从键盘读入两个整数，输出它们的和、差、积、商（整除）与余数，每项一行。</div>
+    <details><summary>查看参考答案与要点</summary>
+      <div class="ans">
+<pre style="margin:0;background:#1b2a21;color:#c9d6cd;border-radius:10px;padding:14px 16px">a = int(input("请输入第一个整数："))
+b = int(input("请输入第二个整数："))
+
+print(a + b)     # 和
+print(a - b)     # 差
+print(a * b)     # 积
+print(a // b)    # 整除
+print(a % b)     # 余数</pre>
+      <p style="margin-top:12px"><b>要点：</b><br>
+      ① 两个输入都要套 <code class="inline">int()</code>，否则得到的是字符串，无法做算术；<br>
+      ② 题目要"整除"就用 <code class="inline">//</code>，不要用 <code class="inline">/</code>（那会得到小数）；<br>
+      ③ 五个 <code class="inline">print</code> 各输出一行，正好符合"顺序结构"。<br>
+      <span class="tagline">对应小节</span>3 输入；4 输入—处理—输出。</p>
+      </div>
+    </details>
+  </div>
+</div>
+
+<!-- ============ 9 ============ -->
+<div class="section-header" id="s9">
+  <h2>9　本单元小结</h2>
+  <div class="en-title">Unit Summary</div>
+</div>
+
+<div class="summary">
+  <h3>你在升降梯旁收获了什么</h3>
+  <ul>
+    <li><strong>顺序结构</strong>——代码从上到下依次执行，不跳步、不回头；它是三大结构的基础。</li>
+    <li><strong>print 多值输出</strong>——多个值之间自动用空格分隔。</li>
+    <li><strong>sep 与 end</strong>——<code class="inline">sep</code> 管值之间的分隔符，<code class="inline">end</code> 管整行结尾的收尾字符。</li>
+    <li><strong>f-string</strong>——引号前加 <code class="inline">f</code>，花括号里放变量或表达式会被求值替换。</li>
+    <li><strong>格式控制</strong>——<code class="inline">{x:3}</code> 控制宽度、<code class="inline">{x:.2f}</code> 保留两位小数。</li>
+    <li><strong>input</strong>——接收用户输入，<strong>拿到的永远是字符串</strong>；要参与算术必须先 <code class="inline">int()</code> 或 <code class="inline">float()</code>。</li>
+    <li><strong>三段式</strong>——输入 → 处理 → 输出，这是所有程序的骨架。</li>
+  </ul>
+</div>
+
+<div class="pager">
+  <a href="py-1-03.html"><div class="k">← 上一单元</div><div class="v">炼金配方台 · 运算符与表达式</div></a>
+  <a href="../index.html" target="_top" class="back"><div class="k">返回</div><div class="v">考纲之路 · 总目录</div></a>
+  <a href="py-1-05.html"><div class="k">下一单元 →</div><div class="v">岔路口的抉择 · 分支结构</div></a>
+</div>
+
+<div class="cta">
+  <h3>下一站：岔路口的抉择</h3>
+  <p>顺序结构只会"一条道走到黑"。可真实世界充满选择——前方有敌人还是空地？血量够不够？
+  下一单元，我们让程序学会"做判断"。</p>
+  <a class="btn-go" href="https://codecombat.cn/" target="_blank" rel="noopener">加入扣哒世界，把这条考纲之路走一遍 →</a>
+</div>
+
+</div><!-- /container -->
+</div><!-- /page -->
+
+<script>
+const KEYWORDS = new Set(("while for if elif else break continue def return pass not and or in is None True False " +
+  "int float bool str list dict input print range randint import turtle type round").split(" "));
+
+function esc(s){ return s.replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;'); }
+
+function highlight(src){
+  let out = '', i = 0;
+  const n = src.length;
+  while (i < n){
+    const c = src[i];
+    if (c === '#'){
+      let j = src.indexOf('\n', i); if (j < 0) j = n;
+      out += '<span class="cm">' + esc(src.slice(i, j)) + '</span>';
+      i = j; continue;
+    }
+    if (c === '"' || c === "'"){
+      let j = i + 1;
+      while (j < n && src[j] !== c){ if (src[j] === '\\') j++; j++; }
+      j = Math.min(j + 1, n);
+      out += '<span class="st">' + esc(src.slice(i, j)) + '</span>';
+      i = j; continue;
+    }
+    if (/[0-9]/.test(c)){
+      let j = i;
+      while (j < n && /[0-9.]/.test(src[j])) j++;
+      out += '<span class="nu">' + esc(src.slice(i, j)) + '</span>';
+      i = j; continue;
+    }
+    if (/[A-Za-z_]/.test(c)){
+      let j = i;
+      while (j < n && /[A-Za-z0-9_]/.test(src[j])) j++;
+      const w = src.slice(i, j);
+      if (KEYWORDS.has(w)) out += '<span class="kw">' + esc(w) + '</span>';
+      else if (src[j] === '(') out += '<span class="fn">' + esc(w) + '</span>';
+      else out += esc(w);
+      i = j; continue;
+    }
+    out += esc(c); i++;
+  }
+  return out;
+}
+
+document.querySelectorAll('.code-card pre code').forEach(block => {
+  block.innerHTML = highlight(block.textContent);
+});
+
+if (location.search.indexOf('expand') >= 0) {
+  document.querySelectorAll('details').forEach(d => d.open = true);
+}
+document.querySelectorAll('.sidebar-nav a').forEach(a => {
+  a.addEventListener('click', () => {
+    if (window.innerWidth <= 900) document.querySelector('.sidebar-nav').classList.remove('active');
+  });
+});
+</script>
+</body>
+</html>

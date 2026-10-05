@@ -1,0 +1,1100 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="copyright" content="CodeCombat Inc. codecombat.cn">
+<title>七进制水晶 · 进制转换 | 扣哒考级 · GESP Python 三级</title>
+<style>
+  :root{
+    --primary:#6d4bd8; --primary-light:#8b6cf0; --primary-lighter:#f1ecfd; --primary-dark:#5233b8;
+    --brand:#ff6b35; --brand-dark:#e8541f; --brand-soft:#fff3ec;
+    --night:#151329; --night-2:#211d3d; --gold:#f5b301;
+    --text:#282538; --dim:#6b6580; --dim2:#9690ab;
+    --bg:#ffffff; --bg-soft:#faf9fe; --line:#e7e3f4; --sidebar:274px;
+    --code-bg:#1b1a2a; --code-tx:#cdc8e0;
+    --code-kw:#c678dd; --code-st:#98c379; --code-nu:#d19a66; --code-cm:#6f6a8a; --code-fn:#61afef;
+  }
+  *{margin:0;padding:0;box-sizing:border-box}
+  html{scroll-behavior:smooth}
+  body{font-family:"PingFang SC","Microsoft YaHei","Segoe UI",-apple-system,sans-serif;line-height:1.9;color:var(--text);background:var(--bg);font-size:15.5px}
+  .sidebar-nav{position:fixed;top:0;left:0;width:var(--sidebar);height:100vh;overflow-y:auto;background:linear-gradient(180deg,#121022,#1c1935);padding:14px 0 40px;z-index:100;border-right:3px solid var(--brand);transition:transform .3s ease}
+  .sidebar-nav::-webkit-scrollbar{width:5px}
+  .sidebar-nav::-webkit-scrollbar-thumb{background:var(--brand);border-radius:4px}
+  .sb-brand{display:flex;align-items:center;gap:10px;padding:10px 13px 12px;border-bottom:1px solid #2c2a4a;margin-bottom:8px}
+  .sidebar-nav a.sb-logo{display:flex;align-items:center;justify-content:center;flex-shrink:0;padding:0;border-left:none;transition:.2s}
+  .sb-logo:hover{transform:scale(1.08)}
+  .sb-logo img{height:34px;width:34px;display:block;object-fit:contain;border-radius:8px}
+  .sb-brand b{color:#f2f0fa;font-size:14px;letter-spacing:.5px;display:block;line-height:1.4}
+  .sb-brand span{color:#8880ab;font-size:11.5px;display:block;line-height:1.4}
+  .nav-title{color:#ffb894;font-size:12px;font-weight:800;padding:10px 18px 6px;letter-spacing:1.2px}
+  .sidebar-nav a{display:block;color:#c6c0dc;text-decoration:none;padding:6px 18px;font-size:12.5px;line-height:1.55;border-left:3px solid transparent;transition:.18s}
+  .sidebar-nav a:hover{color:#fff;background:rgba(255,107,53,.16);border-left-color:var(--brand)}
+  .sidebar-nav a.nav-section{color:#ffb894;font-weight:700;font-size:13px;margin-top:11px;padding-top:10px;border-top:1px solid #2c2a4a}
+  .sidebar-nav a.nav-section:first-of-type{border-top:none;margin-top:0;padding-top:6px}
+  .sidebar-nav a.nav-sub{padding-left:30px;color:#9d96ba;font-size:12px}
+  .sidebar-nav a.nav-sub:hover{color:#fff}
+  .sb-back{margin:16px 14px 0;display:block;text-align:center;padding:9px;border-radius:9px;background:#272348;color:#b3abd0 !important;font-size:12px;font-weight:700;border-left:none !important}
+  .sb-back:hover{background:var(--brand) !important;color:#fff !important}
+  .nav-toggle{display:none;position:fixed;top:14px;left:14px;z-index:120;background:var(--brand);color:#fff;border:none;border-radius:9px;padding:9px 13px;font-size:15px;cursor:pointer;box-shadow:0 4px 14px rgba(0,0,0,.25)}
+  .page{margin-left:var(--sidebar)}
+  .hero{position:relative;overflow:hidden;padding:44px 52px;color:#fff;background:linear-gradient(125deg,#100e20 0%,#1e1a3c 46%,#8a3a16 132%)}
+  .hero::after{content:"";position:absolute;right:-90px;top:-110px;width:400px;height:400px;border-radius:50%;background:radial-gradient(circle,rgba(245,179,1,.30),transparent 68%)}
+  .hero-top{display:flex;gap:36px;align-items:center;position:relative;z-index:2}
+  .hero-txt{flex:1;min-width:0}
+  .hero .crumb{font-size:11.5px;color:#ffb894;letter-spacing:1.5px;font-weight:700;margin-bottom:14px}
+  .hero h1{font-size:31px;font-weight:800;line-height:1.3;letter-spacing:.6px;margin-bottom:8px}
+  .hero h1 .sub{display:block;font-size:18px;font-weight:700;color:#ffd2b3;margin-top:6px;letter-spacing:.3px}
+  .hero .en{font-size:13px;color:#a49dc0;font-style:italic;margin-bottom:18px}
+  .hero .tags{display:flex;flex-wrap:wrap;gap:8px}
+  .tag{font-size:11.5px;padding:4px 12px;border-radius:20px;background:rgba(255,255,255,.12);border:1px solid rgba(255,255,255,.22);color:#e8f0f6;font-weight:600}
+  .tag.hot{background:rgba(255,107,53,.92);border-color:transparent;color:#fff}
+  .hero-card{flex-shrink:0;width:200px;text-align:center}
+  .hero-card .ava{width:148px;height:148px;border-radius:50%;object-fit:cover;object-position:top center;border:4px solid rgba(255,180,140,.6);box-shadow:0 14px 34px rgba(0,0,0,.45);background:#24344a}
+  .hero-card .nm{font-size:15px;font-weight:800;color:#fff;margin-top:10px}
+  .hero-card .ti{font-size:11.5px;color:#ffb894;margin-top:2px}
+  .container{max-width:1080px;margin:0 auto;padding:38px 52px 70px}
+  .lead{font-size:15.5px;line-height:2.05;color:#3a3650;background:linear-gradient(120deg,#fff8f3,#faf9fe);border-left:5px solid var(--brand);border-radius:0 14px 14px 0;padding:22px 26px;margin-bottom:32px}
+  .lead b{color:var(--brand-dark)}
+  .cast{display:flex;gap:16px;align-items:flex-start;border-radius:16px;padding:18px 22px;margin:24px 0}
+  .cast .ava{width:72px;height:72px;border-radius:50%;object-fit:cover;object-position:top center;flex-shrink:0;background:#e8eef5}
+  .cast .bubble{position:relative;font-size:14px;line-height:1.95;padding-top:2px;flex:1}
+  .cast .who{font-size:12px;font-weight:800;margin-bottom:5px;letter-spacing:.5px}
+  .cast.anya{background:var(--brand-soft);border:1px solid #ffdcc9}
+  .cast.anya .who{color:var(--brand-dark)}
+  .cast.anya .bubble{color:#5c4636}
+  .cast.duck{background:#fff5f5;border:1px solid #fbd5d5}
+  .cast.duck .who{color:#b91c1c}
+  .cast.duck .bubble{color:#5c4141}
+  .cast.teacher{background:linear-gradient(120deg,#f5f3fd,#ffffff);border:1px solid #e0daf5}
+  .cast.teacher .who{color:#3b2f6e}
+  .cast.teacher .bubble{color:#443c60}
+  .cast.hero{background:#f7f5fe;border:1px solid #ded6f8}
+  .cast.hero .who{color:#5233b8}
+  .cast.hero .bubble{color:#453d62}
+  .goal-grid{display:grid;grid-template-columns:1fr 1fr;gap:16px;margin-bottom:36px}
+  .goal{border:1px solid var(--line);border-radius:15px;padding:19px 21px;background:#fff;box-shadow:0 4px 16px rgba(109,75,216,.06)}
+  .goal h4{font-size:14px;font-weight:800;margin-bottom:11px;display:flex;align-items:center;gap:8px;color:var(--primary-dark)}
+  .goal h4 .ic{width:22px;height:22px;border-radius:7px;background:var(--primary-lighter);display:flex;align-items:center;justify-content:center;font-size:12px}
+  .goal ul{list-style:none}
+  .goal li{font-size:13.5px;color:#4d4a5c;line-height:1.9;padding-left:18px;position:relative}
+  .goal li::before{content:"▸";position:absolute;left:0;color:var(--primary);font-weight:800}
+  .goal.syllabus li::before{content:"✓"}
+  .section-header{margin:52px 0 24px;padding-bottom:12px;border-bottom:3px solid var(--brand);display:flex;align-items:baseline;gap:14px;flex-wrap:wrap}
+  .section-header h2{font-size:22px;font-weight:800;color:var(--night);letter-spacing:.4px}
+  .section-header .en-title{font-size:12px;color:var(--dim2);font-style:italic}
+  h3{font-size:17.5px;font-weight:800;margin:34px 0 14px;color:var(--night);display:flex;align-items:center;gap:10px}
+  h3::before{content:"";width:5px;height:17px;border-radius:3px;background:var(--brand);flex-shrink:0}
+  h4{font-size:15px;font-weight:800;margin:24px 0 10px;color:#3d3560}
+  p{margin:12px 0;color:#443c60;line-height:2}
+  strong{color:var(--primary-dark)}
+  code.inline{background:var(--primary-lighter);color:var(--primary-dark);padding:2px 7px;border-radius:6px;font-family:"SFMono-Regular",Consolas,Menlo,monospace;font-size:.9em;font-weight:600}
+  .figure{margin:24px 0;text-align:center}
+  .figure svg.diagram{max-width:100%;height:auto;background:#fff;border:1px solid var(--line);border-radius:14px;padding:10px}
+  .figure .caption{font-size:12.5px;color:var(--dim2);margin-top:9px}
+  .pic{margin:26px 0;text-align:center}
+  .pic img{max-width:100%;border-radius:16px;box-shadow:0 10px 28px rgba(60,40,120,.15);display:block;margin:0 auto}
+  .pic figcaption{font-size:12.5px;color:var(--dim2);margin-top:9px}
+  .pic .ph{display:none}
+  .pic.missing img{display:none}
+  .pic.missing .ph{display:flex;flex-direction:column;align-items:center;justify-content:center;gap:9px;border:2px dashed #cbc3e8;border-radius:16px;background:linear-gradient(135deg,#faf9ff,#f2f0fd);padding:40px 26px;color:#7d76a0}
+  .pic.missing .ph .fn{font-family:Consolas,monospace;font-size:12.5px;color:#6d4bd8;font-weight:700;word-break:break-all}
+  .pic.missing .ph .ds{font-size:12.5px;line-height:1.8;max-width:560px}
+  .box{border-radius:13px;padding:16px 20px;margin:20px 0;font-size:14px;line-height:1.95}
+  .box .lb{font-weight:800;margin-right:6px}
+  .info{background:#eef6ff;border-left:5px solid #3b82f6;color:#274768}
+  .info .lb{color:#1d4ed8}
+  .tip{background:#fff9ec;border-left:5px solid #f59e0b;color:#6b4e13}
+  .tip .lb{color:#b45309}
+  .remember{background:var(--primary-lighter);border-left:5px solid var(--primary);color:#3b2f6e}
+  .remember .lb{color:var(--primary-dark)}
+  .warn{background:#fef2f2;border-left:5px solid #ef4444;color:#7f2b2b}
+  .warn .lb{color:#b91c1c}
+  .code-card{margin:20px 0;border-radius:14px;overflow:hidden;box-shadow:0 10px 28px rgba(30,25,60,.20)}
+  .code-head{display:flex;align-items:center;gap:9px;background:#252340;padding:9px 14px}
+  .code-head .dot{width:10px;height:10px;border-radius:50%}
+  .code-head .d1{background:#ff5f57}.code-head .d2{background:#febc2e}.code-head .d3{background:#28c840}
+  .code-head .file{color:#9b94bd;font-size:11.5px;font-family:Consolas,monospace;margin-left:6px}
+  .code-head .lang{margin-left:auto;font-size:10.5px;font-weight:800;color:#17152a;background:#8b6cf0;padding:2px 9px;border-radius:6px;letter-spacing:.4px}
+  .code-card pre{background:var(--code-bg);padding:18px 20px;overflow-x:auto;margin:0;font-family:"SFMono-Regular",Consolas,"Courier New",monospace;font-size:13.5px;line-height:1.85}
+  .code-card pre::-webkit-scrollbar{height:8px}
+  .code-card pre::-webkit-scrollbar-thumb{background:#403c66;border-radius:4px}
+  .code-card code{color:var(--code-tx);white-space:pre}
+  .kw{color:var(--code-kw);font-weight:600}
+  .st{color:var(--code-st)}
+  .nu{color:var(--code-nu)}
+  .cm{color:var(--code-cm);font-style:italic}
+  .fn{color:var(--code-fn)}
+  .out{background:#151424;color:#8fd6a8;font-family:Consolas,monospace;font-size:13px;padding:12px 20px;border-top:1px solid #2c2a48}
+  .out b{color:#cdc8e0;font-weight:600;font-size:11.5px;letter-spacing:1px}
+  table.styled{width:100%;border-collapse:collapse;margin:20px 0;font-size:13.5px;border-radius:12px;overflow:hidden;box-shadow:0 4px 16px rgba(109,75,216,.08)}
+  table.styled thead{background:var(--brand)}
+  table.styled th{color:#fff;padding:11px 14px;text-align:left;font-weight:700;font-size:13px}
+  table.styled td{padding:10px 14px;border-bottom:1px solid var(--line);color:#4a4660;vertical-align:top}
+  table.styled tbody tr:nth-child(even){background:var(--bg-soft)}
+  table.styled tbody tr:last-child td{border-bottom:none}
+  .level-card{border:1px solid var(--line);border-radius:16px;overflow:hidden;margin:22px 0;box-shadow:0 6px 22px rgba(109,75,216,.08)}
+  .level-card .lc-head{background:linear-gradient(100deg,#1a1732,#8a3a16);color:#fff;padding:15px 22px;display:flex;align-items:center;gap:12px;flex-wrap:wrap}
+  .level-card .lc-head .n{font-size:12px;font-weight:800;background:rgba(255,255,255,.2);padding:3px 10px;border-radius:20px}
+  .level-card .lc-head h4{margin:0;color:#fff;font-size:16px}
+  .level-card .lc-head .go{margin-left:auto;font-size:11.5px;color:#ffd2b3}
+  .level-card .lc-body{padding:20px 24px;background:#fff}
+  .level-card .story{background:#fafafd;border-left:4px solid #a5b4fc;border-radius:0 10px 10px 0;padding:13px 18px;margin:0 0 16px;font-size:14px;line-height:1.95;color:#413f57}
+  .level-card .story b{color:#4338ca}
+  .btn-go{display:inline-flex;align-items:center;gap:8px;background:linear-gradient(135deg,var(--brand),var(--brand-dark));color:#fff;text-decoration:none;font-weight:800;font-size:13.5px;padding:10px 22px;border-radius:11px;box-shadow:0 8px 20px rgba(255,107,53,.32);transition:.2s}
+  .btn-go:hover{transform:translateY(-2px);box-shadow:0 12px 26px rgba(255,107,53,.42)}
+  .pit{border:1px solid #f6dede;border-radius:14px;overflow:hidden;margin:16px 0;background:#fff}
+  .pit .pt{display:flex;gap:12px;padding:14px 18px;background:#fffafa;align-items:flex-start}
+  .pit .x{width:26px;height:26px;border-radius:9px;background:#fee;color:#dc2626;display:flex;align-items:center;justify-content:center;font-weight:800;flex-shrink:0;font-size:13px}
+  .pit .t{font-size:13.5px;line-height:1.9;color:#5c4a4a;flex:1}
+  .pit .t b{color:#b91c1c}
+  .pit .duck{display:flex;gap:12px;padding:13px 18px;background:#fff5f5;border-top:1px dashed #f3d0d0;align-items:flex-start}
+  .pit .duck img{width:48px;height:48px;object-fit:contain;flex-shrink:0;margin-top:2px}
+  .pit .duck .dt{font-size:13.5px;line-height:1.9;color:#7a3b3b}
+  .pit .duck .dt b{color:#b91c1c}
+  .pit .fix{padding:12px 18px;background:#f7f5fe;border-top:1px dashed #ded6f8;font-size:13.5px;color:#3b2f6e}
+  .pit .fix b{color:var(--primary-dark)}
+  .exam{border:1px solid #e0dcf5;border-radius:15px;margin:16px 0;overflow:hidden;background:#fff;box-shadow:0 4px 16px rgba(60,50,120,.06)}
+  .exam .eh{display:flex;align-items:center;gap:10px;padding:11px 18px;background:linear-gradient(100deg,#f2f0ff,#faf9ff);border-bottom:1px solid #e6e2f8;flex-wrap:wrap}
+  .exam .eh .src{font-size:11px;font-weight:800;color:#fff;background:#6d4bd8;padding:2.5px 10px;border-radius:20px}
+  .exam .eh .src.ori{background:#0e9488}
+  .exam .eh .tp{font-size:11.5px;color:#6a5f9c;font-weight:700}
+  .exam .eb{padding:16px 20px}
+  .exam .q{font-weight:700;font-size:14px;color:#302c44;line-height:1.9;margin-bottom:10px}
+  .exam .opt{font-size:13.5px;color:#4d4a5c;line-height:2.05;padding-left:6px}
+  .exam .opt i{font-style:normal;font-weight:800;color:var(--primary-dark);margin-right:7px}
+  .exam pre{margin:12px 0;background:#1b1a2a;border-radius:10px;padding:14px 16px;overflow-x:auto;font-family:Consolas,monospace;font-size:13px;line-height:1.8;color:var(--code-tx)}
+  .exam details{margin-top:10px;border-top:1px dashed var(--line);padding-top:10px}
+  .exam summary{cursor:pointer;font-size:12.5px;font-weight:800;color:#6d4bd8;outline:none;user-select:none}
+  .exam details .ans{font-size:13.5px;color:#443c60;line-height:1.95;margin-top:9px;background:var(--bg-soft);padding:13px 16px;border-radius:10px}
+  .exam details .ans b{color:var(--primary-dark)}
+  .exam details .ans .tagline{display:inline-block;font-size:11px;background:#ede9fe;color:#5b21b6;padding:1.5px 8px;border-radius:6px;font-weight:700;margin-right:6px}
+  .summary{margin:40px 0 20px;border-radius:18px;padding:26px 30px;background:linear-gradient(130deg,#fff8f3,#ffffff);border:1px solid #ffe0cf}
+  .summary h3{margin-top:0}
+  .summary ul{list-style:none;margin-top:10px}
+  .summary li{font-size:14px;line-height:2;color:#443c60;padding-left:24px;position:relative}
+  .summary li::before{content:"◆";position:absolute;left:0;color:var(--brand);font-size:11px;top:6px}
+  .pager{display:flex;gap:14px;margin-top:30px;flex-wrap:wrap}
+  .pager a{flex:1;min-width:200px;text-decoration:none;border:1px solid var(--line);border-radius:14px;padding:16px 20px;background:#fff;transition:.2s;display:block}
+  .pager a:hover{border-color:var(--brand);box-shadow:0 10px 26px rgba(255,107,53,.14);transform:translateY(-2px)}
+  .pager a .k{font-size:11px;color:var(--dim2);font-weight:700;letter-spacing:1px}
+  .pager a .v{font-size:14px;font-weight:800;color:var(--night);margin-top:5px}
+  .pager a.back{background:var(--brand-soft);border-color:transparent;text-align:center}
+  .pager a.back .v{color:var(--brand-dark)}
+  .cta{margin-top:26px;border-radius:20px;padding:30px 34px;color:#fff;position:relative;overflow:hidden;background:linear-gradient(120deg,#171528,#2b2750 46%,#a8431c 132%)}
+  .cta::after{content:"";position:absolute;right:-70px;bottom:-90px;width:280px;height:280px;border-radius:50%;background:radial-gradient(circle,rgba(255,140,80,.45),transparent 68%)}
+  .cta h3{color:#fff;margin:0 0 10px;position:relative;z-index:2}
+  .cta h3::before{background:var(--brand)}
+  .cta p{color:#d6d2e8;font-size:13.5px;margin:0 0 18px;position:relative;z-index:2;max-width:640px}
+  .cta .btn-go{position:relative;z-index:2}
+  @media(max-width:900px){
+    .sidebar-nav{transform:translateX(-100%)}
+    .sidebar-nav.active{transform:translateX(0)}
+    .nav-toggle{display:block}
+    .page{margin-left:0}
+    .hero{padding:70px 22px 34px}
+    .hero-top{flex-direction:column-reverse;text-align:center}
+    .hero-card{width:auto}
+    .container{padding:26px 20px 60px}
+    .goal-grid{grid-template-columns:1fr}
+  }
+</style>
+</head>
+<body>
+
+<button class="nav-toggle" onclick="document.querySelector('.sidebar-nav').classList.toggle('active')">☰</button>
+
+<nav class="sidebar-nav">
+  <div class="sb-brand">
+    <a class="sb-logo" href="https://codecombat.cn/" target="_blank" rel="noopener" title="访问 CodeCombat 扣哒世界官网">
+      <img src="../assets/logo.png" alt="CodeCombat 扣哒世界">
+    </a>
+    <div><b>七进制水晶</b><span>符文矿坑 · Python 三级 第 2 单元</span></div>
+  </div>
+  <div class="nav-title">本单元目录</div>
+
+  <a href="#s0" class="nav-section">0　单元导语与目标</a>
+  <a href="#s0-1" class="nav-sub">0.1 学习目标</a>
+  <a href="#s0-2" class="nav-sub">0.2 考纲对照</a>
+  <a href="#s1" class="nav-section">1　进制到底是什么</a>
+  <a href="#s1-1" class="nav-sub">1.1 从"三百四十五"说起</a>
+  <a href="#s1-2" class="nav-sub">1.2 进制的本质</a>
+  <a href="#s2" class="nav-section">2　四种常用进制</a>
+  <a href="#s2-1" class="nav-sub">2.1 四种进制的对照</a>
+  <a href="#s2-2" class="nav-sub">2.2 十六进制的 A~F</a>
+  <a href="#s3" class="nav-section">3　其他进制 → 十进制</a>
+  <a href="#s3-1" class="nav-sub">3.1 按位权展开</a>
+  <a href="#s3-2" class="nav-sub">3.2 换算练习</a>
+  <a href="#s4" class="nav-section">4　十进制 → 其他进制</a>
+  <a href="#s4-1" class="nav-sub">4.1 除基取余法</a>
+  <a href="#s4-2" class="nav-sub">4.2 余数为什么要倒着读</a>
+  <a href="#s5" class="nav-section">5　二八十六的快速互转</a>
+  <a href="#s5-1" class="nav-sub">5.1 三条黄金法则</a>
+  <a href="#s5-2" class="nav-sub">5.2 分组直译速查</a>
+  <a href="#s6" class="nav-section">6　Python 里的进制</a>
+  <a href="#s6-1" class="nav-sub">6.1 四种进制的写法</a>
+  <a href="#s6-2" class="nav-sub">6.2 转换函数</a>
+  <a href="#s7" class="nav-section">7　代码实战</a>
+  <a href="#s8" class="nav-section">8　常见陷阱</a>
+  <a href="#s9" class="nav-section">9　题目练习</a>
+  <a href="#s10" class="nav-section">10　本单元小结</a>
+
+  <a href="../index.html" target="_top" class="sb-back">返回考纲之路</a>
+</nav>
+
+<div class="page">
+
+<div class="hero">
+  <div class="hero-top">
+    <div class="hero-txt">
+      <div class="crumb">扣哒考级 · GESP PYTHON 三级 · 第 2 单元　|　符文矿坑 RUNEMARK MINE</div>
+      <h1>七进制水晶
+        <span class="sub">进制转换</span>
+      </h1>
+      <div class="en">Number Base Conversion</div>
+      <div class="tags">
+        <span class="tag hot">考纲 · 进制转换</span>
+        <span class="tag">位权</span>
+        <span class="tag">二 / 八 / 十 / 十六</span>
+        <span class="tag">除基取余</span>
+        <span class="tag">bin / oct / hex</span>
+      </div>
+    </div>
+    <div class="hero-card">
+      <img class="ava" src="../assets/avatars/hushbaum.webp" alt="贺舒曼" onerror="this.style.background='#24344a'">
+      <div class="nm">贺舒曼</div>
+      <div class="ti">镜中先知 · 你的向导</div>
+    </div>
+  </div>
+</div>
+
+<div class="container">
+
+<div class="lead">
+  沿着暗河往上走，矿洞忽然豁然开朗。正中央悬着一块<b>七棱水晶</b>，慢悠悠地转着。<br>
+  你绕着它走了一圈，越看越糊涂：<b>每一面上刻的都是同一个数字，写法却完全不同。</b>
+  第一面是 <code class="inline">101</code>，第二面是 <code class="inline">5</code>，第三面是
+  <code class="inline">0b101</code>……<br>
+  贺舒曼在镜子里看着你笑：它们真的一样。想知道为什么吗？那得从<b>进制</b>说起。
+</div>
+
+<div class="cast teacher">
+  <img class="ava" src="../assets/avatars/hushbaum.webp" alt="贺舒曼" onerror="this.style.display='none'">
+  <div class="bubble">
+    <div class="who">贺舒曼 · 镜中先知</div>
+    上一单元我们学了"负数怎么存"，这一单元解决"数字怎么写"。<br>
+    别看它名字吓人——<strong>进制的全部秘密，就两个字：位权。</strong>搞懂位权，剩下的都是算术。
+  </div>
+</div>
+
+<!-- ============ 0 ============ -->
+<figure class="pic">
+  <img src="../assets/illustrations/py-L3-02-01_seven_crystal.webp" alt="七进制水晶"
+       onerror="this.closest('.pic').classList.add('missing')">
+  <div class="ph">
+    <div class="fn">assets/illustrations/py-L3-02-01_seven_crystal.webp</div>
+    <div class="ds">【配图位】幽蓝矿洞中央悬浮着一块多棱水晶，每一棱的切面上刻着同一个数的不同写法（101101、55、45、2D），棱面旋转时数字逐一亮起；一名学徒举着矿灯仰头观察。</div>
+  </div>
+  <figcaption>图 1：符文矿坑的七进制水晶——今天要从这里开始</figcaption>
+</figure>
+
+<div class="section-header" id="s0">
+  <h2>0　单元导语与目标</h2>
+  <div class="en-title">Unit Overview</div>
+
+<h3 id="s0-1">0.1 学习目标</h3>
+</div>
+
+<div class="goal-grid">
+  <div class="goal">
+    <h4><span class="ic">1</span>学完这个单元，你将能……</h4>
+    <ul>
+      <li>说清"位权"和"基数"是什么意思</li>
+      <li>把任意进制的数展开成十进制</li>
+      <li>用"除基取余"把十进制转成任意进制</li>
+      <li>二进制与八进制、十六进制之间快速互换</li>
+      <li>看懂 Python 的 <code class="inline">0b</code>/<code class="inline">0o</code>/<code class="inline">0x</code> 前缀</li>
+      <li>会用 <code class="inline">bin() / oct() / hex() / int()</code> 做题</li>
+    </ul>
+  </div>
+  <div class="goal syllabus">
+    <h4><span class="ic">2</span>对标 GESP 考纲（Python 三级）</h4>
+    <ul>
+      <li>掌握二进制、八进制、十进制、十六进制及其相互转换</li>
+      <li>理解位权与基数的概念，掌握按权展开求和的方法</li>
+      <li>掌握十进制转其他进制的短除法（除基取余、逆序排列）</li>
+      <li>了解 Python 中不同进制常量的书写方式与函数</li>
+    </ul>
+  </div>
+</div>
+
+<!-- ============ 1 ============ -->
+<h3 id="s0-2">0.2 考纲对照</h3>
+
+<table class="styled">
+  <thead><tr><th>本单元小节</th><th>对应考纲条目</th><th>真题常考形式</th></tr></thead>
+  <tbody>
+    <tr><td>1　进制是什么</td><td>进制的基本概念</td><td>为什么"逢十进一"、进制的本质是什么</td></tr>
+    <tr><td>2　四种常用进制</td><td>二、八、十、十六进制</td><td>判断某种写法属于哪种进制</td></tr>
+    <tr><td>3　其他进制 → 十进制</td><td>按位权展开</td><td>给一个二进制或十六进制数，问等于十进制几</td></tr>
+    <tr><td>4　十进制 → 其他进制</td><td>除基取余法</td><td>把十进制数换算成二进制，问结果</td></tr>
+    <tr><td>5　快速互转</td><td>进制之间的转换</td><td>二进制与八进制、十六进制之间的速算</td></tr>
+    <tr><td>6　Python 里的进制</td><td>进制的程序表示</td><td>四种写法、以及转换函数的结果</td></tr>
+  </tbody>
+</table>
+
+<div class="section-header" id="s1">
+  <h2>1　进制到底是什么</h2>
+  <div class="en-title">What Is a Base</div>
+</div>
+
+<h3 id="s1-1">1.1 从"三百四十五"说起</h3>
+
+<p>先问你一个"废话"问题：<b>345 这个数，为什么读作三百四十五？</b></p>
+
+<p>因为它站在"十进制"这个规则里。而规则的核心是——<strong>每一个位置，都有它自己的分量。</strong>
+这个分量就叫<strong>位权</strong>。</p>
+
+<figure class="figure">
+  <svg class="diagram" viewBox="0 0 860 230" role="img" aria-label="十进制位权">
+    <text x="24" y="34" font-size="14" font-weight="bold" fill="#1f2937">十进制 345：每一位都有自己的"分量"</text>
+
+    <rect x="110" y="64" width="120" height="56" rx="10" fill="#f1ecfd" stroke="#8b6cf0" stroke-width="2"/>
+    <text x="170" y="102" text-anchor="middle" font-size="26" font-family="Consolas,monospace" fill="#6d4bd8" font-weight="bold">3</text>
+    <rect x="250" y="64" width="120" height="56" rx="10" fill="#eef6ff" stroke="#3b82f6" stroke-width="2"/>
+    <text x="310" y="102" text-anchor="middle" font-size="26" font-family="Consolas,monospace" fill="#1d4ed8" font-weight="bold">4</text>
+    <rect x="390" y="64" width="120" height="56" rx="10" fill="#e9f8ef" stroke="#2e9e5b" stroke-width="2"/>
+    <text x="450" y="102" text-anchor="middle" font-size="26" font-family="Consolas,monospace" fill="#1f7a44" font-weight="bold">5</text>
+
+    <text x="170" y="150" text-anchor="middle" font-size="13" fill="#6d4bd8">× 100　（10²）</text>
+    <text x="310" y="150" text-anchor="middle" font-size="13" fill="#1d4ed8">× 10　（10¹）</text>
+    <text x="450" y="150" text-anchor="middle" font-size="13" fill="#1f7a44">× 1　（10⁰）</text>
+
+    <rect x="600" y="64" width="230" height="86" rx="12" fill="#1b1a2a"/>
+    <text x="715" y="96" text-anchor="middle" font-size="13" fill="#cdc8e0">3×100 + 4×10 + 5×1</text>
+    <text x="715" y="128" text-anchor="middle" font-size="14" fill="#8fd6a8" font-weight="bold">= 345</text>
+
+    <text x="430" y="200" text-anchor="middle" font-size="12.5" fill="#8d9d94">十进制的基数是 10，所以位权是 10 的幂：从右往左依次是 10⁰、10¹、10²……</text>
+  </svg>
+  <div class="caption">图 2（SVG）：位权就是"每个位置值多少"</div>
+</figure>
+
+<div class="box remember">
+  <span class="lb">两个关键词：</span>
+  <strong>基数</strong>——这个进制一共用几个数字。十进制是 10，二进制是 2，八进制是 8，十六进制是 16。<br>
+  <strong>位权</strong>——从右往左数第 i 位（从 0 开始），它的权重是"基数的 i 次方"。<br>
+  <b>把每一位上的数字乘上它的位权，再加起来，就得到这个数的大小。</b>
+</div>
+
+<h3 id="s1-2">1.2 进制的本质：数到几进位</h3>
+
+<div class="box tip">
+  <span class="lb">打个比方：</span>
+  十进制就像我们用<b>十个手指头数数</b>——<strong>数到第十个，手指不够用了，就在前面进一位、把手重新摊开。</strong><br>
+  二进制只有两根手指（0 和 1），<strong>数到第二个就得进位</strong>，所以它长得特别长。<br>
+  <b>"进制"说的就是这一件事：数到几，就该进位了。</b>
+</div>
+
+<p>所以"进制"这个听起来玄乎的词，其实只说了一件事：<b>数到几进位。</b></p>
+
+<div class="cast hero">
+  <img class="ava" src="../assets/avatars/anya.webp" alt="安雅" onerror="this.style.display='none'">
+  <div class="bubble">
+    <div class="who">安雅 · 红发队长</div>
+    岗哨点名用十进制：<b>数到 9，下一个就得进一位</b>，因为手上有十根手指。<br>
+    要是我们外星朋友只有两根手指呢？那它数到 1 就得进位，这就是二进制。<br>
+    <strong>进制不是数学难题，只是"数到几翻篇"的习惯。</strong>
+  </div>
+</div>
+
+<!-- ============ 2 ============ -->
+<div class="section-header" id="s2">
+  <h2>2　四种常用进制</h2>
+  <div class="en-title">Four Common Bases</div>
+
+<h3 id="s2-1">2.1 四种进制的对照</h3>
+</div>
+
+<table class="styled">
+  <thead><tr><th>进制</th><th>基数</th><th>用到的数字</th><th>Python 前缀</th><th>什么时候用</th></tr></thead>
+  <tbody>
+    <tr><td><strong>十进制</strong></td><td>10</td><td>0~9</td><td>无</td><td>我们平时说数</td></tr>
+    <tr><td><strong>二进制</strong></td><td>2</td><td>0、1</td><td><code class="inline">0b</code></td><td>计算机内部存储</td></tr>
+    <tr><td><strong>八进制</strong></td><td>8</td><td>0~7</td><td><code class="inline">0o</code></td><td>简洁表达二进制（三位一组）</td></tr>
+    <tr><td><strong>十六进制</strong></td><td>16</td><td>0~9、A~F</td><td><code class="inline">0x</code></td><td>简洁表达二进制（四位一组）</td></tr>
+  </tbody>
+</table>
+
+<h3 id="s2-2">2.2 十六进制里的 A~F</h3>
+
+<div class="box tip">
+  <span class="lb">十六进制里的 A~F 是什么？</span>
+  十六进制需要 16 个"数字符号"，可我们只有 0~9 这十个，
+  于是借来字母：<strong>A = 10、B = 11、C = 12、D = 13、E = 14、F = 15</strong>。<br>
+  所以 <code class="inline">1F</code> 里的 F 不是"字母"，而是数字 15。
+</div>
+
+<figure class="figure">
+  <svg class="diagram" viewBox="0 0 860 300" role="img" aria-label="同一个数在不同进制下的写法">
+    <text x="24" y="34" font-size="14" font-weight="bold" fill="#1f2937">同一个数，四种写法（都以十进制 45 为例）</text>
+
+    <rect x="60" y="60" width="180" height="86" rx="12" fill="#f7f5fe" stroke="#8b6cf0" stroke-width="2"/>
+    <text x="150" y="88" text-anchor="middle" font-size="12.5" fill="#6d4bd8" font-weight="bold">二进制</text>
+    <text x="150" y="122" text-anchor="middle" font-size="21" font-family="Consolas,monospace" fill="#5233b8">101101</text>
+
+    <rect x="256" y="60" width="180" height="86" rx="12" fill="#eef6ff" stroke="#3b82f6" stroke-width="2"/>
+    <text x="346" y="88" text-anchor="middle" font-size="12.5" fill="#1d4ed8" font-weight="bold">八进制</text>
+    <text x="346" y="122" text-anchor="middle" font-size="21" font-family="Consolas,monospace" fill="#1e40af">55</text>
+
+    <rect x="452" y="60" width="180" height="86" rx="12" fill="#f7fbf8" stroke="#2e9e5b" stroke-width="2"/>
+    <text x="542" y="88" text-anchor="middle" font-size="12.5" fill="#1f7a44" font-weight="bold">十进制</text>
+    <text x="542" y="122" text-anchor="middle" font-size="21" font-family="Consolas,monospace" fill="#166534">45</text>
+
+    <rect x="648" y="60" width="152" height="86" rx="12" fill="#fff9ec" stroke="#f59e0b" stroke-width="2"/>
+    <text x="724" y="88" text-anchor="middle" font-size="12.5" fill="#b45309" font-weight="bold">十六进制</text>
+    <text x="724" y="122" text-anchor="middle" font-size="21" font-family="Consolas,monospace" fill="#a16207">2D</text>
+
+    <rect x="60" y="164" width="740" height="112" rx="12" fill="#1b1a2a"/>
+    <text x="86" y="192" font-family="Consolas,monospace" font-size="13" fill="#cdc8e0">二进制 101101  = 32+0+8+4+0+1                = 45</text>
+    <text x="86" y="218" font-family="Consolas,monospace" font-size="13" fill="#cdc8e0">八进制 55      = 5×8 + 5×1                    = 45</text>
+    <text x="86" y="244" font-family="Consolas,monospace" font-size="13" fill="#cdc8e0">十进制 45      = 4×10 + 5×1                   = 45</text>
+    <text x="86" y="268" font-family="Consolas,monospace" font-size="13" fill="#8fd6a8">十六进制 2D    = 2×16 + 13×1（D 就是 13）     = 45</text>
+  </svg>
+  <div class="caption">图 3（SVG）：同一个数，四种进制写法——算法完全一样，只是基数不同</div>
+</figure>
+
+<!-- ============ 3 ============ -->
+<div class="section-header" id="s3">
+  <h2>3　其他进制 → 十进制</h2>
+  <div class="en-title">To Decimal</div>
+</div>
+
+<h3 id="s3-1">3.1 按位权展开</h3>
+
+<p>方法只有一句话：<strong>按位权展开，然后加起来。</strong></p>
+
+<div class="code-card">
+  <div class="code-head">
+    <span class="dot d1"></span><span class="dot d2"></span><span class="dot d3"></span>
+    <span class="file">按权展开求值（四个例子）</span>
+    <span class="lang">手算</span>
+  </div>
+  <pre><code>二进制 1101  →  1×8 + 1×4 + 0×2 + 1×1
+             =  8 + 4 + 0 + 1
+             =  13
+
+八进制 172   →  1×64 + 7×8 + 2×1
+             =  64 + 56 + 2
+             =  122
+
+十六进制 1F  →  1×16 + 15×1          (F = 15)
+             =  16 + 15
+             =  31
+
+四进制 321   →  3×16 + 2×4 + 1×1
+             =  48 + 8 + 1
+             =  57</code></pre>
+  <div class="out"><b>要点</b>　位权从左往右是 基数的 n-1 次方 …… 基数的一次方、1</div>
+</div>
+
+<h3 id="s3-2">3.2 换算练习</h3>
+
+<figure class="pic">
+  <img src="../assets/illustrations/py-L3-02-03_place_value.webp" alt="位权就像每节车厢的"倍数""
+       onerror="this.closest('.pic').classList.add('missing')">
+  <div class="ph">
+    <div class="fn">assets/illustrations/py-L3-02-03_place_value.webp</div>
+    <div class="ds">【配图位】矿坑轨道上排着四节编号矿车，车厢上分别刻着 8、4、2、1；每节车厢里的矿石数量（0 或 1）乘以车身上的数字，最后倒进最右边一口大熔炉里汇总；一名矿工举着灯沿车厢走过并逐一点亮有矿石的车厢。</div>
+  </div>
+  <figcaption>图 4：位权就是每一格值多少</figcaption>
+</figure>
+
+<div class="box tip">
+  <span class="lb">防错小技巧：</span>
+  先把位权从左到右标在数字上方，再一位一位地乘。手算时这一步特别值得做——
+  <strong>标错了位权，后面全错。</strong>
+  比如 <code class="inline">1101</code> 是四位，位权从高到低就是 8、4、2、1。
+</div>
+
+<!-- ============ 4 ============ -->
+<div class="section-header" id="s4">
+  <h2>4　十进制 → 其他进制</h2>
+  <div class="en-title">From Decimal</div>
+</div>
+
+<h3 id="s4-1">4.1 除基取余法</h3>
+
+<p>反过来就要用"短除法"：<strong>除基取余，直到商为 0，再把余数倒过来读。</strong></p>
+
+<figure class="figure">
+  <svg class="diagram" viewBox="0 0 860 300" role="img" aria-label="除基取余法">
+    <text x="24" y="34" font-size="14" font-weight="bold" fill="#1f2937">把十进制 13 转成二进制：一直除 2，余数倒着读</text>
+
+    <g font-family="Consolas,monospace" font-size="14">
+      <text x="100" y="78" fill="#1d4ed8">13 ÷ 2 = 6 …… 余 1</text>
+      <text x="600" y="78" fill="#5233b8" font-weight="bold">最低位 ↑</text>
+      <text x="700" y="78" fill="#1f7a44" font-weight="bold">1</text>
+
+      <text x="100" y="118" fill="#1d4ed8">6  ÷ 2 = 3 …… 余 0</text>
+      <text x="700" y="118" fill="#1f7a44" font-weight="bold">0</text>
+
+      <text x="100" y="158" fill="#1d4ed8">3  ÷ 2 = 1 …… 余 1</text>
+      <text x="700" y="158" fill="#1f7a44" font-weight="bold">1</text>
+
+      <text x="100" y="198" fill="#1d4ed8">1  ÷ 2 = 0 …… 余 1</text>
+      <text x="600" y="198" fill="#5233b8" font-weight="bold">最高位 ↓</text>
+      <text x="700" y="198" fill="#1f7a44" font-weight="bold">1</text>
+    </g>
+
+    <rect x="740" y="64" width="90" height="150" rx="10" fill="#e9f8ef" stroke="#2e9e5b" stroke-width="2"/>
+    <text x="785" y="102" text-anchor="middle" font-family="Consolas,monospace" font-size="16" fill="#166534" font-weight="bold">1</text>
+    <text x="785" y="132" text-anchor="middle" font-family="Consolas,monospace" font-size="16" fill="#166534" font-weight="bold">0</text>
+    <text x="785" y="162" text-anchor="middle" font-family="Consolas,monospace" font-size="16" fill="#166534" font-weight="bold">1</text>
+    <text x="785" y="192" text-anchor="middle" font-family="Consolas,monospace" font-size="16" fill="#166534" font-weight="bold">1</text>
+    <text x="785" y="234" text-anchor="middle" font-size="11.5" fill="#3b7c5b">从上往下读</text>
+
+    <rect x="80" y="240" width="620" height="46" rx="12" fill="#1b1a2a"/>
+    <text x="110" y="269" font-family="Consolas,monospace" font-size="14" fill="#8fd6a8">结果：13 = 1101(二进制)</text>
+  </svg>
+  <div class="caption">图 5（SVG）：除基取余法——余数从下往上读，就是结果</div>
+</figure>
+
+<div class="code-card">
+  <div class="code-head">
+    <span class="dot d1"></span><span class="dot d2"></span><span class="dot d3"></span>
+    <span class="file">再练三个（十进制转其他进制）</span>
+    <span class="lang">手算</span>
+  </div>
+  <pre><code>45 → 二进制
+45 ÷ 2 = 22 …… 1
+22 ÷ 2 = 11 …… 0
+11 ÷ 2 =  5 …… 1
+ 5 ÷ 2 =  2 …… 1
+ 2 ÷ 2 =  1 …… 0
+ 1 ÷ 2 =  0 …… 1
+倒着读 → 101101
+
+45 → 八进制
+45 ÷ 8 = 5 …… 5
+ 5 ÷ 8 = 0 …… 5
+倒着读 → 55
+
+45 → 十六进制
+45 ÷ 16 = 2 …… 13（D）
+ 2 ÷ 16 = 0 …… 2
+倒着读 → 2D</code></pre>
+  <div class="out"><b>口诀</b>　除到商为 0 为止，余数<b>从下往上</b>读</div>
+</div>
+
+<h3 id="s4-2">4.2 余数为什么要倒着读</h3>
+
+<div class="box tip">
+  <span class="lb">打个比方：</span>
+  除基取余就像<b>把一根木头一段段锯短</b>——<strong>先锯下来的那一小段，是最"靠后"的一块。</strong><br>
+  换算时先得到的余数，其实是结果的<b>最低位</b>；<br>
+  <b>所以最后必须把余数从下往上倒着读，才得到正确的数。</b>
+</div>
+
+<figure class="pic">
+  <img src="../assets/illustrations/py-L3-02-02_divide_remainder.webp" alt="除基取余的矿机"
+       onerror="this.closest('.pic').classList.add('missing')">
+  <div class="ph">
+    <div class="fn">assets/illustrations/py-L3-02-02_divide_remainder.webp</div>
+    <div class="ds">【配图位】矿洞里一台带漏斗与齿轮的矿石分装机：一名矿工把写有数字的石板从顶部投入，机器反复做除法，每次的余数作为一颗小矿石从侧面落到下方的传送带上；传送带上的小矿石自下而上渐渐堆成一摞，最上面一颗被一盏聚光灯照亮（表示这是最高位）；机身侧面刻着"除基取余"。</div>
+  </div>
+  <figcaption>图 6：矿机一次次除，余数从下往上倒着堆</figcaption>
+</figure>
+
+<div class="box warn">
+  <span class="lb">最容易错的一步：顺序。</span>
+  第一次除出来的余数，是结果的<strong>最低位</strong>；最后一次的余数才是<strong>最高位</strong>。<br>
+  所以必须"倒着读"。<b>忘掉倒序，答案就正好反了个个儿。</b>
+</div>
+
+<!-- ============ 5 ============ -->
+<div class="section-header" id="s5">
+  <h2>5　二、八、十六的快速互转</h2>
+  <div class="en-title">Fast Conversion</div>
+</div>
+
+<h3 id="s5-1">5.1 三条黄金法则</h3>
+
+<p>考试里最常考的其实不是"十进制 ↔ 其他"，而是 <b>二进制、八进制、十六进制三者之间的速转</b>。
+因为 8 = 2³、16 = 2⁴，所以它们之间可以"分组直译"，根本不用经过十进制。</p>
+
+<h3 id="s5-2">5.2 分组直译速查</h3>
+
+<div class="box remember">
+  <span class="lb">两条黄金法则：</span>
+  <strong>二进制 → 八进制：每 3 位一组</strong>（不足左边补 0），每组直接读出 0~7。<br>
+  <strong>二进制 → 十六进制：每 4 位一组</strong>（不足左边补 0），每组直接读出 0~F。
+</div>
+
+<figure class="figure">
+  <svg class="diagram" viewBox="0 0 860 320" role="img" aria-label="二进制分组速转">
+    <text x="24" y="34" font-size="14" font-weight="bold" fill="#1f2937">二进制 101101：三位一组变八进制，四位一组变十六进制</text>
+
+    <text x="70" y="76" font-size="13" fill="#6d4bd8" font-weight="bold">原数</text>
+    <text x="180" y="76" font-family="Consolas,monospace" font-size="19" fill="#3b2f6e" font-weight="bold">101101</text>
+
+    <line x1="180" y1="90" x2="300" y2="90" stroke="#cbd5e1" stroke-width="1.6"/>
+
+    <text x="70" y="130" font-size="13" fill="#6d4bd8" font-weight="bold">三位一组</text>
+    <rect x="180" y="104" width="80" height="40" rx="8" fill="#f1ecfd" stroke="#8b6cf0" stroke-width="1.8"/>
+    <text x="220" y="130" text-anchor="middle" font-family="Consolas,monospace" font-size="15" fill="#5233b8">101</text>
+    <rect x="272" y="104" width="80" height="40" rx="8" fill="#f1ecfd" stroke="#8b6cf0" stroke-width="1.8"/>
+    <text x="312" y="130" text-anchor="middle" font-family="Consolas,monospace" font-size="15" fill="#5233b8">101</text>
+    <text x="380" y="130" font-size="13" fill="#6d4bd8">→ 5 和 5 → 八进制 <tspan font-weight="bold">55</tspan></text>
+
+    <text x="70" y="196" font-size="13" fill="#1f7a44" font-weight="bold">四位一组</text>
+    <rect x="180" y="170" width="72" height="40" rx="8" fill="#e9f8ef" stroke="#2e9e5b" stroke-width="1.8"/>
+    <text x="216" y="196" text-anchor="middle" font-family="Consolas,monospace" font-size="15" fill="#166534">0010</text>
+    <rect x="264" y="170" width="72" height="40" rx="8" fill="#e9f8ef" stroke="#2e9e5b" stroke-width="1.8"/>
+    <text x="300" y="196" text-anchor="middle" font-family="Consolas,monospace" font-size="15" fill="#166534">1101</text>
+    <text x="372" y="196" font-size="13" fill="#1f7a44">→ 2 和 13(D) → 十六进制 <tspan font-weight="bold">2D</tspan></text>
+    <text x="200" y="228" font-size="11.5" fill="#8d9d94">（不足四位，左边补 0）</text>
+
+    <rect x="70" y="248" width="720" height="56" rx="12" fill="#fff9ec" stroke="#f59e0b" stroke-width="1.8"/>
+    <text x="430" y="272" text-anchor="middle" font-size="13" fill="#b45309" font-weight="bold">反向也一样：八进制每位拆成 3 位二进制，十六进制每位拆成 4 位</text>
+    <text x="430" y="294" text-anchor="middle" font-size="12" fill="#6b4e13">例：十六进制 2D → 0010 1101 → 去掉前导零 → 101101</text>
+  </svg>
+  <div class="caption">图 7（SVG）：分组直译——这是考试里最省时间的办法</div>
+</figure>
+
+<table class="styled">
+  <thead><tr><th>二进制（4 位）</th><th>十六进制</th><th>二进制（3 位）</th><th>八进制</th></tr></thead>
+  <tbody>
+    <tr><td>0000</td><td>0</td><td>000</td><td>0</td></tr>
+    <tr><td>0001</td><td>1</td><td>001</td><td>1</td></tr>
+    <tr><td>0010</td><td>2</td><td>010</td><td>2</td></tr>
+    <tr><td>0011</td><td>3</td><td>011</td><td>3</td></tr>
+    <tr><td>0100</td><td>4</td><td>100</td><td>4</td></tr>
+    <tr><td>0101</td><td>5</td><td>101</td><td>5</td></tr>
+    <tr><td>0110</td><td>6</td><td>110</td><td>6</td></tr>
+    <tr><td>0111</td><td>7</td><td>111</td><td>7</td></tr>
+    <tr><td>1000 ~ 1111</td><td>8 ~ F</td><td>—</td><td>—</td></tr>
+  </tbody>
+</table>
+
+<div class="cast hero">
+  <img class="ava" src="../assets/avatars/omarn.webp" alt="欧曼" onerror="this.style.display='none'">
+  <div class="bubble">
+    <div class="who">欧曼 · 传奇巫师</div>
+    我念咒语有个习惯：<strong>把长句子拆成一小节一小节，一节一节地念。</strong><br>
+    二进制太长、太难记，八进制和十六进制就是替它分节的——<b>三位一节、四位一节</b>，
+    读起来立刻顺手。<br>
+    所以别把它们当成三种陌生的东西，<b>它们只是同一串 0 和 1 的不同断句方式。</b>
+  </div>
+</div>
+
+<!-- ============ 6 ============ -->
+<div class="section-header" id="s6">
+  <h2>6　Python 里的进制</h2>
+  <div class="en-title">Number Bases in Python</div>
+</div>
+
+<h3 id="s6-1">6.1 四种进制的写法</h3>
+
+<p>Python 给每种进制都准备了"写法"和"转换函数"：</p>
+
+<table class="styled">
+  <thead><tr><th>写法</th><th>含义</th><th>等等于十进制</th></tr></thead>
+  <tbody>
+    <tr><td><code class="inline">101</code></td><td>十进制（没有前缀）</td><td>101</td></tr>
+    <tr><td><code class="inline">0b101</code></td><td>二进制（binary）</td><td>5</td></tr>
+    <tr><td><code class="inline">0o101</code></td><td>八进制（octal）</td><td>65</td></tr>
+    <tr><td><code class="inline">0x101</code></td><td>十六进制（hex）</td><td>257</td></tr>
+  </tbody>
+</table>
+
+<div class="code-card">
+  <div class="code-head">
+    <span class="dot d1"></span><span class="dot d2"></span><span class="dot d3"></span>
+    <span class="file">三个转换函数 + 一个万能解析</span>
+    <span class="lang">Python</span>
+  </div>
+  <pre><code>n = 45
+
+print(bin(n))     # 转成二进制字符串（带 0b 前缀）
+print(oct(n))     # 转成八进制字符串（带 0o 前缀）
+print(hex(n))     # 转成十六进制字符串（带 0x 前缀）
+
+# 反过来：把字符串按指定进制解析成整数
+print(int("101101", 2))    # 把 101101 当成二进制读
+print(int("55", 8))        # 当成八进制读
+print(int("2D", 16))       # 当成十六进制读</code></pre>
+  <div class="out"><b>OUTPUT</b>　0b101101<br>0o55<br>0x2d<br>45<br>45<br>45</div>
+</div>
+
+<h3 id="s6-2">6.2 转换函数</h3>
+
+<div class="box warn">
+  <span class="lb">两个细节千万别错：</span>
+  ① <code class="inline">bin() / oct() / hex()</code> 返回的都是<strong>字符串</strong>，
+  而且带前缀，输出是 <code class="inline">0b101101</code> 这个样子，别把 <code class="inline">"0b"</code> 当成数字的一部分；<br>
+  ② <code class="inline">int(字符串, 进制)</code> 里的第二个参数才是指定进制，
+  <code class="inline">"2D"</code> 这种带字母的<strong>只能配 16 进制用</strong>。
+</div>
+
+
+
+<!-- ============ 7 ============ -->
+<div class="section-header" id="s7">
+  <h2>7　代码实战</h2>
+  <div class="en-title">Level Practice</div>
+</div>
+
+<div class="level-card">
+  <div class="lc-head"><span class="n">关卡</span><h4>形状和性状</h4><span class="go">进入关卡 →</span></div>
+  <div class="lc-body">
+    <div class="story">
+      <b>故事：</b>矿道尽头立着一台魔法机器人，它只认二进制的命令。
+    闯入者正沿着矿道逼近，<b>可敌人的血量和类型，写出来全是十进制的大数字。</b><br>
+    机器人歪着头听不懂。贺舒曼在镜子里说：<b>换个进制写给它看。</b>
+    </div>
+    <p><strong>思路：</strong>用"<b>除基数、取余数、倒着排</b>"的办法，就能把十进制换成任意进制：
+    不断除以基数，把每一次的余数记下来，<b>最后从下往上读</b>。
+    这就是竖式换算的程序版本。</p>
+  <figure class="pic ai-added"><img src="../assets/illustrations/py-L3-02-01_crystal_bases.webp" alt="AI配图：py-L3-02-01_crystal_bases.webp"></figure>
+    <figure class="pic">
+      <img src="../assets/stages/py-L3-02-stage1_shapes_traits.webp" alt="形状和性状 关卡截图"
+           onerror="this.closest('.pic').classList.add('missing')">
+      <div class="ph">
+        <div class="fn">assets/stages/py-L3-02-stage1_shapes_traits.webp</div>
+        <div class="ds">【关卡截图位】请把《形状和性状》的游戏画面截图放到此处（放入 assets/stages/ 目录，文件名为 py-L3-02-stage1_shapes_traits.webp）。</div>
+      </div>
+      <figcaption>关卡实况：形状和性状</figcaption>
+    </figure>
+    <div class="code-card">
+      <div class="code-head">
+        <span class="dot d1"></span><span class="dot d2"></span><span class="dot d3"></span>
+        <span class="file">重点示例：把一个十进制数换成三进制</span>
+        <span class="lang">Python</span>
+      </div>
+      <pre><code># 十进制 → 三进制：除 3 取余，余数倒着排
+def toTernary(number):
+    result = ""
+    while number != 0:
+        remainder = number % 3            # ① 取余数
+        result = str(remainder) + result  # ② 新余数接在"前面"
+        number = number // 3              # ③ 去掉这一位
+    return result
+
+hero.say(toTernary(enemy.health))         # 把血量换成三进制报给机器人</code></pre>
+      <div class="out"><b>要点</b>　余数要<b>接在前面</b>（因为最后才读最高位）；<code>//</code> 是整除，把用掉的那一位丢掉</div>
+    </div>
+    <div class="box info">
+      <span class="lb">和本单元的关系：</span>
+      换进制的三步——<strong>取余、落位、除基</strong>，和"十进制拆成个位十位百位"是同一套动作，
+    只是基数从 10 换成了 3 或 2。<br>
+    <b>把基数换成 2 就是二进制，换成 8 就是八进制——算法一模一样。</b>
+    </div>
+    <a class="btn-go" href="https://codecombat.cn/" target="_blank" rel="noopener">去扣哒世界闯这一关 →</a>
+  </div>
+</div>
+
+<!-- ============ 8 ============ -->
+<div class="section-header" id="s8">
+  <h2>8　常见陷阱</h2>
+  <div class="en-title">Common Pitfalls</div>
+</div>
+
+<div class="cast duck">
+  <img class="ava" src="../assets/ducks/duck_naria.webp" alt="扣哒鸭" onerror="this.style.display='none'">
+  <div class="bubble">
+    <div class="who">扣哒鸭 · 调试官</div>
+    进制换算送分，也送命。四条，条条都是阅卷老师喜欢蹲的点。
+  </div>
+</div>
+
+<div class="pit">
+  <div class="pt">
+    <div class="x">1</div>
+    <div class="t"><b>除基取余忘了倒序。</b>算出来是 1011，答案写成 1101。</div>
+  </div>
+  <div class="duck">
+    <img src="../assets/ducks/duck_zana.webp" alt="扣哒鸭" onerror="this.style.display='none'">
+    <div class="dt"><b>扣哒鸭：</b><strong>第一次除出来的余数是最低位，最后一次才是最高位。</strong>
+    所以要从下往上读。我这有个笨办法：算完以后，<em>用手指从最后一个余数往上划一遍</em>再写答案。</div>
+  </div>
+  <div class="fix"><b>正确做法：</b>商变成 0 时停手，余数从下往上排</div>
+</div>
+
+<div class="pit">
+  <div class="pt">
+    <div class="x">2</div>
+    <div class="t"><b>二进制转八进制时，按四位一组分了。</b>结果怎么算都对不上。</div>
+  </div>
+  <div class="duck">
+    <img src="../assets/ducks/duck_senick.webp" alt="扣哒鸭" onerror="this.style.display='none'">
+    <div class="dt"><b>扣哒鸭：</b>记住这组数字：<strong>8 是 2 的三次方，16 是 2 的四次方。</strong>
+    所以八进制配<em>三位</em>、十六进制配<em>四位</em>。<br>
+    分错了组，等于把句子断错了句读，意思全变。</div>
+  </div>
+  <div class="fix"><b>正确做法：</b>八进制 → 3 位一组；十六进制 → 4 位一组；不足时左边补 0</div>
+</div>
+
+<div class="pit">
+  <div class="pt">
+    <div class="x">3</div>
+    <div class="t"><b>把 <code class="inline">0o</code> 当成"两个零"。</b>把八进制写成了十进制。</div>
+  </div>
+  <div class="duck">
+    <img src="../assets/ducks/duck_illia.webp" alt="扣哒鸭" onerror="this.style.display='none'">
+    <div class="dt"><b>扣哒鸭：</b>八进制前缀是<strong>字母 o</strong>（octal），不是数字 0。
+    写成 <code>00101</code> 的话，Python 会当成十进制 101——差了十几倍。</div>
+  </div>
+  <div class="fix"><b>正确写法：</b><code class="inline">0o101</code> 表示八进制的 101</div>
+</div>
+
+<div class="pit">
+  <div class="pt">
+    <div class="x">4</div>
+    <div class="t"><b>以为 <code class="inline">bin(5)</code> 返回的是数字 101。</b></div>
+  </div>
+  <div class="duck">
+    <img src="../assets/ducks/duck_hattori.webp" alt="扣哒鸭" onerror="this.style.display='none'">
+    <div class="dt"><b>扣哒鸭：</b>它返回的是<strong>字符串</strong> <code>'0b101'</code>，
+    带前缀、带引号。要拿它去做算术，会当场报错。</div>
+  </div>
+  <div class="fix"><b>正确理解：</b>bin/oct/hex 返回字符串；要数字就用 int(字符串, 进制)</div>
+</div>
+
+<!-- ============ 9 ============ -->
+<div class="section-header" id="s9">
+  <h2>9　题目练习</h2>
+  <div class="en-title">Practice</div>
+</div>
+
+<p>第 1 题改编自 2026 年 9 月 · Python 三级 第 4 题，其余为原创练习题。</p>
+
+<div class="exam">
+  <div class="eh"><span class="src">改编自 2026 年 9 月 · Python 三级 · 第 4 题</span><span class="tp">单选题</span></div>
+  <div class="eb">
+    <div class="q">在 Python 中，表达式 <code class="inline">-0b1111</code> 的十进制值是（　　）。</div>
+    <div class="opt"><i>A.</i>15　　<i>B.</i>−15　　<i>C.</i>−1　　<i>D.</i>−7</div>
+    <details><summary>查看答案与详解</summary>
+      <div class="ans"><b>答案：B</b>。<code class="inline">0b</code> 前缀表示<strong>二进制</strong>，所以 <code class="inline">0b1111</code> 就是二进制的 1111：<br>1×2³ + 1×2² + 1×2¹ + 1×2⁰ = 8 + 4 + 2 + 1 = <b>15</b>；<br>前面再加负号，结果就是 <b>−15</b>。<br><b>注意区分：</b>这里的负号是<strong>整个数的正负号</strong>，和"最高位当符号位"的补码不是一回事 ——<code class="inline">-0b1111</code> 是 Python 的写法，而 <code class="inline">1111</code> 这 4 位补码表示的是 −1。<br><b>顺带记牢三个前缀：</b><code class="inline">0b</code> 二进制、<code class="inline">0o</code> 八进制、<code class="inline">0x</code> 十六进制。<br><span class="tagline">对应小节</span>6 Python 里的进制。</div>
+    </details>
+  </div>
+</div>
+<div class="exam">
+  <div class="eh"><span class="src ori">原创练习题</span><span class="tp">单选题</span></div>
+  <div class="eb">
+    <div class="q">二进制数 <code class="inline">11010</code> 对应的十进制数是（　　）。</div>
+    <div class="opt"><i>A.</i>24　　<i>B.</i>26　　<i>C.</i>28　　<i>D.</i>52</div>
+    <details><summary>查看答案与详解</summary>
+      <div class="ans"><b>答案：B</b>。五位二进制，位权从左到右是 16、8、4、2、1：<br>
+      <code class="inline">1×16 + 1×8 + 0×4 + 1×2 + 0×1 = 16 + 8 + 2 = 26</code>。<br>
+      <b>易错点：</b>D 项是把它当成二进制后又加错了（把 11010 看成 110100）。<br>
+      <span class="tagline">对应小节</span>3 其他进制 → 十进制。</div>
+    </details>
+  </div>
+</div>
+
+<div class="exam">
+  <div class="eh"><span class="src ori">原创练习题</span><span class="tp">单选题</span></div>
+  <div class="eb">
+    <div class="q">十进制数 <code class="inline">45</code> 转换成十六进制是（　　）。</div>
+    <div class="opt"><i>A.</i>2D　　<i>B.</i>D2　　<i>C.</i>54　　<i>D.</i>2C</div>
+    <details><summary>查看答案与详解</summary>
+      <div class="ans"><b>答案：A</b>。用除基取余：<br>
+      <code class="inline">45 ÷ 16 = 2 …… 余 13</code>（13 记作 D）<br>
+      <code class="inline">2 ÷ 16 = 0 …… 余 2</code><br>
+      余数从下往上读 → <b>2D</b>。<br>
+      <b>易错点：</b>B 项是忘了倒序，最容易选错。<br>
+      <span class="tagline">对应小节</span>4 十进制 → 其他进制。</div>
+    </details>
+  </div>
+</div>
+
+<div class="exam">
+  <div class="eh"><span class="src ori">原创练习题</span><span class="tp">单选题</span></div>
+  <div class="eb">
+    <div class="q">二进制数 <code class="inline">101101</code> 转换成八进制是（　　）。</div>
+    <div class="opt"><i>A.</i>45　　<i>B.</i>55　　<i>C.</i>65　　<i>D.</i>2D</div>
+    <details><summary>查看答案与详解</summary>
+      <div class="ans"><b>答案：B</b>。<b>三位一组</b>从右往左分：<code class="inline">101 | 101</code><br>
+      左边一组 101 = 5，右边一组 101 = 5，合起来就是 <b>55</b>（八进制）。<br>
+      <b>提示：</b>D 项是这个数转成十六进制的结果（四位一组：0010 1101 → 2D），别混了。<br>
+      <span class="tagline">对应小节</span>5 二、八、十六的快速互转。</div>
+    </details>
+  </div>
+</div>
+
+<div class="exam">
+  <div class="eh"><span class="src ori">原创练习题</span><span class="tp">判断题</span></div>
+  <div class="eb">
+    <div class="q">在 Python 中，表达式 <code class="inline">int("101", 2)</code> 的值是 5。（　　）</div>
+    <details><summary>查看答案与详解</summary>
+      <div class="ans"><b>答案：正确（√）</b>。<code class="inline">int("101", 2)</code>
+      的意思是"把字符串 101 按<strong>二进制</strong>解读"，即
+      <code class="inline">1×4 + 0×2 + 1×1 = 5</code>。<br>
+      <b>对比：</b><code class="inline">int("101")</code> 才是十进制 101。<br>
+      <span class="tagline">对应小节</span>6 Python 里的进制。</div>
+    </details>
+  </div>
+</div>
+
+<div class="exam">
+  <div class="eh"><span class="src ori">原创练习题</span><span class="tp">单选题</span></div>
+  <div class="eb">
+    <div class="q">下列 Python 代码执行后，输出的结果是（　　）。</div>
+    <pre>1  print(hex(255))</pre>
+    <div class="opt"><i>A.</i>255　　<i>B.</i>0xff　　<i>C.</i>ff　　<i>D.</i>0o377</div>
+    <details><summary>查看答案与详解</summary>
+      <div class="ans"><b>答案：B</b>。255 = <code class="inline">1111 1111</code>（二进制），
+      四位一组就是 <code class="inline">F</code> 和 <code class="inline">F</code>，即十六进制的 <b>FF</b>。<br>
+      <code class="inline">hex()</code> 返回的是<strong>带前缀的字符串</strong>，
+      且字母<strong>小写</strong>，所以打印出来是 <code class="inline">0xff</code>。<br>
+      <b>易错点：</b>C 项忘了前缀；D 项是八进制，255 的八进制是 377。<br>
+      <span class="tagline">对应小节</span>6 Python 里的进制。</div>
+    </details>
+  </div>
+</div>
+
+<div class="exam">
+  <div class="eh"><span class="src ori">原创练习题</span><span class="tp">判断题</span></div>
+  <div class="eb">
+    <div class="q">十六进制数 <code class="inline">1A</code> 的十进制值是 26。（　　）</div>
+    <details><summary>查看答案与详解</summary>
+      <div class="ans"><b>答案：正确（√）</b>。按权展开：
+      <code class="inline">1×16 + A×1</code>，而 A = 10，
+      所以 <code class="inline">16 + 10 = 26</code>。<br>
+      <b>牢记：</b>A=10、B=11、C=12、D=13、E=14、F=15。<br>
+      <span class="tagline">对应小节</span>2 四种常用进制；3 其他进制 → 十进制。</div>
+    </details>
+  </div>
+</div>
+
+<div class="exam">
+  <div class="eh"><span class="src ori">原创练习题</span><span class="tp">编程题</span></div>
+  <div class="eb">
+    <div class="q">题目要求：编写程序，输入一个十进制正整数 n，
+    依次输出它的二进制、八进制和十六进制表示（都按 Python 的默认格式输出，即带前缀），一行一个。</div>
+    <details><summary>查看参考答案与要点</summary>
+      <div class="ans">
+<pre style="margin:0;background:#1b1a2a;color:#cdc8e0;border-radius:10px;padding:14px 16px">n = int(input("请输入一个正整数："))
+
+print(bin(n))     # 二进制，带 0b 前缀
+print(oct(n))     # 八进制，带 0o 前缀
+print(hex(n))     # 十六进制，带 0x 前缀</pre>
+      <p style="margin-top:12px"><b>运行示例：</b>输入 45 → 输出 <code class="inline">0b101101</code>、
+      <code class="inline">0o55</code>、<code class="inline">0x2d</code>。<br>
+      <b>要点：</b><br>
+      ① 三个函数都返回<strong>字符串</strong>，直接 print 即可；<br>
+      ② 前缀 <code class="inline">0b / 0o / 0x</code> 会自动带上；<br>
+      ③ 十六进制里的字母是<strong>小写</strong>的，如果要大写可以再用
+      <code class="inline">.upper()</code> 转换。<br>
+      <span class="tagline">对应小节</span>6 Python 里的进制。</p>
+      </div>
+    </details>
+  </div>
+</div>
+
+<!-- ============ 10 ============ -->
+<div class="section-header" id="s10">
+  <h2>10　本单元小结</h2>
+  <div class="en-title">Unit Summary</div>
+</div>
+
+<div class="cast teacher">
+  <img class="ava" src="../assets/avatars/hushbaum.webp" alt="贺舒曼" onerror="this.style.display='none'">
+  <div class="bubble">
+    <div class="who">贺舒曼 · 镜中先知</div>
+    这一单元其实只有两句话：<br>
+    <strong>一、其他进制转十进制——按位权展开再相加。</strong><br>
+    <strong>二、十进制转其他进制——除基取余，倒着读。</strong><br>
+    再加上一个"分组直译"的巧劲（八进制三位、十六进制四位），
+    你在考场上就能省下一半时间。
+  </div>
+</div>
+
+<div class="summary">
+  <h3>你在七棱水晶旁收获了什么</h3>
+  <ul>
+    <li><strong>基数与位权</strong>——基数是"用几个数字"，位权是"每个位置值多少"。</li>
+    <li><strong>四种常用进制</strong>——十进制、二进制、八进制、十六进制；十六进制借用了 A~F。</li>
+    <li><strong>转十进制</strong>——按位权展开求和，一位一位乘了再加。</li>
+    <li><strong>转其他进制</strong>——除基取余，除到商为 0，余数<strong>倒序排列</strong>。</li>
+    <li><strong>分组直译</strong>——二进制 ↔ 八进制每 <strong>3 位</strong>一组；二进制 ↔ 十六进制每 <strong>4 位</strong>一组。</li>
+    <li><strong>Python 前缀</strong>——<code class="inline">0b</code> 二进制、<code class="inline">0o</code> 八进制、<code class="inline">0x</code> 十六进制。</li>
+    <li><strong>转换函数</strong>——<code class="inline">bin / oct / hex</code> 返回带前缀的字符串；
+    <code class="inline">int(字符串, 进制)</code> 反向解析。</li>
+  </ul>
+</div>
+
+<div class="pager">
+  <a href="py-3-01.html"><div class="k">← 上一单元</div><div class="v">暗河下的符文 · 原码、反码、补码</div></a>
+  <a href="../index.html" target="_top" class="back"><div class="k">返回</div><div class="v">考纲之路 · 总目录</div></a>
+  <a href="py-3-03.html"><div class="k">下一单元 →</div><div class="v">光栅闸门 · 位运算</div></a>
+</div>
+
+<div class="cta">
+  <h3>下一站：光栅闸门</h3>
+  <p>矿道尽头有一排会闪光的栅栏：有的只亮一个灯，有的亮一整片。
+  它们不是装饰——<b>每一盏灯都在告诉你一个比特</b>。下一单元，我们让这些灯听你的话。</p>
+  <a class="btn-go" href="https://codecombat.cn/" target="_blank" rel="noopener">加入扣哒世界，把这条考纲之路走一遍 →</a>
+</div>
+
+</div><!-- /container -->
+</div><!-- /page -->
+
+<script>
+const KEYWORDS = new Set(("while for if elif else break continue def return pass not and or in is None True False " +
+  "int float bool str list dict tuple set input print range len abs max min round pow import math random chr ord bin hex oct").split(" "));
+
+function esc(s){ return s.replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;'); }
+
+function highlight(src){
+  let out = '', i = 0;
+  const n = src.length;
+  while (i < n){
+    const c = src[i];
+    if (c === '#'){
+      let j = src.indexOf('\n', i); if (j < 0) j = n;
+      out += '<span class="cm">' + esc(src.slice(i, j)) + '</span>';
+      i = j; continue;
+    }
+    if (c === '"' || c === "'"){
+      let j = i + 1;
+      while (j < n && src[j] !== c){ if (src[j] === '\\') j++; j++; }
+      j = Math.min(j + 1, n);
+      out += '<span class="st">' + esc(src.slice(i, j)) + '</span>';
+      i = j; continue;
+    }
+    if (/[0-9]/.test(c)){
+      let j = i;
+      while (j < n && /[0-9.]/.test(src[j])) j++;
+      out += '<span class="nu">' + esc(src.slice(i, j)) + '</span>';
+      i = j; continue;
+    }
+    if (/[A-Za-z_]/.test(c)){
+      let j = i;
+      while (j < n && /[A-Za-z0-9_]/.test(src[j])) j++;
+      const w = src.slice(i, j);
+      if (KEYWORDS.has(w)) out += '<span class="kw">' + esc(w) + '</span>';
+      else if (src[j] === '(') out += '<span class="fn">' + esc(w) + '</span>';
+      else out += esc(w);
+      i = j; continue;
+    }
+    out += esc(c); i++;
+  }
+  return out;
+}
+
+document.querySelectorAll('.code-card pre code').forEach(block => {
+  block.innerHTML = highlight(block.textContent);
+});
+
+if (location.search.indexOf('expand') >= 0) {
+  document.querySelectorAll('details').forEach(d => d.open = true);
+}
+document.querySelectorAll('.sidebar-nav a').forEach(a => {
+  a.addEventListener('click', () => {
+    if (window.innerWidth <= 900) document.querySelector('.sidebar-nav').classList.remove('active');
+  });
+});
+</script>
+</body>
+</html>

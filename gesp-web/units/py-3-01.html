@@ -1,0 +1,1222 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="copyright" content="CodeCombat Inc. codecombat.cn">
+<title>暗河下的符文 · 数据编码：原码、反码、补码 | 扣哒考级 · GESP Python 三级</title>
+<style>
+  :root{
+    --primary:#6d4bd8; --primary-light:#8b6cf0; --primary-lighter:#f1ecfd; --primary-dark:#5233b8;
+    --brand:#ff6b35; --brand-dark:#e8541f; --brand-soft:#fff3ec;
+    --night:#151329; --night-2:#211d3d; --gold:#f5b301;
+    --text:#282538; --dim:#6b6580; --dim2:#9690ab;
+    --bg:#ffffff; --bg-soft:#faf9fe; --line:#e7e3f4; --sidebar:274px;
+    --code-bg:#1b1a2a; --code-tx:#cdc8e0;
+    --code-kw:#c678dd; --code-st:#98c379; --code-nu:#d19a66; --code-cm:#6f6a8a; --code-fn:#61afef;
+  }
+  *{margin:0;padding:0;box-sizing:border-box}
+  html{scroll-behavior:smooth}
+  body{font-family:"PingFang SC","Microsoft YaHei","Segoe UI",-apple-system,sans-serif;line-height:1.9;color:var(--text);background:var(--bg);font-size:15.5px}
+  .sidebar-nav{position:fixed;top:0;left:0;width:var(--sidebar);height:100vh;overflow-y:auto;background:linear-gradient(180deg,#121022,#1c1935);padding:14px 0 40px;z-index:100;border-right:3px solid var(--brand);transition:transform .3s ease}
+  .sidebar-nav::-webkit-scrollbar{width:5px}
+  .sidebar-nav::-webkit-scrollbar-thumb{background:var(--brand);border-radius:4px}
+  .sb-brand{display:flex;align-items:center;gap:10px;padding:10px 13px 12px;border-bottom:1px solid #2c2a4a;margin-bottom:8px}
+  .sidebar-nav a.sb-logo{display:flex;align-items:center;justify-content:center;flex-shrink:0;padding:0;border-left:none;transition:.2s}
+  .sb-logo:hover{transform:scale(1.08)}
+  .sb-logo img{height:34px;width:34px;display:block;object-fit:contain;border-radius:8px}
+  .sb-brand b{color:#f2f0fa;font-size:14px;letter-spacing:.5px;display:block;line-height:1.4}
+  .sb-brand span{color:#8880ab;font-size:11.5px;display:block;line-height:1.4}
+  .nav-title{color:#ffb894;font-size:12px;font-weight:800;padding:10px 18px 6px;letter-spacing:1.2px}
+  .sidebar-nav a{display:block;color:#c6c0dc;text-decoration:none;padding:6px 18px;font-size:12.5px;line-height:1.55;border-left:3px solid transparent;transition:.18s}
+  .sidebar-nav a:hover{color:#fff;background:rgba(255,107,53,.16);border-left-color:var(--brand)}
+  .sidebar-nav a.nav-section{color:#ffb894;font-weight:700;font-size:13px;margin-top:11px;padding-top:10px;border-top:1px solid #2c2a4a}
+  .sidebar-nav a.nav-section:first-of-type{border-top:none;margin-top:0;padding-top:6px}
+  .sidebar-nav a.nav-sub{padding-left:30px;color:#9d96ba;font-size:12px}
+  .sidebar-nav a.nav-sub:hover{color:#fff}
+  .sb-back{margin:16px 14px 0;display:block;text-align:center;padding:9px;border-radius:9px;background:#272348;color:#b3abd0 !important;font-size:12px;font-weight:700;border-left:none !important}
+  .sb-back:hover{background:var(--brand) !important;color:#fff !important}
+  .nav-toggle{display:none;position:fixed;top:14px;left:14px;z-index:120;background:var(--brand);color:#fff;border:none;border-radius:9px;padding:9px 13px;font-size:15px;cursor:pointer;box-shadow:0 4px 14px rgba(0,0,0,.25)}
+  .page{margin-left:var(--sidebar)}
+  .hero{position:relative;overflow:hidden;padding:44px 52px;color:#fff;background:linear-gradient(125deg,#100e20 0%,#1e1a3c 46%,#8a3a16 132%)}
+  .hero::after{content:"";position:absolute;right:-90px;top:-110px;width:400px;height:400px;border-radius:50%;background:radial-gradient(circle,rgba(245,179,1,.30),transparent 68%)}
+  .hero-top{display:flex;gap:36px;align-items:center;position:relative;z-index:2}
+  .hero-txt{flex:1;min-width:0}
+  .hero .crumb{font-size:11.5px;color:#ffb894;letter-spacing:1.5px;font-weight:700;margin-bottom:14px}
+  .hero h1{font-size:31px;font-weight:800;line-height:1.3;letter-spacing:.6px;margin-bottom:8px}
+  .hero h1 .sub{display:block;font-size:18px;font-weight:700;color:#ffd2b3;margin-top:6px;letter-spacing:.3px}
+  .hero .en{font-size:13px;color:#a49dc0;font-style:italic;margin-bottom:18px}
+  .hero .tags{display:flex;flex-wrap:wrap;gap:8px}
+  .tag{font-size:11.5px;padding:4px 12px;border-radius:20px;background:rgba(255,255,255,.12);border:1px solid rgba(255,255,255,.22);color:#e8f0f6;font-weight:600}
+  .tag.hot{background:rgba(255,107,53,.92);border-color:transparent;color:#fff}
+  .hero-card{flex-shrink:0;width:200px;text-align:center}
+  .hero-card .ava{width:148px;height:148px;border-radius:50%;object-fit:cover;object-position:top center;border:4px solid rgba(255,180,140,.6);box-shadow:0 14px 34px rgba(0,0,0,.45);background:#24344a}
+  .hero-card .nm{font-size:15px;font-weight:800;color:#fff;margin-top:10px}
+  .hero-card .ti{font-size:11.5px;color:#ffb894;margin-top:2px}
+  .container{max-width:1080px;margin:0 auto;padding:38px 52px 70px}
+  .lead{font-size:15.5px;line-height:2.05;color:#3a3650;background:linear-gradient(120deg,#fff8f3,#faf9fe);border-left:5px solid var(--brand);border-radius:0 14px 14px 0;padding:22px 26px;margin-bottom:32px}
+  .lead b{color:var(--brand-dark)}
+  .cast{display:flex;gap:16px;align-items:flex-start;border-radius:16px;padding:18px 22px;margin:24px 0}
+  .cast .ava{width:72px;height:72px;border-radius:50%;object-fit:cover;object-position:top center;flex-shrink:0;background:#e8eef5}
+  .cast .bubble{position:relative;font-size:14px;line-height:1.95;padding-top:2px;flex:1}
+  .cast .who{font-size:12px;font-weight:800;margin-bottom:5px;letter-spacing:.5px}
+  .cast.anya{background:var(--brand-soft);border:1px solid #ffdcc9}
+  .cast.anya .who{color:var(--brand-dark)}
+  .cast.anya .bubble{color:#5c4636}
+  .cast.duck{background:#fff5f5;border:1px solid #fbd5d5}
+  .cast.duck .who{color:#b91c1c}
+  .cast.duck .bubble{color:#5c4141}
+  .cast.teacher{background:linear-gradient(120deg,#f5f3fd,#ffffff);border:1px solid #e0daf5}
+  .cast.teacher .who{color:#3b2f6e}
+  .cast.teacher .bubble{color:#443c60}
+  .cast.hero{background:#f7f5fe;border:1px solid #ded6f8}
+  .cast.hero .who{color:#5233b8}
+  .cast.hero .bubble{color:#453d62}
+  .goal-grid{display:grid;grid-template-columns:1fr 1fr;gap:16px;margin-bottom:36px}
+  .goal{border:1px solid var(--line);border-radius:15px;padding:19px 21px;background:#fff;box-shadow:0 4px 16px rgba(109,75,216,.06)}
+  .goal h4{font-size:14px;font-weight:800;margin-bottom:11px;display:flex;align-items:center;gap:8px;color:var(--primary-dark)}
+  .goal h4 .ic{width:22px;height:22px;border-radius:7px;background:var(--primary-lighter);display:flex;align-items:center;justify-content:center;font-size:12px}
+  .goal ul{list-style:none}
+  .goal li{font-size:13.5px;color:#4d4a5c;line-height:1.9;padding-left:18px;position:relative}
+  .goal li::before{content:"▸";position:absolute;left:0;color:var(--primary);font-weight:800}
+  .goal.syllabus li::before{content:"✓"}
+  .section-header{margin:52px 0 24px;padding-bottom:12px;border-bottom:3px solid var(--brand);display:flex;align-items:baseline;gap:14px;flex-wrap:wrap}
+  .section-header h2{font-size:22px;font-weight:800;color:var(--night);letter-spacing:.4px}
+  .section-header .en-title{font-size:12px;color:var(--dim2);font-style:italic}
+  h3{font-size:17.5px;font-weight:800;margin:34px 0 14px;color:var(--night);display:flex;align-items:center;gap:10px}
+  h3::before{content:"";width:5px;height:17px;border-radius:3px;background:var(--brand);flex-shrink:0}
+  h4{font-size:15px;font-weight:800;margin:24px 0 10px;color:#3d3560}
+  p{margin:12px 0;color:#443c60;line-height:2}
+  strong{color:var(--primary-dark)}
+  code.inline{background:var(--primary-lighter);color:var(--primary-dark);padding:2px 7px;border-radius:6px;font-family:"SFMono-Regular",Consolas,Menlo,monospace;font-size:.9em;font-weight:600}
+  .figure{margin:24px 0;text-align:center}
+  .figure svg.diagram{max-width:100%;height:auto;background:#fff;border:1px solid var(--line);border-radius:14px;padding:10px}
+  .figure .caption{font-size:12.5px;color:var(--dim2);margin-top:9px}
+  .pic{margin:26px 0;text-align:center}
+  .pic img{max-width:100%;border-radius:16px;box-shadow:0 10px 28px rgba(60,40,120,.15);display:block;margin:0 auto}
+  .pic figcaption{font-size:12.5px;color:var(--dim2);margin-top:9px}
+  .pic .ph{display:none}
+  .pic.missing img{display:none}
+  .pic.missing .ph{display:flex;flex-direction:column;align-items:center;justify-content:center;gap:9px;border:2px dashed #cbc3e8;border-radius:16px;background:linear-gradient(135deg,#faf9ff,#f2f0fd);padding:40px 26px;color:#7d76a0}
+  .pic.missing .ph .fn{font-family:Consolas,monospace;font-size:12.5px;color:#6d4bd8;font-weight:700;word-break:break-all}
+  .pic.missing .ph .ds{font-size:12.5px;line-height:1.8;max-width:560px}
+  .box{border-radius:13px;padding:16px 20px;margin:20px 0;font-size:14px;line-height:1.95}
+  .box .lb{font-weight:800;margin-right:6px}
+  .info{background:#eef6ff;border-left:5px solid #3b82f6;color:#274768}
+  .info .lb{color:#1d4ed8}
+  .tip{background:#fff9ec;border-left:5px solid #f59e0b;color:#6b4e13}
+  .tip .lb{color:#b45309}
+  .remember{background:var(--primary-lighter);border-left:5px solid var(--primary);color:#3b2f6e}
+  .remember .lb{color:var(--primary-dark)}
+  .warn{background:#fef2f2;border-left:5px solid #ef4444;color:#7f2b2b}
+  .warn .lb{color:#b91c1c}
+  .code-card{margin:20px 0;border-radius:14px;overflow:hidden;box-shadow:0 10px 28px rgba(30,25,60,.20)}
+  .code-head{display:flex;align-items:center;gap:9px;background:#252340;padding:9px 14px}
+  .code-head .dot{width:10px;height:10px;border-radius:50%}
+  .code-head .d1{background:#ff5f57}.code-head .d2{background:#febc2e}.code-head .d3{background:#28c840}
+  .code-head .file{color:#9b94bd;font-size:11.5px;font-family:Consolas,monospace;margin-left:6px}
+  .code-head .lang{margin-left:auto;font-size:10.5px;font-weight:800;color:#17152a;background:#8b6cf0;padding:2px 9px;border-radius:6px;letter-spacing:.4px}
+  .code-card pre{background:var(--code-bg);padding:18px 20px;overflow-x:auto;margin:0;font-family:"SFMono-Regular",Consolas,"Courier New",monospace;font-size:13.5px;line-height:1.85}
+  .code-card pre::-webkit-scrollbar{height:8px}
+  .code-card pre::-webkit-scrollbar-thumb{background:#403c66;border-radius:4px}
+  .code-card code{color:var(--code-tx);white-space:pre}
+  .kw{color:var(--code-kw);font-weight:600}
+  .st{color:var(--code-st)}
+  .nu{color:var(--code-nu)}
+  .cm{color:var(--code-cm);font-style:italic}
+  .fn{color:var(--code-fn)}
+  .out{background:#151424;color:#8fd6a8;font-family:Consolas,monospace;font-size:13px;padding:12px 20px;border-top:1px solid #2c2a48}
+  .out b{color:#cdc8e0;font-weight:600;font-size:11.5px;letter-spacing:1px}
+  table.styled{width:100%;border-collapse:collapse;margin:20px 0;font-size:13.5px;border-radius:12px;overflow:hidden;box-shadow:0 4px 16px rgba(109,75,216,.08)}
+  table.styled thead{background:var(--brand)}
+  table.styled th{color:#fff;padding:11px 14px;text-align:left;font-weight:700;font-size:13px}
+  table.styled td{padding:10px 14px;border-bottom:1px solid var(--line);color:#4a4660;vertical-align:top}
+  table.styled tbody tr:nth-child(even){background:var(--bg-soft)}
+  table.styled tbody tr:last-child td{border-bottom:none}
+  .level-card{border:1px solid var(--line);border-radius:16px;overflow:hidden;margin:22px 0;box-shadow:0 6px 22px rgba(109,75,216,.08)}
+  .level-card .lc-head{background:linear-gradient(100deg,#1a1732,#8a3a16);color:#fff;padding:15px 22px;display:flex;align-items:center;gap:12px;flex-wrap:wrap}
+  .level-card .lc-head .n{font-size:12px;font-weight:800;background:rgba(255,255,255,.2);padding:3px 10px;border-radius:20px}
+  .level-card .lc-head h4{margin:0;color:#fff;font-size:16px}
+  .level-card .lc-head .go{margin-left:auto;font-size:11.5px;color:#ffd2b3}
+  .level-card .lc-body{padding:20px 24px;background:#fff}
+  .level-card .story{background:#fafafd;border-left:4px solid #a5b4fc;border-radius:0 10px 10px 0;padding:13px 18px;margin:0 0 16px;font-size:14px;line-height:1.95;color:#413f57}
+  .level-card .story b{color:#4338ca}
+  .btn-go{display:inline-flex;align-items:center;gap:8px;background:linear-gradient(135deg,var(--brand),var(--brand-dark));color:#fff;text-decoration:none;font-weight:800;font-size:13.5px;padding:10px 22px;border-radius:11px;box-shadow:0 8px 20px rgba(255,107,53,.32);transition:.2s}
+  .btn-go:hover{transform:translateY(-2px);box-shadow:0 12px 26px rgba(255,107,53,.42)}
+  .pit{border:1px solid #f6dede;border-radius:14px;overflow:hidden;margin:16px 0;background:#fff}
+  .pit .pt{display:flex;gap:12px;padding:14px 18px;background:#fffafa;align-items:flex-start}
+  .pit .x{width:26px;height:26px;border-radius:9px;background:#fee;color:#dc2626;display:flex;align-items:center;justify-content:center;font-weight:800;flex-shrink:0;font-size:13px}
+  .pit .t{font-size:13.5px;line-height:1.9;color:#5c4a4a;flex:1}
+  .pit .t b{color:#b91c1c}
+  .pit .duck{display:flex;gap:12px;padding:13px 18px;background:#fff5f5;border-top:1px dashed #f3d0d0;align-items:flex-start}
+  .pit .duck img{width:48px;height:48px;object-fit:contain;flex-shrink:0;margin-top:2px}
+  .pit .duck .dt{font-size:13.5px;line-height:1.9;color:#7a3b3b}
+  .pit .duck .dt b{color:#b91c1c}
+  .pit .fix{padding:12px 18px;background:#f7f5fe;border-top:1px dashed #ded6f8;font-size:13.5px;color:#3b2f6e}
+  .pit .fix b{color:var(--primary-dark)}
+  .exam{border:1px solid #e0dcf5;border-radius:15px;margin:16px 0;overflow:hidden;background:#fff;box-shadow:0 4px 16px rgba(60,50,120,.06)}
+  .exam .eh{display:flex;align-items:center;gap:10px;padding:11px 18px;background:linear-gradient(100deg,#f2f0ff,#faf9ff);border-bottom:1px solid #e6e2f8;flex-wrap:wrap}
+  .exam .eh .src{font-size:11px;font-weight:800;color:#fff;background:#6d4bd8;padding:2.5px 10px;border-radius:20px}
+  .exam .eh .src.ori{background:#0e9488}
+  .exam .eh .tp{font-size:11.5px;color:#6a5f9c;font-weight:700}
+  .exam .eb{padding:16px 20px}
+  .exam .q{font-weight:700;font-size:14px;color:#302c44;line-height:1.9;margin-bottom:10px}
+  .exam .opt{font-size:13.5px;color:#4d4a5c;line-height:2.05;padding-left:6px}
+  .exam .opt i{font-style:normal;font-weight:800;color:var(--primary-dark);margin-right:7px}
+  .exam pre{margin:12px 0;background:#1b1a2a;border-radius:10px;padding:14px 16px;overflow-x:auto;font-family:Consolas,monospace;font-size:13px;line-height:1.8;color:var(--code-tx)}
+  .exam details{margin-top:10px;border-top:1px dashed var(--line);padding-top:10px}
+  .exam summary{cursor:pointer;font-size:12.5px;font-weight:800;color:#6d4bd8;outline:none;user-select:none}
+  .exam details .ans{font-size:13.5px;color:#443c60;line-height:1.95;margin-top:9px;background:var(--bg-soft);padding:13px 16px;border-radius:10px}
+  .exam details .ans b{color:var(--primary-dark)}
+  .exam details .ans .tagline{display:inline-block;font-size:11px;background:#ede9fe;color:#5b21b6;padding:1.5px 8px;border-radius:6px;font-weight:700;margin-right:6px}
+  .summary{margin:40px 0 20px;border-radius:18px;padding:26px 30px;background:linear-gradient(130deg,#fff8f3,#ffffff);border:1px solid #ffe0cf}
+  .summary h3{margin-top:0}
+  .summary ul{list-style:none;margin-top:10px}
+  .summary li{font-size:14px;line-height:2;color:#443c60;padding-left:24px;position:relative}
+  .summary li::before{content:"◆";position:absolute;left:0;color:var(--brand);font-size:11px;top:6px}
+  .pager{display:flex;gap:14px;margin-top:30px;flex-wrap:wrap}
+  .pager a{flex:1;min-width:200px;text-decoration:none;border:1px solid var(--line);border-radius:14px;padding:16px 20px;background:#fff;transition:.2s;display:block}
+  .pager a:hover{border-color:var(--brand);box-shadow:0 10px 26px rgba(255,107,53,.14);transform:translateY(-2px)}
+  .pager a .k{font-size:11px;color:var(--dim2);font-weight:700;letter-spacing:1px}
+  .pager a .v{font-size:14px;font-weight:800;color:var(--night);margin-top:5px}
+  .pager a.back{background:var(--brand-soft);border-color:transparent;text-align:center}
+  .pager a.back .v{color:var(--brand-dark)}
+  .cta{margin-top:26px;border-radius:20px;padding:30px 34px;color:#fff;position:relative;overflow:hidden;background:linear-gradient(120deg,#171528,#2b2750 46%,#a8431c 132%)}
+  .cta::after{content:"";position:absolute;right:-70px;bottom:-90px;width:280px;height:280px;border-radius:50%;background:radial-gradient(circle,rgba(255,140,80,.45),transparent 68%)}
+  .cta h3{color:#fff;margin:0 0 10px;position:relative;z-index:2}
+  .cta h3::before{background:var(--brand)}
+  .cta p{color:#d6d2e8;font-size:13.5px;margin:0 0 18px;position:relative;z-index:2;max-width:640px}
+  .cta .btn-go{position:relative;z-index:2}
+  @media(max-width:900px){
+    .sidebar-nav{transform:translateX(-100%)}
+    .sidebar-nav.active{transform:translateX(0)}
+    .nav-toggle{display:block}
+    .page{margin-left:0}
+    .hero{padding:70px 22px 34px}
+    .hero-top{flex-direction:column-reverse;text-align:center}
+    .hero-card{width:auto}
+    .container{padding:26px 20px 60px}
+    .goal-grid{grid-template-columns:1fr}
+  }
+</style>
+</head>
+<body>
+
+<button class="nav-toggle" onclick="document.querySelector('.sidebar-nav').classList.toggle('active')">☰</button>
+
+<nav class="sidebar-nav">
+  <div class="sb-brand">
+    <a class="sb-logo" href="https://codecombat.cn/" target="_blank" rel="noopener" title="访问 CodeCombat 扣哒世界官网">
+      <img src="../assets/logo.png" alt="CodeCombat 扣哒世界">
+    </a>
+    <div><b>暗河下的符文</b><span>符文矿坑 · Python 三级 第 1 单元</span></div>
+  </div>
+  <div class="nav-title">本单元目录</div>
+
+  <a href="#s0" class="nav-section">0　单元导语与目标</a>
+  <a href="#s0-1" class="nav-sub">0.1 学习目标</a>
+  <a href="#s0-2" class="nav-sub">0.2 考纲对照</a>
+  <a href="#s1" class="nav-section">1　负数为什么难存</a>
+  <a href="#s1-1" class="nav-sub">1.1 先约定：八位二进制</a>
+  <a href="#s1-2" class="nav-sub">1.2 正数很好办</a>
+  <a href="#s1-3" class="nav-sub">1.3 负数的两个麻烦</a>
+  <a href="#s2" class="nav-section">2　原码：最直观的写法</a>
+  <a href="#s2-1" class="nav-sub">2.1 符号位</a>
+  <a href="#s2-2" class="nav-sub">2.2 原码的两个麻烦</a>
+  <a href="#s3" class="nav-section">3　反码：给负数翻个面</a>
+  <a href="#s3-1" class="nav-sub">3.1 反码的规则</a>
+  <a href="#s3-2" class="nav-sub">3.2 反码解决了什么</a>
+  <a href="#s4" class="nav-section">4　补码：计算机真正用的</a>
+  <a href="#s4-1" class="nav-sub">4.1 补码：反码再加 1</a>
+  <a href="#s4-2" class="nav-sub">4.2 为什么能变加法</a>
+  <a href="#s5" class="nav-section">5　三码速查与互换</a>
+  <a href="#s5-1" class="nav-sub">5.1 三码速查表</a>
+  <a href="#s5-2" class="nav-sub">5.2 从补码倒推原数</a>
+  <a href="#s6" class="nav-section">6　范围与溢出</a>
+  <a href="#s6-1" class="nav-sub">6.1 八位补码的范围</a>
+  <a href="#s6-2" class="nav-sub">6.2 溢出是怎么回事</a>
+  <a href="#s7" class="nav-section">7　代码实战</a>
+  <a href="#s8" class="nav-section">8　常见陷阱</a>
+  <a href="#s9" class="nav-section">9　题目练习</a>
+  <a href="#s10" class="nav-section">10　本单元小结</a>
+
+  <a href="../index.html" target="_top" class="sb-back">返回考纲之路</a>
+</nav>
+
+<div class="page">
+
+<div class="hero">
+  <div class="hero-top">
+    <div class="hero-txt">
+      <div class="crumb">扣哒考级 · GESP PYTHON 三级 · 第 1 单元　|　符文矿坑 RUNEMARK MINE</div>
+      <h1>暗河下的符文
+        <span class="sub">数据编码：原码、反码、补码</span>
+      </h1>
+      <div class="en">Original / One's / Two's Complement</div>
+      <div class="tags">
+        <span class="tag hot">考纲 · 数据编码</span>
+        <span class="tag">符号位</span>
+        <span class="tag">原码</span>
+        <span class="tag">反码</span>
+        <span class="tag">补码</span>
+      </div>
+    </div>
+    <div class="hero-card">
+      <img class="ava" src="../assets/avatars/hushbaum.webp" alt="贺舒曼" onerror="this.style.background='#24344a'">
+      <div class="nm">贺舒曼</div>
+      <div class="ti">镜中先知 · 你的向导</div>
+    </div>
+  </div>
+</div>
+
+<div class="container">
+
+<div class="lead">
+  矿坑越挖越深。走到第三层时，脚下的石壁忽然透出一片幽蓝——那是条<b>地下暗河</b>。<br>
+  河对岸的石壁上刻满了密密的符文，一跳一跳地发着光。你凑近看，发现每个符文不是
+  <b>0</b> 就是 <b>1</b>，排成整齐的八列。<br>
+  贺舒曼站在你旁边，镜子里映出同样的符文：这是矿工们记数用的。
+  <b>可它们现在遇到了一个麻烦——负数，该怎么刻呢？</b>
+</div>
+
+<div class="cast teacher">
+  <img class="ava" src="../assets/avatars/hushbaum.webp" alt="贺舒曼" onerror="this.style.display='none'">
+  <div class="bubble">
+    <div class="who">贺舒曼 · 镜中先知</div>
+    三级的第一课，我们从最底层说起。<br>
+    <strong>计算机里只有 0 和 1，那它怎么表示 -5 呢？</strong>总不能在符文前面画个减号吧。<br>
+    为了这件事，人们先后想出了三套方案：原码、反码、补码——最后赢的那个，就是今天所有计算机都在用的。
+  </div>
+</div>
+
+<!-- ============ 0 ============ -->
+<figure class="pic">
+  <img src="../assets/illustrations/py-L3-01-01_underground_river.webp" alt="暗河下的符文"
+       onerror="this.closest('.pic').classList.add('missing')">
+  <div class="ph">
+    <div class="fn">assets/illustrations/py-L3-01-01_underground_river.webp</div>
+    <div class="ds">【配图位】矿坑深处的暗河：幽蓝水面上倒映着石壁上成排的发光符文，每排八格，只亮或不亮；一名提灯的学徒站在岸边仰头细看，贺舒曼的镜面映出同样的光点。</div>
+  </div>
+  <figcaption>图 1：符文矿坑·暗河下的符文——今天要从这里开始</figcaption>
+</figure>
+
+<div class="section-header" id="s0">
+  <h2>0　单元导语与目标</h2>
+  <div class="en-title">Unit Overview</div>
+
+<h3 id="s0-1">0.1 学习目标</h3>
+</div>
+
+<div class="goal-grid">
+  <div class="goal">
+    <h4><span class="ic">1</span>学完这个单元，你将能……</h4>
+    <ul>
+      <li>说清"符号位"的作用，会用 8 位写出一个数的原码</li>
+      <li>由原码求反码，由反码求补码</li>
+      <li>由补码反推出原来的十进制数</li>
+      <li>说出补码的两个好处（0 唯一、减法变加法）</li>
+      <li>算出 8 位补码能表示的整数范围</li>
+      <li>判断一道题是不是发生了"溢出"</li>
+    </ul>
+  </div>
+  <div class="goal syllabus">
+    <h4><span class="ic">2</span>对标 GESP 考纲（Python 三级）</h4>
+    <ul>
+      <li>掌握数据编码：原码、反码、补码的基本概念与相互转换</li>
+      <li>理解机器数与真值的区别，掌握符号位的约定</li>
+      <li>掌握定点整数的表示范围与溢出的判断</li>
+      <li>考核目标：能熟练完成三码互化，并解释补码的意义</li>
+    </ul>
+  </div>
+</div>
+
+<h3 id="s0-2">0.2 考纲对照</h3>
+
+<table class="styled">
+  <thead><tr><th>本单元小节</th><th>对应考纲条目</th><th>真题常考形式</th></tr></thead>
+  <tbody>
+    <tr><td>1　负数为什么难存</td><td>数据的编码表示</td><td>八位二进制里为什么要有符号位</td></tr>
+    <tr><td>2　原码</td><td>原码的表示方法</td><td>写出某数的原码；说出原码的两个缺点</td></tr>
+    <tr><td>3　反码</td><td>反码的表示方法</td><td>原码与反码之间的互换</td></tr>
+    <tr><td>4　补码</td><td>补码的表示方法</td><td>求某负数的补码；说出补码的两个优点</td></tr>
+    <tr><td>5　三码互化</td><td>三种码的相互转换</td><td>给一串补码，倒推出它表示的十进制数</td></tr>
+    <tr><td>6　范围与溢出</td><td>定点数的表示范围</td><td>八位补码能表示的范围；判断是否溢出</td></tr>
+  </tbody>
+</table>
+
+<div class="box tip">
+  <span class="lb">先记住三个词：</span>
+  <b>机器数</b>——机器里真正存的那串 0/1；<b>真值</b>——它代表的人类数字。
+  例：机器数 <code class="inline">1000 0101</code>，真值 <code class="inline">-5</code>。<br>
+  这一单元所有的活，都是在这两个词之间来回翻译。
+</div>
+
+<!-- ============ 1 ============ -->
+<div class="section-header" id="s1">
+  <h2>1　负数为什么难存</h2>
+  <div class="en-title">Why Negatives Are Tricky</div>
+</div>
+
+<h3 id="s1-1">1.1 先约定：八位二进制</h3>
+
+<p>先把基础打牢。我们约定：<strong>下面所有例子都用 8 位二进制</strong>（正好一个字节）。</p>
+
+<h3 id="s1-2">1.2 正数很好办</h3>
+
+<p>正数很好办。<code class="inline">5</code> 写成八位二进制就是
+<code class="inline">0000 0101</code>——从右往左，每一位代表 1、2、4、8、16……</p>
+
+<figure class="figure">
+  <svg class="diagram" viewBox="0 0 860 250" role="img" aria-label="八位二进制的位权">
+    <text x="24" y="34" font-size="14" font-weight="bold" fill="#1f2937">八个格子，每个格子有自己的"分量"</text>
+
+    <g font-size="13">
+      <rect x="80" y="70" width="76" height="52" rx="9" fill="#f1ecfd" stroke="#8b6cf0" stroke-width="2"/>
+      <text x="118" y="103" text-anchor="middle" font-family="Consolas,monospace" font-size="20" fill="#6d4bd8">0</text>
+      <rect x="166" y="70" width="76" height="52" rx="9" fill="#f1ecfd" stroke="#8b6cf0" stroke-width="2"/>
+      <text x="204" y="103" text-anchor="middle" font-family="Consolas,monospace" font-size="20" fill="#6d4bd8">0</text>
+      <rect x="252" y="70" width="76" height="52" rx="9" fill="#f1ecfd" stroke="#8b6cf0" stroke-width="2"/>
+      <text x="290" y="103" text-anchor="middle" font-family="Consolas,monospace" font-size="20" fill="#6d4bd8">0</text>
+      <rect x="338" y="70" width="76" height="52" rx="9" fill="#f1ecfd" stroke="#8b6cf0" stroke-width="2"/>
+      <text x="376" y="103" text-anchor="middle" font-family="Consolas,monospace" font-size="20" fill="#6d4bd8">0</text>
+      <rect x="424" y="70" width="76" height="52" rx="9" fill="#e9f8ef" stroke="#2e9e5b" stroke-width="2"/>
+      <text x="462" y="103" text-anchor="middle" font-family="Consolas,monospace" font-size="20" fill="#1f7a44">0</text>
+      <rect x="510" y="70" width="76" height="52" rx="9" fill="#e9f8ef" stroke="#2e9e5b" stroke-width="2"/>
+      <text x="548" y="103" text-anchor="middle" font-family="Consolas,monospace" font-size="20" fill="#1f7a44">1</text>
+      <rect x="596" y="70" width="76" height="52" rx="9" fill="#e9f8ef" stroke="#2e9e5b" stroke-width="2"/>
+      <text x="634" y="103" text-anchor="middle" font-family="Consolas,monospace" font-size="20" fill="#1f7a44">0</text>
+      <rect x="682" y="70" width="76" height="52" rx="9" fill="#e9f8ef" stroke="#2e9e5b" stroke-width="2"/>
+      <text x="720" y="103" text-anchor="middle" font-family="Consolas,monospace" font-size="20" fill="#1f7a44">1</text>
+    </g>
+
+    <text x="118" y="152" text-anchor="middle" font-size="12" fill="#8d9d94">128</text>
+    <text x="204" y="152" text-anchor="middle" font-size="12" fill="#8d9d94">64</text>
+    <text x="290" y="152" text-anchor="middle" font-size="12" fill="#8d9d94">32</text>
+    <text x="376" y="152" text-anchor="middle" font-size="12" fill="#8d9d94">16</text>
+    <text x="462" y="152" text-anchor="middle" font-size="12" fill="#8d9d94">8</text>
+    <text x="548" y="152" text-anchor="middle" font-size="12" fill="#8d9d94">4</text>
+    <text x="634" y="152" text-anchor="middle" font-size="12" fill="#8d9d94">2</text>
+    <text x="720" y="152" text-anchor="middle" font-size="12" fill="#8d9d94">1</text>
+
+    <rect x="80" y="176" width="678" height="52" rx="12" fill="#1b1a2a"/>
+    <text x="106" y="207" font-family="Consolas,monospace" font-size="13.5" fill="#cdc8e0">4 + 1 = 5　→　0000 0101 就是 5</text>
+
+    <text x="430" y="246" text-anchor="middle" font-size="12" fill="#8d9d94">哪一位是 1，就把它的"分量"加起来</text>
+  </svg>
+  <div class="caption">图 2（SVG）：八位二进制里，每个位置的分量分别是 128、64、32、16、8、4、2、1</div>
+</figure>
+
+<h3 id="s1-3">1.3 负数的两个麻烦</h3>
+
+<div class="box tip">
+  <span class="lb">打个比方：</span>
+  八位二进制就像<b>一排八个只有"开"和"关"两种状态的灯</b>——没有"半开"，也没有"红色"。<br>
+  既然灯只能表示 0 和 1，那<strong>"负号"这个东西就根本没地方放</strong>。<br>
+  <b>所以人们只能"挪用"一个灯位，专门拿来当正负号的标记——这就是符号位的由来。</b>
+</div>
+
+<p>可负数怎么办？<b>八个格子里只有 0 和 1，没有"-"这个符号。</b></p>
+
+<div class="box remember">
+  <span class="lb">全世界的解决办法：</span>
+  拿出<b>最左边那一位</b>当"符号位"——<br>
+  <code class="inline">0</code> 表示正数，<code class="inline">1</code> 表示负数。<br>
+  <strong>剩下七位才是真正的数值。</strong>
+</div>
+
+<p>所以八位二进制被分成了两半：</p>
+
+<table class="styled">
+  <thead><tr><th>区段</th><th>位权</th><th>作用</th></tr></thead>
+  <tbody>
+    <tr><td>第 8 位（最左边）</td><td><strong>符号位</strong></td><td>0 = 正，1 = 负</td></tr>
+    <tr><td>第 1~7 位</td><td><strong>数值位</strong></td><td>真正的数字大小</td></tr>
+  </tbody>
+</table>
+
+<div class="cast hero">
+  <img class="ava" src="../assets/avatars/ridic.png" alt="凌克" onerror="this.style.display='none'">
+  <div class="bubble">
+    <div class="who">凌克 · 影瞳刺客</div>
+    我们刺客的暗号也有个规矩：<strong>最前面那一声轻敲，不代表数量，只代表"是好消息还是坏消息"。</strong><br>
+    后面敲几下才是在报数。<br>
+    八个格子里，最左边那位干的就是这件事——<b>它不参与计数，只管表态。</b>
+  </div>
+</div>
+
+<!-- ============ 2 ============ -->
+<div class="section-header" id="s2">
+  <h2>2　原码：最直观的写法</h2>
+  <div class="en-title">Original Code</div>
+</div>
+
+<h3 id="s2-1">2.1 符号位：借一格当正负号</h3>
+
+<p>有了符号位，第一套方案立刻就能想出来：<b>正数照写，负数就把符号位改成 1，数值位原样不动。</b>
+这就是<strong>原码</strong>。</p>
+
+<figure class="figure">
+  <svg class="diagram" viewBox="0 0 860 260" role="img" aria-label="原码的写法">
+    <text x="24" y="34" font-size="14" font-weight="bold" fill="#1f2937">原码：符号位 + 数值位，一目了然</text>
+
+    <rect x="60" y="62" width="340" height="72" rx="12" fill="#e9f8ef" stroke="#2e9e5b" stroke-width="2"/>
+    <text x="230" y="88" text-anchor="middle" font-size="12.5" fill="#1f7a44" font-weight="bold">+5 的原码</text>
+    <text x="230" y="118" text-anchor="middle" font-family="Consolas,monospace" font-size="19" fill="#166534">0 000 0101</text>
+    <text x="80" y="164" font-size="12" fill="#3b7c5b">符号位 0 → 正数；数值位 000 0101 = 5</text>
+
+    <rect x="440" y="62" width="350" height="72" rx="12" fill="#fef2f2" stroke="#ef4444" stroke-width="2"/>
+    <text x="615" y="88" text-anchor="middle" font-size="12.5" fill="#b91c1c" font-weight="bold">-5 的原码</text>
+    <text x="615" y="118" text-anchor="middle" font-family="Consolas,monospace" font-size="19" fill="#991b1b">1 000 0101</text>
+    <text x="462" y="164" font-size="12" fill="#7f2b2b">符号位 1 → 负数；数值位 000 0101 仍是 5</text>
+
+    <rect x="60" y="188" width="730" height="52" rx="12" fill="#fff9ec" stroke="#f59e0b" stroke-width="1.8"/>
+    <text x="425" y="220" text-anchor="middle" font-size="13" fill="#b45309">原码的毛病：0 有两个身份 —— +0 = 0 000 0000，-0 = 1 000 0000</text>
+  </svg>
+  <div class="caption">图 3（SVG）：原码的写法与它的第一个毛病</div>
+</figure>
+
+<div class="code-card">
+  <div class="code-head">
+    <span class="dot d1"></span><span class="dot d2"></span><span class="dot d3"></span>
+    <span class="file">原码举例（8 位）</span>
+    <span class="lang">定点数</span>
+  </div>
+  <pre><code>+5  →  0 000 0101        +12  →  0 000 1100
+-5  →  1 000 0101        -12  →  1 000 1100
+
++0  →  0 000 0000        -0   →  1 000 0000   ← 两个零！</code></pre>
+  <div class="out"><b>读法</b>　第一位看正负，后七位看大小</div>
+</div>
+
+<h3 id="s2-2">2.2 原码的两个麻烦</h3>
+
+<div class="box tip">
+  <span class="lb">打个比方：</span>
+  用原码做加减法，就像家门口挂着<b>四把不同的钥匙</b>——正加正、正加负、负加正、负加负，<br>
+  <strong>每种情况都得先认出"我是哪一类"，再去掏对应的那把钥匙。</strong><br>
+  <b>机器做起来又慢又容易出错。人们希望的是：不管正负，都用同一套动作就能算出来。</b>
+</div>
+
+<p>原码很好懂，可它有两个大麻烦：</p>
+
+<div class="box warn">
+  <span class="lb">麻烦一：0 有两种写法。</span>
+  <code class="inline">+0</code> 和 <code class="inline">-0</code> 明明是同一个数，机器里却存成两种样子。
+  判断"这个数是不是 0"要检查两遍，白白浪费了一个编码。
+</div>
+
+<div class="box warn">
+  <span class="lb">麻烦二：加减法要分四种情况。</span>
+  同号相加、异号相减、还要比较谁大谁小……
+  硬件电路得做得特别复杂。<strong>越复杂，越慢、越容易出错。</strong>
+</div>
+
+<!-- ============ 3 ============ -->
+<div class="section-header" id="s3">
+  <h2>3　反码：给负数翻个面</h2>
+  <div class="en-title">One's Complement</div>
+</div>
+
+<h3 id="s3-1">3.1 反码的规则</h3>
+
+<p>人们想：既然负数不好算，那能不能让负数"长得"'更像'正数一点？
+于是<strong>反码</strong>来了。规则简单到一句话：</p>
+
+<div class="box remember">
+  <span class="lb">反码规则：</span>
+  <strong>正数的反码 = 它的原码（不用改）。</strong><br>
+  <strong>负数的反码 = 符号位不变，其余各位全部取反</strong>（0 变 1，1 变 0）。
+</div>
+
+<figure class="figure">
+  <svg class="diagram" viewBox="0 0 860 240" role="img" aria-label="反码的求法">
+    <text x="24" y="34" font-size="14" font-weight="bold" fill="#1f2937">求 -5 的反码：符号位保留，其余七位全体翻转</text>
+
+    <text x="80" y="86" font-size="13" fill="#6b6580">-5 的原码</text>
+    <text x="290" y="86" font-family="Consolas,monospace" font-size="19" fill="#991b1b">1 000 0101</text>
+
+    <text x="80" y="134" font-size="13" fill="#6d4bd8" font-weight="bold">↓ 后七位取反</text>
+
+    <text x="290" y="134" font-family="Consolas,monospace" font-size="19" fill="#6d4bd8">1 111 1010</text>
+    <text x="600" y="134" font-size="13" fill="#6d4bd8" font-weight="bold">← 这就是 -5 的反码</text>
+
+    <rect x="80" y="162" width="700" height="56" rx="12" fill="#fef2f2" stroke="#ef4444" stroke-width="1.8"/>
+    <text x="430" y="186" text-anchor="middle" font-size="13" fill="#b91c1c" font-weight="bold">但 0 还是有两个：+0 = 0 000 0000，-0 = 1 111 1111</text>
+    <text x="430" y="208" text-anchor="middle" font-size="12" fill="#7f2b2b">麻烦一点都没少，还得再想办法</text>
+  </svg>
+  <div class="caption">图 4（SVG）：反码的求法与它没能解决的问题</div>
+</figure>
+
+<div class="code-card">
+  <div class="code-head">
+    <span class="dot d1"></span><span class="dot d2"></span><span class="dot d3"></span>
+    <span class="file">反码举例（8 位）</span>
+    <span class="lang">定点数</span>
+  </div>
+  <pre><code>+5  →  0 000 0101        正数：反码 = 原码，原样照抄
+
+-5  →  1 000 0101        先写出原码
+    →  1 111 1010        符号位不动，后七位全部取反
+
+0   →  0 000 0000（+0） / 1 111 1111（-0）   ← 还是两个零</code></pre>
+  <div class="out"><b>口诀</b>　正数照抄，负数"符号不动，其余全翻"</div>
+</div>
+
+<div class="cast hero">
+  <img class="ava" src="../assets/avatars/hushbaum.webp" alt="贺舒曼" onerror="this.style.display='none'">
+  <div class="bubble">
+    <div class="who">贺舒曼 · 镜中先知</div>
+    照镜子的时候，镜子里的你左右是反的，但<strong>站位没变</strong>。<br>
+    反码就是这个思路：<b>符号位站着不动，后面七位进镜子翻个面。</b><br>
+    可惜光翻面还不够——镜子里的"零"，和外面的"零"，毕竟是两个影子。
+  </div>
+</div>
+
+<!-- ============ 4 ============ -->
+<h3 id="s3-2">3.2 反码解决了什么，又留下了什么</h3>
+
+<div class="section-header" id="s4">
+  <h2>4　补码：计算机真正用的</h2>
+  <div class="en-title">Two's Complement</div>
+</div>
+
+<h3 id="s4-1">4.1 补码：反码再加 1</h3>
+
+<div class="box tip">
+  <span class="lb">打个比方：</span>
+  补码很像<b>钟表上的指针</b>——表盘只有十二个刻度，<br>
+  <strong>往前拨 3 格和往后拨 9 格，最后停在同一个位置。</strong><br>
+  <b>既然表盘是"转圈"的，那"减去一个数"就可以改写成"加上另一个数"，而且结果一模一样。</b><br>
+  <b>这正是补码能把减法变成加法的原因。</b>
+</div>
+
+<p>最后一招来了，而且赢得干净利落：<strong>在反码的基础上再加 1</strong>。</p>
+
+<div class="box remember">
+  <span class="lb">补码规则（重中之重）：</span>
+  <strong>正数的补码 = 它的原码（不变）。</strong><br>
+  <strong>负数的补码 = 反码 + 1</strong>（也就是：原码 → 符号位不动、其余取反 → 再加 1）。
+</div>
+
+<figure class="figure">
+  <svg class="diagram" viewBox="0 0 860 300" role="img" aria-label="补码的求法">
+    <text x="24" y="34" font-size="14" font-weight="bold" fill="#1f2937">求 -5 的补码：原码 → 取反 → 加 1</text>
+
+    <rect x="60" y="60" width="230" height="64" rx="12" fill="#fef2f2" stroke="#ef4444" stroke-width="2"/>
+    <text x="175" y="84" text-anchor="middle" font-size="12" fill="#b91c1c">① 原码</text>
+    <text x="175" y="110" text-anchor="middle" font-family="Consolas,monospace" font-size="17" fill="#991b1b">1 000 0101</text>
+
+    <text x="306" y="100" font-size="18" fill="#cbd5e1" font-weight="bold">→</text>
+
+    <rect x="336" y="60" width="230" height="64" rx="12" fill="#f1ecfd" stroke="#8b6cf0" stroke-width="2"/>
+    <text x="451" y="84" text-anchor="middle" font-size="12" fill="#6d4bd8">② 反码（后七位取反）</text>
+    <text x="451" y="110" text-anchor="middle" font-family="Consolas,monospace" font-size="17" fill="#5233b8">1 111 1010</text>
+
+    <text x="582" y="100" font-size="18" fill="#cbd5e1" font-weight="bold">→</text>
+
+    <rect x="612" y="60" width="196" height="64" rx="12" fill="#e9f8ef" stroke="#2e9e5b" stroke-width="2"/>
+    <text x="710" y="84" text-anchor="middle" font-size="12" fill="#1f7a44">③ 加 1 得补码</text>
+    <text x="710" y="110" text-anchor="middle" font-family="Consolas,monospace" font-size="17" fill="#166534">1 111 1011</text>
+
+    <rect x="60" y="146" width="748" height="56" rx="12" fill="#1b1a2a"/>
+    <text x="86" y="172" font-family="Consolas,monospace" font-size="13" fill="#cdc8e0">1 111 1010</text>
+    <text x="230" y="172" font-family="Consolas,monospace" font-size="13" fill="#8fd6a8">+ 0000 0001</text>
+    <text x="386" y="172" font-family="Consolas,monospace" font-size="13" fill="#cdc8e0">= 1 111 1011　（低位 0+1=1，其余照抄）</text>
+    <text x="86" y="192" font-family="Consolas,monospace" font-size="12" fill="#6f6a8a">注意：加 1 只加在最低位，不要动符号位</text>
+
+    <rect x="60" y="218" width="748" height="64" rx="12" fill="#f7f5fe" stroke="#ded6f8" stroke-width="1.8"/>
+    <text x="434" y="244" text-anchor="middle" font-size="13" fill="#3b2f6e" font-weight="bold">补码带来的两个大好处</text>
+    <text x="434" y="268" text-anchor="middle" font-size="12.5" fill="#5233b8">① 0 只有一种写法：0000 0000　② 减法可以直接当加法算，电路一下子简单了</text>
+  </svg>
+  <div class="caption">图 5（SVG）：补码的三步走，以及它的两个好处</div>
+</figure>
+
+<div class="code-card">
+  <div class="code-head">
+    <span class="dot d1"></span><span class="dot d2"></span><span class="dot d3"></span>
+    <span class="file">补码举例（8 位）</span>
+    <span class="lang">定点数</span>
+  </div>
+  <pre><code>+5  →  0 000 0101        正数：补码 = 原码
+
+-5  原码 1 000 0101
+    反码 1 111 1010
+    补码 1 111 1011      ← 反码加 1
+
+0   →  0 000 0000        只有这一种写法，干净利落</code></pre>
+  <div class="out"><b>口诀</b>　正数照抄；负数"取反加一"</div>
+</div>
+
+<h3 id="s4-2">4.2 为什么说"减法变加法"</h3>
+
+<p>算 <code class="inline">5 - 3</code>。用补码，我们可以把它当成 <code class="inline">5 + (-3)</code> 来做：</p>
+
+<div class="code-card">
+  <div class="code-head">
+    <span class="dot d1"></span><span class="dot d2"></span><span class="dot d3"></span>
+    <span class="file">5 + (-3) 的补码运算</span>
+    <span class="lang">定点数</span>
+  </div>
+  <pre><code>  5 的补码    0000 0101
++-3 的补码    1111 1101        (-3 的补码：取反加一)
+─────────────
+  相加得      1 0000 0010
+  丢掉最高位  0000 0010   →  2   ✔ 正确！</code></pre>
+  <div class="out"><b>要点</b>　最左边多出来的那一位，硬件自动丢掉——这叫"按位截断"</div>
+</div>
+
+<div class="cast duck">
+  <img class="ava" src="../assets/ducks/duck_nalfar.webp" alt="扣哒鸭" onerror="this.style.display='none'">
+  <div class="bubble">
+    <div class="who">扣哒鸭 · 调试官</div>
+    这一步最容易看傻眼：<strong>加起来怎么多出一位？</strong><br>
+    别慌。八位机器只认八位，第九位<strong>自动溢出丢弃</strong>，就像算盘上珠子里多出来的那一颗，
+    根本不在格子里。<br>
+    结果是 <code>0000 0010</code>，也就是 <b>2</b>——5 减 3 确实是 2。完美。
+  </div>
+</div>
+
+<!-- ============ 5 ============ -->
+<div class="section-header" id="s5">
+  <h2>5　三码速查与互换</h2>
+  <div class="en-title">Quick Reference</div>
+
+<h3 id="s5-1">5.1 三码速查表</h3>
+</div>
+
+<table class="styled">
+  <thead><tr><th>真值</th><th>原码</th><th>反码</th><th>补码</th></tr></thead>
+  <tbody>
+    <tr><td>+5</td><td>0 000 0101</td><td>0 000 0101</td><td>0 000 0101</td></tr>
+    <tr><td>+1</td><td>0 000 0001</td><td>0 000 0001</td><td>0 000 0001</td></tr>
+    <tr><td><strong>-1</strong></td><td>1 000 0001</td><td>1 111 1110</td><td><strong>1 111 1111</strong></td></tr>
+    <tr><td>-5</td><td>1 000 0101</td><td>1 111 1010</td><td>1 111 1011</td></tr>
+    <tr><td>-12</td><td>1 000 1100</td><td>1 111 0011</td><td>1 111 0100</td></tr>
+    <tr><td>0</td><td>0 000 0000 / 1 000 0000</td><td>0 000 0000 / 1 111 1111</td><td><strong>0 000 0000</strong></td></tr>
+  </tbody>
+</table>
+
+<figure class="pic">
+  <img src="../assets/illustrations/py-L3-01-02_three_encodings.webp" alt="三种编码并排对照"
+       onerror="this.closest('.pic').classList.add('missing')">
+  <div class="ph">
+    <div class="fn">assets/illustrations/py-L3-01-02_three_encodings.webp</div>
+    <div class="ds">【配图位】矿坑石壁上并排嵌着三块一模一样的石板，每块石板上都刻着同一串由发光格组成的位模式，但三块的"翻转格"位置各不相同：左边一块只有符号格发红光（原码），中间一块除符号格外还有好几格发蓝光（反码），右边一块同样多格发光但最右一格额外亮起（补码）；每块石板下方刻着它的名称，一名矿工举灯从左往右依次对照。</div>
+  </div>
+  <figcaption>图 6：同一串位模式，三种编码三副样子</figcaption>
+</figure>
+
+<div class="box remember">
+  <span class="lb">规律发现：</span>
+  正数的原码 = 反码 = 补码，<strong>永远一模一样</strong>。<br>
+  只有负数才需要"取反""加一"。<br>
+  <b>小技巧：</b><code class="inline">-1</code> 的补码是 <code class="inline">1111 1111</code>（八个 1 全亮），
+  这是个特别好记的特殊值。
+</div>
+
+<h4>反过来：给补码，怎么求真值？</h4>
+
+<h3 id="s5-2">5.2 从补码倒推原数</h3>
+
+<p>考试也常倒着考：给你 <code class="inline">1111 0110</code>，问它是多少。方法有两条——</p>
+
+<div class="code-card">
+  <div class="code-head">
+    <span class="dot d1"></span><span class="dot d2"></span><span class="dot d3"></span>
+    <span class="file">由补码求真值（以 1111 0110 为例）</span>
+    <span class="lang">两种思路</span>
+  </div>
+  <pre><code>方法一：还原回去算
+  1111 0110            最高位是 1 → 一定是负数
+  取反 → 1000 1001
+  加一 → 1000 1010     得到原码，数值位 000 1010 = 10
+  所以真值是 -10
+
+方法二：按"位权"直接算
+  最高位权  -128
+  1×(-128) + 1×64 + 1×32 + 1×16 + 0×8 + 1×4 + 1×2 + 0×1
+  = -128 + 64 + 32 + 16 + 4 + 2 = -10   ✔ 两种方法结果一致</code></pre>
+  <div class="out"><b>要点</b>　方法一适合手算，方法二能帮你校验</div>
+</div>
+
+<div class="box tip">
+  <span class="lb">方法二为什么用 -128？</span>
+  因为在补码里，最高位的权值从 <code class="inline">+128</code> 变成了
+  <code class="inline">-128</code>——这正是补码最巧妙的地方：
+  <strong>它把"符号位"和"数值位"统一到一套加法规则里去了。</strong>
+</div>
+
+<!-- ============ 6 ============ -->
+<div class="section-header" id="s6">
+  <h2>6　范围与溢出</h2>
+  <div class="en-title">Range &amp; Overflow</div>
+</div>
+
+<h3 id="s6-1">6.1 八位补码的范围</h3>
+
+<div class="box tip">
+  <span class="lb">打个比方：</span>
+  八位二进制一共能排出 <b>2 的 8 次方 = 256 种</b>不同的组合。<br>
+  补码把这 256 种组合<b>平均分成两半</b>：<strong>一半表示 0 和正数，一半表示负数。</strong><br>
+  可"零"只有一个，却占掉了正数那边的第一格，<strong>于是多出来的那一格就分给了负数——
+  所以范围是 −128 ~ 127，负数比正数多一个。</strong>
+</div>
+
+<h3 id="s6-2">6.2 溢出是怎么回事</h3>
+
+<p>八位补码能表示多少个数？算一算：一共 <code class="inline">2^8 = 256</code> 种组合，
+其中一半是负数、一半是非负数。</p>
+
+<figure class="figure">
+  <svg class="diagram" viewBox="0 0 860 250" role="img" aria-label="八位补码的表示范围">
+    <text x="24" y="34" font-size="14" font-weight="bold" fill="#1f2937">八位补码能表示的范围</text>
+
+    <rect x="70" y="70" width="330" height="70" rx="12" fill="#f1ecfd" stroke="#8b6cf0" stroke-width="2"/>
+    <text x="235" y="98" text-anchor="middle" font-size="13" fill="#6d4bd8" font-weight="bold">负数区：128 种</text>
+    <text x="235" y="124" text-anchor="middle" font-family="Consolas,monospace" font-size="16" fill="#5233b8">-128 ～ -1</text>
+
+    <rect x="460" y="70" width="330" height="70" rx="12" fill="#e9f8ef" stroke="#2e9e5b" stroke-width="2"/>
+    <text x="625" y="98" text-anchor="middle" font-size="13" fill="#1f7a44" font-weight="bold">非负数区：128 种</text>
+    <text x="625" y="124" text-anchor="middle" font-family="Consolas,monospace" font-size="16" fill="#166534">0 ～ 127</text>
+
+    <rect x="70" y="160" width="720" height="70" rx="12" fill="#fff9ec" stroke="#f59e0b" stroke-width="1.8"/>
+    <text x="430" y="186" text-anchor="middle" font-size="13" fill="#b45309" font-weight="bold">为什么是 -128 而不是 -127？</text>
+    <text x="430" y="212" text-anchor="middle" font-size="12.5" fill="#6b4e13">因为 0 只占了一个编码（0000 0000），省下来的那个 1000 0000 分给了 -128</text>
+  </svg>
+  <div class="caption">图 7（SVG）：八位补码的范围是 -128 ~ 127，不是对称的</div>
+</figure>
+
+<figure class="pic">
+  <img src="../assets/illustrations/py-L3-01-03_range_numberline.webp" alt="补码的数轴"
+       onerror="this.closest('.pic').classList.add('missing')">
+  <div class="ph">
+    <div class="fn">assets/illustrations/py-L3-01-03_range_numberline.webp</div>
+    <div class="ds">【配图位】矿壁上画着一条由石砖拼成的数轴，从 −128 一直排到 127；数轴正中立着一个标着 0 的石碑，零左边有 128 块砖、右边有 127 块砖，因此最左端那块砖（−128）被特别画上了金色边；数轴两端各画着一道断崖，崖边堆着滚出去的石砖（表示溢出）；一名矿工站在数轴前数砖。</div>
+  </div>
+  <figcaption>图 8：八位补码的范围，一头比另一头多一格</figcaption>
+</figure>
+
+<div class="box remember">
+  <span class="lb">必记结论：</span>
+  n 位补码能表示的整数范围是 <strong>-2<sup>n-1</sup> ～ 2<sup>n-1</sup> - 1</strong>。<br>
+  8 位：<code class="inline">-128 ~ 127</code>；16 位：<code class="inline">-32768 ~ 32767</code>。<br>
+  <strong>负数比正数多一个</strong>，这是补码的特点（因为 0 算在正数那边）。
+</div>
+
+<p>那什么叫<strong>溢出</strong>？很简单：<b>算出来的结果超出了能表示的范围。</b></p>
+
+<div class="code-card">
+  <div class="code-head">
+    <span class="dot d1"></span><span class="dot d2"></span><span class="dot d3"></span>
+    <span class="file">溢出的例子</span>
+    <span class="lang">定点数</span>
+  </div>
+  <pre><code>127 + 1 = ?
+  127 的补码   0111 1111
++ 1           0000 0001
+──────────────
+              1000 0000   →  按补码解释是 -128   ✘ 明显错了
+
+-128 - 1 = ?
+  -128         1000 0000
++ -1           1111 1111
+──────────────
+              0111 1111   →  变成了 +127        ✘ 也错了</code></pre>
+  <div class="out"><b>要点</b>　两个正数相加却得到负数，或两个负数相加却得到正数——这就是溢出的信号</div>
+</div>
+
+<div class="box warn">
+  <span class="lb">做题小窍门：</span>
+  先按正常数学把结果算出来，再看看它是不是落在
+  <code class="inline">-128 ~ 127</code> 里。落在外面，就是溢出。
+  <strong>考试里这种题基本上都是送分题，别被那一长串二进制吓到。</strong>
+</div>
+
+<!-- ============ 7 ============ -->
+<div class="section-header" id="s7">
+  <h2>7　代码实战</h2>
+  <div class="en-title">Level Practice</div>
+</div>
+
+<div class="cast teacher">
+  <img class="ava" src="../assets/avatars/hushbaum.webp" alt="贺舒曼" onerror="this.style.display='none'">
+  <div class="bubble">
+    <div class="who">贺舒曼 · 镜中先知</div>
+    我知道你在想什么：<strong>原码补码这么绕，跟写代码有什么关系？</strong><br>
+    关系可大了。补码解决的核心问题是"<b>怎么用简单的规则处理复杂的情况</b>"，
+    而这个思路，在写程序时天天都用得上。<br>
+    下面这一关，就是同一个思路的另一种模样。
+  </div>
+</div>
+
+<div class="level-card">
+  <div class="lc-head"><span class="n">关卡</span><h4>非与或</h4><span class="go">进入关卡 →</span></div>
+  <div class="lc-body">
+    <div class="story">
+      <b>故事：</b>矿坑的岔路口堆着杂七杂八的东西——有的能捡，有的碰不得；
+      远处的食人魔也不全该打，有个叫 burl 的家伙其实是友军。<br>
+      <b>你得给程序定一套规矩：什么样的东西该收，什么样的敌人该打。</b>
+      规矩定得越准，动作就越省。
+    </div>
+    <p><strong>思路：</strong>用 <code class="inline">or</code> 表示"满足其中之一就行"，
+    用 <code class="inline">and</code> 表示"两个条件都要成立"，
+    用 <code class="inline">!=</code> 表示"不是这个"。
+  <figure class="pic ai-added"><img src="../assets/illustrations/py-L3-01-01_underground_runes.webp" alt="AI配图：py-L3-01-01_underground_runes.webp"></figure>
+    <b>它们和位运算里的"或、与、非"是同一family——只不过一个作用于真假，一个作用于每一位。</b></p><figure class="pic">
+      <img src="../assets/stages/py-L3-01-stage1_not_and_or.webp" alt="非与或 关卡截图"
+           onerror="this.closest('.pic').classList.add('missing')">
+      <div class="ph">
+        <div class="fn">assets/stages/py-L3-01-stage1_not_and_or.webp</div>
+        <div class="ds">【关卡截图位】请把《非与或》的游戏画面截图放到此处（放入 assets/stages/ 目录，文件名为 py-L3-01-stage1_not_and_or.webp）。</div>
+      </div>
+      <figcaption>关卡实况：非与或</figcaption>
+    </figure>
+    <div class="code-card">
+      <div class="code-head">
+        <span class="dot d1"></span><span class="dot d2"></span><span class="dot d3"></span>
+        <span class="file">重点示例：把"规矩"写成条件</span>
+        <span class="lang">Python</span>
+      </div>
+      <pre><code># 只捡 potion 或 lightstone 这两种东西
+if item.type == "potion" or item.type == "lightstone":
+    hero.moveXY(item.pos.x, item.pos.y)
+
+# 攻击条件：不是 burl，并且距离小于 15
+if enemy.type != "burl" and distance &lt; 15:
+    hero.attack(enemy)</code></pre>
+      <div class="out"><b>要点</b>　<code>or</code> 松、<code>and</code> 严、<code>!=</code> 排除；剩下的框架留给你自己搭</div>
+    </div>
+    <div class="box info">
+      <span class="lb">和本单元的关系：</span>
+      位运算里的"与、或、异或、取反"，处理的是<b>每一位</b>的 0/1；
+      而这里的 <code class="inline">and / or / not</code>，处理的是<b>整个条件</b>的真假。<br>
+      <strong>内核是同一个：把复杂判断拆成几条简单规则，再组合起来。</strong>
+    </div>
+    
+    <a class="btn-go" href="https://codecombat.cn/" target="_blank" rel="noopener">去扣哒世界闯这一关 →</a>
+  </div>
+</div>
+
+
+
+<!-- ============ 8 ============ -->
+<div class="section-header" id="s8">
+  <h2>8　常见陷阱</h2>
+  <div class="en-title">Common Pitfalls</div>
+</div>
+
+<div class="cast duck">
+  <img class="ava" src="../assets/ducks/duck_hattori.webp" alt="扣哒鸭" onerror="this.style.display='none'">
+  <div class="bubble">
+    <div class="who">扣哒鸭 · 调试官</div>
+    三码互化这章，错法高度集中。下面四条，我给学生讲过不下几百遍。
+  </div>
+</div>
+
+<div class="pit">
+  <div class="pt">
+    <div class="x">1</div>
+    <div class="t"><b>给负数取反时，把符号位也翻了。</b>结果正负号都变了。</div>
+  </div>
+  <div class="duck">
+    <img src="../assets/ducks/duck_zana.webp" alt="扣哒鸭" onerror="this.style.display='none'">
+    <div class="dt"><b>扣哒鸭：</b><strong>符号位是"身份牌"，不能动。</strong>
+    取反只对后面七位动手——记住这句：<em>翻身子，不翻脸。</em></div>
+  </div>
+  <div class="fix"><b>正确做法：</b>符号位保持 1，只把数值位取反</div>
+</div>
+
+<div class="pit">
+  <div class="pt">
+    <div class="x">2</div>
+    <div class="t"><b>把"反码加一"加到了符号位上。</b>八个位一起加，越加越乱。</div>
+  </div>
+  <div class="duck">
+    <img src="../assets/ducks/duck_naria.webp" alt="扣哒鸭" onerror="this.style.display='none'">
+    <div class="dt"><b>扣哒鸭：</b>加一加在<b>最低位</b>上，一位一位往前进位。
+    正常情况它根本进不到最左边那个符号位——<strong>除非你算错了。</strong></div>
+  </div>
+  <div class="fix"><b>正确做法：</b>反码的最低位 +1，按二进制进位规则往左推</div>
+</div>
+
+<div class="pit">
+  <div class="pt">
+    <div class="x">3</div>
+    <div class="t"><b>以为 -128 的补码是 <code class="inline">1 000 0000</code> 的"原码直接读"。</b>
+    又或者以为范围是 -127 ~ 127。</div>
+  </div>
+  <div class="duck">
+    <img src="../assets/ducks/duck_senick.webp" alt="扣哒鸭" onerror="this.style.display='none'">
+    <div class="dt"><b>扣哒鸭：</b><code>1000 0000</code> 在补码里表示 <strong>-128</strong>，它是个特例——
+    没有对应的原码和反码（因为 -128 超出了 7 位数值位能表示的范围）。<br>
+    范围记牢：<strong>八位是 -128 ~ 127，不是对称的。</strong></div>
+  </div>
+  <div class="fix"><b>正确记法：</b>-2<sup>n-1</sup> ~ 2<sup>n-1</sup>-1；8 位即 -128 ~ 127</div>
+</div>
+
+<div class="pit">
+  <div class="pt">
+    <div class="x">4</div>
+    <div class="t"><b>把原码的三位一组当成了"位权"。</b>写 <code class="inline">000 0101</code>
+    时不知道它读作 5。</div>
+  </div>
+  <div class="duck">
+    <img src="../assets/ducks/duck_illia.webp" alt="扣哒鸭" onerror="this.style.display='none'">
+    <div class="dt"><b>扣哒鸭：</b>后面的七位就是二进制数，按 4、2、1 的位权加起来。
+    <code>000 0101</code> = 4 + 1 = <strong>5</strong>。
+    实在拿不准就拆成 8-4-2-1 四组来读。</div>
+  </div>
+  <div class="fix"><b>正确读法：</b>数值位的位权从右往左是 1、2、4、8、16、32、64</div>
+</div>
+
+<!-- ============ 9 ============ -->
+<div class="section-header" id="s9">
+  <h2>9　题目练习</h2>
+  <div class="en-title">Practice</div>
+</div>
+
+<p>第 1 题改编自 2026 年 9 月 · Python 三级 第 3 题，其余为原创练习题。</p>
+
+<div class="exam">
+  <div class="eh"><span class="src">改编自 2026 年 9 月 · Python 三级 · 第 3 题</span><span class="tp">单选题</span></div>
+  <div class="eb">
+    <div class="q">符文矿坑的记账石板上刻着 8 位二进制原码。<br>这 8 位原码能表示的最小整数和最大整数分别是（　　）。</div>
+    <div class="opt"><i>A.</i>−128、128<br>
+      <i>B.</i>−128、127<br>
+      <i>C.</i>−127、128<br>
+      <i>D.</i>−127、127</div>
+    <details><summary>查看答案与详解</summary>
+      <div class="ans"><b>答案：D</b>。原码用<strong>最高位当符号位</strong>（0 正 1 负），剩下 7 位表示数值大小。<br>正数最大：<code class="inline">0111 1111</code> = <b>127</b>；<br>负数绝对值最大：<code class="inline">1111 1111</code> = −<b>127</b>。<br><b>为什么不是 −128？</b>因为 8 位原码里 <code class="inline">1000 0000</code> 表示的是"负零"，它和"正零"重复了 —— 原码的<strong>零有两种写法</strong>，这也是它不方便直接做加减法的原因。<br><b>对比一下：</b>补码同样 8 位能表示 −128 ~ 127，比原码多出一个 −128，而且零只有一种写法。<br><span class="tagline">对应小节</span>2 原码：最直观的写法。</div>
+    </details>
+  </div>
+</div>
+<div class="exam">
+  <div class="eh"><span class="src ori">原创练习题</span><span class="tp">单选题</span></div>
+  <div class="eb">
+    <div class="q">十进制数 <code class="inline">-6</code> 的 8 位二进制补码是（　　）。</div>
+    <div class="opt"><i>A.</i>1 000 0110　　<i>B.</i>1 111 1001　　<i>C.</i>1 111 1010　　<i>D.</i>1 111 1011</div>
+    <details><summary>查看答案与详解</summary>
+      <div class="ans"><b>答案：C</b>。三步走：<br>
+      ① 原码：符号位取 1，数值位 6 = <code class="inline">000 0110</code> → <code class="inline">1 000 0110</code>；<br>
+      ② 反码：符号位不动，后七位取反 → <code class="inline">1 111 1001</code>；<br>
+      ③ 补码：反码最低位加 1 → <code class="inline">1 111 1010</code>。<br>
+      <b>易错点：</b>A 是原码，B 是反码，D 是 -5 的补码。<br>
+      <span class="tagline">对应小节</span>4 补码：计算机真正用的。</div>
+    </details>
+  </div>
+</div>
+
+<div class="exam">
+  <div class="eh"><span class="src ori">原创练习题</span><span class="tp">单选题</span></div>
+  <div class="eb">
+    <div class="q">已知某数的 8 位补码为 <code class="inline">1111 1101</code>，它的十进制真值是（　　）。</div>
+    <div class="opt"><i>A.</i>-3　　<i>B.</i>-2　　<i>C.</i>253　　<i>D.</i>-125</div>
+    <details><summary>查看答案与详解</summary>
+      <div class="ans"><b>答案：A</b>。两种算法都可以：<br>
+      <b>方法一：</b>取反得 <code class="inline">1000 0010</code>，加一得 <code class="inline">1000 0011</code>（原码），
+      数值位 <code class="inline">000 0011</code> = 3，所以真值是 <b>-3</b>。<br>
+      <b>方法二：</b>按位权算，最高位是 -128：
+      -128 + 64 + 32 + 16 + 8 + 4 + 0 + 1 = <b>-3</b>。<br>
+      <b>提示：</b><code class="inline">-1</code> 的补码是 <code class="inline">1111 1111</code>，
+      <code class="inline">-3</code> 就是它减 2，即 <code class="inline">1111 1101</code>——熟手可以秒答。<br>
+      <span class="tagline">对应小节</span>5 三码速查与互换。</div>
+    </details>
+  </div>
+</div>
+
+<div class="exam">
+  <div class="eh"><span class="src ori">原创练习题</span><span class="tp">判断题</span></div>
+  <div class="eb">
+    <div class="q">在补码表示中，数字 0 只有一种写法，即 <code class="inline">0000 0000</code>。（　　）</div>
+    <details><summary>查看答案与详解</summary>
+      <div class="ans"><b>答案：正确（√）</b>。这正是补码优于原码、反码的关键之处——原码和反码里的 0
+      都有两种写法（正零、负零），补码把这个问题消灭了。<br>
+      省下来的编码 <code class="inline">1000 0000</code> 就分给了 <b>-128</b>。<br>
+      <span class="tagline">对应小节</span>4 补码；6 范围与溢出。</div>
+    </details>
+  </div>
+</div>
+
+<div class="exam">
+  <div class="eh"><span class="src ori">原创练习题</span><span class="tp">单选题</span></div>
+  <div class="eb">
+    <div class="q">8 位补码能表示的十进制整数范围是（　　）。</div>
+    <div class="opt"><i>A.</i>-127 ~ 127　　<i>B.</i>-128 ~ 127　　<i>C.</i>-128 ~ 128　　<i>D.</i>0 ~ 255</div>
+    <details><summary>查看答案与详解</summary>
+      <div class="ans"><b>答案：B</b>。公式：<b>-2<sup>n-1</sup> ~ 2<sup>n-1</sup>-1</b>，
+      n = 8 时即 <b>-128 ~ 127</b>。<br>
+      一共 256 个数：负数 128 个、非负数 128 个。<br>
+      A 是原码/反码的范围（因为零占了两个编码）；D 是 8 位无符号数的范围。<br>
+      <span class="tagline">对应小节</span>6 范围与溢出。</div>
+    </details>
+  </div>
+</div>
+
+<div class="exam">
+  <div class="eh"><span class="src ori">原创练习题</span><span class="tp">判断题</span></div>
+  <div class="eb">
+    <div class="q">在 8 位补码运算中，127 + 1 的结果是 128。（　　）</div>
+    <details><summary>查看答案与详解</summary>
+      <div class="ans"><b>答案：错误（×）</b>。8 位补码最大只能表示 127，
+      <code class="inline">0111 1111 + 0000 0001 = 1000 0000</code>，
+      而 <code class="inline">1000 0000</code> 按补码解释是 <b>-128</b>。<br>
+      <b>这是典型的"正溢出"</b>：两个正数相加得到负数。<br>
+      <span class="tagline">对应小节</span>6 范围与溢出。</div>
+    </details>
+  </div>
+</div>
+
+<div class="exam">
+  <div class="eh"><span class="src ori">原创练习题</span><span class="tp">单选题</span></div>
+  <div class="eb">
+    <div class="q">十进制数 <code class="inline">-1</code> 的 8 位反码与补码分别是（　　）。</div>
+    <div class="opt">
+      <i>A.</i>1 111 1110 与 1 111 1111<br>
+      <i>B.</i>1 000 0001 与 1 111 1110<br>
+      <i>C.</i>1 111 1111 与 1 111 1111<br>
+      <i>D.</i>1 000 0001 与 1 111 1111
+    </div>
+    <details><summary>查看答案与详解</summary>
+      <div class="ans"><b>答案：A</b>。① 原码 <code class="inline">1 000 0001</code>；
+      ② 反码 = 后七位取反 → <code class="inline">1 111 1110</code>；
+      ③ 补码 = 反码加 1 → <code class="inline">1 111 1111</code>。<br>
+      <b>记牢：</b><code class="inline">-1</code> 的补码是八个 1 全亮，这是最常考的特殊值。<br>
+      <span class="tagline">对应小节</span>5 三码速查与互换。</div>
+    </details>
+  </div>
+</div>
+
+<div class="exam">
+  <div class="eh"><span class="src ori">原创练习题</span><span class="tp">编程题</span></div>
+  <div class="eb">
+    <div class="q">题目要求：编写程序，对输入的十进制整数 n（-128 ≤ n ≤ 127），
+    求它的 8 位二进制补码并以字符串形式输出（不足 8 位时左边补 0）。</div>
+    <details><summary>查看参考答案与要点</summary>
+      <div class="ans">
+<pre style="margin:0;background:#1b1a2a;color:#cdc8e0;border-radius:10px;padding:14px 16px">n = int(input("请输入一个整数（-128~127）："))
+
+# Python 里负数内部就是用补码存的，
+# n &amp; 0xFF 可以把 -1 变成 255（也就是 1111 1111）
+value = n &amp; 0xFF
+
+# 二进制字符串，前面补 0 到 8 位
+bits = bin(value)[2:].zfill(8)
+
+print(bits)</pre>
+      <p style="margin-top:12px"><b>运行示例：</b>输入 <code class="inline">-5</code> → 输出 <code class="inline">11111011</code><br>
+      <b>要点：</b><br>
+      ① 在 Python 里，整数本来就是用补码存在的，负数直接转二进制会得到 <code class="inline">-101</code> 这种带负号的形式；<br>
+      ② <code class="inline">n &amp; 0xFF</code> 是"按位与"，取低 8 位的效果 —— 这正是下一单元位运算的内容；<br>
+      ③ <code class="inline">bin()</code> 把数字转成二进制字符串（带 <code class="inline">0b</code> 前缀），
+      <code class="inline">zfill(8)</code> 负责左边补零。<br>
+      <span class="tagline">对应小节</span>4 补码；预告下一单元的位运算。</p>
+      </div>
+    </details>
+  </div>
+</div>
+
+<!-- ============ 10 ============ -->
+<div class="section-header" id="s10">
+  <h2>10　本单元小结</h2>
+  <div class="en-title">Unit Summary</div>
+</div>
+
+<div class="cast teacher">
+  <img class="ava" src="../assets/avatars/hushbaum.webp" alt="贺舒曼" onerror="this.style.display='none'">
+  <div class="bubble">
+    <div class="who">贺舒曼 · 镜中先知</div>
+    收成三句话，你就能走遍这一章：<br>
+    <strong>一、正数的原码、反码、补码一模一样，只有负数才要"取反加一"。</strong><br>
+    <strong>二、补码赢在两点：零只有一种写法；减法能当加法算。</strong><br>
+    <strong>三、8 位补码的范围是 -128 ~ 127，负数比正数多一个。</strong><br>
+    记住这三条，剩下的都是练习题。
+  </div>
+</div>
+
+<div class="summary">
+  <h3>你在暗河边上收获了什么</h3>
+  <ul>
+    <li><strong>机器数与真值</strong>——机器里真存的 0/1 是机器数，它代表的数字是真值。</li>
+    <li><strong>符号位</strong>——最高位约定：0 正、1 负；剩下七位才是数值。</li>
+    <li><strong>原码</strong>——符号位 + 数值位；缺点：零有两种写法，加减要分情况。</li>
+    <li><strong>反码</strong>——负数"符号位不动，其余全翻"；缺点：零还是两种写法。</li>
+    <li><strong>补码</strong>——负数"取反加一"；零唯一，减法变加法，计算机实际采用。</li>
+    <li><strong>由补码求真值</strong>——可以"取反加一还原成原码"，也可以按最高位权重 -2<sup>n-1</sup> 直接算。</li>
+    <li><strong>范围与溢出</strong>——n 位补码范围 -2<sup>n-1</sup> ~ 2<sup>n-1</sup>-1；8 位为 -128 ~ 127。</li>
+  </ul>
+</div>
+
+<div class="pager">
+  <a href="py-2-06.html"><div class="k">← 上一级别</div><div class="v">溪谷量尺 · Python 二级第 6 单元</div></a>
+  <a href="../index.html" target="_top" class="back"><div class="k">返回</div><div class="v">考纲之路 · 总目录</div></a>
+  <a href="py-3-02.html"><div class="k">下一单元 →</div><div class="v">七进制水晶 · 进制转换</div></a>
+</div>
+
+<div class="cta">
+  <h3>下一站：七进制水晶</h3>
+  <p>矿坑深处立着一块七棱水晶，每一面都映着不同的数字写法。
+  二进制、八进制、十六进制——它们之间怎么换算？下一单元我们一次说清。</p>
+  <a class="btn-go" href="https://codecombat.cn/" target="_blank" rel="noopener">加入扣哒世界，把这条考纲之路走一遍 →</a>
+</div>
+
+</div><!-- /container -->
+</div><!-- /page -->
+
+<script>
+const KEYWORDS = new Set(("while for if elif else break continue def return pass not and or in is None True False " +
+  "int float bool str list dict tuple set input print range len abs max min round pow import math random chr ord bin hex oct").split(" "));
+
+function esc(s){ return s.replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;'); }
+
+function highlight(src){
+  let out = '', i = 0;
+  const n = src.length;
+  while (i < n){
+    const c = src[i];
+    if (c === '#'){
+      let j = src.indexOf('\n', i); if (j < 0) j = n;
+      out += '<span class="cm">' + esc(src.slice(i, j)) + '</span>';
+      i = j; continue;
+    }
+    if (c === '"' || c === "'"){
+      let j = i + 1;
+      while (j < n && src[j] !== c){ if (src[j] === '\\') j++; j++; }
+      j = Math.min(j + 1, n);
+      out += '<span class="st">' + esc(src.slice(i, j)) + '</span>';
+      i = j; continue;
+    }
+    if (/[0-9]/.test(c)){
+      let j = i;
+      while (j < n && /[0-9.]/.test(src[j])) j++;
+      out += '<span class="nu">' + esc(src.slice(i, j)) + '</span>';
+      i = j; continue;
+    }
+    if (/[A-Za-z_]/.test(c)){
+      let j = i;
+      while (j < n && /[A-Za-z0-9_]/.test(src[j])) j++;
+      const w = src.slice(i, j);
+      if (KEYWORDS.has(w)) out += '<span class="kw">' + esc(w) + '</span>';
+      else if (src[j] === '(') out += '<span class="fn">' + esc(w) + '</span>';
+      else out += esc(w);
+      i = j; continue;
+    }
+    out += esc(c); i++;
+  }
+  return out;
+}
+
+document.querySelectorAll('.code-card pre code').forEach(block => {
+  block.innerHTML = highlight(block.textContent);
+});
+
+if (location.search.indexOf('expand') >= 0) {
+  document.querySelectorAll('details').forEach(d => d.open = true);
+}
+document.querySelectorAll('.sidebar-nav a').forEach(a => {
+  a.addEventListener('click', () => {
+    if (window.innerWidth <= 900) document.querySelector('.sidebar-nav').classList.remove('active');
+  });
+});
+</script>
+</body>
+</html>

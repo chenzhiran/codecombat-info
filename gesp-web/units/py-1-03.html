@@ -1,0 +1,1157 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="copyright" content="CodeCombat Inc. codecombat.cn">
+<title>炼金配方台 · 运算符与表达式 | 扣哒考级 · GESP Python 一级</title>
+<style>
+  :root{
+    --primary:#2e9e5b; --primary-light:#4fbf7c; --primary-lighter:#e9f8ef; --primary-dark:#1f7a44;
+    --brand:#ff6b35; --brand-dark:#e8541f; --brand-soft:#fff3ec;
+    --night:#131c2b; --night-2:#1e2a3a; --gold:#f5b301;
+    --text:#26302a; --dim:#63756b; --dim2:#8d9d94;
+    --bg:#ffffff; --bg-soft:#f7fbf8; --line:#e2ece6; --sidebar:274px;
+    --code-bg:#1b2a21; --code-tx:#c9d6cd;
+    --code-kw:#c678dd; --code-st:#98c379; --code-nu:#d19a66; --code-cm:#6b7f72; --code-fn:#61afef;
+  }
+  *{margin:0;padding:0;box-sizing:border-box}
+  html{scroll-behavior:smooth}
+  body{font-family:"PingFang SC","Microsoft YaHei","Segoe UI",-apple-system,sans-serif;line-height:1.9;color:var(--text);background:var(--bg);font-size:15.5px}
+  .sidebar-nav{position:fixed;top:0;left:0;width:var(--sidebar);height:100vh;overflow-y:auto;background:linear-gradient(180deg,#101a26,#182636);padding:14px 0 40px;z-index:100;border-right:3px solid var(--brand);transition:transform .3s ease}
+  .sidebar-nav::-webkit-scrollbar{width:5px}
+  .sidebar-nav::-webkit-scrollbar-thumb{background:var(--brand);border-radius:4px}
+  .sb-brand{display:flex;align-items:center;gap:10px;padding:10px 13px 12px;border-bottom:1px solid #26384c;margin-bottom:8px}
+  .sidebar-nav a.sb-logo{display:flex;align-items:center;justify-content:center;flex-shrink:0;padding:0;border-left:none;transition:.2s}
+  .sb-logo:hover{transform:scale(1.08)}
+  .sb-logo img{height:34px;width:34px;display:block;object-fit:contain;border-radius:8px}
+  .sb-brand b{color:#f2f6fa;font-size:14px;letter-spacing:.5px;display:block;line-height:1.4}
+  .sb-brand span{color:#7f95ab;font-size:11.5px;display:block;line-height:1.4}
+  .nav-title{color:#ffb894;font-size:12px;font-weight:800;padding:10px 18px 6px;letter-spacing:1.2px}
+  .sidebar-nav a{display:block;color:#c3d0dc;text-decoration:none;padding:6px 18px;font-size:12.5px;line-height:1.55;border-left:3px solid transparent;transition:.18s}
+  .sidebar-nav a:hover{color:#fff;background:rgba(255,107,53,.16);border-left-color:var(--brand)}
+  .sidebar-nav a.nav-section{color:#ffb894;font-weight:700;font-size:13px;margin-top:11px;padding-top:10px;border-top:1px solid #26384c}
+  .sidebar-nav a.nav-section:first-of-type{border-top:none;margin-top:0;padding-top:6px}
+  .sidebar-nav a.nav-sub{padding-left:30px;color:#93a8bc;font-size:12px}
+  .sidebar-nav a.nav-sub:hover{color:#fff}
+  .sb-back{margin:16px 14px 0;display:block;text-align:center;padding:9px;border-radius:9px;background:#22344a;color:#a9c0d6 !important;font-size:12px;font-weight:700;border-left:none !important}
+  .sb-back:hover{background:var(--brand) !important;color:#fff !important}
+  .nav-toggle{display:none;position:fixed;top:14px;left:14px;z-index:120;background:var(--brand);color:#fff;border:none;border-radius:9px;padding:9px 13px;font-size:15px;cursor:pointer;box-shadow:0 4px 14px rgba(0,0,0,.25)}
+  .page{margin-left:var(--sidebar)}
+  .hero{position:relative;overflow:hidden;padding:44px 52px;color:#fff;background:linear-gradient(125deg,#0e1724 0%,#1b2b3f 46%,#8a3a16 132%)}
+  .hero::after{content:"";position:absolute;right:-90px;top:-110px;width:400px;height:400px;border-radius:50%;background:radial-gradient(circle,rgba(245,179,1,.30),transparent 68%)}
+  .hero-top{display:flex;gap:36px;align-items:center;position:relative;z-index:2}
+  .hero-txt{flex:1;min-width:0}
+  .hero .crumb{font-size:11.5px;color:#ffb894;letter-spacing:1.5px;font-weight:700;margin-bottom:14px}
+  .hero h1{font-size:31px;font-weight:800;line-height:1.3;letter-spacing:.6px;margin-bottom:8px}
+  .hero h1 .sub{display:block;font-size:18px;font-weight:700;color:#ffd2b3;margin-top:6px;letter-spacing:.3px}
+  .hero .en{font-size:13px;color:#9db4c8;font-style:italic;margin-bottom:18px}
+  .hero .tags{display:flex;flex-wrap:wrap;gap:8px}
+  .tag{font-size:11.5px;padding:4px 12px;border-radius:20px;background:rgba(255,255,255,.12);border:1px solid rgba(255,255,255,.22);color:#e8f0f6;font-weight:600}
+  .tag.hot{background:rgba(255,107,53,.92);border-color:transparent;color:#fff}
+  .hero-card{flex-shrink:0;width:200px;text-align:center}
+  .hero-card .ava{width:148px;height:148px;border-radius:50%;object-fit:cover;object-position:top center;border:4px solid rgba(255,180,140,.6);box-shadow:0 14px 34px rgba(0,0,0,.45);background:#24344a}
+  .hero-card .nm{font-size:15px;font-weight:800;color:#fff;margin-top:10px}
+  .hero-card .ti{font-size:11.5px;color:#ffb894;margin-top:2px}
+  .container{max-width:1080px;margin:0 auto;padding:38px 52px 70px}
+  .lead{font-size:15.5px;line-height:2.05;color:#38453d;background:linear-gradient(120deg,#fff8f3,#f7fbf8);border-left:5px solid var(--brand);border-radius:0 14px 14px 0;padding:22px 26px;margin-bottom:32px}
+  .lead b{color:var(--brand-dark)}
+  .cast{display:flex;gap:16px;align-items:flex-start;border-radius:16px;padding:18px 22px;margin:24px 0}
+  .cast .ava{width:72px;height:72px;border-radius:50%;object-fit:cover;object-position:top center;flex-shrink:0;background:#e8eef5}
+  .cast .bubble{position:relative;font-size:14px;line-height:1.95;padding-top:2px;flex:1}
+  .cast .who{font-size:12px;font-weight:800;margin-bottom:5px;letter-spacing:.5px}
+  .cast.anya{background:var(--brand-soft);border:1px solid #ffdcc9}
+  .cast.anya .who{color:var(--brand-dark)}
+  .cast.anya .bubble{color:#5c4636}
+  .cast.duck{background:#fff5f5;border:1px solid #fbd5d5}
+  .cast.duck .who{color:#b91c1c}
+  .cast.duck .bubble{color:#5c4141}
+  .cast.teacher{background:linear-gradient(120deg,#f4f7fb,#ffffff);border:1px solid #dbe4f0}
+  .cast.teacher .who{color:#1e293b}
+  .cast.teacher .bubble{color:#3c4a5a}
+  .goal-grid{display:grid;grid-template-columns:1fr 1fr;gap:16px;margin-bottom:36px}
+  .goal{border:1px solid var(--line);border-radius:15px;padding:19px 21px;background:#fff;box-shadow:0 4px 16px rgba(31,122,68,.05)}
+  .goal h4{font-size:14px;font-weight:800;margin-bottom:11px;display:flex;align-items:center;gap:8px;color:var(--primary-dark)}
+  .goal h4 .ic{width:22px;height:22px;border-radius:7px;background:var(--primary-lighter);display:flex;align-items:center;justify-content:center;font-size:12px}
+  .goal ul{list-style:none}
+  .goal li{font-size:13.5px;color:#4b5a52;line-height:1.9;padding-left:18px;position:relative}
+  .goal li::before{content:"▸";position:absolute;left:0;color:var(--primary);font-weight:800}
+  .goal.syllabus li::before{content:"✓"}
+  .section-header{margin:52px 0 24px;padding-bottom:12px;border-bottom:3px solid var(--brand);display:flex;align-items:baseline;gap:14px;flex-wrap:wrap}
+  .section-header h2{font-size:22px;font-weight:800;color:var(--night);letter-spacing:.4px}
+  .section-header .en-title{font-size:12px;color:var(--dim2);font-style:italic}
+  h3{font-size:17.5px;font-weight:800;margin:34px 0 14px;color:var(--night);display:flex;align-items:center;gap:10px}
+  h3::before{content:"";width:5px;height:17px;border-radius:3px;background:var(--brand);flex-shrink:0}
+  h4{font-size:15px;font-weight:800;margin:24px 0 10px;color:#33513f}
+  p{margin:12px 0;color:#3c4a42;line-height:2}
+  strong{color:var(--primary-dark)}
+  code.inline{background:var(--primary-lighter);color:var(--primary-dark);padding:2px 7px;border-radius:6px;font-family:"SFMono-Regular",Consolas,Menlo,monospace;font-size:.9em;font-weight:600}
+  .figure{margin:24px 0;text-align:center}
+  .figure svg.diagram{max-width:100%;height:auto;background:#fff;border:1px solid var(--line);border-radius:14px;padding:10px}
+  .figure .caption{font-size:12.5px;color:var(--dim2);margin-top:9px}
+  .pic{margin:26px 0;text-align:center}
+  .pic img{max-width:100%;border-radius:16px;box-shadow:0 10px 28px rgba(30,60,45,.15);display:block;margin:0 auto}
+  .pic figcaption{font-size:12.5px;color:var(--dim2);margin-top:9px}
+  .pic .ph{display:none}
+  .pic.missing img{display:none}
+  .pic.missing .ph{display:flex;flex-direction:column;align-items:center;justify-content:center;gap:9px;border:2px dashed #c9d9e8;border-radius:16px;background:linear-gradient(135deg,#f8fbfe,#eef6ff);padding:40px 26px;color:#7a8fa8}
+  .pic.missing .ph .fn{font-family:Consolas,monospace;font-size:12.5px;color:#2563eb;font-weight:700;word-break:break-all}
+  .pic.missing .ph .ds{font-size:12.5px;line-height:1.8;max-width:560px}
+  .box{border-radius:13px;padding:16px 20px;margin:20px 0;font-size:14px;line-height:1.95}
+  .box .lb{font-weight:800;margin-right:6px}
+  .info{background:#eef6ff;border-left:5px solid #3b82f6;color:#274768}
+  .info .lb{color:#1d4ed8}
+  .tip{background:#fff9ec;border-left:5px solid #f59e0b;color:#6b4e13}
+  .tip .lb{color:#b45309}
+  .remember{background:var(--primary-lighter);border-left:5px solid var(--primary);color:#1f5033}
+  .remember .lb{color:var(--primary-dark)}
+  .warn{background:#fef2f2;border-left:5px solid #ef4444;color:#7f2b2b}
+  .warn .lb{color:#b91c1c}
+  .code-card{margin:20px 0;border-radius:14px;overflow:hidden;box-shadow:0 10px 28px rgba(20,40,28,.20)}
+  .code-head{display:flex;align-items:center;gap:9px;background:#243126;padding:9px 14px}
+  .code-head .dot{width:10px;height:10px;border-radius:50%}
+  .code-head .d1{background:#ff5f57}.code-head .d2{background:#febc2e}.code-head .d3{background:#28c840}
+  .code-head .file{color:#95ab9c;font-size:11.5px;font-family:Consolas,monospace;margin-left:6px}
+  .code-head .lang{margin-left:auto;font-size:10.5px;font-weight:800;color:#0f2016;background:#4fbf7c;padding:2px 9px;border-radius:6px;letter-spacing:.4px}
+  .code-card pre{background:var(--code-bg);padding:18px 20px;overflow-x:auto;margin:0;font-family:"SFMono-Regular",Consolas,"Courier New",monospace;font-size:13.5px;line-height:1.85}
+  .code-card pre::-webkit-scrollbar{height:8px}
+  .code-card pre::-webkit-scrollbar-thumb{background:#3a5544;border-radius:4px}
+  .code-card code{color:var(--code-tx);white-space:pre}
+  .kw{color:var(--code-kw);font-weight:600}
+  .st{color:var(--code-st)}
+  .nu{color:var(--code-nu)}
+  .cm{color:var(--code-cm);font-style:italic}
+  .fn{color:var(--code-fn)}
+  .out{background:#16211a;color:#8fd6a8;font-family:Consolas,monospace;font-size:13px;padding:12px 20px;border-top:1px solid #2b3d31}
+  .out b{color:#c9d6cd;font-weight:600;font-size:11.5px;letter-spacing:1px}
+  table.styled{width:100%;border-collapse:collapse;margin:20px 0;font-size:13.5px;border-radius:12px;overflow:hidden;box-shadow:0 4px 16px rgba(31,122,68,.07)}
+  table.styled thead{background:var(--brand)}
+  table.styled th{color:#fff;padding:11px 14px;text-align:left;font-weight:700;font-size:13px}
+  table.styled td{padding:10px 14px;border-bottom:1px solid var(--line);color:#46564d;vertical-align:top}
+  table.styled tbody tr:nth-child(even){background:var(--bg-soft)}
+  table.styled tbody tr:last-child td{border-bottom:none}
+  .level-card{border:1px solid var(--line);border-radius:16px;overflow:hidden;margin:22px 0;box-shadow:0 6px 22px rgba(31,122,68,.07)}
+  .level-card .lc-head{background:linear-gradient(100deg,#17283a,#8a3a16);color:#fff;padding:15px 22px;display:flex;align-items:center;gap:12px;flex-wrap:wrap}
+  .level-card .lc-head .n{font-size:12px;font-weight:800;background:rgba(255,255,255,.2);padding:3px 10px;border-radius:20px}
+  .level-card .lc-head h4{margin:0;color:#fff;font-size:16px}
+  .level-card .lc-head .go{margin-left:auto;font-size:11.5px;color:#ffd2b3}
+  .level-card .lc-body{padding:20px 24px;background:#fff}
+  .level-card .story{background:#f9fbfd;border-left:4px solid #93c5fd;border-radius:0 10px 10px 0;padding:13px 18px;margin:0 0 16px;font-size:14px;line-height:1.95;color:#3f5163}
+  .level-card .story b{color:#1d4ed8}
+  .btn-go{display:inline-flex;align-items:center;gap:8px;background:linear-gradient(135deg,var(--brand),var(--brand-dark));color:#fff;text-decoration:none;font-weight:800;font-size:13.5px;padding:10px 22px;border-radius:11px;box-shadow:0 8px 20px rgba(255,107,53,.32);transition:.2s}
+  .btn-go:hover{transform:translateY(-2px);box-shadow:0 12px 26px rgba(255,107,53,.42)}
+  .pit{border:1px solid #f6dede;border-radius:14px;overflow:hidden;margin:16px 0;background:#fff}
+  .pit .pt{display:flex;gap:12px;padding:14px 18px;background:#fffafa;align-items:flex-start}
+  .pit .x{width:26px;height:26px;border-radius:9px;background:#fee;color:#dc2626;display:flex;align-items:center;justify-content:center;font-weight:800;flex-shrink:0;font-size:13px}
+  .pit .t{font-size:13.5px;line-height:1.9;color:#5c4a4a;flex:1}
+  .pit .t b{color:#b91c1c}
+  .pit .duck{display:flex;gap:12px;padding:13px 18px;background:#fff5f5;border-top:1px dashed #f3d0d0;align-items:flex-start}
+  .pit .duck img{width:48px;height:48px;object-fit:contain;flex-shrink:0;margin-top:2px}
+  .pit .duck .dt{font-size:13.5px;line-height:1.9;color:#7a3b3b}
+  .pit .duck .dt b{color:#b91c1c}
+  .pit .fix{padding:12px 18px;background:#f2fbf5;border-top:1px dashed #cfe7d8;font-size:13.5px;color:#1f5033}
+  .pit .fix b{color:var(--primary-dark)}
+  .exam{border:1px solid #dfe7f5;border-radius:15px;margin:16px 0;overflow:hidden;background:#fff;box-shadow:0 4px 16px rgba(38,62,120,.06)}
+  .exam .eh{display:flex;align-items:center;gap:10px;padding:11px 18px;background:linear-gradient(100deg,#eef4ff,#f7faff);border-bottom:1px solid #e3ebf8;flex-wrap:wrap}
+  .exam .eh .src{font-size:11px;font-weight:800;color:#fff;background:#2563eb;padding:2.5px 10px;border-radius:20px}
+  .exam .eh .src.ori{background:#8b5cf6}
+  .exam .eh .tp{font-size:11.5px;color:#5b7ba8;font-weight:700}
+  .exam .eb{padding:16px 20px}
+  .exam .q{font-weight:700;font-size:14px;color:#2c3c33;line-height:1.9;margin-bottom:10px}
+  .exam .opt{font-size:13.5px;color:#4b5a52;line-height:2.05;padding-left:6px}
+  .exam .opt i{font-style:normal;font-weight:800;color:var(--primary-dark);margin-right:7px}
+  .exam pre{margin:12px 0;background:#1b2a21;border-radius:10px;padding:14px 16px;overflow-x:auto;font-family:Consolas,monospace;font-size:13px;line-height:1.8;color:var(--code-tx)}
+  .exam details{margin-top:10px;border-top:1px dashed var(--line);padding-top:10px}
+  .exam summary{cursor:pointer;font-size:12.5px;font-weight:800;color:#2563eb;outline:none;user-select:none}
+  .exam details .ans{font-size:13.5px;color:#3c4a42;line-height:1.95;margin-top:9px;background:var(--bg-soft);padding:13px 16px;border-radius:10px}
+  .exam details .ans b{color:var(--primary-dark)}
+  .exam details .ans .tagline{display:inline-block;font-size:11px;background:#e0f2fe;color:#0e7490;padding:1.5px 8px;border-radius:6px;font-weight:700;margin-right:6px}
+  .summary{margin:40px 0 20px;border-radius:18px;padding:26px 30px;background:linear-gradient(130deg,#fff8f3,#ffffff);border:1px solid #ffe0cf}
+  .summary h3{margin-top:0}
+  .summary ul{list-style:none;margin-top:10px}
+  .summary li{font-size:14px;line-height:2;color:#41524a;padding-left:24px;position:relative}
+  .summary li::before{content:"◆";position:absolute;left:0;color:var(--brand);font-size:11px;top:6px}
+  .pager{display:flex;gap:14px;margin-top:30px;flex-wrap:wrap}
+  .pager a{flex:1;min-width:200px;text-decoration:none;border:1px solid var(--line);border-radius:14px;padding:16px 20px;background:#fff;transition:.2s;display:block}
+  .pager a:hover{border-color:var(--brand);box-shadow:0 10px 26px rgba(255,107,53,.14);transform:translateY(-2px)}
+  .pager a .k{font-size:11px;color:var(--dim2);font-weight:700;letter-spacing:1px}
+  .pager a .v{font-size:14px;font-weight:800;color:var(--night);margin-top:5px}
+  .pager a.back{background:var(--brand-soft);border-color:transparent;text-align:center}
+  .pager a.back .v{color:var(--brand-dark)}
+  .cta{margin-top:26px;border-radius:20px;padding:30px 34px;color:#fff;position:relative;overflow:hidden;background:linear-gradient(120deg,#16202f,#2b3a52 46%,#a8431c 132%)}
+  .cta::after{content:"";position:absolute;right:-70px;bottom:-90px;width:280px;height:280px;border-radius:50%;background:radial-gradient(circle,rgba(255,140,80,.45),transparent 68%)}
+  .cta h3{color:#fff;margin:0 0 10px;position:relative;z-index:2}
+  .cta h3::before{background:var(--brand)}
+  .cta p{color:#d8e0ef;font-size:13.5px;margin:0 0 18px;position:relative;z-index:2;max-width:640px}
+  .cta .btn-go{position:relative;z-index:2}
+  @media(max-width:900px){
+    .sidebar-nav{transform:translateX(-100%)}
+    .sidebar-nav.active{transform:translateX(0)}
+    .nav-toggle{display:block}
+    .page{margin-left:0}
+    .hero{padding:70px 22px 34px}
+    .hero-top{flex-direction:column-reverse;text-align:center}
+    .hero-card{width:auto}
+    .container{padding:26px 20px 60px}
+    .goal-grid{grid-template-columns:1fr}
+  }
+</style>
+</head>
+<body>
+
+<button class="nav-toggle" onclick="document.querySelector('.sidebar-nav').classList.toggle('active')">☰</button>
+
+<nav class="sidebar-nav">
+  <div class="sb-brand">
+    <a class="sb-logo" href="https://codecombat.cn/" target="_blank" rel="noopener" title="访问 CodeCombat 扣哒世界官网">
+      <img src="../assets/logo.png" alt="CodeCombat 扣哒世界">
+    </a>
+    <div><b>炼金配方台</b><span>烛火岗哨 · Python 一级 第 3 单元</span></div>
+  </div>
+  <div class="nav-title">本单元目录</div>
+
+  <a href="#s0" class="nav-section">0　单元导语与目标</a>
+  <a href="#s1" class="nav-section">1　算术运算符</a>
+  <a href="#s1-1" class="nav-sub">1.1 六个基本运算符</a>
+  <a href="#s1-2" class="nav-sub">1.2 除法三兄弟</a>
+  <a href="#s1-3" class="nav-sub">1.3 运算符优先级</a>
+  <a href="#s2" class="nav-section">2　关系运算符</a>
+  <a href="#s3" class="nav-section">3　逻辑运算符</a>
+  <a href="#s3-1" class="nav-sub">3.1 and 与 or</a>
+  <a href="#s3-2" class="nav-sub">3.2 not 取反</a>
+  <a href="#s3-3" class="nav-sub">3.3 逻辑运算的优先级</a>
+  <a href="#s4" class="nav-section">4　复合赋值运算符</a>
+  <a href="#s5" class="nav-section">5　拓展：turtle 海龟绘图</a>
+  <a href="#s6" class="nav-section">6　代码实战</a>
+  <a href="#s7" class="nav-section">7　常见陷阱</a>
+  <a href="#s8" class="nav-section">8　题目练习</a>
+  <a href="#s9" class="nav-section">9　本单元小结</a>
+
+  <a href="../index.html" target="_top" class="sb-back">返回考纲之路</a>
+</nav>
+
+<div class="page">
+
+<div class="hero">
+  <div class="hero-top">
+    <div class="hero-txt">
+      <div class="crumb">扣哒考级 · GESP PYTHON 一级 · 第 3 单元　|　烛火岗哨 CANDLEWATCH OUTPOST</div>
+      <h1>炼金配方台
+        <span class="sub">运算符与表达式</span>
+      </h1>
+      <div class="en">Operators &amp; Expressions</div>
+      <div class="tags">
+        <span class="tag hot">考纲 · 基本运算</span>
+        <span class="tag">+ - * / // % **</span>
+        <span class="tag">== &gt; &lt; !=</span>
+        <span class="tag">and / or / not</span>
+        <span class="tag">turtle 绘图</span>
+      </div>
+    </div>
+    <div class="hero-card">
+      <img class="ava" src="../assets/avatars/anya.webp" alt="安雅" onerror="this.style.background='#24344a';this.src='../assets/heroes/anya.webp'">
+      <div class="nm">安雅</div>
+      <div class="ti">红发队长 · 你的旅伴</div>
+    </div>
+  </div>
+</div>
+
+<div class="container">
+
+<div class="lead">
+  岗哨的地下室有一张长桌，桌上摆满了装着发光液体的瓶子，每只瓶身上都刻着一个符号：
+  <b>+</b>、<b>-</b>、<b>*</b>、<b>/</b>、<b>%</b>、<b>**</b>……<br>
+  "这叫<b>炼金配方台</b>。"安雅拿起两只瓶子倒进一只水晶杯，杯里的液体立刻变了颜色，
+  <b>把不同的东西按照符号配在一起，就会得到新东西</b>——程序里的'运算'，就是这么回事。
+</div>
+
+<div class="cast anya">
+  <img class="ava" src="../assets/avatars/anya.webp" alt="安雅" onerror="this.style.display='none'">
+  <div class="bubble">
+    <div class="who">安雅 · 红发队长</div>
+    这一单元我们会把三套符号全部过一遍：<strong>算术</strong>（算数）、
+    <strong>关系</strong>（比大小）、<strong>逻辑</strong>（判断真假）。
+    它们看着简单，但真题里的"算一算，输出是几"几乎全从这儿出。
+  </div>
+</div>
+
+<!-- ============ 0 ============ -->
+<figure class="pic">
+  <img src="../assets/illustrations/py-L1-03-00_alchemy_bench.webp" alt="开篇场景图：岗哨的炼金配方台"
+       onerror="this.closest('.pic').classList.add('missing')">
+  <div class="ph">
+    <div class="fn">assets/illustrations/py-L1-03-00_alchemy_bench.webp</div>
+    <div class="ds">【配图位】烛火岗哨的炼金小屋：石台上摊着发黄的配方纸，青铜天平、量杯与砝码一字排开，架上一排装着发光液体的药瓶按颜色排列；炉火把整个屋子映成暖橙色，一名学徒举着写满算式的纸片在药架前比对。</div>
+  </div>
+  <figcaption>图 1：烛火岗哨的炼金配方台——今天要从这里开始</figcaption>
+</figure>
+
+<div class="section-header" id="s0">
+  <h2>0　单元导语与目标</h2>
+  <div class="en-title">Unit Overview</div>
+</div>
+
+<div class="goal-grid">
+  <div class="goal">
+    <h4><span class="ic">1</span>学完这个单元，你将能……</h4>
+    <ul>
+      <li>熟练使用六个算术运算符，说清 <code class="inline">/</code>、<code class="inline">//</code>、<code class="inline">%</code> 的区别</li>
+      <li>背出运算符的优先级顺序，并正确计算混合表达式</li>
+      <li>用关系运算符比较大小，结果是 True 或 False</li>
+      <li>用 <code class="inline">and / or / not</code> 组合出复杂条件</li>
+      <li>读懂并写出复合赋值（<code class="inline">+= -= *= //= %=</code>）</li>
+      <li>用 <code class="inline">turtle</code> 画出简单的图形</li>
+    </ul>
+  </div>
+  <div class="goal syllabus">
+    <h4><span class="ic">2</span>对标 GESP 考纲（Python 一级）</h4>
+    <ul>
+      <li>（9）掌握比较运算符、算术运算符、逻辑运算符的基本概念及基础应用</li>
+      <li>（12）掌握图形库 turtle 的主要功能，使用 turtle 进行绘图</li>
+      <li>（13）掌握模块的导入方法</li>
+      <li>考核目标：掌握数据类型的使用与基础运算</li>
+    </ul>
+  </div>
+</div>
+
+<div class="box tip">
+  <span class="lb">零基础提示：</span>运算符就是"做运算的符号"。数学里你早就会用 <code class="inline">+</code> <code class="inline">-</code> <code class="inline">×</code> <code class="inline">÷</code>，
+  程序里只是换了几种写法，并多了几个数学课上学不到的新符号（比如取余 <code class="inline">%</code>）。
+</div>
+
+<!-- ============ 1 ============ -->
+<div class="section-header" id="s1">
+  <h2>1　算术运算符</h2>
+  <div class="en-title">Arithmetic Operators</div>
+</div>
+
+<h3 id="s1-1">1.1 六个基本运算符</h3>
+
+<figure class="figure">
+  <svg class="diagram" viewBox="0 0 840 300" role="img" aria-label="六个算术运算符">
+    <text x="24" y="34" font-size="14" font-weight="bold" fill="#1f2937">炼金台上的六只瓶子</text>
+
+    <g>
+      <rect x="40" y="70" width="118" height="150" rx="14" fill="#fff6ec" stroke="#ff6b35" stroke-width="2"/>
+      <text x="99" y="126" text-anchor="middle" font-size="34" fill="#c1440e" font-weight="bold">+</text>
+      <text x="99" y="158" text-anchor="middle" font-size="13" fill="#a85728">加</text>
+      <text x="99" y="196" text-anchor="middle" font-size="12" font-family="Consolas,monospace" fill="#8d9d94">3 + 2 = 5</text>
+    </g>
+    <g>
+      <rect x="168" y="70" width="118" height="150" rx="14" fill="#fff6ec" stroke="#ff6b35" stroke-width="2"/>
+      <text x="227" y="126" text-anchor="middle" font-size="34" fill="#c1440e" font-weight="bold">-</text>
+      <text x="227" y="158" text-anchor="middle" font-size="13" fill="#a85728">减</text>
+      <text x="227" y="196" text-anchor="middle" font-size="12" font-family="Consolas,monospace" fill="#8d9d94">3 - 2 = 1</text>
+    </g>
+    <g>
+      <rect x="296" y="70" width="118" height="150" rx="14" fill="#fff6ec" stroke="#ff6b35" stroke-width="2"/>
+      <text x="355" y="126" text-anchor="middle" font-size="34" fill="#c1440e" font-weight="bold">*</text>
+      <text x="355" y="158" text-anchor="middle" font-size="13" fill="#a85728">乘</text>
+      <text x="355" y="196" text-anchor="middle" font-size="12" font-family="Consolas,monospace" fill="#8d9d94">3 * 2 = 6</text>
+    </g>
+    <g>
+      <rect x="424" y="70" width="118" height="150" rx="14" fill="#eef6ff" stroke="#3b82f6" stroke-width="2"/>
+      <text x="483" y="126" text-anchor="middle" font-size="34" fill="#1d4ed8" font-weight="bold">/</text>
+      <text x="483" y="158" text-anchor="middle" font-size="13" fill="#3b6ea8">真除</text>
+      <text x="483" y="196" text-anchor="middle" font-size="12" font-family="Consolas,monospace" fill="#8d9d94">7 / 2 = 3.5</text>
+    </g>
+    <g>
+      <rect x="552" y="70" width="118" height="150" rx="14" fill="#eef6ff" stroke="#3b82f6" stroke-width="2"/>
+      <text x="611" y="126" text-anchor="middle" font-size="34" fill="#1d4ed8" font-weight="bold">//</text>
+      <text x="611" y="158" text-anchor="middle" font-size="13" fill="#3b6ea8">整除</text>
+      <text x="611" y="196" text-anchor="middle" font-size="12" font-family="Consolas,monospace" fill="#8d9d94">7 // 2 = 3</text>
+    </g>
+    <g>
+      <rect x="680" y="70" width="126" height="150" rx="14" fill="#eef6ff" stroke="#3b82f6" stroke-width="2"/>
+      <text x="743" y="126" text-anchor="middle" font-size="34" fill="#1d4ed8" font-weight="bold">%</text>
+      <text x="743" y="158" text-anchor="middle" font-size="13" fill="#3b6ea8">取余</text>
+      <text x="743" y="196" text-anchor="middle" font-size="12" font-family="Consolas,monospace" fill="#8d9d94">7 % 2 = 1</text>
+    </g>
+
+    <text x="24" y="262" font-size="12" fill="#8d9d94">还有第七只瓶子（幂运算 **）：2 ** 3 = 8，表示 2 的 3 次方</text>
+  </svg>
+  <div class="caption">图 2（SVG）：六个基本算术运算符，外加幂运算</div>
+</figure>
+
+<table class="styled">
+  <thead><tr><th>运算符</th><th>名称</th><th>例子</th><th>结果</th><th>说明</th></tr></thead>
+  <tbody>
+    <tr><td><code class="inline">+</code></td><td>加</td><td><code class="inline">3 + 2</code></td><td>5</td><td>字符串之间也能用，表示拼接</td></tr>
+    <tr><td><code class="inline">-</code></td><td>减</td><td><code class="inline">3 - 2</code></td><td>1</td><td>—</td></tr>
+    <tr><td><code class="inline">*</code></td><td>乘</td><td><code class="inline">3 * 2</code></td><td>6</td><td>字符串乘整数表示重复：<code class="inline">"ab" * 3</code> → <code class="inline">ababab</code></td></tr>
+    <tr><td><code class="inline">/</code></td><td>真除</td><td><code class="inline">7 / 2</code></td><td>3.5</td><td><strong>结果一定是浮点数</strong></td></tr>
+    <tr><td><code class="inline">//</code></td><td>整除</td><td><code class="inline">7 // 2</code></td><td>3</td><td>只取整数部分，<strong>向下取整</strong></td></tr>
+    <tr><td><code class="inline">%</code></td><td>取余（模）</td><td><code class="inline">7 % 2</code></td><td>1</td><td>取除完剩下的余数</td></tr>
+    <tr><td><code class="inline">**</code></td><td>幂</td><td><code class="inline">2 ** 3</code></td><td>8</td><td>2 的 3 次方；注意<strong>不是</strong> <code class="inline">^</code></td></tr>
+  </tbody>
+</table>
+
+<div class="box warn">
+  <span class="lb">重要提醒：</span>Python 里<strong>乘方用 <code class="inline">**</code>，不是 <code class="inline">^</code></strong>。
+  <code class="inline">^</code> 在 Python 里是另一种运算（异或，三级才学）。
+  另外，Python 里<strong>没有 <code class="inline">×</code> 和 <code class="inline">÷</code></strong>，乘除一律写 <code class="inline">*</code> 和 <code class="inline">/</code>。
+</div>
+
+<h3 id="s1-2">1.2 除法三兄弟</h3>
+<p>这是每次考试都会出现的一组符号，务必分清楚。拿 <code class="inline">7 ÷ 2</code> 举例：</p>
+
+<figure class="figure">
+  <svg class="diagram" viewBox="0 0 840 260" role="img" aria-label="除法三兄弟对比">
+    <text x="24" y="34" font-size="14" font-weight="bold" fill="#1f2937">同样是 7 和 2，三个写法各答什么</text>
+
+    <rect x="40" y="60" width="230" height="130" rx="14" fill="#eef6ff" stroke="#3b82f6" stroke-width="2"/>
+    <text x="155" y="92" text-anchor="middle" font-size="15" fill="#1d4ed8" font-weight="bold">7 / 2　真除</text>
+    <text x="155" y="132" text-anchor="middle" font-size="30" fill="#1e40af" font-weight="bold">3.5</text>
+    <text x="155" y="166" text-anchor="middle" font-size="12" fill="#3b6ea8">老老实实除，结果带小数</text>
+
+    <rect x="300" y="60" width="230" height="130" rx="14" fill="#e9f8ef" stroke="#2e9e5b" stroke-width="2"/>
+    <text x="415" y="92" text-anchor="middle" font-size="15" fill="#1f7a44" font-weight="bold">7 // 2　整除</text>
+    <text x="415" y="132" text-anchor="middle" font-size="30" fill="#166534" font-weight="bold">3</text>
+    <text x="415" y="166" text-anchor="middle" font-size="12" fill="#3b7c5b">只要商，扔掉小数</text>
+
+    <rect x="560" y="60" width="246" height="130" rx="14" fill="#fff6ec" stroke="#ff6b35" stroke-width="2"/>
+    <text x="683" y="92" text-anchor="middle" font-size="15" fill="#c1440e" font-weight="bold">7 % 2　取余</text>
+    <text x="683" y="132" text-anchor="middle" font-size="30" fill="#a83f13" font-weight="bold">1</text>
+    <text x="683" y="166" text-anchor="middle" font-size="12" fill="#a85728">只要余数，扔掉商</text>
+
+    <text x="420" y="232" text-anchor="middle" font-size="12.5" fill="#8d9d94">口诀：真除要小数，整除只要商，取余只剩渣</text>
+  </svg>
+  <div class="caption">图 3（SVG）：<code class="inline">/</code>、<code class="inline">//</code>、<code class="inline">%</code> 三兄弟的分工</div>
+</figure>
+
+<div class="code-card">
+  <div class="code-head">
+    <span class="dot d1"></span><span class="dot d2"></span><span class="dot d3"></span>
+    <span class="file">三个都试一遍</span>
+    <span class="lang">Python</span>
+  </div>
+  <pre><code>a = 8
+b = 10
+
+print(a / b)      # 真除
+print(a // b)     # 整除
+print(a % b)      # 取余
+print(b // a)     # 换个大数除以小数
+print(b % a)      # 再来一次</code></pre>
+  <div class="out"><b>OUTPUT</b>　0.8<br>0<br>8<br>1<br>2</div>
+</div>
+
+<div class="box info">
+  <span class="lb">看第 3、5 行：</span><code class="inline">8 % 10</code> 得 <strong>8</strong>，<code class="inline">10 % 8</code> 得 <strong>2</strong>。
+  <strong>当被除数比除数还小时，取余的结果就是被除数本身</strong>（8 不够除 10，剩下 8）。这是真题爱考的小细节。
+</div>
+
+<div class="box remember">
+  <span class="lb">取余的三大用途（记住它，后面会反复遇到）：</span><br>
+  ① <strong>判断能不能整除</strong>：<code class="inline">n % 2 == 0</code> 说明 n 是偶数；<br>
+  ② <strong>取一个数的个位</strong>：<code class="inline">n % 10</code> 就是个位数；<br>
+  ③ <strong>让数字循环</strong>：<code class="inline">i % 5</code> 会得到 0,1,2,3,4,0,1,2,3,4……
+</div>
+
+<h3 id="s1-3">1.3 运算符优先级</h3>
+<p>当一行里出现多种运算符时，谁先算？岗哨的炼金规矩是这样的（从高到低）：</p>
+
+<figure class="figure">
+  <svg class="diagram" viewBox="0 0 840 300" role="img" aria-label="运算符优先级金字塔">
+    <text x="24" y="34" font-size="14" font-weight="bold" fill="#1f2937">运算符优先级：越靠上，越先算</text>
+
+    <rect x="280" y="56" width="280" height="46" rx="10" fill="#fef2f2" stroke="#ef4444" stroke-width="2"/>
+    <text x="420" y="85" text-anchor="middle" font-size="13.5" fill="#b91c1c" font-weight="bold">( )　小括号 —— 最高级</text>
+
+    <rect x="250" y="110" width="340" height="46" rx="10" fill="#fff6ec" stroke="#ff6b35" stroke-width="2"/>
+    <text x="420" y="139" text-anchor="middle" font-size="13.5" fill="#c1440e" font-weight="bold">**　幂运算 &nbsp;|&nbsp; +x  -x  正负号</text>
+
+    <rect x="220" y="164" width="400" height="46" rx="10" fill="#eef6ff" stroke="#3b82f6" stroke-width="2"/>
+    <text x="420" y="193" text-anchor="middle" font-size="13.5" fill="#1d4ed8" font-weight="bold">*　/　//　%　乘除与取余</text>
+
+    <rect x="190" y="218" width="460" height="46" rx="10" fill="#e9f8ef" stroke="#2e9e5b" stroke-width="2"/>
+    <text x="420" y="247" text-anchor="middle" font-size="13.5" fill="#1f7a44" font-weight="bold">+　-　加减 &nbsp;（比较与逻辑运算符更低，见后文）</text>
+
+    <text x="24" y="290" font-size="12" fill="#8d9d94">同级从左往右算；想让谁先算，给它加小括号就行</text>
+  </svg>
+  <div class="caption">图 4（SVG）：优先级金字塔</div>
+</figure>
+
+<div class="code-card">
+  <div class="code-head">
+    <span class="dot d1"></span><span class="dot d2"></span><span class="dot d3"></span>
+    <span class="file">优先级实例</span>
+    <span class="lang">Python</span>
+  </div>
+  <pre><code>print(2 + 3 * 4)        # 先乘后加
+print((2 + 3) * 4)      # 括号优先
+print(2 ** 3 * 2)       # 先算幂，再乘
+print(-2 ** 2)          # 幂优先于负号！
+print(10 - 4 / 2)       # 先除后减</code></pre>
+  <div class="out"><b>OUTPUT</b>　14<br>20<br>16<br>-4<br>8.0</div>
+</div>
+
+<div class="box warn">
+  <span class="lb">重点看第 4 行：</span><code class="inline">-2 ** 2</code> 的结果是 <strong>-4</strong>，不是 4！
+  因为<strong>幂运算的优先级高于一元负号</strong>：
+  先算 2 ** 2 = 4，再取负 → -4。<br>
+  如果想表达 (-2) 的平方，必须写 <code class="inline">(-2) ** 2</code>。<br>
+  <strong>这一点在真题里考过（第 4 题），务必记住。</strong>
+</div>
+
+<!-- ============ 2 ============ -->
+<div class="cast anya">
+  <img class="ava" src="../assets/avatars/anya.webp" alt="安雅" onerror="this.style.display='none'">
+  <div class="bubble">
+    <div class="who">安雅 · 红发队长</div>
+    我们的补给官分宝石有个绝招——<strong>先分，再看剩几颗</strong>。<br>
+    7 颗宝石分给 3 个人，每人 <code>7 // 3 = 2</code> 颗，还剩 <code>7 % 3 = 1</code> 颗归队长。<br>
+    那颗"多出来的"就是<b>余数</b>。它不参与平分，但它永远存在——而且特别有用。
+  </div>
+</div>
+
+<div class="section-header" id="s2">
+  <h2>2　关系运算符</h2>
+  <div class="en-title">Comparison Operators</div>
+</div>
+
+<p><strong>关系运算符</strong>用来"比大小"，它的结果<strong>只有两种：<code class="inline">True</code>（成立）或 <code class="inline">False</code>（不成立）</strong>。</p>
+
+<table class="styled">
+  <thead><tr><th>运算符</th><th>含义</th><th>例子</th><th>结果</th></tr></thead>
+  <tbody>
+    <tr><td><code class="inline">==</code></td><td>等于</td><td><code class="inline">10 == 10</code></td><td><code class="inline">True</code></td></tr>
+    <tr><td><code class="inline">!=</code></td><td>不等于</td><td><code class="inline">10 != 10</code></td><td><code class="inline">False</code></td></tr>
+    <tr><td><code class="inline">&gt;</code></td><td>大于</td><td><code class="inline">10 &gt; 9</code></td><td><code class="inline">True</code></td></tr>
+    <tr><td><code class="inline">&lt;</code></td><td>小于</td><td><code class="inline">10 &lt; 9</code></td><td><code class="inline">False</code></td></tr>
+    <tr><td><code class="inline">&gt;=</code></td><td>大于等于</td><td><code class="inline">10 &gt;= 10</code></td><td><code class="inline">True</code></td></tr>
+    <tr><td><code class="inline">&lt;=</code></td><td>小于等于</td><td><code class="inline">10 &lt;= 9</code></td><td><code class="inline">False</code></td></tr>
+  </tbody>
+</table>
+
+<div class="code-card">
+  <div class="code-head">
+    <span class="dot d1"></span><span class="dot d2"></span><span class="dot d3"></span>
+    <span class="file">比一比</span>
+    <span class="lang">Python</span>
+  </div>
+  <pre><code>print(10 &gt; 9)
+print(10 == 10)
+print(3 != 3)
+print(5 &gt;= 8)
+
+name = "安雅"
+print(name == "安雅")     # 字符串也能比较
+print(name == "塔林")</code></pre>
+  <div class="out"><b>OUTPUT</b>　True<br>True<br>False<br>False<br>True<br>False</div>
+</div>
+
+<div class="box warn">
+  <span class="lb">别混淆：</span><code class="inline">=</code> 是赋值（装东西），<code class="inline">==</code> 是比较（问一样吗）。
+  这两个符号虽然只差一个等号，但含义完全不同。
+</div>
+
+<!-- ============ 3 ============ -->
+<div class="cast hero">
+  <img class="ava" src="../assets/avatars/amara.webp" alt="阿玛拉" onerror="this.style.display='none'">
+  <div class="bubble">
+    <div class="who">阿玛拉 · 冷羽射手</div>
+    我们射手判断能不能放箭，只问三件事：<strong>够不够近、是不是敌人、中间有没有挡箭的墙</strong>。<br>
+    写进代码就是一行：<code>distance &lt; 30 and is_enemy and not has_wall</code>。<br>
+    你看，一个 <code>and</code> 就把三个条件拧成了一股绳。
+  </div>
+</div>
+
+<div class="section-header" id="s3">
+  <h2>3　逻辑运算符</h2>
+  <div class="en-title">Logical Operators</div>
+</div>
+
+<p>有时候一个条件不够用，需要把几个条件"组合"起来。Python 提供三个逻辑运算符：</p>
+
+<h3 id="s3-1">3.1 and 与 or</h3>
+
+<figure class="figure">
+  <svg class="diagram" viewBox="0 0 840 300" role="img" aria-label="and 与 or 的真值表">
+    <text x="24" y="34" font-size="14" font-weight="bold" fill="#1f2937">两扇门的规矩：and 要全开，or 开一个就行</text>
+
+    <rect x="50" y="60" width="340" height="210" rx="14" fill="#eef6ff" stroke="#3b82f6" stroke-width="2"/>
+    <text x="220" y="90" text-anchor="middle" font-size="15" fill="#1d4ed8" font-weight="bold">A and B</text>
+    <text x="220" y="114" text-anchor="middle" font-size="12" fill="#3b6ea8">两个条件都必须成立</text>
+    <line x1="80" y1="130" x2="360" y2="130" stroke="#cbd5e1" stroke-width="1.4"/>
+    <text x="120" y="158" font-size="12.5" fill="#475569" font-family="Consolas,monospace">True  and True</text>
+    <text x="320" y="158" font-size="12.5" fill="#166534" font-weight="bold">True</text>
+    <text x="120" y="186" font-size="12.5" fill="#475569" font-family="Consolas,monospace">True  and False</text>
+    <text x="320" y="186" font-size="12.5" fill="#b91c1c" font-weight="bold">False</text>
+    <text x="120" y="214" font-size="12.5" fill="#475569" font-family="Consolas,monospace">False and True</text>
+    <text x="320" y="214" font-size="12.5" fill="#b91c1c" font-weight="bold">False</text>
+    <text x="120" y="242" font-size="12.5" fill="#475569" font-family="Consolas,monospace">False and False</text>
+    <text x="320" y="242" font-size="12.5" fill="#b91c1c" font-weight="bold">False</text>
+
+    <rect x="450" y="60" width="340" height="210" rx="14" fill="#e9f8ef" stroke="#2e9e5b" stroke-width="2"/>
+    <text x="620" y="90" text-anchor="middle" font-size="15" fill="#1f7a44" font-weight="bold">A or B</text>
+    <text x="620" y="114" text-anchor="middle" font-size="12" fill="#3b7c5b">只要有一个成立就行</text>
+    <line x1="480" y1="130" x2="760" y2="130" stroke="#cbd5e1" stroke-width="1.4"/>
+    <text x="520" y="158" font-size="12.5" fill="#475569" font-family="Consolas,monospace">True  or True</text>
+    <text x="720" y="158" font-size="12.5" fill="#166534" font-weight="bold">True</text>
+    <text x="520" y="186" font-size="12.5" fill="#475569" font-family="Consolas,monospace">True  or False</text>
+    <text x="720" y="186" font-size="12.5" fill="#166534" font-weight="bold">True</text>
+    <text x="520" y="214" font-size="12.5" fill="#475569" font-family="Consolas,monospace">False or True</text>
+    <text x="720" y="214" font-size="12.5" fill="#166534" font-weight="bold">True</text>
+    <text x="520" y="242" font-size="12.5" fill="#475569" font-family="Consolas,monospace">False or False</text>
+    <text x="720" y="242" font-size="12.5" fill="#b91c1c" font-weight="bold">False</text>
+  </svg>
+  <div class="caption">图 5（SVG）：and 与 or 的完整真值表</div>
+</figure>
+
+<div class="box remember">
+  <span class="lb">记忆口诀：</span><br>
+  <strong>and（与）</strong>：一假则假，<strong>全真才真</strong>。<br>
+  <strong>or（或）</strong>：一真则真，<strong>全假才假</strong>。
+</div>
+
+<h3 id="s3-2">3.2 not 取反</h3>
+<p><code class="inline">not</code> 把 True 变 False、False 变 True：</p>
+<table class="styled">
+  <thead><tr><th>写法</th><th>结果</th></tr></thead>
+  <tbody>
+    <tr><td><code class="inline">not True</code></td><td><code class="inline">False</code></td></tr>
+    <tr><td><code class="inline">not False</code></td><td><code class="inline">True</code></td></tr>
+    <tr><td><code class="inline">not (10 &gt; 9)</code></td><td><code class="inline">False</code>（因为 10 &gt; 9 是 True）</td></tr>
+  </tbody>
+</table>
+
+<div class="code-card">
+  <div class="code-head">
+    <span class="dot d1"></span><span class="dot d2"></span><span class="dot d3"></span>
+    <span class="file">组合条件</span>
+    <span class="lang">Python</span>
+  </div>
+  <pre><code>hp = 80
+gold = 30
+
+# 血量够 且 金币够，才买得起药
+print(hp &gt; 50 and gold &gt; 20)
+
+# 血量低 或 没金币，都该撤退
+print(hp &lt; 30 or gold == 0)
+
+# 不在白天（即夜晚）
+is_day = False
+print(not is_day)</code></pre>
+  <div class="out"><b>OUTPUT</b>　True<br>False<br>True</div>
+</div>
+
+<h3 id="s3-3">3.3 逻辑运算的优先级</h3>
+<p>三个逻辑运算符之间的顺序是：<strong><code class="inline">not</code> &gt; <code class="inline">and</code> &gt; <code class="inline">or</code></strong>。</p>
+
+<div class="box info">
+  <span class="lb">完整优先级（从高到低）：</span>
+  <code class="inline">( )</code> → <code class="inline">**</code> → 正负号 → <code class="inline">* / // %</code> → <code class="inline">+ -</code> →
+  关系运算符（<code class="inline">== &gt; &lt;</code> 等）→ <code class="inline">not</code> → <code class="inline">and</code> → <code class="inline">or</code>。<br>
+  <strong>记不住就先加小括号</strong>——加括号永远是对的，而且更清楚。
+</div>
+
+<div class="code-card">
+  <div class="code-head">
+    <span class="dot d1"></span><span class="dot d2"></span><span class="dot d3"></span>
+    <span class="file">优先级实例</span>
+    <span class="lang">Python</span>
+  </div>
+  <pre><code>print(True or False and False)      # 先算 and
+print((True or False) and False)    # 括号优先
+print(not True and False)           # 先算 not
+print(3 + 4 &gt; 6 and 2 * 2 == 4)     # 先算数，再比较，最后 and</code></pre>
+  <div class="out"><b>OUTPUT</b>　True<br>False<br>False<br>True</div>
+</div>
+
+<!-- ============ 4 ============ -->
+<div class="section-header" id="s4">
+  <h2>4　复合赋值运算符</h2>
+  <div class="en-title">Compound Assignment</div>
+</div>
+
+<p>在第 2 单元你已经见过 <code class="inline">+=</code> 和 <code class="inline">-=</code>。其实算术运算符都能这么简写：</p>
+
+<table class="styled">
+  <thead><tr><th>简写</th><th>完整写法</th><th>例子（a 初始为 10）</th><th>运算后 a 的值</th></tr></thead>
+  <tbody>
+    <tr><td><code class="inline">a += 5</code></td><td><code class="inline">a = a + 5</code></td><td>10 + 5</td><td>15</td></tr>
+    <tr><td><code class="inline">a -= 5</code></td><td><code class="inline">a = a - 5</code></td><td>10 - 5</td><td>5</td></tr>
+    <tr><td><code class="inline">a *= 3</code></td><td><code class="inline">a = a * 3</code></td><td>10 * 3</td><td>30</td></tr>
+    <tr><td><code class="inline">a /= 4</code></td><td><code class="inline">a = a / 4</code></td><td>10 / 4</td><td>2.5</td></tr>
+    <tr><td><code class="inline">a //= 3</code></td><td><code class="inline">a = a // 3</code></td><td>10 // 3</td><td>3</td></tr>
+    <tr><td><code class="inline">a %= 3</code></td><td><code class="inline">a = a % 3</code></td><td>10 % 3</td><td>1</td></tr>
+    <tr><td><code class="inline">a **= 2</code></td><td><code class="inline">a = a ** 2</code></td><td>10 ** 2</td><td>100</td></tr>
+  </tbody>
+</table>
+
+<div class="code-card">
+  <div class="code-head">
+    <span class="dot d1"></span><span class="dot d2"></span><span class="dot d3"></span>
+    <span class="file">复合赋值实战</span>
+    <span class="lang">Python</span>
+  </div>
+  <pre><code>gold = 100
+gold += 50          # 捡到 50 金币
+print(gold)
+
+gold -= 30          # 花掉 30
+print(gold)
+
+gold *= 2           # 翻倍奖励
+print(gold)</code></pre>
+  <div class="out"><b>OUTPUT</b>　150<br>120<br>240</div>
+</div>
+
+<!-- ============ 5 ============ -->
+<div class="section-header" id="s5">
+  <h2>5　拓展：turtle 海龟绘图</h2>
+  <div class="en-title">Turtle Graphics</div>
+</div>
+
+<p>考纲一级要求"掌握图形库 turtle 的主要功能"。想象岗哨广场上趴着一只机械海龟，
+你给它下命令"前进 100 步""左转 90 度"，它就会<strong>一边爬一边留下痕迹</strong>，最后画出一个图形。</p>
+
+<p>要使用 turtle，第一步是<strong>导入模块</strong>：</p>
+
+<div class="code-card">
+  <div class="code-head">
+    <span class="dot d1"></span><span class="dot d2"></span><span class="dot d3"></span>
+    <span class="file">第一个海龟程序</span>
+    <span class="lang">Python</span>
+  </div>
+  <pre><code>import turtle          # 导入海龟绘图模块
+
+turtle.forward(100)    # 向前爬 100
+turtle.right(90)       # 右转 90 度
+turtle.forward(100)    # 再向前爬 100
+
+turtle.done()          # 结束绘图，保持窗口不关闭</code></pre>
+  <div class="out"><b>效果</b>　画出一个"直角"，像骰子上的 L 形</div>
+</div>
+
+<table class="styled">
+  <thead><tr><th>指令</th><th>作用</th><th>说明</th></tr></thead>
+  <tbody>
+    <tr><td><code class="inline">import turtle</code></td><td>导入模块</td><td>不导入就用不了任何海龟指令</td></tr>
+    <tr><td><code class="inline">forward(d)</code> / <code class="inline">fd(d)</code></td><td>前进 d 步</td><td>一边走一边画线</td></tr>
+    <tr><td><code class="inline">backward(d)</code></td><td>后退 d 步</td><td>同样会画线</td></tr>
+    <tr><td><code class="inline">right(角度)</code></td><td>右转</td><td>只转向，不移动</td></tr>
+    <tr><td><code class="inline">left(角度)</code></td><td>左转</td><td>只转向，不移动</td></tr>
+    <tr><td><code class="inline">goto(x, y)</code></td><td>移动到坐标 (x, y)</td><td><strong>移动过程中会画线</strong></td></tr>
+    <tr><td><code class="inline">home()</code></td><td>回到原点 (0,0)</td><td>也会画线</td></tr>
+    <tr><td><code class="inline">penup()</code> / <code class="inline">pu()</code></td><td>抬笔</td><td>之后移动不再留下痕迹</td></tr>
+    <tr><td><code class="inline">pendown()</code> / <code class="inline">pd()</code></td><td>落笔</td><td>恢复"边走边画"</td></tr>
+    <tr><td><code class="inline">turtle.done()</code></td><td>结束绘图</td><td>写在最后，防止窗口闪退</td></tr>
+  </tbody>
+</table>
+
+<div class="box info">
+  <span class="lb">起点与朝向：</span>海龟默认从画布<strong>中心</strong>出发，
+  初始朝<strong>右</strong>（0 度）。<code class="inline">right(90)</code> 是顺时针转，<code class="inline">left(90)</code> 是逆时针转。
+  注意 <code class="inline">right(90)</code> 与 <code class="inline">left(-90)</code> 效果<strong>完全相同</strong>（真题考过）。
+</div>
+
+<div class="code-card">
+  <div class="code-head">
+    <span class="dot d1"></span><span class="dot d2"></span><span class="dot d3"></span>
+    <span class="file">用循环画一个正方形</span>
+    <span class="lang">Python</span>
+  </div>
+  <pre><code>import turtle
+
+for i in range(4):        # 重复 4 次（循环下个单元细讲）
+    turtle.forward(100)
+    turtle.right(90)
+
+turtle.done()</code></pre>
+  <div class="out"><b>效果</b>　画出一个边长为 100 的正方形</div>
+</div>
+
+<figure class="pic">
+  <img src="../assets/illustrations/py-L1-03-01_alchemy_table.webp" alt="炼金配方台"
+       onerror="this.closest('.pic').classList.add('missing')">
+  <div class="ph">
+    <div class="fn">assets/illustrations/py-L1-03-01_alchemy_table.webp</div>
+    <div class="ds">【配图位】岗哨地下室的炼金台：桌上摆满发光的药剂瓶，每只瓶身刻着一个运算符符号；一名新兵把两瓶药剂倒进中央的结果水晶杯，杯内液体变色并冒出星点；暖橙色火光与青色药液对比。</div>
+  </div>
+  <figcaption>图 6：把两只瓶子倒进水晶杯——这就是一次运算</figcaption>
+</figure>
+
+<figure class="pic">
+  <img src="../assets/illustrations/py-L1-03-02_precedence_scales.webp" alt="优先级天平"
+       onerror="this.closest('.pic').classList.add('missing')">
+  <div class="ph">
+    <div class="fn">assets/illustrations/py-L1-03-02_precedence_scales.webp</div>
+    <div class="ds">【配图位】一架三层黄铜天平：顶层放着幂运算的砝码，中层放着乘除与取余，底层放着加减；每层砝码发光，天平整体矗立在岗哨的炼金台旁。</div>
+  </div>
+  <figcaption>图 7：优先级就像天平——越靠上的越先算</figcaption>
+</figure>
+
+<!-- ============ 6 ============ -->
+<div class="section-header" id="s6">
+  <h2>6　代码实战</h2>
+  <div class="en-title">Level Practice</div>
+</div>
+
+<div class="level-card">
+  <div class="lc-head"><span class="n">关卡</span><h4>火中取宝</h4><span class="go">进入关卡 →</span></div>
+  <div class="lc-body">
+    <div class="story">
+      <b>故事：</b>地面像呼吸一样喷吐着火舌，火焰陷阱在等你犯错。更麻烦的是，宝石旁边还站着食人魔。<br>
+      但你注意到一件事：<b>这些陷阱对食人魔同样致命</b>。如果能引诱它踏进火海，
+      你就能不战而胜——<b>有时候，环境就是最好的武器</b>。
+    </div>
+    <figure class="pic">
+      <img src="../assets/stages/py-L1-03-stage1_fire_treasure.webp" alt="火中取宝 关卡截图"
+           onerror="this.closest('.pic').classList.add('missing')">
+      <div class="ph">
+        <div class="fn">assets/stages/py-L1-03-stage1_fire_treasure.webp</div>
+        <div class="ds">【关卡截图位】请把《火中取宝》的游戏画面截图放到此处（放入 assets/stages/ 目录，文件名为 py-L1-03-stage1_fire_treasure.webp）。</div>
+      </div>
+      <figcaption>关卡实况：火中取宝</figcaption>
+    </figure>
+    <p><strong>思路：</strong>看上面的关卡实况——火焰陷阱遍地，但存在一条安全路径。
+    这一关考的是"用最少的代码，走最聪明的路"：数一数哪一段是连续的直线，
+    就把它<b>合成一条指令</b>——而括号里那个数字，正是本单元的主角：<strong>数值</strong>。</p>
+    <div class="code-card">
+      <div class="code-head">
+        <span class="dot d1"></span><span class="dot d2"></span><span class="dot d3"></span>
+        <span class="file">重点示例：把好几步合成一步</span>
+        <span class="lang">Python</span>
+      </div>
+      <pre><code>hero.moveRight(3)     # 一次向右走 3 格
+hero.moveUp()         # 向上走 1 格；不填数字就是默认的 1
+hero.moveDown(3)      # 一次向下走 3 格</code></pre>
+      <div class="out"><b>就这个套路</b>　把路线拆成几段直线，每段合成一条指令；剩下两段的写法完全一样，留给你自己补</div>
+    </div>
+    <div class="box remember">
+      <span class="lb">和运算符接上了：</span>括号里不一定只能写一个数——
+      你完全可以写 <code class="inline">hero.moveRight(2 + 1)</code>。
+      Python 会<b>先算出 3</b>，再把 3 交给方法。<br>
+      <b>记住这句话：程序里凡是要"算一算"的地方，都归运算符管。</b>
+    </div>
+    <div class="box tip">
+      <span class="lb">省代码也是一种本事：</span>把 <code class="inline">moveRight()</code> 连写三遍，
+      和 <code class="inline">moveRight(3)</code> 写一遍，效果完全一样，但后者少写两行。
+      程序员管这叫"代码优化"——<strong>用更少的字，办同样的事</strong>。
+    </div>
+    <a class="btn-go" href="https://codecombat.cn/" target="_blank" rel="noopener">去扣哒世界闯这一关 →</a>
+  </div>
+</div>
+
+<!-- ============ 7 ============ -->
+<div class="section-header" id="s7">
+  <h2>7　常见陷阱</h2>
+  <div class="en-title">Common Pitfalls &amp; Debugging</div>
+</div>
+
+<div class="cast duck">
+  <img class="ava" src="../assets/ducks/duck_usara.webp" alt="扣哒鸭" onerror="this.style.display='none'">
+  <div class="bubble">
+    <div class="who">扣哒鸭 · 调试官</div>
+    运算符这章的错误，一半来自"想当然"，一半来自"记混了符号"。
+    下面五个，是我见你犯得最多的。
+  </div>
+</div>
+
+<div class="pit">
+  <div class="pt">
+    <div class="x">1</div>
+    <div class="t"><b>把 <code class="inline">//</code> 当成注释。</b>以为 <code class="inline">a = 7 // 2</code> 后面一段会被忽略。</div>
+  </div>
+  <div class="duck">
+    <img src="../assets/ducks/duck_hattori.webp" alt="扣哒鸭" onerror="this.style.display='none'">
+    <div class="dt"><b>扣哒鸭：</b><code>//</code> 是<strong>整除</strong>，不是注释。
+    Python 的注释是 <code>#</code>（一个井号）。你把整数除法的符号当成了注释符，
+    难怪结果对不上。</div>
+  </div>
+  <div class="fix"><b>正确写法：</b><code class="inline">7 // 2</code> → 3；注释用 <code class="inline"># 这里是注释</code></div>
+</div>
+
+<div class="pit">
+  <div class="pt">
+    <div class="x">2</div>
+    <div class="t"><b>乘方写成了 <code class="inline">^</code>。</b>写 <code class="inline">2 ^ 3</code> 想要 8，结果得到 1。</div>
+  </div>
+  <div class="duck">
+    <img src="../assets/ducks/duck_zana.webp" alt="扣哒鸭" onerror="this.style.display='none'">
+    <div class="dt"><b>扣哒鸭：</b><code>^</code> 在 Python 里<strong>不是乘方</strong>，是"按位异或"，三级才学。
+    乘方要用<strong>两个星号</strong>：<code>2 ** 3</code>。少一个星号，意思全变。</div>
+  </div>
+  <div class="fix"><b>正确写法：</b><code class="inline">2 ** 3</code> → 8</div>
+</div>
+
+<div class="pit">
+  <div class="pt">
+    <div class="x">3</div>
+    <div class="t"><b>以为 <code class="inline">/</code> 的结果一定是整数。</b>算 <code class="inline">10 / 2</code> 得到 <code class="inline">5.0</code> 而不是 <code class="inline">5</code>。</div>
+  </div>
+  <div class="duck">
+    <img src="../assets/ducks/duck_naria.webp" alt="扣哒鸭" onerror="this.style.display='none'">
+    <div class="dt"><b>扣哒鸭：</b>在 Python 3 里，<strong>真除 <code>/</code> 的结果永远是浮点数</strong>，
+    能整除也会带小数点。想要整数结果，用 <code>//</code> 或者 <code>int()</code> 套一层。</div>
+  </div>
+  <div class="fix"><b>正确写法：</b><code class="inline">10 // 2</code> → 5；<code class="inline">int(10 / 2)</code> → 5</div>
+</div>
+
+<div class="pit">
+  <div class="pt">
+    <div class="x">4</div>
+    <div class="t"><b>搞错 <code class="inline">-2 ** 2</code> 的结果。</b>以为是 4，实际是 -4。</div>
+  </div>
+  <div class="duck">
+    <img src="../assets/ducks/duck_senick.webp" alt="扣哒鸭" onerror="this.style.display='none'">
+    <div class="dt"><b>扣哒鸭：</b><strong>幂运算比负号优先级高</strong>：
+    <code>-2 ** 2</code> 先算 <code>2 ** 2 = 4</code>，再取负得 -4。
+    想要 (-2) 的平方，必须写 <code>(-2) ** 2</code>。这个点在真题里出现不止一次。</div>
+  </div>
+  <div class="fix"><b>正确写法：</b>想算平方就加括号：<code class="inline">(-2) ** 2</code> → 4</div>
+</div>
+
+<div class="pit">
+  <div class="pt">
+    <div class="x">5</div>
+    <div class="t"><b>把 <code class="inline">=</code> 用在条件里。</b>写 <code class="inline">if a = 5:</code>，程序直接报语法错误。</div>
+  </div>
+  <div class="duck">
+    <img src="../assets/ducks/duck_illia.webp" alt="扣哒鸭" onerror="this.style.display='none'">
+    <div class="dt"><b>扣哒鸭：</b>判断相等要写<strong>两个等号</strong> <code>==</code>；
+    一个等号是"装东西"，不能用在条件里。你写 <code>if a = 5</code>，
+    等于在说'把 5 装进 a，然后判断它'——计算机当然不干。</div>
+  </div>
+  <div class="fix"><b>正确写法：</b><code class="inline">if a == 5:</code></div>
+</div>
+
+<!-- ============ 8 ============ -->
+<div class="section-header" id="s8">
+  <h2>8　题目练习</h2>
+  <div class="en-title">Practice</div>
+</div>
+
+<p>下面 7 道题中，前 3 道<strong>改编自 GESP 真题</strong>，后 4 道为<strong>原创练习题</strong>。</p>
+
+<div class="exam">
+  <div class="eh"><span class="src">改编自 2026 年 9 月 · Python 一级 · 第 4 题</span><span class="tp">单选题</span></div>
+  <div class="eb">
+    <div class="q">下列 Python 表达式与 <code class="inline">2 * -2 ** 4</code> 的值相同的是（　　）。</div>
+    <div class="opt">
+      <i>A.</i>(2 * -2) ** 4<br>
+      <i>B.</i>2 * (-2) ** 4<br>
+      <i>C.</i>2 * -(2 ** 4)<br>
+      <i>D.</i>-(2 * 2) ** 4
+    </div>
+    <details><summary>查看答案与详解</summary>
+      <div class="ans"><b>答案：C</b>。幂运算 <code class="inline">**</code> 的优先级<strong>高于一元负号</strong>，
+      所以 <code class="inline">-2 ** 4</code> 先算 2**4 = 16，再取负得 -16；整个表达式是 2 × (-16) = <strong>-32</strong>。<br>
+      C 项 <code class="inline">2 * -(2 ** 4)</code> = 2 × (-16) = -32，与之相同；<br>
+      B 项 <code class="inline">2 * (-2) ** 4</code> = 2 × 16 = 32，是把负号"提前"了，最容易被误选。<br>
+      <span class="tagline">对应小节</span>1.3 运算符优先级。</div>
+    </details>
+  </div>
+</div>
+
+<div class="exam">
+  <div class="eh"><span class="src">改编自 2026 年 9 月 · Python 一级 · 第 6 题</span><span class="tp">单选题</span></div>
+  <div class="eb">
+    <div class="q">下列 Python 代码执行后，其输出是（　　）。</div>
+    <pre>1  a = 8
+2  b = 10
+3  print(a % b, a / b, a // b )</pre>
+    <div class="opt"><i>A.</i>8 0.8 0　　<i>B.</i>0 0.8 0　　<i>C.</i>8 0 0.8　　<i>D.</i>0 0 0.8</div>
+    <details><summary>查看答案与详解</summary>
+      <div class="ans"><b>答案：A</b>。<br>
+      <code class="inline">a % b</code> 取余 → 8 % 10 = <strong>8</strong>（8 不够除 10，余数就是它自己）；<br>
+      <code class="inline">a / b</code> 真除 → 8 / 10 = <strong>0.8</strong>；<br>
+      <code class="inline">a // b</code> 整除 → 8 // 10 = <strong>0</strong>。<br>
+      <span class="tagline">对应小节</span>1.2 除法三兄弟。</div>
+    </details>
+  </div>
+</div>
+
+<div class="exam">
+  <div class="eh"><span class="src">改编自 2026 年 9 月 · Python 一级 · 判断题第 9 题</span><span class="tp">判断题</span></div>
+  <div class="eb">
+    <div class="q">在 Python turtle 中，<code class="inline">turtle.right(90)</code> 与 <code class="inline">turtle.left(-90)</code> 的效果相同。（　　）</div>
+    <details><summary>查看答案与详解</summary>
+      <div class="ans"><b>答案：正确（√）</b>。right(90) 是右转 90 度；left(-90) 是左转 -90 度，也就是右转 90 度。
+      两者朝向变化完全一致。<br>
+      <b>引申：</b>left 与 right 互为逆运算，"负角度"的写法常用来考转角的等价性。<br>
+      <span class="tagline">对应小节</span>5 turtle 海龟绘图。</div>
+    </details>
+  </div>
+</div>
+
+<div class="exam">
+  <div class="eh"><span class="src ori">原创练习题</span><span class="tp">单选题</span></div>
+  <div class="eb">
+    <div class="q">下列 Python 代码执行后，输出的结果是（　　）。</div>
+    <pre>1  a = 17
+2  b = 5
+3  print(a // b + a % b)</pre>
+    <div class="opt"><i>A.</i>3　　<i>B.</i>5　　<i>C.</i>7　　<i>D.</i>22</div>
+    <details><summary>查看答案与详解</summary>
+      <div class="ans"><b>答案：B</b>。先算 <code class="inline">a // b</code> = 17 // 5 = <strong>3</strong>；
+      再算 <code class="inline">a % b</code> = 17 % 5 = <strong>2</strong>；3 + 2 = <strong>5</strong>。<br>
+      <b>记住这个组合：</b><code class="inline">//</code> 和 <code class="inline">%</code> 一起用，可以拆出一个数的"商"与"余数"——
+      这是后面做题的常用套路。<br>
+      <span class="tagline">对应小节</span>1.2 除法三兄弟。</div>
+    </details>
+  </div>
+</div>
+
+<div class="exam">
+  <div class="eh"><span class="src ori">原创练习题</span><span class="tp">单选题</span></div>
+  <div class="eb">
+    <div class="q">下列 Python 代码执行后，输出的结果是（　　）。</div>
+    <pre>1  print(10 - 2 ** 3 // 4 + 1)</pre>
+    <div class="opt"><i>A.</i>7　　<i>B.</i>9　　<i>C.</i>11　　<i>D.</i>3</div>
+    <details><summary>查看答案与详解</summary>
+      <div class="ans"><b>答案：B</b>。按优先级逐步算：<br>
+      ① 先算幂：<code class="inline">2 ** 3</code> = 8<br>
+      ② 再算整除：<code class="inline">8 // 4</code> = 2<br>
+      ③ 最后从左往右算加减：<code class="inline">10 - 2 + 1</code> = <strong>9</strong><br>
+      <b>易错点：</b>加减属于同级运算，必须<strong>从左往右</strong>依次算。
+      若先算 <code class="inline">2 + 1 = 3</code> 再去减，会得到 7，那就错了。<br>
+      <span class="tagline">对应小节</span>1.3 运算符优先级。</div>
+    </details>
+  </div>
+</div>
+
+<div class="exam">
+  <div class="eh"><span class="src ori">原创练习题</span><span class="tp">判断题</span></div>
+  <div class="eb">
+    <div class="q">表达式 <code class="inline">True or False and False</code> 的结果是 True。（　　）</div>
+    <details><summary>查看答案与详解</summary>
+      <div class="ans"><b>答案：正确（√）</b>。<code class="inline">and</code> 的优先级高于 <code class="inline">or</code>，
+      所以先算 <code class="inline">False and False</code> = False；
+      再算 <code class="inline">True or False</code> = <strong>True</strong>。<br>
+      <b>易错点：</b>如果误以为从左往右算，会先算 <code class="inline">True or False</code> = True，
+      再算 <code class="inline">True and False</code> = False，那就错了。<br>
+      <span class="tagline">对应小节</span>3.3 逻辑运算的优先级。</div>
+    </details>
+  </div>
+</div>
+
+<div class="exam">
+  <div class="eh"><span class="src ori">原创练习题</span><span class="tp">编程题</span></div>
+  <div class="eb">
+    <div class="q">题目要求：设 a = 123，用运算符分别求出它的<strong>个位数</strong>、<strong>十位数</strong>与<strong>百位数</strong>，并分行输出。</div>
+    <details><summary>查看参考答案与要点</summary>
+      <div class="ans">
+<pre style="margin:0;background:#1b2a21;color:#c9d6cd;border-radius:10px;padding:14px 16px">a = 123
+
+print(a % 10)          # 个位：取余 10
+print(a // 10 % 10)    # 十位：先整除 10 砍掉个位，再取余 10
+print(a // 100)        # 百位：整除 100 直接砍掉后两位</pre>
+      <p style="margin-top:12px"><b>输出：</b>3　2　1<br>
+      <b>要点：</b><br>
+      ① 取个位用 <code class="inline">% 10</code>；<br>
+      ② 取中间位要"先砍后取"：<code class="inline">a // 10 % 10</code>；<br>
+      ③ 取最高位（已知三位数）可以直接 <code class="inline">// 100</code>。<br>
+      <span class="tagline">对应小节</span>1.2 除法三兄弟。</p>
+      </div>
+    </details>
+  </div>
+</div>
+
+<!-- ============ 9 ============ -->
+<div class="section-header" id="s9">
+  <h2>9　本单元小结</h2>
+  <div class="en-title">Unit Summary</div>
+</div>
+
+<div class="cast teacher">
+  <img class="ava" src="../assets/avatars/hushbaum.webp" alt="贺舒曼" onerror="this.style.display='none'">
+  <div class="bubble">
+    <div class="who">贺舒曼 · 镜中先知</div>
+    运算符是程序的"动词"。你们今天学的三套符号——
+    <strong>算术算子负责算数，关系算子负责比较，逻辑算子负责组合条件</strong>——
+    往后无论写多复杂的程序，都只是在反复调用这三套东西。<br>
+    我只提醒一句：<strong>优先级记不住就加括号</strong>。括号不花钱，但能省下你半小时的调试时间。
+  </div>
+</div>
+
+<div class="summary">
+  <h3>你在炼金台前收获了什么</h3>
+  <ul>
+    <li><strong>算术运算符</strong>——<code class="inline">+ - * / // % **</code>；除法三兄弟各司其职。</li>
+    <li><strong>取余的用途</strong>——判断奇偶、取个位、让数字循环。</li>
+    <li><strong>优先级</strong>——括号 → 幂 → 乘除取余 → 加减 → 比较 → not → and → or；<code class="inline">-2 ** 2</code> 等于 -4。</li>
+    <li><strong>关系运算符</strong>——<code class="inline">== != &gt; &lt; &gt;= &lt;=</code>，结果只有 True / False。</li>
+    <li><strong>逻辑运算符</strong>——<code class="inline">and</code> 全真才真、<code class="inline">or</code> 一真则真、<code class="inline">not</code> 取反。</li>
+    <li><strong>复合赋值</strong>——<code class="inline">+= -= *= /= //= %= **=</code>。</li>
+    <li><strong>turtle 绘图</strong>——导入模块、前进后退、左右转向、抬笔落笔、<code class="inline">goto</code> 与 <code class="inline">home</code>。</li>
+  </ul>
+</div>
+
+<div class="pager">
+  <a href="py-1-02.html"><div class="k">← 上一单元</div><div class="v">会记事的木箱 · 变量、常量与数据类型</div></a>
+  <a href="../index.html" target="_top" class="back"><div class="k">返回</div><div class="v">考纲之路 · 总目录</div></a>
+  <a href="py-1-04.html"><div class="k">下一单元 →</div><div class="v">潮汐升降梯 · 顺序结构与输入输出</div></a>
+</div>
+
+<div class="cta">
+  <h3>下一站：潮汐升降梯</h3>
+  <p>会算了，还得会"把东西收进来、把结果送出去"。
+  下一单元我们研究输入与输出——这是让程序和外界真正打上交道的第一步。</p>
+  <a class="btn-go" href="https://codecombat.cn/" target="_blank" rel="noopener">加入扣哒世界，把这条考纲之路走一遍 →</a>
+</div>
+
+</div><!-- /container -->
+</div><!-- /page -->
+
+<script>
+const KEYWORDS = new Set(("while for if elif else break continue def return pass not and or in is None True False " +
+  "int float bool str list dict input print range randint import turtle type round").split(" "));
+
+function esc(s){ return s.replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;'); }
+
+function highlight(src){
+  let out = '', i = 0;
+  const n = src.length;
+  while (i < n){
+    const c = src[i];
+    if (c === '#'){
+      let j = src.indexOf('\n', i); if (j < 0) j = n;
+      out += '<span class="cm">' + esc(src.slice(i, j)) + '</span>';
+      i = j; continue;
+    }
+    if (c === '"' || c === "'"){
+      let j = i + 1;
+      while (j < n && src[j] !== c){ if (src[j] === '\\') j++; j++; }
+      j = Math.min(j + 1, n);
+      out += '<span class="st">' + esc(src.slice(i, j)) + '</span>';
+      i = j; continue;
+    }
+    if (/[0-9]/.test(c)){
+      let j = i;
+      while (j < n && /[0-9.]/.test(src[j])) j++;
+      out += '<span class="nu">' + esc(src.slice(i, j)) + '</span>';
+      i = j; continue;
+    }
+    if (/[A-Za-z_]/.test(c)){
+      let j = i;
+      while (j < n && /[A-Za-z0-9_]/.test(src[j])) j++;
+      const w = src.slice(i, j);
+      if (KEYWORDS.has(w)) out += '<span class="kw">' + esc(w) + '</span>';
+      else if (src[j] === '(') out += '<span class="fn">' + esc(w) + '</span>';
+      else out += esc(w);
+      i = j; continue;
+    }
+    out += esc(c); i++;
+  }
+  return out;
+}
+
+document.querySelectorAll('.code-card pre code').forEach(block => {
+  block.innerHTML = highlight(block.textContent);
+});
+
+if (location.search.indexOf('expand') >= 0) {
+  document.querySelectorAll('details').forEach(d => d.open = true);
+}
+document.querySelectorAll('.sidebar-nav a').forEach(a => {
+  a.addEventListener('click', () => {
+    if (window.innerWidth <= 900) document.querySelector('.sidebar-nav').classList.remove('active');
+  });
+});
+</script>
+</body>
+</html>

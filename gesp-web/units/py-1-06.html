@@ -1,0 +1,1575 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="copyright" content="CodeCombat Inc. codecombat.cn">
+<title>永不熄的齿轮 · 循环结构 | 扣哒考级 · GESP Python 一级</title>
+<style>
+  :root{
+    --primary:#2e9e5b; --primary-light:#4fbf7c; --primary-lighter:#e9f8ef; --primary-dark:#1f7a44;
+    --brand:#ff6b35; --brand-dark:#e8541f; --brand-soft:#fff3ec;
+    --night:#131c2b; --night-2:#1e2a3a;
+    --gold:#f5b301;
+    --text:#26302a; --dim:#63756b; --dim2:#8d9d94;
+    --bg:#ffffff; --bg-soft:#f7fbf8; --line:#e2ece6;
+    --sidebar:274px;
+    --code-bg:#1b2a21; --code-tx:#c9d6cd;
+    --code-kw:#c678dd; --code-st:#98c379; --code-nu:#d19a66; --code-cm:#6b7f72; --code-fn:#61afef;
+  }
+  *{margin:0;padding:0;box-sizing:border-box}
+  html{scroll-behavior:smooth}
+  body{
+    font-family:"PingFang SC","Microsoft YaHei","Segoe UI",-apple-system,sans-serif;
+    line-height:1.9;color:var(--text);background:var(--bg);font-size:15.5px;
+  }
+
+  /* ============ 左侧目录 ============ */
+  .sidebar-nav{
+    position:fixed;top:0;left:0;width:var(--sidebar);height:100vh;overflow-y:auto;
+    background:linear-gradient(180deg,#101a26,#182636);padding:16px 0 40px;z-index:100;
+    border-right:3px solid var(--brand);transition:transform .3s ease;
+  }
+  .sidebar-nav::-webkit-scrollbar{width:5px}
+  .sidebar-nav::-webkit-scrollbar-thumb{background:var(--brand);border-radius:4px}
+  .sb-brand{display:flex;align-items:center;gap:10px;padding:10px 13px 12px;border-bottom:1px solid #26384c;margin-bottom:8px}
+  .sidebar-nav a.sb-logo{display:flex;align-items:center;justify-content:center;flex-shrink:0;padding:0;border-left:none;transition:.2s}
+  .sb-logo:hover{transform:scale(1.08)}
+  .sb-logo img{height:34px;width:34px;display:block;object-fit:contain;border-radius:8px}
+  .sb-brand b{color:#f2f6fa;font-size:14px;letter-spacing:.5px;display:block;line-height:1.4}
+  .sb-brand span{color:#7f95ab;font-size:11.5px;display:block;line-height:1.4}
+  .nav-title{color:#ffb894;font-size:12px;font-weight:800;padding:10px 18px 6px;letter-spacing:1.2px}
+  .sidebar-nav a{
+    display:block;color:#c3d0dc;text-decoration:none;padding:6px 18px;font-size:12.5px;
+    line-height:1.55;border-left:3px solid transparent;transition:.18s;
+  }
+  .sidebar-nav a:hover{color:#fff;background:rgba(255,107,53,.16);border-left-color:var(--brand)}
+  .sidebar-nav a.nav-section{color:#ffb894;font-weight:700;font-size:13px;margin-top:11px;padding-top:10px;border-top:1px solid #26384c}
+  .sidebar-nav a.nav-section:first-of-type{border-top:none;margin-top:0;padding-top:6px}
+  .sidebar-nav a.nav-sub{padding-left:30px;color:#93a8bc;font-size:12px}
+  .sidebar-nav a.nav-sub:hover{color:#fff}
+  .sb-back{margin:16px 14px 0;display:block;text-align:center;padding:9px;border-radius:9px;background:#22344a;color:#a9c0d6 !important;font-size:12px;font-weight:700;border-left:none !important}
+  .sb-back:hover{background:var(--brand) !important;color:#fff !important}
+  .nav-toggle{display:none;position:fixed;top:14px;left:14px;z-index:120;background:var(--brand);color:#fff;border:none;border-radius:9px;padding:9px 13px;font-size:15px;cursor:pointer;box-shadow:0 4px 14px rgba(0,0,0,.25)}
+
+  .page{margin-left:var(--sidebar)}
+
+  /* ============ Hero ============ */
+  .hero{
+    position:relative;overflow:hidden;padding:44px 52px;color:#fff;
+    background:linear-gradient(125deg,#0e1724 0%,#1b2b3f 46%,#8a3a16 132%);
+  }
+  .hero::after{content:"";position:absolute;right:-90px;top:-110px;width:400px;height:400px;border-radius:50%;background:radial-gradient(circle,rgba(245,179,1,.30),transparent 68%)}
+  .hero-top{display:flex;gap:36px;align-items:center;position:relative;z-index:2}
+  .hero-txt{flex:1;min-width:0}
+  .hero .crumb{font-size:11.5px;color:#ffb894;letter-spacing:1.5px;font-weight:700;margin-bottom:14px}
+  .hero h1{font-size:31px;font-weight:800;line-height:1.3;letter-spacing:.6px;margin-bottom:8px}
+  .hero h1 .sub{display:block;font-size:18px;font-weight:700;color:#ffd2b3;margin-top:6px;letter-spacing:.3px}
+  .hero .en{font-size:13px;color:#9db4c8;font-style:italic;margin-bottom:18px}
+  .hero .tags{display:flex;flex-wrap:wrap;gap:8px}
+  .tag{font-size:11.5px;padding:4px 12px;border-radius:20px;background:rgba(255,255,255,.12);border:1px solid rgba(255,255,255,.22);color:#e8f0f6;font-weight:600}
+  .tag.hot{background:rgba(255,107,53,.92);border-color:transparent;color:#fff}
+
+  .hero-card{flex-shrink:0;width:200px;text-align:center}
+  .hero-card .ava{
+    width:148px;height:148px;border-radius:50%;object-fit:cover;object-position:top center;
+    border:4px solid rgba(255,180,140,.6);box-shadow:0 14px 34px rgba(0,0,0,.45);
+    background:#24344a;
+  }
+  .hero-card .nm{font-size:15px;font-weight:800;color:#fff;margin-top:10px}
+  .hero-card .ti{font-size:11.5px;color:#ffb894;margin-top:2px}
+
+  .container{max-width:1080px;margin:0 auto;padding:38px 52px 70px}
+
+  .lead{
+    font-size:15.5px;line-height:2.05;color:#38453d;background:linear-gradient(120deg,#fff8f3,#f7fbf8);
+    border-left:5px solid var(--brand);border-radius:0 14px 14px 0;padding:22px 26px;margin-bottom:32px;
+  }
+  .lead b{color:var(--brand-dark)}
+
+  /* 角色对话 */
+  .cast{display:flex;gap:16px;align-items:flex-start;border-radius:16px;padding:18px 22px;margin:24px 0}
+  .cast .ava{width:72px;height:72px;border-radius:50%;object-fit:cover;object-position:top center;flex-shrink:0;background:#e8eef5}
+  .cast .bubble{position:relative;font-size:14px;line-height:1.95;padding-top:2px;flex:1}
+  .cast .who{font-size:12px;font-weight:800;margin-bottom:5px;letter-spacing:.5px}
+  .cast.anya{background:var(--brand-soft);border:1px solid #ffdcc9}
+  .cast.anya .who{color:var(--brand-dark)}
+  .cast.anya .bubble{color:#5c4636}
+  .cast.duck{background:#fff5f5;border:1px solid #fbd5d5}
+  .cast.duck .who{color:#b91c1c}
+  .cast.duck .bubble{color:#5c4141}
+  .cast.teacher{background:linear-gradient(120deg,#f4f7fb,#ffffff);border:1px solid #dbe4f0}
+  .cast.teacher .who{color:#1e293b}
+  .cast.teacher .bubble{color:#3c4a5a}
+
+  /* 目标卡 */
+  .goal-grid{display:grid;grid-template-columns:1fr 1fr;gap:16px;margin-bottom:36px}
+  .goal{border:1px solid var(--line);border-radius:15px;padding:19px 21px;background:#fff;box-shadow:0 4px 16px rgba(31,122,68,.05)}
+  .goal h4{font-size:14px;font-weight:800;margin-bottom:11px;display:flex;align-items:center;gap:8px;color:var(--primary-dark)}
+  .goal h4 .ic{width:22px;height:22px;border-radius:7px;background:var(--primary-lighter);display:flex;align-items:center;justify-content:center;font-size:12px}
+  .goal ul{list-style:none}
+  .goal li{font-size:13.5px;color:#4b5a52;line-height:1.9;padding-left:18px;position:relative}
+  .goal li::before{content:"▸";position:absolute;left:0;color:var(--primary);font-weight:800}
+  .goal.syllabus li::before{content:"✓"}
+
+  /* 分节 */
+  .section-header{margin:52px 0 24px;padding-bottom:12px;border-bottom:3px solid var(--brand);display:flex;align-items:baseline;gap:14px;flex-wrap:wrap}
+  .section-header h2{font-size:22px;font-weight:800;color:var(--night);letter-spacing:.4px}
+  .section-header .en-title{font-size:12px;color:var(--dim2);font-style:italic}
+  h3{font-size:17.5px;font-weight:800;margin:34px 0 14px;color:var(--night);display:flex;align-items:center;gap:10px}
+  h3::before{content:"";width:5px;height:17px;border-radius:3px;background:var(--brand);flex-shrink:0}
+  h4{font-size:15px;font-weight:800;margin:24px 0 10px;color:#33513f}
+  p{margin:12px 0;color:#3c4a42;line-height:2}
+  strong{color:var(--primary-dark)}
+  code.inline{background:var(--primary-lighter);color:var(--primary-dark);padding:2px 7px;border-radius:6px;font-family:"SFMono-Regular",Consolas,Menlo,monospace;font-size:.9em;font-weight:600}
+
+  /* 图 */
+  .figure{margin:24px 0;text-align:center}
+  .figure svg.diagram{max-width:100%;height:auto;background:#fff;border:1px solid var(--line);border-radius:14px;padding:10px}
+  .figure .caption{font-size:12.5px;color:var(--dim2);margin-top:9px}
+
+  /* PNG 配图（带缺失占位） */
+  .pic{margin:26px 0;text-align:center}
+  .pic img{max-width:100%;border-radius:16px;box-shadow:0 10px 28px rgba(30,60,45,.15);display:block;margin:0 auto}
+  .pic figcaption{font-size:12.5px;color:var(--dim2);margin-top:9px}
+  .pic .ph{display:none}
+  .pic.missing img{display:none}
+  .pic.missing .ph{
+    display:flex;flex-direction:column;align-items:center;justify-content:center;gap:9px;
+    border:2px dashed #c9d9e8;border-radius:16px;background:linear-gradient(135deg,#f8fbfe,#eef6ff);
+    padding:40px 26px;color:#7a8fa8;
+  }
+  .pic.missing .ph .fn{font-family:Consolas,monospace;font-size:12.5px;color:#2563eb;font-weight:700;word-break:break-all}
+  .pic.missing .ph .ds{font-size:12.5px;line-height:1.8;max-width:560px}
+
+  /* 提示框 */
+  .box{border-radius:13px;padding:16px 20px;margin:20px 0;font-size:14px;line-height:1.95}
+  .box .lb{font-weight:800;margin-right:6px}
+  .info{background:#eef6ff;border-left:5px solid #3b82f6;color:#274768}
+  .info .lb{color:#1d4ed8}
+  .tip{background:#fff9ec;border-left:5px solid #f59e0b;color:#6b4e13}
+  .tip .lb{color:#b45309}
+  .remember{background:var(--primary-lighter);border-left:5px solid var(--primary);color:#1f5033}
+  .remember .lb{color:var(--primary-dark)}
+  .warn{background:#fef2f2;border-left:5px solid #ef4444;color:#7f2b2b}
+  .warn .lb{color:#b91c1c}
+
+  /* 代码卡 */
+  .code-card{margin:20px 0;border-radius:14px;overflow:hidden;box-shadow:0 10px 28px rgba(20,40,28,.20)}
+  .code-head{display:flex;align-items:center;gap:9px;background:#243126;padding:9px 14px}
+  .code-head .dot{width:10px;height:10px;border-radius:50%}
+  .code-head .d1{background:#ff5f57}.code-head .d2{background:#febc2e}.code-head .d3{background:#28c840}
+  .code-head .file{color:#95ab9c;font-size:11.5px;font-family:Consolas,monospace;margin-left:6px}
+  .code-head .lang{margin-left:auto;font-size:10.5px;font-weight:800;color:#0f2016;background:#4fbf7c;padding:2px 9px;border-radius:6px;letter-spacing:.4px}
+  .code-card pre{background:var(--code-bg);padding:18px 20px;overflow-x:auto;margin:0;font-family:"SFMono-Regular",Consolas,"Courier New",monospace;font-size:13.5px;line-height:1.85}
+  .code-card pre::-webkit-scrollbar{height:8px}
+  .code-card pre::-webkit-scrollbar-thumb{background:#3a5544;border-radius:4px}
+  .code-card code{color:var(--code-tx);white-space:pre}
+  .kw{color:var(--code-kw);font-weight:600}
+  .st{color:var(--code-st)}
+  .nu{color:var(--code-nu)}
+  .cm{color:var(--code-cm);font-style:italic}
+  .fn{color:var(--code-fn)}
+  .out{background:#16211a;color:#8fd6a8;font-family:Consolas,monospace;font-size:13px;padding:12px 20px;border-top:1px solid #2b3d31}
+  .out b{color:#c9d6cd;font-weight:600;font-size:11.5px;letter-spacing:1px}
+
+  /* 表格 */
+  table.styled{width:100%;border-collapse:collapse;margin:20px 0;font-size:13.5px;border-radius:12px;overflow:hidden;box-shadow:0 4px 16px rgba(31,122,68,.07)}
+  table.styled thead{background:var(--brand)}
+  table.styled th{color:#fff;padding:11px 14px;text-align:left;font-weight:700;font-size:13px}
+  table.styled td{padding:10px 14px;border-bottom:1px solid var(--line);color:#46564d;vertical-align:top}
+  table.styled tbody tr:nth-child(even){background:var(--bg-soft)}
+  table.styled tbody tr:last-child td{border-bottom:none}
+
+  /* 关卡卡 */
+  .level-card{border:1px solid var(--line);border-radius:16px;overflow:hidden;margin:22px 0;box-shadow:0 6px 22px rgba(31,122,68,.07)}
+  .level-card .lc-head{background:linear-gradient(100deg,#17283a,#8a3a16);color:#fff;padding:15px 22px;display:flex;align-items:center;gap:12px;flex-wrap:wrap}
+  .level-card .lc-head .n{font-size:12px;font-weight:800;background:rgba(255,255,255,.2);padding:3px 10px;border-radius:20px}
+  .level-card .lc-head h4{margin:0;color:#fff;font-size:16px}
+  .level-card .lc-head .go{margin-left:auto;font-size:11.5px;color:#ffd2b3}
+  .level-card .lc-body{padding:20px 24px;background:#fff}
+  .level-card .story{background:#f9fbfd;border-left:4px solid #93c5fd;border-radius:0 10px 10px 0;padding:13px 18px;margin:0 0 16px;font-size:14px;line-height:1.95;color:#3f5163}
+  .level-card .story b{color:#1d4ed8}
+  .btn-go{
+    display:inline-flex;align-items:center;gap:8px;background:linear-gradient(135deg,var(--brand),var(--brand-dark));
+    color:#fff;text-decoration:none;font-weight:800;font-size:13.5px;padding:10px 22px;border-radius:11px;
+    box-shadow:0 8px 20px rgba(255,107,53,.32);transition:.2s;
+  }
+  .btn-go:hover{transform:translateY(-2px);box-shadow:0 12px 26px rgba(255,107,53,.42)}
+
+  /* 陷阱 */
+  .pit{border:1px solid #f6dede;border-radius:14px;overflow:hidden;margin:16px 0;background:#fff}
+  .pit .pt{display:flex;gap:12px;padding:14px 18px;background:#fffafa;align-items:flex-start}
+  .pit .x{width:26px;height:26px;border-radius:9px;background:#fee;color:#dc2626;display:flex;align-items:center;justify-content:center;font-weight:800;flex-shrink:0;font-size:13px}
+  .pit .t{font-size:13.5px;line-height:1.9;color:#5c4a4a;flex:1}
+  .pit .t b{color:#b91c1c}
+  .pit .duck{display:flex;gap:12px;padding:13px 18px;background:#fff5f5;border-top:1px dashed #f3d0d0;align-items:flex-start}
+  .pit .duck img{width:48px;height:48px;object-fit:contain;flex-shrink:0;margin-top:2px}
+  .pit .duck .dt{font-size:13.5px;line-height:1.9;color:#7a3b3b}
+  .pit .duck .dt b{color:#b91c1c}
+  .pit .fix{padding:12px 18px;background:#f2fbf5;border-top:1px dashed #cfe7d8;font-size:13.5px;color:#1f5033}
+  .pit .fix b{color:var(--primary-dark)}
+
+  /* 题目练习 */
+  .exam{border:1px solid #dfe7f5;border-radius:15px;margin:16px 0;overflow:hidden;background:#fff;box-shadow:0 4px 16px rgba(38,62,120,.06)}
+  .exam .eh{display:flex;align-items:center;gap:10px;padding:11px 18px;background:linear-gradient(100deg,#eef4ff,#f7faff);border-bottom:1px solid #e3ebf8;flex-wrap:wrap}
+  .exam .eh .src{font-size:11px;font-weight:800;color:#fff;background:#2563eb;padding:2.5px 10px;border-radius:20px}
+  .exam .eh .src.ori{background:#8b5cf6}
+  .exam .eh .tp{font-size:11.5px;color:#5b7ba8;font-weight:700}
+  .exam .eb{padding:16px 20px}
+  .exam .q{font-weight:700;font-size:14px;color:#2c3c33;line-height:1.9;margin-bottom:10px}
+  .exam .opt{font-size:13.5px;color:#4b5a52;line-height:2.05;padding-left:6px}
+  .exam .opt i{font-style:normal;font-weight:800;color:var(--primary-dark);margin-right:7px}
+  .exam pre{margin:12px 0;background:#1b2a21;border-radius:10px;padding:14px 16px;overflow-x:auto;font-family:Consolas,monospace;font-size:13px;line-height:1.8;color:var(--code-tx)}
+  .exam details{margin-top:10px;border-top:1px dashed var(--line);padding-top:10px}
+  .exam summary{cursor:pointer;font-size:12.5px;font-weight:800;color:#2563eb;outline:none;user-select:none}
+  .exam details .ans{font-size:13.5px;color:#3c4a42;line-height:1.95;margin-top:9px;background:var(--bg-soft);padding:13px 16px;border-radius:10px}
+  .exam details .ans b{color:var(--primary-dark)}
+
+  /* 小结 */
+  .summary{margin:40px 0 20px;border-radius:18px;padding:26px 30px;background:linear-gradient(130deg,#fff8f3,#ffffff);border:1px solid #ffe0cf}
+  .summary h3{margin-top:0}
+  .summary ul{list-style:none;margin-top:10px}
+  .summary li{font-size:14px;line-height:2;color:#41524a;padding-left:24px;position:relative}
+  .summary li::before{content:"◆";position:absolute;left:0;color:var(--brand);font-size:11px;top:6px}
+
+  /* 页尾 */
+  .pager{display:flex;gap:14px;margin-top:30px;flex-wrap:wrap}
+  .pager a{flex:1;min-width:200px;text-decoration:none;border:1px solid var(--line);border-radius:14px;padding:16px 20px;background:#fff;transition:.2s;display:block}
+  .pager a:hover{border-color:var(--brand);box-shadow:0 10px 26px rgba(255,107,53,.14);transform:translateY(-2px)}
+  .pager a .k{font-size:11px;color:var(--dim2);font-weight:700;letter-spacing:1px}
+  .pager a .v{font-size:14px;font-weight:800;color:var(--night);margin-top:5px}
+  .pager a.back{background:var(--brand-soft);border-color:transparent;text-align:center}
+  .pager a.back .v{color:var(--brand-dark)}
+
+  .cta{
+    margin-top:26px;border-radius:20px;padding:30px 34px;color:#fff;position:relative;overflow:hidden;
+    background:linear-gradient(120deg,#16202f,#2b3a52 46%,#a8431c 132%);
+  }
+  .cta::after{content:"";position:absolute;right:-70px;bottom:-90px;width:280px;height:280px;border-radius:50%;background:radial-gradient(circle,rgba(255,140,80,.45),transparent 68%)}
+  .cta h3{color:#fff;margin:0 0 10px;position:relative;z-index:2}
+  .cta h3::before{background:var(--brand)}
+  .cta p{color:#d8e0ef;font-size:13.5px;margin:0 0 18px;position:relative;z-index:2;max-width:640px}
+  .cta .btn-go{position:relative;z-index:2}
+
+  @media(max-width:900px){
+    .sidebar-nav{transform:translateX(-100%)}
+    .sidebar-nav.active{transform:translateX(0)}
+    .nav-toggle{display:block}
+    .page{margin-left:0}
+    .hero{padding:70px 22px 34px}
+    .hero-top{flex-direction:column-reverse;text-align:center}
+    .hero-card{width:auto}
+    .container{padding:26px 20px 60px}
+    .goal-grid{grid-template-columns:1fr}
+  }
+</style>
+</head>
+<body>
+
+<button class="nav-toggle" onclick="document.querySelector('.sidebar-nav').classList.toggle('active')">☰</button>
+
+<!-- ============ 左侧目录 ============ -->
+<nav class="sidebar-nav">
+  <div class="sb-brand">
+    <a class="sb-logo" href="https://codecombat.cn/" target="_blank" rel="noopener" title="访问 CodeCombat 扣哒世界官网">
+      <img src="../assets/logo.png" alt="CodeCombat 扣哒世界">
+    </a>
+    <div><b>永不熄的齿轮</b><span>烛火岗哨 · Python 一级 第 6 单元</span></div>
+  </div>
+  <div class="nav-title">本单元目录</div>
+
+  <a href="#s0" class="nav-section">0　单元导语与目标</a>
+  <a href="#s0-1" class="nav-sub">0.1 学习目标</a>
+  <a href="#s0-2" class="nav-sub">0.2 考纲对照与前置知识</a>
+
+  <a href="#s1" class="nav-section">1　为什么要循环</a>
+  <a href="#s1-1" class="nav-sub">1.1 永不熄的齿轮</a>
+  <a href="#s1-2" class="nav-sub">1.2 循环的三要素</a>
+
+  <a href="#s2" class="nav-section">2　while：只要……就一直做</a>
+  <a href="#s2-1" class="nav-sub">2.1 while 与 while True</a>
+  <a href="#s2-2" class="nav-sub">2.2 会自己停下的 while</a>
+
+  <a href="#s3" class="nav-section">3　for：重复固定的次数</a>
+  <a href="#s3-1" class="nav-sub">3.1 for 与 range()</a>
+  <a href="#s3-2" class="nav-sub">3.2 range 的四种写法</a>
+
+  <a href="#s4" class="nav-section">4　循环里做判断</a>
+  <a href="#s4-1" class="nav-sub">4.1 循环 + 分支嵌套</a>
+  <a href="#s4-2" class="nav-sub">4.2 积木是怎么摆的</a>
+
+  <a href="#s5" class="nav-section">5　循环的两个"刹车"</a>
+  <a href="#s5-1" class="nav-sub">5.1 break：立刻收工</a>
+  <a href="#s5-2" class="nav-sub">5.2 continue：跳过这一轮</a>
+
+  <a href="#s6" class="nav-section">6　三大结构总对照</a>
+
+  <a href="#s7" class="nav-section">7　关卡实战</a>
+  <a href="#s7-1" class="nav-sub">关卡一 · 再下一步</a>
+  <a href="#s7-2" class="nav-sub">关卡二 · 循环仓库</a>
+  <a href="#s7-3" class="nav-sub">关卡三 · 恐惧之门</a>
+
+  <a href="#s8" class="nav-section">8　常见陷阱</a>
+  <a href="#s9" class="nav-section">9　题目练习</a>
+  <a href="#s10" class="nav-section">10　本单元小结</a>
+
+  <a href="../index.html" target="_top" class="sb-back">返回考纲之路</a>
+</nav>
+
+<div class="page">
+
+<!-- ============ Hero ============ -->
+<div class="hero">
+  <div class="hero-top">
+    <div class="hero-txt">
+      <div class="crumb">扣哒考级 · GESP PYTHON 一级 · 第 6 单元　|　烛火岗哨 CANDLEWATCH OUTPOST</div>
+      <h1>永不熄的齿轮
+        <span class="sub">循环结构：重复执行的力量</span>
+      </h1>
+      <div class="en">Loops — The Power of Doing It Again and Again</div>
+      <div class="tags">
+        <span class="tag hot">考纲 · 循环结构</span>
+        <span class="tag">while</span>
+        <span class="tag">for / range</span>
+        <span class="tag">break / continue</span>
+        <span class="tag">循环嵌套</span>
+      </div>
+    </div>
+    <div class="hero-card">
+      <img class="ava" src="../assets/avatars/anya.webp" alt="安雅"
+           onerror="this.style.background='#24344a';this.src='../assets/heroes/anya.webp'">
+      <div class="nm">安雅</div>
+      <div class="ti">红发队长 · 你的旅伴</div>
+    </div>
+  </div>
+</div>
+
+<div class="container">
+
+<!-- ============ 导语 ============ -->
+<div class="lead">
+  走出暗影地牢的第三天，你跟着安雅来到了<b>烛火岗哨</b>。这座哨站的塔顶燃着一簇永不熄灭的火，
+  而驱动它的，是一整排咬合在一起、昼夜不停地转动的齿轮。<br>
+  看清楚了吗？安雅把一支火把插进墙壁，<b>它不累，因为它只做一件事——转。一圈，再一圈。</b>
+  你写代码也该这样：别傻乎乎地把同一行抄一百遍，告诉程序"重复做"就行了。
+</div>
+
+<div class="cast anya">
+  <img class="ava" src="../assets/avatars/anya.webp" alt="安雅" onerror="this.style.display='none'">
+  <div class="bubble">
+    <div class="who">安雅 · 红发队长</div>
+    这一关我陪你走。记住三句话：<strong>循环体是你要重复做的事，条件是它什么时候该停，出口是它凭什么停下来</strong>。
+    想不明白也没关系，先往下看——岗哨的齿轮会教你。
+  </div>
+</div>
+
+<figure class="pic">
+  <img src="../assets/illustrations/py-L1-06-01_outpost_arrival.webp" alt="抵达烛火岗哨"
+       onerror="this.closest('.pic').classList.add('missing')">
+  <div class="ph">
+    <div class="fn">py-L1-06-01_outpost_arrival.webp</div>
+    <div class="ds">【配图待补】黄昏的烛火岗哨：砂岩哨塔顶燃着一簇永不熄灭的火焰，塔身外挂着一整排咬合转动的青铜齿轮；安雅在门口向新兵招手，新兵怀里抱着一卷图纸。</div>
+  </div>
+  <figcaption>图 1：烛火岗哨·永不熄的齿轮——今天要从这里开始</figcaption>
+</figure>
+
+<!-- ============ 0 ============ -->
+<div class="section-header" id="s0">
+  <h2>0　单元导语与目标</h2>
+  <div class="en-title">Unit Overview</div>
+</div>
+
+<h3 id="s0-1">0.1 学习目标</h3>
+<div class="goal-grid">
+  <div class="goal">
+    <h4><span class="ic">1</span>学完这个单元，你将能……</h4>
+    <ul>
+      <li>说清"循环"是什么，以及它能解决什么问题</li>
+      <li>用 <code class="inline">while</code> 与 <code class="inline">while True</code> 写出会重复执行的程序</li>
+      <li>用 <code class="inline">for</code> 与 <code class="inline">range()</code> 精确重复固定次数</li>
+      <li>在循环内部嵌套分支，一边巡逻一边判断</li>
+      <li>用 <code class="inline">break</code> 与 <code class="inline">continue</code> 控制循环的进出</li>
+      <li>独立完成 GESP 一级中所有循环类题目</li>
+    </ul>
+  </div>
+  <div class="goal syllabus">
+    <h4><span class="ic">2</span>对标 GESP 考纲（Python 一级）</h4>
+    <ul>
+      <li>（7）了解程序的顺序结构、选择结构、循环结构</li>
+      <li>（5）理解并掌握"输入、处理、输出"程序编写方法</li>
+      <li>（11）掌握输入输出语句 input 和 print</li>
+      <li>（9）掌握比较运算符、算术运算符、逻辑运算符</li>
+      <li>考核目标：完成包含分支语句、循环语句的综合案例</li>
+    </ul>
+  </div>
+</div>
+
+<h3 id="s0-2">0.2 考纲对照与前置知识</h3>
+<p>本单元是<strong>"三大基本结构"三部曲</strong>的最后一块拼图。在它之前，你已经走过两段路：</p>
+<table class="styled">
+  <thead><tr><th style="width:56px">顺序</th><th>单元</th><th>核心问题</th><th>岗哨里的场景</th></tr></thead>
+  <tbody>
+    <tr><td>①</td><td>第 4 单元 · 潮汐升降梯</td><td>事情按什么次序发生？</td><td>升降梯一层一层往上走</td></tr>
+    <tr><td>②</td><td>第 5 单元 · 岔路口的抉择</td><td>这一步该不该做？</td><td>看到敌人就打，没有就绕开</td></tr>
+    <tr><td><strong>③</strong></td><td><strong>第 6 单元 · 永不熄的齿轮</strong></td><td><strong>同一件事要做很多遍怎么办？</strong></td><td><strong>齿轮转一整夜，哨火不灭</strong></td></tr>
+  </tbody>
+</table>
+<div class="box tip">
+  <span class="lb">前置检查：</span>如果 <code class="inline">print()</code>、<code class="inline">input()</code>、<code class="inline">if / else</code> 的写法你还有点陌生，
+  建议先回到第 4、5 单元热个身。循环，本质上就是"把已经会做的事情，重复很多次"。
+</div>
+
+<!-- ============ 1 ============ -->
+<div class="section-header" id="s1">
+  <h2>1　为什么要循环</h2>
+  <div class="en-title">Why We Need Loops</div>
+</div>
+
+<h3 id="s1-1">1.1 永不熄的齿轮</h3>
+
+<p>岗哨的塔顶有一排齿轮，每个齿都一样大。它们整天做的事只有一件：<strong>咬住下一个齿，转过去</strong>。
+正是这一件重复到极致的小事，让哨火燃烧了整整一百年。</p>
+
+<div class="figure">
+  <svg class="diagram" viewBox="0 0 820 250" role="img" aria-label="齿轮传动示意">
+    <defs>
+      <g id="gear">
+        <circle cx="0" cy="0" r="34" fill="none" stroke="#d97706" stroke-width="7"/>
+        <circle cx="0" cy="0" r="14" fill="#f5b301" stroke="#d97706" stroke-width="3"/>
+        <g fill="#d97706">
+          <rect x="-6" y="-44" width="12" height="12" rx="2"/>
+          <rect x="-6" y="32" width="12" height="12" rx="2"/>
+          <rect x="-44" y="-6" width="12" height="12" rx="2"/>
+          <rect x="32" y="-6" width="12" height="12" rx="2"/>
+          <rect x="18" y="-38" width="12" height="12" rx="2" transform="rotate(45 24 -32)"/>
+          <rect x="-30" y="-38" width="12" height="12" rx="2" transform="rotate(-45 -24 -32)"/>
+          <rect x="18" y="26" width="12" height="12" rx="2" transform="rotate(-45 24 32)"/>
+          <rect x="-30" y="26" width="12" height="12" rx="2" transform="rotate(45 -24 32)"/>
+        </g>
+      </g>
+    </defs>
+    <rect x="0" y="0" width="820" height="250" fill="#fff" rx="12"/>
+    <text x="30" y="36" font-size="14" font-weight="bold" fill="#1f2937">同一颗齿轮，一圈一圈地转 —— 这就是循环</text>
+
+    <use href="#gear" x="120" y="140"/>
+    <use href="#gear" x="196" y="140"/>
+    <use href="#gear" x="272" y="140"/>
+    <use href="#gear" x="348" y="140"/>
+    <use href="#gear" x="424" y="140"/>
+
+    <path d="M60 210 Q 240 248 430 210" fill="none" stroke="#2e9e5b" stroke-width="2.6" stroke-dasharray="7 5"/>
+    <polygon points="438,207 424,202 426,214" fill="#2e9e5b"/>
+    <text x="245" y="240" text-anchor="middle" font-size="12" fill="#1f7a44" font-weight="bold">转完一圈，回到起点，再来一圈</text>
+
+    <rect x="520" y="72" width="270" height="112" rx="14" fill="#1b2a21"/>
+    <text x="540" y="104" font-family="Consolas,monospace" font-size="14" fill="#c678dd">while</text>
+    <text x="586" y="104" font-family="Consolas,monospace" font-size="14" fill="#c678dd">True</text>
+    <text x="628" y="104" font-family="Consolas,monospace" font-size="14" fill="#c9d6cd">:</text>
+    <text x="558" y="132" font-family="Consolas,monospace" font-size="14" fill="#c9d6cd">哨火.</text>
+    <text x="604" y="132" font-family="Consolas,monospace" font-size="14" fill="#61afef">继续燃烧</text>
+    <text x="690" y="132" font-family="Consolas,monospace" font-size="14" fill="#c9d6cd">()</text>
+    <text x="540" y="164" font-size="12" fill="#8fa499">循环体只有一件事：让火继续烧</text>
+  </svg>
+  <div class="caption">图 2（SVG）：齿轮的启示——重复一件小事，坚持一百年</div>
+</div>
+
+<p>现在把它换成你的代码：如果哨站外墙有 12 个火把要依次点亮，而你不知道该怎么"重复"，你只能这样写：</p>
+
+<div class="code-card">
+  <div class="code-head">
+    <span class="dot d1"></span><span class="dot d2"></span><span class="dot d3"></span>
+    <span class="file">笨办法：点亮 12 个火把</span>
+    <span class="lang">Python</span>
+  </div>
+  <pre><code>hero.buildXY("fire-trap", 10, 34)
+hero.buildXY("fire-trap", 16, 34)
+hero.buildXY("fire-trap", 22, 34)
+hero.buildXY("fire-trap", 28, 34)
+# …… 还要再写 8 行，而且坐标得自己一个个数</code></pre>
+</div>
+
+<p>这段代码暴露了"一行一步"的<strong>两个致命问题</strong>：</p>
+<p><strong>第一，太啰嗦。</strong>12 个火把写 12 行，100 个就得写 100 行。岗哨的墙再长一点，你的手就先断了。</p>
+<p><strong>第二，更要命的是——你有时候根本不知道要重复多少次。</strong>
+比如"一直往前走，直到碰壁为止"，碰壁前到底有多少格？没人告诉你。</p>
+
+<p>程序员的答案很优雅：<strong>不要描述"做几次"，而是描述"做到什么条件为止"。</strong>
+只要把"重复这件事"本身写成一条指令，剩下的交给计算机去数——这就是<strong>循环（Loop）</strong>。</p>
+
+<div class="box remember">
+  <span class="lb">一句话记忆：</span>循环 = 让计算机"照着同一套动作反复执行"，直到你喊停、或它自己走到终点。
+</div>
+
+<h3 id="s1-2">1.2 循环的三要素</h3>
+
+<div class="figure">
+  <svg class="diagram" viewBox="0 0 780 320" role="img" aria-label="循环结构执行流程图">
+    <defs>
+      <marker id="ar" markerWidth="11" markerHeight="11" refX="8" refY="4" orient="auto">
+        <path d="M0,0 L9,4 L0,8 z" fill="#2e9e5b"/>
+      </marker>
+      <marker id="ar2" markerWidth="11" markerHeight="11" refX="8" refY="4" orient="auto">
+        <path d="M0,0 L9,4 L0,8 z" fill="#ff6b35"/>
+      </marker>
+    </defs>
+    <rect x="26" y="128" width="100" height="50" rx="25" fill="#e9f8ef" stroke="#2e9e5b" stroke-width="2.4"/>
+    <text x="76" y="159" text-anchor="middle" font-size="14" fill="#1f7a44" font-weight="bold">开始</text>
+    <line x1="126" y1="153" x2="196" y2="153" stroke="#2e9e5b" stroke-width="2.4" marker-end="url(#ar)"/>
+
+    <polygon points="262,153 336,112 410,153 336,194" fill="#fff6ec" stroke="#ff6b35" stroke-width="2.4"/>
+    <text x="336" y="147" text-anchor="middle" font-size="13" fill="#c1440e" font-weight="bold">条件成立？</text>
+    <text x="336" y="166" text-anchor="middle" font-size="11" fill="#c1440e">哨火还亮着吗</text>
+    <line x1="196" y1="153" x2="256" y2="153" stroke="#2e9e5b" stroke-width="2.4" marker-end="url(#ar)"/>
+
+    <rect x="482" y="125" width="164" height="56" rx="11" fill="#eef6ff" stroke="#3b82f6" stroke-width="2.4"/>
+    <text x="564" y="149" text-anchor="middle" font-size="13" fill="#1d4ed8" font-weight="bold">齿轮转过一格</text>
+    <text x="564" y="168" text-anchor="middle" font-size="11" fill="#1d4ed8">（循环体）</text>
+    <line x1="410" y1="153" x2="476" y2="153" stroke="#2e9e5b" stroke-width="2.4" marker-end="url(#ar)"/>
+    <text x="443" y="142" text-anchor="middle" font-size="11.5" fill="#1f7a44" font-weight="bold">是</text>
+
+    <path d="M564 125 L564 62 L336 62 L336 108" fill="none" stroke="#ff6b35" stroke-width="2.4"
+          stroke-dasharray="7 5" marker-end="url(#ar2)"/>
+    <text x="450" y="52" text-anchor="middle" font-size="11.5" fill="#c1440e" font-weight="bold">回到条件，再判一次</text>
+
+    <line x1="336" y1="194" x2="336" y2="258" stroke="#2e9e5b" stroke-width="2.4" marker-end="url(#ar)"/>
+    <text x="351" y="224" font-size="11.5" fill="#1f7a44" font-weight="bold">否</text>
+    <rect x="272" y="260" width="128" height="44" rx="22" fill="#e9f8ef" stroke="#2e9e5b" stroke-width="2.4"/>
+    <text x="336" y="287" text-anchor="middle" font-size="14" fill="#1f7a44" font-weight="bold">结束</text>
+    <text x="646" y="118" font-size="11.5" fill="#8d9d94">循环体 = 被重复执行的那段</text>
+  </svg>
+  <div class="caption">图 3（SVG）：循环三要素——进入条件、循环体、回到条件再判断</div>
+</div>
+
+<p>看虚线那条箭头：执行完循环体后，程序会<strong>回到条件处再问一次</strong>。
+只要条件还成立，就再来一轮；一旦不成立，循环结束，程序继续往下走。三样东西缺一不可：</p>
+
+<table class="styled">
+  <thead><tr><th>要素</th><th>作用</th><th>岗哨里的例子</th></tr></thead>
+  <tbody>
+    <tr><td><strong>循环条件</strong></td><td>决定"还要不要再来一轮"</td><td>哨火还亮着吗？</td></tr>
+    <tr><td><strong>循环体</strong></td><td>每一轮真正做的事</td><td>齿轮转过一格</td></tr>
+    <tr><td><strong>退出时机</strong></td><td>什么时候跳出循环</td><td>火把点完了 / 天亮了</td></tr>
+  </tbody>
+</table>
+
+<!-- ============ 2 ============ -->
+<div class="cast anya">
+  <img class="ava" src="../assets/avatars/anya.webp" alt="安雅" onerror="this.style.display='none'">
+  <div class="bubble">
+    <div class="who">安雅 · 红发队长</div>
+    塔顶那排齿轮，转了整整一百年，从来没人给它数过圈数。<br>
+    它不累，因为它<strong>只做一件事——转</strong>。转完一圈，再来一圈。<br>
+    你也一样：把那些"要重复很多遍"的活儿交给循环，自己去喝口水。
+  </div>
+</div>
+
+<div class="section-header" id="s2">
+  <h2>2　while：只要……就一直做</h2>
+  <div class="en-title">The while Loop</div>
+</div>
+
+<h3 id="s2-1">2.1 while 与 while True</h3>
+<p><code class="inline">while</code> 的读法是"<strong>当……时，重复做</strong>"。
+在扣哒世界的地牢关卡"再下一步"里，你会反复看到一种最简单、也最霸道的写法：</p>
+
+<div class="code-card">
+  <div class="code-head">
+    <span class="dot d1"></span><span class="dot d2"></span><span class="dot d3"></span>
+    <span class="file">再下一步 · 参考解法</span>
+    <span class="lang">Python</span>
+  </div>
+  <pre><code># 走廊很长，"右—下"的节奏要一直重复
+while True:
+    hero.moveRight()
+    hero.moveDown()</code></pre>
+</div>
+
+<p><code class="inline">True</code> 的意思是"永远为真"，所以这个循环<strong>不会因为条件不成立而结束</strong>——
+它会一遍又一遍地执行"右、下"，直到英雄撞上地牢的墙，或走完整条走廊。</p>
+
+<div class="box warn">
+  <span class="lb">注意：</span>在关卡里，<code class="inline">while True</code> 靠"关卡结束"自然收场；
+  但在真正的程序里，<strong>没有出口的循环就是死循环，会让程序卡死</strong>。
+  写循环时永远先问一句：它凭什么停下来？
+</div>
+
+<h3 id="s2-2">2.2 会自己停下的 while</h3>
+<p>更常见的写法是给 <code class="inline">while</code> 配一个<strong>真·条件</strong>，让它自己判断什么时候收工：</p>
+
+<div class="code-card">
+  <div class="code-head">
+    <span class="dot d1"></span><span class="dot d2"></span><span class="dot d3"></span>
+    <span class="file">循环仓库 · 参考解法</span>
+    <span class="lang">Python</span>
+  </div>
+  <pre><code># 只要"视野里还有宝石"，就一直去捡
+item = hero.findNearestItem()
+
+while item:
+    hero.moveXY(item.pos.x, item.pos.y)
+    item = hero.findNearestItem()   # 捡完一颗，重新找下一颗</code></pre>
+  <div class="out"><b>关键</b>　循环体第二行必须重新找一次，否则英雄会原地反复横跳</div>
+</div>
+
+<div class="box info">
+  <span class="lb">关键细节：</span>注意循环体里的<strong>第二行</strong>——它必须重新获取一次 <code class="inline">item</code>。
+  否则 <code class="inline">item</code> 永远是第一颗宝石，条件永远成立。
+  <strong>循环体里必须有"让条件终有一天不成立"的动作</strong>，这是写出正确循环的核心心法。
+</div>
+
+<div class="figure">
+  <svg class="diagram" viewBox="0 0 800 260" role="img" aria-label="两种循环的执行节奏对比">
+    <text x="30" y="34" font-size="13.5" font-weight="bold" fill="#1f2937">两种 while 的执行节奏</text>
+
+    <text x="30" y="76" font-size="13" font-weight="bold" fill="#c1440e">while True：无限跑，靠外部喊停</text>
+    <g>
+      <rect x="30" y="90" width="52" height="34" rx="8" fill="#ffe9dc" stroke="#ff6b35" stroke-width="1.8"/>
+      <text x="56" y="112" text-anchor="middle" font-size="12" fill="#a83f13" font-weight="bold">第1轮</text>
+      <rect x="92" y="90" width="52" height="34" rx="8" fill="#ffe9dc" stroke="#ff6b35" stroke-width="1.8"/>
+      <text x="118" y="112" text-anchor="middle" font-size="12" fill="#a83f13" font-weight="bold">第2轮</text>
+      <rect x="154" y="90" width="52" height="34" rx="8" fill="#ffe9dc" stroke="#ff6b35" stroke-width="1.8"/>
+      <text x="180" y="112" text-anchor="middle" font-size="12" fill="#a83f13" font-weight="bold">第3轮</text>
+      <text x="228" y="112" font-size="18" fill="#ff6b35" font-weight="bold">……</text>
+      <line x1="30" y1="146" x2="360" y2="146" stroke="#ff6b35" stroke-width="2" stroke-dasharray="6 4"/>
+      <text x="366" y="150" font-size="11.5" fill="#c1440e">← 没有终点，直到关卡结束</text>
+    </g>
+
+    <line x1="30" y1="176" x2="770" y2="176" stroke="#e2ece6" stroke-width="1.4"/>
+
+    <text x="30" y="208" font-size="13" font-weight="bold" fill="#1f7a44">while 条件：条件一旦不成立，立刻收工</text>
+    <g>
+      <rect x="30" y="220" width="52" height="30" rx="8" fill="#e9f8ef" stroke="#2e9e5b" stroke-width="1.8"/>
+      <text x="56" y="240" text-anchor="middle" font-size="12" fill="#1f7a44" font-weight="bold">第1轮</text>
+      <rect x="92" y="220" width="52" height="30" rx="8" fill="#e9f8ef" stroke="#2e9e5b" stroke-width="1.8"/>
+      <text x="118" y="240" text-anchor="middle" font-size="12" fill="#1f7a44" font-weight="bold">第2轮</text>
+      <rect x="154" y="220" width="52" height="30" rx="8" fill="#e9f8ef" stroke="#2e9e5b" stroke-width="1.8"/>
+      <text x="180" y="240" text-anchor="middle" font-size="12" fill="#1f7a44" font-weight="bold">第3轮</text>
+      <rect x="216" y="220" width="70" height="30" rx="8" fill="#d1fae5" stroke="#059669" stroke-width="2"/>
+      <text x="251" y="240" text-anchor="middle" font-size="11.5" fill="#065f46" font-weight="bold">条件假 → 停</text>
+    </g>
+  </svg>
+  <div class="caption">图 4（SVG）：while True 与 while 条件的执行节奏差异</div>
+</div>
+
+<table class="styled">
+  <thead><tr><th>写法</th><th>何时使用</th><th>扣哒世界里的场景</th><th>风险</th></tr></thead>
+  <tbody>
+    <tr><td><code class="inline">while True:</code></td><td>不知道要重复几次，交给关卡自己结束</td><td>再下一步、闹鬼的迷宫</td><td>忘记设置出口会死循环</td></tr>
+    <tr><td><code class="inline">while 条件:</code></td><td>重复次数由"数据"决定（如还有几颗宝石）</td><td>循环仓库、宝石收集类关卡</td><td>循环体里忘记更新条件</td></tr>
+  </tbody>
+</table>
+
+<figure class="pic">
+  <img src="../assets/illustrations/py-L1-06-02_eternal_gear.webp" alt="永不熄的齿轮"
+       onerror="this.closest('.pic').classList.add('missing')">
+  <div class="ph">
+    <div class="fn">py-L1-06-02_eternal_gear.webp</div>
+    <div class="ds">【配图待补】巨大的青铜齿轮组驱动灯塔般的永恒火焰，齿轮咬合形成闭环，暖橙色火光映在砂岩上，画面带运动弧线。</div>
+  </div>
+  <figcaption>图 5：循环，就是这套齿轮永不熄火的原因</figcaption>
+</figure>
+
+<!-- ============ 3 ============ -->
+<div class="cast hero">
+  <img class="ava" src="../assets/avatars/naria.webp" alt="娜莉亚" onerror="this.style.display='none'">
+  <div class="bubble">
+    <div class="who">娜莉亚 · 翠羽射手</div>
+    我练箭的时候，师父让我把同一个动作重复一千次。我问他为什么。<br>
+    他说：<em>"因为战场上，你只有一次机会。"</em><br>
+    <strong>循环，就是那双替你练一千次的手。</strong>它不会烦，也不会累——这一点比你我都强。
+  </div>
+</div>
+
+<div class="section-header" id="s3">
+  <h2>3　for：重复固定的次数</h2>
+  <div class="en-title">The for Loop</div>
+</div>
+
+<h3 id="s3-1">3.1 for 与 range()</h3>
+<p>如果"重复几次"你心里有数——比如"向右走 4 格"——用 <code class="inline">for</code> 更干净：</p>
+
+<div class="code-card">
+  <div class="code-head">
+    <span class="dot d1"></span><span class="dot d2"></span><span class="dot d3"></span>
+    <span class="file">向右走 4 格</span>
+    <span class="lang">Python</span>
+  </div>
+  <pre><code># 重复 4 次：向右一步
+for i in range(4):
+    hero.moveRight()</code></pre>
+  <div class="out"><b>OUTPUT</b>　英雄向右连续移动 4 格；i 依次取值 0 → 1 → 2 → 3</div>
+</div>
+
+<h3 id="s3-2">3.2 range 的四种写法</h3>
+<p><code class="inline">range()</code> 是 for 循环的"计数器工厂"，它最常用的四种写法如下（全部是高频考点）：</p>
+
+<table class="styled">
+  <thead><tr><th>写法</th><th>产生的序列</th><th>循环次数</th><th>典型用途</th></tr></thead>
+  <tbody>
+    <tr><td><code class="inline">range(5)</code></td><td>0, 1, 2, 3, 4</td><td>5 次</td><td>固定次数重复</td></tr>
+    <tr><td><code class="inline">range(2, 6)</code></td><td>2, 3, 4, 5</td><td>4 次</td><td>从某个数开始</td></tr>
+    <tr><td><code class="inline">range(0, 20, 3)</code></td><td>0, 3, 6, 9, 12, 15, 18</td><td>7 次</td><td>每隔几个取一个（步长）</td></tr>
+    <tr><td><code class="inline">range(-10, 0)</code></td><td>-10, -9, …, -1</td><td>10 次</td><td>从负数开始</td></tr>
+  </tbody>
+</table>
+
+<div class="box remember">
+  <span class="lb">记牢一句话：</span><strong>range(a, b) 包含 a，不包含 b</strong>。
+  <code class="inline">range(1, 5)</code> 得到的是 1、2、3、4 共 4 个数——少算或多算一次，是最常见的失分点。
+</div>
+
+<div class="figure">
+  <svg class="diagram" viewBox="0 0 800 220" role="img" aria-label="range 的边界示意">
+    <text x="30" y="34" font-size="13.5" font-weight="bold" fill="#1f2937">range(a, b)：含 a，不含 b</text>
+    <g font-family="Consolas,monospace" font-size="15">
+      <rect x="40" y="70" width="46" height="46" rx="9" fill="#e9f8ef" stroke="#2e9e5b" stroke-width="2"/>
+      <text x="63" y="100" text-anchor="middle" fill="#1f7a44" font-weight="bold">1</text>
+      <rect x="96" y="70" width="46" height="46" rx="9" fill="#e9f8ef" stroke="#2e9e5b" stroke-width="2"/>
+      <text x="119" y="100" text-anchor="middle" fill="#1f7a44" font-weight="bold">2</text>
+      <rect x="152" y="70" width="46" height="46" rx="9" fill="#e9f8ef" stroke="#2e9e5b" stroke-width="2"/>
+      <text x="175" y="100" text-anchor="middle" fill="#1f7a44" font-weight="bold">3</text>
+      <rect x="208" y="70" width="46" height="46" rx="9" fill="#e9f8ef" stroke="#2e9e5b" stroke-width="2"/>
+      <text x="231" y="100" text-anchor="middle" fill="#1f7a44" font-weight="bold">4</text>
+      <rect x="264" y="70" width="46" height="46" rx="9" fill="#fff" stroke="#cbd5e1" stroke-width="2" stroke-dasharray="5 4"/>
+      <text x="287" y="100" text-anchor="middle" fill="#94a3b8" font-weight="bold">5</text>
+      <text x="330" y="100" fill="#94a3b8" font-size="14">← 5 被挡在门外</text>
+    </g>
+    <path d="M40 140 L310 140" stroke="#2e9e5b" stroke-width="2.4"/>
+    <text x="175" y="164" text-anchor="middle" font-size="13" fill="#1f7a44" font-weight="bold">range(1, 5) 一共 4 个数 → 循环 4 次</text>
+    <text x="30" y="200" font-size="12.5" fill="#8d9d94">口诀：起点算，终点不算（左闭右开）</text>
+  </svg>
+  <div class="caption">图 6（SVG）：range(1, 5) 为什么只有 4 个数</div>
+</div>
+
+<h4>计数循环的四个要素</h4>
+<p>Python 的 <code class="inline">for i in range(n)</code> 看起来只有一行，其实暗含了四件事：</p>
+<table class="styled">
+  <thead><tr><th>要素</th><th>含义</th><th>在 range(4) 中的体现</th></tr></thead>
+  <tbody>
+    <tr><td>① 初始化</td><td>计数器从几开始</td><td>从 0 开始</td></tr>
+    <tr><td>② 条件</td><td>还要不要再来一轮</td><td>计数器小于 4</td></tr>
+    <tr><td>③ 循环体</td><td>每轮要做什么</td><td>缩进的那几行</td></tr>
+    <tr><td>④ 步进</td><td>每轮结束后计数器怎么变</td><td>每次 +1</td></tr>
+  </tbody>
+</table>
+
+<!-- ============ 4 ============ -->
+<div class="section-header" id="s4">
+  <h2>4　循环里做判断</h2>
+  <div class="en-title">Branching Inside a Loop</div>
+</div>
+
+<h3 id="s4-1">4.1 循环 + 分支嵌套</h3>
+<p>真正的巡逻不会只有"往前走"。岗哨外会冒出食人魔，路中间会横着尖刺——
+这意味着你需要在<strong>每一轮循环里都做一次选择</strong>，这就是<strong>循环与分支的嵌套</strong>：</p>
+
+<div class="code-card">
+  <div class="code-head">
+    <span class="dot d1"></span><span class="dot d2"></span><span class="dot d3"></span>
+    <span class="file">恐惧之门 · 参考解法</span>
+    <span class="lang">Python</span>
+  </div>
+  <pre><code># 每一轮：先看看有没有敌人
+while True:
+    enemy = hero.findNearestEnemy()
+
+    if enemy:                       # 有敌人 → 打
+        hero.attack(enemy)
+    else:                           # 没敌人 → 继续前进
+        hero.moveRight()</code></pre>
+</div>
+
+<div class="figure">
+  <svg class="diagram" viewBox="0 0 780 300" role="img" aria-label="循环嵌套分支的结构示意">
+    <rect x="30" y="26" width="330" height="250" rx="14" fill="#fff8f3" stroke="#ffd0b3" stroke-width="2"/>
+    <text x="52" y="56" font-size="13.5" font-weight="bold" fill="#c1440e">外层：while —— 管"一直做"</text>
+
+    <rect x="56" y="74" width="278" height="180" rx="12" fill="#fff" stroke="#e2ece6" stroke-width="1.6"/>
+    <text x="76" y="102" font-size="12.5" fill="#5b6b62">每一轮先看一眼：</text>
+    <rect x="76" y="114" width="238" height="36" rx="9" fill="#eef6ff" stroke="#3b82f6" stroke-width="1.6"/>
+    <text x="195" y="138" text-anchor="middle" font-size="12.5" fill="#1d4ed8" font-weight="bold">enemy = 找最近的敌人</text>
+
+    <rect x="76" y="162" width="238" height="78" rx="10" fill="#fff9ec" stroke="#f59e0b" stroke-width="1.6"/>
+    <text x="195" y="184" text-anchor="middle" font-size="12.5" fill="#b45309" font-weight="bold">内层：if / else</text>
+    <text x="195" y="206" text-anchor="middle" font-size="12" fill="#6b4e13">有敌人 → attack(enemy)</text>
+    <text x="195" y="226" text-anchor="middle" font-size="12" fill="#6b4e13">没敌人 → moveRight()</text>
+
+    <path d="M400 150 L448 150" stroke="#ff6b35" stroke-width="2.4" stroke-dasharray="6 5"/>
+    <text x="424" y="140" text-anchor="middle" font-size="14" fill="#ff6b35" font-weight="bold">=</text>
+
+    <rect x="470" y="26" width="288" height="250" rx="14" fill="#1b2a21"/>
+    <text x="490" y="56" font-size="12.5" fill="#8fd6a8" font-weight="bold">Python</text>
+    <text x="490" y="92" font-family="Consolas,monospace" font-size="13.5" fill="#c678dd">while</text>
+    <text x="536" y="92" font-family="Consolas,monospace" font-size="13.5" fill="#c678dd">True</text>
+    <text x="576" y="92" font-family="Consolas,monospace" font-size="13.5" fill="#c9d6cd">:</text>
+    <text x="506" y="120" font-family="Consolas,monospace" font-size="13.5" fill="#c9d6cd">enemy = hero.</text>
+    <text x="622" y="120" font-family="Consolas,monospace" font-size="13.5" fill="#61afef">findNearestEnemy</text>
+    <text x="740" y="120" font-family="Consolas,monospace" font-size="13.5" fill="#c9d6cd">()</text>
+    <text x="506" y="152" font-family="Consolas,monospace" font-size="13.5" fill="#c678dd">if</text>
+    <text x="530" y="152" font-family="Consolas,monospace" font-size="13.5" fill="#c9d6cd">enemy:</text>
+    <text x="522" y="178" font-family="Consolas,monospace" font-size="13.5" fill="#c9d6cd">hero.</text>
+    <text x="566" y="178" font-family="Consolas,monospace" font-size="13.5" fill="#61afef">attack</text>
+    <text x="616" y="178" font-family="Consolas,monospace" font-size="13.5" fill="#c9d6cd">(enemy)</text>
+    <text x="506" y="206" font-family="Consolas,monospace" font-size="13.5" fill="#c678dd">else</text>
+    <text x="546" y="206" font-family="Consolas,monospace" font-size="13.5" fill="#c9d6cd">:</text>
+    <text x="522" y="232" font-family="Consolas,monospace" font-size="13.5" fill="#c9d6cd">hero.</text>
+    <text x="566" y="232" font-family="Consolas,monospace" font-size="13.5" fill="#61afef">moveRight</text>
+    <text x="648" y="232" font-family="Consolas,monospace" font-size="13.5" fill="#c9d6cd">()</text>
+    <text x="490" y="262" font-size="11.5" fill="#8fa499">缩进多一层 = 进了内层的门</text>
+  </svg>
+  <div class="caption">图 7（SVG）：外层 while 管"一直做"，内层 if / else 管"这一轮做什么"</div>
+</div>
+
+<div class="box remember">
+  <span class="lb">结构读法：</span>外层 <code class="inline">while</code> 管"<strong>一直做</strong>"，
+  内层 <code class="inline">if / else</code> 管"<strong>这一轮做什么</strong>"。
+  注意缩进——<code class="inline">if</code> 比 <code class="inline">while</code> 多缩进一层，它才属于循环体内部。
+</div>
+
+<h3 id="s4-2">4.2 积木是怎么摆的</h3>
+<p>如果你之前在扣哒世界的<strong>少年版</strong>里玩过，那套内容在屏幕上呈现的是<strong>模块化的积木</strong>。
+积木和 Python 代码说的其实是同一件事——下面这张对照图，帮你把两边连起来：</p>
+
+<div class="figure">
+  <svg class="diagram" viewBox="0 0 800 300" role="img" aria-label="少年版积木与 Python 代码对照">
+    <rect x="18" y="16" width="360" height="268" rx="14" fill="#f7fbf8" stroke="#e2ece6" stroke-width="1.5"/>
+    <text x="38" y="46" font-size="13" font-weight="bold" fill="#1f7a44">少年版 · 图形化积木</text>
+
+    <rect x="40" y="66" width="286" height="46" rx="9" fill="#ffbf00" stroke="#e09000" stroke-width="1.6"/>
+    <text x="58" y="95" font-size="13.5" fill="#ffffff" font-weight="bold">重复执行</text>
+    <rect x="168" y="77" width="52" height="24" rx="12" fill="#ffffff" stroke="#e09000" stroke-width="1.4"/>
+    <text x="194" y="94" text-anchor="middle" font-size="13" fill="#b26a00" font-weight="bold">4</text>
+    <text x="230" y="95" font-size="13.5" fill="#ffffff" font-weight="bold">次</text>
+
+    <rect x="64" y="122" width="248" height="42" rx="9" fill="#4c97ff" stroke="#3373cc" stroke-width="1.6"/>
+    <text x="80" y="148" font-size="13" fill="#ffffff" font-weight="bold">移动 10 步</text>
+
+    <rect x="40" y="186" width="286" height="46" rx="9" fill="#ffab19" stroke="#e09000" stroke-width="1.6"/>
+    <text x="58" y="215" font-size="13.5" fill="#ffffff" font-weight="bold">重复执行直到</text>
+    <rect x="186" y="197" width="118" height="24" rx="6" fill="#ffffff" stroke="#e09000" stroke-width="1.4"/>
+    <text x="245" y="214" text-anchor="middle" font-size="12" fill="#b26a00" font-weight="bold">碰到 边缘</text>
+
+    <rect x="64" y="242" width="248" height="34" rx="9" fill="#4c97ff" stroke="#3373cc" stroke-width="1.6"/>
+    <text x="80" y="264" font-size="12.5" fill="#ffffff" font-weight="bold">移动 10 步</text>
+
+    <path d="M392 150 L436 150" stroke="#ff6b35" stroke-width="2.4" stroke-dasharray="6 5"/>
+    <text x="414" y="140" text-anchor="middle" font-size="15" fill="#ff6b35" font-weight="bold">⇄</text>
+
+    <rect x="450" y="16" width="332" height="268" rx="14" fill="#1b2a21"/>
+    <text x="470" y="46" font-size="13" font-weight="bold" fill="#8fd6a8">Python 代码</text>
+    <text x="470" y="82" font-family="Consolas,monospace" font-size="14" fill="#c678dd">for</text>
+    <text x="502" y="82" font-family="Consolas,monospace" font-size="14" fill="#c9d6cd">i </text>
+    <text x="520" y="82" font-family="Consolas,monospace" font-size="14" fill="#c678dd">in</text>
+    <text x="544" y="82" font-family="Consolas,monospace" font-size="14" fill="#61afef">range</text>
+    <text x="590" y="82" font-family="Consolas,monospace" font-size="14" fill="#c9d6cd">(</text>
+    <text x="598" y="82" font-family="Consolas,monospace" font-size="14" fill="#d19a66">4</text>
+    <text x="608" y="82" font-family="Consolas,monospace" font-size="14" fill="#c9d6cd">):</text>
+    <text x="488" y="108" font-family="Consolas,monospace" font-size="14" fill="#c9d6cd">hero.</text>
+    <text x="540" y="108" font-family="Consolas,monospace" font-size="14" fill="#61afef">moveRight</text>
+    <text x="622" y="108" font-family="Consolas,monospace" font-size="14" fill="#c9d6cd">()</text>
+
+    <line x1="470" y1="132" x2="762" y2="132" stroke="#2f4437" stroke-width="1"/>
+    <text x="470" y="164" font-family="Consolas,monospace" font-size="14" fill="#c678dd">while</text>
+    <text x="516" y="164" font-family="Consolas,monospace" font-size="14" fill="#c678dd">True</text>
+    <text x="558" y="164" font-family="Consolas,monospace" font-size="14" fill="#c9d6cd">:</text>
+    <text x="488" y="190" font-family="Consolas,monospace" font-size="14" fill="#c9d6cd">hero.</text>
+    <text x="540" y="190" font-family="Consolas,monospace" font-size="14" fill="#61afef">moveRight</text>
+    <text x="622" y="190" font-family="Consolas,monospace" font-size="14" fill="#c9d6cd">()</text>
+
+    <text x="470" y="228" font-size="12" fill="#8fa499">· 积木"重复执行 N 次"</text>
+    <text x="470" y="250" font-size="12" fill="#8fa499">  = for i in range(N)</text>
+    <text x="470" y="272" font-size="12" fill="#8fa499">· 积木"重复执行直到…"</text>
+    <text x="470" y="294" font-size="12" fill="#8fa499">  = while 判断条件</text>
+  </svg>
+  <div class="caption">图 8（SVG）：少年版积木与 Python 代码的对应关系——形状不同，逻辑完全一致</div>
+</div>
+
+<!-- ============ 5 ============ -->
+<div class="section-header" id="s5">
+  <h2>5　循环的两个"刹车"</h2>
+  <div class="en-title">break &amp; continue</div>
+</div>
+
+<h3 id="s5-1">5.1 break：立刻收工</h3>
+<div class="code-card">
+  <div class="code-head">
+    <span class="dot d1"></span><span class="dot d2"></span><span class="dot d3"></span>
+    <span class="file">金币攒够就走人</span>
+    <span class="lang">Python</span>
+  </div>
+  <pre><code># 一路向右走，金币攒够 20 枚就立刻收工
+while True:
+    hero.moveRight()
+
+    if hero.gold >= 20:
+        break          # 跳出整个循环，不再走
+
+hero.say("收工！")      # break 之后，程序从这里继续</code></pre>
+</div>
+<p><code class="inline">break</code> 的意思是：<strong>不管循环条件还剩多少轮，现在就跳出去</strong>，直接执行循环后面的代码。</p>
+
+<h3 id="s5-2">5.2 continue：跳过这一轮</h3>
+<div class="code-card">
+  <div class="code-head">
+    <span class="dot d1"></span><span class="dot d2"></span><span class="dot d3"></span>
+    <span class="file">清点火把 · 跳过错位的</span>
+    <span class="lang">Python</span>
+  </div>
+  <pre><code># 依次清点 1~10 号火把，跳过 3 的倍数（那些位置被尖刺占了）
+for i in range(1, 11):
+    if i % 3 == 0:
+        continue        # 本轮到此为止，直接看下一号
+    hero.say(i)         # 报告安全编号
+
+# 输出：1 2 4 5 7 8 10</code></pre>
+</div>
+
+<div class="figure">
+  <svg class="diagram" viewBox="0 0 800 270" role="img" aria-label="break 与 continue 的执行路径">
+    <text x="30" y="34" font-size="13.5" font-weight="bold" fill="#1f2937">break 与 continue 分别跳到哪里</text>
+
+    <rect x="30" y="60" width="350" height="180" rx="12" fill="#fff5f5" stroke="#fbd5d5" stroke-width="2"/>
+    <text x="205" y="86" text-anchor="middle" font-size="13" font-weight="bold" fill="#b91c1c">break —— 跳出整个循环</text>
+    <g font-size="12.5">
+      <circle cx="70" cy="116" r="13" fill="#fee" stroke="#dc2626" stroke-width="1.6"/>
+      <text x="70" y="121" text-anchor="middle" fill="#b91c1c" font-weight="bold">1</text>
+      <circle cx="130" cy="116" r="13" fill="#fee" stroke="#dc2626" stroke-width="1.6"/>
+      <text x="130" y="121" text-anchor="middle" fill="#b91c1c" font-weight="bold">2</text>
+      <circle cx="190" cy="116" r="13" fill="#fee" stroke="#dc2626" stroke-width="1.6"/>
+      <text x="190" y="121" text-anchor="middle" fill="#b91c1c" font-weight="bold">3</text>
+      <circle cx="250" cy="116" r="13" fill="#fff" stroke="#cbd5e1" stroke-width="1.6" stroke-dasharray="4 3"/>
+      <text x="250" y="121" text-anchor="middle" fill="#94a3b8" font-weight="bold">4</text>
+      <circle cx="310" cy="116" r="13" fill="#fff" stroke="#cbd5e1" stroke-width="1.6" stroke-dasharray="4 3"/>
+      <text x="310" y="121" text-anchor="middle" fill="#94a3b8" font-weight="bold">5</text>
+    </g>
+    <path d="M196 150 L196 186 L360 186" fill="none" stroke="#dc2626" stroke-width="2.4"/>
+    <polygon points="368,186 356,180 356,192" fill="#dc2626"/>
+    <text x="285" y="178" text-anchor="middle" font-size="12" fill="#b91c1c" font-weight="bold">直接跳到循环外</text>
+    <text x="30" y="226" font-size="11.5" fill="#8d9d94">后面的轮次全部取消</text>
+
+    <rect x="420" y="60" width="350" height="180" rx="12" fill="#f2fbf5" stroke="#cfe7d8" stroke-width="2"/>
+    <text x="595" y="86" text-anchor="middle" font-size="13" font-weight="bold" fill="#1f7a44">continue —— 只跳过本轮</text>
+    <g font-size="12.5">
+      <circle cx="460" cy="116" r="13" fill="#e9f8ef" stroke="#2e9e5b" stroke-width="1.6"/>
+      <text x="460" y="121" text-anchor="middle" fill="#1f7a44" font-weight="bold">1</text>
+      <circle cx="520" cy="116" r="13" fill="#e9f8ef" stroke="#2e9e5b" stroke-width="1.6"/>
+      <text x="520" y="121" text-anchor="middle" fill="#1f7a44" font-weight="bold">2</text>
+      <circle cx="580" cy="116" r="13" fill="#fff" stroke="#f59e0b" stroke-width="2"/>
+      <text x="580" y="121" text-anchor="middle" fill="#b45309" font-weight="bold">3</text>
+      <circle cx="640" cy="116" r="13" fill="#e9f8ef" stroke="#2e9e5b" stroke-width="1.6"/>
+      <text x="640" y="121" text-anchor="middle" fill="#1f7a44" font-weight="bold">4</text>
+      <circle cx="700" cy="116" r="13" fill="#e9f8ef" stroke="#2e9e5b" stroke-width="1.6"/>
+      <text x="700" y="121" text-anchor="middle" fill="#1f7a44" font-weight="bold">5</text>
+    </g>
+    <path d="M580 142 Q580 168 620 168 Q660 168 660 146" fill="none" stroke="#f59e0b" stroke-width="2.2" stroke-dasharray="5 4"/>
+    <polygon points="660,140 654,152 666,152" fill="#f59e0b"/>
+    <text x="620" y="192" text-anchor="middle" font-size="12" fill="#b45309" font-weight="bold">跳过本轮剩余代码，直接下一轮</text>
+    <text x="420" y="226" font-size="11.5" fill="#8d9d94">后面的轮次照常进行</text>
+  </svg>
+  <div class="caption">图 9（SVG）：break 跳出去，continue 跳过去</div>
+</div>
+
+<table class="styled">
+  <thead><tr><th>关键词</th><th>作用范围</th><th>一句话区别</th><th>岗哨里的用法</th></tr></thead>
+  <tbody>
+    <tr><td><code class="inline">break</code></td><td>跳出<strong>整个</strong>循环</td><td>"我不干了"</td><td>金币攒够、哨火已点亮</td></tr>
+    <tr><td><code class="inline">continue</code></td><td>跳过<strong>本轮</strong>剩余代码</td><td>"这轮不算，下一轮"</td><td>这一格有尖刺，跳过</td></tr>
+  </tbody>
+</table>
+
+<div class="box warn">
+  <span class="lb">易错点：</span>在嵌套循环里，<code class="inline">break</code> 只会跳出<strong>最内层</strong>的那一个循环，
+  外面那层照样继续转。理解这一点，是 GESP 高年级"多层循环"题目的常考点。
+</div>
+
+<figure class="pic">
+  <img src="../assets/illustrations/py-L1-06-03_patrol_result.webp" alt="岗哨夜巡"
+       onerror="this.closest('.pic').classList.add('missing')">
+  <div class="ph">
+    <div class="fn">py-L1-06-03_patrol_result.webp</div>
+    <div class="ds">【配图待补】夜色中的哨站外墙，一整排火把被依次点亮，英雄沿墙巡逻，脚下是同一步伐重复出的发光轨迹。</div>
+  </div>
+  <figcaption>图 10：一段循环，点亮整排火把</figcaption>
+</figure>
+
+<!-- ============ 6 ============ -->
+<div class="section-header" id="s6">
+  <h2>6　三大结构总对照</h2>
+  <div class="en-title">The Three Basic Structures</div>
+</div>
+
+<p>到这里，"三大基本结构"就集齐了。这张表请务必记牢——它几乎是 GESP 一级到三级所有编程题的骨架：</p>
+
+<table class="styled">
+  <thead>
+    <tr><th>结构</th><th>解决问题</th><th>少年版积木</th><th>Python</th></tr>
+  </thead>
+  <tbody>
+    <tr><td><strong>顺序</strong></td><td>按次序执行</td><td>积木从上到下拼</td><td>一行一行写</td></tr>
+    <tr><td><strong>分支</strong></td><td>该不该做</td><td>如果…那么…否则…</td><td><code class="inline">if / elif / else</code></td></tr>
+    <tr><td><strong>循环</strong></td><td>重复做很多遍</td><td>重复执行 / 重复执行直到</td><td><code class="inline">while / for</code></td></tr>
+  </tbody>
+</table>
+
+<div class="figure">
+  <svg class="diagram" viewBox="0 0 800 240" role="img" aria-label="三大基本结构关系图">
+    <rect x="24" y="30" width="238" height="180" rx="14" fill="#eef6ff" stroke="#93c5fd" stroke-width="2"/>
+    <text x="143" y="62" text-anchor="middle" font-size="14" font-weight="bold" fill="#1d4ed8">顺序</text>
+    <g>
+      <rect x="76" y="80" width="134" height="26" rx="7" fill="#dbeafe" stroke="#3b82f6" stroke-width="1.4"/>
+      <text x="143" y="98" text-anchor="middle" font-size="12" fill="#1e40af">步骤 1</text>
+      <rect x="76" y="114" width="134" height="26" rx="7" fill="#dbeafe" stroke="#3b82f6" stroke-width="1.4"/>
+      <text x="143" y="132" text-anchor="middle" font-size="12" fill="#1e40af">步骤 2</text>
+      <rect x="76" y="148" width="134" height="26" rx="7" fill="#dbeafe" stroke="#3b82f6" stroke-width="1.4"/>
+      <text x="143" y="166" text-anchor="middle" font-size="12" fill="#1e40af">步骤 3</text>
+    </g>
+
+    <rect x="282" y="30" width="238" height="180" rx="14" fill="#fff9ec" stroke="#fcd34d" stroke-width="2"/>
+    <text x="401" y="62" text-anchor="middle" font-size="14" font-weight="bold" fill="#b45309">分支</text>
+    <polygon points="401,86 452,112 401,138 350,112" fill="#fef3c7" stroke="#f59e0b" stroke-width="1.6"/>
+    <text x="401" y="116" text-anchor="middle" font-size="11.5" fill="#92400e" font-weight="bold">条件？</text>
+    <rect x="316" y="152" width="80" height="26" rx="7" fill="#dcfce7" stroke="#4ade80" stroke-width="1.4"/>
+    <text x="356" y="170" text-anchor="middle" font-size="11.5" fill="#166534">是 → A</text>
+    <rect x="406" y="152" width="80" height="26" rx="7" fill="#fee2e2" stroke="#f87171" stroke-width="1.4"/>
+    <text x="446" y="170" text-anchor="middle" font-size="11.5" fill="#991b1b">否 → B</text>
+
+    <rect x="540" y="30" width="238" height="180" rx="14" fill="#f2fbf5" stroke="#9ae6b4" stroke-width="2"/>
+    <text x="659" y="62" text-anchor="middle" font-size="14" font-weight="bold" fill="#1f7a44">循环</text>
+    <circle cx="659" cy="124" r="40" fill="none" stroke="#2e9e5b" stroke-width="3" stroke-dasharray="9 6"/>
+    <text x="659" y="128" text-anchor="middle" font-size="12" fill="#1f7a44" font-weight="bold">循环体</text>
+    <path d="M700 100 L714 124 L700 148" fill="none" stroke="#2e9e5b" stroke-width="2.4"/>
+    <polygon points="716,124 702,116 702,132" fill="#2e9e5b"/>
+    <text x="659" y="196" text-anchor="middle" font-size="11.5" fill="#4b7c60">一圈，再一圈，直到条件不成立</text>
+
+    <text x="400" y="228" text-anchor="middle" font-size="12" fill="#8d9d94">任何程序，都是这三种结构拼出来的</text>
+  </svg>
+  <div class="caption">图 11（SVG）：顺序、分支、循环——三种结构撑起所有程序</div>
+</div>
+
+<div class="cast teacher">
+  <img class="ava" src="../assets/avatars/hushbaum.webp" alt="贺舒曼" onerror="this.style.display='none'">
+  <div class="bubble">
+    <div class="who">贺舒曼 · 镜中先知</div>
+    你们在岗哨里转了一晚上齿轮，现在该把它想清楚了。<br>
+    <strong>循环的本质，是用"规律"代替"重复"。</strong>凡是你能说出"重复什么"和"什么时候停"的地方，循环就能替你干活。
+    你们接下来会遇到的所有算法——枚举、模拟、查找、排序、动态规划——骨子里都是循环。
+    <strong>这个单元，是整个 GESP 考纲最基础、也最重要的一块砖。</strong>
+  </div>
+</div>
+
+<!-- ============ 7 ============ -->
+<div class="section-header" id="s7">
+  <h2>7　关卡实战</h2>
+  <div class="en-title">Level Practice</div>
+</div>
+
+<p>下面三个关卡都能在扣哒世界里直接找到。先读懂故事与思路，再进关卡亲手打一遍——<strong>代码写在纸上永远学不会，写在关卡里才会。</strong></p>
+
+<div class="figure">
+  <svg class="diagram" viewBox="0 0 800 330" role="img" aria-label="烛火岗哨夜间巡逻俯视图">
+    <rect x="0" y="0" width="800" height="330" fill="#101a26" rx="12"/>
+    <text x="24" y="32" font-size="13.5" fill="#ffb894" font-weight="bold">烛火岗哨 · 夜间巡逻俯视图</text>
+    <g stroke="#203349" stroke-width="1">
+      <line x1="40" y1="66" x2="760" y2="66"/><line x1="40" y1="116" x2="760" y2="116"/>
+      <line x1="40" y1="166" x2="760" y2="166"/><line x1="40" y1="216" x2="760" y2="216"/>
+      <line x1="40" y1="266" x2="760" y2="266"/>
+      <line x1="140" y1="66" x2="140" y2="300"/><line x1="240" y1="66" x2="240" y2="300"/>
+      <line x1="340" y1="66" x2="340" y2="300"/><line x1="440" y1="66" x2="440" y2="300"/>
+      <line x1="540" y1="66" x2="540" y2="300"/><line x1="640" y1="66" x2="640" y2="300"/>
+    </g>
+    <rect x="60" y="176" width="680" height="42" rx="6" fill="#1a2c3d" stroke="#3d5f80" stroke-width="1.6"/>
+    <text x="62" y="162" font-size="11.5" fill="#6f8fab">巡逻走廊</text>
+
+    <circle cx="92" cy="197" r="15" fill="#ff6b35" stroke="#ffc7a8" stroke-width="2"/>
+    <text x="92" y="202" text-anchor="middle" font-size="13" fill="#2a1206" font-weight="bold">A</text>
+    <text x="92" y="234" text-anchor="middle" font-size="11" fill="#ffb894">安雅</text>
+
+    <g fill="#f5b301">
+      <circle cx="196" cy="197" r="9"/>
+      <circle cx="296" cy="197" r="9"/>
+      <circle cx="396" cy="197" r="9"/>
+      <circle cx="496" cy="197" r="9"/>
+      <circle cx="596" cy="197" r="9"/>
+    </g>
+    <text x="400" y="243" text-anchor="middle" font-size="11" fill="#f5b301">待点亮的火把</text>
+
+    <g fill="#7e8bff">
+      <polygon points="246,286 256,268 266,286"/>
+      <polygon points="346,286 356,268 366,286"/>
+      <polygon points="446,286 456,268 466,286"/>
+    </g>
+    <text x="358" y="308" text-anchor="middle" font-size="11" fill="#9aa5ff">幽蓝尖刺 · 碰到就凉凉</text>
+
+    <rect x="700" y="181" width="34" height="34" rx="8" fill="#4ade80" stroke="#22c55e" stroke-width="2"/>
+    <text x="717" y="204" text-anchor="middle" font-size="15" fill="#0b2a15" font-weight="bold">▮</text>
+    <text x="717" y="234" text-anchor="middle" font-size="11" fill="#86efac">哨塔</text>
+
+    <path d="M124 140 L688 140" stroke="#ff6b35" stroke-width="2" stroke-dasharray="7 5"/>
+    <polygon points="696,140 684,134 684,146" fill="#ff6b35"/>
+    <text x="400" y="128" text-anchor="middle" font-size="12" fill="#ffb08c" font-weight="bold">一段循环，就能点亮整排火把</text>
+  </svg>
+  <div class="caption">图 12（SVG）：岗哨俯视图——巡逻路线就是一段循环</div>
+</div>
+
+<div class="level-card" id="s7-1">
+  <div class="lc-head"><span class="n">关卡一</span><h4>再下一步</h4><span class="go">进入关卡 →</span></div>
+  <div class="lc-body">
+    <div class="story">
+      <b>故事：</b>地牢的石门在身后轰然合拢。走廊很长，"右—下—右—下"的节奏要一遍遍重复，
+      可你根本数不清要走多少遍——有些路段藏在地图的黑暗里，光靠眼睛看不出来。<br>
+      <b>这一关还藏着一个额外挑战：只能用 4 条语句过关。</b>（空行和注释不算行数，但一行里写多个语句要算。）
+      这下可没法"一步一行"地硬写了。
+    </div>
+    <figure class="pic">
+      <img src="../assets/stages/py-L1-06-stage1_nextstep.webp" alt="再下一步 关卡截图"
+           onerror="this.closest('.pic').classList.add('missing')">
+      <div class="ph">
+        <div class="fn">assets/stages/py-L1-06-stage1_nextstep.webp</div>
+        <div class="ds">【关卡截图位】请把《再下一步》的游戏画面截图放到此处（放入 assets/stages/ 目录，文件名为 py-L1-06-stage1_nextstep.webp）。</div>
+      </div>
+      <figcaption>关卡实况：再下一步</figcaption>
+    </figure>
+    <p><strong>思路：</strong>看上面的关卡实况——"右—下"的节奏要重复很多遍，
+    那就别写 10 行 20 行，把这两步装进一个循环，让英雄自己一直走下去。</p>
+    <div class="code-card">
+      <div class="code-head">
+        <span class="dot d1"></span><span class="dot d2"></span><span class="dot d3"></span>
+        <span class="file">重点示例：把重复动作装进循环</span>
+        <span class="lang">Python</span>
+      </div>
+      <pre><code>while True:
+    hero.moveRight(2)
+    hero.moveDown()</code></pre>
+      <div class="out"><b>要点</b>　循环体里只有两行，但它们会被执行无数次</div>
+    </div>
+  </div>
+</div>
+
+<div class="level-card" id="s7-2">
+  <div class="lc-head"><span class="n">关卡二</span><h4>循环仓库</h4><span class="go">进入关卡 →</span></div>
+  <div class="lc-body">
+    <div class="story">
+      <b>故事：</b>穿过一条窄廊，你闯进了食人魔的仓库。里头宝石堆成小山，
+      可巡逻的守卫来回走动——你完全没法提前规划一条固定路线。<br>
+      <b>但你很快发现了破绽：仓库的布局是有规律的。</b>
+      只要找到那个"绕圈子的节奏"，闭着眼睛都能走完全程。
+    </div>
+    <figure class="pic">
+      <img src="../assets/stages/py-L1-06-stage2_loop_warehouse.webp" alt="循环仓库 关卡截图"
+           onerror="this.closest('.pic').classList.add('missing')">
+      <div class="ph">
+        <div class="fn">assets/stages/py-L1-06-stage2_loop_warehouse.webp</div>
+        <div class="ds">【关卡截图位】请把《循环仓库》的游戏画面截图放到此处（放入 assets/stages/ 目录，文件名为 py-L1-06-stage2_loop_warehouse.webp）。</div>
+      </div>
+      <figcaption>关卡实况：循环仓库</figcaption>
+    </figure>
+    <p><strong>关键：</strong>看上面的关卡实况——宝石撒了一圈，巡逻守卫来回走，
+    但布局是有规律的。把"绕一圈"的四个动作写进循环，转完一圈正好回到起点，
+    于是这一圈可以无限重复，宝石自然就被一路收走了。<br>
+    <b>这一关同样限制：不超过 5 条语句。</b></p>
+    <div class="code-card">
+      <div class="code-head">
+        <span class="dot d1"></span><span class="dot d2"></span><span class="dot d3"></span>
+        <span class="file">重点示例：一条能绕回原点的路线</span>
+        <span class="lang">Python</span>
+      </div>
+      <pre><code>while True:
+    hero.moveUp(2)
+    hero.moveRight(2)
+    hero.moveDown()
+    hero.moveLeft()</code></pre>
+      <div class="out"><b>要点</b>　上 2 → 右 2 → 下 1 → 左 1，正好绕回原地</div>
+    </div>
+    <div class="box tip">
+      <span class="lb">找规律的小窍门：</span>先在纸上把路线画一遍，看看它是不是"每个方向走几格、然后回到原点"。
+      只要是闭环，就能用循环一直转下去。
+    </div>
+  </div>
+</div>
+
+<div class="level-card" id="s7-3">
+  <div class="lc-head"><span class="n">关卡三</span><h4>恐惧之门</h4><span class="go">进入关卡 →</span></div>
+  <div class="lc-body">
+    <div class="story">
+      <b>故事：</b>走廊尽头立着一扇巨大的石门，门后藏着满满的宝箱。
+      你举剑劈了一下——门纹丝不动。第二下、第三下……<br>
+      <b>这扇门特别结实，得砍上很多很多次。</b>数得清吗？数不清。
+      那就干脆别数了——让程序替你重复。
+    </div>
+    <figure class="pic">
+      <img src="../assets/stages/py-L1-06-stage3_fear_door.webp" alt="恐惧之门 关卡截图"
+           onerror="this.closest('.pic').classList.add('missing')">
+      <div class="ph">
+        <div class="fn">assets/stages/py-L1-06-stage3_fear_door.webp</div>
+        <div class="ds">【关卡截图位】请把《恐惧之门》的游戏画面截图放到此处（放入 assets/stages/ 目录，文件名为 py-L1-06-stage3_fear_door.webp）。</div>
+      </div>
+      <figcaption>关卡实况：恐惧之门</figcaption>
+    </figure>
+    <p><strong>思路：</strong>看上面的关卡实况——门特别结实，得砍很多很多次，根本数不清。
+    那就干脆别数了，把"攻击"放进循环，让英雄一直砍，砍到门倒下为止。</p>
+    <div class="code-card">
+      <div class="code-head">
+        <span class="dot d1"></span><span class="dot d2"></span><span class="dot d3"></span>
+        <span class="file">重点示例：循环体里放什么都可以</span>
+        <span class="lang">Python</span>
+      </div>
+      <pre><code>while True:
+    hero.attack("Door")</code></pre>
+      <div class="out"><b>要点</b>　循环体里可以放任何方法——不只是移动，攻击也照样行</div>
+    </div>
+    <div class="box info">
+      <span class="lb">三关连起来看：</span>
+      再下一步用循环"走路"，循环仓库用循环"绕圈收宝石"，恐惧之门用循环"砍门"。
+      <strong>循环并不关心你在重复什么，它只负责"一直再来一遍"。</strong>
+    </div>
+    <a class="btn-go" href="https://codecombat.cn/" target="_blank" rel="noopener">去扣哒世界闯这一关 →</a>
+  </div>
+</div>
+
+<h4>补充知识：知道要重复几次时，用 for 循环更利落</h4>
+<p>上面三关用的都是 <code class="inline">while True</code>——<strong>当你不知道要重复几遍</strong>时，它最省心。
+但如果"重复次数"你心里有数（比如明确要走 5 步），Python 还有一种更清爽的写法：</p>
+
+<div class="code-card">
+  <div class="code-head">
+    <span class="dot d1"></span><span class="dot d2"></span><span class="dot d3"></span>
+    <span class="file">for 循环长什么样</span>
+    <span class="lang">Python</span>
+  </div>
+  <pre><code># 重复 4 次：向右走一步
+for i in range(4):
+    hero.moveRight()</code></pre>
+  <div class="out"><b>OUTPUT</b>　英雄向右连续移动 4 格；i 依次取值 0 → 1 → 2 → 3</div>
+</div>
+
+<div class="box remember">
+  <span class="lb">一句话区分：</span>
+  <strong>次数已知 → 用 <code class="inline">for</code>；次数未知 → 用 <code class="inline">while</code>。</strong><br>
+  下次再看到"走过 6 格路"这种题目，别再写 <code class="inline">while True</code> 了。
+</div>
+
+<!-- ============ 8 ============ -->
+<div class="section-header" id="s8">
+  <h2>8　常见陷阱</h2>
+  <div class="en-title">Common Pitfalls &amp; Debugging</div>
+</div>
+
+<div class="cast duck">
+  <img class="ava" src="../assets/ducks/duck_hattori.webp" alt="扣哒鸭" onerror="this.style.display='none'">
+  <div class="bubble">
+    <div class="who">扣哒鸭 · 调试官</div>
+    我是这座岗哨里唯一会读报错的人。等下我要是说话难听，那说明你的 bug 更难听。
+    先把这五条刻进脑子里，能省下你今晚所有的火把。
+  </div>
+</div>
+
+<div class="pit">
+  <div class="pt">
+    <div class="x">1</div>
+    <div class="t"><b>缩进不对，代码不在循环里。</b>下面这段只走了一步：<br>
+    <code class="inline">for i in range(4):</code><br>
+    <code class="inline">hero.moveRight()</code> ← 没缩进</div>
+  </div>
+  <div class="duck">
+    <img src="../assets/ducks/duck_zana.webp" alt="扣哒鸭" onerror="this.style.display='none'">
+    <div class="dt"><b>扣哒鸭：</b><strong>Python 靠缩进认亲</strong>。你把 <code class="inline">moveRight()</code> 放到了循环外面，
+    它当然只走一次。<strong>想让谁跟着循环转，就往右缩进四个空格。</strong>就这么简单，别再来找我。</div>
+  </div>
+  <div class="fix"><b>正确写法：</b>把循环体整体多缩进一层</div>
+</div>
+
+<div class="pit">
+  <div class="pt">
+    <div class="x">2</div>
+    <div class="t"><b>条件永远为真（死循环）。</b>循环体里忘了重新获取目标：
+    <code class="inline">while item:</code> 之中只有 <code class="inline">hero.moveXY(...)</code>，没有再调用
+    <code class="inline">findNearestItem()</code>。</div>
+  </div>
+  <div class="duck">
+    <img src="../assets/ducks/duck_naria.webp" alt="扣哒鸭" onerror="this.style.display='none'">
+    <div class="dt"><b>扣哒鸭：</b>英雄在同一个位置反复横跳，看着挺努力，其实是<strong>瞎转</strong>。
+    循环体里必须有一行动作能<strong>推动条件往前挪</strong>——捡完一颗就重新找一次。
+    记住这句：<strong>不推进条件的循环，等于耍赖。</strong></div>
+  </div>
+  <div class="fix"><b>正确写法：</b>在循环体末尾补上 <code class="inline">item = hero.findNearestItem()</code></div>
+</div>
+
+<div class="pit">
+  <div class="pt">
+    <div class="x">3</div>
+    <div class="t"><b>break 写错层级。</b>把 <code class="inline">break</code> 写在了 <code class="inline">if</code> 外面，
+    导致第一轮就直接跳出整个循环。</div>
+  </div>
+  <div class="duck">
+    <img src="../assets/ducks/duck_senick.webp" alt="扣哒鸭" onerror="this.style.display='none'">
+    <div class="dt"><b>扣哒鸭：</b><code class="inline">break</code> 站错了队。
+    它得待在 <code class="inline">if</code> <strong>里面</strong>，条件成立时才跳；放在外面，第一轮就跑了。
+    <strong>缩进决定它听谁的命令，别让它自作主张。</strong></div>
+  </div>
+  <div class="fix"><b>正确写法：</b>把 <code class="inline">break</code> 缩进到 <code class="inline">if</code> 的语句块内</div>
+</div>
+
+<div class="pit">
+  <div class="pt">
+    <div class="x">4</div>
+    <div class="t"><b>把 while True 当万能钥匙。</b>次数明明已知（走 6 格），却还是写 <code class="inline">while True</code>。</div>
+  </div>
+  <div class="duck">
+    <img src="../assets/ducks/duck_illia.webp" alt="扣哒鸭" onerror="this.style.display='none'">
+    <div class="dt"><b>扣哒鸭：</b>知道走 6 格还写 <code class="inline">while True</code>，你是打算走到天荒地老吗？
+    <strong>次数已知就用 <code class="inline">for i in range(6)</code></strong>——一眼看清，也不容易出错。
+    只有"不知道要几轮"的时候，才轮到 <code class="inline">while True</code> 上场。</div>
+  </div>
+  <div class="fix"><b>正确写法：</b>用 <code class="inline">for i in range(6):</code> 替代</div>
+</div>
+
+<div class="pit">
+  <div class="pt">
+    <div class="x">5</div>
+    <div class="t"><b>循环变量用完就丢。</b>循环结束后还想用 <code class="inline">i</code>，却不知道它停在哪个值。
+    比如 <code class="inline">for i in range(10)</code> 之后，<code class="inline">i</code> 是 9 而不是 10。</div>
+  </div>
+  <div class="duck">
+    <img src="../assets/ducks/duck_usara.webp" alt="扣哒鸭" onerror="this.style.display='none'">
+    <div class="dt"><b>扣哒鸭：</b><code class="inline">range(10)</code> 只给你 0 到 9。
+    循环跑完，<code class="inline">i</code> <strong>就停在最后一个值 9</strong>，不会自动变成 10。
+    想数次数就<strong>另开一个计数器</strong>，别指望循环变量替你记账。</div>
+  </div>
+  <div class="fix"><b>正确写法：</b>用单独的 <code class="inline">cnt += 1</code> 统计次数，避免依赖循环变量的终值</div>
+</div>
+
+<!-- ============ 9 ============ -->
+<div class="section-header" id="s9">
+  <h2>9　题目练习</h2>
+  <div class="en-title">Practice</div>
+</div>
+
+<p>下面 6 道题中，前 5 道<strong>改编自 CCF GESP 历年真题</strong>（情境已改写成扣哒世界的故事，考点完全一致），
+第 6 道为<strong>原创拓展题</strong>。先自己动手做，再点开看详解。</p>
+
+<div class="exam">
+  <div class="eh"><span class="src">改编自 2026 年 9 月 · Python 一级 · 第 8 题</span><span class="tp">单选题</span></div>
+  <div class="eb">
+    <div class="q">岗哨的换岗钟每敲一次，哨兵就记录一次。下列代码执行后，其输出是（　　）。</div>
+    <pre>1  cnt = 0
+2  for i in range(10):
+3      cnt += 1
+4  print(i, cnt)</pre>
+    <div class="opt"><i>A.</i>10 10　　<i>B.</i>9 9　　<i>C.</i>10 9　　<i>D.</i>9 10</div>
+    <details><summary>查看答案与详解</summary>
+      <div class="ans"><b>答案：D</b>。<code class="inline">range(10)</code> 产生 0~9 共 10 个数，
+      循环结束时 <code class="inline">i</code> 停留在最后一个值 <strong>9</strong>，而 <code class="inline">cnt</code> 累加了 10 次，是 <strong>10</strong>。<br>
+      <b>易错点：</b>很多人会以为循环结束时 <code class="inline">i</code> 等于 10，其实 range 的终点是"取不到"的。<br>
+      <b>对应单元：</b>第 3 节 · range 的四种写法。</div>
+    </details>
+  </div>
+</div>
+
+<div class="exam">
+  <div class="eh"><span class="src">改编自 2026 年 9 月 · Python 一级 · 第 9 题</span><span class="tp">单选题</span></div>
+  <div class="eb">
+    <div class="q">矿坑里的矿车编号从 -10 号排到 -1 号（负号表示地下层）。下列代码执行后，其输出是（　　）。</div>
+    <pre>1  cnt = 0
+2  for i in range(-10, 0):
+3      cnt += 1
+4  print(i * cnt)</pre>
+    <div class="opt"><i>A.</i>-10　　<i>B.</i>-9　　<i>C.</i>0　　<i>D.</i>9</div>
+    <details><summary>查看答案与详解</summary>
+      <div class="ans"><b>答案：A</b>。<code class="inline">range(-10, 0)</code> 产生 -10 到 -1 共 10 个数。
+      循环结束时 <code class="inline">i = -1</code>、<code class="inline">cnt = 10</code>，于是 <code class="inline">i * cnt = -1 × 10 = -10</code>。<br>
+      <b>易错点：</b>这类题必须"跑"到最后一步再算，中途推演容易算错。<br>
+      <b>对应单元：</b>第 3 节 · range 的四种写法。</div>
+    </details>
+  </div>
+</div>
+
+<div class="exam">
+  <div class="eh"><span class="src">改编自 2026 年 9 月 · Python 一级 · 第 10 题</span><span class="tp">单选题</span></div>
+  <div class="eb">
+    <div class="q">哨塔每天有 4 轮巡查，遇到"禁行"的轮次就跳过，遇到"晴天"就出勤后收工。下列代码执行后，其输出是（　　）。</div>
+    <pre>1  for i in range(1, 5):
+2      if i % 3 == 0:
+3          print(i, end = "+")
+4          continue
+5      else:
+6          print(i, end = "-")
+7      break
+8  print(i, "END", end = "#")</pre>
+    <div class="opt"><i>A.</i>1-1　　<i>B.</i>1+1 END#　　<i>C.</i>1+1-2-2 END#　　<i>D.</i>1-1 END#</div>
+    <details><summary>查看答案与详解</summary>
+      <div class="ans"><b>答案：D</b>。逐轮推演：<br>
+      i=1：<code class="inline">1 % 3 == 0</code> 不成立 → 走 else，输出 <code class="inline">1-</code> → 然后执行 <code class="inline">break</code>，跳出循环。<br>
+      此时 <code class="inline">i</code> 仍为 1，最后一行输出 <code class="inline">1 END#</code>。合计 <code class="inline">1-1 END#</code>。<br>
+      <b>关键：</b><code class="inline">break</code> 位于 if-else 之外，只要没被 continue 跳过，第一轮就会结束整个循环。<br>
+      <b>对应单元：</b>第 5 节 · break 与 continue。</div>
+    </details>
+  </div>
+</div>
+
+<div class="exam">
+  <div class="eh"><span class="src">改编自 2026 年 9 月 · Python 一级 · 判断题第 3 题</span><span class="tp">判断题</span></div>
+  <div class="eb">
+    <div class="q">下面代码执行后将输出 20。（　）</div>
+    <pre>1  for i in range(0, 20, 3):
+2      if i % 3 != 0:
+3          continue
+4      print(i)</pre>
+    <details><summary>查看答案与详解</summary>
+      <div class="ans"><b>答案：错误（×）</b>。<code class="inline">range(0, 20, 3)</code> 产生 0, 3, 6, 9, 12, 15, 18——
+      它们<strong>全部都是 3 的倍数</strong>，所以 <code class="inline">i % 3 != 0</code> 永远不成立，<code class="inline">continue</code> 一次都不会执行。
+      程序会依次打印 <code class="inline">0 3 6 9 12 15 18</code>，而不是 20。<br>
+      <b>易错点：</b>看到 continue 就以为会跳过，要看<strong>条件是否可能成立</strong>。<br>
+      <b>对应单元：</b>第 5 节 · continue。</div>
+    </details>
+  </div>
+</div>
+
+<div class="exam">
+  <div class="eh"><span class="src">改编自 2026 年 9 月 · Python 一级 · 编程题 2</span><span class="tp">编程题</span></div>
+  <div class="eb">
+    <div class="q">题目描述</div>
+    <p style="font-size:13.5px;color:#4b5a52;line-height:1.95">
+      岗哨的守夜规矩是这样的：第 1 夜点亮 1 支火把；第 2 夜点亮 2 支；之后每一夜都要点亮前一夜的两倍。
+      请问连续 n 夜，一共点亮了多少支火把？
+    </p>
+    <p style="font-size:13.5px;color:#4b5a52;line-height:1.95"><strong>输入格式：</strong>一行，一个整数 n。<br>
+    <strong>输出格式：</strong>一行，一个整数，表示前 n 夜点亮的火把总数。</p>
+    <table class="styled" style="font-size:13px">
+      <thead><tr><th>输入样例</th><th>输出样例</th><th>说明</th></tr></thead>
+      <tbody>
+        <tr><td>3</td><td>7</td><td>1 + 2 + 4 = 7</td></tr>
+        <tr><td>10</td><td>1023</td><td>1 + 2 + 4 + … + 512 = 1023</td></tr>
+      </tbody>
+    </table>
+    <details><summary>查看参考程序与详解</summary>
+      <div class="ans">
+<pre style="margin:0;background:#1b2a21;color:#c9d6cd;border-radius:10px;padding:14px 16px">n = int(input())
+f, ans = 1, 0        # f：今夜的火把数；ans：总数
+for i in range(n):
+    ans += f         # 累加今夜
+    f *= 2           # 下一夜翻倍
+print(ans)</pre>
+      <p style="margin-top:12px"><b>思路：</b>这是"递推 + 循环累加"的经典模型。第 k 夜的火把数是 2<sup>k-1</sup>，一边翻倍一边累加即可。<br>
+      <b>易错点：</b>循环只能跑 n 次（<code class="inline">range(n)</code>），不能多算一夜；<code class="inline">f</code> 与 <code class="inline">ans</code> 的更新顺序不能颠倒。<br>
+      <b>对应单元：</b>第 3 节 · for 与 range；第 4 节 · 循环 + 判断。</p>
+      </div>
+    </details>
+  </div>
+</div>
+
+<div class="exam">
+  <div class="eh"><span class="src ori">原创拓展题</span><span class="tp">单选题</span></div>
+  <div class="eb">
+    <div class="q">哨兵要在 1~20 号火把中，把编号能被 4 整除的火把全部跳过不点。执行下面代码后，一共点亮了多少支火把？（　　）</div>
+    <pre>1  cnt = 0
+2  for i in range(1, 21):
+3      if i % 4 == 0:
+4          continue
+5      cnt += 1
+6  print(cnt)</pre>
+    <div class="opt"><i>A.</i>15　　<i>B.</i>16　　<i>C.</i>17　　<i>D.</i>20</div>
+    <details><summary>查看答案与详解</summary>
+      <div class="ans"><b>答案：A</b>。1~20 共 20 个数，其中 4 的倍数有 4、8、12、16、20 共 5 个被 <code class="inline">continue</code> 跳过。
+      所以点亮的数量是 20 − 5 = <strong>15</strong>。<br>
+      <b>解法二（推荐）：</b>把 <code class="inline">cnt</code> 当成"实际点亮数"的计数器，循环结束后直接输出即可——这也是最容易写对的方式。<br>
+      <b>对应单元：</b>第 3 节 · range 边界；第 5 节 · continue。</div>
+    </details>
+  </div>
+</div>
+
+<!-- ============ 10 ============ -->
+<div class="section-header" id="s10">
+  <h2>10　本单元小结</h2>
+  <div class="en-title">Unit Summary</div>
+</div>
+
+<div class="summary">
+  <h3>你在这座岗哨里收获了什么</h3>
+  <ul>
+    <li><strong>循环的本质</strong>——描述"重复的方式"，而不是"重复几次"；三要素：条件、循环体、退出时机。</li>
+    <li><strong>while</strong>——"只要……就一直做"。<code class="inline">while True</code> 用于次数未知的场合，必须想清楚出口。</li>
+    <li><strong>for + range</strong>——"重复固定次数"的最佳选择，四种常见 range 写法要记牢（含步长与负数区间）。</li>
+    <li><strong>循环 + 分支嵌套</strong>——每一轮都做一次选择，这是真实程序最常见的骨架。</li>
+    <li><strong>break / continue</strong>——一个"我不干了"，一个"这轮不算"；注意嵌套时的作用范围。</li>
+    <li><strong>三大基本结构</strong>——顺序、分支、循环，GESP 一级的核心考点全部集齐。</li>
+  </ul>
+</div>
+
+<div class="pager">
+  <a href="../index.html" target="_top"><div class="k">← 上一单元</div><div class="v">岔路口的抉择 · 分支结构</div></a>
+  <a href="../index.html" target="_top" class="back"><div class="k">返回</div><div class="v">考纲之路 · 总目录</div></a>
+  <a href="../index.html" target="_top"><div class="k">下一单元 →</div><div class="v">迷雾中的脚印 · 注释、调试与综合项目</div></a>
+</div>
+
+<div class="cta">
+  <h3>下一站：迷雾中的脚印</h3>
+  <p>把顺序、分支、循环拧成一股绳，用一段完整的程序点亮整座岗哨。
+  顺便，你会学到程序员最重要的隐藏技能——怎么让扣哒鸭少骂你几句。</p>
+  <a class="btn-go" href="https://codecombat.cn/" target="_blank" rel="noopener">加入扣哒世界，把这条考纲之路走一遍 →</a>
+</div>
+
+</div><!-- /container -->
+</div><!-- /page -->
+
+<script>
+/* ============ 代码高亮（内置轻量高亮器，无外链） ============ */
+const KEYWORDS = new Set(("while for if elif else break continue def return pass not and or in is None True False " +
+  "int float bool str list dict input print range randint").split(" "));
+
+function esc(s){ return s.replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;'); }
+
+function highlight(src, lang){
+  let out = '', i = 0;
+  const n = src.length;
+  while (i < n){
+    const c = src[i];
+    if (c === '#'){
+      let j = src.indexOf('\n', i); if (j < 0) j = n;
+      out += '<span class="cm">' + esc(src.slice(i, j)) + '</span>';
+      i = j; continue;
+    }
+    if (c === '"' || c === "'"){
+      let j = i + 1;
+      while (j < n && src[j] !== c){ if (src[j] === '\\') j++; j++; }
+      j = Math.min(j + 1, n);
+      out += '<span class="st">' + esc(src.slice(i, j)) + '</span>';
+      i = j; continue;
+    }
+    if (/[0-9]/.test(c)){
+      let j = i;
+      while (j < n && /[0-9.]/.test(src[j])) j++;
+      out += '<span class="nu">' + esc(src.slice(i, j)) + '</span>';
+      i = j; continue;
+    }
+    if (/[A-Za-z_]/.test(c)){
+      let j = i;
+      while (j < n && /[A-Za-z0-9_]/.test(src[j])) j++;
+      const w = src.slice(i, j);
+      if (KEYWORDS.has(w)) out += '<span class="kw">' + esc(w) + '</span>';
+      else if (src[j] === '(') out += '<span class="fn">' + esc(w) + '</span>';
+      else out += esc(w);
+      i = j; continue;
+    }
+    out += esc(c); i++;
+  }
+  return out;
+}
+
+document.querySelectorAll('.code-card pre code').forEach(block => {
+  block.innerHTML = highlight(block.textContent, 'py');
+});
+
+/* 截图 / 打印时自动展开所有答案 */
+if (location.search.indexOf('expand') >= 0) {
+  document.querySelectorAll('details').forEach(d => d.open = true);
+}
+
+document.querySelectorAll('.sidebar-nav a').forEach(a => {
+  a.addEventListener('click', () => {
+    if (window.innerWidth <= 900) document.querySelector('.sidebar-nav').classList.remove('active');
+  });
+});
+</script>
+</body>
+</html>

@@ -1,0 +1,1139 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="copyright" content="CodeCombat Inc. codecombat.cn">
+<title>哨火初燃 · 计算机基础与开发环境 | 扣哒考级 · GESP Python 一级</title>
+<style>
+  :root{
+    --primary:#2e9e5b; --primary-light:#4fbf7c; --primary-lighter:#e9f8ef; --primary-dark:#1f7a44;
+    --brand:#ff6b35; --brand-dark:#e8541f; --brand-soft:#fff3ec;
+    --night:#131c2b; --night-2:#1e2a3a;
+    --gold:#f5b301;
+    --text:#26302a; --dim:#63756b; --dim2:#8d9d94;
+    --bg:#ffffff; --bg-soft:#f7fbf8; --line:#e2ece6;
+    --sidebar:274px;
+    --code-bg:#1b2a21; --code-tx:#c9d6cd;
+    --code-kw:#c678dd; --code-st:#98c379; --code-nu:#d19a66; --code-cm:#6b7f72; --code-fn:#61afef;
+  }
+  *{margin:0;padding:0;box-sizing:border-box}
+  html{scroll-behavior:smooth}
+  body{
+    font-family:"PingFang SC","Microsoft YaHei","Segoe UI",-apple-system,sans-serif;
+    line-height:1.9;color:var(--text);background:var(--bg);font-size:15.5px;
+  }
+
+  .sidebar-nav{
+    position:fixed;top:0;left:0;width:var(--sidebar);height:100vh;overflow-y:auto;
+    background:linear-gradient(180deg,#101a26,#182636);padding:14px 0 40px;z-index:100;
+    border-right:3px solid var(--brand);transition:transform .3s ease;
+  }
+  .sidebar-nav::-webkit-scrollbar{width:5px}
+  .sidebar-nav::-webkit-scrollbar-thumb{background:var(--brand);border-radius:4px}
+  .sb-brand{display:flex;align-items:center;gap:10px;padding:10px 13px 12px;border-bottom:1px solid #26384c;margin-bottom:8px}
+  .sidebar-nav a.sb-logo{display:flex;align-items:center;justify-content:center;flex-shrink:0;padding:0;border-left:none;transition:.2s}
+  .sb-logo:hover{transform:scale(1.08)}
+  .sb-logo img{height:34px;width:34px;display:block;object-fit:contain;border-radius:8px}
+  .sb-brand b{color:#f2f6fa;font-size:14px;letter-spacing:.5px;display:block;line-height:1.4}
+  .sb-brand span{color:#7f95ab;font-size:11.5px;display:block;line-height:1.4}
+  .nav-title{color:#ffb894;font-size:12px;font-weight:800;padding:10px 18px 6px;letter-spacing:1.2px}
+  .sidebar-nav a{
+    display:block;color:#c3d0dc;text-decoration:none;padding:6px 18px;font-size:12.5px;
+    line-height:1.55;border-left:3px solid transparent;transition:.18s;
+  }
+  .sidebar-nav a:hover{color:#fff;background:rgba(255,107,53,.16);border-left-color:var(--brand)}
+  .sidebar-nav a.nav-section{color:#ffb894;font-weight:700;font-size:13px;margin-top:11px;padding-top:10px;border-top:1px solid #26384c}
+  .sidebar-nav a.nav-section:first-of-type{border-top:none;margin-top:0;padding-top:6px}
+  .sidebar-nav a.nav-sub{padding-left:30px;color:#93a8bc;font-size:12px}
+  .sidebar-nav a.nav-sub:hover{color:#fff}
+  .sb-back{margin:16px 14px 0;display:block;text-align:center;padding:9px;border-radius:9px;background:#22344a;color:#a9c0d6 !important;font-size:12px;font-weight:700;border-left:none !important}
+  .sb-back:hover{background:var(--brand) !important;color:#fff !important}
+  .nav-toggle{display:none;position:fixed;top:14px;left:14px;z-index:120;background:var(--brand);color:#fff;border:none;border-radius:9px;padding:9px 13px;font-size:15px;cursor:pointer;box-shadow:0 4px 14px rgba(0,0,0,.25)}
+
+  .page{margin-left:var(--sidebar)}
+
+  .hero{
+    position:relative;overflow:hidden;padding:44px 52px;color:#fff;
+    background:linear-gradient(125deg,#0e1724 0%,#1b2b3f 46%,#8a3a16 132%);
+  }
+  .hero::after{content:"";position:absolute;right:-90px;top:-110px;width:400px;height:400px;border-radius:50%;background:radial-gradient(circle,rgba(245,179,1,.30),transparent 68%)}
+  .hero-top{display:flex;gap:36px;align-items:center;position:relative;z-index:2}
+  .hero-txt{flex:1;min-width:0}
+  .hero .crumb{font-size:11.5px;color:#ffb894;letter-spacing:1.5px;font-weight:700;margin-bottom:14px}
+  .hero h1{font-size:31px;font-weight:800;line-height:1.3;letter-spacing:.6px;margin-bottom:8px}
+  .hero h1 .sub{display:block;font-size:18px;font-weight:700;color:#ffd2b3;margin-top:6px;letter-spacing:.3px}
+  .hero .en{font-size:13px;color:#9db4c8;font-style:italic;margin-bottom:18px}
+  .hero .tags{display:flex;flex-wrap:wrap;gap:8px}
+  .tag{font-size:11.5px;padding:4px 12px;border-radius:20px;background:rgba(255,255,255,.12);border:1px solid rgba(255,255,255,.22);color:#e8f0f6;font-weight:600}
+  .tag.hot{background:rgba(255,107,53,.92);border-color:transparent;color:#fff}
+  .hero-card{flex-shrink:0;width:200px;text-align:center}
+  .hero-card .ava{
+    width:148px;height:148px;border-radius:50%;object-fit:cover;object-position:top center;
+    border:4px solid rgba(255,180,140,.6);box-shadow:0 14px 34px rgba(0,0,0,.45);background:#24344a;
+  }
+  .hero-card .nm{font-size:15px;font-weight:800;color:#fff;margin-top:10px}
+  .hero-card .ti{font-size:11.5px;color:#ffb894;margin-top:2px}
+
+  .container{max-width:1080px;margin:0 auto;padding:38px 52px 70px}
+
+  .lead{
+    font-size:15.5px;line-height:2.05;color:#38453d;background:linear-gradient(120deg,#fff8f3,#f7fbf8);
+    border-left:5px solid var(--brand);border-radius:0 14px 14px 0;padding:22px 26px;margin-bottom:32px;
+  }
+  .lead b{color:var(--brand-dark)}
+
+  .cast{display:flex;gap:16px;align-items:flex-start;border-radius:16px;padding:18px 22px;margin:24px 0}
+  .cast .ava{width:72px;height:72px;border-radius:50%;object-fit:cover;object-position:top center;flex-shrink:0;background:#e8eef5}
+  .cast .bubble{position:relative;font-size:14px;line-height:1.95;padding-top:2px;flex:1}
+  .cast .who{font-size:12px;font-weight:800;margin-bottom:5px;letter-spacing:.5px}
+  .cast.anya{background:var(--brand-soft);border:1px solid #ffdcc9}
+  .cast.anya .who{color:var(--brand-dark)}
+  .cast.anya .bubble{color:#5c4636}
+  .cast.duck{background:#fff5f5;border:1px solid #fbd5d5}
+  .cast.duck .who{color:#b91c1c}
+  .cast.duck .bubble{color:#5c4141}
+  .cast.teacher{background:linear-gradient(120deg,#f4f7fb,#ffffff);border:1px solid #dbe4f0}
+  .cast.teacher .who{color:#1e293b}
+  .cast.teacher .bubble{color:#3c4a5a}
+  .cast.hero{background:#f2fbf5;border:1px solid #cfe7d8}
+  .cast.hero .who{color:#1f7a44}
+  .cast.hero .bubble{color:#3c4a42}
+
+  .goal-grid{display:grid;grid-template-columns:1fr 1fr;gap:16px;margin-bottom:36px}
+  .goal{border:1px solid var(--line);border-radius:15px;padding:19px 21px;background:#fff;box-shadow:0 4px 16px rgba(31,122,68,.05)}
+  .goal h4{font-size:14px;font-weight:800;margin-bottom:11px;display:flex;align-items:center;gap:8px;color:var(--primary-dark)}
+  .goal h4 .ic{width:22px;height:22px;border-radius:7px;background:var(--primary-lighter);display:flex;align-items:center;justify-content:center;font-size:12px}
+  .goal ul{list-style:none}
+  .goal li{font-size:13.5px;color:#4b5a52;line-height:1.9;padding-left:18px;position:relative}
+  .goal li::before{content:"▸";position:absolute;left:0;color:var(--primary);font-weight:800}
+  .goal.syllabus li::before{content:"✓"}
+
+  .section-header{margin:52px 0 24px;padding-bottom:12px;border-bottom:3px solid var(--brand);display:flex;align-items:baseline;gap:14px;flex-wrap:wrap}
+  .section-header h2{font-size:22px;font-weight:800;color:var(--night);letter-spacing:.4px}
+  .section-header .en-title{font-size:12px;color:var(--dim2);font-style:italic}
+  h3{font-size:17.5px;font-weight:800;margin:34px 0 14px;color:var(--night);display:flex;align-items:center;gap:10px}
+  h3::before{content:"";width:5px;height:17px;border-radius:3px;background:var(--brand);flex-shrink:0}
+  h4{font-size:15px;font-weight:800;margin:24px 0 10px;color:#33513f}
+  p{margin:12px 0;color:#3c4a42;line-height:2}
+  strong{color:var(--primary-dark)}
+  code.inline{background:var(--primary-lighter);color:var(--primary-dark);padding:2px 7px;border-radius:6px;font-family:"SFMono-Regular",Consolas,Menlo,monospace;font-size:.9em;font-weight:600}
+
+  .figure{margin:24px 0;text-align:center}
+  .figure svg.diagram{max-width:100%;height:auto;background:#fff;border:1px solid var(--line);border-radius:14px;padding:10px}
+  .figure .caption{font-size:12.5px;color:var(--dim2);margin-top:9px}
+
+  .pic{margin:26px 0;text-align:center}
+  .pic img{max-width:100%;border-radius:16px;box-shadow:0 10px 28px rgba(30,60,45,.15);display:block;margin:0 auto}
+  .pic figcaption{font-size:12.5px;color:var(--dim2);margin-top:9px}
+  .pic .ph{display:none}
+  .pic.missing img{display:none}
+  .pic.missing .ph{
+    display:flex;flex-direction:column;align-items:center;justify-content:center;gap:9px;
+    border:2px dashed #c9d9e8;border-radius:16px;background:linear-gradient(135deg,#f8fbfe,#eef6ff);
+    padding:40px 26px;color:#7a8fa8;
+  }
+  .pic.missing .ph .fn{font-family:Consolas,monospace;font-size:12.5px;color:#2563eb;font-weight:700;word-break:break-all}
+  .pic.missing .ph .ds{font-size:12.5px;line-height:1.8;max-width:560px}
+
+  .box{border-radius:13px;padding:16px 20px;margin:20px 0;font-size:14px;line-height:1.95}
+  .box .lb{font-weight:800;margin-right:6px}
+  .info{background:#eef6ff;border-left:5px solid #3b82f6;color:#274768}
+  .info .lb{color:#1d4ed8}
+  .tip{background:#fff9ec;border-left:5px solid #f59e0b;color:#6b4e13}
+  .tip .lb{color:#b45309}
+  .remember{background:var(--primary-lighter);border-left:5px solid var(--primary);color:#1f5033}
+  .remember .lb{color:var(--primary-dark)}
+  .warn{background:#fef2f2;border-left:5px solid #ef4444;color:#7f2b2b}
+  .warn .lb{color:#b91c1c}
+
+  .code-card{margin:20px 0;border-radius:14px;overflow:hidden;box-shadow:0 10px 28px rgba(20,40,28,.20)}
+  .code-head{display:flex;align-items:center;gap:9px;background:#243126;padding:9px 14px}
+  .code-head .dot{width:10px;height:10px;border-radius:50%}
+  .code-head .d1{background:#ff5f57}.code-head .d2{background:#febc2e}.code-head .d3{background:#28c840}
+  .code-head .file{color:#95ab9c;font-size:11.5px;font-family:Consolas,monospace;margin-left:6px}
+  .code-head .lang{margin-left:auto;font-size:10.5px;font-weight:800;color:#0f2016;background:#4fbf7c;padding:2px 9px;border-radius:6px;letter-spacing:.4px}
+  .code-card pre{background:var(--code-bg);padding:18px 20px;overflow-x:auto;margin:0;font-family:"SFMono-Regular",Consolas,"Courier New",monospace;font-size:13.5px;line-height:1.85}
+  .code-card pre::-webkit-scrollbar{height:8px}
+  .code-card pre::-webkit-scrollbar-thumb{background:#3a5544;border-radius:4px}
+  .code-card code{color:var(--code-tx);white-space:pre}
+  .kw{color:var(--code-kw);font-weight:600}
+  .st{color:var(--code-st)}
+  .nu{color:var(--code-nu)}
+  .cm{color:var(--code-cm);font-style:italic}
+  .fn{color:var(--code-fn)}
+  .out{background:#16211a;color:#8fd6a8;font-family:Consolas,monospace;font-size:13px;padding:12px 20px;border-top:1px solid #2b3d31}
+  .out b{color:#c9d6cd;font-weight:600;font-size:11.5px;letter-spacing:1px}
+
+  table.styled{width:100%;border-collapse:collapse;margin:20px 0;font-size:13.5px;border-radius:12px;overflow:hidden;box-shadow:0 4px 16px rgba(31,122,68,.07)}
+  table.styled thead{background:var(--brand)}
+  table.styled th{color:#fff;padding:11px 14px;text-align:left;font-weight:700;font-size:13px}
+  table.styled td{padding:10px 14px;border-bottom:1px solid var(--line);color:#46564d;vertical-align:top}
+  table.styled tbody tr:nth-child(even){background:var(--bg-soft)}
+  table.styled tbody tr:last-child td{border-bottom:none}
+
+  .level-card{border:1px solid var(--line);border-radius:16px;overflow:hidden;margin:22px 0;box-shadow:0 6px 22px rgba(31,122,68,.07)}
+  .level-card .lc-head{background:linear-gradient(100deg,#17283a,#8a3a16);color:#fff;padding:15px 22px;display:flex;align-items:center;gap:12px;flex-wrap:wrap}
+  .level-card .lc-head .n{font-size:12px;font-weight:800;background:rgba(255,255,255,.2);padding:3px 10px;border-radius:20px}
+  .level-card .lc-head h4{margin:0;color:#fff;font-size:16px}
+  .level-card .lc-head .go{margin-left:auto;font-size:11.5px;color:#ffd2b3}
+  .level-card .lc-body{padding:20px 24px;background:#fff}
+  .level-card .story{background:#f9fbfd;border-left:4px solid #93c5fd;border-radius:0 10px 10px 0;padding:13px 18px;margin:0 0 16px;font-size:14px;line-height:1.95;color:#3f5163}
+  .level-card .story b{color:#1d4ed8}
+  .btn-go{
+    display:inline-flex;align-items:center;gap:8px;background:linear-gradient(135deg,var(--brand),var(--brand-dark));
+    color:#fff;text-decoration:none;font-weight:800;font-size:13.5px;padding:10px 22px;border-radius:11px;
+    box-shadow:0 8px 20px rgba(255,107,53,.32);transition:.2s;
+  }
+  .btn-go:hover{transform:translateY(-2px);box-shadow:0 12px 26px rgba(255,107,53,.42)}
+
+  .pit{border:1px solid #f6dede;border-radius:14px;overflow:hidden;margin:16px 0;background:#fff}
+  .pit .pt{display:flex;gap:12px;padding:14px 18px;background:#fffafa;align-items:flex-start}
+  .pit .x{width:26px;height:26px;border-radius:9px;background:#fee;color:#dc2626;display:flex;align-items:center;justify-content:center;font-weight:800;flex-shrink:0;font-size:13px}
+  .pit .t{font-size:13.5px;line-height:1.9;color:#5c4a4a;flex:1}
+  .pit .t b{color:#b91c1c}
+  .pit .duck{display:flex;gap:12px;padding:13px 18px;background:#fff5f5;border-top:1px dashed #f3d0d0;align-items:flex-start}
+  .pit .duck img{width:48px;height:48px;object-fit:contain;flex-shrink:0;margin-top:2px}
+  .pit .duck .dt{font-size:13.5px;line-height:1.9;color:#7a3b3b}
+  .pit .duck .dt b{color:#b91c1c}
+  .pit .fix{padding:12px 18px;background:#f2fbf5;border-top:1px dashed #cfe7d8;font-size:13.5px;color:#1f5033}
+  .pit .fix b{color:var(--primary-dark)}
+
+  .exam{border:1px solid #dfe7f5;border-radius:15px;margin:16px 0;overflow:hidden;background:#fff;box-shadow:0 4px 16px rgba(38,62,120,.06)}
+  .exam .eh{display:flex;align-items:center;gap:10px;padding:11px 18px;background:linear-gradient(100deg,#eef4ff,#f7faff);border-bottom:1px solid #e3ebf8;flex-wrap:wrap}
+  .exam .eh .src{font-size:11px;font-weight:800;color:#fff;background:#2563eb;padding:2.5px 10px;border-radius:20px}
+  .exam .eh .src.ori{background:#8b5cf6}
+  .exam .eh .tp{font-size:11.5px;color:#5b7ba8;font-weight:700}
+  .exam .eb{padding:16px 20px}
+  .exam .q{font-weight:700;font-size:14px;color:#2c3c33;line-height:1.9;margin-bottom:10px}
+  .exam .opt{font-size:13.5px;color:#4b5a52;line-height:2.05;padding-left:6px}
+  .exam .opt i{font-style:normal;font-weight:800;color:var(--primary-dark);margin-right:7px}
+  .exam pre{margin:12px 0;background:#1b2a21;border-radius:10px;padding:14px 16px;overflow-x:auto;font-family:Consolas,monospace;font-size:13px;line-height:1.8;color:var(--code-tx)}
+  .exam details{margin-top:10px;border-top:1px dashed var(--line);padding-top:10px}
+  .exam summary{cursor:pointer;font-size:12.5px;font-weight:800;color:#2563eb;outline:none;user-select:none}
+  .exam details .ans{font-size:13.5px;color:#3c4a42;line-height:1.95;margin-top:9px;background:var(--bg-soft);padding:13px 16px;border-radius:10px}
+  .exam details .ans b{color:var(--primary-dark)}
+  .exam details .ans .tagline{display:inline-block;font-size:11px;background:#e0f2fe;color:#0e7490;padding:1.5px 8px;border-radius:6px;font-weight:700;margin-right:6px}
+
+  .summary{margin:40px 0 20px;border-radius:18px;padding:26px 30px;background:linear-gradient(130deg,#fff8f3,#ffffff);border:1px solid #ffe0cf}
+  .summary h3{margin-top:0}
+  .summary ul{list-style:none;margin-top:10px}
+  .summary li{font-size:14px;line-height:2;color:#41524a;padding-left:24px;position:relative}
+  .summary li::before{content:"◆";position:absolute;left:0;color:var(--brand);font-size:11px;top:6px}
+
+  .pager{display:flex;gap:14px;margin-top:30px;flex-wrap:wrap}
+  .pager a{flex:1;min-width:200px;text-decoration:none;border:1px solid var(--line);border-radius:14px;padding:16px 20px;background:#fff;transition:.2s;display:block}
+  .pager a:hover{border-color:var(--brand);box-shadow:0 10px 26px rgba(255,107,53,.14);transform:translateY(-2px)}
+  .pager a .k{font-size:11px;color:var(--dim2);font-weight:700;letter-spacing:1px}
+  .pager a .v{font-size:14px;font-weight:800;color:var(--night);margin-top:5px}
+  .pager a.back{background:var(--brand-soft);border-color:transparent;text-align:center}
+  .pager a.back .v{color:var(--brand-dark)}
+
+  .cta{margin-top:26px;border-radius:20px;padding:30px 34px;color:#fff;position:relative;overflow:hidden;background:linear-gradient(120deg,#16202f,#2b3a52 46%,#a8431c 132%)}
+  .cta::after{content:"";position:absolute;right:-70px;bottom:-90px;width:280px;height:280px;border-radius:50%;background:radial-gradient(circle,rgba(255,140,80,.45),transparent 68%)}
+  .cta h3{color:#fff;margin:0 0 10px;position:relative;z-index:2}
+  .cta h3::before{background:var(--brand)}
+  .cta p{color:#d8e0ef;font-size:13.5px;margin:0 0 18px;position:relative;z-index:2;max-width:640px}
+  .cta .btn-go{position:relative;z-index:2}
+
+  @media(max-width:900px){
+    .sidebar-nav{transform:translateX(-100%)}
+    .sidebar-nav.active{transform:translateX(0)}
+    .nav-toggle{display:block}
+    .page{margin-left:0}
+    .hero{padding:70px 22px 34px}
+    .hero-top{flex-direction:column-reverse;text-align:center}
+    .hero-card{width:auto}
+    .container{padding:26px 20px 60px}
+    .goal-grid{grid-template-columns:1fr}
+  }
+</style>
+</head>
+<body>
+
+<button class="nav-toggle" onclick="document.querySelector('.sidebar-nav').classList.toggle('active')">☰</button>
+
+<nav class="sidebar-nav">
+  <div class="sb-brand">
+    <a class="sb-logo" href="https://codecombat.cn/" target="_blank" rel="noopener" title="访问 CodeCombat 扣哒世界官网">
+      <img src="../assets/logo.png" alt="CodeCombat 扣哒世界">
+    </a>
+    <div><b>哨火初燃</b><span>烛火岗哨 · Python 一级 第 1 单元</span></div>
+  </div>
+  <div class="nav-title">本单元目录</div>
+
+  <a href="#s0" class="nav-section">0　单元导语与目标</a>
+  <a href="#s0-1" class="nav-sub">0.1 学习目标</a>
+  <a href="#s0-2" class="nav-sub">0.2 考纲对照</a>
+
+  <a href="#s1" class="nav-section">1　计算机长什么样</a>
+  <a href="#s1-1" class="nav-sub">1.1 五大部件</a>
+  <a href="#s1-2" class="nav-sub">1.2 硬件与软件</a>
+  <a href="#s1-3" class="nav-sub">1.3 操作系统与常用操作</a>
+
+  <a href="#s2" class="nav-section">2　计算机的四代</a>
+  <a href="#s2-1" class="nav-sub">2.1 四个时代</a>
+  <a href="#s2-2" class="nav-sub">2.2 划分依据</a>
+
+  <a href="#s3" class="nav-section">3　什么是程序</a>
+  <a href="#s3-1" class="nav-sub">3.1 程序与指令</a>
+  <a href="#s3-2" class="nav-sub">3.2 编程语言的三个层次</a>
+  <a href="#s3-3" class="nav-sub">3.3 为什么选 Python</a>
+
+  <a href="#s4" class="nav-section">4　开发环境 IDE</a>
+  <a href="#s4-1" class="nav-sub">4.1 IDE 的五件事</a>
+  <a href="#s4-2" class="nav-sub">4.2 第一个程序</a>
+  <a href="#s4-3" class="nav-sub">4.3 保存与运行</a>
+
+  <a href="#s5" class="nav-section">5　代码实战</a>
+  <a href="#s6" class="nav-section">6　常见陷阱</a>
+  <a href="#s7" class="nav-section">7　题目练习</a>
+  <a href="#s8" class="nav-section">8　本单元小结</a>
+
+  <a href="../index.html" target="_top" class="sb-back">返回考纲之路</a>
+</nav>
+
+<div class="page">
+
+<div class="hero">
+  <div class="hero-top">
+    <div class="hero-txt">
+      <div class="crumb">扣哒考级 · GESP PYTHON 一级 · 第 1 单元　|　烛火岗哨 CANDLEWATCH OUTPOST</div>
+      <h1>哨火初燃
+        <span class="sub">计算机基础与开发环境</span>
+      </h1>
+      <div class="en">Computer Basics &amp; Development Environment</div>
+      <div class="tags">
+        <span class="tag hot">考纲 · 计算机基础</span>
+        <span class="tag">硬件组成</span>
+        <span class="tag">发展史</span>
+        <span class="tag">编程语言</span>
+        <span class="tag">IDE 与调试</span>
+      </div>
+    </div>
+    <div class="hero-card">
+      <img class="ava" src="../assets/avatars/anya.webp" alt="安雅" onerror="this.style.background='#24344a';this.src='../assets/heroes/anya.webp'">
+      <div class="nm">安雅</div>
+      <div class="ti">红发队长 · 你的旅伴</div>
+    </div>
+  </div>
+</div>
+
+<div class="container">
+
+<div class="lead">
+  走出暗影地牢的第二天，你跟着安雅爬上了一道缓坡。坡顶立着一座砂岩哨塔，
+  塔尖上燃着一簇青蓝色的火——那是<b>永不熄灭的哨火</b>，也是这一带所有旅人的方向。<br>
+  这里是<b>烛火岗哨</b>。安雅把一张通行证拍在你肩上，从今天起，你是守夜人。
+  不过在点灯之前，得先弄明白一件事——<b>你到底在用什么在写代码？</b>
+</div>
+
+<div class="cast anya">
+  <img class="ava" src="../assets/avatars/anya.webp" alt="安雅" onerror="this.style.display='none'">
+  <div class="bubble">
+    <div class="who">安雅 · 红发队长</div>
+    别急着敲代码。这一单元我们把"写代码用的这套家伙"从头捋一遍——
+    你的机器由什么组成、它是怎么发展来的、程序到底是什么、以及你在哪个窗口里敲下第一行字。
+    这些看起来是常识，但考试第一题就爱考它们。
+  </div>
+</div>
+
+<figure class="pic">
+  <img src="../assets/illustrations/py-L1-01-01_outpost_arrival.webp" alt="抵达烛火岗哨"
+       onerror="this.closest('.pic').classList.add('missing')">
+  <div class="ph">
+    <div class="fn">assets/illustrations/py-L1-01-01_outpost_arrival.webp</div>
+    <div class="ds">【配图位】黄昏的烛火岗哨：砂岩哨塔塔尖燃着青蓝色永恒的火焰；红发独眼女队长安雅在门口向新兵招手，新兵怀里抱着一卷图纸；塔墙外的木窗透出暖色的灯光，屋里能看到一张摆着卷轴的写字台。</div>
+  </div>
+  <figcaption>图 1：烛火岗哨的哨火初燃——今天要从这里开始</figcaption>
+</figure>
+
+<!-- ============ 0 ============ -->
+<div class="section-header" id="s0">
+  <h2>0　单元导语与目标</h2>
+  <div class="en-title">Unit Overview</div>
+</div>
+
+<h3 id="s0-1">0.1 学习目标</h3>
+<div class="goal-grid">
+  <div class="goal">
+    <h4><span class="ic">1</span>学完这个单元，你将能……</h4>
+    <ul>
+      <li>说出计算机的五大组成部件，并分清哪些是输入设备、哪些是输出设备</li>
+      <li>讲清计算机发展的四个时代，以及划分时代的依据</li>
+      <li>说明"程序""指令""编程语言"分别是什么</li>
+      <li>说出机器语言、汇编语言、高级语言的区别</li>
+      <li>熟练使用 IDE 完成"新建 → 编辑 → 保存 → 运行 → 调试"</li>
+      <li>写出并运行你的第一个 Python 程序</li>
+    </ul>
+  </div>
+  <div class="goal syllabus">
+    <h4><span class="ic">2</span>对标 GESP 考纲（Python 一级）</h4>
+    <ul>
+      <li>（1）了解操作系统的基本概念及常见操作，了解计算机硬件的基本组成结构</li>
+      <li>（2）了解计算机网络协议和互联网的基本概念</li>
+      <li>（3）了解计算机语言的基本概念与转换，掌握编程文件创建、复制、粘贴、删除、移动和调试的基本操作</li>
+      <li>（4）掌握编程语言开发环境的使用</li>
+      <li>考核目标：对计算机系统的编程软件界面有认识、能完成基本操作</li>
+    </ul>
+  </div>
+</div>
+
+<h3 id="s0-2">0.2 考纲对照</h3>
+<p>这一单元是整套 Python 一级的<strong>起点</strong>，它不讲语法，只讲"环境与常识"。
+但别小看它——在一级真题里，<strong>单选题的第 1、2 题几乎都在这个范围内出题</strong>。</p>
+<table class="styled">
+  <thead><tr><th>本单元小节</th><th>对应考纲条目</th><th>真题常考形式</th></tr></thead>
+  <tbody>
+    <tr><td>1　计算机组成</td><td>硬件的基本组成结构</td><td>判断某设备是输入还是输出设备</td></tr>
+    <tr><td>2　发展历程</td><td>计算机的历史</td><td>四个时代的划分依据</td></tr>
+    <tr><td>3　程序与语言</td><td>计算机语言的基本概念</td><td>机器语言 / 汇编 / 高级语言的区别</td></tr>
+    <tr><td>4　开发环境</td><td>IDE 的使用、文件基本操作</td><td>IDE 能做什么、不能做什么</td></tr>
+  </tbody>
+</table>
+<div class="box tip">
+  <span class="lb">零基础提示：</span>如果你完全没接触过编程也没关系。这一单元的所有内容都不需要你写复杂的代码，
+  只需要"看懂、记住、能分辨"。真正开始写代码是从第 2 单元起。
+</div>
+
+<!-- ============ 1 ============ -->
+<div class="section-header" id="s1">
+  <h2>1　计算机长什么样</h2>
+  <div class="en-title">What Makes Up a Computer</div>
+</div>
+
+<h3 id="s1-1">1.1 五大部件</h3>
+
+<p>岗哨的机械师把一台老式"运算机"拆给你看。他说：别看它复杂，拆开来只有五样东西。</p>
+
+<figure class="figure">
+  <svg class="diagram" viewBox="0 0 820 330" role="img" aria-label="计算机五大部件示意">
+    <text x="24" y="34" font-size="14" font-weight="bold" fill="#1f2937">计算机的五大部件</text>
+
+    <rect x="40" y="70" width="150" height="80" rx="12" fill="#eef6ff" stroke="#3b82f6" stroke-width="2"/>
+    <text x="115" y="102" text-anchor="middle" font-size="13.5" fill="#1d4ed8" font-weight="bold">输入设备</text>
+    <text x="115" y="126" text-anchor="middle" font-size="11.5" fill="#3b6ea8">键盘 · 鼠标 · 摄像头</text>
+
+    <rect x="290" y="60" width="220" height="100" rx="12" fill="#fff6ec" stroke="#ff6b35" stroke-width="2.4"/>
+    <text x="400" y="92" text-anchor="middle" font-size="14" fill="#c1440e" font-weight="bold">中央处理器 CPU</text>
+    <text x="400" y="116" text-anchor="middle" font-size="11.5" fill="#a85728">运算器 + 控制器</text>
+    <text x="400" y="138" text-anchor="middle" font-size="11.5" fill="#a85728">负责"算"和"指挥"</text>
+
+    <rect x="610" y="70" width="160" height="80" rx="12" fill="#e9f8ef" stroke="#2e9e5b" stroke-width="2"/>
+    <text x="690" y="102" text-anchor="middle" font-size="13.5" fill="#1f7a44" font-weight="bold">输出设备</text>
+    <text x="690" y="126" text-anchor="middle" font-size="11.5" fill="#3b7c5b">显示器 · 音箱 · 打印机</text>
+
+    <line x1="190" y1="110" x2="286" y2="110" stroke="#3b82f6" stroke-width="2.4"/>
+    <polygon points="286,110 274,104 274,116" fill="#3b82f6"/>
+    <line x1="510" y1="110" x2="606" y2="110" stroke="#2e9e5b" stroke-width="2.4"/>
+    <polygon points="606,110 594,104 594,116" fill="#2e9e5b"/>
+
+    <rect x="290" y="196" width="220" height="86" rx="12" fill="#f4f0ff" stroke="#8b5cf6" stroke-width="2"/>
+    <text x="400" y="226" text-anchor="middle" font-size="13.5" fill="#6d28d9" font-weight="bold">存储器</text>
+    <text x="400" y="250" text-anchor="middle" font-size="11.5" fill="#7c5cd0">内存（临时）· 硬盘（长期）</text>
+    <text x="400" y="270" text-anchor="middle" font-size="11.5" fill="#7c5cd0">负责"记住"数据与程序</text>
+
+    <line x1="400" y1="164" x2="400" y2="192" stroke="#8b5cf6" stroke-width="2.4" stroke-dasharray="6 4"/>
+    <line x1="400" y1="192" x2="400" y2="164" stroke="#8b5cf6" stroke-width="2.4" stroke-dasharray="6 4"/>
+
+    <text x="24" y="304" font-size="12" fill="#8d9d94">记忆口诀：输入 →（CPU 用存储器）→ 输出；CPU 里有运算器与控制器</text>
+  </svg>
+  <div class="caption">图 2（SVG）：计算机的五大部件与数据流向</div>
+</figure>
+
+<table class="styled">
+  <thead><tr><th>部件</th><th>作用</th><th>常见例子</th></tr></thead>
+  <tbody>
+    <tr><td><strong>输入设备</strong></td><td>把外面的信息送进计算机</td><td>键盘、鼠标、扫描仪、摄像头、麦克风、触摸屏</td></tr>
+    <tr><td><strong>运算器</strong></td><td>做算术运算和逻辑运算</td><td>与控制器一起封装在 CPU 里</td></tr>
+    <tr><td><strong>控制器</strong></td><td>指挥各个部件按顺序工作</td><td>与运算器一起封装在 CPU 里</td></tr>
+    <tr><td><strong>存储器</strong></td><td>保存数据和程序</td><td>内存（RAM）、硬盘、U 盘、光盘</td></tr>
+    <tr><td><strong>输出设备</strong></td><td>把结果送出去给人看</td><td>显示器、打印机、音箱、投影仪</td></tr>
+  </tbody>
+</table>
+
+<div class="box remember">
+  <span class="lb">一句话记忆：</span>电脑就像一个"看不见的岗哨"——
+  <strong>眼睛耳朵负责收（输入），大脑负责想（CPU），本子负责记（存储器），嘴巴负责说（输出）。</strong>
+</div>
+
+<div class="box warn">
+  <span class="lb">最容易错的三个：</span><br>
+  ① <strong>触摸屏既是输入设备，也是输出设备</strong>（你点它是输入，它显示是输出）；<br>
+  ② <strong>硬盘属于存储器，不属于输出设备</strong>（虽然它能把内容"存出去"，但它的本职是"记"）；<br>
+  ③ <strong>CPU 不是一个部件，而是运算器 + 控制器</strong>两部分合起来的称呼。
+</div>
+
+<div class="cast duck">
+  <img class="ava" src="../assets/ducks/duck_hushbaum.webp" alt="扣哒鸭" onerror="this.style.display='none'">
+  <div class="bubble">
+    <div class="who">扣哒鸭 · 调试官</div>
+    每年都有考生把"硬盘"填进输出设备的空里。硬盘是仓库，不是喇叭。
+    仓库负责存，喇叭负责喊——你要是分不清，就想想岗哨的粮仓和号角。
+  </div>
+</div>
+
+<h3 id="s1-2">1.2 硬件与软件</h3>
+<p><strong>硬件（Hardware）</strong>是你摸得到的部分：主机、显示器、键盘、鼠标。
+<strong>软件（Software）</strong>是你摸不到的部分：装在里面、指挥硬件干活的一套套程序。</p>
+
+<table class="styled">
+  <thead><tr><th>类别</th><th>是什么</th><th>例子</th></tr></thead>
+  <tbody>
+    <tr><td><strong>硬件</strong></td><td>看得见、摸得着的物理设备</td><td>CPU、内存条、硬盘、显示器、键盘</td></tr>
+    <tr><td><strong>系统软件</strong></td><td>管理整台机器的最底层软件</td><td>Windows、Linux、macOS 操作系统</td></tr>
+    <tr><td><strong>应用软件</strong></td><td>为我们做具体事情的软件</td><td>浏览器、画图工具、<strong>Python 开发环境</strong></td></tr>
+  </tbody>
+</table>
+
+<div class="box info">
+  <span class="lb">类比：</span>把计算机比作岗哨——
+  <strong>硬件</strong>是墙体、火把、粮仓；<strong>系统软件</strong>是队长排的班表；
+  <strong>应用软件</strong>是每个守夜人手上的具体活儿。没有班表，人多也乱；没有活儿，班表也没意义。
+</div>
+
+<h3 id="s1-3">1.3 操作系统与常用操作</h3>
+<p><strong>操作系统（Operating System，简称 OS）</strong>是管理计算机硬件的系统软件，
+它替你把 CPU、内存、硬盘、设备都管起来，你才能在它上面装软件、开文件。</p>
+
+<p>常见操作系统：<strong>Windows</strong>（我们最常用的）、<strong>Linux</strong>（服务器上最常见）、
+<strong>macOS</strong>（苹果电脑）、<strong>Android / iOS</strong>（手机上的）。</p>
+
+<p>在写程序之前，你至少要熟练这些操作（考纲要求"掌握编程文件创建、复制、粘贴、删除、移动"）：</p>
+<table class="styled">
+  <thead><tr><th>操作</th><th>Windows 快捷键</th><th>用途</th></tr></thead>
+  <tbody>
+    <tr><td>新建文件夹</td><td><code class="inline">Ctrl + Shift + N</code></td><td>给代码文件安个家</td></tr>
+    <tr><td>复制</td><td><code class="inline">Ctrl + C</code></td><td>备份代码</td></tr>
+    <tr><td>粘贴</td><td><code class="inline">Ctrl + V</code></td><td>把备份放回别处</td></tr>
+    <tr><td>剪切（移动）</td><td><code class="inline">Ctrl + X</code></td><td>把文件挪到别的位置</td></tr>
+    <tr><td>删除</td><td><code class="inline">Delete</code></td><td>删掉不要的文件</td></tr>
+    <tr><td>重命名</td><td><code class="inline">F2</code></td><td>给文件改名（注意保留扩展名）</td></tr>
+    <tr><td>保存</td><td><code class="inline">Ctrl + S</code></td><td><strong>写代码时最常用的一个键</strong></td></tr>
+  </tbody>
+</table>
+
+<div class="box tip">
+  <span class="lb">小提示：</span>写代码时，<strong>每写几行就按一次 Ctrl + S</strong>。
+  岗哨的电源可不太稳，没保存的代码断电就没了——这个习惯会救你很多次。
+</div>
+
+<!-- ============ 2 ============ -->
+<div class="cast anya">
+  <img class="ava" src="../assets/avatars/anya.webp" alt="安雅" onerror="this.style.display='none'">
+  <div class="bubble">
+    <div class="who">安雅 · 红发队长</div>
+    明白了吗？电脑其实特别好懂——<strong>它一辈子只做四件事：收、想、记、说</strong>。<br>
+    你敲键盘是"收"，CPU 算数是"想"，硬盘存东西是"记"，屏幕亮起来是"说"。<br>
+    所以别怕它。它一点都不聪明，<strong>它只是特别听话、特别快</strong>。
+  </div>
+</div>
+
+<div class="section-header" id="s2">
+  <h2>2　计算机的四代</h2>
+  <div class="en-title">Four Generations of Computers</div>
+</div>
+
+<h3 id="s2-1">2.1 四个时代</h3>
+<p>岗哨的档案室里挂着一张长长的年表。安雅指着它说：计算机不是一天长成现在这样的，它换过四次'心脏'。</p>
+
+<figure class="figure">
+  <svg class="diagram" viewBox="0 0 840 300" role="img" aria-label="计算机四代发展时间轴">
+    <text x="24" y="34" font-size="14" font-weight="bold" fill="#1f2937">计算机发展的四个时代</text>
+    <line x1="60" y1="150" x2="800" y2="150" stroke="#cbd5e1" stroke-width="3"/>
+
+    <circle cx="140" cy="150" r="11" fill="#ff6b35"/>
+    <rect x="66" y="60" width="150" height="66" rx="10" fill="#fff6ec" stroke="#ff6b35" stroke-width="1.8"/>
+    <text x="141" y="86" text-anchor="middle" font-size="12.5" fill="#c1440e" font-weight="bold">第一代</text>
+    <text x="141" y="108" text-anchor="middle" font-size="12" fill="#a85728">电子管</text>
+    <text x="141" y="176" text-anchor="middle" font-size="11" fill="#8d9d94">1946 — 1958</text>
+
+    <circle cx="340" cy="150" r="11" fill="#f5b301"/>
+    <rect x="266" y="196" width="150" height="66" rx="10" fill="#fffbea" stroke="#f5b301" stroke-width="1.8"/>
+    <text x="341" y="222" text-anchor="middle" font-size="12.5" fill="#a16207" font-weight="bold">第二代</text>
+    <text x="341" y="244" text-anchor="middle" font-size="12" fill="#a16207">晶体管</text>
+    <text x="341" y="180" text-anchor="middle" font-size="11" fill="#8d9d94">1958 — 1964</text>
+
+    <circle cx="540" cy="150" r="11" fill="#3b82f6"/>
+    <rect x="466" y="60" width="150" height="66" rx="10" fill="#eef6ff" stroke="#3b82f6" stroke-width="1.8"/>
+    <text x="541" y="86" text-anchor="middle" font-size="12.5" fill="#1d4ed8" font-weight="bold">第三代</text>
+    <text x="541" y="108" text-anchor="middle" font-size="12" fill="#3b6ea8">中小规模集成电路</text>
+    <text x="541" y="176" text-anchor="middle" font-size="11" fill="#8d9d94">1965 — 1970</text>
+
+    <circle cx="740" cy="150" r="11" fill="#2e9e5b"/>
+    <rect x="666" y="196" width="150" height="66" rx="10" fill="#e9f8ef" stroke="#2e9e5b" stroke-width="1.8"/>
+    <text x="741" y="222" text-anchor="middle" font-size="12.5" fill="#1f7a44" font-weight="bold">第四代</text>
+    <text x="741" y="244" text-anchor="middle" font-size="12" fill="#3b7c5b">大规模集成电路</text>
+    <text x="741" y="180" text-anchor="middle" font-size="11" fill="#8d9d94">1971 — 至今</text>
+
+    <text x="420" y="288" text-anchor="middle" font-size="12" fill="#8d9d94">四代换的从来不是外形，而是"心脏"——核心元器件</text>
+  </svg>
+  <div class="caption">图 3（SVG）：四个时代与它们的时间范围</div>
+</figure>
+
+<table class="styled">
+  <thead><tr><th>时代</th><th>时间</th><th>核心元器件</th><th>特点（了解即可）</th></tr></thead>
+  <tbody>
+    <tr><td>第一代</td><td>1946 — 1958</td><td><strong>电子管</strong></td><td>体积巨大、耗电惊人、速度慢</td></tr>
+    <tr><td>第二代</td><td>1958 — 1964</td><td><strong>晶体管</strong></td><td>比电子管小得多、更可靠</td></tr>
+    <tr><td>第三代</td><td>1965 — 1970</td><td><strong>中小规模集成电路</strong></td><td>多个元件做在一块芯片上</td></tr>
+    <tr><td>第四代</td><td>1971 — 至今</td><td><strong>大规模 / 超大规模集成电路</strong></td><td>一台电脑塞进一块芯片，个人电脑普及</td></tr>
+  </tbody>
+</table>
+
+<h3 id="s2-2">2.2 划分依据</h3>
+<p>这是<strong>真题原题考过的点</strong>，一定要记牢：</p>
+<div class="box remember">
+  <span class="lb">划分依据：</span>这四个时代是按照<strong>核心元器件</strong>来划分的，
+  <strong>不是</strong>按运算速度、存储容量或体积大小划分的。
+  速度、容量、体积的变化，都是"换了元器件"之后<strong>带来的结果</strong>，而不是划分的理由。
+</div>
+
+<div class="cast duck">
+  <img class="ava" src="../assets/ducks/duck_nalfar.webp" alt="扣哒鸭" onerror="this.style.display='none'">
+  <div class="bubble">
+    <div class="who">扣哒鸭 · 调试官</div>
+    有人填"运算速度"，说"后面几代算得越来越快嘛"——那是结果，不是依据。
+    <strong>先换心，才跑得快。</strong>记住这个顺序，这题你就不会错。
+  </div>
+</div>
+
+<!-- ============ 3 ============ -->
+<div class="cast hero">
+  <img class="ava" src="../assets/avatars/tharin.webp" alt="塔林" onerror="this.style.display='none'">
+  <div class="bubble">
+    <div class="who">塔林 · 金甲战士</div>
+    我爷爷那把剑比我还高，重得要用两只手才抬得起来。我这把轻一半，却更结实、更锋利。<br>
+    <strong>计算机也是这个道理：不是越大越厉害。</strong>
+    从电子管到晶体管，一代比一代小，一代比一代快。<br>
+    所以别问"哪一代最猛"，要问"它换了什么心脏"。
+  </div>
+</div>
+
+<div class="section-header" id="s3">
+  <h2>3　什么是程序</h2>
+  <div class="en-title">Programs &amp; Programming Languages</div>
+</div>
+
+<h3 id="s3-1">3.1 程序与指令</h3>
+
+<p>岗哨塔顶的哨火为什么能整夜不灭？因为有个人给它编了一整套"值夜流程"：
+几点添柴、几点拨芯、火小了怎么办。这套流程一旦写下来，换谁值班都能照做。</p>
+
+<p>计算机里的<strong>程序（Program）</strong>就是这样一套"流程"：</p>
+<ul style="margin:10px 0 10px 26px;color:#3c4a42;line-height:2">
+  <li><strong>指令（Instruction）</strong>：一条一条明确的、计算机能听懂的命令，例如"把 3 和 4 加起来"</li>
+  <li><strong>程序</strong>：按一定顺序排列起来的一串指令，用来完成某项任务</li>
+</ul>
+
+<div class="box remember">
+  <span class="lb">一句话记忆：</span><strong>指令是一条命令，程序是一串命令；写程序就是把要计算机做的事，翻译成它能执行的指令序列。</strong>
+</div>
+
+<p>请特别注意：计算机<strong>不会自己思考</strong>。它只会一件事——照着指令一条条执行。
+所以程序的顺序、条件、次数，都必须由你写清楚。</p>
+
+<h3 id="s3-2">3.2 编程语言的三个层次</h3>
+
+<p>问题是：计算机只认<strong>电信号的开与关</strong>（用 0 和 1 表示）。
+而你不可能用 0 和 1 写一整个游戏。于是人类造了三种"语言"来过渡：</p>
+
+<figure class="figure">
+  <svg class="diagram" viewBox="0 0 840 320" role="img" aria-label="编程语言三个层次">
+    <text x="24" y="34" font-size="14" font-weight="bold" fill="#1f2937">从"机器听得懂"到"人看得懂"</text>
+
+    <rect x="60" y="62" width="700" height="62" rx="12" fill="#f1f5f9" stroke="#94a3b8" stroke-width="1.8"/>
+    <text x="86" y="88" font-size="13.5" fill="#334155" font-weight="bold">机器语言</text>
+    <text x="86" y="110" font-size="12" fill="#64748b">直接由二进制 0 / 1 组成，计算机能直接执行，但人几乎读不懂</text>
+    <text x="700" y="100" font-size="16" font-family="Consolas,monospace" fill="#64748b">10110000 01100001</text>
+
+    <rect x="60" y="140" width="700" height="62" rx="12" fill="#fff6ec" stroke="#ff6b35" stroke-width="1.8"/>
+    <text x="86" y="166" font-size="13.5" fill="#c1440e" font-weight="bold">汇编语言</text>
+    <text x="86" y="188" font-size="12" fill="#a85728">用助记符（如 MOV、ADD）代替 0/1，需要"汇编器"翻译成机器语言</text>
+    <text x="690" y="178" font-size="14" font-family="Consolas,monospace" fill="#a85728">MOV AL, 61H</text>
+
+    <rect x="60" y="218" width="700" height="70" rx="12" fill="#e9f8ef" stroke="#2e9e5b" stroke-width="2.2"/>
+    <text x="86" y="246" font-size="13.5" fill="#1f7a44" font-weight="bold">高级语言</text>
+    <text x="86" y="268" font-size="12" fill="#3b7c5b">接近自然语言与数学表达，需要翻译后才能执行。Python 就属于高级语言</text>
+    <text x="690" y="256" font-size="14" font-family="Consolas,monospace" fill="#1f7a44">print("岗哨你好")</text>
+
+    <text x="420" y="308" text-anchor="middle" font-size="12" fill="#8d9d94">越往下越"像人话"，越往上越"像机器话"</text>
+  </svg>
+  <div class="caption">图 4（SVG）：机器语言 → 汇编语言 → 高级语言</div>
+</figure>
+
+<table class="styled">
+  <thead><tr><th>语言层次</th><th>由什么组成</th><th>计算机能直接执行吗</th><th>需要什么翻译</th></tr></thead>
+  <tbody>
+    <tr><td><strong>机器语言</strong></td><td>二进制指令（0 和 1）</td><td>能，直接执行</td><td>不需要</td></tr>
+    <tr><td><strong>汇编语言</strong></td><td>助记符号</td><td>不能</td><td>汇编器（Assembler）</td></tr>
+    <tr><td><strong>高级语言</strong></td><td>接近自然语言的语句</td><td>不能</td><td><strong>编译</strong>或<strong>解释</strong></td></tr>
+  </tbody>
+</table>
+
+<div class="box info">
+  <span class="lb">"翻译"的两种方式：</span><br>
+  <strong>编译（Compile）</strong>：整份程序一次性翻译成机器语言，生成一个可执行文件再运行。C++ 用这种方式。<br>
+  <strong>解释（Interpret）</strong>：一行一行地翻译、一行一行地执行。<strong>Python 用这种方式</strong>，
+  所以改动后立刻就能看到结果，非常适合初学和调试。
+</div>
+
+<h3 id="s3-3">3.3 为什么选 Python</h3>
+<p>岗哨的每个人都在用不同的工具：塔林用重剑、娜莉亚用长弓、贺舒曼用法杖。
+编程语言也一样，各有擅长。<strong>Python 是其中最适合初学者的那一把。</strong></p>
+
+<table class="styled">
+  <thead><tr><th>特点</th><th>说明</th></tr></thead>
+  <tbody>
+    <tr><td><strong>语法接近英语与数学</strong></td><td>读起来像句子，例如 <code class="inline">if score &gt; 60:</code> 几乎不用翻译</td></tr>
+    <tr><td><strong>靠缩进组织代码</strong></td><td>不需要分号和大括号，靠"缩进"表示层级——这也是最容易出错的地方</td></tr>
+    <tr><td><strong>解释执行</strong></td><td>写完立刻运行，改一行马上见效</td></tr>
+    <tr><td><strong>库非常丰富</strong></td><td>想画图有 <code class="inline">turtle</code>，想算数学有 <code class="inline">math</code>，不必从零造轮子</td></tr>
+  </tbody>
+</table>
+
+<!-- ============ 4 ============ -->
+<div class="section-header" id="s4">
+  <h2>4　开发环境 IDE</h2>
+  <div class="en-title">Integrated Development Environment</div>
+</div>
+
+<h3 id="s4-1">4.1 IDE 的五件事</h3>
+
+<p>你不可能对着记事本写代码——那太容易出错。岗哨给你配了一整套"写字台"，
+它把写代码需要的工具都装在一个窗口里，这就是 <strong>IDE（集成开发环境，Integrated Development Environment）</strong>。</p>
+
+<figure class="figure">
+  <svg class="diagram" viewBox="0 0 840 320" role="img" aria-label="IDE 的工作流程">
+    <text x="24" y="34" font-size="14" font-weight="bold" fill="#1f2937">IDE 帮你做的五件事</text>
+
+    <rect x="40" y="70" width="140" height="80" rx="12" fill="#eef6ff" stroke="#3b82f6" stroke-width="2"/>
+    <text x="110" y="100" text-anchor="middle" font-size="13" fill="#1d4ed8" font-weight="bold">① 新建文件</text>
+    <text x="110" y="124" text-anchor="middle" font-size="11.5" fill="#3b6ea8">建一个 .py 文件</text>
+
+    <rect x="210" y="70" width="140" height="80" rx="12" fill="#eef6ff" stroke="#3b82f6" stroke-width="2"/>
+    <text x="280" y="100" text-anchor="middle" font-size="13" fill="#1d4ed8" font-weight="bold">② 编辑代码</text>
+    <text x="280" y="124" text-anchor="middle" font-size="11.5" fill="#3b6ea8">高亮 · 补全</text>
+
+    <rect x="380" y="70" width="140" height="80" rx="12" fill="#fff6ec" stroke="#ff6b35" stroke-width="2"/>
+    <text x="450" y="100" text-anchor="middle" font-size="13" fill="#c1440e" font-weight="bold">③ 保存</text>
+    <text x="450" y="124" text-anchor="middle" font-size="11.5" fill="#a85728">Ctrl + S</text>
+
+    <rect x="550" y="70" width="140" height="80" rx="12" fill="#e9f8ef" stroke="#2e9e5b" stroke-width="2"/>
+    <text x="620" y="100" text-anchor="middle" font-size="13" fill="#1f7a44" font-weight="bold">④ 运行</text>
+    <text x="620" y="124" text-anchor="middle" font-size="11.5" fill="#3b7c5b">解释并执行</text>
+
+    <rect x="700" y="70" width="110" height="80" rx="12" fill="#f4f0ff" stroke="#8b5cf6" stroke-width="2"/>
+    <text x="755" y="100" text-anchor="middle" font-size="13" fill="#6d28d9" font-weight="bold">⑤ 调试</text>
+    <text x="755" y="124" text-anchor="middle" font-size="11.5" fill="#7c5cd0">找错改错</text>
+
+    <line x1="180" y1="110" x2="206" y2="110" stroke="#cbd5e1" stroke-width="2.4"/>
+    <line x1="350" y1="110" x2="376" y2="110" stroke="#cbd5e1" stroke-width="2.4"/>
+    <line x1="520" y1="110" x2="546" y2="110" stroke="#cbd5e1" stroke-width="2.4"/>
+    <line x1="690" y1="110" x2="696" y2="110" stroke="#cbd5e1" stroke-width="2.4"/>
+
+    <rect x="40" y="190" width="770" height="106" rx="12" fill="#f8fafc" stroke="#e2e8f0" stroke-width="1.5"/>
+    <text x="66" y="218" font-size="13" fill="#334155" font-weight="bold">IDE 能做的 与 不能做的</text>
+    <text x="66" y="244" font-size="12.5" fill="#2e9e5b">能做：代码自动补全、语法高亮、提示错误位置、辅助排查逻辑问题、运行与调试程序</text>
+    <text x="66" y="270" font-size="12.5" fill="#b91c1c">不能做：直接控制硬件（例如让机器人电机转动、让打印机出纸）——那要靠程序运行时发出的指令</text>
+  </svg>
+  <div class="caption">图 5（SVG）：IDE 的工作流程，以及"能做"与"不能做"的边界</div>
+</figure>
+
+<div class="cast duck">
+  <img class="ava" src="../assets/ducks/duck_anya.webp" alt="扣哒鸭" onerror="this.style.display='none'">
+  <div class="bubble">
+    <div class="who">扣哒鸭 · 调试官</div>
+    <strong>真题原题就爱考这条：IDE 能不能直接控制硬件？答案是"不能"。</strong>
+    IDE 是写字台，不是手。你的手在程序里，程序跑起来才轮到硬件动。
+    我见过太多人在这里栽跟头，题干换个说法他们就晕——记住这句：<em>IDE 管代码，不管电机。</em>
+  </div>
+</div>
+
+<h3 id="s4-2">4.2 第一个程序</h3>
+<p>现在，打开岗哨配给你的开发环境，我们点亮第一行字。</p>
+
+<div class="code-card">
+  <div class="code-head">
+    <span class="dot d1"></span><span class="dot d2"></span><span class="dot d3"></span>
+    <span class="file">hello.py</span>
+    <span class="lang">Python</span>
+  </div>
+  <pre><code>print("哨火不熄，守夜不止")</code></pre>
+  <div class="out"><b>OUTPUT</b>　哨火不熄，守夜不止</div>
+</div>
+
+<p>逐字拆开看这一行：</p>
+<table class="styled">
+  <thead><tr><th>部分</th><th>名称</th><th>作用</th></tr></thead>
+  <tbody>
+    <tr><td><code class="inline">print</code></td><td>函数名</td><td>告诉 Python：把下面的东西显示出来</td></tr>
+    <tr><td><code class="inline">( )</code></td><td>圆括号</td><td>函数要处理的内容写在括号里，<strong>必须是英文括号</strong></td></tr>
+    <tr><td><code class="inline">"…"</code></td><td>字符串</td><td>一对引号括起来的一段文字，引号也要用英文的</td></tr>
+  </tbody>
+</table>
+
+<div class="box warn">
+  <span class="lb">三个致命细节：</span><br>
+  ① 圆括号、双引号必须是<strong>英文半角</strong>符号。写成中文的 <code class="inline">（）</code> 或 <code class="inline">“”</code>，程序会直接报错；<br>
+  ② <code class="inline">print</code> 四个字母<strong>全是小写</strong>。写成 <code class="inline">Print</code>、<code class="inline">PRINT</code> 都不认识；<br>
+  ③ 括号、引号要<strong>成对出现</strong>，少一个就报错。
+</div>
+
+<h3 id="s4-3">4.3 保存与运行</h3>
+<p>写完之后按这个顺序操作（这就是考纲要求的"创建文件、编辑文件、保存文件、编译/解释、调试"）：</p>
+<table class="styled">
+  <thead><tr><th>步骤</th><th>操作</th><th>注意事项</th></tr></thead>
+  <tbody>
+    <tr><td>1　新建</td><td>在 IDE 里新建一个文件</td><td>Python 文件的后缀名是 <code class="inline">.py</code></td></tr>
+    <tr><td>2　编辑</td><td>把上面的代码敲进去</td><td>注意英文符号与缩进</td></tr>
+    <tr><td>3　保存</td><td>按 <code class="inline">Ctrl + S</code>，命名如 <code class="inline">hello.py</code></td><td>文件名要用英文或拼音，别用中文和空格</td></tr>
+    <tr><td>4　运行</td><td>按 <code class="inline">F5</code> 或点击"运行"按钮</td><td>IDE 会解释并执行这段代码</td></tr>
+    <tr><td>5　看结果</td><td>在下方输出区看结果</td><td>如果没显示，多半是没保存就运行了</td></tr>
+  </tbody>
+</table>
+
+<div class="box tip">
+  <span class="lb">最常见的"跑不起来"原因：</span>忘记保存。
+  IDE 运行的是<strong>上次保存的文件</strong>，不是你屏幕上正在编辑的内容。
+  看到结果和预期不符，先按一次 <code class="inline">Ctrl + S</code> 再运行。
+</div>
+
+<figure class="pic">
+  <img src="../assets/illustrations/py-L1-01-02_toolbench.webp" alt="开发环境工作台"
+       onerror="this.closest('.pic').classList.add('missing')">
+  <div class="ph">
+    <div class="fn">assets/illustrations/py-L1-01-02_toolbench.webp</div>
+    <div class="ds">【配图位】岗哨工作台上的四件工具，对应 IDE 的四件事：一张写满符文的卷轴（编辑）、一座能把卷轴变成齿轮的熔炉（编译/解释）、一个带动齿轮的摇柄（运行）、一柄仔细检查齿轮的放大镜（调试）；暖色火光。</div>
+  </div>
+  <figcaption>图 6：IDE 就像岗哨的四件套工具台</figcaption>
+</figure>
+
+<!-- ============ 5 ============ -->
+<div class="section-header" id="s5">
+  <h2>5　代码实战</h2>
+  <div class="en-title">Level Practice</div>
+</div>
+
+<p>这一关是所有扣哒世界冒险的第一关。别看它只有三行代码，你会在里面第一次真切感受到：<strong>是程序在指挥角色。</strong></p>
+
+<div class="level-card">
+  <div class="lc-head"><span class="n">关卡</span><h4>英雄觉醒</h4><span class="go">进入关卡 →</span></div>
+  <div class="lc-body">
+    <div class="story">
+      <b>故事：</b>地牢的石门在身后合拢，你的意识像被冷水浇醒。走廊尽头有一抹湛蓝的光——那是宝石，
+      也是你确认"还活着"的证据。可墙壁上的幽蓝尖刺正等着你踩错一步：
+      在这里，活下去靠的不是蛮力，而是<strong>清晰的代码指令</strong>。
+    </div>
+    <figure class="pic">
+      <img src="../assets/stages/py-L1-01-stage1_hero_awaken.webp" alt="英雄觉醒 关卡截图"
+           onerror="this.closest('.pic').classList.add('missing')">
+      <div class="ph">
+        <div class="fn">assets/stages/py-L1-01-stage1_hero_awaken.webp</div>
+        <div class="ds">【关卡截图位】请把《英雄觉醒》的游戏画面截图放到此处（放入 assets/stages/ 目录，文件名为 py-L1-01-stage1_hero_awaken.webp）。</div>
+      </div>
+      <figcaption>关卡实况：英雄觉醒</figcaption>
+    </figure>
+    <p><strong>思路：</strong>先看一眼上面的关卡实况——走廊很短，尖刺就在旁边。
+    你要做的只有三格移动：向右、向下、再向右。</p>
+    <div class="code-card">
+      <div class="code-head">
+        <span class="dot d1"></span><span class="dot d2"></span><span class="dot d3"></span>
+        <span class="file">重点示例：一条指令长什么样</span>
+        <span class="lang">Python</span>
+      </div>
+      <pre><code>hero.moveRight()      # 让英雄向右走一格
+hero.moveDown()       # 让英雄向下走一格</code></pre>
+      <div class="out"><b>读法</b>　对象.方法()　——　让"英雄"执行"向右移动"这个动作</div>
+    </div>
+    <div class="box tip">
+      <span class="lb">自己试一试：</span>把 <code class="inline">moveRight()</code> 换成
+      <code class="inline">moveDown()</code>、<code class="inline">moveUp()</code>、<code class="inline">moveLeft()</code>，英雄就能朝四个方向走。<br>
+      <strong>路线上还差最后一步向右——这一格留给你自己补上。</strong>
+    </div>
+    <p>注意这个写法：<code class="inline">hero.moveRight()</code>。它由三部分组成——</p>
+    <table class="styled">
+      <thead><tr><th>部分</th><th>含义</th></tr></thead>
+      <tbody>
+        <tr><td><code class="inline">hero</code></td><td>对象：我们的主角，英雄</td></tr>
+        <tr><td><code class="inline">.</code></td><td>点号：表示"我要对它做点什么"</td></tr>
+        <tr><td><code class="inline">moveRight()</code></td><td>方法：向右移动一格</td></tr>
+      </tbody>
+    </table>
+    <div class="box info">
+      <span class="lb">看懂这一行，你就看懂了本书的骨架：</span>
+      之后所有的 <code class="inline">hero.findNearestEnemy()</code>、<code class="inline">hero.moveXY(20, 34)</code>，
+      全都是"<strong>对象.方法(参数)</strong>"这同一个模子刻出来的。
+    </div>
+    <a class="btn-go" href="https://codecombat.cn/" target="_blank" rel="noopener">去扣哒世界闯这一关 →</a>
+  </div>
+</div>
+
+<!-- ============ 6 ============ -->
+<div class="section-header" id="s6">
+  <h2>6　常见陷阱</h2>
+  <div class="en-title">Common Pitfalls &amp; Debugging</div>
+</div>
+
+<div class="cast duck">
+  <img class="ava" src="../assets/ducks/duck_hattori.webp" alt="扣哒鸭" onerror="this.style.display='none'">
+  <div class="bubble">
+    <div class="who">扣哒鸭 · 调试官</div>
+    第一节课最容易翻车的不是语法，是符号。你的输入法在你写代码的时候，必须切成<strong>英文</strong>。
+    这一条我能重复到天亮。
+  </div>
+</div>
+
+<div class="pit">
+  <div class="pt">
+    <div class="x">1</div>
+    <div class="t"><b>用了中文标点。</b>把 <code class="inline">print("你好")</code> 写成了 <code class="inline">print（“你好”）</code>。</div>
+  </div>
+  <div class="duck">
+    <img src="../assets/ducks/duck_zana.webp" alt="扣哒鸭" onerror="this.style.display='none'">
+    <div class="dt"><b>扣哒鸭：</b>你这括号长得比正常的宽一倍，Python 当然不认识。
+    <strong>中文括号、中文引号、中文分号、中文冒号</strong>——写代码时一个都不能用。
+    看到那种"圆滚滚"的括号，先把输入法切成英文再说。</div>
+  </div>
+  <div class="fix"><b>正确写法：</b>一律使用英文半角符号：<code class="inline">print("你好")</code></div>
+</div>
+
+<div class="pit">
+  <div class="pt">
+    <div class="x">2</div>
+    <div class="t"><b>大小写写错。</b>把 <code class="inline">print</code> 写成 <code class="inline">Print</code> 或 <code class="inline">PRINT</code>。</div>
+  </div>
+  <div class="duck">
+    <img src="../assets/ducks/duck_naria.webp" alt="扣哒鸭" onerror="this.style.display='none'">
+    <div class="dt"><b>扣哒鸭：</b><strong>Python 是严格区分大小写的</strong>。
+    <code class="inline">print</code>、<code class="inline">Print</code>、<code class="inline">PRINT</code> 在它眼里是三个完全不同的名字。
+    你把主角的名字写错一个字，他还认得出你吗？</div>
+  </div>
+  <div class="fix"><b>正确写法：</b><code class="inline">print</code> 全小写；之后学的 <code class="inline">True</code>、<code class="inline">False</code>、<code class="inline">None</code> 则是首字母大写</div>
+</div>
+
+<div class="pit">
+  <div class="pt">
+    <div class="x">3</div>
+    <div class="t"><b>改完代码直接运行，忘了保存。</b>输出结果还是上一次的。</div>
+  </div>
+  <div class="duck">
+    <img src="../assets/ducks/duck_illia.webp" alt="扣哒鸭" onerror="this.style.display='none'">
+    <div class="dt"><b>扣哒鸭：</b>你改的是屏幕上的草稿，运行的是硬盘上的旧文件。
+    <strong>Ctrl + S，一秒的事。</strong>养成"写几行就保存一次"的习惯，能少掉一半的疑惑。</div>
+  </div>
+  <div class="fix"><b>正确写法：</b>每次运行前先按 <code class="inline">Ctrl + S</code></div>
+</div>
+
+<div class="pit">
+  <div class="pt">
+    <div class="x">4</div>
+    <div class="t"><b>文件名带中文或空格</b>，例如"我的第一个程序.py"，运行时报路径错误。</div>
+  </div>
+  <div class="duck">
+    <img src="../assets/ducks/duck_senick.webp" alt="扣哒鸭" onerror="this.style.display='none'">
+    <div class="dt"><b>扣哒鸭：</b><strong>文件名请用英文字母、数字和下划线</strong>，例如 <code class="inline">hello.py</code>、<code class="inline">my_first.py</code>。
+    中文名在某些环境下会变成乱码，空格更是会直接让路径断成两截。</div>
+  </div>
+  <div class="fix"><b>正确写法：</b><code class="inline">hello.py</code>　<code class="inline">test01.py</code>　<code class="inline">my_first_program.py</code></div>
+</div>
+
+<div class="pit">
+  <div class="pt">
+    <div class="x">5</div>
+    <div class="t"><b>删掉了文件后缀名。</b>把 <code class="inline">hello.py</code> 改名成 <code class="inline">hello</code>，系统不知道它是 Python 文件。</div>
+  </div>
+  <div class="duck">
+    <img src="../assets/ducks/duck_usara.webp" alt="扣哒鸭" onerror="this.style.display='none'">
+    <div class="dt"><b>扣哒鸭：</b><strong>.py 是 Python 文件的身份证</strong>，改名的时候要连后缀一起保留。
+    很多人只把"显示文件扩展名"打开过一次，就再也没关掉——建议你也去把这个选项打开。</div>
+  </div>
+  <div class="fix"><b>正确写法：</b>改名时保留 <code class="inline">.py</code>；在文件夹选项里勾选"显示文件扩展名"</div>
+</div>
+
+<!-- ============ 7 ============ -->
+<div class="section-header" id="s7">
+  <h2>7　题目练习</h2>
+  <div class="en-title">Practice</div>
+</div>
+
+<p>下面 5 道题中，前 2 道<strong>改编自 GESP 真题</strong>（情境改写为扣哒世界，考点完全一致），后 3 道为<strong>原创练习题</strong>。先自己做，再点开看详解。</p>
+
+<div class="exam">
+  <div class="eh"><span class="src">改编自 2026 年 9 月 · Python 一级 · 第 1 题</span><span class="tp">单选题</span></div>
+  <div class="eb">
+    <div class="q">烛火岗哨的巡逻队由控制程序统一调度。工程师们使用集成开发环境（IDE）编写并调试巡逻程序。下列关于 IDE 功能的描述，<strong>错误</strong>的是（　　）。</div>
+    <div class="opt">
+      <i>A.</i>可以提供代码自动补全，提高编程效率<br>
+      <i>B.</i>可以提供辅助信息，帮助排查程序逻辑错误<br>
+      <i>C.</i>可以直接控制巡逻机器人的电机转动<br>
+      <i>D.</i>支持语法高亮，使代码更易阅读
+    </div>
+    <details><summary>查看答案与详解</summary>
+      <div class="ans"><b>答案：C</b>。IDE 负责代码的编写、检查与调试，它<strong>不会绕过程序直接驱动硬件</strong>；
+      让电机转起来的是程序运行时发出的指令。<br>
+      <span class="tagline">对应小节</span>4.1 IDE 的五件事。</div>
+    </details>
+  </div>
+</div>
+
+<div class="exam">
+  <div class="eh"><span class="src">改编自 2026 年 9 月 · Python 一级 · 第 2 题</span><span class="tp">单选题</span></div>
+  <div class="eb">
+    <div class="q">岗哨档案室里记载：计算机自问世以来经历了四个时代——电子管计算机（1946—1958 年）、
+    晶体管计算机（1958—1964 年）、中小规模集成电路计算机（1965—1970 年）以及大规模和超大规模集成电路计算机（1971 年至今）。
+    划分这四个时代所采用的主要依据是（　　）。</div>
+    <div class="opt">
+      <i>A.</i>运算速度　　<i>B.</i>存储容量　　<i>C.</i>体积大小　　<i>D.</i>核心元器件
+    </div>
+    <details><summary>查看答案与详解</summary>
+      <div class="ans"><b>答案：D</b>。四个时代分别对应电子管、晶体管、中小规模集成电路、大规模集成电路——
+      本质是<strong>构成计算机的核心元器件</strong>变了。速度、容量、体积都是随之而来的结果。<br>
+      <span class="tagline">对应小节</span>2.2 划分依据。</div>
+    </details>
+  </div>
+</div>
+
+<div class="exam">
+  <div class="eh"><span class="src ori">原创练习题</span><span class="tp">单选题</span></div>
+  <div class="eb">
+    <div class="q">岗哨的机械师在整理设备清单。下列设备中，<strong>全部属于输入设备</strong>的一组是（　　）。</div>
+    <div class="opt">
+      <i>A.</i>键盘、鼠标、扫描仪<br>
+      <i>B.</i>显示器、打印机、音箱<br>
+      <i>C.</i>硬盘、U 盘、内存条<br>
+      <i>D.</i>摄像头、投影仪、键盘
+    </div>
+    <details><summary>查看答案与详解</summary>
+      <div class="ans"><b>答案：A</b>。<br>
+      <b>B</b> 项全部是<strong>输出设备</strong>；<br>
+      <b>C</b> 项是<strong>存储设备</strong>，既不是纯粹的输入也不是输出；<br>
+      <b>D</b> 项中"投影仪"是输出设备，混进来就不对了。<br>
+      <b>小技巧：</b>问自己一句"信息是进来还是出去"——进来的是输入，出去的是输出，装东西的是存储。<br>
+      <span class="tagline">对应小节</span>1.1 五大部件。</div>
+    </details>
+  </div>
+</div>
+
+<div class="exam">
+  <div class="eh"><span class="src ori">原创练习题</span><span class="tp">判断题</span></div>
+  <div class="eb">
+    <div class="q">Python 属于高级语言，计算机不能直接执行，需要经过解释之后才能运行。（　　）</div>
+    <details><summary>查看答案与详解</summary>
+      <div class="ans"><b>答案：正确（√）</b>。计算机能直接执行的只有<strong>机器语言</strong>（0 和 1）。
+      Python 是高级语言，需要由 Python 解释器一行一行翻译后执行。<br>
+      <span class="tagline">对应小节</span>3.2 编程语言的三个层次。</div>
+    </details>
+  </div>
+</div>
+
+<div class="exam">
+  <div class="eh"><span class="src ori">原创练习题</span><span class="tp">编程题</span></div>
+  <div class="eb">
+    <div class="q">题目要求：请在开发环境中新建一个 Python 文件，让它输出两行字——第一行是 <code class="inline">哨火不熄</code>，第二行是 <code class="inline">守夜不止</code>。</div>
+    <details><summary>查看参考答案与要点</summary>
+      <div class="ans">
+<pre style="margin:0;background:#1b2a21;color:#c9d6cd;border-radius:10px;padding:14px 16px">print("哨火不熄")
+print("守夜不止")</pre>
+      <p style="margin-top:12px"><b>要点：</b><br>
+      ① 每一个 <code class="inline">print()</code> 会输出一行，写完自动换行；<br>
+      ② 两行代码<strong>都不能缩进</strong>，必须顶格写在最左边；<br>
+      ③ 引号、括号都要用英文半角。<br>
+      <span class="tagline">对应小节</span>4.2 第一个程序；4.3 保存与运行。</p>
+      </div>
+    </details>
+  </div>
+</div>
+
+<!-- ============ 8 ============ -->
+<div class="section-header" id="s8">
+  <h2>8　本单元小结</h2>
+  <div class="en-title">Unit Summary</div>
+</div>
+
+<div class="summary">
+  <h3>你在岗哨门口学到了什么</h3>
+  <ul>
+    <li><strong>五大部件</strong>——输入设备、运算器、控制器、存储器、输出设备；运算器与控制器合称 CPU。</li>
+    <li><strong>硬件与软件</strong>——摸得到的是硬件；系统软件管全局，应用软件办具体事。</li>
+    <li><strong>操作系统</strong>——Windows / Linux / macOS / Android / iOS；文件的新建、复制、移动、删除、改名要熟练。</li>
+    <li><strong>四个时代</strong>——电子管 → 晶体管 → 中小规模集成电路 → 大规模集成电路；<strong>划分依据是核心元器件</strong>。</li>
+    <li><strong>程序与语言</strong>——指令组成程序；机器语言 → 汇编语言 → 高级语言；Python 靠"解释"执行。</li>
+    <li><strong>IDE</strong>——新建、编辑、保存、运行、调试；它能辅助写代码，但<strong>不能直接控制硬件</strong>。</li>
+  </ul>
+</div>
+
+<div class="pager">
+  <a style="pointer-events:none;opacity:.55"><div class="k">← 上一单元</div><div class="v">这是第一单元</div></a>
+  <a href="../index.html" target="_top" class="back"><div class="k">返回</div><div class="v">考纲之路 · 总目录</div></a>
+  <a href="py-1-02.html"><div class="k">下一单元 →</div><div class="v">会记事的木箱 · 变量、常量与数据类型</div></a>
+</div>
+
+<div class="cta">
+  <h3>下一站：会记事的木箱</h3>
+  <p>认识了工具，接下来该让程序真正"记住东西"了。
+  变量是编程里最基础、也最常考的一块砖——下一单元我们把这只木箱研究透。</p>
+  <a class="btn-go" href="https://codecombat.cn/" target="_blank" rel="noopener">加入扣哒世界，把这条考纲之路走一遍 →</a>
+</div>
+
+</div><!-- /container -->
+</div><!-- /page -->
+
+<script>
+const KEYWORDS = new Set(("while for if elif else break continue def return pass not and or in is None True False " +
+  "int float bool str list dict input print range randint import turtle").split(" "));
+
+function esc(s){ return s.replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;'); }
+
+function highlight(src){
+  let out = '', i = 0;
+  const n = src.length;
+  while (i < n){
+    const c = src[i];
+    if (c === '#'){
+      let j = src.indexOf('\n', i); if (j < 0) j = n;
+      out += '<span class="cm">' + esc(src.slice(i, j)) + '</span>';
+      i = j; continue;
+    }
+    if (c === '"' || c === "'"){
+      let j = i + 1;
+      while (j < n && src[j] !== c){ if (src[j] === '\\') j++; j++; }
+      j = Math.min(j + 1, n);
+      out += '<span class="st">' + esc(src.slice(i, j)) + '</span>';
+      i = j; continue;
+    }
+    if (/[0-9]/.test(c)){
+      let j = i;
+      while (j < n && /[0-9.]/.test(src[j])) j++;
+      out += '<span class="nu">' + esc(src.slice(i, j)) + '</span>';
+      i = j; continue;
+    }
+    if (/[A-Za-z_]/.test(c)){
+      let j = i;
+      while (j < n && /[A-Za-z0-9_]/.test(src[j])) j++;
+      const w = src.slice(i, j);
+      if (KEYWORDS.has(w)) out += '<span class="kw">' + esc(w) + '</span>';
+      else if (src[j] === '(') out += '<span class="fn">' + esc(w) + '</span>';
+      else out += esc(w);
+      i = j; continue;
+    }
+    out += esc(c); i++;
+  }
+  return out;
+}
+
+document.querySelectorAll('.code-card pre code').forEach(block => {
+  block.innerHTML = highlight(block.textContent);
+});
+
+if (location.search.indexOf('expand') >= 0) {
+  document.querySelectorAll('details').forEach(d => d.open = true);
+}
+document.querySelectorAll('.sidebar-nav a').forEach(a => {
+  a.addEventListener('click', () => {
+    if (window.innerWidth <= 900) document.querySelector('.sidebar-nav').classList.remove('active');
+  });
+});
+</script>
+</body>
+</html>

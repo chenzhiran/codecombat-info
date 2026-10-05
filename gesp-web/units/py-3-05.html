@@ -1,0 +1,1193 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="copyright" content="CodeCombat Inc. codecombat.cn">
+<title>矿车编队 · 数组与列表 | 扣哒考级 · GESP Python 三级</title>
+<style>
+  :root{
+    --primary:#6d4bd8; --primary-light:#8b6cf0; --primary-lighter:#f1ecfd; --primary-dark:#5233b8;
+    --brand:#ff6b35; --brand-dark:#e8541f; --brand-soft:#fff3ec;
+    --night:#151329; --night-2:#211d3d; --gold:#f5b301;
+    --text:#282538; --dim:#6b6580; --dim2:#9690ab;
+    --bg:#ffffff; --bg-soft:#faf9fe; --line:#e7e3f4; --sidebar:274px;
+    --code-bg:#1b1a2a; --code-tx:#cdc8e0;
+    --code-kw:#c678dd; --code-st:#98c379; --code-nu:#d19a66; --code-cm:#6f6a8a; --code-fn:#61afef;
+  }
+  *{margin:0;padding:0;box-sizing:border-box}
+  html{scroll-behavior:smooth}
+  body{font-family:"PingFang SC","Microsoft YaHei","Segoe UI",-apple-system,sans-serif;line-height:1.9;color:var(--text);background:var(--bg);font-size:15.5px}
+  .sidebar-nav{position:fixed;top:0;left:0;width:var(--sidebar);height:100vh;overflow-y:auto;background:linear-gradient(180deg,#121022,#1c1935);padding:14px 0 40px;z-index:100;border-right:3px solid var(--brand);transition:transform .3s ease}
+  .sidebar-nav::-webkit-scrollbar{width:5px}
+  .sidebar-nav::-webkit-scrollbar-thumb{background:var(--brand);border-radius:4px}
+  .sb-brand{display:flex;align-items:center;gap:10px;padding:10px 13px 12px;border-bottom:1px solid #2c2a4a;margin-bottom:8px}
+  .sidebar-nav a.sb-logo{display:flex;align-items:center;justify-content:center;flex-shrink:0;padding:0;border-left:none;transition:.2s}
+  .sb-logo:hover{transform:scale(1.08)}
+  .sb-logo img{height:34px;width:34px;display:block;object-fit:contain;border-radius:8px}
+  .sb-brand b{color:#f2f0fa;font-size:14px;letter-spacing:.5px;display:block;line-height:1.4}
+  .sb-brand span{color:#8880ab;font-size:11.5px;display:block;line-height:1.4}
+  .nav-title{color:#ffb894;font-size:12px;font-weight:800;padding:10px 18px 6px;letter-spacing:1.2px}
+  .sidebar-nav a{display:block;color:#c6c0dc;text-decoration:none;padding:6px 18px;font-size:12.5px;line-height:1.55;border-left:3px solid transparent;transition:.18s}
+  .sidebar-nav a:hover{color:#fff;background:rgba(255,107,53,.16);border-left-color:var(--brand)}
+  .sidebar-nav a.nav-section{color:#ffb894;font-weight:700;font-size:13px;margin-top:11px;padding-top:10px;border-top:1px solid #2c2a4a}
+  .sidebar-nav a.nav-section:first-of-type{border-top:none;margin-top:0;padding-top:6px}
+  .sidebar-nav a.nav-sub{padding-left:30px;color:#9d96ba;font-size:12px}
+  .sidebar-nav a.nav-sub:hover{color:#fff}
+  .sb-back{margin:16px 14px 0;display:block;text-align:center;padding:9px;border-radius:9px;background:#272348;color:#b3abd0 !important;font-size:12px;font-weight:700;border-left:none !important}
+  .sb-back:hover{background:var(--brand) !important;color:#fff !important}
+  .nav-toggle{display:none;position:fixed;top:14px;left:14px;z-index:120;background:var(--brand);color:#fff;border:none;border-radius:9px;padding:9px 13px;font-size:15px;cursor:pointer;box-shadow:0 4px 14px rgba(0,0,0,.25)}
+  .page{margin-left:var(--sidebar)}
+  .hero{position:relative;overflow:hidden;padding:44px 52px;color:#fff;background:linear-gradient(125deg,#100e20 0%,#1e1a3c 46%,#8a3a16 132%)}
+  .hero::after{content:"";position:absolute;right:-90px;top:-110px;width:400px;height:400px;border-radius:50%;background:radial-gradient(circle,rgba(245,179,1,.30),transparent 68%)}
+  .hero-top{display:flex;gap:36px;align-items:center;position:relative;z-index:2}
+  .hero-txt{flex:1;min-width:0}
+  .hero .crumb{font-size:11.5px;color:#ffb894;letter-spacing:1.5px;font-weight:700;margin-bottom:14px}
+  .hero h1{font-size:31px;font-weight:800;line-height:1.3;letter-spacing:.6px;margin-bottom:8px}
+  .hero h1 .sub{display:block;font-size:18px;font-weight:700;color:#ffd2b3;margin-top:6px;letter-spacing:.3px}
+  .hero .en{font-size:13px;color:#a49dc0;font-style:italic;margin-bottom:18px}
+  .hero .tags{display:flex;flex-wrap:wrap;gap:8px}
+  .tag{font-size:11.5px;padding:4px 12px;border-radius:20px;background:rgba(255,255,255,.12);border:1px solid rgba(255,255,255,.22);color:#e8f0f6;font-weight:600}
+  .tag.hot{background:rgba(255,107,53,.92);border-color:transparent;color:#fff}
+  .hero-card{flex-shrink:0;width:200px;text-align:center}
+  .hero-card .ava{width:148px;height:148px;border-radius:50%;object-fit:cover;object-position:top center;border:4px solid rgba(255,180,140,.6);box-shadow:0 14px 34px rgba(0,0,0,.45);background:#24344a}
+  .hero-card .nm{font-size:15px;font-weight:800;color:#fff;margin-top:10px}
+  .hero-card .ti{font-size:11.5px;color:#ffb894;margin-top:2px}
+  .container{max-width:1080px;margin:0 auto;padding:38px 52px 70px}
+  .lead{font-size:15.5px;line-height:2.05;color:#3a3650;background:linear-gradient(120deg,#fff8f3,#faf9fe);border-left:5px solid var(--brand);border-radius:0 14px 14px 0;padding:22px 26px;margin-bottom:32px}
+  .lead b{color:var(--brand-dark)}
+  .cast{display:flex;gap:16px;align-items:flex-start;border-radius:16px;padding:18px 22px;margin:24px 0}
+  .cast .ava{width:72px;height:72px;border-radius:50%;object-fit:cover;object-position:top center;flex-shrink:0;background:#e8eef5}
+  .cast .bubble{position:relative;font-size:14px;line-height:1.95;padding-top:2px;flex:1}
+  .cast .who{font-size:12px;font-weight:800;margin-bottom:5px;letter-spacing:.5px}
+  .cast.anya{background:var(--brand-soft);border:1px solid #ffdcc9}
+  .cast.anya .who{color:var(--brand-dark)}
+  .cast.anya .bubble{color:#5c4636}
+  .cast.duck{background:#fff5f5;border:1px solid #fbd5d5}
+  .cast.duck .who{color:#b91c1c}
+  .cast.duck .bubble{color:#5c4141}
+  .cast.teacher{background:linear-gradient(120deg,#f5f3fd,#ffffff);border:1px solid #e0daf5}
+  .cast.teacher .who{color:#3b2f6e}
+  .cast.teacher .bubble{color:#443c60}
+  .cast.hero{background:#f7f5fe;border:1px solid #ded6f8}
+  .cast.hero .who{color:#5233b8}
+  .cast.hero .bubble{color:#453d62}
+  .goal-grid{display:grid;grid-template-columns:1fr 1fr;gap:16px;margin-bottom:36px}
+  .goal{border:1px solid var(--line);border-radius:15px;padding:19px 21px;background:#fff;box-shadow:0 4px 16px rgba(109,75,216,.06)}
+  .goal h4{font-size:14px;font-weight:800;margin-bottom:11px;display:flex;align-items:center;gap:8px;color:var(--primary-dark)}
+  .goal h4 .ic{width:22px;height:22px;border-radius:7px;background:var(--primary-lighter);display:flex;align-items:center;justify-content:center;font-size:12px}
+  .goal ul{list-style:none}
+  .goal li{font-size:13.5px;color:#4d4a5c;line-height:1.9;padding-left:18px;position:relative}
+  .goal li::before{content:"▸";position:absolute;left:0;color:var(--primary);font-weight:800}
+  .goal.syllabus li::before{content:"✓"}
+  .section-header{margin:52px 0 24px;padding-bottom:12px;border-bottom:3px solid var(--brand);display:flex;align-items:baseline;gap:14px;flex-wrap:wrap}
+  .section-header h2{font-size:22px;font-weight:800;color:var(--night);letter-spacing:.4px}
+  .section-header .en-title{font-size:12px;color:var(--dim2);font-style:italic}
+  h3{font-size:17.5px;font-weight:800;margin:34px 0 14px;color:var(--night);display:flex;align-items:center;gap:10px}
+  h3::before{content:"";width:5px;height:17px;border-radius:3px;background:var(--brand);flex-shrink:0}
+  h4{font-size:15px;font-weight:800;margin:24px 0 10px;color:#3d3560}
+  p{margin:12px 0;color:#443c60;line-height:2}
+  strong{color:var(--primary-dark)}
+  code.inline{background:var(--primary-lighter);color:var(--primary-dark);padding:2px 7px;border-radius:6px;font-family:"SFMono-Regular",Consolas,Menlo,monospace;font-size:.9em;font-weight:600}
+  .figure{margin:24px 0;text-align:center}
+  .figure svg.diagram{max-width:100%;height:auto;background:#fff;border:1px solid var(--line);border-radius:14px;padding:10px}
+  .figure .caption{font-size:12.5px;color:var(--dim2);margin-top:9px}
+  .pic{margin:26px 0;text-align:center}
+  .pic img{max-width:100%;border-radius:16px;box-shadow:0 10px 28px rgba(60,40,120,.15);display:block;margin:0 auto}
+  .pic figcaption{font-size:12.5px;color:var(--dim2);margin-top:9px}
+  .pic .ph{display:none}
+  .pic.missing img{display:none}
+  .pic.missing .ph{display:flex;flex-direction:column;align-items:center;justify-content:center;gap:9px;border:2px dashed #cbc3e8;border-radius:16px;background:linear-gradient(135deg,#faf9ff,#f2f0fd);padding:40px 26px;color:#7d76a0}
+  .pic.missing .ph .fn{font-family:Consolas,monospace;font-size:12.5px;color:#6d4bd8;font-weight:700;word-break:break-all}
+  .pic.missing .ph .ds{font-size:12.5px;line-height:1.8;max-width:560px}
+  .box{border-radius:13px;padding:16px 20px;margin:20px 0;font-size:14px;line-height:1.95}
+  .box .lb{font-weight:800;margin-right:6px}
+  .info{background:#eef6ff;border-left:5px solid #3b82f6;color:#274768}
+  .info .lb{color:#1d4ed8}
+  .tip{background:#fff9ec;border-left:5px solid #f59e0b;color:#6b4e13}
+  .tip .lb{color:#b45309}
+  .remember{background:var(--primary-lighter);border-left:5px solid var(--primary);color:#3b2f6e}
+  .remember .lb{color:var(--primary-dark)}
+  .warn{background:#fef2f2;border-left:5px solid #ef4444;color:#7f2b2b}
+  .warn .lb{color:#b91c1c}
+  .code-card{margin:20px 0;border-radius:14px;overflow:hidden;box-shadow:0 10px 28px rgba(30,25,60,.20)}
+  .code-head{display:flex;align-items:center;gap:9px;background:#252340;padding:9px 14px}
+  .code-head .dot{width:10px;height:10px;border-radius:50%}
+  .code-head .d1{background:#ff5f57}.code-head .d2{background:#febc2e}.code-head .d3{background:#28c840}
+  .code-head .file{color:#9b94bd;font-size:11.5px;font-family:Consolas,monospace;margin-left:6px}
+  .code-head .lang{margin-left:auto;font-size:10.5px;font-weight:800;color:#17152a;background:#8b6cf0;padding:2px 9px;border-radius:6px;letter-spacing:.4px}
+  .code-card pre{background:var(--code-bg);padding:18px 20px;overflow-x:auto;margin:0;font-family:"SFMono-Regular",Consolas,"Courier New",monospace;font-size:13.5px;line-height:1.85}
+  .code-card pre::-webkit-scrollbar{height:8px}
+  .code-card pre::-webkit-scrollbar-thumb{background:#403c66;border-radius:4px}
+  .code-card code{color:var(--code-tx);white-space:pre}
+  .kw{color:var(--code-kw);font-weight:600}
+  .st{color:var(--code-st)}
+  .nu{color:var(--code-nu)}
+  .cm{color:var(--code-cm);font-style:italic}
+  .fn{color:var(--code-fn)}
+  .out{background:#151424;color:#8fd6a8;font-family:Consolas,monospace;font-size:13px;padding:12px 20px;border-top:1px solid #2c2a48}
+  .out b{color:#cdc8e0;font-weight:600;font-size:11.5px;letter-spacing:1px}
+  table.styled{width:100%;border-collapse:collapse;margin:20px 0;font-size:13.5px;border-radius:12px;overflow:hidden;box-shadow:0 4px 16px rgba(109,75,216,.08)}
+  table.styled thead{background:var(--brand)}
+  table.styled th{color:#fff;padding:11px 14px;text-align:left;font-weight:700;font-size:13px}
+  table.styled td{padding:10px 14px;border-bottom:1px solid var(--line);color:#4a4660;vertical-align:top}
+  table.styled tbody tr:nth-child(even){background:var(--bg-soft)}
+  table.styled tbody tr:last-child td{border-bottom:none}
+  .level-card{border:1px solid var(--line);border-radius:16px;overflow:hidden;margin:22px 0;box-shadow:0 6px 22px rgba(109,75,216,.08)}
+  .level-card .lc-head{background:linear-gradient(100deg,#1a1732,#8a3a16);color:#fff;padding:15px 22px;display:flex;align-items:center;gap:12px;flex-wrap:wrap}
+  .level-card .lc-head .n{font-size:12px;font-weight:800;background:rgba(255,255,255,.2);padding:3px 10px;border-radius:20px}
+  .level-card .lc-head h4{margin:0;color:#fff;font-size:16px}
+  .level-card .lc-head .go{margin-left:auto;font-size:11.5px;color:#ffd2b3}
+  .level-card .lc-body{padding:20px 24px;background:#fff}
+  .level-card .story{background:#fafafd;border-left:4px solid #a5b4fc;border-radius:0 10px 10px 0;padding:13px 18px;margin:0 0 16px;font-size:14px;line-height:1.95;color:#413f57}
+  .level-card .story b{color:#4338ca}
+  .btn-go{display:inline-flex;align-items:center;gap:8px;background:linear-gradient(135deg,var(--brand),var(--brand-dark));color:#fff;text-decoration:none;font-weight:800;font-size:13.5px;padding:10px 22px;border-radius:11px;box-shadow:0 8px 20px rgba(255,107,53,.32);transition:.2s}
+  .btn-go:hover{transform:translateY(-2px);box-shadow:0 12px 26px rgba(255,107,53,.42)}
+  .pit{border:1px solid #f6dede;border-radius:14px;overflow:hidden;margin:16px 0;background:#fff}
+  .pit .pt{display:flex;gap:12px;padding:14px 18px;background:#fffafa;align-items:flex-start}
+  .pit .x{width:26px;height:26px;border-radius:9px;background:#fee;color:#dc2626;display:flex;align-items:center;justify-content:center;font-weight:800;flex-shrink:0;font-size:13px}
+  .pit .t{font-size:13.5px;line-height:1.9;color:#5c4a4a;flex:1}
+  .pit .t b{color:#b91c1c}
+  .pit .duck{display:flex;gap:12px;padding:13px 18px;background:#fff5f5;border-top:1px dashed #f3d0d0;align-items:flex-start}
+  .pit .duck img{width:48px;height:48px;object-fit:contain;flex-shrink:0;margin-top:2px}
+  .pit .duck .dt{font-size:13.5px;line-height:1.9;color:#7a3b3b}
+  .pit .duck .dt b{color:#b91c1c}
+  .pit .fix{padding:12px 18px;background:#f7f5fe;border-top:1px dashed #ded6f8;font-size:13.5px;color:#3b2f6e}
+  .pit .fix b{color:var(--primary-dark)}
+  .exam{border:1px solid #e0dcf5;border-radius:15px;margin:16px 0;overflow:hidden;background:#fff;box-shadow:0 4px 16px rgba(60,50,120,.06)}
+  .exam .eh{display:flex;align-items:center;gap:10px;padding:11px 18px;background:linear-gradient(100deg,#f2f0ff,#faf9ff);border-bottom:1px solid #e6e2f8;flex-wrap:wrap}
+  .exam .eh .src{font-size:11px;font-weight:800;color:#fff;background:#6d4bd8;padding:2.5px 10px;border-radius:20px}
+  .exam .eh .src.ori{background:#0e9488}
+  .exam .eh .tp{font-size:11.5px;color:#6a5f9c;font-weight:700}
+  .exam .eb{padding:16px 20px}
+  .exam .q{font-weight:700;font-size:14px;color:#302c44;line-height:1.9;margin-bottom:10px}
+  .exam .opt{font-size:13.5px;color:#4d4a5c;line-height:2.05;padding-left:6px}
+  .exam .opt i{font-style:normal;font-weight:800;color:var(--primary-dark);margin-right:7px}
+  .exam pre{margin:12px 0;background:#1b1a2a;border-radius:10px;padding:14px 16px;overflow-x:auto;font-family:Consolas,monospace;font-size:13px;line-height:1.8;color:var(--code-tx)}
+  .exam details{margin-top:10px;border-top:1px dashed var(--line);padding-top:10px}
+  .exam summary{cursor:pointer;font-size:12.5px;font-weight:800;color:#6d4bd8;outline:none;user-select:none}
+  .exam details .ans{font-size:13.5px;color:#443c60;line-height:1.95;margin-top:9px;background:var(--bg-soft);padding:13px 16px;border-radius:10px}
+  .exam details .ans b{color:var(--primary-dark)}
+  .exam details .ans .tagline{display:inline-block;font-size:11px;background:#ede9fe;color:#5b21b6;padding:1.5px 8px;border-radius:6px;font-weight:700;margin-right:6px}
+  .summary{margin:40px 0 20px;border-radius:18px;padding:26px 30px;background:linear-gradient(130deg,#fff8f3,#ffffff);border:1px solid #ffe0cf}
+  .summary h3{margin-top:0}
+  .summary ul{list-style:none;margin-top:10px}
+  .summary li{font-size:14px;line-height:2;color:#443c60;padding-left:24px;position:relative}
+  .summary li::before{content:"◆";position:absolute;left:0;color:var(--brand);font-size:11px;top:6px}
+  .pager{display:flex;gap:14px;margin-top:30px;flex-wrap:wrap}
+  .pager a{flex:1;min-width:200px;text-decoration:none;border:1px solid var(--line);border-radius:14px;padding:16px 20px;background:#fff;transition:.2s;display:block}
+  .pager a:hover{border-color:var(--brand);box-shadow:0 10px 26px rgba(255,107,53,.14);transform:translateY(-2px)}
+  .pager a .k{font-size:11px;color:var(--dim2);font-weight:700;letter-spacing:1px}
+  .pager a .v{font-size:14px;font-weight:800;color:var(--night);margin-top:5px}
+  .pager a.back{background:var(--brand-soft);border-color:transparent;text-align:center}
+  .pager a.back .v{color:var(--brand-dark)}
+  .cta{margin-top:26px;border-radius:20px;padding:30px 34px;color:#fff;position:relative;overflow:hidden;background:linear-gradient(120deg,#171528,#2b2750 46%,#a8431c 132%)}
+  .cta::after{content:"";position:absolute;right:-70px;bottom:-90px;width:280px;height:280px;border-radius:50%;background:radial-gradient(circle,rgba(255,140,80,.45),transparent 68%)}
+  .cta h3{color:#fff;margin:0 0 10px;position:relative;z-index:2}
+  .cta h3::before{background:var(--brand)}
+  .cta p{color:#d6d2e8;font-size:13.5px;margin:0 0 18px;position:relative;z-index:2;max-width:640px}
+  .cta .btn-go{position:relative;z-index:2}
+  @media(max-width:900px){
+    .sidebar-nav{transform:translateX(-100%)}
+    .sidebar-nav.active{transform:translateX(0)}
+    .nav-toggle{display:block}
+    .page{margin-left:0}
+    .hero{padding:70px 22px 34px}
+    .hero-top{flex-direction:column-reverse;text-align:center}
+    .hero-card{width:auto}
+    .container{padding:26px 20px 60px}
+    .goal-grid{grid-template-columns:1fr}
+  }
+</style>
+</head>
+<body>
+
+<button class="nav-toggle" onclick="document.querySelector('.sidebar-nav').classList.toggle('active')">☰</button>
+
+<nav class="sidebar-nav">
+  <div class="sb-brand">
+    <a class="sb-logo" href="https://codecombat.cn/" target="_blank" rel="noopener" title="访问 CodeCombat 扣哒世界官网">
+      <img src="../assets/logo.png" alt="CodeCombat 扣哒世界">
+    </a>
+    <div><b>矿车编队</b><span>符文矿坑 · Python 三级 第 5 单元</span></div>
+  </div>
+  <div class="nav-title">本单元目录</div>
+
+  <a href="#s0" class="nav-section">0　单元导语与目标</a>
+  <a href="#s0-1" class="nav-sub">0.1 学习目标</a>
+  <a href="#s0-2" class="nav-sub">0.2 考纲对照</a>
+  <a href="#s1" class="nav-section">1　为什么要用列表</a>
+  <a href="#s1-1" class="nav-sub">1.1 不用列表有多麻烦</a>
+  <a href="#s1-2" class="nav-sub">1.2 列表是什么</a>
+  <a href="#s2" class="nav-section">2　创建列表与索引</a>
+  <a href="#s2-1" class="nav-sub">2.1 索引与下标</a>
+  <a href="#s2-2" class="nav-sub">2.2 为什么下标从 0 开始</a>
+  <a href="#s3" class="nav-section">3　遍历列表</a>
+  <a href="#s3-1" class="nav-sub">3.1 两种遍历写法</a>
+  <a href="#s3-2" class="nav-sub">3.2 什么时候用哪种</a>
+  <a href="#s4" class="nav-section">4　列表的常用操作</a>
+  <a href="#s4-1" class="nav-sub">4.1 常用操作一览</a>
+  <a href="#s4-2" class="nav-sub">4.2 切片</a>
+  <a href="#s5" class="nav-section">5　三个经典小算法</a>
+  <a href="#s5-1" class="nav-sub">5.1 找最大值</a>
+  <a href="#s5-2" class="nav-sub">5.2 累加与筛选</a>
+  <a href="#s6" class="nav-section">6　元组、集合与列表解析</a>
+  <a href="#s6-1" class="nav-sub">6.1 元组：不能改的列表</a>
+  <a href="#s6-2" class="nav-sub">6.2 集合：自动去重</a>
+  <a href="#s6-3" class="nav-sub">6.3 列表解析：一行造列表</a>
+  <a href="#s7" class="nav-section">7　代码实战</a>
+  <a href="#s8" class="nav-section">8　常见陷阱</a>
+  <a href="#s9" class="nav-section">9　题目练习</a>
+  <a href="#s10" class="nav-section">10　本单元小结</a>
+
+  <a href="../index.html" target="_top" class="sb-back">返回考纲之路</a>
+</nav>
+
+<div class="page">
+
+<div class="hero">
+  <div class="hero-top">
+    <div class="hero-txt">
+      <div class="crumb">扣哒考级 · GESP PYTHON 三级 · 第 5 单元　|　符文矿坑 RUNEMARK MINE</div>
+      <h1>矿车编队
+        <span class="sub">数组与列表</span>
+      </h1>
+      <div class="en">Arrays &amp; Lists</div>
+      <div class="tags">
+        <span class="tag hot">考纲 · 数组与列表</span>
+        <span class="tag">索引从 0 开始</span>
+        <span class="tag">append</span>
+        <span class="tag">len</span>
+        <span class="tag">遍历</span>
+        <span class="tag">元组与集合</span>
+      </div>
+    </div>
+    <div class="hero-card">
+      <img class="ava" src="../assets/avatars/hushbaum.webp" alt="贺舒曼" onerror="this.style.background='#24344a'">
+      <div class="nm">贺舒曼</div>
+      <div class="ti">镜中先知 · 你的向导</div>
+    </div>
+  </div>
+</div>
+
+<div class="container">
+
+<div class="lead">
+  矿车从轨道尽头一辆辆滑出来，整整齐齐停成一列。<b>你数了数，一共二十七辆。</b><br>
+  工头递给你一张清单：每辆车里装的矿石数量都不一样，你帮我算算总数，
+  再找出装得最多的那一辆。<br>
+  你正要一辆辆去看，贺舒曼拦住了你：<b>二十七辆车，你要起二十七个名字吗？</b><br>
+  她指了指那一列车：<b>它们本来就是一个整体——这就叫列表。</b>
+</div>
+
+<div class="cast teacher">
+  <img class="ava" src="../assets/avatars/hushbaum.webp" alt="贺舒曼" onerror="this.style.display='none'">
+  <div class="bubble">
+    <div class="who">贺舒曼 · 镜中先知</div>
+    列表是三级最重要的工具，没有之一。<br>
+    <strong>它解决的正是"东西太多、起名起不过来"的问题。</strong><br>
+    接下来的单元，几乎每一段代码都会用到它。
+  </div>
+</div>
+
+<!-- ============ 0 ============ -->
+<figure class="pic">
+  <img src="../assets/illustrations/py-L3-05-01_cart_formation.webp" alt="矿车编队"
+       onerror="this.closest('.pic').classList.add('missing')">
+  <div class="ph">
+    <div class="fn">assets/illustrations/py-L3-05-01_cart_formation.webp</div>
+    <div class="ds">【配图位】矿坑轨道上一整列矿车整齐排列，每辆车厢侧面悬浮着发光的编号（从 0 开始）；车斗里装着不同数量的矿石，一名学徒站在车头拿着清单查看。</div>
+  </div>
+  <figcaption>图 1：符文矿坑的矿车编队——今天要从这里开始</figcaption>
+</figure>
+
+<div class="section-header" id="s0">
+  <h2>0　单元导语与目标</h2>
+  <div class="en-title">Unit Overview</div>
+
+<h3 id="s0-1">0.1 学习目标</h3>
+</div>
+
+<div class="goal-grid">
+  <div class="goal">
+    <h4><span class="ic">1</span>学完这个单元，你将能……</h4>
+    <ul>
+      <li>说清列表和"一堆变量"的区别</li>
+      <li>创建列表，并用下标访问其中元素</li>
+      <li>解释为什么下标从 0 开始</li>
+      <li>用 <code class="inline">for</code> 遍历列表</li>
+      <li>熟练使用 <code class="inline">append / len / 修改 / 切片</code></li>
+      <li>写出求和、求最大值、计数三个经典算法</li>
+      <li>掌握元组、集合与列表解析的用法</li>
+    </ul>
+  </div>
+  <div class="goal syllabus">
+    <h4><span class="ic">2</span>对标 GESP 考纲（Python 三级）</h4>
+    <ul>
+      <li>掌握一维数组（列表）的定义、初始化与访问方式</li>
+      <li>掌握列表的常用操作：增加、修改、遍历、求长度</li>
+      <li>掌握元组、集合的基本应用，以及列表解析的写法</li>
+      <li>能用列表解决求和、求最值、统计等基础问题</li>
+      <li>考核目标：能读懂并写出带列表的程序，预测输出结果</li>
+    </ul>
+  </div>
+</div>
+
+<!-- ============ 1 ============ -->
+<h3 id="s0-2">0.2 考纲对照</h3>
+
+<table class="styled">
+  <thead><tr><th>本单元小节</th><th>对应考纲条目</th><th>真题常考形式</th></tr></thead>
+  <tbody>
+    <tr><td>1　为什么要用列表</td><td>一维数组（列表）的概念</td><td>用列表比用多个变量好在哪里</td></tr>
+    <tr><td>2　创建与索引</td><td>列表的创建与下标访问</td><td>给一个列表，问某个下标取出什么；负下标是什么</td></tr>
+    <tr><td>3　遍历</td><td>列表的遍历</td><td><code class="inline">for x in lst</code> 与 <code class="inline">for i in range(len(lst))</code> 的区别</td></tr>
+    <tr><td>4　常用操作</td><td>列表的常用方法</td><td>append / insert / remove / pop 的作用；切片的结果</td></tr>
+    <tr><td>5　经典小算法</td><td>用列表解决问题</td><td>求最大、求和、筛选</td></tr>
+    <tr><td>6　元组、集合与列表解析</td><td>Python 的元组、集合、列表解析</td><td>元组能改吗；<code class="inline">set()</code> 去重；列表解析的输出结果</td></tr>
+  </tbody>
+</table>
+
+<div class="section-header" id="s1">
+  <h2>1　为什么要用列表</h2>
+  <div class="en-title">Why Lists</div>
+</div>
+
+<h3 id="s1-1">1.1 不用列表有多麻烦</h3>
+
+<p>先看"不用列表"要写多少东西：</p>
+
+<div class="code-card">
+  <div class="code-head">
+    <span class="dot d1"></span><span class="dot d2"></span><span class="dot d3"></span>
+    <span class="file">二十七辆矿车，二十七行代码</span>
+    <span class="lang">Python</span>
+  </div>
+  <pre><code>cart1 = 12
+cart2 = 7
+cart3 = 19
+...
+cart27 = 8
+
+# 想算总数？还得再加二十七个加法……</code></pre>
+  <div class="out"><b>问题</b>　数据一多，变量就爆炸；而且循环根本没法用</div>
+</div>
+
+<p>换成列表，一切立刻变得清爽：</p>
+
+<div class="code-card">
+  <div class="code-head">
+    <span class="dot d1"></span><span class="dot d2"></span><span class="dot d3"></span>
+    <span class="file">一列车，就是一个列表</span>
+    <span class="lang">Python</span>
+  </div>
+  <pre><code>carts = [12, 7, 19, 25, 6, 8]      # 一辆车对应一个元素
+
+total = 0
+for x in carts:                    # 循环自动跑遍每一辆
+    total = total + x
+
+print(total)</code></pre>
+  <div class="out"><b>OUTPUT</b>　77</div>
+</div>
+
+<h3 id="s1-2">1.2 列表是什么</h3>
+
+<div class="box tip">
+  <span class="lb">打个比方：</span>
+  列表就像矿坑里的<b>一列编号矿车</b>——<strong>按顺序排成一串，每节车厢都有自己的编号。</strong><br>
+  想找第 3 节车厢？<b>报编号就行</b>；想再挂一节？<b>直接接在末尾</b>。<br>
+  <b>比"给每节车厢都单独起一个名字"省事太多了。</b>
+</div>
+
+<div class="box remember">
+  <span class="lb">列表是什么：</span>
+  <strong>列表（list）就是把一堆数据按顺序装在一起的"容器"。</strong><br>
+  装在里面的每一个数据叫一个<b>元素</b>；元素在列表里的位置编号叫<b>下标</b>（也叫索引）。<br>
+  写起来就是一对方括号：<code class="inline">[12, 7, 19]</code>。
+</div>
+
+<!-- ============ 2 ============ -->
+<div class="section-header" id="s2">
+  <h2>2　创建列表与索引</h2>
+  <div class="en-title">Creating &amp; Indexing</div>
+
+<h3 id="s2-1">2.1 索引与下标</h3>
+</div>
+
+<figure class="figure">
+  <svg class="diagram" viewBox="0 0 860 280" role="img" aria-label="列表与下标">
+    <text x="24" y="34" font-size="14" font-weight="bold" fill="#1f2937">列表的下标从 0 开始数</text>
+
+    <rect x="70" y="70" width="120" height="60" rx="10" fill="#f1ecfd" stroke="#8b6cf0" stroke-width="2"/>
+    <text x="130" y="108" text-anchor="middle" font-size="22" font-family="Consolas,monospace" fill="#5233b8" font-weight="bold">12</text>
+    <rect x="200" y="70" width="120" height="60" rx="10" fill="#eef6ff" stroke="#3b82f6" stroke-width="2"/>
+    <text x="260" y="108" text-anchor="middle" font-size="22" font-family="Consolas,monospace" fill="#1e40af" font-weight="bold">7</text>
+    <rect x="330" y="70" width="120" height="60" rx="10" fill="#e9f8ef" stroke="#2e9e5b" stroke-width="2"/>
+    <text x="390" y="108" text-anchor="middle" font-size="22" font-family="Consolas,monospace" fill="#166534" font-weight="bold">19</text>
+    <rect x="460" y="70" width="120" height="60" rx="10" fill="#fff9ec" stroke="#f59e0b" stroke-width="2"/>
+    <text x="520" y="108" text-anchor="middle" font-size="22" font-family="Consolas,monospace" fill="#a16207" font-weight="bold">25</text>
+    <rect x="590" y="70" width="120" height="60" rx="10" fill="#f4f0ff" stroke="#8b5cf6" stroke-width="2"/>
+    <text x="650" y="108" text-anchor="middle" font-size="22" font-family="Consolas,monospace" fill="#6d28d9" font-weight="bold">6</text>
+
+    <text x="130" y="154" text-anchor="middle" font-size="13" fill="#6d4bd8" font-weight="bold">下标 0</text>
+    <text x="260" y="154" text-anchor="middle" font-size="13" fill="#1d4ed8" font-weight="bold">下标 1</text>
+    <text x="390" y="154" text-anchor="middle" font-size="13" fill="#1f7a44" font-weight="bold">下标 2</text>
+    <text x="520" y="154" text-anchor="middle" font-size="13" fill="#b45309" font-weight="bold">下标 3</text>
+    <text x="650" y="154" text-anchor="middle" font-size="13" fill="#6d28d9" font-weight="bold">下标 4</text>
+
+    <rect x="70" y="180" width="640" height="72" rx="12" fill="#1b1a2a"/>
+    <text x="96" y="208" font-family="Consolas,monospace" font-size="13" fill="#61afef">carts[0]</text>
+    <text x="200" y="208" font-family="Consolas,monospace" font-size="13" fill="#8fd6a8">→ 12</text>
+    <text x="96" y="236" font-family="Consolas,monospace" font-size="13" fill="#61afef">carts[4]</text>
+    <text x="200" y="236" font-family="Consolas,monospace" font-size="13" fill="#8fd6a8">→ 6　（最后一个的下标是"长度 - 1"）</text>
+
+    <text x="430" y="272" text-anchor="middle" font-size="12" fill="#8d9d94">五个元素，下标是 0~4，不是 1~5</text>
+  </svg>
+  <div class="caption">图 2（SVG）：列表像一排编了号的矿车，编号从 0 起</div>
+</figure>
+
+<div class="code-card">
+  <div class="code-head">
+    <span class="dot d1"></span><span class="dot d2"></span><span class="dot d3"></span>
+    <span class="file">创建与访问</span>
+    <span class="lang">Python</span>
+  </div>
+  <pre><code>carts = [12, 7, 19, 25, 6]     # 直接写出来
+
+print(carts[0])      # 第 1 个元素：12
+print(carts[2])      # 第 3 个元素：19
+print(carts[-1])     # 负数下标：从右边数，-1 是最后一个 → 6
+print(carts[-2])     # 倒数第二个 → 25
+
+print(len(carts))    # len() 求长度（有几个元素） → 5
+
+carts[1] = 100       # 直接改掉第 2 个元素
+print(carts)         # 列表中 7 变成了 100</code></pre>
+  <div class="out"><b>OUTPUT</b>　12<br>19<br>6<br>25<br>5<br>[12, 100, 19, 25, 6]</div>
+</div>
+
+<h3 id="s2-2">2.2 为什么下标从 0 开始</h3>
+
+<figure class="pic">
+  <img src="../assets/illustrations/py-L3-05-02_index_access.webp" alt="按编号取货"
+       onerror="this.closest('.pic').classList.add('missing')">
+  <div class="ph">
+    <div class="fn">assets/illustrations/py-L3-05-02_index_access.webp</div>
+    <div class="ds">【配图位】矿坑轨道上排着一列编号矿车，车身上的编号从 0 开始依次递增；一名矿工正站在第 3 号车厢前，伸手把里面的矿石换成一块宝石，头顶有一束聚光打在这一节车厢上；旁边几节车厢纹丝不动；轨道侧面挂着"从 0 开始编号"的小木牌。</div>
+  </div>
+  <figcaption>图 3：报出编号，就把那一节的矿石换掉</figcaption>
+</figure>
+
+<div class="box tip">
+  <span class="lb">为什么从 0 开始？</span>
+  可以这样理解：<strong>下标表示的是"前面有几个元素"。</strong><br>
+  第一个元素前面有 0 个，所以下标是 0；第三个元素前面有 2 个，所以下标是 2。<br>
+  这个习惯一开始别扭，但几乎所有的编程语言都这样——<b>早适应早省事。</b>
+</div>
+
+<div class="cast hero">
+  <img class="ava" src="../assets/avatars/anya.webp" alt="安雅" onerror="this.style.display='none'">
+  <div class="bubble">
+    <div class="who">安雅 · 红发队长</div>
+    我们排队点名时也是这个规矩：<strong>报"第一名"的时候，其实他前面一个人都没有。</strong><br>
+    列表里的第 N 个元素，前面的元素正好是 N-1 个——不对，等下，
+    <b>是"下标 = 前面的人数"。第 1 个人前面 0 人，他的下标就是 0。</b><br>
+    习惯就好。
+  </div>
+</div>
+
+<!-- ============ 3 ============ -->
+<div class="section-header" id="s3">
+  <h2>3　遍历列表</h2>
+  <div class="en-title">Traversing</div>
+</div>
+
+<h3 id="s3-1">3.1 两种遍历写法</h3>
+
+<p>"遍历"就是把列表里的元素一个个走一遍。Python 有两种常用写法：</p>
+
+<div class="code-card">
+  <div class="code-head">
+    <span class="dot d1"></span><span class="dot d2"></span><span class="dot d3"></span>
+    <span class="file">两种遍历方式</span>
+    <span class="lang">Python</span>
+  </div>
+  <pre><code>fruits = ["苹果", "香蕉", "橘子"]
+
+# 写法一：直接拿到元素（简单，最常用）
+for f in fruits:
+    print(f)
+
+# 写法二：用下标（需要知道位置时用）
+for i in range(len(fruits)):
+    print(i, fruits[i])</code></pre>
+  <div class="out"><b>OUTPUT</b>　苹果<br>香蕉<br>橘子<br>0 苹果<br>1 香蕉<br>2 橘子</div>
+</div>
+
+<h3 id="s3-2">3.2 什么时候用哪种</h3>
+
+<figure class="pic">
+  <img src="../assets/illustrations/py-L3-05-03_traverse_cart.webp" alt="一列走过去的矿车"
+       onerror="this.closest('.pic').classList.add('missing')">
+  <div class="ph">
+    <div class="fn">assets/illustrations/py-L3-05-03_traverse_cart.webp</div>
+    <div class="ds">【配图位】矿坑轨道旁，一名矿工正沿着编号矿车从头走到尾，走过和即将走的车厢之间用一串发光脚印连接；每经过一节车厢，车厢里就亮起一小簇光（表示被访问过）；走廊尽头挂着一块写着"遍历"的木牌。</div>
+  </div>
+  <figcaption>图 4：遍历就是一节一节走过去，每节都看一眼</figcaption>
+</figure>
+
+<div class="box remember">
+  <span class="lb">什么时候用哪种？</span>
+  <strong>只是"看看每个元素"</strong> → 用写法一，又快又清楚。<br>
+  <strong>需要用到下标</strong>（比如要打印"第几号"、或者要改元素）→ 用写法二。<br>
+  <b>记住一句：<code class="inline">range(len(列表))</code> 就是"从 0 到最后一个下标"。</b>
+</div>
+
+<!-- ============ 4 ============ -->
+<div class="section-header" id="s4">
+  <h2>4　列表的常用操作</h2>
+  <div class="en-title">Common Operations</div>
+
+<h3 id="s4-1">4.1 常用操作一览</h3>
+</div>
+
+<table class="styled">
+  <thead><tr><th>想干什么</th><th>写法</th><th>说明</th></tr></thead>
+  <tbody>
+    <tr><td>在末尾添加一个</td><td><code class="inline">a.append(x)</code></td><td>最常用！一个一个往里塞</td></tr>
+    <tr><td>求长度</td><td><code class="inline">len(a)</code></td><td>返回元素个数</td></tr>
+    <tr><td>访问元素</td><td><code class="inline">a[i]</code></td><td>下标从 0 开始；负数表示从右数</td></tr>
+    <tr><td>修改元素</td><td><code class="inline">a[i] = x</code></td><td>直接赋值就能改</td></tr>
+    <tr><td>删除末尾</td><td><code class="inline">a.pop()</code></td><td>把最后一个取出来并删掉</td></tr>
+    <tr><td>求最大值 / 最小值</td><td><code class="inline">max(a)</code>　<code class="inline">min(a)</code></td><td>直接用内置函数</td></tr>
+    <tr><td>求和</td><td><code class="inline">sum(a)</code></td><td>所有元素加起来</td></tr>
+    <tr><td>切片</td><td><code class="inline">a[1:4]</code></td><td>取出下标 1、2、3 的部分（含头不含尾）</td></tr>
+    <tr><td>判断是否在列表中</td><td><code class="inline">x in a</code></td><td>返回 True 或 False</td></tr>
+  </tbody>
+</table>
+
+<div class="code-card">
+  <div class="code-head">
+    <span class="dot d1"></span><span class="dot d2"></span><span class="dot d3"></span>
+    <span class="file">常用操作演示</span>
+    <span class="lang">Python</span>
+  </div>
+  <pre><code>a = [3, 1, 4]
+
+a.append(1)          # 在末尾加一个 1  → [3, 1, 4, 1]
+a.append(5)          # 再加一个 5      → [3, 1, 4, 1, 5]
+
+print(len(a))        # 5
+print(max(a))        # 5
+print(min(a))        # 1
+print(sum(a))        # 14
+
+print(a[1:3])        # 切片：[1, 4]（下标 1 和 2，不含 3）
+print(4 in a)        # True</code></pre>
+  <div class="out"><b>OUTPUT</b>　5<br>5<br>1<br>14<br>[1, 4]<br>True</div>
+</div>
+
+<h3 id="s4-2">4.2 切片</h3>
+
+<div class="box warn">
+  <span class="lb">切片最容易错的地方：</span>
+  <code class="inline">a[1:4]</code> 取的是下标 <b>1、2、3</b>，<strong>不包含 4</strong>。<br>
+  这个规则叫"含头不含尾"，一定要记牢。
+  <b>所以 <code class="inline">a[0:len(a)]</code> 才等于整个列表。</b>
+</div>
+
+<!-- ============ 5 ============ -->
+<div class="section-header" id="s5">
+  <h2>5　三个经典小算法</h2>
+  <div class="en-title">Three Classic Patterns</div>
+
+<h3 id="s5-1">5.1 找最大值</h3>
+</div>
+
+<p>用列表做的题，翻来覆去就是这三个套路。背下来，考试能省很多时间。</p>
+
+<div class="code-card">
+  <div class="code-head">
+    <span class="dot d1"></span><span class="dot d2"></span><span class="dot d3"></span>
+    <span class="file">套路一：求和</span>
+    <span class="lang">Python</span>
+  </div>
+  <pre><code>a = [12, 7, 19, 25, 6]
+
+total = 0              # 先准备一个"累加器"
+for x in a:
+    total = total + x  # 一个一个往里加
+
+print(total)           # 69
+# 也可以直接写 print(sum(a))</code></pre>
+  <div class="out"><b>口诀</b>　累加器先归零，循环里逐个加</div>
+</div>
+
+<div class="code-card">
+  <div class="code-head">
+    <span class="dot d1"></span><span class="dot d2"></span><span class="dot d3"></span>
+    <span class="file">套路二：求最大值</span>
+    <span class="lang">Python</span>
+  </div>
+  <pre><code>a = [12, 7, 19, 25, 6]
+
+big = a[0]             # 拿第一个当"擂主"
+for x in a:
+    if x &gt; big:
+        big = x        # 有更厉害的，换擂主
+
+print(big)             # 25</code></pre>
+  <div class="out"><b>口诀</b>　初值取第一个，遇到更大的就更新</div>
+</div>
+
+<div class="code-card">
+  <div class="code-head">
+    <span class="dot d1"></span><span class="dot d2"></span><span class="dot d3"></span>
+    <span class="file">套路三：统计符合条件的个数</span>
+    <span class="lang">Python</span>
+  </div>
+  <pre><code>a = [12, 7, 19, 25, 6]
+
+count = 0              # 计数器
+for x in a:
+    if x % 2 == 0:     # 条件：是偶数
+        count = count + 1
+
+print(count)           # 3（12、6 是偶数……等等，还有谁？）</code></pre>
+  <div class="out"><b>实际答案</b>　2（12 和 6）；注释里的玩笑提醒你：<b>别凭感觉数，让程序数</b></div>
+</div>
+
+<div class="cast duck">
+  <img class="ava" src="../assets/ducks/duck_naria.webp" alt="扣哒鸭" onerror="this.style.display='none'">
+  <div class="bubble">
+    <div class="who">扣哒鸭 · 调试官</div>
+    最后一个例子里我故意写错了一句话，你发现了吗？<br>
+    <strong>12 和 6 是偶数，19、7、25 是奇数——所以正确答案是 2，不是 3。</strong><br>
+    我想说的是：<b>心算容易错，程序不会。这就是为什么我们要写循环。</b>
+  </div>
+</div>
+
+
+
+<!-- ============ 6 ============ -->
+<h3 id="s5-2">5.2 累加与筛选</h3>
+
+<div class="section-header" id="s6">
+  <h2>6　元组、集合与列表解析</h2>
+  <div class="en-title">Tuple, Set and Comprehension</div>
+</div>
+
+<h3 id="s6-1">6.1 元组：一旦创建就不能改的"列表"（含与列表的转换）</h3>
+
+<p>三级考纲除了列表，还要掌握<b>元组（tuple）</b>、<b>集合（set）</b>和<b>列表解析</b>。
+它们和列表长得很像，但各有各的脾气。</p>
+
+<table class="styled">
+  <thead><tr><th>容器</th><th>写法</th><th>能不能改</th><th>能不能重复</th><th>有序吗</th></tr></thead>
+  <tbody>
+    <tr><td><strong>列表 list</strong></td><td><code class="inline">[1, 2, 3]</code></td><td>能改</td><td>能重复</td><td>有序</td></tr>
+    <tr><td><strong>元组 tuple</strong></td><td><code class="inline">(1, 2, 3)</code></td><td><b>不能改</b></td><td>能重复</td><td>有序</td></tr>
+    <tr><td><strong>集合 set</strong></td><td><code class="inline">{1, 2, 3}</code></td><td>能加能删</td><td><b>不能重复</b></td><td>无序</td></tr>
+    <tr><td><strong>字典 dict</strong></td><td><code class="inline">{"a": 1}</code></td><td>能改</td><td>键不能重复</td><td>有序（3.7 起）</td></tr>
+  </tbody>
+</table>
+
+<div class="box remember">
+  <span class="lb">一句话分清三个括号：</span><br>
+  <code class="inline">[]</code> 列表——什么都能改；<br>
+  <code class="inline">()</code> 元组——<b>编好就不能动</b>，用来装"不该被改的数据"；<br>
+  <code class="inline">{}</code> 集合 / 字典——集合自动去重，字典是"键查值"。<br>
+  <b>打个比方：</b>列表像铅笔写的名单（能擦能改），元组像刻在石碑上的名单（只能看）。
+</div>
+
+<div class="code-card">
+  <div class="code-head">
+    <span class="dot d1"></span><span class="dot d2"></span><span class="dot d3"></span>
+    <span class="file">元组的定义、访问与转换</span>
+    <span class="lang">Python</span>
+  </div>
+<pre><code>t = (10, 20, 30, 40, 50)
+
+print(t[0], t[-1])       # 10 50      下标访问和列表一样
+print(t[1:3])            # (20, 30)   切片也一样
+
+# t[0] = 99              # 报错！元组不能改
+print(len(t))            # 5
+
+# 元组与列表互相转换
+lst = list(t)            # 变成列表
+lst[0] = 99
+new_t = tuple(lst)       # 再变回元组
+print(new_t)             # (99, 20, 30, 40, 50)
+
+# 元组拆包：一行取出多个值
+a, *b, c = t             # a 拿第一个，c 拿最后一个，剩下的给 b
+print(a, b, c)           # 10 [20, 30, 40] 50</code></pre>
+  <div class="out"><b>要点</b> 元组"能读不能写"；<code>list()</code> 与 <code>tuple()</code> 负责互转</div>
+</div>
+
+<h3 id="s6-2">6.2 集合：自动去掉重复的"袋子"</h3>
+
+<div class="code-card">
+  <div class="code-head">
+    <span class="dot d1"></span><span class="dot d2"></span><span class="dot d3"></span>
+    <span class="file">集合：去重与快速判断</span>
+    <span class="lang">Python</span>
+  </div>
+<pre><code>s = {3, 1, 4, 1, 5, 9, 2, 6, 5, 3}
+print(s)                 # {1, 2, 3, 4, 5, 6, 9}  自动去重
+
+s.add(7)                 # 加一个
+s.discard(9)             # 删一个（没有也不报错）
+print(7 in s)            # True   集合的 in 非常快
+
+# 去重最常见的用法
+words = ["a", "b", "a", "c", "a"]
+print(list(set(words)))  # ['a', 'b', 'c']（顺序不保证）
+
+# 空集合不能写 {}——那是空字典！
+empty = set()
+print(type(empty))       # &lt;class 'set'&gt;</code></pre>
+  <div class="out"><b>要点</b> <code>{}</code> 是空字典，空集合要写 <code>set()</code></div>
+</div>
+
+<h3 id="s6-3">6.3 列表解析：一行造出一个列表</h3>
+
+<div class="code-card">
+  <div class="code-head">
+    <span class="dot d1"></span><span class="dot d2"></span><span class="dot d3"></span>
+    <span class="file">列表解析：一行顶三行</span>
+    <span class="lang">Python</span>
+  </div>
+<pre><code># 普通写法：4 行
+squares = []
+for i in range(1, 6):
+    squares.append(i * i)
+print(squares)                   # [1, 4, 9, 16, 25]
+
+# 列表解析写法：1 行
+squares = [i * i for i in range(1, 6)]
+print(squares)                   # 一样的结果
+
+# 带 if 的筛选：只要偶数
+evens = [i for i in range(1, 11) if i % 2 == 0]
+print(evens)                     # [2, 4, 6, 8, 10]
+
+# 也能直接处理已有列表
+a = [3, 1, 4, 1, 5]
+print([x * 2 for x in a])        # [6, 2, 8, 2, 10]</code></pre>
+  <div class="out"><b>要点</b> 格式：<code>[表达式 for 变量 in 序列 if 条件]</code></div>
+</div>
+
+<div class="box info">
+  <span class="lb">真题演练（2026 年 9 月 · Python 三级）：</span><br>
+  <b>元组拆包：</b><code class="inline">my_tuple = (10, 20, 30, 40, 50)</code>，
+  执行 <code class="inline">a, *b, c = my_tuple</code> 后，
+  <code class="inline">a</code> 是 <b>10</b>、<code class="inline">c</code> 是 <b>50</b>，
+  中间的 <code class="inline">b</code> 是<b>列表</b> <code class="inline">[20, 30, 40]</code>
+  ——<b>带星号的那一个收的是列表，不是元组</b>。<br>
+  <b>元组与列表转换：</b><code class="inline">new_tuple = tuple(list(my_tuple))</code>
+  得到的是元组，可以正常输出。<br>
+  <b>集合：</b><code class="inline">set()</code> 建空集合、
+  <code class="inline">set("abc").clear()</code> 清空后是空集合
+  ——<b>注意 <code class="inline">set()</code> 不返回内容，<code class="inline">clear()</code> 也没有返回值</b>。<br>
+  <b>字典：</b><code class="inline">dict(z)</code> 要求 z 是"键值对序列"，
+  例如 <code class="inline">dict([("a", 1)])</code>。
+</div>
+
+
+<figure class="pic">
+  <img src="../assets/illustrations/py-L3-05-04_tuple_set_comprehension.webp" alt="元组、集合与列表解析"
+       onerror="this.closest('.pic').classList.add('missing')">
+  <div class="ph">
+    <div class="fn">assets/illustrations/py-L3-05-04_tuple_set_comprehension.webp</div>
+    <div class="ds">【配图位】莫克矿坑的"容器货架"上摆着四个不同的箱子：一个敞口木箱（列表，能随意取放）、一个用铁条焊死的箱子（元组，只能看）、一个会自动弹掉重复物品的筛子箱（集合）、一个贴着"一行生成"标签的自动打包机（列表解析）；每个箱子上都刻着对应的括号符号 [] () {}</div>
+  </div>
+  <figcaption>图 4（PNG）：四种容器的脾气——列表能改、元组锁死、集合去重</figcaption>
+</figure>
+
+<div class="section-header" id="s7">
+  <h2>7　代码实战</h2>
+  <div class="en-title">Level Practice</div>
+</div>
+
+<div class="level-card">
+  <div class="lc-head"><span class="n">关卡</span><h4>资源谷</h4><span class="go">进入关卡 →</span></div>
+  <div class="lc-body">
+    <div class="story">
+      <b>故事：</b>矿坑的资源谷里，食人魔三三两两地晃悠着，其中有投手、有巨怪，还有几个小喽啰。<br>
+      <b>你的箭只够对付投手</b>，所以得先把它们挑出来。
+      可敌人是走来走去的，数量说不准——<b>你没法提前知道有几个。</b><br>
+      那就准备一个空篮子，贺舒曼说，<b>看到一个投手，就丢进去一个。</b>
+    </div>
+    <p><strong>思路：</strong>先建一个空列表，然后遍历所有敌人，<strong>符合条件的就 append 进去</strong>。
+  <figure class="pic ai-added"><img src="../assets/illustrations/py-L3-05-01_ore_cart_line.webp" alt="AI配图：py-L3-05-01_ore_cart_line.webp"></figure>
+    这是"筛选"的标准写法，也是列表最实用的场景之一。</p><figure class="pic">
+      <img src="../assets/stages/py-L3-05-stage1_resource_valley.webp" alt="资源谷 关卡截图"
+           onerror="this.closest('.pic').classList.add('missing')">
+      <div class="ph">
+        <div class="fn">assets/stages/py-L3-05-stage1_resource_valley.webp</div>
+        <div class="ds">【关卡截图位】请把《资源谷》的游戏画面截图放到此处（放入 assets/stages/ 目录，文件名为 py-L3-05-stage1_resource_valley.webp）。</div>
+      </div>
+      <figcaption>关卡实况：资源谷</figcaption>
+    </figure>
+    <div class="code-card">
+      <div class="code-head">
+        <span class="dot d1"></span><span class="dot d2"></span><span class="dot d3"></span>
+        <span class="file">重点示例：把符合条件的挑进新列表</span>
+        <span class="lang">Python</span>
+      </div>
+      <pre><code>enemies = hero.findEnemies()   # 拿到一整个数组
+throwers = []                  # 准备一个空数组当"篮子"
+
+for i in range(len(enemies)):
+    enemy = enemies[i]
+    if enemy.type == "thrower":    # 只要投手
+        throwers.append(enemy)     # 丢进篮子
+
+# 现在 throwers 里装着所有投手</code></pre>
+      <div class="out"><b>要点</b>　空列表 → 遍历 → 判断 → append，这是"筛选"的四步标准流程</div>
+    </div>
+    <div class="box info">
+      <span class="lb">为什么要先建空列表？</span>
+      因为你事先<strong>不知道有几个投手</strong>。空列表就像一个空篮子，
+      见到一个装一个，最后自然就装齐了。<br>
+      <b>如果一开始就写死长度，遇到多一个少一个的情况就全乱了。</b>
+    </div>
+    
+    <a class="btn-go" href="https://codecombat.cn/" target="_blank" rel="noopener">去扣哒世界闯这一关 →</a>
+  </div>
+</div>
+
+<!-- ============ 7 ============ -->
+<div class="section-header" id="s8">
+  <h2>8　常见陷阱</h2>
+  <div class="en-title">Common Pitfalls</div>
+</div>
+
+<div class="cast duck">
+  <img class="ava" src="../assets/ducks/duck_zana.webp" alt="扣哒鸭" onerror="this.style.display='none'">
+  <div class="bubble">
+    <div class="who">扣哒鸭 · 调试官</div>
+    列表的报错信息都特别短，一不留神就找不着北。四条，都是高频错。
+  </div>
+</div>
+
+<div class="pit">
+  <div class="pt">
+    <div class="x">1</div>
+    <div class="t"><b>下标越界。</b>五个元素的列表却去访问 <code class="inline">a[5]</code>。</div>
+  </div>
+  <div class="duck">
+    <img src="../assets/ducks/duck_senick.webp" alt="扣哒鸭" onerror="this.style.display='none'">
+    <div class="dt"><b>扣哒鸭：</b>报错是 <code>IndexError</code>。<br>
+    <strong>长度为 n 的列表，合法下标是 0 到 n-1。</strong>
+    最后一个元素要用 <code>a[len(a)-1]</code> 或者干脆写 <code>a[-1]</code>。</div>
+  </div>
+  <div class="fix"><b>正确做法：</b>用 <code class="inline">a[-1]</code> 取最后一个；遍历用 <code class="inline">range(len(a))</code></div>
+</div>
+
+<div class="pit">
+  <div class="pt">
+    <div class="x">2</div>
+    <div class="t"><b>以为 <code class="inline">a.append(x)</code> 会返回新列表。</b>
+    写成 <code class="inline">a = a.append(x)</code>。</div>
+  </div>
+  <div class="duck">
+    <img src="../assets/ducks/duck_naria.webp" alt="扣哒鸭" onerror="this.style.display='none'">
+    <div class="dt"><b>扣哒鸭：</b><code>append</code> 是<strong>直接改原列表</strong>，它不返回东西（返回 None）。<br>
+    写成 <code>a = a.append(x)</code> 之后，<code>a</code> 就变成 None 了，后面全崩。</div>
+  </div>
+  <div class="fix"><b>正确写法：</b>直接写 <code class="inline">a.append(x)</code>，不要赋值</div>
+</div>
+
+<div class="pit">
+  <div class="pt">
+    <div class="x">3</div>
+    <div class="t"><b>切片范围记成"含尾"。</b>以为 <code class="inline">a[1:3]</code> 取三个元素。</div>
+  </div>
+  <div class="duck">
+    <img src="../assets/ducks/duck_illia.webp" alt="扣哒鸭" onerror="this.style.display='none'">
+    <div class="dt"><b>扣哒鸭：</b>切片是<strong>含头不含尾</strong>！
+    <code>a[1:3]</code> 只取下标 1 和 2 两个元素。<br>
+    记法：<em>后面那个数字是"停在哪"，不停在它上面。</em></div>
+  </div>
+  <div class="fix"><b>正确理解：</b><code class="inline">a[start:end]</code> 取下标 start 到 end-1</div>
+</div>
+
+<div class="pit">
+  <div class="pt">
+    <div class="x">4</div>
+    <div class="t"><b>求最大值时把初始值设成 0。</b></div>
+  </div>
+  <div class="duck">
+    <img src="../assets/ducks/duck_hattori.webp" alt="扣哒鸭" onerror="this.style.display='none'">
+    <div class="dt"><b>扣哒鸭：</b>如果列表里全是负数，答案会变成 0——<strong>而 0 根本不在列表里。</strong><br>
+    正确做法：<strong>直接拿 <code>a[0]</code> 当初始值</strong>。</div>
+  </div>
+  <div class="fix"><b>正确写法：</b><code class="inline">big = a[0]</code></div>
+</div>
+
+<!-- ============ 8 ============ -->
+<div class="section-header" id="s9">
+  <h2>9　题目练习</h2>
+  <div class="en-title">Practice</div>
+</div>
+
+<p>第 1 题改编自 2026 年 9 月 · Python 三级 第 6 题，其余为原创练习题。</p>
+
+<div class="exam">
+  <div class="eh"><span class="src">改编自 2026 年 9 月 · Python 三级 · 第 6 题</span><span class="tp">单选题</span></div>
+  <div class="eb">
+    <div class="q">矿车编队要从一列货物里按规律取货。执行下面 Python 代码后，输出的结果是（　　）。<br><pre>1  my_list = ['a', 'b', 'c', 'd', 'e', 'f']
+2  result = my_list[::2] + my_list[1::2]
+3  print(result)</pre></div>
+    <div class="opt"><i>A.</i>['a', 'c', 'e']<br>
+      <i>B.</i>['b', 'd', 'f']<br>
+      <i>C.</i>['a', 'c', 'e', 'b', 'd', 'f']<br>
+      <i>D.</i>['a', 'b', 'c', 'd', 'e', 'f']</div>
+    <details><summary>查看答案与详解</summary>
+      <div class="ans"><b>答案：C</b>。带两个冒号的切片写法是 <code class="inline">列表[起点:终点:步长]</code>，省略起点终点就表示"从头到尾"。<br><code class="inline">my_list[::2]</code>：从头开始、每 2 个取 1 个 → <b>['a', 'c', 'e']</b>（下标 0、2、4）；<br><code class="inline">my_list[1::2]</code>：从下标 1 开始、每 2 个取 1 个 → <b>['b', 'd', 'f']</b>（下标 1、3、5）；<br>两个列表用 <code class="inline">+</code> 拼接，得到 C。<br><b>要点：</b><code class="inline">+</code> 对列表是<strong>拼接</strong>不是相加；切片得到的是<strong>新列表</strong>，不会改动原列表。<br><span class="tagline">对应小节</span>4 列表的常用操作。</div>
+    </details>
+  </div>
+</div>
+<div class="exam">
+  <div class="eh"><span class="src ori">原创练习题</span><span class="tp">单选题</span></div>
+  <div class="eb">
+    <div class="q">已知 <code class="inline">a = [3, 1, 4, 1, 5]</code>，则 <code class="inline">a[2]</code> 的值是（　　）。</div>
+    <div class="opt"><i>A.</i>1　　<i>B.</i>3　　<i>C.</i>4　　<i>D.</i>5</div>
+    <details><summary>查看答案与详解</summary>
+      <div class="ans"><b>答案：C</b>。下标从 0 开始：
+      <code class="inline">a[0]=3</code>、<code class="inline">a[1]=1</code>、<b><code class="inline">a[2]=4</code></b>。<br>
+      <b>易错点：</b>把下标当成"第几个"，于是选了 B（第 2 个是 1）。<br>
+      <span class="tagline">对应小节</span>2 创建列表与索引。</div>
+    </details>
+  </div>
+</div>
+
+<div class="exam">
+  <div class="eh"><span class="src ori">原创练习题</span><span class="tp">单选题</span></div>
+  <div class="eb">
+    <div class="q">已知 <code class="inline">a = [3, 1, 4, 1, 5]</code>，则 <code class="inline">len(a)</code> 的值是（　　）。</div>
+    <div class="opt"><i>A.</i>4　　<i>B.</i>5　　<i>C.</i>6　　<i>D.</i>3</div>
+    <details><summary>查看答案与详解</summary>
+      <div class="ans"><b>答案：B</b>。列表里有 5 个元素，所以长度是 5。<br>
+      <b>关键关系：</b>长度为 5 的列表，最后一个元素的下标是 <code class="inline">5-1 = 4</code>。<br>
+      <span class="tagline">对应小节</span>2 创建列表与索引；4 列表的常用操作。</div>
+    </details>
+  </div>
+</div>
+
+<div class="exam">
+  <div class="eh"><span class="src ori">原创练习题</span><span class="tp">单选题</span></div>
+  <div class="eb">
+    <div class="q">下列 Python 代码执行后，输出的结果是（　　）。</div>
+    <pre>1  a = [1, 2, 3]
+2  a.append(4)
+3  a.append(5)
+4  print(len(a), a[-1])</pre>
+    <div class="opt"><i>A.</i>3 3　　<i>B.</i>4 5　　<i>C.</i>5 5　　<i>D.</i>5 4</div>
+    <details><summary>查看答案与详解</summary>
+      <div class="ans"><b>答案：C</b>。原来 3 个元素，<code class="inline">append</code> 两次后变成
+      <code class="inline">[1, 2, 3, 4, 5]</code>。<br>
+      所以长度是 <b>5</b>，<code class="inline">a[-1]</code> 是最后一个元素 <b>5</b>。<br>
+      <span class="tagline">对应小节</span>4 列表的常用操作。</div>
+    </details>
+  </div>
+</div>
+
+<div class="exam">
+  <div class="eh"><span class="src ori">原创练习题</span><span class="tp">判断题</span></div>
+  <div class="eb">
+    <div class="q">已知 <code class="inline">a = [10, 20, 30, 40, 50]</code>，那么 <code class="inline">a[1:4]</code>
+    的结果是 <code class="inline">[20, 30, 40, 50]</code>。（　　）</div>
+    <details><summary>查看答案与详解</summary>
+      <div class="ans"><b>答案：错误（×）</b>。切片是<strong>含头不含尾</strong>的：
+      <code class="inline">a[1:4]</code> 取下标 1、2、3，结果是 <b>[20, 30, 40]</b>，不包括下标 4 的 50。<br>
+      <b>提示：</b>想要 <code class="inline">[20, 30, 40, 50]</code> 应该写 <code class="inline">a[1:5]</code>。<br>
+      <span class="tagline">对应小节</span>4 列表的常用操作。</div>
+    </details>
+  </div>
+</div>
+
+<div class="exam">
+  <div class="eh"><span class="src ori">原创练习题</span><span class="tp">单选题</span></div>
+  <div class="eb">
+    <div class="q">下列 Python 代码执行后，输出的结果是（　　）。</div>
+    <pre>1  a = [5, 3, 9, 1]
+2  big = a[0]
+3  for x in a:
+4      if x &gt; big:
+5          big = x
+6  print(big)</pre>
+    <div class="opt"><i>A.</i>1　　<i>B.</i>5　　<i>C.</i>9　　<i>D.</i>18</div>
+    <details><summary>查看答案与详解</summary>
+      <div class="ans"><b>答案：C</b>。这是"求最大值"的标准写法：<br>
+      初值 <code class="inline">big = 5</code>；遇到 3（不大于 5）、9（大于 5，更新为 9）、1（不大于 9）。<br>
+      最终输出 <b>9</b>。<br>
+      <span class="tagline">对应小节</span>5 三个经典小算法。</div>
+    </details>
+  </div>
+</div>
+
+<div class="exam">
+  <div class="eh"><span class="src ori">原创练习题</span><span class="tp">判断题</span></div>
+  <div class="eb">
+    <div class="q">在 Python 中，列表的下标可以是负数，<code class="inline">a[-1]</code> 表示最后一个元素。（　　）</div>
+    <details><summary>查看答案与详解</summary>
+      <div class="ans"><b>答案：正确（√）</b>。负数下标表示"从右往左数"：
+      <code class="inline">-1</code> 是最后一个，<code class="inline">-2</code> 是倒数第二个，以此类推。<br>
+      它和 <code class="inline">a[len(a)-1]</code> 是等价的，但写起来短得多。<br>
+      <span class="tagline">对应小节</span>2 创建列表与索引。</div>
+    </details>
+  </div>
+</div>
+
+<div class="exam">
+  <div class="eh"><span class="src ori">原创练习题</span><span class="tp">编程题</span></div>
+  <div class="eb">
+    <div class="q">题目要求：已知一个整数列表 <code class="inline">a = [12, 7, 19, 25, 6]</code>，
+    编写程序输出：① 所有元素的和；② 最大值；③ 元素个数；④ 其中偶数的个数。</div>
+    <details><summary>查看参考答案与要点</summary>
+      <div class="ans">
+<pre style="margin:0;background:#1b1a2a;color:#cdc8e0;border-radius:10px;padding:14px 16px">a = [12, 7, 19, 25, 6]
+
+# ① 求和
+total = 0
+for x in a:
+    total = total + x
+print(total)
+
+# ② 求最大值
+big = a[0]
+for x in a:
+    if x &gt; big:
+        big = x
+print(big)
+
+# ③ 元素个数
+print(len(a))
+
+# ④ 偶数的个数
+count = 0
+for x in a:
+    if x % 2 == 0:
+        count = count + 1
+print(count)</pre>
+      <p style="margin-top:12px"><b>输出：</b>69、25、5、2<br>
+      <b>要点：</b><br>
+      ① 求和、求最值、计数是三个基本套路，都要"先准备变量，再循环，最后输出"；<br>
+      ② 求最大值时初值必须取 <code class="inline">a[0]</code>，不能取 0；<br>
+      ③ 判断偶数用 <code class="inline">x % 2 == 0</code>（或用位运算 <code class="inline">x &amp; 1 == 0</code>）。<br>
+      <span class="tagline">对应小节</span>5 三个经典小算法。</p>
+      </div>
+    </details>
+  </div>
+</div>
+
+<!-- ============ 9 ============ -->
+<div class="section-header" id="s10">
+  <h2>10　本单元小结</h2>
+  <div class="en-title">Unit Summary</div>
+</div>
+
+<div class="cast teacher">
+  <img class="ava" src="../assets/avatars/hushbaum.webp" alt="贺舒曼" onerror="this.style.display='none'">
+  <div class="bubble">
+    <div class="who">贺舒曼 · 镜中先知</div>
+    列表这一章，你只要牢牢记住三句话：<br>
+    <strong>一、下标从 0 开始，最后一个的下标是"长度减一"。</strong><br>
+    <strong>二、加元素用 append，求长度用 len，遍历直接 for x in a。</strong><br>
+    <strong>三、求和、求最值、计数——三个套路走遍天下。</strong><br>
+    把它们练熟，后面学字符串、学排序，都会轻松很多。
+  </div>
+</div>
+
+<div class="summary">
+  <h3>你在矿车编队前收获了什么</h3>
+  <ul>
+    <li><strong>列表</strong>——把一堆数据按顺序装在一起的容器，写作 <code class="inline">[a, b, c]</code>。</li>
+    <li><strong>下标</strong>——<strong>从 0 开始</strong>；负数下标表示从右往左数，<code class="inline">a[-1]</code> 是最后一个。</li>
+    <li><strong>长度与下标的关系</strong>——长度为 n 时，合法下标是 0 ~ n-1。</li>
+    <li><strong>遍历</strong>——<code class="inline">for x in a</code> 直接取元素；<code class="inline">for i in range(len(a))</code> 取下标。</li>
+    <li><strong>常用操作</strong>——<code class="inline">append / len / max / min / sum / pop</code>；切片是"含头不含尾"。</li>
+    <li><strong>三个套路</strong>——求和（累加器）、求最值（初值取 a[0]）、计数（计数器）。</li>
+    <li><strong>筛选四步</strong>——建空列表 → 遍历 → 判断 → <code class="inline">append</code>。</li>
+  </ul>
+</div>
+
+<div class="pager">
+  <a href="py-3-04.html"><div class="k">← 上一单元</div><div class="v">矿道图纸 · 算法与描述</div></a>
+  <a href="../index.html" target="_top" class="back"><div class="k">返回</div><div class="v">考纲之路 · 总目录</div></a>
+  <a href="py-3-06.html"><div class="k">下一单元 →</div><div class="v">石碑上的密语 · 字符串及其函数</div></a>
+</div>
+
+<div class="cta">
+  <h3>下一站：石碑上的密语</h3>
+  <p>矿坑出口处立着一块石碑，上面刻着一长串文字。
+  想读懂它，得会一件本事——<b>把文字当成数据来处理</b>。下一单元，我们聊聊字符串。</p>
+  <a class="btn-go" href="https://codecombat.cn/" target="_blank" rel="noopener">加入扣哒世界，把这条考纲之路走一遍 →</a>
+</div>
+
+</div><!-- /container -->
+</div><!-- /page -->
+
+<script>
+const KEYWORDS = new Set(("while for if elif else break continue def return pass not and or in is None True False " +
+  "int float bool str list dict tuple set input print range len abs max min round pow import math random chr ord bin hex oct append pop sum").split(" "));
+
+function esc(s){ return s.replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;'); }
+
+function highlight(src){
+  let out = '', i = 0;
+  const n = src.length;
+  while (i < n){
+    const c = src[i];
+    if (c === '#'){
+      let j = src.indexOf('\n', i); if (j < 0) j = n;
+      out += '<span class="cm">' + esc(src.slice(i, j)) + '</span>';
+      i = j; continue;
+    }
+    if (c === '"' || c === "'"){
+      let j = i + 1;
+      while (j < n && src[j] !== c){ if (src[j] === '\\') j++; j++; }
+      j = Math.min(j + 1, n);
+      out += '<span class="st">' + esc(src.slice(i, j)) + '</span>';
+      i = j; continue;
+    }
+    if (/[0-9]/.test(c)){
+      let j = i;
+      while (j < n && /[0-9.]/.test(src[j])) j++;
+      out += '<span class="nu">' + esc(src.slice(i, j)) + '</span>';
+      i = j; continue;
+    }
+    if (/[A-Za-z_]/.test(c)){
+      let j = i;
+      while (j < n && /[A-Za-z0-9_]/.test(src[j])) j++;
+      const w = src.slice(i, j);
+      if (KEYWORDS.has(w)) out += '<span class="kw">' + esc(w) + '</span>';
+      else if (src[j] === '(') out += '<span class="fn">' + esc(w) + '</span>';
+      else out += esc(w);
+      i = j; continue;
+    }
+    out += esc(c); i++;
+  }
+  return out;
+}
+
+document.querySelectorAll('.code-card pre code').forEach(block => {
+  block.innerHTML = highlight(block.textContent);
+});
+
+if (location.search.indexOf('expand') >= 0) {
+  document.querySelectorAll('details').forEach(d => d.open = true);
+}
+document.querySelectorAll('.sidebar-nav a').forEach(a => {
+  a.addEventListener('click', () => {
+    if (window.innerWidth <= 900) document.querySelector('.sidebar-nav').classList.remove('active');
+  });
+});
+</script>
+</body>
+</html>

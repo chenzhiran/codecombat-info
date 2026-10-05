@@ -1,0 +1,977 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="copyright" content="CodeCombat Inc. codecombat.cn">
+<title>漩涡阶梯 · 多层循环结构 | 扣哒考级 · GESP Python 二级</title>
+<style>
+  :root{
+    --primary:#2e9e5b; --primary-light:#4fbf7c; --primary-lighter:#e9f8ef; --primary-dark:#1f7a44;
+    --brand:#ff6b35; --brand-dark:#e8541f; --brand-soft:#fff3ec;
+    --night:#131c2b; --night-2:#1e2a3a; --gold:#f5b301;
+    --text:#26302a; --dim:#63756b; --dim2:#8d9d94;
+    --bg:#ffffff; --bg-soft:#f7fbf8; --line:#e2ece6; --sidebar:274px;
+    --code-bg:#1b2a21; --code-tx:#c9d6cd;
+    --code-kw:#c678dd; --code-st:#98c379; --code-nu:#d19a66; --code-cm:#6b7f72; --code-fn:#61afef;
+  }
+  *{margin:0;padding:0;box-sizing:border-box}
+  html{scroll-behavior:smooth}
+  body{font-family:"PingFang SC","Microsoft YaHei","Segoe UI",-apple-system,sans-serif;line-height:1.9;color:var(--text);background:var(--bg);font-size:15.5px}
+  .sidebar-nav{position:fixed;top:0;left:0;width:var(--sidebar);height:100vh;overflow-y:auto;background:linear-gradient(180deg,#101a26,#182636);padding:14px 0 40px;z-index:100;border-right:3px solid var(--brand);transition:transform .3s ease}
+  .sidebar-nav::-webkit-scrollbar{width:5px}
+  .sidebar-nav::-webkit-scrollbar-thumb{background:var(--brand);border-radius:4px}
+  .sb-brand{display:flex;align-items:center;gap:10px;padding:10px 13px 12px;border-bottom:1px solid #26384c;margin-bottom:8px}
+  .sidebar-nav a.sb-logo{display:flex;align-items:center;justify-content:center;flex-shrink:0;padding:0;border-left:none;transition:.2s}
+  .sb-logo:hover{transform:scale(1.08)}
+  .sb-logo img{height:34px;width:34px;display:block;object-fit:contain;border-radius:8px}
+  .sb-brand b{color:#f2f6fa;font-size:14px;letter-spacing:.5px;display:block;line-height:1.4}
+  .sb-brand span{color:#7f95ab;font-size:11.5px;display:block;line-height:1.4}
+  .nav-title{color:#ffb894;font-size:12px;font-weight:800;padding:10px 18px 6px;letter-spacing:1.2px}
+  .sidebar-nav a{display:block;color:#c3d0dc;text-decoration:none;padding:6px 18px;font-size:12.5px;line-height:1.55;border-left:3px solid transparent;transition:.18s}
+  .sidebar-nav a:hover{color:#fff;background:rgba(255,107,53,.16);border-left-color:var(--brand)}
+  .sidebar-nav a.nav-section{color:#ffb894;font-weight:700;font-size:13px;margin-top:11px;padding-top:10px;border-top:1px solid #26384c}
+  .sidebar-nav a.nav-section:first-of-type{border-top:none;margin-top:0;padding-top:6px}
+  .sidebar-nav a.nav-sub{padding-left:30px;color:#93a8bc;font-size:12px}
+  .sidebar-nav a.nav-sub:hover{color:#fff}
+  .sb-back{margin:16px 14px 0;display:block;text-align:center;padding:9px;border-radius:9px;background:#22344a;color:#a9c0d6 !important;font-size:12px;font-weight:700;border-left:none !important}
+  .sb-back:hover{background:var(--brand) !important;color:#fff !important}
+  .nav-toggle{display:none;position:fixed;top:14px;left:14px;z-index:120;background:var(--brand);color:#fff;border:none;border-radius:9px;padding:9px 13px;font-size:15px;cursor:pointer;box-shadow:0 4px 14px rgba(0,0,0,.25)}
+  .page{margin-left:var(--sidebar)}
+  .hero{position:relative;overflow:hidden;padding:44px 52px;color:#fff;background:linear-gradient(125deg,#0e1724 0%,#1b2b3f 46%,#8a3a16 132%)}
+  .hero::after{content:"";position:absolute;right:-90px;top:-110px;width:400px;height:400px;border-radius:50%;background:radial-gradient(circle,rgba(245,179,1,.30),transparent 68%)}
+  .hero-top{display:flex;gap:36px;align-items:center;position:relative;z-index:2}
+  .hero-txt{flex:1;min-width:0}
+  .hero .crumb{font-size:11.5px;color:#ffb894;letter-spacing:1.5px;font-weight:700;margin-bottom:14px}
+  .hero h1{font-size:31px;font-weight:800;line-height:1.3;letter-spacing:.6px;margin-bottom:8px}
+  .hero h1 .sub{display:block;font-size:18px;font-weight:700;color:#ffd2b3;margin-top:6px;letter-spacing:.3px}
+  .hero .en{font-size:13px;color:#9db4c8;font-style:italic;margin-bottom:18px}
+  .hero .tags{display:flex;flex-wrap:wrap;gap:8px}
+  .tag{font-size:11.5px;padding:4px 12px;border-radius:20px;background:rgba(255,255,255,.12);border:1px solid rgba(255,255,255,.22);color:#e8f0f6;font-weight:600}
+  .tag.hot{background:rgba(255,107,53,.92);border-color:transparent;color:#fff}
+  .hero-card{flex-shrink:0;width:200px;text-align:center}
+  .hero-card .ava{width:148px;height:148px;border-radius:50%;object-fit:cover;object-position:top center;border:4px solid rgba(255,180,140,.6);box-shadow:0 14px 34px rgba(0,0,0,.45);background:#24344a}
+  .hero-card .nm{font-size:15px;font-weight:800;color:#fff;margin-top:10px}
+  .hero-card .ti{font-size:11.5px;color:#ffb894;margin-top:2px}
+  .container{max-width:1080px;margin:0 auto;padding:38px 52px 70px}
+  .lead{font-size:15.5px;line-height:2.05;color:#38453d;background:linear-gradient(120deg,#fff8f3,#f7fbf8);border-left:5px solid var(--brand);border-radius:0 14px 14px 0;padding:22px 26px;margin-bottom:32px}
+  .lead b{color:var(--brand-dark)}
+  .cast{display:flex;gap:16px;align-items:flex-start;border-radius:16px;padding:18px 22px;margin:24px 0}
+  .cast .ava{width:72px;height:72px;border-radius:50%;object-fit:cover;object-position:top center;flex-shrink:0;background:#e8eef5}
+  .cast .bubble{position:relative;font-size:14px;line-height:1.95;padding-top:2px;flex:1}
+  .cast .who{font-size:12px;font-weight:800;margin-bottom:5px;letter-spacing:.5px}
+  .cast.anya{background:var(--brand-soft);border:1px solid #ffdcc9}
+  .cast.anya .who{color:var(--brand-dark)}
+  .cast.anya .bubble{color:#5c4636}
+  .cast.duck{background:#fff5f5;border:1px solid #fbd5d5}
+  .cast.duck .who{color:#b91c1c}
+  .cast.duck .bubble{color:#5c4141}
+  .cast.teacher{background:linear-gradient(120deg,#f4f7fb,#ffffff);border:1px solid #dbe4f0}
+  .cast.teacher .who{color:#1e293b}
+  .cast.teacher .bubble{color:#3c4a5a}
+  .cast.hero{background:#f2fbf5;border:1px solid #cfe7d8}
+  .cast.hero .who{color:#1f7a44}
+  .cast.hero .bubble{color:#3c4a42}
+  .goal-grid{display:grid;grid-template-columns:1fr 1fr;gap:16px;margin-bottom:36px}
+  .goal{border:1px solid var(--line);border-radius:15px;padding:19px 21px;background:#fff;box-shadow:0 4px 16px rgba(31,122,68,.05)}
+  .goal h4{font-size:14px;font-weight:800;margin-bottom:11px;display:flex;align-items:center;gap:8px;color:var(--primary-dark)}
+  .goal h4 .ic{width:22px;height:22px;border-radius:7px;background:var(--primary-lighter);display:flex;align-items:center;justify-content:center;font-size:12px}
+  .goal ul{list-style:none}
+  .goal li{font-size:13.5px;color:#4b5a52;line-height:1.9;padding-left:18px;position:relative}
+  .goal li::before{content:"▸";position:absolute;left:0;color:var(--primary);font-weight:800}
+  .goal.syllabus li::before{content:"✓"}
+  .section-header{margin:52px 0 24px;padding-bottom:12px;border-bottom:3px solid var(--brand);display:flex;align-items:baseline;gap:14px;flex-wrap:wrap}
+  .section-header h2{font-size:22px;font-weight:800;color:var(--night);letter-spacing:.4px}
+  .section-header .en-title{font-size:12px;color:var(--dim2);font-style:italic}
+  h3{font-size:17.5px;font-weight:800;margin:34px 0 14px;color:var(--night);display:flex;align-items:center;gap:10px}
+  h3::before{content:"";width:5px;height:17px;border-radius:3px;background:var(--brand);flex-shrink:0}
+  h4{font-size:15px;font-weight:800;margin:24px 0 10px;color:#33513f}
+  p{margin:12px 0;color:#3c4a42;line-height:2}
+  strong{color:var(--primary-dark)}
+  code.inline{background:var(--primary-lighter);color:var(--primary-dark);padding:2px 7px;border-radius:6px;font-family:"SFMono-Regular",Consolas,Menlo,monospace;font-size:.9em;font-weight:600}
+  .figure{margin:24px 0;text-align:center}
+  .figure svg.diagram{max-width:100%;height:auto;background:#fff;border:1px solid var(--line);border-radius:14px;padding:10px}
+  .figure .caption{font-size:12.5px;color:var(--dim2);margin-top:9px}
+  .pic{margin:26px 0;text-align:center}
+  .pic img{max-width:100%;border-radius:16px;box-shadow:0 10px 28px rgba(30,60,45,.15);display:block;margin:0 auto}
+  .pic figcaption{font-size:12.5px;color:var(--dim2);margin-top:9px}
+  .pic .ph{display:none}
+  .pic.missing img{display:none}
+  .pic.missing .ph{display:flex;flex-direction:column;align-items:center;justify-content:center;gap:9px;border:2px dashed #c9d9e8;border-radius:16px;background:linear-gradient(135deg,#f8fbfe,#eef6ff);padding:40px 26px;color:#7a8fa8}
+  .pic.missing .ph .fn{font-family:Consolas,monospace;font-size:12.5px;color:#2563eb;font-weight:700;word-break:break-all}
+  .pic.missing .ph .ds{font-size:12.5px;line-height:1.8;max-width:560px}
+  .box{border-radius:13px;padding:16px 20px;margin:20px 0;font-size:14px;line-height:1.95}
+  .box .lb{font-weight:800;margin-right:6px}
+  .info{background:#eef6ff;border-left:5px solid #3b82f6;color:#274768}
+  .info .lb{color:#1d4ed8}
+  .tip{background:#fff9ec;border-left:5px solid #f59e0b;color:#6b4e13}
+  .tip .lb{color:#b45309}
+  .remember{background:var(--primary-lighter);border-left:5px solid var(--primary);color:#1f5033}
+  .remember .lb{color:var(--primary-dark)}
+  .warn{background:#fef2f2;border-left:5px solid #ef4444;color:#7f2b2b}
+  .warn .lb{color:#b91c1c}
+  .code-card{margin:20px 0;border-radius:14px;overflow:hidden;box-shadow:0 10px 28px rgba(20,40,28,.20)}
+  .code-head{display:flex;align-items:center;gap:9px;background:#243126;padding:9px 14px}
+  .code-head .dot{width:10px;height:10px;border-radius:50%}
+  .code-head .d1{background:#ff5f57}.code-head .d2{background:#febc2e}.code-head .d3{background:#28c840}
+  .code-head .file{color:#95ab9c;font-size:11.5px;font-family:Consolas,monospace;margin-left:6px}
+  .code-head .lang{margin-left:auto;font-size:10.5px;font-weight:800;color:#0f2016;background:#4fbf7c;padding:2px 9px;border-radius:6px;letter-spacing:.4px}
+  .code-card pre{background:var(--code-bg);padding:18px 20px;overflow-x:auto;margin:0;font-family:"SFMono-Regular",Consolas,"Courier New",monospace;font-size:13.5px;line-height:1.85}
+  .code-card pre::-webkit-scrollbar{height:8px}
+  .code-card pre::-webkit-scrollbar-thumb{background:#3a5544;border-radius:4px}
+  .code-card code{color:var(--code-tx);white-space:pre}
+  .kw{color:var(--code-kw);font-weight:600}
+  .st{color:var(--code-st)}
+  .nu{color:var(--code-nu)}
+  .cm{color:var(--code-cm);font-style:italic}
+  .fn{color:var(--code-fn)}
+  .out{background:#16211a;color:#8fd6a8;font-family:Consolas,monospace;font-size:13px;padding:12px 20px;border-top:1px solid #2b3d31}
+  .out b{color:#c9d6cd;font-weight:600;font-size:11.5px;letter-spacing:1px}
+  table.styled{width:100%;border-collapse:collapse;margin:20px 0;font-size:13.5px;border-radius:12px;overflow:hidden;box-shadow:0 4px 16px rgba(31,122,68,.07)}
+  table.styled thead{background:var(--brand)}
+  table.styled th{color:#fff;padding:11px 14px;text-align:left;font-weight:700;font-size:13px}
+  table.styled td{padding:10px 14px;border-bottom:1px solid var(--line);color:#46564d;vertical-align:top}
+  table.styled tbody tr:nth-child(even){background:var(--bg-soft)}
+  table.styled tbody tr:last-child td{border-bottom:none}
+  .level-card{border:1px solid var(--line);border-radius:16px;overflow:hidden;margin:22px 0;box-shadow:0 6px 22px rgba(31,122,68,.07)}
+  .level-card .lc-head{background:linear-gradient(100deg,#17283a,#8a3a16);color:#fff;padding:15px 22px;display:flex;align-items:center;gap:12px;flex-wrap:wrap}
+  .level-card .lc-head .n{font-size:12px;font-weight:800;background:rgba(255,255,255,.2);padding:3px 10px;border-radius:20px}
+  .level-card .lc-head h4{margin:0;color:#fff;font-size:16px}
+  .level-card .lc-head .go{margin-left:auto;font-size:11.5px;color:#ffd2b3}
+  .level-card .lc-body{padding:20px 24px;background:#fff}
+  .level-card .story{background:#f9fbfd;border-left:4px solid #93c5fd;border-radius:0 10px 10px 0;padding:13px 18px;margin:0 0 16px;font-size:14px;line-height:1.95;color:#3f5163}
+  .level-card .story b{color:#1d4ed8}
+  .btn-go{display:inline-flex;align-items:center;gap:8px;background:linear-gradient(135deg,var(--brand),var(--brand-dark));color:#fff;text-decoration:none;font-weight:800;font-size:13.5px;padding:10px 22px;border-radius:11px;box-shadow:0 8px 20px rgba(255,107,53,.32);transition:.2s}
+  .btn-go:hover{transform:translateY(-2px);box-shadow:0 12px 26px rgba(255,107,53,.42)}
+  .pit{border:1px solid #f6dede;border-radius:14px;overflow:hidden;margin:16px 0;background:#fff}
+  .pit .pt{display:flex;gap:12px;padding:14px 18px;background:#fffafa;align-items:flex-start}
+  .pit .x{width:26px;height:26px;border-radius:9px;background:#fee;color:#dc2626;display:flex;align-items:center;justify-content:center;font-weight:800;flex-shrink:0;font-size:13px}
+  .pit .t{font-size:13.5px;line-height:1.9;color:#5c4a4a;flex:1}
+  .pit .t b{color:#b91c1c}
+  .pit .duck{display:flex;gap:12px;padding:13px 18px;background:#fff5f5;border-top:1px dashed #f3d0d0;align-items:flex-start}
+  .pit .duck img{width:48px;height:48px;object-fit:contain;flex-shrink:0;margin-top:2px}
+  .pit .duck .dt{font-size:13.5px;line-height:1.9;color:#7a3b3b}
+  .pit .duck .dt b{color:#b91c1c}
+  .pit .fix{padding:12px 18px;background:#f2fbf5;border-top:1px dashed #cfe7d8;font-size:13.5px;color:#1f5033}
+  .pit .fix b{color:var(--primary-dark)}
+  .exam{border:1px solid #dfe7f5;border-radius:15px;margin:16px 0;overflow:hidden;background:#fff;box-shadow:0 4px 16px rgba(38,62,120,.06)}
+  .exam .eh{display:flex;align-items:center;gap:10px;padding:11px 18px;background:linear-gradient(100deg,#eef4ff,#f7faff);border-bottom:1px solid #e3ebf8;flex-wrap:wrap}
+  .exam .eh .src{font-size:11px;font-weight:800;color:#fff;background:#2563eb;padding:2.5px 10px;border-radius:20px}
+  .exam .eh .src.ori{background:#8b5cf6}
+  .exam .eh .tp{font-size:11.5px;color:#5b7ba8;font-weight:700}
+  .exam .eb{padding:16px 20px}
+  .exam .q{font-weight:700;font-size:14px;color:#2c3c33;line-height:1.9;margin-bottom:10px}
+  .exam .opt{font-size:13.5px;color:#4b5a52;line-height:2.05;padding-left:6px}
+  .exam .opt i{font-style:normal;font-weight:800;color:var(--primary-dark);margin-right:7px}
+  .exam pre{margin:12px 0;background:#1b2a21;border-radius:10px;padding:14px 16px;overflow-x:auto;font-family:Consolas,monospace;font-size:13px;line-height:1.8;color:var(--code-tx)}
+  .exam details{margin-top:10px;border-top:1px dashed var(--line);padding-top:10px}
+  .exam summary{cursor:pointer;font-size:12.5px;font-weight:800;color:#2563eb;outline:none;user-select:none}
+  .exam details .ans{font-size:13.5px;color:#3c4a42;line-height:1.95;margin-top:9px;background:var(--bg-soft);padding:13px 16px;border-radius:10px}
+  .exam details .ans b{color:var(--primary-dark)}
+  .exam details .ans .tagline{display:inline-block;font-size:11px;background:#e0f2fe;color:#0e7490;padding:1.5px 8px;border-radius:6px;font-weight:700;margin-right:6px}
+  .summary{margin:40px 0 20px;border-radius:18px;padding:26px 30px;background:linear-gradient(130deg,#fff8f3,#ffffff);border:1px solid #ffe0cf}
+  .summary h3{margin-top:0}
+  .summary ul{list-style:none;margin-top:10px}
+  .summary li{font-size:14px;line-height:2;color:#41524a;padding-left:24px;position:relative}
+  .summary li::before{content:"◆";position:absolute;left:0;color:var(--brand);font-size:11px;top:6px}
+  .pager{display:flex;gap:14px;margin-top:30px;flex-wrap:wrap}
+  .pager a{flex:1;min-width:200px;text-decoration:none;border:1px solid var(--line);border-radius:14px;padding:16px 20px;background:#fff;transition:.2s;display:block}
+  .pager a:hover{border-color:var(--brand);box-shadow:0 10px 26px rgba(255,107,53,.14);transform:translateY(-2px)}
+  .pager a .k{font-size:11px;color:var(--dim2);font-weight:700;letter-spacing:1px}
+  .pager a .v{font-size:14px;font-weight:800;color:var(--night);margin-top:5px}
+  .pager a.back{background:var(--brand-soft);border-color:transparent;text-align:center}
+  .pager a.back .v{color:var(--brand-dark)}
+  .cta{margin-top:26px;border-radius:20px;padding:30px 34px;color:#fff;position:relative;overflow:hidden;background:linear-gradient(120deg,#16202f,#2b3a52 46%,#a8431c 132%)}
+  .cta::after{content:"";position:absolute;right:-70px;bottom:-90px;width:280px;height:280px;border-radius:50%;background:radial-gradient(circle,rgba(255,140,80,.45),transparent 68%)}
+  .cta h3{color:#fff;margin:0 0 10px;position:relative;z-index:2}
+  .cta h3::before{background:var(--brand)}
+  .cta p{color:#d8e0ef;font-size:13.5px;margin:0 0 18px;position:relative;z-index:2;max-width:640px}
+  .cta .btn-go{position:relative;z-index:2}
+  @media(max-width:900px){
+    .sidebar-nav{transform:translateX(-100%)}
+    .sidebar-nav.active{transform:translateX(0)}
+    .nav-toggle{display:block}
+    .page{margin-left:0}
+    .hero{padding:70px 22px 34px}
+    .hero-top{flex-direction:column-reverse;text-align:center}
+    .hero-card{width:auto}
+    .container{padding:26px 20px 60px}
+    .goal-grid{grid-template-columns:1fr}
+  }
+</style>
+</head>
+<body>
+
+<button class="nav-toggle" onclick="document.querySelector('.sidebar-nav').classList.toggle('active')">☰</button>
+
+<nav class="sidebar-nav">
+  <div class="sb-brand">
+    <a class="sb-logo" href="https://codecombat.cn/" target="_blank" rel="noopener" title="访问 CodeCombat 扣哒世界官网">
+      <img src="../assets/logo.png" alt="CodeCombat 扣哒世界">
+    </a>
+    <div><b>漩涡阶梯</b><span>回声溪谷 · Python 二级 第 5 单元</span></div>
+  </div>
+  <div class="nav-title">本单元目录</div>
+
+  <a href="#s0" class="nav-section">0　单元导语与目标</a>
+  <a href="#s1" class="nav-section">1　循环里的循环</a>
+  <a href="#s2" class="nav-section">2　执行顺序与次数</a>
+  <a href="#s2-1" class="nav-sub">2.1 内层跑完，外层才走一步</a>
+  <a href="#s2-2" class="nav-sub">2.2 总共跑几次？</a>
+  <a href="#s3" class="nav-section">3　用嵌套循环画图</a>
+  <a href="#s4" class="nav-section">4　break 与 continue 的管辖范围</a>
+  <a href="#s5" class="nav-section">5　代码实战</a>
+  <a href="#s6" class="nav-section">6　常见陷阱</a>
+  <a href="#s7" class="nav-section">7　题目练习</a>
+  <a href="#s8" class="nav-section">8　本单元小结</a>
+
+  <a href="../index.html" target="_top" class="sb-back">返回考纲之路</a>
+</nav>
+
+<div class="page">
+
+<div class="hero">
+  <div class="hero-top">
+    <div class="hero-txt">
+      <div class="crumb">扣哒考级 · GESP PYTHON 二级 · 第 5 单元　|　回声溪谷 ECHOSTREAM VALLEY</div>
+      <h1>漩涡阶梯
+        <span class="sub">多层循环结构</span>
+      </h1>
+      <div class="en">Nested Loops</div>
+      <div class="tags">
+        <span class="tag hot">考纲 · 循环结构进阶</span>
+        <span class="tag">循环嵌套</span>
+        <span class="tag">执行次数</span>
+        <span class="tag">打印图形</span>
+        <span class="tag">break 范围</span>
+      </div>
+    </div>
+    <div class="hero-card">
+      <img class="ava" src="../assets/avatars/anya.webp" alt="安雅" onerror="this.style.background='#24344a';this.src='../assets/heroes/anya.webp'">
+      <div class="nm">安雅</div>
+      <div class="ti">红发队长 · 你的旅伴</div>
+    </div>
+  </div>
+</div>
+
+<div class="container">
+
+<div class="lead">
+  溪谷最深处的岩壁上凿着一道<b>螺旋石阶</b>，一圈一圈往下盘进漩涡里。
+  你顺着台阶往下走了几级，忽然停住——<b>每一级台阶上，又刻着一小圈更细的花纹</b>。<br>
+  安雅在你身后说：看出来了？<b>大圈套着小圈。</b>
+  你每往前迈一步，脚底下那一小圈就得先转完一整轮。<br>
+  她顿了顿：这就是今天要学的——<b>循环里再放循环。</b>
+</div>
+
+<div class="cast anya">
+  <img class="ava" src="../assets/avatars/anya.webp" alt="安雅" onerror="this.style.display='none'">
+  <div class="bubble">
+    <div class="who">安雅 · 红发队长</div>
+    上一单元我们让"判断"套判断，这一单元轮到"重复"套重复。<br>
+    它听起来抽象，但其实你天天都在用它——<strong>课表就是最典型的嵌套循环</strong>：一周几天是外层，一天几节课是内层。
+  </div>
+</div>
+
+<!-- ============ 0 ============ -->
+<figure class="pic">
+  <img src="../assets/illustrations/py-L2-05-01_whirlpool_stairs.webp" alt="漩涡阶梯"
+       onerror="this.closest('.pic').classList.add('missing')">
+  <div class="ph">
+    <div class="fn">assets/illustrations/py-L2-05-01_whirlpool_stairs.webp</div>
+    <div class="ds">【配图位】通向漩涡的石制螺旋阶梯：整一圈代表外层循环，每一级台阶代表内层循环；一名新兵提着灯往下走，脚边是旋转的深蓝色水涡与雾气。</div>
+  </div>
+  <figcaption>图 1：回声溪谷的漩涡阶梯——今天要从这里开始</figcaption>
+</figure>
+
+<div class="section-header" id="s0">
+  <h2>0　单元导语与目标</h2>
+  <div class="en-title">Unit Overview</div>
+</div>
+
+<div class="goal-grid">
+  <div class="goal">
+    <h4><span class="ic">1</span>学完这个单元，你将能……</h4>
+    <ul>
+      <li>说清"循环嵌套"是什么，并画出它的执行路径</li>
+      <li>正确算出嵌套循环一共执行多少次</li>
+      <li>用嵌套循环打印矩形、三角形、乘法表</li>
+      <li>说出 <code class="inline">break</code> 在嵌套里只跳出哪一层</li>
+      <li>读懂双层循环的缩进结构</li>
+      <li>把"重复的动作里还有重复的动作"翻译成代码</li>
+    </ul>
+  </div>
+  <div class="goal syllabus">
+    <h4><span class="ic">2</span>对标 GESP 考纲（Python 二级）</h4>
+    <ul>
+      <li>（7）掌握循环结构的基本概念及基础应用</li>
+      <li>考核目标：使用分支循环嵌套结构完成较复杂的程序</li>
+      <li>考核目标：能计算多重循环的执行次数、预测输出结果</li>
+      <li>考核目标：能读懂打印图形的嵌套循环程序</li>
+    </ul>
+  </div>
+</div>
+
+<!-- ============ 1 ============ -->
+<div class="section-header" id="s1">
+  <h2>1　循环里的循环</h2>
+  <div class="en-title">Loops Inside Loops</div>
+</div>
+
+<p>先看一个你非常熟悉的例子：<b>课表</b>。</p>
+
+<p>学校每周上 5 天课，每天上 4 节。你想说"每一节课都要点名"，怎么写？</p>
+
+<ul style="margin:10px 0 10px 26px;color:#3c4a42;line-height:2">
+  <li>外层循环：<b>遍历 5 天</b>（周一、周二……）</li>
+  <li>内层循环：<b>每一天里遍历 4 节课</b>（第 1 节、第 2 节……）</li>
+</ul>
+
+<p>于是"点名"这件事总共会发生 <strong>5 × 4 = 20 次</strong>。
+这就是<strong>循环嵌套</strong>：<b>外面转一圈，里面转满好几圈。</b></p>
+
+<figure class="figure">
+  <svg class="diagram" viewBox="0 0 860 340" role="img" aria-label="嵌套循环的结构">
+    <text x="24" y="34" font-size="14" font-weight="bold" fill="#1f2937">外层是"天"，内层是"课"</text>
+
+    <rect x="40" y="60" width="780" height="250" rx="14" fill="#eef6ff" stroke="#3b82f6" stroke-width="2.2"/>
+    <text x="64" y="90" font-size="13" font-family="Consolas,monospace" fill="#1d4ed8" font-weight="bold">for day in range(5):</text>
+    <text x="700" y="90" font-size="11.5" fill="#3b6ea8">外层循环</text>
+
+    <rect x="80" y="106" width="716" height="190" rx="12" fill="#fff" stroke="#dbeafe" stroke-width="1.6"/>
+    <text x="104" y="134" font-size="13" font-family="Consolas,monospace" fill="#c1440e" font-weight="bold">for lesson in range(4):</text>
+    <text x="690" y="134" font-size="11.5" fill="#a85728">内层循环</text>
+
+    <rect x="124" y="152" width="240" height="46" rx="10" fill="#e9f8ef" stroke="#2e9e5b" stroke-width="1.8"/>
+    <text x="244" y="181" text-anchor="middle" font-size="12.5" font-family="Consolas,monospace" fill="#1f7a44">print("点名")</text>
+
+    <text x="400" y="182" font-size="12.5" fill="#64748b">← 这行才是真正在干活的</text>
+
+    <rect x="124" y="216" width="580" height="62" rx="10" fill="#f8fafc" stroke="#e2e8f0" stroke-width="1.4"/>
+    <text x="146" y="240" font-size="12" fill="#475569">执行顺序：周一第1节 → 周一第2节 → 周一第3节 → 周一第4节</text>
+    <text x="146" y="264" font-size="12" fill="#475569">→ 周二第1节 → …… （内层跑满 4 次，外层才前进 1 格）</text>
+
+    <text x="430" y="332" text-anchor="middle" font-size="12" fill="#8d9d94">总共点名 5 × 4 = 20 次</text>
+  </svg>
+  <div class="caption">图 2（SVG）：嵌套循环——外层转一圈，内层要转满好几圈</div>
+</figure>
+
+<div class="code-card">
+  <div class="code-head">
+    <span class="dot d1"></span><span class="dot d2"></span><span class="dot d3"></span>
+    <span class="file">课表点名</span>
+    <span class="lang">Python</span>
+  </div>
+  <pre><code>for day in range(5):          # 外层：5 天
+    print("第", day + 1, "天")
+    for lesson in range(4):   # 内层：每天 4 节课
+        print("  第", lesson + 1, "节课：点名")</code></pre>
+  <div class="out"><b>OUTPUT（节选）</b><br>第 1 天<br>&nbsp;&nbsp;第 1 节课：点名<br>&nbsp;&nbsp;第 2 节课：点名<br>&nbsp;&nbsp;第 3 节课：点名<br>&nbsp;&nbsp;第 4 节课：点名<br>第 2 天<br>&nbsp;&nbsp;第 1 节课：点名<br>……</div>
+</div>
+
+<div class="box remember">
+  <span class="lb">一句话理解：</span>
+  <strong>嵌套循环就是"重复的事情里，还包含着另一件要重复的事情"。</strong><br>
+  比如：<b>每周（外层）都要上 5 天课，每天（内层）都要上 4 节课。</b>
+</div>
+
+<div class="cast hero">
+  <img class="ava" src="../assets/avatars/valkyrie.webp" alt="星璃" onerror="this.style.display='none'">
+  <div class="bubble">
+    <div class="who">星璃 · 女武神</div>
+    我练兵的时候有两重口令：<b>第一重喊"整队"，第二重喊"报数"</b>。<br>
+    整队一次，全队就要报数一整轮；整队第二次，又报一整轮。<br>
+    <strong>你看，外层动一次，内层就得跑满一遍。</strong>这就是嵌套循环的节奏。
+  </div>
+</div>
+
+<!-- ============ 2 ============ -->
+<div class="section-header" id="s2">
+  <h2>2　执行顺序与次数</h2>
+  <div class="en-title">Execution Order &amp; Count</div>
+</div>
+
+<h3 id="s2-1">2.1 内层跑完，外层才走一步</h3>
+
+<p>这是嵌套循环最核心的一条规律，务必背下来：</p>
+
+<div class="box warn">
+  <span class="lb">铁律：</span>
+  <strong>外层循环每执行一次，内层循环就要完整地执行一遍。</strong><br>
+  ——内层不跑完，外层绝不动。
+</div>
+
+<figure class="figure">
+  <svg class="diagram" viewBox="0 0 860 280" role="img" aria-label="嵌套循环的执行顺序">
+    <text x="24" y="34" font-size="14" font-weight="bold" fill="#1f2937">外层 3 次 × 内层 2 次 = 共 6 次</text>
+
+    <rect x="46" y="66" width="230" height="180" rx="12" fill="#eef6ff" stroke="#3b82f6" stroke-width="2"/>
+    <text x="161" y="92" text-anchor="middle" font-size="13" fill="#1d4ed8" font-weight="bold">第 1 轮（外层 i=0）</text>
+    <rect x="76" y="106" width="170" height="40" rx="8" fill="#fff" stroke="#60a5fa" stroke-width="1.6"/>
+    <text x="161" y="132" text-anchor="middle" font-size="12" fill="#1e40af">内层 j=0</text>
+    <rect x="76" y="152" width="170" height="40" rx="8" fill="#fff" stroke="#60a5fa" stroke-width="1.6"/>
+    <text x="161" y="178" text-anchor="middle" font-size="12" fill="#1e40af">内层 j=1</text>
+    <text x="161" y="220" text-anchor="middle" font-size="11.5" fill="#3b6ea8">内层跑满 2 次</text>
+
+    <rect x="316" y="66" width="230" height="180" rx="12" fill="#fff6ec" stroke="#ff6b35" stroke-width="2"/>
+    <text x="431" y="92" text-anchor="middle" font-size="13" fill="#c1440e" font-weight="bold">第 2 轮（外层 i=1）</text>
+    <rect x="346" y="106" width="170" height="40" rx="8" fill="#fff" stroke="#fbbf24" stroke-width="1.6"/>
+    <text x="431" y="132" text-anchor="middle" font-size="12" fill="#a85728">内层 j=0</text>
+    <rect x="346" y="152" width="170" height="40" rx="8" fill="#fff" stroke="#fbbf24" stroke-width="1.6"/>
+    <text x="431" y="178" text-anchor="middle" font-size="12" fill="#a85728">内层 j=1</text>
+    <text x="431" y="220" text-anchor="middle" font-size="11.5" fill="#a85728">内层跑满 2 次</text>
+
+    <rect x="586" y="66" width="230" height="180" rx="12" fill="#e9f8ef" stroke="#2e9e5b" stroke-width="2"/>
+    <text x="701" y="92" text-anchor="middle" font-size="13" fill="#1f7a44" font-weight="bold">第 3 轮（外层 i=2）</text>
+    <rect x="616" y="106" width="170" height="40" rx="8" fill="#fff" stroke="#6ee7b7" stroke-width="1.6"/>
+    <text x="701" y="132" text-anchor="middle" font-size="12" fill="#065f46">内层 j=0</text>
+    <rect x="616" y="152" width="170" height="40" rx="8" fill="#fff" stroke="#6ee7b7" stroke-width="1.6"/>
+    <text x="701" y="178" text-anchor="middle" font-size="12" fill="#065f46">内层 j=1</text>
+    <text x="701" y="220" text-anchor="middle" font-size="11.5" fill="#3b7c5b">内层跑满 2 次</text>
+
+    <text x="430" y="266" text-anchor="middle" font-size="12" fill="#8d9d94">注意：每次进入新一轮外层，内层的计数器都会"重新从 0 开始"</text>
+  </svg>
+  <div class="caption">图 3（SVG）：执行顺序——内层跑完整一轮，外层才前进</div>
+</figure>
+
+<h3 id="s2-2">2.2 总共跑几次？</h3>
+
+<p>考试最爱出的题型之一：<b>给一段嵌套循环，问最里面的语句执行了多少次。</b></p>
+
+<div class="box remember">
+  <span class="lb">计算公式：</span>
+  <strong>总次数 = 外层次数 × 内层次数</strong>（有三层就再乘第三层）<br>
+  循环体写在外层里、内层外的语句，只执行 <b>外层次数</b> 次——这是最容易算错的地方。
+</div>
+
+<div class="code-card">
+  <div class="code-head">
+    <span class="dot d1"></span><span class="dot d2"></span><span class="dot d3"></span>
+    <span class="file">数一数各执行几次</span>
+    <span class="lang">Python</span>
+  </div>
+  <pre><code>count_a = 0
+count_b = 0
+
+for i in range(3):
+    count_a += 1              # 在外层里、内层外
+    for j in range(4):
+        count_b += 1          # 在最里面
+
+print(count_a)
+print(count_b)</code></pre>
+  <div class="out"><b>OUTPUT</b>　3<br>12</div>
+</div>
+
+<div class="box tip">
+  <span class="lb">怎么数最稳妥？</span>
+  看缩进！<br>
+  <b>缩进 4 格</b>的语句 → 属于外层，执行 外层次数 次；<br>
+  <b>缩进 8 格</b>的语句 → 属于内层，执行 外层次数 × 内层次数 次。<br>
+  <strong>缩进是嵌套循环的"楼层卡"，数楼层比数次数可靠得多。</strong>
+</div>
+
+<!-- ============ 3 ============ -->
+<div class="section-header" id="s3">
+  <h2>3　用嵌套循环画图</h2>
+  <div class="en-title">Drawing with Nested Loops</div>
+</div>
+
+<p>嵌套循环最直观的用途就是<b>打印图形</b>——因为"长方形的图案"本来就是"几行 × 每行几个"。</p>
+
+<div class="code-card">
+  <div class="code-head">
+    <span class="dot d1"></span><span class="dot d2"></span><span class="dot d3"></span>
+    <span class="file">打印一个 3 行 5 列的星号方阵</span>
+    <span class="lang">Python</span>
+  </div>
+  <pre><code>for i in range(3):            # 3 行
+    for j in range(5):        # 每行 5 个
+        print("*", end="")    # end="" 表示不换行
+    print()                   # 一行结束后换行</code></pre>
+  <div class="out"><b>OUTPUT</b><br>*****<br>*****<br>*****</div>
+</div>
+
+<p>注意那个 <code class="inline">print()</code>——它<b>缩进 4 格</b>，属于外层循环。
+它的作用是"每画完一行就换行"。<strong>如果把它也缩进到内层，星号就会一个一行。</strong></p>
+
+<div class="code-card">
+  <div class="code-head">
+    <span class="dot d1"></span><span class="dot d2"></span><span class="dot d3"></span>
+    <span class="file">打印直角三角形（第几行就几个星）</span>
+    <span class="lang">Python</span>
+  </div>
+  <pre><code>for i in range(1, 5):         # i = 1,2,3,4
+    for j in range(i):        # 第 i 行画 i 个星
+        print("*", end="")
+    print()</code></pre>
+  <div class="out"><b>OUTPUT</b><br>*<br>**<br>***<br>****</div>
+</div>
+
+<div class="box info">
+  <span class="lb">看第 2 行：</span><code class="inline">for j in range(i)</code>——
+  内层的循环次数<b>由外层变量 i 决定</b>。<br>
+  这就是嵌套循环最漂亮的地方：<strong>外层管"第几行"，内层管"这一行画几个"。</strong>
+</div>
+
+
+
+<!-- ============ 4 ============ -->
+<div class="section-header" id="s4">
+  <h2>4　break 与 continue 的管辖范围</h2>
+  <div class="en-title">Scope of break &amp; continue</div>
+</div>
+
+<p>这是二级考试里的"高级陷阱"。先记住一句话：</p>
+
+<div class="box warn">
+  <span class="lb">铁律：</span>
+  <strong><code class="inline">break</code> 和 <code class="inline">continue</code> 只管它所在的那一层循环。</strong><br>
+  在双层循环里，<code class="inline">break</code> 只跳出<b>最内层</b>，外层照样继续转。
+</div>
+
+<figure class="figure">
+  <svg class="diagram" viewBox="0 0 860 300" role="img" aria-label="break 在嵌套循环中的作用范围">
+    <text x="24" y="34" font-size="14" font-weight="bold" fill="#1f2937">break 只打破它所在的那一层圈</text>
+
+    <circle cx="240" cy="176" r="104" fill="none" stroke="#2e9e5b" stroke-width="3" stroke-dasharray="10 7"/>
+    <circle cx="240" cy="176" r="58" fill="none" stroke="#ff6b35" stroke-width="3"/>
+    <text x="240" y="182" text-anchor="middle" font-size="12" fill="#c1440e" font-weight="bold">内层</text>
+    <text x="240" y="60" text-anchor="middle" font-size="12.5" fill="#1f7a44" font-weight="bold">外层</text>
+
+    <path d="M240 118 L240 84" stroke="#dc2626" stroke-width="3"/>
+    <polygon points="240,78 233,92 247,92" fill="#dc2626"/>
+    <text x="286" y="100" font-size="12" fill="#b91c1c" font-weight="bold">break 从这里出去</text>
+    <text x="286" y="122" font-size="11.5" fill="#7f2b2b">只跳出了内层</text>
+
+    <path d="M344 176 Q 380 120 344 80" fill="none" stroke="#2e9e5b" stroke-width="2.4" stroke-dasharray="6 4"/>
+    <text x="392" y="150" font-size="11.5" fill="#1f7a44">外层还在转</text>
+
+    <rect x="500" y="86" width="330" height="150" rx="12" fill="#1b2a21"/>
+    <text x="522" y="116" font-family="Consolas,monospace" font-size="13" fill="#c678dd">for</text>
+    <text x="554" y="116" font-family="Consolas,monospace" font-size="13" fill="#c9d6cd">i </text>
+    <text x="572" y="116" font-family="Consolas,monospace" font-size="13" fill="#c678dd">in</text>
+    <text x="596" y="116" font-family="Consolas,monospace" font-size="13" fill="#61afef">range</text>
+    <text x="640" y="116" font-family="Consolas,monospace" font-size="13" fill="#c9d6cd">(3):</text>
+    <text x="542" y="146" font-family="Consolas,monospace" font-size="13" fill="#c678dd">for</text>
+    <text x="574" y="146" font-family="Consolas,monospace" font-size="13" fill="#c9d6cd">j </text>
+    <text x="592" y="146" font-family="Consolas,monospace" font-size="13" fill="#c678dd">in</text>
+    <text x="616" y="146" font-family="Consolas,monospace" font-size="13" fill="#61afef">range</text>
+    <text x="660" y="146" font-family="Consolas,monospace" font-size="13" fill="#c9d6cd">(3):</text>
+    <text x="562" y="174" font-family="Consolas,monospace" font-size="13" fill="#c678dd">if</text>
+    <text x="586" y="174" font-family="Consolas,monospace" font-size="13" fill="#c9d6cd">j == 1:</text>
+    <text x="582" y="200" font-family="Consolas,monospace" font-size="13" fill="#e06c75">break</text>
+    <text x="522" y="226" font-size="11.5" fill="#8fa499">← 这个 break 只管内层的 for j</text>
+  </svg>
+  <div class="caption">图 4（SVG）：break 只跳出它所在的那一层</div>
+</figure>
+
+<div class="code-card">
+  <div class="code-head">
+    <span class="dot d1"></span><span class="dot d2"></span><span class="dot d3"></span>
+    <span class="file">break 到底跳出了谁</span>
+    <span class="lang">Python</span>
+  </div>
+  <pre><code>for i in range(3):
+    for j in range(3):
+        if j == 1:
+            break          # 只跳出内层
+        print(i, j)
+
+print("结束")</code></pre>
+  <div class="out"><b>OUTPUT</b>　0 0<br>1 0<br>2 0<br>结束</div>
+</div>
+
+<p>看输出：外层 i 从 0 走到 2，<b>每轮都只打印了一个 0 就跳出来了</b>。
+说明 <code class="inline">break</code> 每次只终结了内层那一轮，外层毫发无伤。</p>
+
+<div class="box tip">
+  <span class="lb">想跳出两层怎么办？</span>
+  一级学的 <code class="inline">break</code> 只管一层。真要"一次跳两层"，
+  可以用一个标记变量配合判断，或者把代码写成一个函数再用 <code class="inline">return</code>——
+  后者是三级以后的内容。<strong>二级只要记住"break 只管一层"就够了。</strong>
+</div>
+
+<!-- ============ 5 ============ -->
+<div class="section-header" id="s5">
+  <h2>5　代码实战</h2>
+  <div class="en-title">Level Practice</div>
+</div>
+
+<div class="level-card">
+  <div class="lc-head"><span class="n">关卡</span><h4>食人魔营地</h4><span class="go">进入关卡 →</span></div>
+  <div class="lc-body">
+    <div class="story">
+      <b>故事：</b>你摸到了食人魔营地的边缘。营地中央堆着一只巨大的<b>宝箱</b>——
+      里面装着被抢走的所有宝物。<br>
+      可麻烦在于：<b>食人魔会一波一波地冲过来</b>。你要一边打退它们，一边抽空砸宝箱。
+      什么时候打人、什么时候砸箱子？<b>全看眼前有没有敌人。</b>
+    </div>
+  <figure class="pic ai-added"><img src="../assets/illustrations/py-L2-05-02_multiplication_lattice.webp" alt="AI配图：py-L2-05-02_multiplication_lattice.webp"></figure>
+    <figure class="pic">
+      <img src="../assets/stages/py-L2-05-stage1_ogre_camp.webp" alt="食人魔营地 关卡截图"
+           onerror="this.closest('.pic').classList.add('missing')">
+      <div class="ph">
+        <div class="fn">assets/stages/py-L2-05-stage1_ogre_camp.webp</div>
+        <div class="ds">【关卡截图位】请把《食人魔营地》的游戏画面截图放到此处（放入 assets/stages/ 目录，文件名为 py-L2-05-stage1_ogre_camp.webp）。</div>
+      </div>
+      <figcaption>关卡实况：食人魔营地</figcaption>
+    </figure>
+    <p><strong>思路：</strong>看上面的关卡实况——宝物就堆在营地中央，可食人魔会一波一波地冲过来。
+    外层用一个永不停止的循环盯着营地，里面用 <code class="inline">if-else</code> 做一次判断：
+    <b>有敌人就打敌人，没敌人就砸箱子。</b><br>
+    这是"循环 + 分支"最经典的组合，也是二级考试里最爱考的结构。</p>
+    <div class="code-card">
+      <div class="code-head">
+        <span class="dot d1"></span><span class="dot d2"></span><span class="dot d3"></span>
+        <span class="file">重点示例：每轮先看一眼，再决定做什么</span>
+        <span class="lang">Python</span>
+      </div>
+      <pre><code>while True:
+    enemy = hero.findNearestEnemy()   # 看一眼
+    if enemy:
+        hero.attack(enemy)            # 有人，打人
+    else:
+        hero.attack("Chest")          # 没人，砸箱</code></pre>
+      <div class="out"><b>要点</b>　一秒都没浪费：有人打人，没人砸箱</div>
+    </div>
+    <div class="box info">
+      <span class="lb">这段代码妙在哪？</span>
+      如果写成顺序结构（先打三下敌人，再砸一下箱子），
+      <strong>那就一定会浪费动作</strong>——没有敌人的时候你在对着空气挥剑。<br>
+      <b>而"每轮先看一眼再决定"，是效率最高的写法。</b>
+    </div>
+    <div class="box tip">
+      <span class="lb">和嵌套的关系：</span>这里的 <code class="inline">if-else</code> 整个嵌在
+      <code class="inline">while</code> 里，每转一圈就判断一次。<br>
+      <strong>嵌套不只是"循环套循环"，"循环套分支"也是嵌套</strong>——而后者在实战关卡里出现得更频繁。
+    </div>
+    <a class="btn-go" href="https://codecombat.cn/" target="_blank" rel="noopener">去扣哒世界闯这一关 →</a>
+  </div>
+</div>
+
+<!-- ============ 6 ============ -->
+<div class="section-header" id="s6">
+  <h2>6　常见陷阱</h2>
+  <div class="en-title">Common Pitfalls</div>
+</div>
+
+<div class="cast duck">
+  <img class="ava" src="../assets/ducks/duck_illia.webp" alt="扣哒鸭" onerror="this.style.display='none'">
+  <div class="bubble">
+    <div class="who">扣哒鸭 · 调试官</div>
+    嵌套循环的错误，最典型的就是"数错次数"和"缩错楼层"。
+    下面四条你要是全躲过，这章就没问题了。
+  </div>
+</div>
+
+<div class="pit">
+  <div class="pt">
+    <div class="x">1</div>
+    <div class="t"><b>把次数算成"相加"。</b>以为外 3 次、内 4 次，总共 7 次。</div>
+  </div>
+  <div class="duck">
+    <img src="../assets/ducks/duck_zana.webp" alt="扣哒鸭" onerror="this.style.display='none'">
+    <div class="dt"><b>扣哒鸭：</b>是<strong>相乘</strong>！3 × 4 = 12 次。<br>
+    因为外层每动一次，内层就要跑满一整轮——<strong>一整轮懂吗，不是一次。</strong></div>
+  </div>
+  <div class="fix"><b>正确算法：</b>总次数 = 外层次数 × 内层次数</div>
+</div>
+
+<div class="pit">
+  <div class="pt">
+    <div class="x">2</div>
+    <div class="t"><b>把换行的 print() 缩进到内层。</b>结果星号变成一列，一行一个。</div>
+  </div>
+  <div class="duck">
+    <img src="../assets/ducks/duck_hattori.webp" alt="扣哒鸭" onerror="this.style.display='none'">
+    <div class="dt"><b>扣哒鸭：</b><strong>换行是"这一行画完了"的意思，所以它属于外层。</strong>
+    缩进到内层，等于每画一个星就换一次行——那还叫什么"一行"？</div>
+  </div>
+  <div class="fix"><b>正确写法：</b>换行的 <code class="inline">print()</code> 与外层的 <code class="inline">for</code> 对齐</div>
+</div>
+
+<div class="pit">
+  <div class="pt">
+    <div class="x">3</div>
+    <div class="t"><b>以为 break 能一次跳出两层。</b></div>
+  </div>
+  <div class="duck">
+    <img src="../assets/ducks/duck_naria.webp" alt="扣哒鸭" onerror="this.style.display='none'">
+    <div class="dt"><b>扣哒鸭：</b><strong>break 只管它自己那一层。</strong>
+    你在内层写 break，外层该转还转——这叫"各扫门前雪"。</div>
+  </div>
+  <div class="fix"><b>正确理解：</b>break / continue 只作用于它所在的那一层循环</div>
+</div>
+
+<div class="pit">
+  <div class="pt">
+    <div class="x">4</div>
+    <div class="t"><b>内外层用了同一个变量名。</b>比如内外都写 <code class="inline">for i in range(...)</code>。</div>
+  </div>
+  <div class="duck">
+    <img src="../assets/ducks/duck_senick.webp" alt="扣哒鸭" onerror="this.style.display='none'">
+    <div class="dt"><b>扣哒鸭：</b>内层的 <code>i</code> 会把外层的 <code>i</code> <strong>覆盖掉</strong>，
+    外层那个圈就找不着北了。<br>
+    习惯写法：<strong>外层用 i，内层用 j，第三层用 k</strong>——老规矩，别乱。</div>
+  </div>
+  <div class="fix"><b>正确写法：</b><code class="inline">for i in ...:</code> 里用 <code class="inline">for j in ...:</code></div>
+</div>
+
+<!-- ============ 7 ============ -->
+<div class="section-header" id="s7">
+  <h2>7　题目练习</h2>
+  <div class="en-title">Practice</div>
+</div>
+
+<p>下面 7 道题围绕多层循环展开，前 2 道改编自真题，后 5 道为原创练习题。</p>
+
+<div class="exam">
+  <div class="eh"><span class="src">改编自 2026 年 9 月 · Python 一级 · 第 8 题</span><span class="tp">单选题</span></div>
+  <div class="eb">
+    <div class="q">下列 Python 代码执行后，其输出是（　　）。</div>
+    <pre>1  cnt = 0
+2  for i in range(10):
+3      cnt += 1
+4  print(i, cnt)</pre>
+    <div class="opt"><i>A.</i>10 10　　<i>B.</i>9 9　　<i>C.</i>10 9　　<i>D.</i>9 10</div>
+    <details><summary>查看答案与详解</summary>
+      <div class="ans"><b>答案：D</b>。<code class="inline">range(10)</code> 产生 0~9 共 10 个数，
+      循环结束时 <code class="inline">i</code> 停在最后一个值 <strong>9</strong>，
+      而 <code class="inline">cnt</code> 累加了 10 次，是 <strong>10</strong>。<br>
+      <b>这是理解嵌套循环次数的基础：先把单层循环的"次数"和"终值"分清。</b><br>
+      <span class="tagline">对应小节</span>2.2 总共跑几次。</div>
+    </details>
+  </div>
+</div>
+
+<div class="exam">
+  <div class="eh"><span class="src">改编自 2026 年 9 月 · Python 一级 · 第 12 题</span><span class="tp">单选题</span></div>
+  <div class="eb">
+    <div class="q">下列 Python 代码执行时如输入 35，输出如下所示。横线处应填入的代码是（　　）。</div>
+    <pre>35 34 33 32 31 30 29 28 27 26
+25 24 23 22 21 20 19 18 17 16
+15 14 13 12 11 10 9 8 7 6
+5 4 3 2 1
+
+1  N = int(input())
+2
+3  tot = 0
+4  for i in range(N):
+5      print(__________, end = "")
+6      tot = tot + 1
+7      if tot % 10 == 0:
+8          print()</pre>
+    <div class="opt"><i>A.</i>f"{N:3}"　　<i>B.</i>f"{N - i:3}"　　<i>C.</i>N - i　　<i>D.</i>N</div>
+    <details><summary>查看答案与详解</summary>
+      <div class="ans"><b>答案：B</b>。第 i 轮要打印的是 <code class="inline">N - i</code>，
+      并要求占 3 个字符宽度，所以是 <code class="inline">f"{N - i:3}"</code>。<br>
+      <b>提示：</b>这段程序用"每满 10 个换一行"实现了分行输出，
+      思路和嵌套循环打印图形非常接近。<br>
+      <span class="tagline">对应小节</span>3 用嵌套循环画图。</div>
+    </details>
+  </div>
+</div>
+
+<div class="exam">
+  <div class="eh"><span class="src ori">原创练习题</span><span class="tp">单选题</span></div>
+  <div class="eb">
+    <div class="q">下列 Python 代码中，<code class="inline">print("*")</code> 一共会执行多少次？（　　）</div>
+    <pre>1  for i in range(4):
+2      for j in range(5):
+3          print("*")</pre>
+    <div class="opt"><i>A.</i>9　　<i>B.</i>20　　<i>C.</i>4　　<i>D.</i>5</div>
+    <details><summary>查看答案与详解</summary>
+      <div class="ans"><b>答案：B</b>。外层 4 次，内层每次 5 次，
+      总共 4 × 5 = <strong>20</strong> 次。<br>
+      <b>易错点：</b>不要把它们相加（那是 9）——外层每转一圈，内层都要跑满一整轮。<br>
+      <span class="tagline">对应小节</span>2.2 总共跑几次。</div>
+    </details>
+  </div>
+</div>
+
+<div class="exam">
+  <div class="eh"><span class="src ori">原创练习题</span><span class="tp">单选题</span></div>
+  <div class="eb">
+    <div class="q">下列 Python 代码执行后，输出的结果是（　　）。</div>
+    <pre>1  for i in range(3):
+2      for j in range(3):
+3          if j == 2:
+4              break
+5          print(i, j)</pre>
+    <div class="opt">
+      <i>A.</i>输出 9 行　　<i>B.</i>输出 6 行　　<i>C.</i>输出 3 行　　<i>D.</i>什么都不输出
+    </div>
+    <details><summary>查看答案与详解</summary>
+      <div class="ans"><b>答案：B</b>。外层 3 次；每一轮内层 j 依次取 0、1、2——
+      j=0 和 j=1 各打印一次，j=2 时遇到 <code class="inline">break</code> 跳出内层。<br>
+      所以每轮输出 2 行，3 轮共 <strong>6 行</strong>：<code class="inline">0 0</code>、<code class="inline">0 1</code>、<code class="inline">1 0</code>、
+      <code class="inline">1 1</code>、<code class="inline">2 0</code>、<code class="inline">2 1</code>。<br>
+      <b>关键：</b>break 只跳出内层，外层照样跑满 3 轮。<br>
+      <span class="tagline">对应小节</span>4 break 与 continue 的管辖范围。</div>
+    </details>
+  </div>
+</div>
+
+<div class="exam">
+  <div class="eh"><span class="src ori">原创练习题</span><span class="tp">判断题</span></div>
+  <div class="eb">
+    <div class="q">在双层循环中，内层循环里的 <code class="inline">break</code> 语句可以同时跳出内层和外层两个循环。（　　）</div>
+    <details><summary>查看答案与详解</summary>
+      <div class="ans"><b>答案：错误（×）</b>。<code class="inline">break</code> <strong>只能跳出它所在的那一层循环</strong>。
+      在双层循环中，内层的 break 跳出后，外层会继续执行下一轮。<br>
+      <span class="tagline">对应小节</span>4 break 与 continue 的管辖范围。</div>
+    </details>
+  </div>
+</div>
+
+<div class="exam">
+  <div class="eh"><span class="src ori">原创练习题</span><span class="tp">单选题</span></div>
+  <div class="eb">
+    <div class="q">要打印一个 5 行 5 列的星号方阵，下面的代码中哪一处的缩进是正确的？（　　）</div>
+    <pre>for i in range(5):
+    for j in range(5):
+        print("*", end = "")
+    ____</pre>
+    <div class="opt">
+      <i>A.</i>横线处应写 <code class="inline">print()</code> 且缩进 4 格<br>
+      <i>B.</i>横线处应写 <code class="inline">print()</code> 且缩进 8 格<br>
+      <i>C.</i>横线处应写 <code class="inline">print()</code> 且顶格<br>
+      <i>D.</i>横线处不需要写任何语句
+    </div>
+    <details><summary>查看答案与详解</summary>
+      <div class="ans"><b>答案：A</b>。"每画完一行换行"这件事属于<strong>外层循环</strong>，
+      所以 <code class="inline">print()</code> 要缩进 <strong>4 格</strong>，与外层的 <code class="inline">for i</code> 内部对齐。<br>
+      缩进 8 格就成了"每画一个星换一次行"，会变成一列；顶格则是循环结束后只换一次行。<br>
+      <span class="tagline">对应小节</span>3 用嵌套循环画图。</div>
+    </details>
+  </div>
+</div>
+
+<div class="exam">
+  <div class="eh"><span class="src ori">原创练习题</span><span class="tp">编程题</span></div>
+  <div class="eb">
+    <div class="q">题目要求：用嵌套循环打印一个"倒三角形"——第一行 5 个星号，
+    第二行 4 个，第三行 3 个，第四行 2 个，第五行 1 个。</div>
+    <details><summary>查看参考答案与要点</summary>
+      <div class="ans">
+<pre style="margin:0;background:#1b2a21;color:#c9d6cd;border-radius:10px;padding:14px 16px">for i in range(5, 0, -1):     # i 依次取 5、4、3、2、1
+    for j in range(i):        # 第 i 行画 i 个星
+        print("*", end="")
+    print()                   # 一行画完后换行</pre>
+      <p style="margin-top:12px"><b>输出：</b><br>*****<br>****<br>***<br>**<br>*<br>
+      <b>要点：</b><br>
+      ① 外层用 <code class="inline">range(5, 0, -1)</code> 让 i 从 5 递减到 1；<br>
+      ② 内层 <code class="inline">range(i)</code> 的循环次数由外层变量决定；<br>
+      ③ 换行的 <code class="inline">print()</code> 必须缩进 4 格，属于外层。<br>
+      <span class="tagline">对应小节</span>3 用嵌套循环画图。</p>
+      </div>
+    </details>
+  </div>
+</div>
+
+<!-- ============ 8 ============ -->
+<div class="section-header" id="s8">
+  <h2>8　本单元小结</h2>
+  <div class="en-title">Unit Summary</div>
+</div>
+
+<div class="cast teacher">
+  <img class="ava" src="../assets/avatars/hushbaum.webp" alt="贺舒曼" onerror="this.style.display='none'">
+  <div class="bubble">
+    <div class="who">贺舒曼 · 镜中先知</div>
+    三层意思，说完就散课：<br>
+    <strong>一、外层跑一次，内层跑满一整轮——所以次数是相乘，不是相加。</strong><br>
+    <strong>二、缩进就是楼层：缩进 4 格属于外层，缩进 8 格属于内层。</strong><br>
+    <strong>三、break 只管一层，别指望它一次跳两层。</strong><br>
+    你们现在已经会用"循环套分支"写出真正干活的程序了。下一单元，我们换个轻松的话题——让数字听话。
+  </div>
+</div>
+
+<div class="summary">
+  <h3>你在漩涡阶梯学到了什么</h3>
+  <ul>
+    <li><strong>循环嵌套</strong>——重复的事情里还包含着另一件要重复的事情。</li>
+    <li><strong>执行顺序</strong>——外层每转一圈，内层必须跑满一整轮。</li>
+    <li><strong>次数计算</strong>——总次数 = 外层次数 × 内层次数（不是相加）。</li>
+    <li><strong>缩进即楼层</strong>——缩进 4 格属于外层，8 格属于内层。</li>
+    <li><strong>打印图形</strong>——外层管"第几行"，内层管"这一行几个"，换行的 <code class="inline">print()</code> 属于外层。</li>
+    <li><strong>break 的范围</strong>——只跳出它所在的那一层；内外层变量名要用 i / j / k 区分。</li>
+    <li><strong>循环 + 分支</strong>——"每轮先看一眼再决定"，这是实战关卡里最常见的写法。</li>
+  </ul>
+</div>
+
+<div class="pager">
+  <a href="py-2-04.html"><div class="k">← 上一单元</div><div class="v">双岔迷宫 · 多层分支结构</div></a>
+  <a href="../index.html" target="_top" class="back"><div class="k">返回</div><div class="v">考纲之路 · 总目录</div></a>
+  <a href="py-2-06.html"><div class="k">下一单元 →</div><div class="v">溪谷量尺 · 常用数学函数</div></a>
+</div>
+
+<div class="cta">
+  <h3>下一站：溪谷量尺</h3>
+  <p>溪谷的工程师手里有几样"魔法量具"：能把负数折成正值的尺子、
+  能挑出最大最小的筛子、还有块能把小数磨圆的石头。下一单元，我们一一认全。</p>
+  <a class="btn-go" href="https://codecombat.cn/" target="_blank" rel="noopener">加入扣哒世界，把这条考纲之路走一遍 →</a>
+</div>
+
+</div><!-- /container -->
+</div><!-- /page -->
+
+<script>
+const KEYWORDS = new Set(("while for if elif else break continue def return pass not and or in is None True False " +
+  "int float bool str list dict tuple set input print range len abs max min round pow import math random chr ord").split(" "));
+
+function esc(s){ return s.replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;'); }
+
+function highlight(src){
+  let out = '', i = 0;
+  const n = src.length;
+  while (i < n){
+    const c = src[i];
+    if (c === '#'){
+      let j = src.indexOf('\n', i); if (j < 0) j = n;
+      out += '<span class="cm">' + esc(src.slice(i, j)) + '</span>';
+      i = j; continue;
+    }
+    if (c === '"' || c === "'"){
+      let j = i + 1;
+      while (j < n && src[j] !== c){ if (src[j] === '\\') j++; j++; }
+      j = Math.min(j + 1, n);
+      out += '<span class="st">' + esc(src.slice(i, j)) + '</span>';
+      i = j; continue;
+    }
+    if (/[0-9]/.test(c)){
+      let j = i;
+      while (j < n && /[0-9.]/.test(src[j])) j++;
+      out += '<span class="nu">' + esc(src.slice(i, j)) + '</span>';
+      i = j; continue;
+    }
+    if (/[A-Za-z_]/.test(c)){
+      let j = i;
+      while (j < n && /[A-Za-z0-9_]/.test(src[j])) j++;
+      const w = src.slice(i, j);
+      if (KEYWORDS.has(w)) out += '<span class="kw">' + esc(w) + '</span>';
+      else if (src[j] === '(') out += '<span class="fn">' + esc(w) + '</span>';
+      else out += esc(w);
+      i = j; continue;
+    }
+    out += esc(c); i++;
+  }
+  return out;
+}
+
+document.querySelectorAll('.code-card pre code').forEach(block => {
+  block.innerHTML = highlight(block.textContent);
+});
+
+if (location.search.indexOf('expand') >= 0) {
+  document.querySelectorAll('details').forEach(d => d.open = true);
+}
+document.querySelectorAll('.sidebar-nav a').forEach(a => {
+  a.addEventListener('click', () => {
+    if (window.innerWidth <= 900) document.querySelector('.sidebar-nav').classList.remove('active');
+  });
+});
+</script>
+</body>
+</html>

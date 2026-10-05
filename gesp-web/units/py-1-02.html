@@ -1,0 +1,1166 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="copyright" content="CodeCombat Inc. codecombat.cn">
+<title>会记事的木箱 · 变量、常量与数据类型 | 扣哒考级 · GESP Python 一级</title>
+<style>
+  :root{
+    --primary:#2e9e5b; --primary-light:#4fbf7c; --primary-lighter:#e9f8ef; --primary-dark:#1f7a44;
+    --brand:#ff6b35; --brand-dark:#e8541f; --brand-soft:#fff3ec;
+    --night:#131c2b; --night-2:#1e2a3a;
+    --gold:#f5b301;
+    --text:#26302a; --dim:#63756b; --dim2:#8d9d94;
+    --bg:#ffffff; --bg-soft:#f7fbf8; --line:#e2ece6;
+    --sidebar:274px;
+    --code-bg:#1b2a21; --code-tx:#c9d6cd;
+    --code-kw:#c678dd; --code-st:#98c379; --code-nu:#d19a66; --code-cm:#6b7f72; --code-fn:#61afef;
+  }
+  *{margin:0;padding:0;box-sizing:border-box}
+  html{scroll-behavior:smooth}
+  body{
+    font-family:"PingFang SC","Microsoft YaHei","Segoe UI",-apple-system,sans-serif;
+    line-height:1.9;color:var(--text);background:var(--bg);font-size:15.5px;
+  }
+  .sidebar-nav{
+    position:fixed;top:0;left:0;width:var(--sidebar);height:100vh;overflow-y:auto;
+    background:linear-gradient(180deg,#101a26,#182636);padding:14px 0 40px;z-index:100;
+    border-right:3px solid var(--brand);transition:transform .3s ease;
+  }
+  .sidebar-nav::-webkit-scrollbar{width:5px}
+  .sidebar-nav::-webkit-scrollbar-thumb{background:var(--brand);border-radius:4px}
+  .sb-brand{display:flex;align-items:center;gap:10px;padding:10px 13px 12px;border-bottom:1px solid #26384c;margin-bottom:8px}
+  .sidebar-nav a.sb-logo{display:flex;align-items:center;justify-content:center;flex-shrink:0;padding:0;border-left:none;transition:.2s}
+  .sb-logo:hover{transform:scale(1.08)}
+  .sb-logo img{height:34px;width:34px;display:block;object-fit:contain;border-radius:8px}
+  .sb-brand b{color:#f2f6fa;font-size:14px;letter-spacing:.5px;display:block;line-height:1.4}
+  .sb-brand span{color:#7f95ab;font-size:11.5px;display:block;line-height:1.4}
+  .nav-title{color:#ffb894;font-size:12px;font-weight:800;padding:10px 18px 6px;letter-spacing:1.2px}
+  .sidebar-nav a{
+    display:block;color:#c3d0dc;text-decoration:none;padding:6px 18px;font-size:12.5px;
+    line-height:1.55;border-left:3px solid transparent;transition:.18s;
+  }
+  .sidebar-nav a:hover{color:#fff;background:rgba(255,107,53,.16);border-left-color:var(--brand)}
+  .sidebar-nav a.nav-section{color:#ffb894;font-weight:700;font-size:13px;margin-top:11px;padding-top:10px;border-top:1px solid #26384c}
+  .sidebar-nav a.nav-section:first-of-type{border-top:none;margin-top:0;padding-top:6px}
+  .sidebar-nav a.nav-sub{padding-left:30px;color:#93a8bc;font-size:12px}
+  .sidebar-nav a.nav-sub:hover{color:#fff}
+  .sb-back{margin:16px 14px 0;display:block;text-align:center;padding:9px;border-radius:9px;background:#22344a;color:#a9c0d6 !important;font-size:12px;font-weight:700;border-left:none !important}
+  .sb-back:hover{background:var(--brand) !important;color:#fff !important}
+  .nav-toggle{display:none;position:fixed;top:14px;left:14px;z-index:120;background:var(--brand);color:#fff;border:none;border-radius:9px;padding:9px 13px;font-size:15px;cursor:pointer;box-shadow:0 4px 14px rgba(0,0,0,.25)}
+  .page{margin-left:var(--sidebar)}
+  .hero{
+    position:relative;overflow:hidden;padding:44px 52px;color:#fff;
+    background:linear-gradient(125deg,#0e1724 0%,#1b2b3f 46%,#8a3a16 132%);
+  }
+  .hero::after{content:"";position:absolute;right:-90px;top:-110px;width:400px;height:400px;border-radius:50%;background:radial-gradient(circle,rgba(245,179,1,.30),transparent 68%)}
+  .hero-top{display:flex;gap:36px;align-items:center;position:relative;z-index:2}
+  .hero-txt{flex:1;min-width:0}
+  .hero .crumb{font-size:11.5px;color:#ffb894;letter-spacing:1.5px;font-weight:700;margin-bottom:14px}
+  .hero h1{font-size:31px;font-weight:800;line-height:1.3;letter-spacing:.6px;margin-bottom:8px}
+  .hero h1 .sub{display:block;font-size:18px;font-weight:700;color:#ffd2b3;margin-top:6px;letter-spacing:.3px}
+  .hero .en{font-size:13px;color:#9db4c8;font-style:italic;margin-bottom:18px}
+  .hero .tags{display:flex;flex-wrap:wrap;gap:8px}
+  .tag{font-size:11.5px;padding:4px 12px;border-radius:20px;background:rgba(255,255,255,.12);border:1px solid rgba(255,255,255,.22);color:#e8f0f6;font-weight:600}
+  .tag.hot{background:rgba(255,107,53,.92);border-color:transparent;color:#fff}
+  .hero-card{flex-shrink:0;width:200px;text-align:center}
+  .hero-card .ava{
+    width:148px;height:148px;border-radius:50%;object-fit:cover;object-position:top center;
+    border:4px solid rgba(255,180,140,.6);box-shadow:0 14px 34px rgba(0,0,0,.45);background:#24344a;
+  }
+  .hero-card .nm{font-size:15px;font-weight:800;color:#fff;margin-top:10px}
+  .hero-card .ti{font-size:11.5px;color:#ffb894;margin-top:2px}
+  .container{max-width:1080px;margin:0 auto;padding:38px 52px 70px}
+  .lead{
+    font-size:15.5px;line-height:2.05;color:#38453d;background:linear-gradient(120deg,#fff8f3,#f7fbf8);
+    border-left:5px solid var(--brand);border-radius:0 14px 14px 0;padding:22px 26px;margin-bottom:32px;
+  }
+  .lead b{color:var(--brand-dark)}
+  .cast{display:flex;gap:16px;align-items:flex-start;border-radius:16px;padding:18px 22px;margin:24px 0}
+  .cast .ava{width:72px;height:72px;border-radius:50%;object-fit:cover;object-position:top center;flex-shrink:0;background:#e8eef5}
+  .cast .bubble{position:relative;font-size:14px;line-height:1.95;padding-top:2px;flex:1}
+  .cast .who{font-size:12px;font-weight:800;margin-bottom:5px;letter-spacing:.5px}
+  .cast.anya{background:var(--brand-soft);border:1px solid #ffdcc9}
+  .cast.anya .who{color:var(--brand-dark)}
+  .cast.anya .bubble{color:#5c4636}
+  .cast.duck{background:#fff5f5;border:1px solid #fbd5d5}
+  .cast.duck .who{color:#b91c1c}
+  .cast.duck .bubble{color:#5c4141}
+  .cast.teacher{background:linear-gradient(120deg,#f4f7fb,#ffffff);border:1px solid #dbe4f0}
+  .cast.teacher .who{color:#1e293b}
+  .cast.teacher .bubble{color:#3c4a5a}
+  .cast.hero{background:#f2fbf5;border:1px solid #cfe7d8}
+  .cast.hero .who{color:#1f7a44}
+  .cast.hero .bubble{color:#3c4a42}
+  .goal-grid{display:grid;grid-template-columns:1fr 1fr;gap:16px;margin-bottom:36px}
+  .goal{border:1px solid var(--line);border-radius:15px;padding:19px 21px;background:#fff;box-shadow:0 4px 16px rgba(31,122,68,.05)}
+  .goal h4{font-size:14px;font-weight:800;margin-bottom:11px;display:flex;align-items:center;gap:8px;color:var(--primary-dark)}
+  .goal h4 .ic{width:22px;height:22px;border-radius:7px;background:var(--primary-lighter);display:flex;align-items:center;justify-content:center;font-size:12px}
+  .goal ul{list-style:none}
+  .goal li{font-size:13.5px;color:#4b5a52;line-height:1.9;padding-left:18px;position:relative}
+  .goal li::before{content:"▸";position:absolute;left:0;color:var(--primary);font-weight:800}
+  .goal.syllabus li::before{content:"✓"}
+  .section-header{margin:52px 0 24px;padding-bottom:12px;border-bottom:3px solid var(--brand);display:flex;align-items:baseline;gap:14px;flex-wrap:wrap}
+  .section-header h2{font-size:22px;font-weight:800;color:var(--night);letter-spacing:.4px}
+  .section-header .en-title{font-size:12px;color:var(--dim2);font-style:italic}
+  h3{font-size:17.5px;font-weight:800;margin:34px 0 14px;color:var(--night);display:flex;align-items:center;gap:10px}
+  h3::before{content:"";width:5px;height:17px;border-radius:3px;background:var(--brand);flex-shrink:0}
+  h4{font-size:15px;font-weight:800;margin:24px 0 10px;color:#33513f}
+  p{margin:12px 0;color:#3c4a42;line-height:2}
+  strong{color:var(--primary-dark)}
+  code.inline{background:var(--primary-lighter);color:var(--primary-dark);padding:2px 7px;border-radius:6px;font-family:"SFMono-Regular",Consolas,Menlo,monospace;font-size:.9em;font-weight:600}
+  .figure{margin:24px 0;text-align:center}
+  .figure svg.diagram{max-width:100%;height:auto;background:#fff;border:1px solid var(--line);border-radius:14px;padding:10px}
+  .figure .caption{font-size:12.5px;color:var(--dim2);margin-top:9px}
+  .pic{margin:26px 0;text-align:center}
+  .pic img{max-width:100%;border-radius:16px;box-shadow:0 10px 28px rgba(30,60,45,.15);display:block;margin:0 auto}
+  .pic figcaption{font-size:12.5px;color:var(--dim2);margin-top:9px}
+  .pic .ph{display:none}
+  .pic.missing img{display:none}
+  .pic.missing .ph{
+    display:flex;flex-direction:column;align-items:center;justify-content:center;gap:9px;
+    border:2px dashed #c9d9e8;border-radius:16px;background:linear-gradient(135deg,#f8fbfe,#eef6ff);
+    padding:40px 26px;color:#7a8fa8;
+  }
+  .pic.missing .ph .fn{font-family:Consolas,monospace;font-size:12.5px;color:#2563eb;font-weight:700;word-break:break-all}
+  .pic.missing .ph .ds{font-size:12.5px;line-height:1.8;max-width:560px}
+  .box{border-radius:13px;padding:16px 20px;margin:20px 0;font-size:14px;line-height:1.95}
+  .box .lb{font-weight:800;margin-right:6px}
+  .info{background:#eef6ff;border-left:5px solid #3b82f6;color:#274768}
+  .info .lb{color:#1d4ed8}
+  .tip{background:#fff9ec;border-left:5px solid #f59e0b;color:#6b4e13}
+  .tip .lb{color:#b45309}
+  .remember{background:var(--primary-lighter);border-left:5px solid var(--primary);color:#1f5033}
+  .remember .lb{color:var(--primary-dark)}
+  .warn{background:#fef2f2;border-left:5px solid #ef4444;color:#7f2b2b}
+  .warn .lb{color:#b91c1c}
+  .code-card{margin:20px 0;border-radius:14px;overflow:hidden;box-shadow:0 10px 28px rgba(20,40,28,.20)}
+  .code-head{display:flex;align-items:center;gap:9px;background:#243126;padding:9px 14px}
+  .code-head .dot{width:10px;height:10px;border-radius:50%}
+  .code-head .d1{background:#ff5f57}.code-head .d2{background:#febc2e}.code-head .d3{background:#28c840}
+  .code-head .file{color:#95ab9c;font-size:11.5px;font-family:Consolas,monospace;margin-left:6px}
+  .code-head .lang{margin-left:auto;font-size:10.5px;font-weight:800;color:#0f2016;background:#4fbf7c;padding:2px 9px;border-radius:6px;letter-spacing:.4px}
+  .code-card pre{background:var(--code-bg);padding:18px 20px;overflow-x:auto;margin:0;font-family:"SFMono-Regular",Consolas,"Courier New",monospace;font-size:13.5px;line-height:1.85}
+  .code-card pre::-webkit-scrollbar{height:8px}
+  .code-card pre::-webkit-scrollbar-thumb{background:#3a5544;border-radius:4px}
+  .code-card code{color:var(--code-tx);white-space:pre}
+  .kw{color:var(--code-kw);font-weight:600}
+  .st{color:var(--code-st)}
+  .nu{color:var(--code-nu)}
+  .cm{color:var(--code-cm);font-style:italic}
+  .fn{color:var(--code-fn)}
+  .out{background:#16211a;color:#8fd6a8;font-family:Consolas,monospace;font-size:13px;padding:12px 20px;border-top:1px solid #2b3d31}
+  .out b{color:#c9d6cd;font-weight:600;font-size:11.5px;letter-spacing:1px}
+  table.styled{width:100%;border-collapse:collapse;margin:20px 0;font-size:13.5px;border-radius:12px;overflow:hidden;box-shadow:0 4px 16px rgba(31,122,68,.07)}
+  table.styled thead{background:var(--brand)}
+  table.styled th{color:#fff;padding:11px 14px;text-align:left;font-weight:700;font-size:13px}
+  table.styled td{padding:10px 14px;border-bottom:1px solid var(--line);color:#46564d;vertical-align:top}
+  table.styled tbody tr:nth-child(even){background:var(--bg-soft)}
+  table.styled tbody tr:last-child td{border-bottom:none}
+  .level-card{border:1px solid var(--line);border-radius:16px;overflow:hidden;margin:22px 0;box-shadow:0 6px 22px rgba(31,122,68,.07)}
+  .level-card .lc-head{background:linear-gradient(100deg,#17283a,#8a3a16);color:#fff;padding:15px 22px;display:flex;align-items:center;gap:12px;flex-wrap:wrap}
+  .level-card .lc-head .n{font-size:12px;font-weight:800;background:rgba(255,255,255,.2);padding:3px 10px;border-radius:20px}
+  .level-card .lc-head h4{margin:0;color:#fff;font-size:16px}
+  .level-card .lc-head .go{margin-left:auto;font-size:11.5px;color:#ffd2b3}
+  .level-card .lc-body{padding:20px 24px;background:#fff}
+  .level-card .story{background:#f9fbfd;border-left:4px solid #93c5fd;border-radius:0 10px 10px 0;padding:13px 18px;margin:0 0 16px;font-size:14px;line-height:1.95;color:#3f5163}
+  .level-card .story b{color:#1d4ed8}
+  .btn-go{
+    display:inline-flex;align-items:center;gap:8px;background:linear-gradient(135deg,var(--brand),var(--brand-dark));
+    color:#fff;text-decoration:none;font-weight:800;font-size:13.5px;padding:10px 22px;border-radius:11px;
+    box-shadow:0 8px 20px rgba(255,107,53,.32);transition:.2s;
+  }
+  .btn-go:hover{transform:translateY(-2px);box-shadow:0 12px 26px rgba(255,107,53,.42)}
+  .pit{border:1px solid #f6dede;border-radius:14px;overflow:hidden;margin:16px 0;background:#fff}
+  .pit .pt{display:flex;gap:12px;padding:14px 18px;background:#fffafa;align-items:flex-start}
+  .pit .x{width:26px;height:26px;border-radius:9px;background:#fee;color:#dc2626;display:flex;align-items:center;justify-content:center;font-weight:800;flex-shrink:0;font-size:13px}
+  .pit .t{font-size:13.5px;line-height:1.9;color:#5c4a4a;flex:1}
+  .pit .t b{color:#b91c1c}
+  .pit .duck{display:flex;gap:12px;padding:13px 18px;background:#fff5f5;border-top:1px dashed #f3d0d0;align-items:flex-start}
+  .pit .duck img{width:48px;height:48px;object-fit:contain;flex-shrink:0;margin-top:2px}
+  .pit .duck .dt{font-size:13.5px;line-height:1.9;color:#7a3b3b}
+  .pit .duck .dt b{color:#b91c1c}
+  .pit .fix{padding:12px 18px;background:#f2fbf5;border-top:1px dashed #cfe7d8;font-size:13.5px;color:#1f5033}
+  .pit .fix b{color:var(--primary-dark)}
+  .exam{border:1px solid #dfe7f5;border-radius:15px;margin:16px 0;overflow:hidden;background:#fff;box-shadow:0 4px 16px rgba(38,62,120,.06)}
+  .exam .eh{display:flex;align-items:center;gap:10px;padding:11px 18px;background:linear-gradient(100deg,#eef4ff,#f7faff);border-bottom:1px solid #e3ebf8;flex-wrap:wrap}
+  .exam .eh .src{font-size:11px;font-weight:800;color:#fff;background:#2563eb;padding:2.5px 10px;border-radius:20px}
+  .exam .eh .src.ori{background:#8b5cf6}
+  .exam .eh .tp{font-size:11.5px;color:#5b7ba8;font-weight:700}
+  .exam .eb{padding:16px 20px}
+  .exam .q{font-weight:700;font-size:14px;color:#2c3c33;line-height:1.9;margin-bottom:10px}
+  .exam .opt{font-size:13.5px;color:#4b5a52;line-height:2.05;padding-left:6px}
+  .exam .opt i{font-style:normal;font-weight:800;color:var(--primary-dark);margin-right:7px}
+  .exam pre{margin:12px 0;background:#1b2a21;border-radius:10px;padding:14px 16px;overflow-x:auto;font-family:Consolas,monospace;font-size:13px;line-height:1.8;color:var(--code-tx)}
+  .exam details{margin-top:10px;border-top:1px dashed var(--line);padding-top:10px}
+  .exam summary{cursor:pointer;font-size:12.5px;font-weight:800;color:#2563eb;outline:none;user-select:none}
+  .exam details .ans{font-size:13.5px;color:#3c4a42;line-height:1.95;margin-top:9px;background:var(--bg-soft);padding:13px 16px;border-radius:10px}
+  .exam details .ans b{color:var(--primary-dark)}
+  .exam details .ans .tagline{display:inline-block;font-size:11px;background:#e0f2fe;color:#0e7490;padding:1.5px 8px;border-radius:6px;font-weight:700;margin-right:6px}
+  .summary{margin:40px 0 20px;border-radius:18px;padding:26px 30px;background:linear-gradient(130deg,#fff8f3,#ffffff);border:1px solid #ffe0cf}
+  .summary h3{margin-top:0}
+  .summary ul{list-style:none;margin-top:10px}
+  .summary li{font-size:14px;line-height:2;color:#41524a;padding-left:24px;position:relative}
+  .summary li::before{content:"◆";position:absolute;left:0;color:var(--brand);font-size:11px;top:6px}
+  .pager{display:flex;gap:14px;margin-top:30px;flex-wrap:wrap}
+  .pager a{flex:1;min-width:200px;text-decoration:none;border:1px solid var(--line);border-radius:14px;padding:16px 20px;background:#fff;transition:.2s;display:block}
+  .pager a:hover{border-color:var(--brand);box-shadow:0 10px 26px rgba(255,107,53,.14);transform:translateY(-2px)}
+  .pager a .k{font-size:11px;color:var(--dim2);font-weight:700;letter-spacing:1px}
+  .pager a .v{font-size:14px;font-weight:800;color:var(--night);margin-top:5px}
+  .pager a.back{background:var(--brand-soft);border-color:transparent;text-align:center}
+  .pager a.back .v{color:var(--brand-dark)}
+  .cta{margin-top:26px;border-radius:20px;padding:30px 34px;color:#fff;position:relative;overflow:hidden;background:linear-gradient(120deg,#16202f,#2b3a52 46%,#a8431c 132%)}
+  .cta::after{content:"";position:absolute;right:-70px;bottom:-90px;width:280px;height:280px;border-radius:50%;background:radial-gradient(circle,rgba(255,140,80,.45),transparent 68%)}
+  .cta h3{color:#fff;margin:0 0 10px;position:relative;z-index:2}
+  .cta h3::before{background:var(--brand)}
+  .cta p{color:#d8e0ef;font-size:13.5px;margin:0 0 18px;position:relative;z-index:2;max-width:640px}
+  .cta .btn-go{position:relative;z-index:2}
+  @media(max-width:900px){
+    .sidebar-nav{transform:translateX(-100%)}
+    .sidebar-nav.active{transform:translateX(0)}
+    .nav-toggle{display:block}
+    .page{margin-left:0}
+    .hero{padding:70px 22px 34px}
+    .hero-top{flex-direction:column-reverse;text-align:center}
+    .hero-card{width:auto}
+    .container{padding:26px 20px 60px}
+    .goal-grid{grid-template-columns:1fr}
+  }
+</style>
+</head>
+<body>
+
+<button class="nav-toggle" onclick="document.querySelector('.sidebar-nav').classList.toggle('active')">☰</button>
+
+<nav class="sidebar-nav">
+  <div class="sb-brand">
+    <a class="sb-logo" href="https://codecombat.cn/" target="_blank" rel="noopener" title="访问 CodeCombat 扣哒世界官网">
+      <img src="../assets/logo.png" alt="CodeCombat 扣哒世界">
+    </a>
+    <div><b>会记事的木箱</b><span>烛火岗哨 · Python 一级 第 2 单元</span></div>
+  </div>
+  <div class="nav-title">本单元目录</div>
+
+  <a href="#s0" class="nav-section">0　单元导语与目标</a>
+  <a href="#s1" class="nav-section">1　标识符与关键字</a>
+  <a href="#s1-1" class="nav-sub">1.1 名字要合法</a>
+  <a href="#s1-2" class="nav-sub">1.2 关键字不能占用</a>
+  <a href="#s2" class="nav-section">2　变量</a>
+  <a href="#s2-1" class="nav-sub">2.1 会记事的木箱</a>
+  <a href="#s2-2" class="nav-sub">2.2 赋值：一个等号的秘密</a>
+  <a href="#s2-3" class="nav-sub">2.3 变量的重新赋值</a>
+  <a href="#s3" class="nav-section">3　常量</a>
+  <a href="#s4" class="nav-section">4　四种基本数据类型</a>
+  <a href="#s4-1" class="nav-sub">4.1 整数与浮点数</a>
+  <a href="#s4-2" class="nav-sub">4.2 字符串</a>
+  <a href="#s4-3" class="nav-sub">4.3 布尔值</a>
+  <a href="#s4-4" class="nav-sub">4.4 类型查看 type()</a>
+  <a href="#s5" class="nav-section">5　类型转换</a>
+  <a href="#s6" class="nav-section">6　变量的自增自减</a>
+  <a href="#s7" class="nav-section">7　代码实战</a>
+  <a href="#s8" class="nav-section">8　常见陷阱</a>
+  <a href="#s9" class="nav-section">9　题目练习</a>
+  <a href="#s10" class="nav-section">10　本单元小结</a>
+
+  <a href="../index.html" target="_top" class="sb-back">返回考纲之路</a>
+</nav>
+
+<div class="page">
+
+<div class="hero">
+  <div class="hero-top">
+    <div class="hero-txt">
+      <div class="crumb">扣哒考级 · GESP PYTHON 一级 · 第 2 单元　|　烛火岗哨 CANDLEWATCH OUTPOST</div>
+      <h1>会记事的木箱
+        <span class="sub">变量、常量与数据类型</span>
+      </h1>
+      <div class="en">Variables, Constants &amp; Data Types</div>
+      <div class="tags">
+        <span class="tag hot">考纲 · 变量与数据类型</span>
+        <span class="tag">标识符</span>
+        <span class="tag">int / float / str / bool</span>
+        <span class="tag">类型转换</span>
+        <span class="tag">+= 与 -=</span>
+      </div>
+    </div>
+    <div class="hero-card">
+      <img class="ava" src="../assets/avatars/anya.webp" alt="安雅" onerror="this.style.background='#24344a';this.src='../assets/heroes/anya.webp'">
+      <div class="nm">安雅</div>
+      <div class="ti">红发队长 · 你的旅伴</div>
+    </div>
+  </div>
+</div>
+
+<div class="container">
+
+<div class="lead">
+  岗哨的储藏室里堆着一整面墙的木箱。每个箱子正面都刻着名字："火把""粮袋""弓弦"……<br>
+  安雅随手拉开一个，从里面掏出一块写着 <b>12</b> 的小木牌，又换了一块写着 <b>7</b> 的进去。<br>
+  <b>箱子是固定的，里面的东西可以换。</b>她把箱子推回原位，
+  这就是程序里最重要的一个东西——<b>变量</b>。
+</div>
+
+<div class="cast anya">
+  <img class="ava" src="../assets/avatars/anya.webp" alt="安雅" onerror="this.style.display='none'">
+  <div class="bubble">
+    <div class="who">安雅 · 红发队长</div>
+    变量听着玄乎，其实就是<strong>一个贴了标签、能反复换内容的箱子</strong>。
+    这一单元我们把它彻底拆开看：怎么给箱子起名、怎么往里放东西、放的东西有哪几种、以及怎么把一种换成另一种。
+  </div>
+</div>
+
+<!-- ============ 0 ============ -->
+<figure class="pic">
+  <img src="../assets/illustrations/py-L1-02-00_chest_warehouse.webp" alt="开篇场景图：烛火岗哨的木箱仓库"
+       onerror="this.closest('.pic').classList.add('missing')">
+  <div class="ph">
+    <div class="fn">assets/illustrations/py-L1-02-00_chest_warehouse.webp</div>
+    <div class="ds">【配图位】烛火岗哨内侧的储藏木屋：一排排贴着手写标签的旧木箱沿墙码到屋顶，每个箱盖上都用炭笔写着不同的名字；晨光从高窗斜切进来，一名学徒踮脚把一个新箱子推上架子，安雅抱着册子在旁边登记。</div>
+  </div>
+  <figcaption>图 1：烛火岗哨·会记事的木箱——今天要从这里开始</figcaption>
+</figure>
+
+<div class="section-header" id="s0">
+  <h2>0　单元导语与目标</h2>
+  <div class="en-title">Unit Overview</div>
+</div>
+
+<div class="goal-grid">
+  <div class="goal">
+    <h4><span class="ic">1</span>学完这个单元，你将能……</h4>
+    <ul>
+      <li>判断一个名字能不能做变量名（标识符规则）</li>
+      <li>说清变量与常量的区别</li>
+      <li>用赋值语句给变量存值、换值</li>
+      <li>分辨整数、浮点数、字符串、布尔值四种类型</li>
+      <li>用 <code class="inline">type()</code> 查出一个值是什么类型</li>
+      <li>用 <code class="inline">int() / float() / str()</code> 做类型转换</li>
+      <li>用 <code class="inline">+=</code>、<code class="inline">-=</code> 让变量自己长大变小</li>
+    </ul>
+  </div>
+  <div class="goal syllabus">
+    <h4><span class="ic">2</span>对标 GESP 考纲（Python 一级）</h4>
+    <ul>
+      <li>（6）掌握标识符、关键字、常量、变量的命名规则和使用方法</li>
+      <li>（8）了解数字类型、字符串类型和布尔类型的初级使用</li>
+      <li>（10）掌握变量的创建及使用</li>
+      <li>考核目标：能独立创建完整的编程文件并运行通过，掌握数据类型的使用</li>
+    </ul>
+  </div>
+</div>
+
+<div class="box tip">
+  <span class="lb">零基础提示：</span>这一单元是<strong>整个编程的地基</strong>。
+  后面所有的循环、判断、函数，操作的都是"变量"。
+  如果这里没弄懂，后面每一步都会别扭——所以请慢一点，把每个例子亲手敲一遍。
+</div>
+
+<!-- ============ 1 ============ -->
+<div class="section-header" id="s1">
+  <h2>1　标识符与关键字</h2>
+  <div class="en-title">Identifiers &amp; Keywords</div>
+</div>
+
+<h3 id="s1-1">1.1 名字要合法</h3>
+
+<p><strong>标识符（Identifier）</strong>就是你给程序里的东西起的名字，比如变量名、函数名。
+给箱子刻名字总得守规矩——岗哨的规矩是这四条：</p>
+
+<table class="styled">
+  <thead><tr><th>规则</th><th>说明</th><th>合法例子</th><th>非法例子</th></tr></thead>
+  <tbody>
+    <tr><td>① 只能用<strong>字母、数字、下划线</strong></td><td>不能有空格、减号、标点</td><td><code class="inline">score</code>、<code class="inline">my_score</code></td><td><code class="inline">my score</code>、<code class="inline">my-score</code></td></tr>
+    <tr><td>② <strong>不能以数字开头</strong></td><td>数字可以在中间和末尾</td><td><code class="inline">score1</code>、<code class="inline">lvl2_hp</code></td><td><code class="inline">1score</code>、<code class="inline">2hp</code></td></tr>
+    <tr><td>③ <strong>不能是关键字</strong></td><td>关键字被 Python 自己占用了</td><td><code class="inline">total</code>、<code class="inline">count</code></td><td><code class="inline">if</code>、<code class="inline">for</code>、<code class="inline">class</code></td></tr>
+    <tr><td>④ <strong>区分大小写</strong></td><td><code class="inline">Score</code> 与 <code class="inline">score</code> 是两个不同的名字</td><td><code class="inline">score</code> 与 <code class="inline">Score</code> 可共存</td><td>—</td></tr>
+  </tbody>
+</table>
+
+<div class="box remember">
+  <span class="lb">口诀：</span><strong>字母下划线打头，数字不能走前头；空格标点都不许，关键字儿要绕开。</strong>
+</div>
+
+<h4>良好的命名习惯（不强制，但强烈建议）</h4>
+<ul style="margin:10px 0 10px 26px;color:#3c4a42;line-height:2">
+  <li><strong>见名知意</strong>：用 <code class="inline">hp</code> 表示血量，别用 <code class="inline">a</code>、<code class="inline">x</code>、<code class="inline">aaa</code>。</li>
+  <li><strong>多个单词用下划线连</strong>：<code class="inline">max_hp</code>、<code class="inline">player_score</code>。</li>
+  <li><strong>变量名用小写</strong>：Python 社区的惯例是小写加下划线。</li>
+</ul>
+
+<h3 id="s1-2">1.2 关键字不能占用</h3>
+<p><strong>关键字（Keyword）</strong>是 Python 自己留着用的词，就像岗哨里"将军""队长"这些称呼，
+普通人不能拿去当名字。一级阶段你只需要认识这几个常考的：</p>
+
+<table class="styled">
+  <thead><tr><th>关键字</th><th>作用</th><th>首次出现在</th></tr></thead>
+  <tbody>
+    <tr><td><code class="inline">if</code> / <code class="inline">else</code> / <code class="inline">elif</code></td><td>分支判断</td><td>第 5 单元</td></tr>
+    <tr><td><code class="inline">for</code> / <code class="inline">while</code></td><td>循环</td><td>第 6 单元</td></tr>
+    <tr><td><code class="inline">break</code> / <code class="inline">continue</code></td><td>跳出 / 跳过循环</td><td>第 6 单元</td></tr>
+    <tr><td><code class="inline">and</code> / <code class="inline">or</code> / <code class="inline">not</code></td><td>逻辑运算</td><td>第 3 单元</td></tr>
+    <tr><td><code class="inline">True</code> / <code class="inline">False</code> / <code class="inline">None</code></td><td>布尔真值 / 空值</td><td>本单元</td></tr>
+    <tr><td><code class="inline">def</code> / <code class="inline">return</code></td><td>函数</td><td>一年级下册 / 更高等级</td></tr>
+  </tbody>
+</table>
+
+<div class="cast duck">
+  <img class="ava" src="../assets/ducks/duck_senick.webp" alt="扣哒鸭" onerror="this.style.display='none'">
+  <div class="bubble">
+    <div class="who">扣哒鸭 · 调试官</div>
+    有人给小兵起名叫 <code>if</code>，然后抱怨程序不认他。
+    <strong>关键字是 Python 的编制内成员，名额是定死的，你借不走。</strong>
+    想叫"如果"的感觉，就叫 <code>if_flag</code> 或 <code>is_ready</code>，加个后缀皆大欢喜。
+  </div>
+</div>
+
+<!-- ============ 2 ============ -->
+<div class="cast anya">
+  <img class="ava" src="../assets/avatars/anya.webp" alt="安雅" onerror="this.style.display='none'">
+  <div class="bubble">
+    <div class="who">安雅 · 红发队长</div>
+    我见过新兵起名最离谱的一次：他把血量叫 <code>a</code>，把金币叫 <code>b</code>，把名字叫 <code>c</code>。<br>
+    三天后他回来问我：<em>"队长，这个 <code>b</code> 到底是金币还是箭？"</em>——你说呢？<br>
+    <strong>好名字自己会说话。</strong>起名的时候，想象一个月后的你回来看这段代码。
+  </div>
+</div>
+
+<div class="section-header" id="s2">
+  <h2>2　变量</h2>
+  <div class="en-title">Variables</div>
+</div>
+
+<h3 id="s2-1">2.1 会记事的木箱</h3>
+
+<p>程序运行的时候，需要不停地记住各种数字和文字：英雄的血量、捡到的金币数、对手的名字……
+这些"要记住的东西"就存在<strong>变量（Variable）</strong>里。</p>
+
+<figure class="figure">
+  <svg class="diagram" viewBox="0 0 820 300" role="img" aria-label="变量就是贴标签的箱子">
+    <text x="24" y="34" font-size="14" font-weight="bold" fill="#1f2937">变量 = 贴了名字的箱子（内存里的一小块空间）</text>
+
+    <rect x="60" y="70" width="200" height="150" rx="14" fill="#fff6ec" stroke="#ff6b35" stroke-width="2.4"/>
+    <rect x="70" y="80" width="180" height="42" rx="8" fill="#ff6b35"/>
+    <text x="160" y="108" text-anchor="middle" font-size="15" fill="#fff" font-weight="bold">hp</text>
+    <text x="160" y="152" text-anchor="middle" font-size="12" fill="#a85728">箱子上的名字</text>
+    <text x="160" y="174" text-anchor="middle" font-size="12" fill="#a85728">（变量名）</text>
+    <text x="160" y="204" text-anchor="middle" font-size="30" font-weight="bold" fill="#c1440e">100</text>
+
+    <text x="290" y="150" font-size="26" fill="#cbd5e1" font-weight="bold">→</text>
+
+    <rect x="340" y="70" width="200" height="150" rx="14" fill="#fff6ec" stroke="#ff6b35" stroke-width="2.4"/>
+    <rect x="350" y="80" width="180" height="42" rx="8" fill="#ff6b35"/>
+    <text x="440" y="108" text-anchor="middle" font-size="15" fill="#fff" font-weight="bold">hp</text>
+    <text x="440" y="152" text-anchor="middle" font-size="12" fill="#a85728">名字没变</text>
+    <text x="440" y="174" text-anchor="middle" font-size="12" fill="#a85728">里面的值换了</text>
+    <text x="440" y="204" text-anchor="middle" font-size="30" font-weight="bold" fill="#c1440e">80</text>
+
+    <rect x="580" y="88" width="210" height="114" rx="12" fill="#f8fafc" stroke="#e2e8f0" stroke-width="1.5"/>
+    <text x="600" y="118" font-size="13" fill="#334155" font-weight="bold">要点</text>
+    <text x="600" y="144" font-size="12" fill="#64748b">· 名字固定</text>
+    <text x="600" y="166" font-size="12" fill="#64748b">· 内容可变</text>
+    <text x="600" y="188" font-size="12" fill="#64748b">· 换内容不换名字</text>
+
+    <text x="24" y="262" font-size="12" fill="#8d9d94">变量在内存中占据一块空间，名字是它的地址标签，值可以随时被替换</text>
+  </svg>
+  <div class="caption">图 2（SVG）：变量就像储藏室里贴了名字的木箱</div>
+</figure>
+
+<p>我们来看一个最小的例子：</p>
+<div class="code-card">
+  <div class="code-head">
+    <span class="dot d1"></span><span class="dot d2"></span><span class="dot d3"></span>
+    <span class="file">变量初体验</span>
+    <span class="lang">Python</span>
+  </div>
+  <pre><code>hp = 100          # 把 100 放进名字叫 hp 的箱子里
+print(hp)         # 打开箱子看看</code></pre>
+  <div class="out"><b>OUTPUT</b>　100</div>
+</div>
+
+<p>这一行 <code class="inline">hp = 100</code> 读作"把 100 赋值给 hp"。它做了两件事：</p>
+<ol style="margin:10px 0 10px 26px;color:#3c4a42;line-height:2">
+  <li>在内存里申请一小块空间；</li>
+  <li>给它贴上名字 <code class="inline">hp</code>，并把 100 放进去。</li>
+</ol>
+
+<h3 id="s2-2">2.2 赋值：一个等号的秘密</h3>
+
+<div class="box warn">
+  <span class="lb">这是零基础最容易搞错的地方：</span>
+  在 Python 里，<strong>一个等号 <code class="inline">=</code> 不是"等于"，而是"把右边的值装进左边的变量"</strong>。
+  数学里的"等于"在程序里要写成两个等号 <code class="inline">==</code>。
+</div>
+
+<table class="styled">
+  <thead><tr><th>写法</th><th>名字</th><th>含义</th><th>举例</th></tr></thead>
+  <tbody>
+    <tr><td><code class="inline">=</code></td><td>赋值运算符</td><td>把右边的值放进左边的变量</td><td><code class="inline">hp = 100</code>　→ hp 里面装的是 100</td></tr>
+    <tr><td><code class="inline">==</code></td><td>相等比较</td><td>判断两边是否相等，结果是 True 或 False</td><td><code class="inline">hp == 100</code>　→ 结果是 True</td></tr>
+  </tbody>
+</table>
+
+<div class="cast duck">
+  <img class="ava" src="../assets/ducks/duck_zana.webp" alt="扣哒鸭" onerror="this.style.display='none'">
+  <div class="bubble">
+    <div class="who">扣哒鸭 · 调试官</div>
+    <strong>一个等号是"装进去"，两个等号才是"一样吗"。</strong>这条记不住，
+    你后面写判断语句时会一错到底。我现在就说了，省得你到时候哭着回来找我。
+  </div>
+</div>
+
+<p>再看两个赋值：</p>
+<div class="code-card">
+  <div class="code-head">
+    <span class="dot d1"></span><span class="dot d2"></span><span class="dot d3"></span>
+    <span class="file">赋值的方向</span>
+    <span class="lang">Python</span>
+  </div>
+  <pre><code>name = "安雅"      # 字符串要加引号
+level = 3
+print(name, level)
+
+3 = level          # 这样写是错的！左边必须是变量名</code></pre>
+  <div class="out"><b>OUTPUT</b>　安雅 3　（最后一行为语法错误）</div>
+</div>
+
+<div class="box info">
+  <span class="lb">方向感：</span>赋值语句<strong>永远是从右往左</strong>。
+  <code class="inline">hp = 100</code> 是"把 100 装进 hp"；
+  写成 <code class="inline">100 = hp</code> 就像说"把箱子装进数字里"，Python 会直接报错。
+</div>
+
+<h3 id="s2-3">2.3 变量的重新赋值</h3>
+
+<p>变量最大的好处是<strong>可以反复换内容</strong>，而且可以拿自己算自己：</p>
+
+<div class="code-card">
+  <div class="code-head">
+    <span class="dot d1"></span><span class="dot d2"></span><span class="dot d3"></span>
+    <span class="file">血量被打了</span>
+    <span class="lang">Python</span>
+  </div>
+  <pre><code>hp = 100
+print("初始血量：", hp)
+
+hp = hp - 30        # 取出现有的 hp，减掉 30，再放回去
+print("挨了一下：", hp)
+
+hp = 60             # 也可以直接换成另一个值
+print("回血后：", hp)</code></pre>
+  <div class="out"><b>OUTPUT</b>　初始血量： 100<br>挨了一下： 70<br>回血后： 60</div>
+</div>
+
+<p>请重点体会 <code class="inline">hp = hp - 30</code> 这一行。虽然两边都有 hp，但它<strong>不是等式</strong>，而是三步操作：</p>
+<ol style="margin:10px 0 10px 26px;color:#3c4a42;line-height:2">
+  <li>先取出右边 hp 现在的值（100）；</li>
+  <li>计算 100 - 30，得到 70；</li>
+  <li>把 70 放回左边那个叫 hp 的箱子。</li>
+</ol>
+
+<div class="box remember">
+  <span class="lb">一句话记忆：</span><strong>赋值是"装"，不是"等"；
+  <code class="inline">a = a + 1</code> 的意思是"把 a 现在的值加 1 之后再装回去"。</strong>
+</div>
+
+<!-- ============ 3 ============ -->
+<div class="cast hero">
+  <img class="ava" src="../assets/avatars/naria.webp" alt="娜莉亚" onerror="this.style.display='none'">
+  <div class="bubble">
+    <div class="who">娜莉亚 · 翠羽射手</div>
+    我的箭袋里永远有箭。可射出去一支，就少一支——<br>
+    <code>arrows = arrows - 1</code>，你看，这就是变量在"变"。<br>
+    哪天箭袋空了，我就得回家补货。<strong>变量的值会变，所以你得时时盯着它。</strong>
+  </div>
+</div>
+
+<div class="section-header" id="s3">
+  <h2>3　常量</h2>
+  <div class="en-title">Constants</div>
+</div>
+
+<p><strong>常量（Constant）</strong>是程序运行过程中<strong>不会改变</strong>的值。
+比如岗哨灯的"最大亮度"、圆周长公式里的圆周率，它们在整段程序里始终是一个数。</p>
+
+<table class="styled">
+  <thead><tr><th></th><th>变量</th><th>常量</th></tr></thead>
+  <tbody>
+    <tr><td>值会变吗</td><td>会，随时可以重新赋值</td><td>不会，一旦定下就不再改动</td></tr>
+    <tr><td>例子</td><td>血量、分数、金币数</td><td>圆周率、最大等级、一天的小时数</td></tr>
+    <tr><td>命名习惯</td><td>小写加下划线：<code class="inline">max_hp</code></td><td>全大写加下划线：<code class="inline">MAX_LEVEL</code></td></tr>
+  </tbody>
+</table>
+
+<div class="code-card">
+  <div class="code-head">
+    <span class="dot d1"></span><span class="dot d2"></span><span class="dot d3"></span>
+    <span class="file">常量的写法</span>
+    <span class="lang">Python</span>
+  </div>
+  <pre><code>PI = 3.14159          # 圆周率，以后都不改
+MAX_HP = 999          # 血量上限
+
+hp = 100              # 这个是变量，会变
+hp = hp + 50
+print(PI, MAX_HP, hp)</code></pre>
+  <div class="out"><b>OUTPUT</b>　3.14159 999 150</div>
+</div>
+
+<div class="box warn">
+  <span class="lb">重要区别：</span>Python 并没有一条语法强制常量真的不能改——
+  你写 <code class="inline">PI = 3</code> 它也不会报错。
+  <strong>常量是一种"约定"：用全大写名字提醒自己和大家，这个值不要动。</strong>
+  而考试里问"常量和变量的区别"，标准答案就是：<strong>变量的值可以改变，常量的值不能改变。</strong>
+</div>
+
+<!-- ============ 4 ============ -->
+<div class="section-header" id="s4">
+  <h2>4　四种基本数据类型</h2>
+  <div class="en-title">Basic Data Types</div>
+</div>
+
+<p>箱子可以装不同的东西：装粮的是粮箱、装箭的是箭箱。程序里的"箱子"也一样，
+放进不同类型的数据，就成了不同的<strong>数据类型（Data Type）</strong>。
+一级阶段你只需要掌握四种：</p>
+
+<table class="styled">
+  <thead><tr><th>类型</th><th>中文名</th><th>Python 中的名字</th><th>例子</th><th>要点</th></tr></thead>
+  <tbody>
+    <tr><td><strong>整数</strong></td><td>整型</td><td><code class="inline">int</code></td><td><code class="inline">100</code>　<code class="inline">-7</code>　<code class="inline">0</code></td><td>不带小数点的数</td></tr>
+    <tr><td><strong>浮点数</strong></td><td>实型 / 小数</td><td><code class="inline">float</code></td><td><code class="inline">3.14</code>　<code class="inline">0.5</code>　<code class="inline">-2.0</code></td><td>带小数点的数</td></tr>
+    <tr><td><strong>字符串</strong></td><td>文本</td><td><code class="inline">str</code></td><td><code class="inline">"安雅"</code>　<code class="inline">"100"</code></td><td>用引号括起来的一串字符</td></tr>
+    <tr><td><strong>布尔值</strong></td><td>真/假</td><td><code class="inline">bool</code></td><td><code class="inline">True</code>　<code class="inline">False</code></td><td>只有两个值，注意首字母大写</td></tr>
+  </tbody>
+</table>
+
+<h3 id="s4-1">4.1 整数与浮点数</h3>
+<div class="code-card">
+  <div class="code-head">
+    <span class="dot d1"></span><span class="dot d2"></span><span class="dot d3"></span>
+    <span class="file">整数与浮点数</span>
+    <span class="lang">Python</span>
+  </div>
+  <pre><code>gold = 120            # 整数
+price = 9.5           # 浮点数
+print(gold)
+print(price)
+print(gold + price)   # 整数和浮点数一起算，结果变成浮点数</code></pre>
+  <div class="out"><b>OUTPUT</b>　120<br>9.5<br>129.5</div>
+</div>
+
+<div class="box info">
+  <span class="lb">注意：</span><code class="inline">2.0</code> 虽然数学上等于 2，但在 Python 里它是<strong>浮点数</strong>，不是整数。
+  <strong>只看有没有小数点，不看值的大小。</strong>
+</div>
+
+<h3 id="s4-2">4.2 字符串</h3>
+<p>字符串就是用<strong>一对引号</strong>括起来的一串字符。单引号、双引号都可以，但要成对：</p>
+
+<div class="code-card">
+  <div class="code-head">
+    <span class="dot d1"></span><span class="dot d2"></span><span class="dot d3"></span>
+    <span class="file">字符串的写法</span>
+    <span class="lang">Python</span>
+  </div>
+  <pre><code>name = "安雅"
+job  = '守夜人'
+print(name)
+print(job)
+print("你好，" + name)     # 字符串可以用 + 拼起来</code></pre>
+  <div class="out"><b>OUTPUT</b>　安雅<br>守夜人<br>你好，安雅</div>
+</div>
+
+<div class="box warn">
+  <span class="lb">最容易混的一点：</span><code class="inline">100</code> 是整数，<code class="inline">"100"</code> 是字符串。
+  <strong>加了引号就不再是数字，而是一段文字。</strong>
+  这两个看起来一样，但类型完全不同，也不能直接相加：
+  <code class="inline">100 + 1</code> 得 101，而 <code class="inline">"100" + 1</code> 会直接报错。
+</div>
+
+<h3 id="s4-3">4.3 布尔值</h3>
+<p><strong>布尔值（bool）</strong>只有两个值：<strong><code class="inline">True</code></strong>（真）和 <strong><code class="inline">False</code></strong>（假）。
+它们专门用来表示"条件成立不成立"，是第 5 单元判断语句的基础。</p>
+
+<div class="code-card">
+  <div class="code-head">
+    <span class="dot d1"></span><span class="dot d2"></span><span class="dot d3"></span>
+    <span class="file">布尔值</span>
+    <span class="lang">Python</span>
+  </div>
+  <pre><code>is_night = True
+is_full  = False
+print(is_night, is_full)
+print(10 &gt; 9)          # 比较的结果也是布尔值</code></pre>
+  <div class="out"><b>OUTPUT</b>　True False<br>True</div>
+</div>
+
+<div class="box warn">
+  <span class="lb">大小写警告：</span>必须是 <code class="inline">True</code> / <code class="inline">False</code>——
+  <strong>首字母大写，其余小写</strong>。
+  写成 <code class="inline">true</code>、<code class="inline">TRUE</code>、<code class="inline">FALSE</code> 都会报错。
+  <strong>这是真题考过的一个点，务必记牢。</strong>
+</div>
+
+<h3 id="s4-4">4.4 类型查看 type()</h3>
+<p>不确定一个值是哪种类型？用 <code class="inline">type()</code> 查一下就知道：</p>
+
+<div class="code-card">
+  <div class="code-head">
+    <span class="dot d1"></span><span class="dot d2"></span><span class="dot d3"></span>
+    <span class="file">查类型</span>
+    <span class="lang">Python</span>
+  </div>
+  <pre><code>print(type(100))
+print(type(3.14))
+print(type("100"))
+print(type(True))</code></pre>
+  <div class="out"><b>OUTPUT</b>　&lt;class 'int'&gt;<br>&lt;class 'float'&gt;<br>&lt;class 'str'&gt;<br>&lt;class 'bool'&gt;</div>
+</div>
+
+<figure class="pic">
+  <img src="../assets/illustrations/py-L1-02-01_named_chest.webp" alt="会记事的木箱"
+       onerror="this.closest('.pic').classList.add('missing')">
+  <div class="ph">
+    <div class="fn">assets/illustrations/py-L1-02-01_named_chest.webp</div>
+    <div class="ds">【配图位】岗哨储藏室里的一只木箱，箱盖上贴着发光的名牌；箱内的数字牌正从 3 换成 7（一名新兵正在替换内容）；旁边一只上锁的箱子代表常量；火光下的木架背景。</div>
+  </div>
+  <figcaption>图 3：箱子是固定的，里面的值可以换——这就是变量</figcaption>
+</figure>
+
+<figure class="pic">
+  <img src="../assets/illustrations/py-L1-02-02_data_types.webp" alt="四种数据类型"
+       onerror="this.closest('.pic').classList.add('missing')">
+  <div class="ph">
+    <div class="fn">assets/illustrations/py-L1-02-02_data_types.webp</div>
+    <div class="ds">【配图位】四只形状与颜色各异的箱子并排放置：石箱刻着整数、水滴箱里盛着小数、卷轴箱里是一枚字母、提灯箱亮着"真/假"两色光。</div>
+  </div>
+  <figcaption>图 4：四只箱子，四种数据类型</figcaption>
+</figure>
+
+<!-- ============ 5 ============ -->
+<div class="section-header" id="s5">
+  <h2>5　类型转换</h2>
+  <div class="en-title">Type Conversion</div>
+</div>
+
+<p>有时候你得把箱子里的东西换个形式装——比如把"100"这块写着字的木牌，变成真正的数字 100。
+Python 给了三个转换函数：</p>
+
+<table class="styled">
+  <thead><tr><th>函数</th><th>作用</th><th>例子</th><th>结果</th></tr></thead>
+  <tbody>
+    <tr><td><code class="inline">int()</code></td><td>转成整数</td><td><code class="inline">int("100")</code>　<code class="inline">int(3.9)</code></td><td><code class="inline">100</code>　<code class="inline">3</code>（<strong>直接截断，不四舍五入</strong>）</td></tr>
+    <tr><td><code class="inline">float()</code></td><td>转成浮点数</td><td><code class="inline">float("3.5")</code>　<code class="inline">float(7)</code></td><td><code class="inline">3.5</code>　<code class="inline">7.0</code></td></tr>
+    <tr><td><code class="inline">str()</code></td><td>转成字符串</td><td><code class="inline">str(100)</code>　<code class="inline">str(3.5)</code></td><td><code class="inline">"100"</code>　<code class="inline">"3.5"</code></td></tr>
+  </tbody>
+</table>
+
+<div class="code-card">
+  <div class="code-head">
+    <span class="dot d1"></span><span class="dot d2"></span><span class="dot d3"></span>
+    <span class="file">类型转换实战</span>
+    <span class="lang">Python</span>
+  </div>
+  <pre><code>a = int("100")        # 字符串 → 整数
+b = float("3.5")      # 字符串 → 浮点数
+c = str(100)          # 整数 → 字符串
+
+print(a + 1)          # 现在是数字了，可以算
+print(c + "分")       # 现在是字符串了，可以拼
+print(type(a), type(c))</code></pre>
+  <div class="out"><b>OUTPUT</b>　101<br>100分<br>&lt;class 'int'&gt; &lt;class 'str'&gt;</div>
+</div>
+
+<div class="box warn">
+  <span class="lb">两个坑：</span><br>
+  ① <code class="inline">int(3.9)</code> 的结果是 <strong>3</strong>，不是 4。
+  它<strong>切掉小数部分</strong>，不做四舍五入（要四舍五入得用 <code class="inline">round()</code>）；<br>
+  ② 不是所有字符串都能转数字：<code class="inline">int("abc")</code> 会报错。
+  只有内容全是数字的字符串才转得动。
+</div>
+
+<div class="cast duck">
+  <img class="ava" src="../assets/ducks/duck_naria.webp" alt="扣哒鸭" onerror="this.style.display='none'">
+  <div class="bubble">
+    <div class="who">扣哒鸭 · 调试官</div>
+    <code>int(3.9)</code> 是 3 不是 4，别拿数学课的习惯套程序。
+    <strong>类型转换是"换一种装法"，不是"按数学规则算个近似值"。</strong>
+    想四舍五入？那是 <code>round()</code> 的活儿，别让 <code>int()</code> 背锅。
+  </div>
+</div>
+
+<!-- ============ 6 ============ -->
+<div class="section-header" id="s6">
+  <h2>6　变量的自增自减</h2>
+  <div class="en-title">Increment &amp; Decrement</div>
+</div>
+
+<p>"让变量自己加 1"是程序里出现得最频繁的操作之一。前面我们写成 <code class="inline">hp = hp + 30</code>，
+Python 还给了一种更简短的写法：</p>
+
+<table class="styled">
+  <thead><tr><th>简写</th><th>等价于</th><th>含义</th></tr></thead>
+  <tbody>
+    <tr><td><code class="inline">a += 1</code></td><td><code class="inline">a = a + 1</code></td><td>自己加 1</td></tr>
+    <tr><td><code class="inline">a -= 1</code></td><td><code class="inline">a = a - 1</code></td><td>自己减 1</td></tr>
+    <tr><td><code class="inline">a *= 2</code></td><td><code class="inline">a = a * 2</code></td><td>自己乘 2</td></tr>
+    <tr><td><code class="inline">a //= 2</code></td><td><code class="inline">a = a // 2</code></td><td>自己整除 2</td></tr>
+    <tr><td><code class="inline">a %= 3</code></td><td><code class="inline">a = a % 3</code></td><td>自己取余</td></tr>
+  </tbody>
+</table>
+
+<div class="code-card">
+  <div class="code-head">
+    <span class="dot d1"></span><span class="dot d2"></span><span class="dot d3"></span>
+    <span class="file">计数器</span>
+    <span class="lang">Python</span>
+  </div>
+  <pre><code>count = 0
+count += 1
+count += 1
+count += 1
+print(count)          # 数到 3
+
+hp = 100
+hp -= 25              # 挨了 25 点伤害
+print(hp)</code></pre>
+  <div class="out"><b>OUTPUT</b>　3<br>75</div>
+</div>
+
+<div class="box tip">
+  <span class="lb">注意：</span>Python <strong>没有</strong> <code class="inline">a++</code> 这种写法（那是 C / C++ / Java 的语法）。
+  在 Python 里一律写成 <code class="inline">a += 1</code>。这是一个很容易被带偏的地方。
+</div>
+
+<!-- ============ 7 ============ -->
+<div class="section-header" id="s7">
+  <h2>7　代码实战</h2>
+  <div class="en-title">Level Practice</div>
+</div>
+
+<div class="level-card">
+  <div class="lc-head"><span class="n">关卡</span><h4>名称大师</h4><span class="go">进入关卡 →</span></div>
+  <div class="lc-body">
+    <div class="story">
+      <b>故事：</b>你在装备间里翻出一副<b>鹰眼眼镜</b>。戴上它，你能一眼看见离自己最近的食人魔——
+      麻烦来了：<b>你根本不知道它叫什么名字</b>。<br>
+      以前打怪靠喊名字（<code>hero.attack("Brak")</code>），可现在名字是未知的，
+      喊不出来就打不着。怎么办？<br>
+      <b>先给它起个名字，记在木箱里</b>——这就是"名称大师"要教你的本事。
+    </div>
+    <figure class="pic">
+      <img src="../assets/stages/py-L1-02-stage1_name_master.webp" alt="名称大师 关卡截图"
+           onerror="this.closest('.pic').classList.add('missing')">
+      <div class="ph">
+        <div class="fn">assets/stages/py-L1-02-stage1_name_master.webp</div>
+        <div class="ds">【关卡截图位】请把《名称大师》的游戏画面截图放到此处（放入 assets/stages/ 目录，文件名为 py-L1-02-stage1_name_master.webp）。</div>
+      </div>
+      <figcaption>关卡实况：名称大师</figcaption>
+    </figure>
+    <p><strong>思路：</strong>看上面的关卡实况——三只食人魔就站在那里，可你叫不出它们的名字，
+    喊不出名字就打不着。那就换一招：用眼镜找到最近的敌人，把结果<strong>存进一个变量</strong>，
+    之后喊变量名就行，完全不需要知道它的真名。</p>
+    <div class="code-card">
+      <div class="code-head">
+        <span class="dot d1"></span><span class="dot d2"></span><span class="dot d3"></span>
+        <span class="file">重点示例：一组"找 + 打"</span>
+        <span class="lang">Python</span>
+      </div>
+      <pre><code># 把 hero.findNearestEnemy() 的结果装进变量 enemy1
+enemy1 = hero.findNearestEnemy()
+
+# enemy1 现在指向最近的敌人，用变量去攻击！
+hero.attack(enemy1)
+hero.attack(enemy1)</code></pre>
+      <div class="out"><b>就这三行</b>　找一次、打两下。换一只木箱（<code>enemy2</code>、<code>enemy3</code>）再重复两遍，三只食人魔就都倒下了</div>
+    </div>
+    <div class="box info">
+      <span class="lb">为什么不能只用一个变量？</span>
+      如果你一直用 <code class="inline">enemy1</code>，那"第一只敌人被打败后"，木箱里装的还是<b>那只已经倒下的敌人</b>。
+      变量会记住<b>上一次放进去的东西</b>，所以每换一个目标，就要重新装一次。
+    </div>
+    <div class="box tip">
+      <span class="lb">小技巧：</span>整段代码里 <code class="inline">hero.attack(enemy1)</code> 出现了两次——
+      因为小食人魔要挨两下。数一数你写了几组"找 + 打两下"，就知道自己打了几个敌人。
+    </div>
+    <a class="btn-go" href="https://codecombat.cn/" target="_blank" rel="noopener">去扣哒世界闯这一关 →</a>
+  </div>
+</div>
+
+<!-- ============ 8 ============ -->
+<div class="section-header" id="s8">
+  <h2>8　常见陷阱</h2>
+  <div class="en-title">Common Pitfalls &amp; Debugging</div>
+</div>
+
+<div class="cast duck">
+  <img class="ava" src="../assets/ducks/duck_illia.webp" alt="扣哒鸭" onerror="this.style.display='none'">
+  <div class="bubble">
+    <div class="who">扣哒鸭 · 调试官</div>
+    变量这章的错误特别统一——<strong>不是名字起错，就是把"装"当成了"等"</strong>。
+    我把最常见的五个摆出来，你挨个避过去就行。
+  </div>
+</div>
+
+<div class="pit">
+  <div class="pt">
+    <div class="x">1</div>
+    <div class="t"><b>用关键字当变量名。</b>写 <code class="inline">if = 3</code> 或 <code class="inline">for = 5</code>。</div>
+  </div>
+  <div class="duck">
+    <img src="../assets/ducks/duck_hattori.webp" alt="扣哒鸭" onerror="this.style.display='none'">
+    <div class="dt"><b>扣哒鸭：</b><code>if</code>、<code>for</code>、<code>class</code> 这些词是 Python 自己的，你借不走。
+    想表达同样的意思，加个后缀：<code>if_flag</code>、<code>for_count</code>。</div>
+  </div>
+  <div class="fix"><b>正确写法：</b>换个名字，例如 <code class="inline">flag = 3</code></div>
+</div>
+
+<div class="pit">
+  <div class="pt">
+    <div class="x">2</div>
+    <div class="t"><b>变量名以数字开头。</b>写 <code class="inline">1hp = 100</code>。</div>
+  </div>
+  <div class="duck">
+    <img src="../assets/ducks/duck_usara.webp" alt="扣哒鸭" onerror="this.style.display='none'">
+    <div class="dt"><b>扣哒鸭：</b><strong>数字只能出现在名字的中间或末尾</strong>，不能打头。
+    <code>hp1</code>、<code>lvl2_hp</code> 都行，<code>1hp</code> 不行。</div>
+  </div>
+  <div class="fix"><b>正确写法：</b><code class="inline">hp1 = 100</code>　或　<code class="inline">hero_hp = 100</code></div>
+</div>
+
+<div class="pit">
+  <div class="pt">
+    <div class="x">3</div>
+    <div class="t"><b>把赋值当成数学等式。</b>以为 <code class="inline">a = a + 1</code> 是不成立的。</div>
+  </div>
+  <div class="duck">
+    <img src="../assets/ducks/duck_senick.webp" alt="扣哒鸭" onerror="this.style.display='none'">
+    <div class="dt"><b>扣哒鸭：</b>这不是数学题，这是操作步骤：<strong>先算右边，再装进左边</strong>。
+    <code>a = a + 1</code> 的意思就是"把 a 加一之后再放回去"，完全合法，而且是程序里最常见的写法。</div>
+  </div>
+  <div class="fix"><b>正确理解：</b>赋值方向永远从右往左</div>
+</div>
+
+<div class="pit">
+  <div class="pt">
+    <div class="x">4</div>
+    <div class="t"><b>数字和字符串相加。</b>写 <code class="inline">"100" + 1</code>，程序报错。</div>
+  </div>
+  <div class="duck">
+    <img src="../assets/ducks/duck_zana.webp" alt="扣哒鸭" onerror="this.style.display='none'">
+    <div class="dt"><b>扣哒鸭：</b><code>"100"</code> 是<strong>文字</strong>，不是数字。
+    文字只能和文字拼，数字只能和数字算。
+    想把文字当数字用，先 <code>int("100")</code> 转一下。</div>
+  </div>
+  <div class="fix"><b>正确写法：</b><code class="inline">int("100") + 1</code>　→　101</div>
+</div>
+
+<div class="pit">
+  <div class="pt">
+    <div class="x">5</div>
+    <div class="t"><b>变量还没赋值就使用。</b>直接写 <code class="inline">print(score)</code>，但前面从没写过 <code class="inline">score = ...</code>。</div>
+  </div>
+  <div class="duck">
+    <img src="../assets/ducks/duck_nalfar.webp" alt="扣哒鸭" onerror="this.style.display='none'">
+    <div class="dt"><b>扣哒鸭：</b>报错信息是 <code>NameError: name 'score' is not defined</code>。
+    <strong>箱子还没造出来，你就想打开看。</strong>先赋值，再使用——顺序不能反。</div>
+  </div>
+  <div class="fix"><b>正确写法：</b>先 <code class="inline">score = 0</code>，再使用 <code class="inline">score</code></div>
+</div>
+
+<!-- ============ 9 ============ -->
+<div class="section-header" id="s9">
+  <h2>9　题目练习</h2>
+  <div class="en-title">Practice</div>
+</div>
+
+<p>下面 6 道题中，前 1 道<strong>改编自 GESP 真题</strong>，后 5 道为<strong>原创练习题</strong>。先自己做，再点开看详解。</p>
+
+<div class="exam">
+  <div class="eh"><span class="src">改编自 2026 年 9 月 · Python 一级 · 判断题第 6 题</span><span class="tp">判断题</span></div>
+  <div class="eb">
+    <div class="q">在 Python 中，执行 <code class="inline">print(10 &gt; 9)</code> 后，其输出是 <code class="inline">TRUE</code>。（　　）</div>
+    <details><summary>查看答案与详解</summary>
+      <div class="ans"><b>答案：错误（×）</b>。Python 的布尔值只有 <code class="inline">True</code> 和 <code class="inline">False</code>，
+      <strong>首字母大写、其余小写</strong>。写成 <code class="inline">TRUE</code> 会被当成一个没定义过的变量名而报错。<br>
+      <span class="tagline">对应小节</span>4.3 布尔值。</div>
+    </details>
+  </div>
+</div>
+
+<div class="exam">
+  <div class="eh"><span class="src ori">原创练习题</span><span class="tp">单选题</span></div>
+  <div class="eb">
+    <div class="q">下列变量名中，<strong>全部合法</strong>的一组是（　　）。</div>
+    <div class="opt">
+      <i>A.</i>my_score、score2、_total<br>
+      <i>B.</i>2score、my-score、total score<br>
+      <i>C.</i>if、for、while<br>
+      <i>D.</i>score$、3level、my.score
+    </div>
+    <details><summary>查看答案与详解</summary>
+      <div class="ans"><b>答案：A</b>。<br>
+      <b>B</b> 项：<code class="inline">2score</code> 数字开头（不行）、<code class="inline">my-score</code> 含减号（不行）、<code class="inline">total score</code> 含空格（不行）；<br>
+      <b>C</b> 项：三个都是 Python 的关键字，不能作变量名；<br>
+      <b>D</b> 项：含 <code class="inline">$</code>、数字开头、含点号，全部不合规。<br>
+      <span class="tagline">对应小节</span>1.1 名字要合法。</div>
+    </details>
+  </div>
+</div>
+
+<div class="exam">
+  <div class="eh"><span class="src ori">原创练习题</span><span class="tp">单选题</span></div>
+  <div class="eb">
+    <div class="q">下列 Python 代码执行后，输出的结果是（　　）。</div>
+    <pre>1  hp = 100
+2  hp = hp - 30
+3  hp += 10
+4  print(hp)</pre>
+    <div class="opt"><i>A.</i>100　　<i>B.</i>70　　<i>C.</i>80　　<i>D.</i>110</div>
+    <details><summary>查看答案与详解</summary>
+      <div class="ans"><b>答案：C</b>。逐行看：<br>
+      <code class="inline">hp = 100</code> → hp 里是 100；<br>
+      <code class="inline">hp = hp - 30</code> → 100 - 30 = 70，装回去，hp 变 70；<br>
+      <code class="inline">hp += 10</code> → 等价于 <code class="inline">hp = hp + 10</code>，70 + 10 = 80。<br>
+      <span class="tagline">对应小节</span>2.3 变量的重新赋值；6 自增自减。</div>
+    </details>
+  </div>
+</div>
+
+<div class="exam">
+  <div class="eh"><span class="src ori">原创练习题</span><span class="tp">单选题</span></div>
+  <div class="eb">
+    <div class="q">下列四个值中，类型为<strong>字符串</strong>的是（　　）。</div>
+    <div class="opt"><i>A.</i>100　　<i>B.</i>3.14　　<i>C.</i>"3.14"　　<i>D.</i>True</div>
+    <details><summary>查看答案与详解</summary>
+      <div class="ans"><b>答案：C</b>。<code class="inline">100</code> 是整数（int），<code class="inline">3.14</code> 是浮点数（float），
+      <code class="inline">True</code> 是布尔值（bool）。<strong>只有被引号括起来的才是字符串</strong>——
+      所以 <code class="inline">"3.14"</code> 虽然看着像小数，它其实是一段文字。<br>
+      <span class="tagline">对应小节</span>4 四种基本数据类型。</div>
+    </details>
+  </div>
+</div>
+
+<div class="exam">
+  <div class="eh"><span class="src ori">原创练习题</span><span class="tp">单选题</span></div>
+  <div class="eb">
+    <div class="q">下列代码执行后，输出的结果是（　　）。</div>
+    <pre>1  a = "5"
+2  b = int(a)
+3  print(b + 5)</pre>
+    <div class="opt"><i>A.</i>55　　<i>B.</i>10　　<i>C.</i>"55"　　<i>D.</i>程序报错</div>
+    <details><summary>查看答案与详解</summary>
+      <div class="ans"><b>答案：B</b>。<code class="inline">a</code> 里装的是字符串 <code class="inline">"5"</code>，
+      经 <code class="inline">int(a)</code> 转换后变成真正的数字 5，5 + 5 = <strong>10</strong>。<br>
+      <b>易错点：</b>如果不转换，直接 <code class="inline">a + 5</code> 会报错（文字不能和数字相加），
+      而 <code class="inline">"5" + "5"</code> 得到的是字符串 <code class="inline">"55"</code>——两个等号之差，天壤之别。<br>
+      <span class="tagline">对应小节</span>5 类型转换。</div>
+    </details>
+  </div>
+</div>
+
+<div class="exam">
+  <div class="eh"><span class="src ori">原创练习题</span><span class="tp">判断题</span></div>
+  <div class="eb">
+    <div class="q">在 Python 中，<code class="inline">int(3.9)</code> 的结果是 4。（　　）</div>
+    <details><summary>查看答案与详解</summary>
+      <div class="ans"><b>答案：错误（×）</b>。<code class="inline">int()</code> 转换浮点数时是<strong>直接切掉小数部分</strong>，
+      不做四舍五入，所以 <code class="inline">int(3.9)</code> 的结果是 <strong>3</strong>。
+      要四舍五入得用 <code class="inline">round(3.9)</code>。<br>
+      <span class="tagline">对应小节</span>5 类型转换。</div>
+    </details>
+  </div>
+</div>
+
+<!-- ============ 10 ============ -->
+<div class="section-header" id="s10">
+  <h2>10　本单元小结</h2>
+  <div class="en-title">Unit Summary</div>
+</div>
+
+<div class="summary">
+  <h3>你在这只木箱里收获了什么</h3>
+  <ul>
+    <li><strong>标识符规则</strong>——字母或下划线开头，只能含字母、数字、下划线，不能用关键字，区分大小写。</li>
+    <li><strong>变量</strong>——贴了名字、内容可以改的箱子；赋值是"把右边装进左边"。</li>
+    <li><strong>常量</strong>——值不会改变，习惯用<strong>全大写</strong>命名提醒自己和别人。</li>
+    <li><strong>四种类型</strong>——<code class="inline">int</code> 整数、<code class="inline">float</code> 浮点数、<code class="inline">str</code> 字符串、<code class="inline">bool</code> 布尔值（True / False，注意大写）。</li>
+    <li><strong>类型转换</strong>——<code class="inline">int()</code> 截断、<code class="inline">float()</code> 转小数、<code class="inline">str()</code> 转文字；<code class="inline">type()</code> 用来查类型。</li>
+    <li><strong>自增自减</strong>——<code class="inline">+=</code>、<code class="inline">-=</code>、<code class="inline">*=</code>；Python 没有 <code class="inline">a++</code>。</li>
+  </ul>
+</div>
+
+<div class="pager">
+  <a href="py-1-01.html"><div class="k">← 上一单元</div><div class="v">哨火初燃 · 计算机基础与开发环境</div></a>
+  <a href="../index.html" target="_top" class="back"><div class="k">返回</div><div class="v">考纲之路 · 总目录</div></a>
+  <a href="py-1-03.html"><div class="k">下一单元 →</div><div class="v">炼金配方台 · 运算符与表达式</div></a>
+</div>
+
+<div class="cta">
+  <h3>下一站：炼金配方台</h3>
+  <p>箱子有了，接下来该往里面"配药"了。
+  加、减、乘、除、取余、比大小、判断与或非——下一单元我们把运算符这一套工具全部配齐。</p>
+  <a class="btn-go" href="https://codecombat.cn/" target="_blank" rel="noopener">加入扣哒世界，把这条考纲之路走一遍 →</a>
+</div>
+
+</div><!-- /container -->
+</div><!-- /page -->
+
+<script>
+const KEYWORDS = new Set(("while for if elif else break continue def return pass not and or in is None True False " +
+  "int float bool str list dict input print range randint import turtle type round").split(" "));
+
+function esc(s){ return s.replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;'); }
+
+function highlight(src){
+  let out = '', i = 0;
+  const n = src.length;
+  while (i < n){
+    const c = src[i];
+    if (c === '#'){
+      let j = src.indexOf('\n', i); if (j < 0) j = n;
+      out += '<span class="cm">' + esc(src.slice(i, j)) + '</span>';
+      i = j; continue;
+    }
+    if (c === '"' || c === "'"){
+      let j = i + 1;
+      while (j < n && src[j] !== c){ if (src[j] === '\\') j++; j++; }
+      j = Math.min(j + 1, n);
+      out += '<span class="st">' + esc(src.slice(i, j)) + '</span>';
+      i = j; continue;
+    }
+    if (/[0-9]/.test(c)){
+      let j = i;
+      while (j < n && /[0-9.]/.test(src[j])) j++;
+      out += '<span class="nu">' + esc(src.slice(i, j)) + '</span>';
+      i = j; continue;
+    }
+    if (/[A-Za-z_]/.test(c)){
+      let j = i;
+      while (j < n && /[A-Za-z0-9_]/.test(src[j])) j++;
+      const w = src.slice(i, j);
+      if (KEYWORDS.has(w)) out += '<span class="kw">' + esc(w) + '</span>';
+      else if (src[j] === '(') out += '<span class="fn">' + esc(w) + '</span>';
+      else out += esc(w);
+      i = j; continue;
+    }
+    out += esc(c); i++;
+  }
+  return out;
+}
+
+document.querySelectorAll('.code-card pre code').forEach(block => {
+  block.innerHTML = highlight(block.textContent);
+});
+
+if (location.search.indexOf('expand') >= 0) {
+  document.querySelectorAll('details').forEach(d => d.open = true);
+}
+document.querySelectorAll('.sidebar-nav a').forEach(a => {
+  a.addEventListener('click', () => {
+    if (window.innerWidth <= 900) document.querySelector('.sidebar-nav').classList.remove('active');
+  });
+});
+</script>
+</body>
+</html>

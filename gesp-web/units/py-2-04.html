@@ -1,0 +1,961 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="copyright" content="CodeCombat Inc. codecombat.cn">
+<title>双岔迷宫 · 多层分支结构 | 扣哒考级 · GESP Python 二级</title>
+<style>
+  :root{
+    --primary:#2e9e5b; --primary-light:#4fbf7c; --primary-lighter:#e9f8ef; --primary-dark:#1f7a44;
+    --brand:#ff6b35; --brand-dark:#e8541f; --brand-soft:#fff3ec;
+    --night:#131c2b; --night-2:#1e2a3a; --gold:#f5b301;
+    --text:#26302a; --dim:#63756b; --dim2:#8d9d94;
+    --bg:#ffffff; --bg-soft:#f7fbf8; --line:#e2ece6; --sidebar:274px;
+    --code-bg:#1b2a21; --code-tx:#c9d6cd;
+    --code-kw:#c678dd; --code-st:#98c379; --code-nu:#d19a66; --code-cm:#6b7f72; --code-fn:#61afef;
+  }
+  *{margin:0;padding:0;box-sizing:border-box}
+  html{scroll-behavior:smooth}
+  body{font-family:"PingFang SC","Microsoft YaHei","Segoe UI",-apple-system,sans-serif;line-height:1.9;color:var(--text);background:var(--bg);font-size:15.5px}
+  .sidebar-nav{position:fixed;top:0;left:0;width:var(--sidebar);height:100vh;overflow-y:auto;background:linear-gradient(180deg,#101a26,#182636);padding:14px 0 40px;z-index:100;border-right:3px solid var(--brand);transition:transform .3s ease}
+  .sidebar-nav::-webkit-scrollbar{width:5px}
+  .sidebar-nav::-webkit-scrollbar-thumb{background:var(--brand);border-radius:4px}
+  .sb-brand{display:flex;align-items:center;gap:10px;padding:10px 13px 12px;border-bottom:1px solid #26384c;margin-bottom:8px}
+  .sidebar-nav a.sb-logo{display:flex;align-items:center;justify-content:center;flex-shrink:0;padding:0;border-left:none;transition:.2s}
+  .sb-logo:hover{transform:scale(1.08)}
+  .sb-logo img{height:34px;width:34px;display:block;object-fit:contain;border-radius:8px}
+  .sb-brand b{color:#f2f6fa;font-size:14px;letter-spacing:.5px;display:block;line-height:1.4}
+  .sb-brand span{color:#7f95ab;font-size:11.5px;display:block;line-height:1.4}
+  .nav-title{color:#ffb894;font-size:12px;font-weight:800;padding:10px 18px 6px;letter-spacing:1.2px}
+  .sidebar-nav a{display:block;color:#c3d0dc;text-decoration:none;padding:6px 18px;font-size:12.5px;line-height:1.55;border-left:3px solid transparent;transition:.18s}
+  .sidebar-nav a:hover{color:#fff;background:rgba(255,107,53,.16);border-left-color:var(--brand)}
+  .sidebar-nav a.nav-section{color:#ffb894;font-weight:700;font-size:13px;margin-top:11px;padding-top:10px;border-top:1px solid #26384c}
+  .sidebar-nav a.nav-section:first-of-type{border-top:none;margin-top:0;padding-top:6px}
+  .sidebar-nav a.nav-sub{padding-left:30px;color:#93a8bc;font-size:12px}
+  .sidebar-nav a.nav-sub:hover{color:#fff}
+  .sb-back{margin:16px 14px 0;display:block;text-align:center;padding:9px;border-radius:9px;background:#22344a;color:#a9c0d6 !important;font-size:12px;font-weight:700;border-left:none !important}
+  .sb-back:hover{background:var(--brand) !important;color:#fff !important}
+  .nav-toggle{display:none;position:fixed;top:14px;left:14px;z-index:120;background:var(--brand);color:#fff;border:none;border-radius:9px;padding:9px 13px;font-size:15px;cursor:pointer;box-shadow:0 4px 14px rgba(0,0,0,.25)}
+  .page{margin-left:var(--sidebar)}
+  .hero{position:relative;overflow:hidden;padding:44px 52px;color:#fff;background:linear-gradient(125deg,#0e1724 0%,#1b2b3f 46%,#8a3a16 132%)}
+  .hero::after{content:"";position:absolute;right:-90px;top:-110px;width:400px;height:400px;border-radius:50%;background:radial-gradient(circle,rgba(245,179,1,.30),transparent 68%)}
+  .hero-top{display:flex;gap:36px;align-items:center;position:relative;z-index:2}
+  .hero-txt{flex:1;min-width:0}
+  .hero .crumb{font-size:11.5px;color:#ffb894;letter-spacing:1.5px;font-weight:700;margin-bottom:14px}
+  .hero h1{font-size:31px;font-weight:800;line-height:1.3;letter-spacing:.6px;margin-bottom:8px}
+  .hero h1 .sub{display:block;font-size:18px;font-weight:700;color:#ffd2b3;margin-top:6px;letter-spacing:.3px}
+  .hero .en{font-size:13px;color:#9db4c8;font-style:italic;margin-bottom:18px}
+  .hero .tags{display:flex;flex-wrap:wrap;gap:8px}
+  .tag{font-size:11.5px;padding:4px 12px;border-radius:20px;background:rgba(255,255,255,.12);border:1px solid rgba(255,255,255,.22);color:#e8f0f6;font-weight:600}
+  .tag.hot{background:rgba(255,107,53,.92);border-color:transparent;color:#fff}
+  .hero-card{flex-shrink:0;width:200px;text-align:center}
+  .hero-card .ava{width:148px;height:148px;border-radius:50%;object-fit:cover;object-position:top center;border:4px solid rgba(255,180,140,.6);box-shadow:0 14px 34px rgba(0,0,0,.45);background:#24344a}
+  .hero-card .nm{font-size:15px;font-weight:800;color:#fff;margin-top:10px}
+  .hero-card .ti{font-size:11.5px;color:#ffb894;margin-top:2px}
+  .container{max-width:1080px;margin:0 auto;padding:38px 52px 70px}
+  .lead{font-size:15.5px;line-height:2.05;color:#38453d;background:linear-gradient(120deg,#fff8f3,#f7fbf8);border-left:5px solid var(--brand);border-radius:0 14px 14px 0;padding:22px 26px;margin-bottom:32px}
+  .lead b{color:var(--brand-dark)}
+  .cast{display:flex;gap:16px;align-items:flex-start;border-radius:16px;padding:18px 22px;margin:24px 0}
+  .cast .ava{width:72px;height:72px;border-radius:50%;object-fit:cover;object-position:top center;flex-shrink:0;background:#e8eef5}
+  .cast .bubble{position:relative;font-size:14px;line-height:1.95;padding-top:2px;flex:1}
+  .cast .who{font-size:12px;font-weight:800;margin-bottom:5px;letter-spacing:.5px}
+  .cast.anya{background:var(--brand-soft);border:1px solid #ffdcc9}
+  .cast.anya .who{color:var(--brand-dark)}
+  .cast.anya .bubble{color:#5c4636}
+  .cast.duck{background:#fff5f5;border:1px solid #fbd5d5}
+  .cast.duck .who{color:#b91c1c}
+  .cast.duck .bubble{color:#5c4141}
+  .cast.teacher{background:linear-gradient(120deg,#f4f7fb,#ffffff);border:1px solid #dbe4f0}
+  .cast.teacher .who{color:#1e293b}
+  .cast.teacher .bubble{color:#3c4a5a}
+  .cast.hero{background:#f2fbf5;border:1px solid #cfe7d8}
+  .cast.hero .who{color:#1f7a44}
+  .cast.hero .bubble{color:#3c4a42}
+  .goal-grid{display:grid;grid-template-columns:1fr 1fr;gap:16px;margin-bottom:36px}
+  .goal{border:1px solid var(--line);border-radius:15px;padding:19px 21px;background:#fff;box-shadow:0 4px 16px rgba(31,122,68,.05)}
+  .goal h4{font-size:14px;font-weight:800;margin-bottom:11px;display:flex;align-items:center;gap:8px;color:var(--primary-dark)}
+  .goal h4 .ic{width:22px;height:22px;border-radius:7px;background:var(--primary-lighter);display:flex;align-items:center;justify-content:center;font-size:12px}
+  .goal ul{list-style:none}
+  .goal li{font-size:13.5px;color:#4b5a52;line-height:1.9;padding-left:18px;position:relative}
+  .goal li::before{content:"▸";position:absolute;left:0;color:var(--primary);font-weight:800}
+  .goal.syllabus li::before{content:"✓"}
+  .section-header{margin:52px 0 24px;padding-bottom:12px;border-bottom:3px solid var(--brand);display:flex;align-items:baseline;gap:14px;flex-wrap:wrap}
+  .section-header h2{font-size:22px;font-weight:800;color:var(--night);letter-spacing:.4px}
+  .section-header .en-title{font-size:12px;color:var(--dim2);font-style:italic}
+  h3{font-size:17.5px;font-weight:800;margin:34px 0 14px;color:var(--night);display:flex;align-items:center;gap:10px}
+  h3::before{content:"";width:5px;height:17px;border-radius:3px;background:var(--brand);flex-shrink:0}
+  h4{font-size:15px;font-weight:800;margin:24px 0 10px;color:#33513f}
+  p{margin:12px 0;color:#3c4a42;line-height:2}
+  strong{color:var(--primary-dark)}
+  code.inline{background:var(--primary-lighter);color:var(--primary-dark);padding:2px 7px;border-radius:6px;font-family:"SFMono-Regular",Consolas,Menlo,monospace;font-size:.9em;font-weight:600}
+  .figure{margin:24px 0;text-align:center}
+  .figure svg.diagram{max-width:100%;height:auto;background:#fff;border:1px solid var(--line);border-radius:14px;padding:10px}
+  .figure .caption{font-size:12.5px;color:var(--dim2);margin-top:9px}
+  .pic{margin:26px 0;text-align:center}
+  .pic img{max-width:100%;border-radius:16px;box-shadow:0 10px 28px rgba(30,60,45,.15);display:block;margin:0 auto}
+  .pic figcaption{font-size:12.5px;color:var(--dim2);margin-top:9px}
+  .pic .ph{display:none}
+  .pic.missing img{display:none}
+  .pic.missing .ph{display:flex;flex-direction:column;align-items:center;justify-content:center;gap:9px;border:2px dashed #c9d9e8;border-radius:16px;background:linear-gradient(135deg,#f8fbfe,#eef6ff);padding:40px 26px;color:#7a8fa8}
+  .pic.missing .ph .fn{font-family:Consolas,monospace;font-size:12.5px;color:#2563eb;font-weight:700;word-break:break-all}
+  .pic.missing .ph .ds{font-size:12.5px;line-height:1.8;max-width:560px}
+  .box{border-radius:13px;padding:16px 20px;margin:20px 0;font-size:14px;line-height:1.95}
+  .box .lb{font-weight:800;margin-right:6px}
+  .info{background:#eef6ff;border-left:5px solid #3b82f6;color:#274768}
+  .info .lb{color:#1d4ed8}
+  .tip{background:#fff9ec;border-left:5px solid #f59e0b;color:#6b4e13}
+  .tip .lb{color:#b45309}
+  .remember{background:var(--primary-lighter);border-left:5px solid var(--primary);color:#1f5033}
+  .remember .lb{color:var(--primary-dark)}
+  .warn{background:#fef2f2;border-left:5px solid #ef4444;color:#7f2b2b}
+  .warn .lb{color:#b91c1c}
+  .code-card{margin:20px 0;border-radius:14px;overflow:hidden;box-shadow:0 10px 28px rgba(20,40,28,.20)}
+  .code-head{display:flex;align-items:center;gap:9px;background:#243126;padding:9px 14px}
+  .code-head .dot{width:10px;height:10px;border-radius:50%}
+  .code-head .d1{background:#ff5f57}.code-head .d2{background:#febc2e}.code-head .d3{background:#28c840}
+  .code-head .file{color:#95ab9c;font-size:11.5px;font-family:Consolas,monospace;margin-left:6px}
+  .code-head .lang{margin-left:auto;font-size:10.5px;font-weight:800;color:#0f2016;background:#4fbf7c;padding:2px 9px;border-radius:6px;letter-spacing:.4px}
+  .code-card pre{background:var(--code-bg);padding:18px 20px;overflow-x:auto;margin:0;font-family:"SFMono-Regular",Consolas,"Courier New",monospace;font-size:13.5px;line-height:1.85}
+  .code-card pre::-webkit-scrollbar{height:8px}
+  .code-card pre::-webkit-scrollbar-thumb{background:#3a5544;border-radius:4px}
+  .code-card code{color:var(--code-tx);white-space:pre}
+  .kw{color:var(--code-kw);font-weight:600}
+  .st{color:var(--code-st)}
+  .nu{color:var(--code-nu)}
+  .cm{color:var(--code-cm);font-style:italic}
+  .fn{color:var(--code-fn)}
+  .out{background:#16211a;color:#8fd6a8;font-family:Consolas,monospace;font-size:13px;padding:12px 20px;border-top:1px solid #2b3d31}
+  .out b{color:#c9d6cd;font-weight:600;font-size:11.5px;letter-spacing:1px}
+  table.styled{width:100%;border-collapse:collapse;margin:20px 0;font-size:13.5px;border-radius:12px;overflow:hidden;box-shadow:0 4px 16px rgba(31,122,68,.07)}
+  table.styled thead{background:var(--brand)}
+  table.styled th{color:#fff;padding:11px 14px;text-align:left;font-weight:700;font-size:13px}
+  table.styled td{padding:10px 14px;border-bottom:1px solid var(--line);color:#46564d;vertical-align:top}
+  table.styled tbody tr:nth-child(even){background:var(--bg-soft)}
+  table.styled tbody tr:last-child td{border-bottom:none}
+  .level-card{border:1px solid var(--line);border-radius:16px;overflow:hidden;margin:22px 0;box-shadow:0 6px 22px rgba(31,122,68,.07)}
+  .level-card .lc-head{background:linear-gradient(100deg,#17283a,#8a3a16);color:#fff;padding:15px 22px;display:flex;align-items:center;gap:12px;flex-wrap:wrap}
+  .level-card .lc-head .n{font-size:12px;font-weight:800;background:rgba(255,255,255,.2);padding:3px 10px;border-radius:20px}
+  .level-card .lc-head h4{margin:0;color:#fff;font-size:16px}
+  .level-card .lc-head .go{margin-left:auto;font-size:11.5px;color:#ffd2b3}
+  .level-card .lc-body{padding:20px 24px;background:#fff}
+  .level-card .story{background:#f9fbfd;border-left:4px solid #93c5fd;border-radius:0 10px 10px 0;padding:13px 18px;margin:0 0 16px;font-size:14px;line-height:1.95;color:#3f5163}
+  .level-card .story b{color:#1d4ed8}
+  .btn-go{display:inline-flex;align-items:center;gap:8px;background:linear-gradient(135deg,var(--brand),var(--brand-dark));color:#fff;text-decoration:none;font-weight:800;font-size:13.5px;padding:10px 22px;border-radius:11px;box-shadow:0 8px 20px rgba(255,107,53,.32);transition:.2s}
+  .btn-go:hover{transform:translateY(-2px);box-shadow:0 12px 26px rgba(255,107,53,.42)}
+  .pit{border:1px solid #f6dede;border-radius:14px;overflow:hidden;margin:16px 0;background:#fff}
+  .pit .pt{display:flex;gap:12px;padding:14px 18px;background:#fffafa;align-items:flex-start}
+  .pit .x{width:26px;height:26px;border-radius:9px;background:#fee;color:#dc2626;display:flex;align-items:center;justify-content:center;font-weight:800;flex-shrink:0;font-size:13px}
+  .pit .t{font-size:13.5px;line-height:1.9;color:#5c4a4a;flex:1}
+  .pit .t b{color:#b91c1c}
+  .pit .duck{display:flex;gap:12px;padding:13px 18px;background:#fff5f5;border-top:1px dashed #f3d0d0;align-items:flex-start}
+  .pit .duck img{width:48px;height:48px;object-fit:contain;flex-shrink:0;margin-top:2px}
+  .pit .duck .dt{font-size:13.5px;line-height:1.9;color:#7a3b3b}
+  .pit .duck .dt b{color:#b91c1c}
+  .pit .fix{padding:12px 18px;background:#f2fbf5;border-top:1px dashed #cfe7d8;font-size:13.5px;color:#1f5033}
+  .pit .fix b{color:var(--primary-dark)}
+  .exam{border:1px solid #dfe7f5;border-radius:15px;margin:16px 0;overflow:hidden;background:#fff;box-shadow:0 4px 16px rgba(38,62,120,.06)}
+  .exam .eh{display:flex;align-items:center;gap:10px;padding:11px 18px;background:linear-gradient(100deg,#eef4ff,#f7faff);border-bottom:1px solid #e3ebf8;flex-wrap:wrap}
+  .exam .eh .src{font-size:11px;font-weight:800;color:#fff;background:#2563eb;padding:2.5px 10px;border-radius:20px}
+  .exam .eh .src.ori{background:#8b5cf6}
+  .exam .eh .tp{font-size:11.5px;color:#5b7ba8;font-weight:700}
+  .exam .eb{padding:16px 20px}
+  .exam .q{font-weight:700;font-size:14px;color:#2c3c33;line-height:1.9;margin-bottom:10px}
+  .exam .opt{font-size:13.5px;color:#4b5a52;line-height:2.05;padding-left:6px}
+  .exam .opt i{font-style:normal;font-weight:800;color:var(--primary-dark);margin-right:7px}
+  .exam pre{margin:12px 0;background:#1b2a21;border-radius:10px;padding:14px 16px;overflow-x:auto;font-family:Consolas,monospace;font-size:13px;line-height:1.8;color:var(--code-tx)}
+  .exam details{margin-top:10px;border-top:1px dashed var(--line);padding-top:10px}
+  .exam summary{cursor:pointer;font-size:12.5px;font-weight:800;color:#2563eb;outline:none;user-select:none}
+  .exam details .ans{font-size:13.5px;color:#3c4a42;line-height:1.95;margin-top:9px;background:var(--bg-soft);padding:13px 16px;border-radius:10px}
+  .exam details .ans b{color:var(--primary-dark)}
+  .exam details .ans .tagline{display:inline-block;font-size:11px;background:#e0f2fe;color:#0e7490;padding:1.5px 8px;border-radius:6px;font-weight:700;margin-right:6px}
+  .summary{margin:40px 0 20px;border-radius:18px;padding:26px 30px;background:linear-gradient(130deg,#fff8f3,#ffffff);border:1px solid #ffe0cf}
+  .summary h3{margin-top:0}
+  .summary ul{list-style:none;margin-top:10px}
+  .summary li{font-size:14px;line-height:2;color:#41524a;padding-left:24px;position:relative}
+  .summary li::before{content:"◆";position:absolute;left:0;color:var(--brand);font-size:11px;top:6px}
+  .pager{display:flex;gap:14px;margin-top:30px;flex-wrap:wrap}
+  .pager a{flex:1;min-width:200px;text-decoration:none;border:1px solid var(--line);border-radius:14px;padding:16px 20px;background:#fff;transition:.2s;display:block}
+  .pager a:hover{border-color:var(--brand);box-shadow:0 10px 26px rgba(255,107,53,.14);transform:translateY(-2px)}
+  .pager a .k{font-size:11px;color:var(--dim2);font-weight:700;letter-spacing:1px}
+  .pager a .v{font-size:14px;font-weight:800;color:var(--night);margin-top:5px}
+  .pager a.back{background:var(--brand-soft);border-color:transparent;text-align:center}
+  .pager a.back .v{color:var(--brand-dark)}
+  .cta{margin-top:26px;border-radius:20px;padding:30px 34px;color:#fff;position:relative;overflow:hidden;background:linear-gradient(120deg,#16202f,#2b3a52 46%,#a8431c 132%)}
+  .cta::after{content:"";position:absolute;right:-70px;bottom:-90px;width:280px;height:280px;border-radius:50%;background:radial-gradient(circle,rgba(255,140,80,.45),transparent 68%)}
+  .cta h3{color:#fff;margin:0 0 10px;position:relative;z-index:2}
+  .cta h3::before{background:var(--brand)}
+  .cta p{color:#d8e0ef;font-size:13.5px;margin:0 0 18px;position:relative;z-index:2;max-width:640px}
+  .cta .btn-go{position:relative;z-index:2}
+  @media(max-width:900px){
+    .sidebar-nav{transform:translateX(-100%)}
+    .sidebar-nav.active{transform:translateX(0)}
+    .nav-toggle{display:block}
+    .page{margin-left:0}
+    .hero{padding:70px 22px 34px}
+    .hero-top{flex-direction:column-reverse;text-align:center}
+    .hero-card{width:auto}
+    .container{padding:26px 20px 60px}
+    .goal-grid{grid-template-columns:1fr}
+  }
+</style>
+</head>
+<body>
+
+<button class="nav-toggle" onclick="document.querySelector('.sidebar-nav').classList.toggle('active')">☰</button>
+
+<nav class="sidebar-nav">
+  <div class="sb-brand">
+    <a class="sb-logo" href="https://codecombat.cn/" target="_blank" rel="noopener" title="访问 CodeCombat 扣哒世界官网">
+      <img src="../assets/logo.png" alt="CodeCombat 扣哒世界">
+    </a>
+    <div><b>双岔迷宫</b><span>回声溪谷 · Python 二级 第 4 单元</span></div>
+  </div>
+  <div class="nav-title">本单元目录</div>
+
+  <a href="#s0" class="nav-section">0　单元导语与目标</a>
+  <a href="#s1" class="nav-section">1　多层分支：岔路里的岔路</a>
+  <a href="#s2" class="nav-section">2　if-elif-else 综合运用</a>
+  <a href="#s2-1" class="nav-sub">2.1 判断链的顺序</a>
+  <a href="#s2-2" class="nav-sub">2.2 常见判断场景</a>
+  <a href="#s3" class="nav-section">3　用逻辑运算组合条件</a>
+  <a href="#s4" class="nav-section">4　缩进就是层级</a>
+  <a href="#s5" class="nav-section">5　代码实战</a>
+  <a href="#s6" class="nav-section">6　常见陷阱</a>
+  <a href="#s7" class="nav-section">7　题目练习</a>
+  <a href="#s8" class="nav-section">8　本单元小结</a>
+
+  <a href="../index.html" target="_top" class="sb-back">返回考纲之路</a>
+</nav>
+
+<div class="page">
+
+<div class="hero">
+  <div class="hero-top">
+    <div class="hero-txt">
+      <div class="crumb">扣哒考级 · GESP PYTHON 二级 · 第 4 单元　|　回声溪谷 ECHOSTREAM VALLEY</div>
+      <h1>双岔迷宫
+        <span class="sub">多层分支结构</span>
+      </h1>
+      <div class="en">Nested Branching</div>
+      <div class="tags">
+        <span class="tag hot">考纲 · 分支结构进阶</span>
+        <span class="tag">嵌套分支</span>
+        <span class="tag">elif 链</span>
+        <span class="tag">and / or / not</span>
+        <span class="tag">缩进层级</span>
+      </div>
+    </div>
+    <div class="hero-card">
+      <img class="ava" src="../assets/avatars/anya.webp" alt="安雅" onerror="this.style.background='#24344a';this.src='../assets/heroes/anya.webp'">
+      <div class="nm">安雅</div>
+      <div class="ti">红发队长 · 你的旅伴</div>
+    </div>
+  </div>
+</div>
+
+<div class="container">
+
+<div class="lead">
+  溪谷深处有一座用树篱围成的迷宫。你走了进去，转过第一个弯，
+  迎面又是两条岔路——<b>再转过一个弯，还是两条</b>。<br>
+  你回头看了看，安雅正站在入口处冲你挥手，喊了一句：<br>
+  <b>别慌！岔路套岔路，也不过就是"先问一个问题，再问下一个"而已。</b>
+</div>
+
+<div class="cast anya">
+  <img class="ava" src="../assets/avatars/anya.webp" alt="安雅" onerror="this.style.display='none'">
+  <div class="bubble">
+    <div class="who">安雅 · 红发队长</div>
+    一级你已经学过怎么写 <code>if</code>、<code>else</code>、<code>elif</code> 了。<br>
+    这一单元我们要把它们<strong>摞起来用</strong>——分支里面再套分支。<br>
+    说白了就是：<b>先问第一个问题，根据答案，再问第二个问题。</b>
+  </div>
+</div>
+
+<!-- ============ 0 ============ -->
+<figure class="pic">
+  <img src="../assets/illustrations/py-L2-04-01_nested_fork.webp" alt="嵌套岔路"
+       onerror="this.closest('.pic').classList.add('missing')">
+  <div class="ph">
+    <div class="fn">assets/illustrations/py-L2-04-01_nested_fork.webp</div>
+    <div class="ds">【配图位】溪谷树篱迷宫：第一个岔路口的左支路立刻又分出两个岔口，发光的菱形判断框层层嵌套；一名新兵站在最外层的岔口举着火把犹豫。</div>
+  </div>
+  <figcaption>图 1：回声溪谷的双岔迷宫——今天要从这里开始</figcaption>
+</figure>
+
+<div class="section-header" id="s0">
+  <h2>0　单元导语与目标</h2>
+  <div class="en-title">Unit Overview</div>
+</div>
+
+<div class="goal-grid">
+  <div class="goal">
+    <h4><span class="ic">1</span>学完这个单元，你将能……</h4>
+    <ul>
+      <li>说清"嵌套分支"是什么，并画出它的流程图</li>
+      <li>在分支里正确地再写分支（缩进不乱）</li>
+      <li>熟练使用 <code class="inline">if - elif - else</code> 处理多种情况</li>
+      <li>用 <code class="inline">and / or / not</code> 组合复杂条件</li>
+      <li>判断区间、奇偶、大小、字符等常见场景</li>
+      <li>一眼看出嵌套代码的层级关系</li>
+    </ul>
+  </div>
+  <div class="goal syllabus">
+    <h4><span class="ic">2</span>对标 GESP 考纲（Python 二级）</h4>
+    <ul>
+      <li>（7）掌握分支结构的基本概念及基础应用</li>
+      <li>（9）掌握比较运算符、算术运算符、逻辑运算符的基本概念及基础应用</li>
+      <li>考核目标：使用分支循环嵌套结构完成较复杂的逻辑判断</li>
+      <li>考核目标：能读懂多层嵌套代码并预测输出结果</li>
+    </ul>
+  </div>
+</div>
+
+<!-- ============ 1 ============ -->
+<div class="section-header" id="s1">
+  <h2>1　多层分支：岔路里的岔路</h2>
+  <div class="en-title">Nested Branches</div>
+</div>
+
+<p>先看一个你熟悉的场景：岗哨的卫兵要检查进城的人。</p>
+
+<p>他会先问第一个问题：<b>"你是来干什么的？"</b>
+——如果回答"送货"，他会接着问第二个问题：<b>"有通行证吗？"</b>
+——如果回答"来访友"，他会问：<b>"谁是你的联系人？"</b></p>
+
+<p>你看，<b>第二个问题，是在第一个问题的答案里才问的。</b>这就是嵌套分支。</p>
+
+<figure class="figure">
+  <svg class="diagram" viewBox="0 0 860 340" role="img" aria-label="嵌套分支的执行路径">
+    <text x="24" y="34" font-size="14" font-weight="bold" fill="#1f2937">外层判断"血量还有吗"，内层判断"血量够不够"</text>
+
+    <rect x="34" y="56" width="792" height="256" rx="14" fill="#fff8f3" stroke="#ffd0b3" stroke-width="2"/>
+    <text x="58" y="86" font-size="13" fill="#c1440e" font-weight="bold">外层：if hp &gt; 0</text>
+
+    <rect x="76" y="104" width="726" height="192" rx="12" fill="#fff" stroke="#e2ece6" stroke-width="1.6"/>
+    <text x="98" y="132" font-size="12.5" fill="#5b6b62">只有外层成立时，才会进来做内层判断</text>
+
+    <polygon points="230,186 316,214 230,242 144,214" fill="#fff6ec" stroke="#ff6b35" stroke-width="2"/>
+    <text x="230" y="211" text-anchor="middle" font-size="11.5" fill="#c1440e" font-weight="bold">hp &lt; 30？</text>
+    <text x="230" y="229" text-anchor="middle" font-size="10.5" fill="#c1440e">内层判断</text>
+
+    <rect x="410" y="170" width="170" height="40" rx="9" fill="#fee2e2" stroke="#f87171" stroke-width="1.8"/>
+    <text x="495" y="196" text-anchor="middle" font-size="12.5" fill="#991b1b">危险，快治疗</text>
+
+    <rect x="410" y="222" width="170" height="40" rx="9" fill="#dcfce7" stroke="#4ade80" stroke-width="1.8"/>
+    <text x="495" y="248" text-anchor="middle" font-size="12.5" fill="#166534">状态良好</text>
+
+    <line x1="316" y1="206" x2="404" y2="192" stroke="#2e9e5b" stroke-width="2"/>
+    <line x1="316" y1="226" x2="404" y2="240" stroke="#94a3b8" stroke-width="2"/>
+    <text x="356" y="192" font-size="11" fill="#1f7a44">是</text>
+    <text x="356" y="248" font-size="11" fill="#64748b">否</text>
+
+    <rect x="626" y="170" width="156" height="92" rx="10" fill="#fef2f2" stroke="#f87171" stroke-width="1.8" opacity="0.6"/>
+    <text x="704" y="204" text-anchor="middle" font-size="11.5" fill="#991b1b">else：</text>
+    <text x="704" y="228" text-anchor="middle" font-size="11.5" fill="#991b1b">英雄倒下了</text>
+    <text x="704" y="250" text-anchor="middle" font-size="10.5" fill="#b91c1c">（外层不成立）</text>
+
+    <text x="430" y="300" text-anchor="middle" font-size="12" fill="#8d9d94">每多嵌套一层，代码就多缩进一层——层级一多，最容易看错</text>
+  </svg>
+  <div class="caption">图 2（SVG）：嵌套分支——外层的答案决定要不要问内层</div>
+</figure>
+
+<div class="code-card">
+  <div class="code-head">
+    <span class="dot d1"></span><span class="dot d2"></span><span class="dot d3"></span>
+    <span class="file">嵌套分支示例</span>
+    <span class="lang">Python</span>
+  </div>
+  <pre><code>hp = int(input("请输入血量："))
+
+if hp &gt; 0:
+    if hp &lt; 30:
+        print("危险！需要治疗")
+    else:
+        print("状态良好")
+else:
+    print("英雄倒下了")</code></pre>
+  <div class="out"><b>运行过程</b>　请输入血量：<em>20</em>　→　危险！需要治疗</div>
+</div>
+
+<div class="box remember">
+  <span class="lb">三层缩进的读法：</span><br>
+  <b>第 1 层（顶格）</b>：外层的 <code class="inline">if</code> / <code class="inline">else</code>，它们是一家人；<br>
+  <b>第 2 层（缩进 4 空格）</b>：外层成立后要做的事，里头的 <code class="inline">if</code> / <code class="inline">else</code> 又是一家人；<br>
+  <b>第 3 层（缩进 8 空格）</b>：内层成立后要做的事。<br>
+  <strong>同缩进 = 同一伙人；多缩进 = 进了里屋。</strong>
+</div>
+
+<div class="cast hero">
+  <img class="ava" src="../assets/avatars/hattori.webp" alt="服部半藏" onerror="this.style.display='none'">
+  <div class="bubble">
+    <div class="who">服部半藏 · 赤影武士</div>
+    我们潜入前要先判断：<b>门锁了吗？</b>——锁了，就再判断：<b>有钥匙吗？</b><br>
+    你看，第二个问题根本不会在"门没锁"的时候出现。<br>
+    <strong>嵌套就是把问题排好队，一个一个问。</strong>一次只问一个，永远不会乱。
+  </div>
+</div>
+
+<!-- ============ 2 ============ -->
+<div class="section-header" id="s2">
+  <h2>2　if-elif-else 综合运用</h2>
+  <div class="en-title">The if-elif-else Chain</div>
+</div>
+
+<h3 id="s2-1">2.1 判断链的顺序</h3>
+
+<p>如果情况一次有好几种（比如成绩分档、宝石分级），用 <code class="inline">elif</code> 串成一条"判断链"最清爽：</p>
+
+<figure class="figure">
+  <svg class="diagram" viewBox="0 0 860 320" rx="12" role="img" aria-label="if-elif-else 判断链">
+    <text x="24" y="34" font-size="14" font-weight="bold" fill="#1f2937">判断链：从上往下问，命中即停</text>
+
+    <polygon points="170,86 260,126 170,166 80,126" fill="#fff6ec" stroke="#ff6b35" stroke-width="2.2"/>
+    <text x="170" y="131" text-anchor="middle" font-size="12" fill="#c1440e" font-weight="bold">score ≥ 90 ?</text>
+    <polygon points="410,86 500,126 410,166 320,126" fill="#fff6ec" stroke="#ff6b35" stroke-width="2.2"/>
+    <text x="410" y="131" text-anchor="middle" font-size="12" fill="#c1440e" font-weight="bold">score ≥ 60 ?</text>
+    <rect x="650" y="104" width="170" height="44" rx="10" fill="#f1f5f9" stroke="#94a3b8" stroke-width="2"/>
+    <text x="735" y="132" text-anchor="middle" font-size="12.5" fill="#334155" font-weight="bold">else：不及格</text>
+
+    <line x1="260" y1="126" x2="316" y2="126" stroke="#94a3b8" stroke-width="2.2" stroke-dasharray="6 4"/>
+    <polygon points="320,126 308,120 308,132" fill="#94a3b8"/>
+    <text x="288" y="116" font-size="11" fill="#64748b">否</text>
+
+    <line x1="500" y1="126" x2="644" y2="126" stroke="#94a3b8" stroke-width="2.2" stroke-dasharray="6 4"/>
+    <polygon points="648,126 636,120 636,132" fill="#94a3b8"/>
+    <text x="572" y="116" font-size="11" fill="#64748b">否</text>
+
+    <rect x="80" y="222" width="180" height="46" rx="10" fill="#eef6ff" stroke="#3b82f6" stroke-width="2"/>
+    <text x="170" y="251" text-anchor="middle" font-size="13" fill="#1d4ed8" font-weight="bold">输出：优秀</text>
+    <rect x="320" y="222" width="180" height="46" rx="10" fill="#eef6ff" stroke="#3b82f6" stroke-width="2"/>
+    <text x="410" y="251" text-anchor="middle" font-size="13" fill="#1d4ed8" font-weight="bold">输出：及格</text>
+    <rect x="650" y="222" width="170" height="46" rx="10" fill="#f1f5f9" stroke="#94a3b8" stroke-width="2"/>
+    <text x="735" y="251" text-anchor="middle" font-size="13" fill="#334155" font-weight="bold">输出：不及格</text>
+
+    <line x1="170" y1="166" x2="170" y2="218" stroke="#3b82f6" stroke-width="2.2"/>
+    <polygon points="170,222 164,210 176,210" fill="#3b82f6"/>
+    <text x="184" y="198" font-size="11" fill="#1d4ed8">是</text>
+
+    <line x1="410" y1="166" x2="410" y2="218" stroke="#3b82f6" stroke-width="2.2"/>
+    <polygon points="410,222 404,210 416,210" fill="#3b82f6"/>
+    <text x="424" y="198" font-size="11" fill="#1d4ed8">是</text>
+
+    <text x="430" y="300" text-anchor="middle" font-size="12" fill="#8d9d94">一旦某条成立，后面的条件就再也不看了——所以"先严后松"</text>
+  </svg>
+  <div class="caption">图 3（SVG）：判断链从上往下执行，命中即停</div>
+</figure>
+
+<div class="code-card">
+  <div class="code-head">
+    <span class="dot d1"></span><span class="dot d2"></span><span class="dot d3"></span>
+    <span class="file">成绩分档（正确顺序）</span>
+    <span class="lang">Python</span>
+  </div>
+  <pre><code>score = int(input("请输入成绩："))
+
+if score &gt;= 90:          # 最严的条件放最前面
+    print("优秀")
+elif score &gt;= 60:        # 次严的放中间
+    print("及格")
+else:                    # 剩下的都归我
+    print("不及格")</code></pre>
+  <div class="out"><b>运行过程</b>　输入 <em>75</em> → 及格　｜　输入 <em>95</em> → 优秀</div>
+</div>
+
+<div class="box warn">
+  <span class="lb">顺序颠倒会出大乱子：</span>
+  如果写成 <code class="inline">if score &gt;= 60</code> 在前、<code class="inline">elif score &gt;= 90</code> 在后，
+  那么输入 95 时，第一条 <code class="inline">95 &gt;= 60</code> 就成立了，
+  程序会立刻输出"及格"，<strong>根本不会去看后面那条"优秀"</strong>。<br>
+  <strong>牢记：范围越窄、要求越严的条件，越要写在前面。</strong>
+</div>
+
+<h3 id="s2-2">2.2 常见判断场景</h3>
+
+<p>二级的判断题翻来覆去就是这几种，我们一次性认全：</p>
+
+<table class="styled">
+  <thead><tr><th>要判断什么</th><th>怎么写</th><th>说明</th></tr></thead>
+  <tbody>
+    <tr><td>是否是偶数</td><td><code class="inline">n % 2 == 0</code></td><td>除以 2 余数为 0</td></tr>
+    <tr><td>是否是 3 的倍数</td><td><code class="inline">n % 3 == 0</code></td><td>同理</td></tr>
+    <tr><td>是否在 1~100 之间</td><td><code class="inline">1 &lt;= n &lt;= 100</code></td><td>Python 支持这种连写</td></tr>
+    <tr><td>是否同时满足两个条件</td><td><code class="inline">a &gt; 0 and b &gt; 0</code></td><td>两个都要真</td></tr>
+    <tr><td>是否满足其中之一</td><td><code class="inline">a == 1 or a == 2</code></td><td>一个真就够了</td></tr>
+    <tr><td>是否不是某个值</td><td><code class="inline">not (a == 0)</code></td><td>等价于 <code class="inline">a != 0</code></td></tr>
+    <tr><td>字符是否是大写字母</td><td><code class="inline">'A' &lt;= ch &lt;= 'Z'</code></td><td>用 ASCII 顺序比较</td></tr>
+  </tbody>
+</table>
+
+<div class="box tip">
+  <span class="lb">Python 的"连写"很好用：</span>
+  <code class="inline">1 &lt;= n &lt;= 100</code> 和 <code class="inline">1 &lt;= n and n &lt;= 100</code> 完全等价，
+  但写起来更短、更不容易错。<strong>这种写法只有 Python 才支持，用的时候很得意。</strong>
+</div>
+
+<!-- ============ 3 ============ -->
+<div class="section-header" id="s3">
+  <h2>3　用逻辑运算组合条件</h2>
+  <div class="en-title">Combining Conditions</div>
+</div>
+
+<p>嵌套分支有个"笨兄弟"——用 <code class="inline">and</code> 把两个条件直接拼起来，往往能少写好几行。</p>
+
+<div class="code-card">
+  <div class="code-head">
+    <span class="dot d1"></span><span class="dot d2"></span><span class="dot d3"></span>
+    <span class="file">同一个判断，两种写法</span>
+    <span class="lang">Python</span>
+  </div>
+  <pre><code>hp = 20
+gold = 5
+
+# 写法一：嵌套（两层缩进）
+if hp &gt; 0:
+    if gold &gt;= 10:
+        print("可以买药水")
+
+# 写法二：用 and 合并（一层缩进，更清爽）
+if hp &gt; 0 and gold &gt;= 10:
+    print("可以买药水")</code></pre>
+  <div class="out"><b>结果</b>　两种写法效果完全一样，都不会输出（因为金币不够）</div>
+</div>
+
+<div class="box remember">
+  <span class="lb">什么时候用嵌套、什么时候用 and？</span><br>
+  <b>条件要"先判断一个，再看要不要问下一个"</b> → 用嵌套；<br>
+  <b>几个条件地位平等、都要同时成立</b> → 用 <code class="inline">and</code>。<br>
+  <strong>能一行说清的事，就别叠三层。</strong>
+</div>
+
+<div class="cast anya">
+  <img class="ava" src="../assets/avatars/anya.webp" alt="安雅" onerror="this.style.display='none'">
+  <div class="bubble">
+    <div class="who">安雅 · 红发队长</div>
+    我审新兵的时候只用一句话：<strong>"十八岁以上、体检合格、愿意守夜"</strong>——
+    三个条件并列，中间用 <code>and</code> 串起来就行。<br>
+    要是我真的一层一层嵌套着问，新兵们早排队排到溪谷对岸去了。
+  </div>
+</div>
+
+<!-- ============ 4 ============ -->
+<div class="section-header" id="s4">
+  <h2>4　缩进就是层级</h2>
+  <div class="en-title">Indentation Is Hierarchy</div>
+</div>
+
+<p>Python 用缩进表示"谁属于谁"。嵌套越深，缩进越多。
+这个规则简单，但它是二级考卷里最容易看走眼的地方。</p>
+
+<figure class="figure">
+  <svg class="diagram" viewBox="0 0 860 300" role="img" aria-label="缩进对应的层级">
+    <text x="24" y="34" font-size="14" font-weight="bold" fill="#1f2937">数一数缩进了几格，就知道它属于谁</text>
+
+    <rect x="40" y="60" width="780" height="46" rx="10" fill="#eef6ff" stroke="#3b82f6" stroke-width="1.8"/>
+    <text x="60" y="89" font-size="13" font-family="Consolas,monospace" fill="#1d4ed8">if score &gt;= 60:</text>
+    <text x="740" y="89" font-size="11.5" fill="#3b6ea8">缩进 0 格 → 第 1 层</text>
+
+    <rect x="70" y="114" width="750" height="46" rx="10" fill="#fff6ec" stroke="#ff6b35" stroke-width="1.8"/>
+    <text x="94" y="143" font-size="13" font-family="Consolas,monospace" fill="#c1440e">if score &gt;= 90:</text>
+    <text x="700" y="143" font-size="11.5" fill="#a85728">缩进 4 格 → 第 2 层</text>
+
+    <rect x="100" y="168" width="720" height="46" rx="10" fill="#e9f8ef" stroke="#2e9e5b" stroke-width="1.8"/>
+    <text x="128" y="197" font-size="13" font-family="Consolas,monospace" fill="#1f7a44">print("优秀")</text>
+    <text x="700" y="197" font-size="11.5" fill="#3b7c5b">缩进 8 格 → 第 3 层</text>
+
+    <rect x="70" y="222" width="750" height="46" rx="10" fill="#f4f0ff" stroke="#8b5cf6" stroke-width="1.8"/>
+    <text x="94" y="251" font-size="13" font-family="Consolas,monospace" fill="#6d28d9">else:</text>
+    <text x="690" y="251" font-size="11.5" fill="#7c5cd0">缩进 4 格 → 和外层 if 同伙</text>
+
+    <text x="430" y="290" text-anchor="middle" font-size="12" fill="#8d9d94">上例中 else 属于【里面那个 if】，而不是最外层那个</text>
+  </svg>
+  <div class="caption">图 4（SVG）：缩进的格数，就是它所在的楼层</div>
+</figure>
+
+<div class="box warn">
+  <span class="lb">最容易错的地方：</span>
+  上图的 <code class="inline">else</code> 缩进了 4 格，所以它属于<b>里面那个 <code class="inline">if score &gt;= 90</code></b>，
+  而不是最外层那个。<br>
+  <strong>看代码时，先对齐缩进，再判断"谁和谁是一对"。</strong>
+</div>
+
+
+
+<!-- ============ 5 ============ -->
+<div class="section-header" id="s5">
+  <h2>5　代码实战</h2>
+  <div class="en-title">Level Practice</div>
+</div>
+
+<div class="level-card">
+  <div class="lc-head"><span class="n">关卡</span><h4>村庄守护者</h4><span class="go">进入关卡 →</span></div>
+  <div class="lc-body">
+    <div class="story">
+      <b>故事：</b>溪谷边的村庄有两个入口，一个在左边、一个在右边。
+      食人魔鬼鬼祟祟，时而在左、时而在右——<b>你没法提前知道它从哪边来。</b><br>
+      于是你只能来回巡逻：<b>走到左边的路口看一眼，再走到右边的路口看一眼。</b>
+      哪边有人，就揍哪边。
+    </div>
+  <figure class="pic ai-added"><img src="../assets/illustrations/py-L2-04-02_chain_branches.webp" alt="AI配图：py-L2-04-02_chain_branches.webp"></figure>
+    <figure class="pic">
+      <img src="../assets/stages/py-L2-04-stage1_village_guardian.webp" alt="村庄守护者 关卡截图"
+           onerror="this.closest('.pic').classList.add('missing')">
+      <div class="ph">
+        <div class="fn">assets/stages/py-L2-04-stage1_village_guardian.webp</div>
+        <div class="ds">【关卡截图位】请把《村庄守护者》的游戏画面截图放到此处（放入 assets/stages/ 目录，文件名为 py-L2-04-stage1_village_guardian.webp）。</div>
+      </div>
+      <figcaption>关卡实况：村庄守护者</figcaption>
+    </figure>
+    <p><strong>思路：</strong>看上面的关卡实况——两个村口分别在左和右，你得来回巡逻。
+    把"循环 + 两次判断"合起来用：<b>每跑到一个路口，就先看一眼有没有敌人。</b><br>
+    注意：两个 <code class="inline">if</code> 是<strong>各自独立</strong>判断的——
+    左边有没有敌人、右边有没有敌人，互不干扰。</p>
+    <div class="code-card">
+      <div class="code-head">
+        <span class="dot d1"></span><span class="dot d2"></span><span class="dot d3"></span>
+        <span class="file">重点示例：一个路口的"看一眼再动手"</span>
+        <span class="lang">Python</span>
+      </div>
+      <pre><code>while True:
+    hero.moveXY(35, 34)                 # 跑到左边路口
+    leftEnemy = hero.findNearestEnemy() # 看一眼
+    if leftEnemy:
+        hero.attack(leftEnemy)
+        hero.attack(leftEnemy)
+
+    # 右侧路口照抄一遍，换个变量名即可……</code></pre>
+      <div class="out"><b>要点</b>　两次变量、两次判断，各自管好自己的那一侧</div>
+    </div>
+    <div class="box info">
+      <span class="lb">看仔细：这里有两个变量</span><br>
+      <code class="inline">leftEnemy</code> 记录左边看到的敌人，
+      <code class="inline">rightEnemy</code> 记录右边看到的敌人。<br>
+      <strong>为什么要用两个名字？</strong>因为你在左边找完之后又走到了右边，
+      如果共用同一个变量，它就会被新的结果覆盖，你就分不清哪只是哪只了。
+      这和一级"名称大师"里那三只木箱是同一个道理。
+    </div>
+    <div class="box tip">
+      <span class="lb">想一想：</span>如果把第二个 <code class="inline">if rightEnemy:</code> 删掉会怎样？
+      英雄走到右边就只是站着——<b>看到敌人也不动手，白挨一顿打。</b>
+      判断写不写，取决于你想不想对那种情况作出反应。
+    </div>
+    <a class="btn-go" href="https://codecombat.cn/" target="_blank" rel="noopener">去扣哒世界闯这一关 →</a>
+  </div>
+</div>
+
+<!-- ============ 6 ============ -->
+<div class="section-header" id="s6">
+  <h2>6　常见陷阱</h2>
+  <div class="en-title">Common Pitfalls</div>
+</div>
+
+<div class="cast duck">
+  <img class="ava" src="../assets/ducks/duck_naria.webp" alt="扣哒鸭" onerror="this.style.display='none'">
+  <div class="bubble">
+    <div class="who">扣哒鸭 · 调试官</div>
+    嵌套分支的错误，99% 都在"数缩进"上。四条，看完你能少熬两小时夜。
+  </div>
+</div>
+
+<div class="pit">
+  <div class="pt">
+    <div class="x">1</div>
+    <div class="t"><b>else 跟错了 if。</b>以为 <code class="inline">else</code> 属于最外层，其实它属于里面那个。</div>
+  </div>
+  <div class="duck">
+    <img src="../assets/ducks/duck_hattori.webp" alt="扣哒鸭" onerror="this.style.display='none'">
+    <div class="dt"><b>扣哒鸭：</b><strong>else 永远和"离它最近、缩进相同的那个 if"配对。</strong>
+    数缩进，别靠感觉。看不准就拿手指头在屏幕上比一比。</div>
+  </div>
+  <div class="fix"><b>正确做法：</b>看缩进格数，同缩进的 if / elif / else 才是一家人</div>
+</div>
+
+<div class="pit">
+  <div class="pt">
+    <div class="x">2</div>
+    <div class="t"><b>判断链顺序写反。</b>把宽松条件写在前面，导致后面的永远执行不到。</div>
+  </div>
+  <div class="duck">
+    <img src="../assets/ducks/duck_zana.webp" alt="扣哒鸭" onerror="this.style.display='none'">
+    <div class="dt"><b>扣哒鸭：</b><strong>先严后松。</strong>
+    <code>score &gt;= 90</code> 一定要写在 <code>score &gt;= 60</code> 前面。
+    写反了程序不会报错，只会安安静静地给你一个错答案——这种错最难发现。</div>
+  </div>
+  <div class="fix"><b>正确做法：</b>范围窄的、要求高的条件放最上面</div>
+</div>
+
+<div class="pit">
+  <div class="pt">
+    <div class="x">3</div>
+    <div class="t"><b>该用 and 的地方硬套两层 if。</b>代码又长又难读。</div>
+  </div>
+  <div class="duck">
+    <img src="../assets/ducks/duck_illia.webp" alt="扣哒鸭" onerror="this.style.display='none'">
+    <div class="dt"><b>扣哒鸭：</b>两个条件地位平等、都要成立？<strong>那就用 <code>and</code> 一行写完。</strong>
+    嵌套是留给"先看第一步结果、再决定要不要看第二步"的场合。别用大炮打蚊子。</div>
+  </div>
+  <div class="fix"><b>正确写法：</b><code class="inline">if a &gt; 0 and b &gt; 0:</code></div>
+</div>
+
+<div class="pit">
+  <div class="pt">
+    <div class="x">4</div>
+    <div class="t"><b>用 <code class="inline">=</code> 代替 <code class="inline">==</code></b>，或用 <code class="inline">=&lt;</code> 这种不存在的写法。</div>
+  </div>
+  <div class="duck">
+    <img src="../assets/ducks/duck_senick.webp" alt="扣哒鸭" onerror="this.style.display='none'">
+    <div class="dt"><b>扣哒鸭：</b>比较要用 <code>==</code>（两个等号）；
+    "小于等于"要写成 <code>&lt;=</code>，<strong>不是 <code>=&lt;</code></strong>，也不是数学课上的 <code>≤</code>。
+    中文输入法下的符号 Python 一概不认。</div>
+  </div>
+  <div class="fix"><b>正确写法：</b><code class="inline">if a == 5:</code>　<code class="inline">if a &lt;= 100:</code></div>
+</div>
+
+<!-- ============ 7 ============ -->
+<div class="section-header" id="s7">
+  <h2>7　题目练习</h2>
+  <div class="en-title">Practice</div>
+</div>
+
+<p>下面 6 道题围绕多层分支展开，前 2 道改编自真题，后 4 道为原创练习题。</p>
+
+<div class="exam">
+  <div class="eh"><span class="src">改编自 2026 年 9 月 · Python 一级 · 判断题第 4 题</span><span class="tp">判断题</span></div>
+  <div class="eb">
+    <div class="q">下列 Python 代码执行时如果先后输入 10 和 10，则将输出 <code class="inline">10小于等于10</code>。（　　）</div>
+    <pre>1  N = int(input())
+2  M = int(input())
+3
+4  if N &gt; M:
+5      print(f"{N}大于{M}")
+6  else:
+7      print(f"{N}小于等于{M}")</pre>
+    <details><summary>查看答案与详解</summary>
+      <div class="ans"><b>答案：正确（√）</b>。N = 10、M = 10，<code class="inline">10 &gt; 10</code> 不成立，
+      走 else 分支，输出 <code class="inline">10小于等于10</code>。<br>
+      <b>提示：</b>相等的情况落在 else 里，所以 else 的措辞必须是"小于<strong>等于</strong>"。<br>
+      <span class="tagline">对应小节</span>2.1 判断链的顺序。</div>
+    </details>
+  </div>
+</div>
+
+<div class="exam">
+  <div class="eh"><span class="src">改编自 2026 年 9 月 · Python 一级 · 第 10 题</span><span class="tp">单选题</span></div>
+  <div class="eb">
+    <div class="q">下列 Python 代码执行后，其输出是（　　）。</div>
+    <pre>1  for i in range(1,5):
+2      if i % 3 == 0:
+3          print(i, end = "+")
+4          continue
+5      else:
+6          print(i, end = "-")
+7      break
+8  print(i, "END", end = "#")</pre>
+    <div class="opt"><i>A.</i>1-1　　<i>B.</i>1+1 END#　　<i>C.</i>1+1-2-2 END#　　<i>D.</i>1-1 END#</div>
+    <details><summary>查看答案与详解</summary>
+      <div class="ans"><b>答案：D</b>。i = 1 时 <code class="inline">1 % 3 == 0</code> 不成立 → 走 else，输出 <code class="inline">1-</code>；
+      接着执行 <code class="inline">break</code>，跳出整个循环。此时 i 仍为 1，最后输出 <code class="inline">1 END#</code>。<br>
+      <b>关键：</b><code class="inline">break</code> 写在 if-else 之外，所以第一轮就会结束整个循环。<br>
+      <span class="tagline">对应小节</span>2.1 判断链的顺序；4 缩进就是层级。</div>
+    </details>
+  </div>
+</div>
+
+<div class="exam">
+  <div class="eh"><span class="src ori">原创练习题</span><span class="tp">单选题</span></div>
+  <div class="eb">
+    <div class="q">下列 Python 代码执行后，输出的结果是（　　）。</div>
+    <pre>1  score = 95
+2
+3  if score &gt;= 60:
+4      print("及格")
+5  elif score &gt;= 90:
+6      print("优秀")
+7  else:
+8      print("不及格")</pre>
+    <div class="opt"><i>A.</i>及格　　<i>B.</i>优秀　　<i>C.</i>及格优秀　　<i>D.</i>不及格</div>
+    <details><summary>查看答案与详解</summary>
+      <div class="ans"><b>答案：A</b>。判断链<strong>从上往下、命中即停</strong>：
+      <code class="inline">95 &gt;= 60</code> 首先成立，于是输出"及格"，<strong>后面那条永远不会被检查</strong>。<br>
+      <b>正确写法：</b>把 <code class="inline">if score &gt;= 90:</code> 写在最前面。<br>
+      <span class="tagline">对应小节</span>2.1 判断链的顺序。</div>
+    </details>
+  </div>
+</div>
+
+<div class="exam">
+  <div class="eh"><span class="src ori">原创练习题</span><span class="tp">单选题</span></div>
+  <div class="eb">
+    <div class="q">下列 Python 代码执行后，输出的结果是（　　）。</div>
+    <pre>1  a = 7
+2
+3  if a &gt; 0:
+4      if a % 2 == 0:
+5          print("正偶数")
+6      else:
+7          print("正奇数")
+8  else:
+9      print("非正数")</pre>
+    <div class="opt"><i>A.</i>正偶数　　<i>B.</i>正奇数　　<i>C.</i>非正数　　<i>D.</i>什么都不输出</div>
+    <details><summary>查看答案与详解</summary>
+      <div class="ans"><b>答案：B</b>。先看外层：<code class="inline">7 &gt; 0</code> 成立，进入内层；
+      再看内层：<code class="inline">7 % 2 == 0</code> 不成立（7 是奇数），所以走内层的 else，
+      输出 <strong>"正奇数"</strong>。<br>
+      <b>易错点：</b>第 7 行的 <code class="inline">else</code> 缩进 4 格，属于内层 if；
+      第 8 行的 <code class="inline">else</code> 顶格，属于外层 if。两者不是一回事。<br>
+      <span class="tagline">对应小节</span>1 多层分支；4 缩进就是层级。</div>
+    </details>
+  </div>
+</div>
+
+<div class="exam">
+  <div class="eh"><span class="src ori">原创练习题</span><span class="tp">判断题</span></div>
+  <div class="eb">
+    <div class="q">在 Python 中，<code class="inline">1 &lt;= n &lt;= 100</code> 与
+    <code class="inline">1 &lt;= n and n &lt;= 100</code> 的判断结果完全一样。（　　）</div>
+    <details><summary>查看答案与详解</summary>
+      <div class="ans"><b>答案：正确（√）</b>。Python 允许把区间判断"连写"，
+      <code class="inline">1 &lt;= n &lt;= 100</code> 就是"n 同时大于等于 1 且小于等于 100"。<br>
+      <b>注意：</b>这种连写是 Python 的特色（有些语言不支持），
+      在其他语言里写成这样可能会得到完全不同的结果。<br>
+      <span class="tagline">对应小节</span>2.2 常见判断场景。</div>
+    </details>
+  </div>
+</div>
+
+<div class="exam">
+  <div class="eh"><span class="src ori">原创练习题</span><span class="tp">编程题</span></div>
+  <div class="eb">
+    <div class="q">题目要求：输入一个整数，按下表规则输出它的类型——
+    大于 0 且是偶数输出 <code class="inline">正偶数</code>；大于 0 且是奇数输出 <code class="inline">正奇数</code>；
+    等于 0 输出 <code class="inline">零</code>；小于 0 输出 <code class="inline">负数</code>。</div>
+    <details><summary>查看参考答案与要点</summary>
+      <div class="ans">
+<pre style="margin:0;background:#1b2a21;color:#c9d6cd;border-radius:10px;padding:14px 16px">n = int(input("请输入一个整数："))
+
+if n &gt; 0:
+    # 正数里再分奇偶
+    if n % 2 == 0:
+        print("正偶数")
+    else:
+        print("正奇数")
+elif n == 0:
+    print("零")
+else:
+    print("负数")</pre>
+      <p style="margin-top:12px"><b>要点：</b><br>
+      ① "正数里再分奇偶"这一步必须用<strong>嵌套</strong>——因为奇偶只在正数范围内讨论；<br>
+      ② 也可以写成 <code class="inline">if n &gt; 0 and n % 2 == 0:</code> 的两条并列判断，
+      但嵌套写法更贴近"先判断正负，再判断奇偶"的思路；<br>
+      ③ 注意 <code class="inline">elif n == 0</code> 和最后的 <code class="inline">else</code> 要顶格书写。<br>
+      <span class="tagline">对应小节</span>1 多层分支；2.2 常见判断场景。</p>
+      </div>
+    </details>
+  </div>
+</div>
+
+<!-- ============ 8 ============ -->
+<div class="section-header" id="s8">
+  <h2>8　本单元小结</h2>
+  <div class="en-title">Unit Summary</div>
+</div>
+
+<div class="cast teacher">
+  <img class="ava" src="../assets/avatars/hushbaum.webp" alt="贺舒曼" onerror="this.style.display='none'">
+  <div class="bubble">
+    <div class="who">贺舒曼 · 镜中先知</div>
+    分歧越长，越需要秩序。记住三句话：<br>
+    <strong>一、嵌套就是"先问一个，再问下一个"；缩进几格，就在第几层。</strong><br>
+    <strong>二、判断链从上往下、命中即停，所以要"先严后松"。</strong><br>
+    <strong>三、条件平等就用 and 并列，别硬叠三层。</strong><br>
+    你们现在已经能写出"会思考"的程序了——下一单元，我们让它学会"重复地思考"。
+  </div>
+</div>
+
+<div class="summary">
+  <h3>你在双岔迷宫学到了什么</h3>
+  <ul>
+    <li><strong>嵌套分支</strong>——分支里面再写分支；外层的答案决定要不要问内层。</li>
+    <li><strong>缩进即层级</strong>——同缩进的 if / elif / else 是一家人，多缩进一层就是进了里屋。</li>
+    <li><strong>判断链</strong>——<code class="inline">if - elif - else</code> 从上往下判断，<strong>命中即停</strong>，所以要<strong>先严后松</strong>。</li>
+    <li><strong>逻辑组合</strong>——<code class="inline">and</code> 全真才真、<code class="inline">or</code> 一真则真、<code class="inline">not</code> 取反。</li>
+    <li><strong>常见判断</strong>——奇偶用 <code class="inline">% 2</code>，区间可用连写 <code class="inline">1 &lt;= n &lt;= 100</code>。</li>
+    <li><strong>两个变量的用处</strong>——左边一只、右边一只，互不覆盖。</li>
+  </ul>
+</div>
+
+<div class="pager">
+  <a href="py-2-03.html"><div class="k">← 上一单元</div><div class="v">密文石桥 · ASCII 编码与数据类型转换</div></a>
+  <a href="../index.html" target="_top" class="back"><div class="k">返回</div><div class="v">考纲之路 · 总目录</div></a>
+  <a href="py-2-05.html"><div class="k">下一单元 →</div><div class="v">漩涡阶梯 · 多层循环结构</div></a>
+</div>
+
+<div class="cta">
+  <h3>下一站：漩涡阶梯</h3>
+  <p>分支会嵌套，循环其实也会。溪谷深处那道绕着漩涡盘旋的石阶，
+  一圈套着一圈——走完这一圈，还有下一圈。</p>
+  <a class="btn-go" href="https://codecombat.cn/" target="_blank" rel="noopener">加入扣哒世界，把这条考纲之路走一遍 →</a>
+</div>
+
+</div><!-- /container -->
+</div><!-- /page -->
+
+<script>
+const KEYWORDS = new Set(("while for if elif else break continue def return pass not and or in is None True False " +
+  "int float bool str list dict tuple set input print range len abs max min round pow import math random chr ord").split(" "));
+
+function esc(s){ return s.replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;'); }
+
+function highlight(src){
+  let out = '', i = 0;
+  const n = src.length;
+  while (i < n){
+    const c = src[i];
+    if (c === '#'){
+      let j = src.indexOf('\n', i); if (j < 0) j = n;
+      out += '<span class="cm">' + esc(src.slice(i, j)) + '</span>';
+      i = j; continue;
+    }
+    if (c === '"' || c === "'"){
+      let j = i + 1;
+      while (j < n && src[j] !== c){ if (src[j] === '\\') j++; j++; }
+      j = Math.min(j + 1, n);
+      out += '<span class="st">' + esc(src.slice(i, j)) + '</span>';
+      i = j; continue;
+    }
+    if (/[0-9]/.test(c)){
+      let j = i;
+      while (j < n && /[0-9.]/.test(src[j])) j++;
+      out += '<span class="nu">' + esc(src.slice(i, j)) + '</span>';
+      i = j; continue;
+    }
+    if (/[A-Za-z_]/.test(c)){
+      let j = i;
+      while (j < n && /[A-Za-z0-9_]/.test(src[j])) j++;
+      const w = src.slice(i, j);
+      if (KEYWORDS.has(w)) out += '<span class="kw">' + esc(w) + '</span>';
+      else if (src[j] === '(') out += '<span class="fn">' + esc(w) + '</span>';
+      else out += esc(w);
+      i = j; continue;
+    }
+    out += esc(c); i++;
+  }
+  return out;
+}
+
+document.querySelectorAll('.code-card pre code').forEach(block => {
+  block.innerHTML = highlight(block.textContent);
+});
+
+if (location.search.indexOf('expand') >= 0) {
+  document.querySelectorAll('details').forEach(d => d.open = true);
+}
+document.querySelectorAll('.sidebar-nav a').forEach(a => {
+  a.addEventListener('click', () => {
+    if (window.innerWidth <= 900) document.querySelector('.sidebar-nav').classList.remove('active');
+  });
+});
+</script>
+</body>
+</html>
