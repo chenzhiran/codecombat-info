@@ -1,0 +1,1042 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="copyright" content="CodeCombat Inc. codecombat.cn">
+<title>塔身回廊 · 图与图的遍历 | 扣哒考级 · GESP C++ 七级</title>
+<style>
+  :root{
+    --primary:#2563eb; --primary-light:#4f8ff0; --primary-lighter:#eaf1fe; --primary-dark:#1b47a8;
+    --brand:#ff6b35; --brand-dark:#e8541f; --brand-soft:#fff3ec;
+    --night:#131c2b; --night-2:#1e2a3a; --gold:#f5b301;
+    --text:#242e3d; --dim:#68788f; --dim2:#93a2b6;
+    --bg:#ffffff; --bg-soft:#f7f9fd; --line:#e2e9f4; --sidebar:274px;
+    --code-bg:#131a26; --code-tx:#c8d3e0;
+    --code-kw:#c678dd; --code-st:#98c379; --code-nu:#d19a66; --code-cm:#5f7488; --code-fn:#e5c07b;
+  }
+  *{margin:0;padding:0;box-sizing:border-box}
+  html{scroll-behavior:smooth}
+  body{font-family:"PingFang SC","Microsoft YaHei","Segoe UI",-apple-system,sans-serif;line-height:1.9;color:var(--text);background:var(--bg);font-size:15.5px}
+  .sidebar-nav{position:fixed;top:0;left:0;width:var(--sidebar);height:100vh;overflow-y:auto;background:linear-gradient(180deg,#0c1626,#14243c);padding:14px 0 40px;z-index:100;border-right:3px solid var(--brand);transition:transform .3s ease}
+  .sidebar-nav::-webkit-scrollbar{width:5px}
+  .sidebar-nav::-webkit-scrollbar-thumb{background:var(--brand);border-radius:4px}
+  .sb-brand{display:flex;align-items:center;gap:10px;padding:10px 13px 12px;border-bottom:1px solid #233752;margin-bottom:8px}
+  .sidebar-nav a.sb-logo{display:flex;align-items:center;justify-content:center;flex-shrink:0;padding:0;border-left:none;transition:.2s}
+  .sb-logo:hover{transform:scale(1.08)}
+  .sb-logo img{height:34px;width:34px;display:block;object-fit:contain;border-radius:8px}
+  .sb-brand b{color:#f2f6fa;font-size:14px;letter-spacing:.5px;display:block;line-height:1.4}
+  .sb-brand span{color:#7f95ab;font-size:11.5px;display:block;line-height:1.4}
+  .nav-title{color:#ffb894;font-size:12px;font-weight:800;padding:10px 18px 6px;letter-spacing:1.2px}
+  .sidebar-nav a{display:block;color:#c3d0dc;text-decoration:none;padding:6px 18px;font-size:12.5px;line-height:1.55;border-left:3px solid transparent;transition:.18s}
+  .sidebar-nav a:hover{color:#fff;background:rgba(255,107,53,.16);border-left-color:var(--brand)}
+  .sidebar-nav a.nav-section{color:#ffb894;font-weight:700;font-size:13px;margin-top:11px;padding-top:10px;border-top:1px solid #233752}
+  .sidebar-nav a.nav-section:first-of-type{border-top:none;margin-top:0;padding-top:6px}
+  .sidebar-nav a.nav-sub{padding-left:30px;color:#93a8bc;font-size:12px}
+  .sidebar-nav a.nav-sub:hover{color:#fff}
+  .sb-back{margin:16px 14px 0;display:block;text-align:center;padding:9px;border-radius:9px;background:#1e304a;color:#a9c0d6 !important;font-size:12px;font-weight:700;border-left:none !important}
+  .sb-back:hover{background:var(--brand) !important;color:#fff !important}
+  .nav-toggle{display:none;position:fixed;top:14px;left:14px;z-index:120;background:var(--brand);color:#fff;border:none;border-radius:9px;padding:9px 13px;font-size:15px;cursor:pointer;box-shadow:0 4px 14px rgba(0,0,0,.25)}
+  .page{margin-left:var(--sidebar)}
+  .hero{position:relative;overflow:hidden;padding:44px 52px;color:#fff;background:linear-gradient(125deg,#0a1220 0%,#16294a 46%,#8a3a16 132%)}
+  .hero::after{content:"";position:absolute;right:-90px;top:-110px;width:400px;height:400px;border-radius:50%;background:radial-gradient(circle,rgba(245,179,1,.30),transparent 68%)}
+  .hero-top{display:flex;gap:36px;align-items:center;position:relative;z-index:2}
+  .hero-txt{flex:1;min-width:0}
+  .hero .crumb{font-size:11.5px;color:#ffb894;letter-spacing:1.5px;font-weight:700;margin-bottom:14px}
+  .hero h1{font-size:31px;font-weight:800;line-height:1.3;letter-spacing:.6px;margin-bottom:8px}
+  .hero h1 .sub{display:block;font-size:18px;font-weight:700;color:#ffd2b3;margin-top:6px;letter-spacing:.3px}
+  .hero .en{font-size:13px;color:#9db4c8;font-style:italic;margin-bottom:18px}
+  .hero .tags{display:flex;flex-wrap:wrap;gap:8px}
+  .tag{font-size:11.5px;padding:4px 12px;border-radius:20px;background:rgba(255,255,255,.12);border:1px solid rgba(255,255,255,.22);color:#e8f0f6;font-weight:600}
+  .tag.hot{background:rgba(255,107,53,.92);border-color:transparent;color:#fff}
+  .hero-card{flex-shrink:0;width:200px;text-align:center}
+  .hero-card .ava{width:148px;height:148px;border-radius:50%;object-fit:cover;object-position:top center;border:4px solid rgba(255,180,140,.6);box-shadow:0 14px 34px rgba(0,0,0,.45);background:#24344a}
+  .hero-card .nm{font-size:15px;font-weight:800;color:#fff;margin-top:10px}
+  .hero-card .ti{font-size:11.5px;color:#ffb894;margin-top:2px}
+  .container{max-width:1080px;margin:0 auto;padding:38px 52px 70px}
+  .lead{font-size:15.5px;line-height:2.05;color:#333f52;background:linear-gradient(120deg,#fff8f3,#f7fbf8);border-left:5px solid var(--brand);border-radius:0 14px 14px 0;padding:22px 26px;margin-bottom:32px}
+  .lead b{color:var(--brand-dark)}
+  .cast{display:flex;gap:16px;align-items:flex-start;border-radius:16px;padding:18px 22px;margin:24px 0}
+  .cast .ava{width:72px;height:72px;border-radius:50%;object-fit:cover;object-position:top center;flex-shrink:0;background:#e8eef5}
+  .cast .bubble{position:relative;font-size:14px;line-height:1.95;padding-top:2px;flex:1}
+  .cast .who{font-size:12px;font-weight:800;margin-bottom:5px;letter-spacing:.5px}
+  .cast.anya{background:var(--brand-soft);border:1px solid #ffdcc9}
+  .cast.anya .who{color:var(--brand-dark)}
+  .cast.anya .bubble{color:#5c4636}
+  .cast.duck{background:#fff5f5;border:1px solid #fbd5d5}
+  .cast.duck .who{color:#b91c1c}
+  .cast.duck .bubble{color:#5c4141}
+  .cast.teacher{background:linear-gradient(120deg,#f4f7fb,#ffffff);border:1px solid #dbe4f0}
+  .cast.teacher .who{color:#1e293b}
+  .cast.teacher .bubble{color:#3c4a5a}
+  .cast.hero{background:#f2f7fd;border:1px solid #cfe0f5}
+  .cast.hero .who{color:#1b47a8}
+  .cast.hero .bubble{color:#3a4658}
+  .goal-grid{display:grid;grid-template-columns:1fr 1fr;gap:16px;margin-bottom:36px}
+  .goal{border:1px solid var(--line);border-radius:15px;padding:19px 21px;background:#fff;box-shadow:0 4px 16px rgba(31,122,68,.05)}
+  .goal h4{font-size:14px;font-weight:800;margin-bottom:11px;display:flex;align-items:center;gap:8px;color:var(--primary-dark)}
+  .goal h4 .ic{width:22px;height:22px;border-radius:7px;background:var(--primary-lighter);display:flex;align-items:center;justify-content:center;font-size:12px}
+  .goal ul{list-style:none}
+  .goal li{font-size:13.5px;color:#48576b;line-height:1.9;padding-left:18px;position:relative}
+  .goal li::before{content:"▸";position:absolute;left:0;color:var(--primary);font-weight:800}
+  .goal.syllabus li::before{content:"✓"}
+  .section-header{margin:52px 0 24px;padding-bottom:12px;border-bottom:3px solid var(--brand);display:flex;align-items:baseline;gap:14px;flex-wrap:wrap}
+  .section-header h2{font-size:22px;font-weight:800;color:var(--night);letter-spacing:.4px}
+  .section-header .en-title{font-size:12px;color:var(--dim2);font-style:italic}
+  h3{font-size:17.5px;font-weight:800;margin:34px 0 14px;color:var(--night);display:flex;align-items:center;gap:10px}
+  h3::before{content:"";width:5px;height:17px;border-radius:3px;background:var(--brand);flex-shrink:0}
+  h4{font-size:15px;font-weight:800;margin:24px 0 10px;color:#2b4260}
+  p{margin:12px 0;color:#3a4658;line-height:2}
+  strong{color:var(--primary-dark)}
+  code.inline{background:var(--primary-lighter);color:var(--primary-dark);padding:2px 7px;border-radius:6px;font-family:"SFMono-Regular",Consolas,Menlo,monospace;font-size:.9em;font-weight:600}
+  .figure{margin:24px 0;text-align:center}
+  .figure svg.diagram{max-width:100%;height:auto;background:#fff;border:1px solid var(--line);border-radius:14px;padding:10px}
+  .figure .caption{font-size:12.5px;color:var(--dim2);margin-top:9px}
+  .pic{margin:26px 0;text-align:center}
+  .pic img{max-width:100%;border-radius:16px;box-shadow:0 10px 28px rgba(30,60,45,.15);display:block;margin:0 auto}
+  .pic figcaption{font-size:12.5px;color:var(--dim2);margin-top:9px}
+  .pic .ph{display:none}
+  .pic.missing img{display:none}
+  .pic.missing .ph{display:flex;flex-direction:column;align-items:center;justify-content:center;gap:9px;border:2px dashed #c9d9e8;border-radius:16px;background:linear-gradient(135deg,#f8fbfe,#eef6ff);padding:40px 26px;color:#7a8fa8}
+  .pic.missing .ph .fn{font-family:Consolas,monospace;font-size:12.5px;color:#2563eb;font-weight:700;word-break:break-all}
+  .pic.missing .ph .ds{font-size:12.5px;line-height:1.8;max-width:560px}
+  .box{border-radius:13px;padding:16px 20px;margin:20px 0;font-size:14px;line-height:1.95}
+  .box .lb{font-weight:800;margin-right:6px}
+  .info{background:#eef6ff;border-left:5px solid #3b82f6;color:#274768}
+  .info .lb{color:#1d4ed8}
+  .tip{background:#fff9ec;border-left:5px solid #f59e0b;color:#6b4e13}
+  .tip .lb{color:#b45309}
+  .remember{background:var(--primary-lighter);border-left:5px solid var(--primary);color:#1d3a6b}
+  .remember .lb{color:var(--primary-dark)}
+  .warn{background:#fef2f2;border-left:5px solid #ef4444;color:#7f2b2b}
+  .warn .lb{color:#b91c1c}
+  .code-card{margin:20px 0;border-radius:14px;overflow:hidden;box-shadow:0 10px 28px rgba(20,40,28,.20)}
+  .code-head{display:flex;align-items:center;gap:9px;background:#1a2434;padding:9px 14px}
+  .code-head .dot{width:10px;height:10px;border-radius:50%}
+  .code-head .d1{background:#ff5f57}.code-head .d2{background:#febc2e}.code-head .d3{background:#28c840}
+  .code-head .file{color:#8fa6c0;font-size:11.5px;font-family:Consolas,monospace;margin-left:6px}
+  .code-head .lang{margin-left:auto;font-size:10.5px;font-weight:800;color:#0d141f;background:#4f8ff0;padding:2px 9px;border-radius:6px;letter-spacing:.4px}
+  .code-card pre{background:var(--code-bg);padding:18px 20px;overflow-x:auto;margin:0;font-family:"SFMono-Regular",Consolas,"Courier New",monospace;font-size:13.5px;line-height:1.85}
+  .code-card pre::-webkit-scrollbar{height:8px}
+  .code-card pre::-webkit-scrollbar-thumb{background:#31445c;border-radius:4px}
+  .code-card code{color:var(--code-tx);white-space:pre}
+  .kw{color:var(--code-kw);font-weight:600}
+  .st{color:var(--code-st)}
+  .nu{color:var(--code-nu)}
+  .cm{color:var(--code-cm);font-style:italic}
+  .fn{color:var(--code-fn)}
+  .out{background:#0f1621;color:#7fb3f5;font-family:Consolas,monospace;font-size:13px;padding:12px 20px;border-top:1px solid #22304a}
+  .out b{color:#c9d6cd;font-weight:600;font-size:11.5px;letter-spacing:1px}
+  .out.err{color:#fca5a5}
+  table.styled{width:100%;border-collapse:collapse;margin:20px 0;font-size:13.5px;border-radius:12px;overflow:hidden;box-shadow:0 4px 16px rgba(31,122,68,.07)}
+  table.styled thead{background:var(--brand)}
+  table.styled th{color:#fff;padding:11px 14px;text-align:left;font-weight:700;font-size:13px}
+  table.styled td{padding:10px 14px;border-bottom:1px solid var(--line);color:#445266;vertical-align:top}
+  table.styled tbody tr:nth-child(even){background:var(--bg-soft)}
+  table.styled tbody tr:last-child td{border-bottom:none}
+  .level-card{border:1px solid var(--line);border-radius:16px;overflow:hidden;margin:22px 0;box-shadow:0 6px 22px rgba(31,122,68,.07)}
+  .level-card .lc-head{background:linear-gradient(100deg,#17283a,#8a3a16);color:#fff;padding:15px 22px;display:flex;align-items:center;gap:12px;flex-wrap:wrap}
+  .level-card .lc-head .n{font-size:12px;font-weight:800;background:rgba(255,255,255,.2);padding:3px 10px;border-radius:20px}
+  .level-card .lc-head h4{margin:0;color:#fff;font-size:16px}
+  .level-card .lc-head .go{margin-left:auto;font-size:11.5px;color:#ffd2b3}
+  .level-card .lc-body{padding:20px 24px;background:#fff}
+  .level-card .story{background:#f9fbfd;border-left:4px solid #93c5fd;border-radius:0 10px 10px 0;padding:13px 18px;margin:0 0 16px;font-size:14px;line-height:1.95;color:#3f5163}
+  .level-card .story b{color:#1d4ed8}
+  .btn-go{display:inline-flex;align-items:center;gap:8px;background:linear-gradient(135deg,var(--brand),var(--brand-dark));color:#fff;text-decoration:none;font-weight:800;font-size:13.5px;padding:10px 22px;border-radius:11px;box-shadow:0 8px 20px rgba(255,107,53,.32);transition:.2s}
+  .btn-go:hover{transform:translateY(-2px);box-shadow:0 12px 26px rgba(255,107,53,.42)}
+  .pit{border:1px solid #f6dede;border-radius:14px;overflow:hidden;margin:16px 0;background:#fff}
+  .pit .pt{display:flex;gap:12px;padding:14px 18px;background:#fffafa;align-items:flex-start}
+  .pit .x{width:26px;height:26px;border-radius:9px;background:#fee;color:#dc2626;display:flex;align-items:center;justify-content:center;font-weight:800;flex-shrink:0;font-size:13px}
+  .pit .t{font-size:13.5px;line-height:1.9;color:#5c4a4a;flex:1}
+  .pit .t b{color:#b91c1c}
+  .pit .duck{display:flex;gap:12px;padding:13px 18px;background:#fff5f5;border-top:1px dashed #f3d0d0;align-items:flex-start}
+  .pit .duck img{width:48px;height:48px;object-fit:contain;flex-shrink:0;margin-top:2px}
+  .pit .duck .dt{font-size:13.5px;line-height:1.9;color:#7a3b3b}
+  .pit .duck .dt b{color:#b91c1c}
+  .pit .fix{padding:12px 18px;background:#f2f7fd;border-top:1px dashed #cfe0f5;font-size:13.5px;color:#1d3a6b}
+  .pit .fix b{color:var(--primary-dark)}
+  .exam{border:1px solid #dfe7f5;border-radius:15px;margin:16px 0;overflow:hidden;background:#fff;box-shadow:0 4px 16px rgba(38,62,120,.06)}
+  .exam .eh{display:flex;align-items:center;gap:10px;padding:11px 18px;background:linear-gradient(100deg,#eef4ff,#f7faff);border-bottom:1px solid #e3ebf8;flex-wrap:wrap}
+  .exam .eh .src{font-size:11px;font-weight:800;color:#fff;background:#2563eb;padding:2.5px 10px;border-radius:20px}
+  .exam .eh .src.ori{background:#4f8ff0}
+  .exam .eh .tp{font-size:11.5px;color:#5b7ba8;font-weight:700}
+  .exam .eb{padding:16px 20px}
+  .exam .q{font-weight:700;font-size:14px;color:#1e2a3e;line-height:1.9;margin-bottom:10px}
+  .exam .opt{font-size:13.5px;color:#48576b;line-height:2.05;padding-left:6px}
+  .exam .opt i{font-style:normal;font-weight:800;color:var(--primary-dark);margin-right:7px}
+  .exam pre{margin:12px 0;background:#1b2a21;border-radius:10px;padding:14px 16px;overflow-x:auto;font-family:Consolas,monospace;font-size:13px;line-height:1.8;color:var(--code-tx)}
+  .exam details{margin-top:10px;border-top:1px dashed var(--line);padding-top:10px}
+  .exam summary{cursor:pointer;font-size:12.5px;font-weight:800;color:#2563eb;outline:none;user-select:none}
+  .exam details .ans{font-size:13.5px;color:#3a4658;line-height:1.95;margin-top:9px;background:var(--bg-soft);padding:13px 16px;border-radius:10px}
+  .exam details .ans b{color:var(--primary-dark)}
+  .exam details .ans .tagline{display:inline-block;font-size:11px;background:#e0f2fe;color:#0e7490;padding:1.5px 8px;border-radius:6px;font-weight:700;margin-right:6px}
+  .summary{margin:40px 0 20px;border-radius:18px;padding:26px 30px;background:linear-gradient(130deg,#fff8f3,#ffffff);border:1px solid #ffe0cf}
+  .summary h3{margin-top:0}
+  .summary ul{list-style:none;margin-top:10px}
+  .summary li{font-size:14px;line-height:2;color:#3d4d66;padding-left:24px;position:relative}
+  .summary li::before{content:"◆";position:absolute;left:0;color:var(--brand);font-size:11px;top:6px}
+  .pager{display:flex;gap:14px;margin-top:30px;flex-wrap:wrap}
+  .pager a{flex:1;min-width:200px;text-decoration:none;border:1px solid var(--line);border-radius:14px;padding:16px 20px;background:#fff;transition:.2s;display:block}
+  .pager a:hover{border-color:var(--brand);box-shadow:0 10px 26px rgba(255,107,53,.14);transform:translateY(-2px)}
+  .pager a .k{font-size:11px;color:var(--dim2);font-weight:700;letter-spacing:1px}
+  .pager a .v{font-size:14px;font-weight:800;color:var(--night);margin-top:5px}
+  .pager a.back{background:var(--brand-soft);border-color:transparent;text-align:center}
+  .pager a.back .v{color:var(--brand-dark)}
+  .cta{margin-top:26px;border-radius:20px;padding:30px 34px;color:#fff;position:relative;overflow:hidden;background:linear-gradient(120deg,#16202f,#2b3a52 46%,#a8431c 132%)}
+  .cta::after{content:"";position:absolute;right:-70px;bottom:-90px;width:280px;height:280px;border-radius:50%;background:radial-gradient(circle,rgba(255,140,80,.45),transparent 68%)}
+  .cta h3{color:#fff;margin:0 0 10px;position:relative;z-index:2}
+  .cta h3::before{background:var(--brand)}
+  .cta p{color:#d8e0ef;font-size:13.5px;margin:0 0 18px;position:relative;z-index:2;max-width:640px}
+  .cta .btn-go{position:relative;z-index:2}
+  @media(max-width:900px){
+    .sidebar-nav{transform:translateX(-100%)}
+    .sidebar-nav.active{transform:translateX(0)}
+    .nav-toggle{display:block}
+    .page{margin-left:0}
+    .hero{padding:70px 22px 34px}
+    .hero-top{flex-direction:column-reverse;text-align:center}
+    .hero-card{width:auto}
+    .container{padding:26px 20px 60px}
+    .goal-grid{grid-template-columns:1fr}
+  }
+</style>
+</head>
+<body>
+
+<button class="nav-toggle" onclick="document.querySelector('.sidebar-nav').classList.toggle('active')">&#9776;</button>
+
+<nav class="sidebar-nav">
+  <div class="sb-brand">
+    <a class="sb-logo" href="https://codecombat.cn/" target="_blank" rel="noopener" title="访问 CodeCombat 扣哒世界官网">
+      <img src="../assets/logo.png" alt="CodeCombat 扣哒世界">
+    </a>
+    <div><b>塔身回廊</b><span>雷鸣高塔 · C++ 七级 第 3 单元</span></div>
+  </div>
+  <div class="nav-title">本单元目录</div>
+  <a href="#s0" class="nav-section">0　单元导语与目标</a>
+  <a href="#s0-1" class="nav-sub">0.1 学习目标</a>
+  <a href="#s0-2" class="nav-sub">0.2 考纲对照</a>
+  <a href="#s1" class="nav-section">1　什么是图</a>
+  <a href="#s1-1" class="nav-sub">1.1 图由点和边组成</a>
+  <a href="#s1-2" class="nav-sub">1.2 树是图的一种特殊情况</a>
+  <a href="#s2" class="nav-section">2　图的两种表示</a>
+  <a href="#s2-1" class="nav-sub">2.1 邻接矩阵与邻接表</a>
+  <a href="#s2-2" class="nav-sub">2.2 两种表示怎么选</a>
+  <a href="#s3" class="nav-section">3　图的遍历</a>
+  <a href="#s3-1" class="nav-sub">3.1 DFS：一路走到黑</a>
+  <a href="#s3-2" class="nav-sub">3.2 BFS：一圈圈往外</a>
+  <a href="#s4" class="nav-section">4　连通分量</a>
+  <a href="#s4-1" class="nav-sub">4.1 连通分量是什么</a>
+  <a href="#s4-2" class="nav-sub">4.2 数连通分量的套路</a>
+  <a href="#s5" class="nav-section">5　代码实战</a>
+  <a href="#s6" class="nav-section">6　常见陷阱</a>
+  <a href="#s7" class="nav-section">7　题目练习</a>
+  <a href="#s8" class="nav-section">8　本单元小结</a>
+  <a href="../index.html" target="_top" class="sb-back">返回考纲之路</a>
+</nav>
+
+<div class="page">
+
+<div class="hero">
+  <div class="hero-top">
+    <div class="hero-txt">
+      <div class="crumb">扣哒考级 · GESP C++ 七级 · 第 3 单元　|　雷鸣高塔 THUNDERSPIRE</div>
+      <h1>塔身回廊
+        <span class="sub">图与图的遍历</span>
+      </h1>
+      <div class="en">Graphs &amp; Graph Traversal</div>
+      <div class="tags">        <span class="tag hot">考纲 · 图</span>
+        <span class="tag">顶点与边</span>
+        <span class="tag">邻接矩阵</span>
+        <span class="tag">邻接表</span>
+        <span class="tag">连通分量</span></div>
+    </div>
+    <div class="hero-card">
+      <img class="ava" src="../assets/avatars/senick.webp" alt="塞尼克" onerror="this.style.background='#24344a';this.src='../assets/heroes/senick.webp'">
+      <div class="nm">塞尼克</div>
+      <div class="ti">沙海向导 · 你的向导</div>
+    </div>
+  </div>
+</div>
+
+<div class="container">
+
+<div class="lead">
+  塔身内部的回廊绕来绕去，有的地方拐个弯又回到了原点。<br>
+  你摊开地图一看：<b>这不像是树，倒像一张网</b>——节点之间彼此相连，
+  <b>而且可以从很多条路互相走到。</b><br>
+  塞尼克点点头：这就叫图。<b>树只能从上往下，图可以四通八达。</b>
+</div>
+
+<div class="cast teacher">
+  <img class="ava" src="../assets/avatars/senick.webp" alt="塞尼克" onerror="this.style.display='none'">
+  <div class="bubble">
+    <div class="who">塞尼克 · 沙海向导</div>
+    图是数据结构里最"自由"的一种：<strong>节点之间想连就连，没有上下级，也没有层次。</strong><br>
+    社交网络、地图导航、电路、课程依赖……<b>全都可以用图来表示。</b><br>
+    这一单元，我们学"怎么把图存进程序"和"怎么在图上走一遍"。
+  </div>
+</div>
+
+<figure class="pic">
+  <img src="../assets/illustrations/py-L7-03-01_tower_corridor.webp" alt="塔身回廊"
+       onerror="this.closest('.pic').classList.add('missing')">
+  <div class="ph">
+    <div class="fn">assets/illustrations/py-L7-03-01_tower_corridor.webp</div>
+    <div class="ds">【配图位】雷鸣高塔内部回廊的立体剖视图：一圈圈环形走廊通过多处阶梯互相连通，形成带环的网状结构；节点处亮着紫色灯标，几条不同颜色的探索路径沿廊道延伸。</div>
+  </div>
+  <figcaption>图 1：雷鸣高塔的塔身回廊——今天要从这里开始</figcaption>
+</figure>
+
+<div class="section-header" id="s0">
+  <h2>0　单元导语与目标</h2>
+  <div class="en-title">Unit Overview</div>
+
+<h3 id="s0-1">0.1 学习目标</h3>
+</div>
+
+<div class="goal-grid">
+  <h3 id="s0-2">0.2 考纲对照</h3>
+
+<div class="goal">
+    <h4><span class="ic">1</span>学完这个单元，你将能……</h4>
+    <ul>
+      <li>说清图与树的区别</li>
+      <li>分辨有向图与无向图、带权图与无权图</li>
+      <li>用邻接矩阵表示一张图</li>
+      <li>用邻接表表示一张图</li>
+      <li>在图上做 DFS 与 BFS 遍历</li>
+      <li>求出图中有几个连通分量</li>
+    </ul>
+  </div>
+  <div class="goal syllabus">
+    <h4><span class="ic">2</span>对标 GESP 考纲（C++ 七级）</h4>
+    <ul>
+      <li>理解图的基本概念：顶点、边、有向/无向、带权/无权、度</li>
+      <li>掌握图的两种存储方式：邻接矩阵与邻接表</li>
+      <li>掌握图的深度优先与广度优先遍历</li>
+      <li>考核目标：能用邻接表建图并完成遍历与连通性判断</li>
+    </ul>
+  </div>
+</div>
+
+<div class="section-header" id="s1">
+  <h2>1　什么是图</h2>
+  <div class="en-title">What Is a Graph</div>
+
+<h3 id="s1-1">1.1 图由点和边组成</h3>
+</div>
+
+<p>图由两部分组成：<strong>顶点（节点）和边（连接关系）。</strong></p>
+
+<h3 id="s1-2">1.2 树是图的一种特殊情况</h3>
+
+<figure class="figure">
+  <svg class="diagram" viewBox="0 0 860 270" role="img" aria-label="树与图的对比">
+    <text x="24" y="34" font-size="14" font-weight="bold" fill="#1f2937">树是一种"特殊的图"：没有环，且任意两点只有一条路</text>
+
+    <rect x="60" y="56" width="350" height="196" rx="12" fill="#eaf1fe" stroke="#4f8ff0" stroke-width="1.8"/>
+    <text x="235" y="84" text-anchor="middle" font-size="12.5" fill="#1d4ed8" font-weight="bold">树：有层次，无环</text>
+    <circle cx="235" cy="122" r="20" fill="#fff" stroke="#2563eb" stroke-width="2"/>
+    <text x="235" y="128" text-anchor="middle" font-size="12" fill="#1d4ed8">A</text>
+    <circle cx="165" cy="192" r="20" fill="#fff" stroke="#2563eb" stroke-width="2"/>
+    <text x="165" y="198" text-anchor="middle" font-size="12" fill="#1d4ed8">B</text>
+    <circle cx="305" cy="192" r="20" fill="#fff" stroke="#2563eb" stroke-width="2"/>
+    <text x="305" y="198" text-anchor="middle" font-size="12" fill="#1d4ed8">C</text>
+    <path d="M224 138 L176 176" stroke="#94a3b8" stroke-width="2"/>
+    <path d="M246 138 L294 176" stroke="#94a3b8" stroke-width="2"/>
+    <text x="235" y="238" text-anchor="middle" font-size="11.5" fill="#1d4ed8">每两点之间只有唯一的一条路径</text>
+
+    <rect x="446" y="56" width="360" height="196" rx="12" fill="#eaf1fe" stroke="#2563eb" stroke-width="2"/>
+    <text x="626" y="84" text-anchor="middle" font-size="12.5" fill="#1d4ed8" font-weight="bold">图：四通八达，可能有环</text>
+    <circle cx="530" cy="122" r="20" fill="#fff" stroke="#2563eb" stroke-width="2"/>
+    <text x="530" y="128" text-anchor="middle" font-size="12" fill="#1d4ed8">A</text>
+    <circle cx="700" cy="122" r="20" fill="#fff" stroke="#2563eb" stroke-width="2"/>
+    <text x="700" y="128" text-anchor="middle" font-size="12" fill="#1d4ed8">B</text>
+    <circle cx="530" cy="206" r="20" fill="#fff" stroke="#2563eb" stroke-width="2"/>
+    <text x="530" y="212" text-anchor="middle" font-size="12" fill="#1d4ed8">C</text>
+    <circle cx="700" cy="206" r="20" fill="#fff" stroke="#2563eb" stroke-width="2"/>
+    <text x="700" y="212" text-anchor="middle" font-size="12" fill="#1d4ed8">D</text>
+    <path d="M550 122 L680 122" stroke="#94a3b8" stroke-width="2"/>
+    <path d="M550 206 L680 206" stroke="#94a3b8" stroke-width="2"/>
+    <path d="M530 142 L530 186" stroke="#94a3b8" stroke-width="2"/>
+    <path d="M700 142 L700 186" stroke="#94a3b8" stroke-width="2"/>
+    <path d="M548 134 L686 194" stroke="#93b4f0" stroke-width="2" stroke-dasharray="6 4"/>
+    <text x="626" y="238" text-anchor="middle" font-size="11.5" fill="#1d4ed8">A 到 D 有好多条路，还绕出了一个环</text>
+  </svg>
+  <div class="caption">图 2（SVG）：树是图的一种特殊情况</div>
+</figure>
+
+<table class="styled">
+  <thead><tr><th>术语</th><th>含义</th></tr></thead>
+  <tbody>
+    <tr><td><strong>顶点（节点）</strong></td><td>图里的每个"点"，如 A、B、C</td></tr>
+    <tr><td><strong>边</strong></td><td>两个顶点之间的连接</td></tr>
+    <tr><td><strong>无向图</strong></td><td>边没有方向：A 能到 B，B 也能到 A</td></tr>
+    <tr><td><strong>有向图</strong></td><td>边有方向：只能从 A 到 B，不能反向</td></tr>
+    <tr><td><strong>带权图</strong></td><td>边上带着数字，如距离、花费</td></tr>
+    <tr><td><strong>度</strong></td><td>这个顶点连了几条边</td></tr>
+    <tr><td><strong>连通</strong></td><td>两个顶点之间存在路径</td></tr>
+    <tr><td><strong>环</strong></td><td>从一点出发，绕一圈又回到自己</td></tr>
+  </tbody>
+</table>
+
+<div class="section-header" id="s2">
+  <h2>2　图的两种表示</h2>
+  <div class="en-title">Two Representations</div>
+
+<h3 id="s2-1">2.1 邻接矩阵与邻接表</h3>
+</div>
+
+<h4>方式一：邻接矩阵（用二维表格记"谁和谁相连"）</h4>
+
+<figure class="figure">
+  <svg class="diagram" viewBox="0 0 860 240" role="img" aria-label="邻接矩阵">
+    <text x="24" y="34" font-size="14" font-weight="bold" fill="#1f2937">邻接矩阵：行和列都是顶点，1 表示相连</text>
+
+    <g font-family="Consolas,monospace" font-size="11.5">
+      <text x="76" y="82" fill="#64748b">A</text><text x="120" y="82" fill="#64748b">B</text>
+      <text x="164" y="82" fill="#64748b">C</text><text x="208" y="82" fill="#64748b">D</text>
+      <text x="46" y="112" fill="#64748b">A</text><text x="46" y="144" fill="#64748b">B</text>
+      <text x="46" y="176" fill="#64748b">C</text><text x="46" y="208" fill="#64748b">D</text>
+
+      <rect x="60" y="92" width="38" height="28" rx="5" fill="#eaf1fe" stroke="#4f8ff0" stroke-width="1.3"/><text x="79" y="111" text-anchor="middle" fill="#1d4ed8">0</text>
+      <rect x="104" y="92" width="38" height="28" rx="5" fill="#93b4f0" stroke="#2563eb" stroke-width="1.6"/><text x="123" y="111" text-anchor="middle" fill="#fff">1</text>
+      <rect x="148" y="92" width="38" height="28" rx="5" fill="#93b4f0" stroke="#2563eb" stroke-width="1.6"/><text x="167" y="111" text-anchor="middle" fill="#fff">1</text>
+      <rect x="192" y="92" width="38" height="28" rx="5" fill="#eaf1fe" stroke="#4f8ff0" stroke-width="1.3"/><text x="211" y="111" text-anchor="middle" fill="#1d4ed8">0</text>
+
+      <rect x="60" y="124" width="38" height="28" rx="5" fill="#93b4f0" stroke="#2563eb" stroke-width="1.6"/><text x="79" y="143" text-anchor="middle" fill="#fff">1</text>
+      <rect x="104" y="124" width="38" height="28" rx="5" fill="#eaf1fe" stroke="#4f8ff0" stroke-width="1.3"/><text x="123" y="143" text-anchor="middle" fill="#1d4ed8">0</text>
+      <rect x="148" y="124" width="38" height="28" rx="5" fill="#93b4f0" stroke="#2563eb" stroke-width="1.6"/><text x="167" y="143" text-anchor="middle" fill="#fff">1</text>
+      <rect x="192" y="124" width="38" height="28" rx="5" fill="#93b4f0" stroke="#2563eb" stroke-width="1.6"/><text x="211" y="143" text-anchor="middle" fill="#fff">1</text>
+
+      <rect x="60" y="156" width="38" height="28" rx="5" fill="#93b4f0" stroke="#2563eb" stroke-width="1.6"/><text x="79" y="175" text-anchor="middle" fill="#fff">1</text>
+      <rect x="104" y="156" width="38" height="28" rx="5" fill="#93b4f0" stroke="#2563eb" stroke-width="1.6"/><text x="123" y="175" text-anchor="middle" fill="#fff">1</text>
+      <rect x="148" y="156" width="38" height="28" rx="5" fill="#eaf1fe" stroke="#4f8ff0" stroke-width="1.3"/><text x="167" y="175" text-anchor="middle" fill="#1d4ed8">0</text>
+      <rect x="192" y="156" width="38" height="28" rx="5" fill="#eaf1fe" stroke="#4f8ff0" stroke-width="1.3"/><text x="211" y="175" text-anchor="middle" fill="#1d4ed8">0</text>
+
+      <rect x="60" y="188" width="38" height="28" rx="5" fill="#eaf1fe" stroke="#4f8ff0" stroke-width="1.3"/><text x="79" y="207" text-anchor="middle" fill="#1d4ed8">0</text>
+      <rect x="104" y="188" width="38" height="28" rx="5" fill="#93b4f0" stroke="#2563eb" stroke-width="1.6"/><text x="123" y="207" text-anchor="middle" fill="#fff">1</text>
+      <rect x="148" y="188" width="38" height="28" rx="5" fill="#eaf1fe" stroke="#4f8ff0" stroke-width="1.3"/><text x="167" y="207" text-anchor="middle" fill="#1d4ed8">0</text>
+      <rect x="192" y="188" width="38" height="28" rx="5" fill="#eaf1fe" stroke="#4f8ff0" stroke-width="1.3"/><text x="211" y="207" text-anchor="middle" fill="#1d4ed8">0</text>
+    </g>
+
+    <rect x="288" y="66" width="528" height="164" rx="12" fill="#0f1621"/>
+    <text x="312" y="94" font-family="Consolas,monospace" font-size="12.5" fill="#cfe0f5">优点：判断"两点是否相连"只需看一格</text>
+    <text x="312" y="126" font-family="Consolas,monospace" font-size="12.5" fill="#cfe0f5">缺点：顶点多、边少时，矩阵里全是 0，浪费空间</text>
+    <text x="312" y="158" font-family="Consolas,monospace" font-size="12.5" fill="#e8c766">无向图的矩阵是对称的（沿对角线翻折一样）</text>
+    <text x="312" y="190" font-family="Consolas,monospace" font-size="12.5" fill="#93b4f0">带权图：格子里的数字从 1 变成具体权值</text>
+    <text x="312" y="216" font-family="Consolas,monospace" font-size="11.5" fill="#93a2b6">适合：顶点不多、边比较密的图</text>
+  </svg>
+  <div class="caption">图 3（SVG）：邻接矩阵——一张 n×n 的 0/1 表格</div>
+</figure>
+
+<h4>方式二：邻接表（每个点记下"我能到谁"）</h4>
+
+<div class="code-card">
+  <div class="code-head">
+    <span class="dot d1"></span><span class="dot d2"></span><span class="dot d3"></span>
+    <span class="file">邻接表：用字典 + 列表最方便</span>
+    <span class="lang">C++</span>
+  </div>
+  <pre><code>// 每个顶点对应一个列表，装它能直接到达的邻居
+map&lt;string, vector&lt;string&gt;&gt; graph = {
+    {"A", {"B", "C"}},
+    {"B", {"A", "C", "D"}},
+    {"C", {"A", "B"}},
+    {"D", {"B"}}
+};
+
+for (string nb : graph["B"])
+    cout &lt;&lt; nb &lt;&lt; " ";        // A C D —— B 连了三个点
+</code></pre>
+  <div class="out"><b>要点</b>　像查通讯录：找到名字，看它能联系谁</div>
+</div>
+
+<h3 id="s2-2">2.2 两种表示怎么选</h3>
+
+<div class="box remember">
+  <span class="lb">两种表示怎么选？</span><br>
+  <b>邻接矩阵</b>：判断"两点是否相连"很快；适合顶点少、边多的<b>稠密图</b>。<br>
+  <b>邻接表</b>：省空间；遍历一个点的所有邻居很快；适合边少的<b>稀疏图</b>。<br>
+  <strong>做题时若无特殊要求，优先用邻接表（字典 + 列表），写起来最快。</strong>
+</div>
+
+<figure class="pic">
+  <img src="../assets/illustrations/py-L7-03-02_graph_adjacency_scene.webp" alt="回廊地图与邻接表"
+       onerror="this.closest('.pic').classList.add('missing')">
+  <div class="ph">
+    <div class="fn">assets/illustrations/py-L7-03-02_graph_adjacency_scene.webp</div>
+    <div class="ds">【配图位】高塔回廊的俯瞰图：一个个房间是发光的圆点，房间之间的走廊是连线，有几个房间通着三条以上走廊、有几个只通一条；旁边一块石板上把它抄成了"邻接表"表格，每一行写着"这个房间通着谁"。</div>
+  </div>
+  <figcaption>图 4：回廊地图与它的邻接表</figcaption>
+</figure>
+
+<div class="section-header" id="s3">
+  <h2>3　图的遍历</h2>
+  <div class="en-title">Traversal</div>
+
+<h3 id="s3-1">3.1 DFS：一路走到黑</h3>
+</div>
+
+<p>图上的 DFS / BFS 与六级学的一模一样，<strong>唯一的区别是必须做访问标记——因为图里可能有环。</strong></p>
+
+<div class="code-card">
+  <div class="code-head">
+    <span class="dot d1"></span><span class="dot d2"></span><span class="dot d3"></span>
+    <span class="file">图的 DFS（递归版）</span>
+    <span class="lang">C++</span>
+  </div>
+  <pre><code>set&lt;string&gt; visited;              // graph 是上面建好的邻接表
+
+void dfs(string node) {
+    if (visited.count(node)) return;    // 走过了就回头
+    visited.insert(node);
+    cout &lt;&lt; node &lt;&lt; " ";
+    for (string nxt : graph[node]) {    // 挨个访问邻居
+        dfs(nxt);
+    }
+}
+
+dfs("A");                               // A B C D
+</code></pre>
+  <div class="out"><b>OUTPUT</b>　A B C D</div>
+</div>
+
+<h3 id="s3-2">3.2 BFS：一圈圈往外</h3>
+
+<div class="code-card">
+  <div class="code-head">
+    <span class="dot d1"></span><span class="dot d2"></span><span class="dot d3"></span>
+    <span class="file">图的 BFS（队列版）</span>
+    <span class="lang">C++</span>
+  </div>
+  <pre><code>set&lt;string&gt; visited;              // graph 同上
+queue&lt;string&gt; q;
+
+visited.insert("A");
+q.push("A");
+
+while (!q.empty()) {
+    string node = q.front();
+    q.pop();
+    cout &lt;&lt; node &lt;&lt; " ";
+    for (string nxt : graph[node]) {
+        if (!visited.count(nxt)) {
+            visited.insert(nxt);
+            q.push(nxt);
+        }
+    }
+}
+</code></pre>
+  <div class="out"><b>要点</b>　与树的遍历只有一处不同：<b>必须检查"是否访问过"</b></div>
+</div>
+
+<div class="box tip">
+  <span class="lb">为什么图上一定要标记？</span>
+  因为图里可能有环。比如 A 连 B、B 连 A，不标记的话程序会<b>在 A 和 B 之间来回跳，永远停不下来</b>。<br>
+  <strong>树天生没有环，所以树的遍历可以不用 visited；但图必须用。</strong>
+</div>
+
+<div class="section-header" id="s4">
+  <h2>4　连通分量</h2>
+  <div class="en-title">Connected Components</div>
+
+<h3 id="s4-1">4.1 连通分量是什么</h3>
+</div>
+
+<p>如果一张图分成好几块互不相连的部分，每一块就是一个<strong>连通分量</strong>。</p>
+
+<div class="code-card">
+  <div class="code-head">
+    <span class="dot d1"></span><span class="dot d2"></span><span class="dot d3"></span>
+    <span class="file">数一数图里有几块</span>
+    <span class="lang">C++</span>
+  </div>
+  <pre><code>map&lt;string, vector&lt;string&gt;&gt; graph = {
+    {"A", {"B"}},
+    {"B", {"A"}},
+    {"C", {"D"}},
+    {"D", {"C"}},
+    {"E", vector&lt;string&gt;{}}      // E 谁也不连，自己是单独一块
+};
+
+set&lt;string&gt; visited;
+
+void dfs(string node) {
+    visited.insert(node);
+    for (string nxt : graph[node]) {
+        if (!visited.count(nxt)) dfs(nxt);
+    }
+}
+
+int count = 0;
+for (auto&amp; p : graph) {
+    if (!visited.count(p.first)) {   // 又发现一个没走过的点，说明是新的一块
+        dfs(p.first);
+        count = count + 1;
+    }
+}
+
+cout &lt;&lt; "连通分量个数：" &lt;&lt; count &lt;&lt; endl;    // 3
+</code></pre>
+  <div class="out"><b>OUTPUT</b>　连通分量个数：3　（{A,B}、{C,D}、{E}）</div>
+</div>
+
+<h3 id="s4-2">4.2 数连通分量的套路</h3>
+
+<div class="box remember">
+  <span class="lb">数连通分量的套路：</span>
+  遍历所有顶点，<strong>每遇到一个"还没被访问过"的点，就说明发现了一个新的连通分量</strong>，
+  然后从它出发做一次完整的 DFS（或 BFS），把这一块全部标记掉。<br>
+  <b>循环结束时，计数器就是连通分量的个数。</b>
+</div>
+
+<figure class="pic">
+  <img src="../assets/illustrations/py-L7-03-03_connected_blocks.webp" alt="数出几块连通区域"
+       onerror="this.closest('.pic').classList.add('missing')">
+  <div class="ph">
+    <div class="fn">assets/illustrations/py-L7-03-03_connected_blocks.webp</div>
+    <div class="ds">【配图位】同一张回廊图被换成两种涂色：一整片连在一起的房间涂成青色、另外两小片各自涂成琥珀色与紫色，三块之间没有走廊相连；一名学徒指着涂色后的地图在数"一共几块"。</div>
+  </div>
+  <figcaption>图 5：数一数，回廊分成几块</figcaption>
+</figure>
+
+<div class="section-header" id="s5">
+  <h2>5　代码实战</h2>
+  <div class="en-title">Level Practice</div>
+</div>
+
+<div class="level-card">
+  <div class="lc-head"><span class="n">关卡</span><h4>网格搜索</h4><span class="go">进入关卡 →</span></div>
+  <div class="lc-body">
+    <div class="story">
+      <b>故事：</b>宝藏埋在树林之间的某个位置，你只知道坐标的大致范围：
+      <b>横向在 20 到 61 之间，纵向也在某个范围里。</b><br>
+      一格一格找太慢了。塞尼克说，但只要范围明确，
+      <b>把可能的点全走一遍，肯定能找到。</b>
+    </div>
+    
+    <p><strong>思路：</strong>用双重循环枚举范围内的每一个点。
+    <b>这其实就是在遍历一张"网格图"——每个格点是一个顶点，相邻格点之间有一条边。</b></p><figure class="pic">
+      <img src="../assets/stages/py-L7-03-stage1_grid_search.webp" alt="网格搜索 关卡截图"
+           onerror="this.closest('.pic').classList.add('missing')">
+      <div class="ph">
+        <div class="fn">assets/stages/py-L7-03-stage1_grid_search.webp</div>
+        <div class="ds">【关卡截图位】请把《网格搜索》的游戏画面截图放到此处（放入 assets/stages/ 目录，文件名为 py-L7-03-stage1_grid_search.webp）。</div>
+      </div>
+      <figcaption>关卡实况：网格搜索</figcaption>
+    </figure>
+    <div class="code-card">
+      <div class="code-head">
+        <span class="dot d1"></span><span class="dot d2"></span><span class="dot d3"></span>
+        <span class="file">重点示例：枚举网格上的每个候选点</span>
+        <span class="lang">C++</span>
+      </div>
+      <pre><code>int leftBorder = 20;
+int rightBorder = 61;
+
+// 横坐标从 20 试到 61，纵坐标也逐格试一遍
+for (int x = leftBorder; x &lt;= rightBorder; x += 4) {
+    for (int y = 34; y &lt;= 46; y += 4) {
+        hero.moveXY(x, y);
+        Unit item = hero.findNearestItem();
+        if (item) {
+            hero.moveXY(item.pos.x, item.pos.y);
+        }
+    }
+}
+</code></pre>
+      <div class="out"><b>要点</b>　双重循环遍历所有候选位置；<code>for (int i = 起点; i &lt;= 终点; i += 步长)</code></div>
+    </div>
+    <div class="box info">
+      <span class="lb">和图的关联：</span>
+      把每个格点看成一个顶点，<b>相邻格点之间连一条边——这张"网格"就是一张标准的图。</b><br>
+      而"枚举每个格点"就相当于<b>把图里所有顶点都访问一遍</b>。<br>
+      <strong>很多图论问题的第一反应，就是"我能不能把它变成一张网格"。</strong>
+    </div>
+    <a class="btn-go" href="https://codecombat.cn/" target="_blank" rel="noopener">去扣哒世界闯这一关 →</a>
+  </div>
+</div>
+
+
+
+<div class="section-header" id="s6">
+  <h2>6　常见陷阱</h2>
+  <div class="en-title">Common Pitfalls</div>
+</div>
+
+<div class="cast duck">
+  <img class="ava" src="../assets/ducks/duck_senick.webp" alt="扣哒鸭" onerror="this.style.display='none'">
+  <div class="bubble">
+    <div class="who">扣哒鸭 · 调试官</div>
+    图论的坑几乎全在"环"上。四条，条条都和安全使用 visited 有关。
+  </div>
+</div>
+
+<div class="pit">
+  <div class="pt">
+    <div class="x">1</div>
+    <div class="t"><b>遍历图时忘了 visited，程序跑不完。</b></div>
+  </div>
+  <div class="duck">
+    <img src="../assets/ducks/duck_zana.webp" alt="扣哒鸭" onerror="this.style.display='none'">
+    <div class="dt"><b>扣哒鸭：</b>树没有环，图有环。
+    <strong>图的 DFS / BFS 必须用 visited 记录访问过的顶点。</strong><br>
+    这是树和图的遍历最大的区别。</div>
+  </div>
+  <div class="fix"><b>正确做法：</b>进入顶点立即标记；BFS 在入队时标记</div>
+</div>
+
+<div class="pit">
+  <div class="pt">
+    <div class="x">2</div>
+    <div class="t"><b>建无向图时只加了单向边。</b></div>
+  </div>
+  <div class="duck">
+    <img src="../assets/ducks/duck_naria.webp" alt="扣哒鸭" onerror="this.style.display='none'">
+    <div class="dt"><b>扣哒鸭：</b>无向图的 A—B 是<b>双向</b>的：<br>
+    <code>graph["A"].push_back("B")</code> 之后，还要 <code>graph["B"].push_back("A")</code>。<br>
+    只加一边，遍历时会漏掉很多点。</div>
+  </div>
+  <div class="fix"><b>正确做法：</b>无向图要加两条有向边</div>
+</div>
+
+<div class="pit">
+  <div class="pt">
+    <div class="x">3</div>
+    <div class="t"><b>邻接表里某个顶点忘了初始化。</b></div>
+  </div>
+  <div class="duck">
+    <img src="../assets/ducks/duck_hattori.webp" alt="扣哒鸭" onerror="this.style.display='none'">
+    <div class="dt"><b>扣哒鸭：</b>如果一个顶点没有任何邻居，它也得在 map 里占一个位置，
+    值是<b>空列表</b>。<br>
+    否则访问 <code>graph[v]</code> 时会临时建出一个空列表，很容易把那个顶点漏掉。</div>
+  </div>
+  <div class="fix"><b>正确做法：</b>所有顶点都要出现在同一个 map 里，没有邻居就写 <code class="inline">vector&lt;string&gt;{}</code></div>
+</div>
+
+<div class="pit">
+  <div class="pt">
+    <div class="x">4</div>
+    <div class="t"><b>把有向图当无向图处理。</b></div>
+  </div>
+  <div class="duck">
+    <img src="../assets/ducks/duck_illia.webp" alt="扣哒鸭" onerror="this.style.display='none'">
+    <div class="dt"><b>扣哒鸭：</b><strong>读题时要看清边有没有方向。</strong><br>
+    "A 能到 B"和"A 与 B 相连"是两回事——
+    前者只加一条边，后者要加两条。</div>
+  </div>
+  <div class="fix"><b>正确做法：</b>先确认有向还是无向，再决定加一条还是两条</div>
+</div>
+
+<div class="section-header" id="s7">
+  <h2>7　题目练习</h2>
+  <div class="en-title">Practice</div>
+</div>
+
+<p>第 1 题改编自 2026 年 9 月 · C++ 七级 第 7 题，其余为原创练习题。</p>
+
+<div class="exam">
+  <div class="eh"><span class="src">改编自 2026 年 9 月 · C++ 七级 · 第 7 题</span><span class="tp">单选题</span></div>
+  <div class="eb">
+    <div class="q">在雷塔的无权图中，从起点开始做 BFS 遍历，访问由结点 <code class="inline">u</code> 扩展出的相邻结点 <code class="inline">v</code> 时记录 <code class="inline">dist[v] = dist[u] + 1</code>，起点的 <code class="inline">dist</code> 为 0。<br>最终 <code class="inline">dist[v]</code> 表示的是（　　）。</div>
+    <div class="opt"><i>A.</i>起点到结点 v 的最少边数<br>
+      <i>B.</i>结点 v 的度数<br>
+      <i>C.</i>从起点到结点 v 的路径上经过的最大边权<br>
+      <i>D.</i>包含结点 v 的连通块大小</div>
+    <details><summary>查看答案与详解</summary>
+      <div class="ans"><b>答案：A</b>。BFS 是"<strong>一层一层往外扩</strong>"的：起点是第 0 层，它的邻居是第 1 层，再往外是第 2 层……<br><code class="inline">dist[v] = dist[u] + 1</code> 干的事就是"把邻居标记成比自己深一层"，所以 <code class="inline">dist[v]</code> 自然是<strong>从起点走到 v 经过的边数</strong>。<br><b>为什么一定是"最少"？</b>因为 BFS 按层推进，第一次抵达某个结点时走的层数就是最少的 ——任何更短的路线都会在更早的层被访问到。这就是"在<strong>无权图</strong>里 BFS 可以当最短路用"的原因。<br><b>B、C、D 错：</b>度数、边权、连通块大小都和"层数"无关；要注意 BFS 只在<strong>无权图（或边权全相同）</strong>时等于最短路，有权图要用 Dijkstra。<br><span class="tagline">对应小节</span>3 广度优先搜索（BFS）。</div>
+    </details>
+  </div>
+</div>
+<div class="exam">
+  <div class="eh"><span class="src ori">原创练习题</span><span class="tp">单选题</span></div>
+  <div class="eb">
+    <div class="q">关于树和图的关系，下列说法正确的是（　　）。</div>
+    <div class="opt">
+      <i>A.</i>树和图没有关系<br>
+      <i>B.</i>树是图的一种特殊情况（无环且连通）<br>
+      <i>C.</i>图是树的一种特殊情况<br>
+      <i>D.</i>树里一定有环，图里一定没有环
+    </div>
+    <details><summary>查看答案与详解</summary>
+      <div class="ans"><b>答案：B</b>。树可以看作"<b>连通且没有环</b>"的图——
+      因此树里任意两点之间有且只有一条路径。<br>
+      <b>图则自由得多：</b>可以有环，也可以分成好几块。<br>
+      <span class="tagline">对应小节</span>1 什么是图。</div>
+    </details>
+  </div>
+</div>
+
+<div class="exam">
+  <div class="eh"><span class="src ori">原创练习题</span><span class="tp">单选题</span></div>
+  <div class="eb">
+    <div class="q">用邻接表表示无向图时，如果 A 与 B 之间有一条边，那么正确的做法是（　　）。</div>
+    <div class="opt">
+      <i>A.</i>只在 A 的列表里加 B<br>
+      <i>B.</i>只在 B 的列表里加 A<br>
+      <i>C.</i>A 的列表加 B，同时 B 的列表也加 A<br>
+      <i>D.</i>不需要记录，程序会自动知道
+    </div>
+    <details><summary>查看答案与详解</summary>
+      <div class="ans"><b>答案：C</b>。无向图的边是<b>双向</b>的，
+      所以两边的邻接表都要加上对方。<br>
+      <b>如果是有向图</b>（比如"只能从 A 到 B"），才只加一边。<br>
+      <span class="tagline">对应小节</span>2 图的两种表示。</div>
+    </details>
+  </div>
+</div>
+
+<div class="exam">
+  <div class="eh"><span class="src ori">原创练习题</span><span class="tp">判断题</span></div>
+  <div class="eb">
+    <div class="q">图的 DFS 遍历即使不加访问标记也不会出错，因为 DFS 一定会结束。（　　）</div>
+    <details><summary>查看答案与详解</summary>
+      <div class="ans"><b>答案：错误（×）</b>。图里可能有环，不加标记会<b>在环里反复兜圈子</b>，
+      导致死循环或栈溢出。<br>
+      <b>访问标记是图遍历的必要条件。</b><br>
+      <span class="tagline">对应小节</span>3 图的遍历。</div>
+    </details>
+  </div>
+</div>
+
+<div class="exam">
+  <div class="eh"><span class="src ori">原创练习题</span><span class="tp">单选题</span></div>
+  <div class="eb">
+    <div class="q">下列关于邻接矩阵的说法，正确的是（　　）。</div>
+    <div class="opt">
+      <i>A.</i>无向图的邻接矩阵是对称的<br>
+      <i>B.</i>邻接矩阵占用的空间比邻接表少<br>
+      <i>C.</i>邻接矩阵无法表示带权图<br>
+      <i>D.</i>邻接矩阵只能表示有向图
+    </div>
+    <details><summary>查看答案与详解</summary>
+      <div class="ans"><b>答案：A</b>。无向图中 A 连 B 就意味着 B 连 A，
+      所以矩阵沿对角线对称。<br>
+      <b>B 错：</b>矩阵是 n×n，边少时反而更浪费；<br>
+      <b>C 错：</b>把 1 换成具体权值就能表示带权图；<br>
+      <b>D 错：</b>有向、无向都能表示。<br>
+      <span class="tagline">对应小节</span>2 图的两种表示。</div>
+    </details>
+  </div>
+</div>
+
+<div class="exam">
+  <div class="eh"><span class="src ori">原创练习题</span><span class="tp">判断题</span></div>
+  <div class="eb">
+    <div class="q">要统计一张图里有几个连通分量，可以反复对未访问的顶点做 DFS，每做一次计数加一。（　　）</div>
+    <details><summary>查看答案与详解</summary>
+      <div class="ans"><b>答案：正确（√）</b>。每发现一个"还没被访问过"的顶点，
+      就说明进入了一个新的连通块。<br>
+      从它出发遍历一次，就会把这一整块全部标记掉。<br>
+      <span class="tagline">对应小节</span>4 连通分量。</div>
+    </details>
+  </div>
+</div>
+
+<div class="exam">
+  <div class="eh"><span class="src ori">原创练习题</span><span class="tp">单选题</span></div>
+  <div class="eb">
+    <div class="q">已知 <code class="inline">graph = {{"A", {"B"}}, {"B", {"A", "C"}}, {"C", {"B"}}}</code>，
+    从 A 出发做 BFS，访问顺序是（　　）。</div>
+    <div class="opt">
+      <i>A.</i>A B C　　<i>B.</i>A C B　　<i>C.</i>C B A　　<i>D.</i>B A C
+    </div>
+    <details><summary>查看答案与详解</summary>
+      <div class="ans"><b>答案：A</b>。BFS 一层层访问：<br>
+      第 1 层：A；第 2 层：A 的邻居 B；第 3 层：B 的邻居 C。<br>
+      所以是 <b>A B C</b>。<br>
+      <b>注意：</b>这个顺序也是 DFS 的顺序——因为这条图本身就是一条链。<br>
+      <span class="tagline">对应小节</span>3 图的遍历。</div>
+    </details>
+  </div>
+</div>
+
+<div class="exam">
+  <div class="eh"><span class="src ori">原创练习题</span><span class="tp">编程题</span></div>
+  <div class="eb">
+    <div class="q">题目要求：用邻接表表示一张无向图，输出①从 A 出发能到达多少个顶点；
+    ②整张图共有几个连通分量。</div>
+    <details><summary>查看参考答案与要点</summary>
+      <div class="ans">
+<pre style="margin:0;background:#131a26;color:#c8d3e0;border-radius:10px;padding:14px 16px">vector&lt;pair&lt;string, string&gt;&gt; edges = {{"A", "B"}, {"B", "C"}, {"D", "E"}};
+
+// ① 建图：所有出现过的顶点都要进 map
+map&lt;string, vector&lt;string&gt;&gt; graph;
+for (auto&amp; e : edges) {
+    string u = e.first, v = e.second;
+    graph[u];                       // 没有就顺手建出空列表
+    graph[v];
+    graph[u].push_back(v);          // 无向图：两边都加
+    graph[v].push_back(u);
+}
+
+for (auto&amp; p : graph) {
+    cout &lt;&lt; p.first &lt;&lt; "：";
+    for (string nb : p.second) cout &lt;&lt; nb &lt;&lt; " ";
+    cout &lt;&lt; endl;
+}
+
+// ② 从 A 出发能到达几个顶点
+set&lt;string&gt; visited;
+
+void dfs(string node) {
+    visited.insert(node);
+    for (string nxt : graph[node])
+        if (!visited.count(nxt)) dfs(nxt);
+}
+
+dfs("A");
+cout &lt;&lt; "从 A 能到达：" &lt;&lt; visited.size() &lt;&lt; " 个顶点" &lt;&lt; endl;     // 3
+
+// ③ 数连通分量
+visited.clear();
+int count = 0;
+for (auto&amp; p : graph) {
+    if (!visited.count(p.first)) {
+        dfs(p.first);
+        count = count + 1;
+    }
+}
+cout &lt;&lt; "连通分量：" &lt;&lt; count &lt;&lt; endl;                        // 2</pre>
+      <p style="margin-top:12px"><b>输出：</b>{'A': ['B'], 'B': ['A', 'C'], 'C': ['B'], 'D': ['E'], 'E': ['D']}；
+      从 A 能到达 3 个顶点；连通分量 2 个<br>
+      <b>要点：</b><br>
+      ① 建图时<b>所有顶点都要初始化</b>，否则访问会报 KeyError；<br>
+      ② 无向图要加两条边；<br>
+      ③ 数连通分量前要把 visited <b>清空重来</b>；<br>
+      ④ 两个分量分别是 {A,B,C} 和 {D,E}。<br>
+      <span class="tagline">对应小节</span>2 图的两种表示；4 连通分量。</p>
+      </div>
+    </details>
+  </div>
+</div>
+
+<div class="section-header" id="s8">
+  <h2>8　本单元小结</h2>
+  <div class="en-title">Unit Summary</div>
+</div>
+
+<div class="cast teacher">
+  <img class="ava" src="../assets/avatars/senick.webp" alt="塞尼克" onerror="this.style.display='none'">
+  <div class="bubble">
+    <div class="who">塞尼克 · 沙海向导</div>
+    三句话记住图：<br>
+    <strong>一、图 = 顶点 + 边；树是"无环且连通"的特殊图。</strong><br>
+    <strong>二、建图用邻接表（字典 + 列表）；无向图要加两条边。</strong><br>
+    <strong>三、图的遍历必须带 visited——因为图里可能有环。</strong><br>
+    还有一句：<b>连通分量的个数 = 需要从头开始 DFS 的次数。</b>
+  </div>
+</div>
+
+<div class="summary">
+  <h3>你在塔身回廊中收获了什么</h3>
+  <ul>
+    <li><strong>图</strong>——由顶点和边组成，比树更自由；树是"无环连通图"。</li>
+    <li><strong>术语</strong>——有向/无向、带权/无权、度、连通、环。</li>
+    <li><strong>邻接矩阵</strong>——n×n 的表格；查连接快，但边少时浪费空间。</li>
+    <li><strong>邻接表</strong>——字典 + 列表；省空间，是做题的首选。</li>
+    <li><strong>建图要点</strong>——无向图要加两条边；所有顶点都要初始化。</li>
+    <li><strong>图的遍历</strong>——DFS 用栈/递归，BFS 用队列；<strong>都必须带 visited</strong>。</li>
+    <li><strong>连通分量</strong>——从未访问的顶点出发做一次 DFS，计数加一。</li>
+  </ul>
+</div>
+
+<div class="pager">
+  <a href="cpp-7-02.html"><div class="k">← 上一单元</div><div class="v">交织雷网 · 复杂动态规划</div></a>
+  <a href="../index.html" target="_top" class="back"><div class="k">返回</div><div class="v">考纲之路 · 总目录</div></a>
+  <a href="cpp-7-04.html"><div class="k">下一单元 →</div><div class="v">雷池漫灌 · 泛洪算法</div></a>
+</div>
+
+<div class="cta">
+  <h3>下一站：雷池漫灌</h3>
+  <p>雷池里的水从一个点渗开，见缝就钻，<b>直到整片区域都被淹没</b>。
+  这种"向四周蔓延"的算法叫泛洪。下一单元，我们看它怎么用。</p>
+  <a class="btn-go" href="https://codecombat.cn/" target="_blank" rel="noopener">加入扣哒世界，把这条考纲之路走一遍 →</a>
+</div>
+</div><!-- /container -->
+</div><!-- /page -->
+
+<script>
+const KEYWORDS = new Set([
+  "int", "long", "short", "unsigned", "signed", "float", "double", "char", "bool", "void",
+  "const", "if", "else", "for", "while", "do", "switch", "case", "default", "break",
+  "continue", "return", "goto", "struct", "class", "union", "enum", "using", "namespace",
+  "std", "main", "true", "false", "cin", "cout", "cerr", "endl", "string", "sizeof",
+  "include", "define", "new", "delete", "public", "private", "static", "inline", "nullptr"
+]);
+
+function esc(s){ return s.replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;'); }
+
+function highlight(src){
+  let out = '', i = 0;
+  const n = src.length;
+  while (i < n){
+    const c = src[i];
+    /* 预处理指令：#include / #define，整行只在行首生效 */
+    if (c === '#' && (i === 0 || src[i-1] === '\n')){
+      let j = i;
+      while (j < n && /[A-Za-z]/.test(src[j])) j++;
+      out += '<span class="kw">' + esc(src.slice(i, j)) + '</span>';
+      let k = src.indexOf('\n', j); if (k < 0) k = n;
+      if (j < k) out += '<span class="st">' + esc(src.slice(j, k)) + '</span>';
+      i = k; continue;
+    }
+    /* 行注释 // */
+    if (c === '/' && src[i+1] === '/'){
+      let j = src.indexOf('\n', i); if (j < 0) j = n;
+      out += '<span class="cm">' + esc(src.slice(i, j)) + '</span>';
+      i = j; continue;
+    }
+    /* 块注释 */
+    if (c === '/' && src[i+1] === '*'){
+      let j = src.indexOf('*/', i + 2); j = j < 0 ? n : j + 2;
+      out += '<span class="cm">' + esc(src.slice(i, j)) + '</span>';
+      i = j; continue;
+    }
+    /* 字符串与字符字面量 */
+    if (c === '"' || c === "'"){
+      let j = i + 1;
+      while (j < n && src[j] !== c){ if (src[j] === '\\') j++; j++; }
+      j = Math.min(j + 1, n);
+      out += '<span class="st">' + esc(src.slice(i, j)) + '</span>';
+      i = j; continue;
+    }
+    /* 数字 */
+    if (/[0-9]/.test(c)){
+      let j = i;
+      while (j < n && /[0-9.]/.test(src[j])) j++;
+      out += '<span class="nu">' + esc(src.slice(i, j)) + '</span>';
+      i = j; continue;
+    }
+    /* 标识符：关键字 / 函数名 / 普通名字 */
+    if (/[A-Za-z_]/.test(c)){
+      let j = i;
+      while (j < n && /[A-Za-z0-9_]/.test(src[j])) j++;
+      const w = src.slice(i, j);
+      if (KEYWORDS.has(w)) out += '<span class="kw">' + esc(w) + '</span>';
+      else if (src[j] === '(') out += '<span class="fn">' + esc(w) + '</span>';
+      else out += esc(w);
+      i = j; continue;
+    }
+    out += esc(c); i++;
+  }
+  return out;
+}
+
+document.querySelectorAll('.code-card pre code').forEach(block => {
+  block.innerHTML = highlight(block.textContent);
+});
+
+if (location.search.indexOf('expand') >= 0) {
+  document.querySelectorAll('details').forEach(d => d.open = true);
+}
+document.querySelectorAll('.sidebar-nav a').forEach(a => {
+  a.addEventListener('click', () => {
+    if (window.innerWidth <= 900) document.querySelector('.sidebar-nav').classList.remove('active');
+  });
+});
+</script>
+</body>
+</html>

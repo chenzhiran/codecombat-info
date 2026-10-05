@@ -1,0 +1,1001 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="copyright" content="CodeCombat Inc. codecombat.cn">
+<title>铭牌索引库 · 哈希表 | 扣哒考级 · GESP C++ 七级</title>
+<style>
+  :root{
+    --primary:#2563eb; --primary-light:#4f8ff0; --primary-lighter:#eaf1fe; --primary-dark:#1b47a8;
+    --brand:#ff6b35; --brand-dark:#e8541f; --brand-soft:#fff3ec;
+    --night:#131c2b; --night-2:#1e2a3a; --gold:#f5b301;
+    --text:#242e3d; --dim:#68788f; --dim2:#93a2b6;
+    --bg:#ffffff; --bg-soft:#f7f9fd; --line:#e2e9f4; --sidebar:274px;
+    --code-bg:#131a26; --code-tx:#c8d3e0;
+    --code-kw:#c678dd; --code-st:#98c379; --code-nu:#d19a66; --code-cm:#5f7488; --code-fn:#e5c07b;
+  }
+  *{margin:0;padding:0;box-sizing:border-box}
+  html{scroll-behavior:smooth}
+  body{font-family:"PingFang SC","Microsoft YaHei","Segoe UI",-apple-system,sans-serif;line-height:1.9;color:var(--text);background:var(--bg);font-size:15.5px}
+  .sidebar-nav{position:fixed;top:0;left:0;width:var(--sidebar);height:100vh;overflow-y:auto;background:linear-gradient(180deg,#0c1626,#14243c);padding:14px 0 40px;z-index:100;border-right:3px solid var(--brand);transition:transform .3s ease}
+  .sidebar-nav::-webkit-scrollbar{width:5px}
+  .sidebar-nav::-webkit-scrollbar-thumb{background:var(--brand);border-radius:4px}
+  .sb-brand{display:flex;align-items:center;gap:10px;padding:10px 13px 12px;border-bottom:1px solid #233752;margin-bottom:8px}
+  .sidebar-nav a.sb-logo{display:flex;align-items:center;justify-content:center;flex-shrink:0;padding:0;border-left:none;transition:.2s}
+  .sb-logo:hover{transform:scale(1.08)}
+  .sb-logo img{height:34px;width:34px;display:block;object-fit:contain;border-radius:8px}
+  .sb-brand b{color:#f2f6fa;font-size:14px;letter-spacing:.5px;display:block;line-height:1.4}
+  .sb-brand span{color:#7f95ab;font-size:11.5px;display:block;line-height:1.4}
+  .nav-title{color:#ffb894;font-size:12px;font-weight:800;padding:10px 18px 6px;letter-spacing:1.2px}
+  .sidebar-nav a{display:block;color:#c3d0dc;text-decoration:none;padding:6px 18px;font-size:12.5px;line-height:1.55;border-left:3px solid transparent;transition:.18s}
+  .sidebar-nav a:hover{color:#fff;background:rgba(255,107,53,.16);border-left-color:var(--brand)}
+  .sidebar-nav a.nav-section{color:#ffb894;font-weight:700;font-size:13px;margin-top:11px;padding-top:10px;border-top:1px solid #233752}
+  .sidebar-nav a.nav-section:first-of-type{border-top:none;margin-top:0;padding-top:6px}
+  .sidebar-nav a.nav-sub{padding-left:30px;color:#93a8bc;font-size:12px}
+  .sidebar-nav a.nav-sub:hover{color:#fff}
+  .sb-back{margin:16px 14px 0;display:block;text-align:center;padding:9px;border-radius:9px;background:#1e304a;color:#a9c0d6 !important;font-size:12px;font-weight:700;border-left:none !important}
+  .sb-back:hover{background:var(--brand) !important;color:#fff !important}
+  .nav-toggle{display:none;position:fixed;top:14px;left:14px;z-index:120;background:var(--brand);color:#fff;border:none;border-radius:9px;padding:9px 13px;font-size:15px;cursor:pointer;box-shadow:0 4px 14px rgba(0,0,0,.25)}
+  .page{margin-left:var(--sidebar)}
+  .hero{position:relative;overflow:hidden;padding:44px 52px;color:#fff;background:linear-gradient(125deg,#0a1220 0%,#16294a 46%,#8a3a16 132%)}
+  .hero::after{content:"";position:absolute;right:-90px;top:-110px;width:400px;height:400px;border-radius:50%;background:radial-gradient(circle,rgba(245,179,1,.30),transparent 68%)}
+  .hero-top{display:flex;gap:36px;align-items:center;position:relative;z-index:2}
+  .hero-txt{flex:1;min-width:0}
+  .hero .crumb{font-size:11.5px;color:#ffb894;letter-spacing:1.5px;font-weight:700;margin-bottom:14px}
+  .hero h1{font-size:31px;font-weight:800;line-height:1.3;letter-spacing:.6px;margin-bottom:8px}
+  .hero h1 .sub{display:block;font-size:18px;font-weight:700;color:#ffd2b3;margin-top:6px;letter-spacing:.3px}
+  .hero .en{font-size:13px;color:#9db4c8;font-style:italic;margin-bottom:18px}
+  .hero .tags{display:flex;flex-wrap:wrap;gap:8px}
+  .tag{font-size:11.5px;padding:4px 12px;border-radius:20px;background:rgba(255,255,255,.12);border:1px solid rgba(255,255,255,.22);color:#e8f0f6;font-weight:600}
+  .tag.hot{background:rgba(255,107,53,.92);border-color:transparent;color:#fff}
+  .hero-card{flex-shrink:0;width:200px;text-align:center}
+  .hero-card .ava{width:148px;height:148px;border-radius:50%;object-fit:cover;object-position:top center;border:4px solid rgba(255,180,140,.6);box-shadow:0 14px 34px rgba(0,0,0,.45);background:#24344a}
+  .hero-card .nm{font-size:15px;font-weight:800;color:#fff;margin-top:10px}
+  .hero-card .ti{font-size:11.5px;color:#ffb894;margin-top:2px}
+  .container{max-width:1080px;margin:0 auto;padding:38px 52px 70px}
+  .lead{font-size:15.5px;line-height:2.05;color:#333f52;background:linear-gradient(120deg,#fff8f3,#f7fbf8);border-left:5px solid var(--brand);border-radius:0 14px 14px 0;padding:22px 26px;margin-bottom:32px}
+  .lead b{color:var(--brand-dark)}
+  .cast{display:flex;gap:16px;align-items:flex-start;border-radius:16px;padding:18px 22px;margin:24px 0}
+  .cast .ava{width:72px;height:72px;border-radius:50%;object-fit:cover;object-position:top center;flex-shrink:0;background:#e8eef5}
+  .cast .bubble{position:relative;font-size:14px;line-height:1.95;padding-top:2px;flex:1}
+  .cast .who{font-size:12px;font-weight:800;margin-bottom:5px;letter-spacing:.5px}
+  .cast.anya{background:var(--brand-soft);border:1px solid #ffdcc9}
+  .cast.anya .who{color:var(--brand-dark)}
+  .cast.anya .bubble{color:#5c4636}
+  .cast.duck{background:#fff5f5;border:1px solid #fbd5d5}
+  .cast.duck .who{color:#b91c1c}
+  .cast.duck .bubble{color:#5c4141}
+  .cast.teacher{background:linear-gradient(120deg,#f4f7fb,#ffffff);border:1px solid #dbe4f0}
+  .cast.teacher .who{color:#1e293b}
+  .cast.teacher .bubble{color:#3c4a5a}
+  .cast.hero{background:#f2f7fd;border:1px solid #cfe0f5}
+  .cast.hero .who{color:#1b47a8}
+  .cast.hero .bubble{color:#3a4658}
+  .goal-grid{display:grid;grid-template-columns:1fr 1fr;gap:16px;margin-bottom:36px}
+  .goal{border:1px solid var(--line);border-radius:15px;padding:19px 21px;background:#fff;box-shadow:0 4px 16px rgba(31,122,68,.05)}
+  .goal h4{font-size:14px;font-weight:800;margin-bottom:11px;display:flex;align-items:center;gap:8px;color:var(--primary-dark)}
+  .goal h4 .ic{width:22px;height:22px;border-radius:7px;background:var(--primary-lighter);display:flex;align-items:center;justify-content:center;font-size:12px}
+  .goal ul{list-style:none}
+  .goal li{font-size:13.5px;color:#48576b;line-height:1.9;padding-left:18px;position:relative}
+  .goal li::before{content:"▸";position:absolute;left:0;color:var(--primary);font-weight:800}
+  .goal.syllabus li::before{content:"✓"}
+  .section-header{margin:52px 0 24px;padding-bottom:12px;border-bottom:3px solid var(--brand);display:flex;align-items:baseline;gap:14px;flex-wrap:wrap}
+  .section-header h2{font-size:22px;font-weight:800;color:var(--night);letter-spacing:.4px}
+  .section-header .en-title{font-size:12px;color:var(--dim2);font-style:italic}
+  h3{font-size:17.5px;font-weight:800;margin:34px 0 14px;color:var(--night);display:flex;align-items:center;gap:10px}
+  h3::before{content:"";width:5px;height:17px;border-radius:3px;background:var(--brand);flex-shrink:0}
+  h4{font-size:15px;font-weight:800;margin:24px 0 10px;color:#2b4260}
+  p{margin:12px 0;color:#3a4658;line-height:2}
+  strong{color:var(--primary-dark)}
+  code.inline{background:var(--primary-lighter);color:var(--primary-dark);padding:2px 7px;border-radius:6px;font-family:"SFMono-Regular",Consolas,Menlo,monospace;font-size:.9em;font-weight:600}
+  .figure{margin:24px 0;text-align:center}
+  .figure svg.diagram{max-width:100%;height:auto;background:#fff;border:1px solid var(--line);border-radius:14px;padding:10px}
+  .figure .caption{font-size:12.5px;color:var(--dim2);margin-top:9px}
+  .pic{margin:26px 0;text-align:center}
+  .pic img{max-width:100%;border-radius:16px;box-shadow:0 10px 28px rgba(30,60,45,.15);display:block;margin:0 auto}
+  .pic figcaption{font-size:12.5px;color:var(--dim2);margin-top:9px}
+  .pic .ph{display:none}
+  .pic.missing img{display:none}
+  .pic.missing .ph{display:flex;flex-direction:column;align-items:center;justify-content:center;gap:9px;border:2px dashed #c9d9e8;border-radius:16px;background:linear-gradient(135deg,#f8fbfe,#eef6ff);padding:40px 26px;color:#7a8fa8}
+  .pic.missing .ph .fn{font-family:Consolas,monospace;font-size:12.5px;color:#2563eb;font-weight:700;word-break:break-all}
+  .pic.missing .ph .ds{font-size:12.5px;line-height:1.8;max-width:560px}
+  .box{border-radius:13px;padding:16px 20px;margin:20px 0;font-size:14px;line-height:1.95}
+  .box .lb{font-weight:800;margin-right:6px}
+  .info{background:#eef6ff;border-left:5px solid #3b82f6;color:#274768}
+  .info .lb{color:#1d4ed8}
+  .tip{background:#fff9ec;border-left:5px solid #f59e0b;color:#6b4e13}
+  .tip .lb{color:#b45309}
+  .remember{background:var(--primary-lighter);border-left:5px solid var(--primary);color:#1d3a6b}
+  .remember .lb{color:var(--primary-dark)}
+  .warn{background:#fef2f2;border-left:5px solid #ef4444;color:#7f2b2b}
+  .warn .lb{color:#b91c1c}
+  .code-card{margin:20px 0;border-radius:14px;overflow:hidden;box-shadow:0 10px 28px rgba(20,40,28,.20)}
+  .code-head{display:flex;align-items:center;gap:9px;background:#1a2434;padding:9px 14px}
+  .code-head .dot{width:10px;height:10px;border-radius:50%}
+  .code-head .d1{background:#ff5f57}.code-head .d2{background:#febc2e}.code-head .d3{background:#28c840}
+  .code-head .file{color:#8fa6c0;font-size:11.5px;font-family:Consolas,monospace;margin-left:6px}
+  .code-head .lang{margin-left:auto;font-size:10.5px;font-weight:800;color:#0d141f;background:#4f8ff0;padding:2px 9px;border-radius:6px;letter-spacing:.4px}
+  .code-card pre{background:var(--code-bg);padding:18px 20px;overflow-x:auto;margin:0;font-family:"SFMono-Regular",Consolas,"Courier New",monospace;font-size:13.5px;line-height:1.85}
+  .code-card pre::-webkit-scrollbar{height:8px}
+  .code-card pre::-webkit-scrollbar-thumb{background:#31445c;border-radius:4px}
+  .code-card code{color:var(--code-tx);white-space:pre}
+  .kw{color:var(--code-kw);font-weight:600}
+  .st{color:var(--code-st)}
+  .nu{color:var(--code-nu)}
+  .cm{color:var(--code-cm);font-style:italic}
+  .fn{color:var(--code-fn)}
+  .out{background:#0f1621;color:#7fb3f5;font-family:Consolas,monospace;font-size:13px;padding:12px 20px;border-top:1px solid #22304a}
+  .out b{color:#c9d6cd;font-weight:600;font-size:11.5px;letter-spacing:1px}
+  .out.err{color:#fca5a5}
+  table.styled{width:100%;border-collapse:collapse;margin:20px 0;font-size:13.5px;border-radius:12px;overflow:hidden;box-shadow:0 4px 16px rgba(31,122,68,.07)}
+  table.styled thead{background:var(--brand)}
+  table.styled th{color:#fff;padding:11px 14px;text-align:left;font-weight:700;font-size:13px}
+  table.styled td{padding:10px 14px;border-bottom:1px solid var(--line);color:#445266;vertical-align:top}
+  table.styled tbody tr:nth-child(even){background:var(--bg-soft)}
+  table.styled tbody tr:last-child td{border-bottom:none}
+  .level-card{border:1px solid var(--line);border-radius:16px;overflow:hidden;margin:22px 0;box-shadow:0 6px 22px rgba(31,122,68,.07)}
+  .level-card .lc-head{background:linear-gradient(100deg,#17283a,#8a3a16);color:#fff;padding:15px 22px;display:flex;align-items:center;gap:12px;flex-wrap:wrap}
+  .level-card .lc-head .n{font-size:12px;font-weight:800;background:rgba(255,255,255,.2);padding:3px 10px;border-radius:20px}
+  .level-card .lc-head h4{margin:0;color:#fff;font-size:16px}
+  .level-card .lc-head .go{margin-left:auto;font-size:11.5px;color:#ffd2b3}
+  .level-card .lc-body{padding:20px 24px;background:#fff}
+  .level-card .story{background:#f9fbfd;border-left:4px solid #93c5fd;border-radius:0 10px 10px 0;padding:13px 18px;margin:0 0 16px;font-size:14px;line-height:1.95;color:#3f5163}
+  .level-card .story b{color:#1d4ed8}
+  .btn-go{display:inline-flex;align-items:center;gap:8px;background:linear-gradient(135deg,var(--brand),var(--brand-dark));color:#fff;text-decoration:none;font-weight:800;font-size:13.5px;padding:10px 22px;border-radius:11px;box-shadow:0 8px 20px rgba(255,107,53,.32);transition:.2s}
+  .btn-go:hover{transform:translateY(-2px);box-shadow:0 12px 26px rgba(255,107,53,.42)}
+  .pit{border:1px solid #f6dede;border-radius:14px;overflow:hidden;margin:16px 0;background:#fff}
+  .pit .pt{display:flex;gap:12px;padding:14px 18px;background:#fffafa;align-items:flex-start}
+  .pit .x{width:26px;height:26px;border-radius:9px;background:#fee;color:#dc2626;display:flex;align-items:center;justify-content:center;font-weight:800;flex-shrink:0;font-size:13px}
+  .pit .t{font-size:13.5px;line-height:1.9;color:#5c4a4a;flex:1}
+  .pit .t b{color:#b91c1c}
+  .pit .duck{display:flex;gap:12px;padding:13px 18px;background:#fff5f5;border-top:1px dashed #f3d0d0;align-items:flex-start}
+  .pit .duck img{width:48px;height:48px;object-fit:contain;flex-shrink:0;margin-top:2px}
+  .pit .duck .dt{font-size:13.5px;line-height:1.9;color:#7a3b3b}
+  .pit .duck .dt b{color:#b91c1c}
+  .pit .fix{padding:12px 18px;background:#f2f7fd;border-top:1px dashed #cfe0f5;font-size:13.5px;color:#1d3a6b}
+  .pit .fix b{color:var(--primary-dark)}
+  .exam{border:1px solid #dfe7f5;border-radius:15px;margin:16px 0;overflow:hidden;background:#fff;box-shadow:0 4px 16px rgba(38,62,120,.06)}
+  .exam .eh{display:flex;align-items:center;gap:10px;padding:11px 18px;background:linear-gradient(100deg,#eef4ff,#f7faff);border-bottom:1px solid #e3ebf8;flex-wrap:wrap}
+  .exam .eh .src{font-size:11px;font-weight:800;color:#fff;background:#2563eb;padding:2.5px 10px;border-radius:20px}
+  .exam .eh .src.ori{background:#4f8ff0}
+  .exam .eh .tp{font-size:11.5px;color:#5b7ba8;font-weight:700}
+  .exam .eb{padding:16px 20px}
+  .exam .q{font-weight:700;font-size:14px;color:#1e2a3e;line-height:1.9;margin-bottom:10px}
+  .exam .opt{font-size:13.5px;color:#48576b;line-height:2.05;padding-left:6px}
+  .exam .opt i{font-style:normal;font-weight:800;color:var(--primary-dark);margin-right:7px}
+  .exam pre{margin:12px 0;background:#1b2a21;border-radius:10px;padding:14px 16px;overflow-x:auto;font-family:Consolas,monospace;font-size:13px;line-height:1.8;color:var(--code-tx)}
+  .exam details{margin-top:10px;border-top:1px dashed var(--line);padding-top:10px}
+  .exam summary{cursor:pointer;font-size:12.5px;font-weight:800;color:#2563eb;outline:none;user-select:none}
+  .exam details .ans{font-size:13.5px;color:#3a4658;line-height:1.95;margin-top:9px;background:var(--bg-soft);padding:13px 16px;border-radius:10px}
+  .exam details .ans b{color:var(--primary-dark)}
+  .exam details .ans .tagline{display:inline-block;font-size:11px;background:#e0f2fe;color:#0e7490;padding:1.5px 8px;border-radius:6px;font-weight:700;margin-right:6px}
+  .summary{margin:40px 0 20px;border-radius:18px;padding:26px 30px;background:linear-gradient(130deg,#fff8f3,#ffffff);border:1px solid #ffe0cf}
+  .summary h3{margin-top:0}
+  .summary ul{list-style:none;margin-top:10px}
+  .summary li{font-size:14px;line-height:2;color:#3d4d66;padding-left:24px;position:relative}
+  .summary li::before{content:"◆";position:absolute;left:0;color:var(--brand);font-size:11px;top:6px}
+  .pager{display:flex;gap:14px;margin-top:30px;flex-wrap:wrap}
+  .pager a{flex:1;min-width:200px;text-decoration:none;border:1px solid var(--line);border-radius:14px;padding:16px 20px;background:#fff;transition:.2s;display:block}
+  .pager a:hover{border-color:var(--brand);box-shadow:0 10px 26px rgba(255,107,53,.14);transform:translateY(-2px)}
+  .pager a .k{font-size:11px;color:var(--dim2);font-weight:700;letter-spacing:1px}
+  .pager a .v{font-size:14px;font-weight:800;color:var(--night);margin-top:5px}
+  .pager a.back{background:var(--brand-soft);border-color:transparent;text-align:center}
+  .pager a.back .v{color:var(--brand-dark)}
+  .cta{margin-top:26px;border-radius:20px;padding:30px 34px;color:#fff;position:relative;overflow:hidden;background:linear-gradient(120deg,#16202f,#2b3a52 46%,#a8431c 132%)}
+  .cta::after{content:"";position:absolute;right:-70px;bottom:-90px;width:280px;height:280px;border-radius:50%;background:radial-gradient(circle,rgba(255,140,80,.45),transparent 68%)}
+  .cta h3{color:#fff;margin:0 0 10px;position:relative;z-index:2}
+  .cta h3::before{background:var(--brand)}
+  .cta p{color:#d8e0ef;font-size:13.5px;margin:0 0 18px;position:relative;z-index:2;max-width:640px}
+  .cta .btn-go{position:relative;z-index:2}
+  @media(max-width:900px){
+    .sidebar-nav{transform:translateX(-100%)}
+    .sidebar-nav.active{transform:translateX(0)}
+    .nav-toggle{display:block}
+    .page{margin-left:0}
+    .hero{padding:70px 22px 34px}
+    .hero-top{flex-direction:column-reverse;text-align:center}
+    .hero-card{width:auto}
+    .container{padding:26px 20px 60px}
+    .goal-grid{grid-template-columns:1fr}
+  }
+</style>
+</head>
+<body>
+
+<button class="nav-toggle" onclick="document.querySelector('.sidebar-nav').classList.toggle('active')">&#9776;</button>
+
+<nav class="sidebar-nav">
+  <div class="sb-brand">
+    <a class="sb-logo" href="https://codecombat.cn/" target="_blank" rel="noopener" title="访问 CodeCombat 扣哒世界官网">
+      <img src="../assets/logo.png" alt="CodeCombat 扣哒世界">
+    </a>
+    <div><b>铭牌索引库</b><span>雷鸣高塔 · C++ 七级 第 5 单元</span></div>
+  </div>
+  <div class="nav-title">本单元目录</div>
+  <a href="#s0" class="nav-section">0　单元导语与目标</a>
+  <a href="#s0-1" class="nav-sub">0.1 学习目标</a>
+  <a href="#s0-2" class="nav-sub">0.2 考纲对照</a>
+  <a href="#s1" class="nav-section">1　为什么需要哈希</a>
+  <a href="#s1-1" class="nav-sub">1.1 用列表一个个找</a>
+  <a href="#s1-2" class="nav-sub">1.2 哈希表的核心思想</a>
+  <a href="#s2" class="nav-section">2　哈希函数</a>
+  <a href="#s2-1" class="nav-sub">2.1 哈希函数在做什么</a>
+  <a href="#s2-2" class="nav-sub">2.2 好哈希函数的两条标准</a>
+  <a href="#s3" class="nav-section">3　冲突怎么办</a>
+  <a href="#s3-1" class="nav-sub">3.1 冲突是必然的</a>
+  <a href="#s3-2" class="nav-sub">3.2 冲突多了会怎样</a>
+  <a href="#s4" class="nav-section">4　unordered_map 就是哈希表</a>
+  <a href="#s4-1" class="nav-sub">4.1 你早就在用哈希表了</a>
+  <a href="#s4-2" class="nav-sub">4.2 三条实用结论</a>
+  <a href="#s5" class="nav-section">5　代码实战</a>
+  <a href="#s6" class="nav-section">6　常见陷阱</a>
+  <a href="#s7" class="nav-section">7　题目练习</a>
+  <a href="#s8" class="nav-section">8　本单元小结</a>
+  <a href="../index.html" target="_top" class="sb-back">返回考纲之路</a>
+</nav>
+
+<div class="page">
+
+<div class="hero">
+  <div class="hero-top">
+    <div class="hero-txt">
+      <div class="crumb">扣哒考级 · GESP C++ 七级 · 第 5 单元　|　雷鸣高塔 THUNDERSPIRE</div>
+      <h1>铭牌索引库
+        <span class="sub">哈希表</span>
+      </h1>
+      <div class="en">Hash Tables</div>
+      <div class="tags">        <span class="tag hot">考纲 · 哈希表</span>
+        <span class="tag">哈希函数</span>
+        <span class="tag">冲突处理</span>
+        <span class="tag">unordered_map原理</span>
+        <span class="tag">O(1) 查找</span></div>
+    </div>
+    <div class="hero-card">
+      <img class="ava" src="../assets/avatars/senick.webp" alt="塞尼克" onerror="this.style.background='#24344a';this.src='../assets/heroes/senick.webp'">
+      <div class="nm">塞尼克</div>
+      <div class="ti">沙海向导 · 你的向导</div>
+    </div>
+  </div>
+</div>
+
+<div class="container">
+
+<div class="lead">
+  塔底的索引库里挂着一排一排的铭牌，每块上面写着一个名字。<br>
+  你随口报了一个名字，管理员<b>伸手就拿出对应的那块牌子</b>，一秒都没犹豫。<br>
+  你怎么这么快就找到了？你惊讶地问。<br>
+  他指了指铭牌背面的小数字：<b>每块牌子背后都算好了一个编号，编号就是它挂在哪个位置。</b>
+</div>
+
+<div class="cast teacher">
+  <img class="ava" src="../assets/avatars/senick.webp" alt="塞尼克" onerror="this.style.display='none'">
+  <div class="bubble">
+    <div class="who">塞尼克 · 沙海向导</div>
+    七级最后一个单元，我们揭一个"早就用过的东西"的老底：<br>
+    <strong>C++ 的 unordered_map，底层就是哈希表。</strong><br>
+    你之前一直觉得unordered_map"查得快"是理所当然的——<b>这一单元我们就来搞清楚它凭什么快。</b>
+  </div>
+</div>
+
+<figure class="pic">
+  <img src="../assets/illustrations/py-L7-05-01_nameplate_index.webp" alt="铭牌索引库"
+       onerror="this.closest('.pic').classList.add('missing')">
+  <div class="ph">
+    <div class="fn">assets/illustrations/py-L7-05-01_nameplate_index.webp</div>
+    <div class="ds">【配图位】塔底弧形索引库，一整面墙的格子里插着发光铭牌，每块铭牌背面刻着一串计算结果；管理员站在中央，伸手径直指向某一格，指尖与格子之间有一条淡淡的光线相连。</div>
+  </div>
+  <figcaption>图 1：雷鸣高塔的铭牌索引库——今天要从这里开始</figcaption>
+</figure>
+
+<div class="section-header" id="s0">
+  <h2>0　单元导语与目标</h2>
+  <div class="en-title">Unit Overview</div>
+
+<h3 id="s0-1">0.1 学习目标</h3>
+</div>
+
+<div class="goal-grid">
+  <h3 id="s0-2">0.2 考纲对照</h3>
+
+<div class="goal">
+    <h4><span class="ic">1</span>学完这个单元，你将能……</h4>
+    <ul>
+      <li>说清哈希表为什么查找快</li>
+      <li>写出一个简单的哈希函数</li>
+      <li>解释什么是"哈希冲突"</li>
+      <li>说清拉链法的原理</li>
+      <li>用unordered_map解决计数、去重、查找问题</li>
+      <li>判断什么问题适合用哈希表</li>
+    </ul>
+  </div>
+  <div class="goal syllabus">
+    <h4><span class="ic">2</span>对标 GESP 考纲（C++ 七级）</h4>
+    <ul>
+      <li>理解哈希表的基本原理：哈希函数、桶、冲突</li>
+      <li>了解常见的冲突处理方法（拉链法、开放寻址）</li>
+      <li>掌握 C++ 哈希容器（unordered_map / unordered_set）的用法与特性</li>
+      <li>考核目标：能用哈希容器高效解决查找、统计与去重问题</li>
+    </ul>
+  </div>
+</div>
+
+<div class="section-header" id="s1">
+  <h2>1　为什么需要哈希</h2>
+  <div class="en-title">Why Hashing</div>
+
+<h3 id="s1-1">1.1 用列表一个个找</h3>
+</div>
+
+<p>先比较两种"找东西"的办法：</p>
+
+<div class="code-card">
+  <div class="code-head">
+    <span class="dot d1"></span><span class="dot d2"></span><span class="dot d3"></span>
+    <span class="file">用列表找：一个个看过去</span>
+    <span class="lang">C++</span>
+  </div>
+  <pre><code>vector&lt;string&gt; names = {"安雅", "塔林", "艾达", "塞尼克"};     // 实际有一万个人
+
+string target = "塞尼克";
+for (int i = 0; i &lt; names.size(); i++) {
+    if (names[i] == target) {      // 从头一个个比
+        cout &lt;&lt; "找到了，第 " &lt;&lt; i &lt;&lt; " 个" &lt;&lt; endl;
+        break;
+    }
+}
+// 最坏情况要比一万次 —— O(n)
+</code></pre>
+  <div class="out"><b>问题</b>　数据越多，找得越慢</div>
+</div>
+
+<div class="code-card">
+  <div class="code-head">
+    <span class="dot d1"></span><span class="dot d2"></span><span class="dot d3"></span>
+    <span class="file">用unordered_map找：算一下位置，直接去拿</span>
+    <span class="lang">C++</span>
+  </div>
+  <pre><code>unordered_map&lt;string, int&gt; info = {{"安雅", 80}, {"塔林", 100},
+                                   {"艾达", 60}, {"塞尼克", 95}};
+
+cout &lt;&lt; info["塞尼克"] &lt;&lt; endl;       // 一次就拿到 —— 平均 O(1)
+// 不管里面存了 10 个人还是 100 万人，花的时间几乎一样
+</code></pre>
+  <div class="out"><b>关键</b>　它不是"找"出来的，而是"算"出来的</div>
+</div>
+
+<h3 id="s1-2">1.2 哈希表的核心思想</h3>
+
+<div class="box remember">
+  <span class="lb">哈希表的核心思想：</span>
+  <strong>不用"一个个比"，而是用一个函数把"键"算成一个数字，直接跳到对应的位置去取。</strong><br>
+  · 列表像<b>一排没编号的书</b>，找书得一本本翻；<br>
+  · 哈希表像<b>带索引的图书馆</b>，报书名就能直接走到那排书架。<br>
+  <b>所以它的查找速度是 O(1)——和数据量几乎无关。</b>
+</div>
+
+<div class="section-header" id="s2">
+  <h2>2　哈希函数</h2>
+  <div class="en-title">Hash Functions</div>
+
+<h3 id="s2-1">2.1 哈希函数在做什么</h3>
+</div>
+
+<figure class="figure">
+  <svg class="diagram" viewBox="0 0 860 260" role="img" aria-label="哈希函数的作用">
+    <text x="24" y="34" font-size="14" font-weight="bold" fill="#1f2937">哈希函数：把"名字"算成"位置编号"</text>
+
+    <rect x="60" y="70" width="180" height="120" rx="12" fill="#eaf1fe" stroke="#2563eb" stroke-width="2"/>
+    <text x="150" y="98" text-anchor="middle" font-size="12.5" fill="#1d4ed8" font-weight="bold">键（名字）</text>
+    <text x="150" y="130" text-anchor="middle" font-size="13" font-family="Consolas,monospace" fill="#1d4ed8">"apple"</text>
+    <text x="150" y="160" text-anchor="middle" font-size="13" font-family="Consolas,monospace" fill="#1d4ed8">"banana"</text>
+    <text x="150" y="184" text-anchor="middle" font-size="11.5" fill="#68788f">任意长度的输入</text>
+
+    <path d="M248 130 L306 130" stroke="#2563eb" stroke-width="2.4"/>
+    <polygon points="312,130 298,123 298,137" fill="#2563eb"/>
+
+    <rect x="320" y="94" width="180" height="72" rx="12" fill="#0f1621" stroke="#4f8ff0" stroke-width="2"/>
+    <text x="410" y="122" text-anchor="middle" font-size="12.5" fill="#93b4f0" font-weight="bold">哈希函数</text>
+    <text x="410" y="148" text-anchor="middle" font-size="11.5" font-family="Consolas,monospace" fill="#cfe0f5">h = 累加字母编码 % 容量</text>
+
+    <path d="M508 130 L566 130" stroke="#2563eb" stroke-width="2.4"/>
+    <polygon points="572,130 558,123 558,137" fill="#2563eb"/>
+
+    <rect x="580" y="70" width="230" height="120" rx="12" fill="#eaf1fe" stroke="#2563eb" stroke-width="2"/>
+    <text x="695" y="98" text-anchor="middle" font-size="12.5" fill="#1d4ed8" font-weight="bold">位置编号</text>
+    <text x="695" y="130" text-anchor="middle" font-size="13" font-family="Consolas,monospace" fill="#1d4ed8">"apple" → 3</text>
+    <text x="695" y="160" text-anchor="middle" font-size="13" font-family="Consolas,monospace" fill="#1d4ed8">"banana" → 7</text>
+    <text x="695" y="184" text-anchor="middle" font-size="11.5" fill="#68788f">固定范围内的小整数</text>
+
+    <text x="430" y="228" text-anchor="middle" font-size="12.5" fill="#1d4ed8">两个要求：算得快、分布要均匀</text>
+    <text x="430" y="250" text-anchor="middle" font-size="11.5" fill="#68788f">最后那个"取余"很关键——它把结果压到 0 到 容量-1 之间</text>
+  </svg>
+  <div class="caption">图 2（SVG）：哈希函数把任意的键映射成固定范围的下标</div>
+</figure>
+
+<div class="code-card">
+  <div class="code-head">
+    <span class="dot d1"></span><span class="dot d2"></span><span class="dot d3"></span>
+    <span class="file">自己写一个简单的哈希函数</span>
+    <span class="lang">C++</span>
+  </div>
+  <pre><code>int hashFunc(string key, int capacity) {
+    int total = 0;
+    for (char ch : key) {
+        total = total + (int)ch;     // 把每个字符转成数字累加
+    }
+    return total % capacity;         // 取余，保证落在 0 ~ capacity-1
+}
+
+cout &lt;&lt; hashFunc("apple", 10) &lt;&lt; endl;     // 某个 0~9 的数
+cout &lt;&lt; hashFunc("banana", 10) &lt;&lt; endl;    // 另一个数
+</code></pre>
+  <div class="out"><b>要点</b>　<code>ord()</code> 把字符转成编码；<code>%</code> 把结果压进桶的范围</div>
+</div>
+
+<h3 id="s2-2">2.2 好哈希函数的两条标准</h3>
+
+<div class="box tip">
+  <span class="lb">好哈希函数的两条标准：</span><br>
+  <b>① 算得快</b>——每次查找都要算一次，太复杂就得不偿失；<br>
+  <b>② 分布均匀</b>——尽量让不同的键落到不同的位置，避免挤在一起。<br>
+  <strong>如果所有键都挤到同一个位置，哈希表就退化成链表了，查找又变回 O(n)。</strong>
+</div>
+
+<figure class="pic">
+  <img src="../assets/illustrations/py-L7-05-02_hash_buckets.webp" alt="一排带编号的格位"
+       onerror="this.closest('.pic').classList.add('missing')">
+  <div class="ph">
+    <div class="fn">assets/illustrations/py-L7-05-02_hash_buckets.webp</div>
+    <div class="ds">【配图位】铭牌库的墙面上钉着一排编好号的格子，每格前贴着一个数字；一名学徒把一块写着名字的铭牌按公式算出的编号，径直走到对应那格前放进去，旁边几块算到同一格的铭牌并排挂着。</div>
+  </div>
+  <figcaption>图 3：算出来的位置——一排带编号的格位</figcaption>
+</figure>
+
+<div class="section-header" id="s3">
+  <h2>3　冲突怎么办</h2>
+  <div class="en-title">Handling Collisions</div>
+
+<h3 id="s3-1">3.1 冲突是必然的</h3>
+</div>
+
+<p>两个不同的键算出同一个位置，就叫<strong>哈希冲突</strong>。这是无法完全避免的（因为桶的数量有限），只能处理。</p>
+
+<figure class="figure">
+  <svg class="diagram" viewBox="0 0 860 280" role="img" aria-label="拉链法">
+    <text x="24" y="34" font-size="14" font-weight="bold" fill="#1f2937">拉链法：冲突的键挂在同一个桶后面，串成一条链</text>
+
+    <g font-family="Consolas,monospace" font-size="12">
+      <rect x="80" y="66" width="60" height="32" rx="6" fill="#eaf1fe" stroke="#4f8ff0" stroke-width="1.6"/>
+      <text x="110" y="87" text-anchor="middle" fill="#1d4ed8">0</text>
+      <rect x="80" y="106" width="60" height="32" rx="6" fill="#eaf1fe" stroke="#4f8ff0" stroke-width="1.6"/>
+      <text x="110" y="127" text-anchor="middle" fill="#1d4ed8">1</text>
+      <rect x="80" y="146" width="60" height="32" rx="6" fill="#93b4f0" stroke="#2563eb" stroke-width="2"/>
+      <text x="110" y="167" text-anchor="middle" fill="#fff" font-weight="bold">2</text>
+      <rect x="80" y="186" width="60" height="32" rx="6" fill="#eaf1fe" stroke="#4f8ff0" stroke-width="1.6"/>
+      <text x="110" y="207" text-anchor="middle" fill="#1d4ed8">3</text>
+      <rect x="80" y="226" width="60" height="32" rx="6" fill="#eaf1fe" stroke="#4f8ff0" stroke-width="1.6"/>
+      <text x="110" y="247" text-anchor="middle" fill="#1d4ed8">4</text>
+    </g>
+
+    <path d="M148 162 L196 162" stroke="#2563eb" stroke-width="2.2"/>
+    <rect x="200" y="146" width="120" height="32" rx="7" fill="#cfe0f5" stroke="#2563eb" stroke-width="1.8"/>
+    <text x="260" y="167" text-anchor="middle" font-size="12" font-family="Consolas,monospace" fill="#1d4ed8">"apple"</text>
+    <path d="M328 162 L376 162" stroke="#4f8ff0" stroke-width="2"/>
+    <rect x="380" y="146" width="120" height="32" rx="7" fill="#cfe0f5" stroke="#2563eb" stroke-width="1.8"/>
+    <text x="440" y="167" text-anchor="middle" font-size="12" font-family="Consolas,monospace" fill="#1d4ed8">"grape"</text>
+    <path d="M508 162 L556 162" stroke="#4f8ff0" stroke-width="2"/>
+    <rect x="560" y="146" width="120" height="32" rx="7" fill="#cfe0f5" stroke="#2563eb" stroke-width="1.8"/>
+    <text x="620" y="167" text-anchor="middle" font-size="12" font-family="Consolas,monospace" fill="#1d4ed8">"melon"</text>
+
+    <text x="110" y="278" text-anchor="middle" font-size="11.5" fill="#64748b">桶</text>
+    <text x="440" y="200" text-anchor="middle" font-size="11.5" fill="#1d4ed8">三个键都算出了 2，就串在这一格后面</text>
+    <text x="440" y="232" text-anchor="middle" font-size="11.5" fill="#68788f">查找时：先算位置，再在这条短链里逐个比</text>
+    <text x="440" y="258" text-anchor="middle" font-size="11.5" fill="#68788f">只要链不太长，平均还是接近 O(1)</text>
+  </svg>
+  <div class="caption">图 4（SVG）：拉链法——冲突的键串成一条链</div>
+</figure>
+
+<table class="styled">
+  <thead><tr><th>处理方法</th><th>做法</th><th>特点</th></tr></thead>
+  <tbody>
+    <tr><td><strong>拉链法</strong></td><td>每个桶挂一个列表，冲突的键都放进去</td><td>最常用，实现简单，C++ 的 unordered_map 用的思想与此类似</td></tr>
+    <tr><td><strong>开放寻址</strong></td><td>位置被占了就往后找下一个空位</td><td>省空间，但删除比较麻烦</td></tr>
+    <tr><td><strong>再哈希</strong></td><td>换一个哈希函数重新算位置</td><td>计算量更大</td></tr>
+  </tbody>
+</table>
+
+<h3 id="s3-2">3.2 冲突多了会怎样</h3>
+
+<div class="box warn">
+  <span class="lb">冲突多了会怎样？</span>
+  如果所有键都挤在同一个桶里，哈希表就<b>退化成一个链表</b>——查找又变成 O(n)，<br>
+  白白浪费了哈希的好处。<br>
+  <strong>所以桶的数量要选得合适（通常比元素个数多一些），让每个桶尽量只放一两个。</strong>
+</div>
+
+<div class="section-header" id="s4">
+  <h2>4　unordered_map 就是哈希表</h2>
+  <div class="en-title">unordered_map Is a Hash Table</div>
+
+<h3 id="s4-1">4.1 你早就在用哈希表了</h3>
+</div>
+
+<div class="code-card">
+  <div class="code-head">
+    <span class="dot d1"></span><span class="dot d2"></span><span class="dot d3"></span>
+    <span class="file">你早就在用哈希表了</span>
+    <span class="lang">C++</span>
+  </div>
+  <pre><code>unordered_map&lt;string, int&gt; d;
+d["apple"] = 3;                 // 底层：算出 "apple" 的哈希位置，把 3 放进去
+cout &lt;&lt; d["apple"] &lt;&lt; endl;     // 底层：再算一次，直接跳到那个位置取出 3
+
+// 速度对比（一万条数据）
+// 线性查找：最坏 10000 次比较
+// 哈希查找：约 1 次定位 + 极少量比较
+cout &lt;&lt; (d.count("apple") ? "有" : "没有") &lt;&lt; endl;   // 也是 O(1)
+</code></pre>
+  <div class="out"><b>重要</b>　unordered_map的键必须是<b>可哈希</b>的：数字、字符串、元组可以，列表不行</div>
+</div>
+
+<h3 id="s4-2">4.2 三条实用结论</h3>
+
+<div class="box remember">
+  <span class="lb">三条实用结论：</span><br>
+  <b>① unordered_map的查找、插入、删除平均都是 O(1)</b>——这就是它快的秘密；<br>
+  <b>② 键必须不可变</b>（数字/字符串/元组），因为哈希值一旦变了就找不到了；<br>
+  <b>③ 哈希容器不保证顺序</b>（unordered_map 的遍历顺序和插入顺序无关，别依赖它做题）。
+</div>
+
+<div class="code-card">
+  <div class="code-head">
+    <span class="dot d1"></span><span class="dot d2"></span><span class="dot d3"></span>
+    <span class="file">哈希表的三大经典用法</span>
+    <span class="lang">C++</span>
+  </div>
+  <pre><code>// ① 计数
+vector&lt;string&gt; words = {"a", "b", "a", "c", "a"};
+unordered_map&lt;string, int&gt; cnt;
+for (string w : words) {
+    cnt[w] = cnt[w] + 1;         // 没有这个键时会自动建出来，初值是 0
+}
+for (auto&amp; p : cnt) cout &lt;&lt; p.first &lt;&lt; "：" &lt;&lt; p.second &lt;&lt; " ";
+cout &lt;&lt; endl;                    // a：3  b：1  c：1
+
+// ② 去重
+set&lt;string&gt; uniq(words.begin(), words.end());
+
+// ③ 快速判断"见过没有"
+unordered_set&lt;int&gt; seen;
+for (int x : {3, 1, 4, 1, 5}) {
+    if (seen.count(x)) cout &lt;&lt; "重复了：" &lt;&lt; x &lt;&lt; endl;
+    seen.insert(x);
+}
+</code></pre>
+  <div class="out"><b>要点</b>　计数、去重、判重——这三件事用哈希做最快</div>
+</div>
+
+<figure class="pic">
+  <img src="../assets/illustrations/py-L7-05-03_dict_lookup.webp" alt="按键直接取——不用一格格找"
+       onerror="this.closest('.pic').classList.add('missing')">
+  <div class="ph">
+    <div class="fn">assets/illustrations/py-L7-05-03_dict_lookup.webp</div>
+    <div class="ds">【配图位】同一排编号格位的对比画面：左边一张长桌上铭牌堆成乱堆、有人正一块块翻找；右边用一道光把名字直接指向了编号格，伸手就拿；中间一块木牌写着"O(n) → O(1)"。</div>
+  </div>
+  <figcaption>图 5：按键直接取，不用一格格找</figcaption>
+</figure>
+
+<div class="section-header" id="s5">
+  <h2>5　代码实战</h2>
+  <div class="en-title">Level Practice</div>
+</div>
+
+<div class="level-card">
+  <div class="lc-head"><span class="n">关卡</span><h4>散列的牦牛</h4><span class="go">进入关卡 →</span></div>
+  <div class="lc-body">
+    <div class="story">
+      <b>故事：</b>牦牛管理员手里有一本名册，每头牦牛对应一个"存放位置"。
+      你报出名字，他<b>不算、不翻，直接走向那格</b>。<br>
+      你怎么知道它在哪儿？你问。<br>
+      他晃了晃手里的册子：<b>名字进来的时候，就已经算好位置了。</b>
+    </div>
+    
+    <p><strong>思路：</strong>写一个哈希函数，把名字变成格子编号，再报出它在哪一格。
+    <b>这就是哈希表的全部核心动作。</b></p><figure class="pic">
+      <img src="../assets/stages/py-L7-05-stage1_hashed_yaks.webp" alt="散列的牦牛 关卡截图"
+           onerror="this.closest('.pic').classList.add('missing')">
+      <div class="ph">
+        <div class="fn">assets/stages/py-L7-05-stage1_hashed_yaks.webp</div>
+        <div class="ds">【关卡截图位】请把《散列的牦牛》的游戏画面截图放到此处（放入 assets/stages/ 目录，文件名为 py-L7-05-stage1_hashed_yaks.webp）。</div>
+      </div>
+      <figcaption>关卡实况：散列的牦牛</figcaption>
+    </figure>
+    <div class="code-card">
+      <div class="code-head">
+        <span class="dot d1"></span><span class="dot d2"></span><span class="dot d3"></span>
+        <span class="file">重点示例：把名字算成位置编号</span>
+        <span class="lang">C++</span>
+      </div>
+      <pre><code>int hashFunction(string key) {
+    int total = 0;
+    for (char ch : key) {
+        total = total + (int)ch;     // 字符编码累加
+    }
+    return total % 135;              // 取余，压到 0 ~ 134
+}
+
+string key = "someName";
+hero.say("它在第 " + to_string(hashFunction(key)) + " 号存储格");
+</code></pre>
+      <div class="out"><b>要点</b>　累加 + 取余 = 最简单的哈希函数；<code>ord()</code> 把字符变成数字</div>
+    </div>
+    <div class="box info">
+      <span class="lb">和本单元的关联：</span>
+      这一关的代码干的事，正是 C++ 的 unordered_map 在底层偷偷做的事：<br>
+      <b>把键（名字）算成一个下标，然后直接把值存到那个位置。</b><br>
+      区别只在于：<strong>标准库用的哈希函数更复杂、冲突处理更完善，所以你用不着操心。</strong>
+    </div>
+    <a class="btn-go" href="https://codecombat.cn/" target="_blank" rel="noopener">去扣哒世界闯这一关 →</a>
+  </div>
+</div>
+
+
+
+<div class="section-header" id="s6">
+  <h2>6　常见陷阱</h2>
+  <div class="en-title">Common Pitfalls</div>
+</div>
+
+<div class="cast duck">
+  <img class="ava" src="../assets/ducks/duck_hattori.webp" alt="扣哒鸭" onerror="this.style.display='none'">
+  <div class="bubble">
+    <div class="who">扣哒鸭 · 调试官</div>
+    哈希这块的坑，一半在"键能不能哈希"，一半在"以为它什么都能做"。四条，看完就清楚了。
+  </div>
+</div>
+
+<div class="pit">
+  <div class="pt">
+    <div class="x">1</div>
+    <div class="t"><b>用列表当unordered_map的键。</b></div>
+  </div>
+  <div class="duck">
+    <img src="../assets/ducks/duck_zana.webp" alt="扣哒鸭" onerror="this.style.display='none'">
+    <div class="dt"><b>扣哒鸭：</b>会报 <code>TypeError: unhashable type: 'list'</code>。<br>
+    <strong>键必须不可变</strong>——列表能改，所以不能做键。<br>
+    真要表达"一组键"，可以把列表转成<b>元组</b>再当键。</div>
+  </div>
+  <div class="fix"><b>正确做法：</b>键用数字、字符串或元组</div>
+</div>
+
+<div class="pit">
+  <div class="pt">
+    <div class="x">2</div>
+    <div class="t"><b>以为哈希表也保证顺序。</b>想按插入顺序取第 3 个元素。</div>
+  </div>
+  <div class="duck">
+    <img src="../assets/ducks/duck_naria.webp" alt="扣哒鸭" onerror="this.style.display='none'">
+    <div class="dt"><b>扣哒鸭：</b>哈希表的核心是"按键直接定位"，<b>不是"按位置顺序访问"</b>。<br>
+    要按顺序访问，就用列表；<b>别拿unordered_map当列表用。</b></div>
+  </div>
+  <div class="fix"><b>正确认识：</b>unordered_map按键取，列表按位置取——各司其职</div>
+</div>
+
+<div class="pit">
+  <div class="pt">
+    <div class="x">3</div>
+    <div class="t"><b>不该用哈希却用了。</b>比如求"最大值"。</div>
+  </div>
+  <div class="duck">
+    <img src="../assets/ducks/duck_illia.webp" alt="扣哒鸭" onerror="this.style.display='none'">
+    <div class="dt"><b>扣哒鸭：</b>哈希表的强项是"<b>按键快速定位</b>"。
+    求最大值还是得遍历一遍，用不着哈希。<br>
+    <strong>选数据结构的标准永远是"这个操作我要做多少次"。</strong></div>
+  </div>
+  <div class="fix"><b>正确认识：</b>按键查找用哈希；求最值、排序还是用列表</div>
+</div>
+
+<div class="pit">
+  <div class="pt">
+    <div class="x">4</div>
+    <div class="t"><b>自己写哈希函数时忘了取余。</b></div>
+  </div>
+  <div class="duck">
+    <img src="../assets/ducks/duck_senick.webp" alt="扣哒鸭" onerror="this.style.display='none'">
+    <div class="dt"><b>扣哒鸭：</b>累加出来的数字可能很大，
+    <strong>必须 <code>% 容量</code> 把它压到 0 到容量-1 之间</strong>，否则会越界。<br>
+    这一步和循环队列取余是同一个道理。</div>
+  </div>
+  <div class="fix"><b>正确写法：</b><code class="inline">return total % capacity</code></div>
+</div>
+
+<div class="section-header" id="s7">
+  <h2>7　题目练习</h2>
+  <div class="en-title">Practice</div>
+</div>
+
+<p>第 1 题改编自 2026 年 9 月 · C++ 七级 第 9 题，其余为原创练习题。</p>
+
+<div class="exam">
+  <div class="eh"><span class="src">改编自 2026 年 9 月 · C++ 七级 · 第 9 题</span><span class="tp">单选题</span></div>
+  <div class="eb">
+    <div class="q">关于哈希表，下列说法<b>正确</b>的是（　　）。</div>
+    <div class="opt"><i>A.</i>只要哈希函数选择合适，就可以完全避免冲突<br>
+      <i>B.</i>在链地址法中，查找一个元素的时间复杂度一定为 O(1)<br>
+      <i>C.</i>开放定址法发生冲突后，会在表内寻找下一个可用位置<br>
+      <i>D.</i>哈希表的查找速度与表中元素个数无关</div>
+    <details><summary>查看答案与详解</summary>
+      <div class="ans"><b>答案：C</b>。开放定址法的做法就是"算出来的位置被占了，就按约定<strong>在表内继续往后找</strong>（线性探测、二次探测等）"。<br><b>A 错：</b>键的数量往往远多于桶的数量，由<strong>抽屉原理</strong>可知冲突无法完全避免，好的哈希函数只是让冲突更均匀；<br><b>B 错：</b>"一定"太绝对。链地址法<strong>平均</strong>是 O(1)，但如果大量元素挤在同一条链上，查找会退化；<br><b>D 错：</b>元素越多、装载因子越大，平均查找长度也会变长，装载因子超过阈值就要扩容。<br><b>顺带记：</b>链地址法删除方便（摘链即可），开放定址法删除要打"墓碑标记"，不能直接置空。<br><span class="tagline">对应小节</span>3.2 冲突多了会怎样。</div>
+    </details>
+  </div>
+</div>
+<div class="exam">
+  <div class="eh"><span class="src ori">原创练习题</span><span class="tp">单选题</span></div>
+  <div class="eb">
+    <div class="q">哈希表查找速度快，主要原因是（　　）。</div>
+    <div class="opt">
+      <i>A.</i>它把数据排好了序<br>
+      <i>B.</i>它用哈希函数直接算出数据的位置<br>
+      <i>C.</i>它的存储空间比别人大<br>
+      <i>D.</i>它用了更快的编程语言
+    </div>
+    <details><summary>查看答案与详解</summary>
+      <div class="ans"><b>答案：B</b>。哈希表不做"逐个比较"，
+      而是<strong>先把键算成一个下标，直接跳到那个位置</strong>，所以平均是 O(1)。<br>
+      <b>A 错：</b>它并不需要排序；<b>C 错：</b>哈希表其实是用额外空间换时间，但"快"的原因不是空间大。<br>
+      <span class="tagline">对应小节</span>1 为什么需要哈希。</div>
+    </details>
+  </div>
+</div>
+
+<div class="exam">
+  <div class="eh"><span class="src ori">原创练习题</span><span class="tp">单选题</span></div>
+  <div class="eb">
+    <div class="q">哈希函数里最后一步通常要执行"取余"运算，目的是（　　）。</div>
+    <div class="opt">
+      <i>A.</i>让计算更复杂，显得高级<br>
+      <i>B.</i>把结果压缩到桶的合法下标范围内<br>
+      <i>C.</i>去掉重复的键<br>
+      <i>D.</i>保证结果不会冲突
+    </div>
+    <details><summary>查看答案与详解</summary>
+      <div class="ans"><b>答案：B</b>。哈希函数的原始结果可能是一个很大的数，
+      而桶的数量是有限的（比如 100 个）——<br>
+      <b>取余就把它压到 0 到 99 之间</b>，正好对应桶的下标。<br>
+      <b>D 错：</b>取余恰恰是造成冲突的原因之一（两个不同的键可能余数相同）。<br>
+      <span class="tagline">对应小节</span>2 哈希函数。</div>
+    </details>
+  </div>
+</div>
+
+<div class="exam">
+  <div class="eh"><span class="src ori">原创练习题</span><span class="tp">判断题</span></div>
+  <div class="eb">
+    <div class="q">哈希冲突是完全可以避免的，只要哈希函数写得足够好。（　　）</div>
+    <details><summary>查看答案与详解</summary>
+      <div class="ans"><b>答案：错误（×）</b>。桶的数量有限，而可能的键几乎无限多，
+      根据"抽屉原理"，<b>冲突是无法完全避免的</b>。<br>
+      我们能做的只是"减少冲突"（好哈希函数）和"处理冲突"（拉链法、开放寻址）。<br>
+      <span class="tagline">对应小节</span>3 冲突怎么办。</div>
+    </details>
+  </div>
+</div>
+
+<div class="exam">
+  <div class="eh"><span class="src ori">原创练习题</span><span class="tp">单选题</span></div>
+  <div class="eb">
+    <div class="q">拉链法处理冲突的做法是（　　）。</div>
+    <div class="opt">
+      <i>A.</i>把冲突的元素丢掉<br>
+      <i>B.</i>把哈希值相同的元素串成一个列表，挂在同一个桶后面<br>
+      <i>C.</i>重新分配一块更大的内存<br>
+      <i>D.</i>把元素放到最后一个空桶里
+    </div>
+    <details><summary>查看答案与详解</summary>
+      <div class="ans"><b>答案：B</b>。拉链法让每个桶挂一条"链"，
+      哈希值相同的键依次挂在后面。<br>
+      查找时先定位桶，再在这条短链里逐个比较。<br>
+      <b>D 项</b>描述的是"线性探测"（开放寻址的一种）。<br>
+      <span class="tagline">对应小节</span>3 冲突怎么办。</div>
+    </details>
+  </div>
+</div>
+
+<div class="exam">
+  <div class="eh"><span class="src ori">原创练习题</span><span class="tp">判断题</span></div>
+  <div class="eb">
+    <div class="q">C++ 的 unordered_map 底层是用哈希表实现的，所以它的键必须能算出哈希值。（　　）</div>
+    <details><summary>查看答案与详解</summary>
+      <div class="ans"><b>答案：正确（√）</b>。整数、字符串等基本类型可以直接做 unordered_map 的键；
+      <b>没提供哈希函数的自定义类型不能</b>直接做键。<br>
+      原因很简单：键一变，哈希值就变了，原来存的位置也就找不到了。<br>
+      <span class="tagline">对应小节</span>4 unordered_map 就是哈希表。</div>
+    </details>
+  </div>
+</div>
+
+<div class="exam">
+  <div class="eh"><span class="src ori">原创练习题</span><span class="tp">单选题</span></div>
+  <div class="eb">
+    <div class="q">下列 C++ 代码执行后，输出的结果是（　　）。</div>
+    <pre>1  unordered_map&lt;string, int&gt; d;
+2  vector&lt;string&gt; words = {"a", "b", "a", "c", "a"};
+3  for (string w : words)
+4      d[w] = d[w] + 1;
+5  cout &lt;&lt; d["a"] &lt;&lt; endl;</pre>
+    <div class="opt"><i>A.</i>1　　<i>B.</i>2　　<i>C.</i>3　　<i>D.</i>报错</div>
+    <details><summary>查看答案与详解</summary>
+      <div class="ans"><b>答案：C</b>。<code class="inline">"a"</code> 在列表里出现了 <b>3 次</b>，
+      所以计数器的值是 3。<br>
+      <b>这是哈希表最经典的用法：</b>用unordered_map做计数器，一遍遍历就能统计完。<br>
+      <span class="tagline">对应小节</span>4 unordered_map 就是哈希表。</div>
+    </details>
+  </div>
+</div>
+
+<div class="exam">
+  <div class="eh"><span class="src ori">原创练习题</span><span class="tp">编程题</span></div>
+  <div class="eb">
+    <div class="q">题目要求：一行文字里有若干单词，请找出<strong>第一个出现两次</strong>的单词；若没有重复则输出"无重复"。</div>
+    <details><summary>查看参考答案与要点</summary>
+      <div class="ans">
+<pre style="margin:0;background:#131a26;color:#c8d3e0;border-radius:10px;padding:14px 16px">string text = "apple banana cherry banana apple date";
+stringstream ss(text);
+string w;
+vector&lt;string&gt; words;
+while (ss &gt;&gt; w) words.push_back(w);      // 按空格切词
+
+unordered_set&lt;string&gt; seen;             // 用集合记录"见过的单词"
+string answer = "无重复";
+
+for (string&amp; s : words) {
+    if (seen.count(s)) {                 // 见过 → 它就是第一个重复的
+        answer = s;
+        break;
+    }
+    seen.insert(s);                      // 没见过 → 记下来
+}
+
+cout &lt;&lt; answer &lt;&lt; endl;                  // banana</pre>
+      <p style="margin-top:12px"><b>输出：</b>banana<br>
+      <b>要点：</b><br>
+      ① <code class="inline">set</code> 和 <code class="inline">dict</code> 一样是哈希实现的，
+      <code class="inline">in</code> 判断平均 O(1)；<br>
+      ② 一边遍历一边往集合里加，<b>第一个"已经在集合里"的单词就是答案</b>；<br>
+      ③ 如果换成列表存"见过的词"，<code class="inline">in</code> 就要 O(n)，
+      整体会退化成 O(n²)——<b>这就是哈希表的价值</b>。<br>
+      <span class="tagline">对应小节</span>4 unordered_map 就是哈希表。</p>
+      </div>
+    </details>
+  </div>
+</div>
+
+<div class="section-header" id="s8">
+  <h2>8　本单元小结</h2>
+  <div class="en-title">Unit Summary</div>
+</div>
+
+<div class="cast teacher">
+  <img class="ava" src="../assets/avatars/senick.webp" alt="塞尼克" onerror="this.style.display='none'">
+  <div class="bubble">
+    <div class="who">塞尼克 · 沙海向导</div>
+    七级到这里就收官了。最后三句话：<br>
+    <strong>一、哈希表用"算位置"代替"逐个找"，所以平均 O(1)。</strong><br>
+    <strong>二、哈希函数要算得快、分布均匀；末尾那个取余不能少。</strong><br>
+    <strong>三、冲突无法避免，常用拉链法把冲突的键串成链。</strong><br>
+    从雷鸣高塔出去，前面是<b>寂灭王座</b>——最后一站，也是最难的一站。
+  </div>
+</div>
+
+<div class="summary">
+  <h3>你在索引库里收获了什么</h3>
+  <ul>
+    <li><strong>哈希表</strong>——用哈希函数把键算成下标，直接定位，平均查找 O(1)。</li>
+    <li><strong>哈希函数</strong>——把任意键映射成固定范围的下标；要求算得快、分布均匀。</li>
+    <li><strong>取余的作用</strong>——把结果压到 0 到"容量-1"之间。</li>
+    <li><strong>哈希冲突</strong>——不同的键算出同一下标；无法完全避免。</li>
+    <li><strong>拉链法</strong>——冲突的键串成一条链，挂在同一个桶后面。</li>
+    <li><strong>退化风险</strong>——冲突太多时会退化成链表，查找变成 O(n)。</li>
+    <li><strong>C++ 的 unordered_map</strong>——底层就是哈希表；键要能被哈希（整数、字符串等基本类型都自带）。</li>
+    <li><strong>三大用法</strong>——计数、去重、快速判重。</li>
+  </ul>
+</div>
+
+<div class="pager">
+  <a href="cpp-7-04.html"><div class="k">← 上一单元</div><div class="v">雷池漫灌 · 泛洪算法</div></a>
+  <a href="../index.html" target="_top" class="back"><div class="k">返回</div><div class="v">考纲之路 · 总目录</div></a>
+  <a href="cpp-8-01.html"><div class="k">下一级别 →</div><div class="v">王座前的岔数 · 计数原理</div></a>
+</div>
+
+<div class="cta">
+  <h3>七级通关，前面是寂灭王座</h3>
+  <p>雷鸣高塔五个单元全部学完。接下来是八级——<b>计数原理、排列组合、杨辉三角、
+  倍增、计算几何、综合算法优化</b>。这是考纲之路的最后一站。</p>
+  <a class="btn-go" href="https://codecombat.cn/" target="_blank" rel="noopener">加入扣哒世界，把这条考纲之路走一遍 →</a>
+</div>
+</div><!-- /container -->
+</div><!-- /page -->
+
+<script>
+const KEYWORDS = new Set([
+  "int", "long", "short", "unsigned", "signed", "float", "double", "char", "bool", "void",
+  "const", "if", "else", "for", "while", "do", "switch", "case", "default", "break",
+  "continue", "return", "goto", "struct", "class", "union", "enum", "using", "namespace",
+  "std", "main", "true", "false", "cin", "cout", "cerr", "endl", "string", "sizeof",
+  "include", "define", "new", "delete", "public", "private", "static", "inline", "nullptr"
+]);
+
+function esc(s){ return s.replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;'); }
+
+function highlight(src){
+  let out = '', i = 0;
+  const n = src.length;
+  while (i < n){
+    const c = src[i];
+    /* 预处理指令：#include / #define，整行只在行首生效 */
+    if (c === '#' && (i === 0 || src[i-1] === '\n')){
+      let j = i;
+      while (j < n && /[A-Za-z]/.test(src[j])) j++;
+      out += '<span class="kw">' + esc(src.slice(i, j)) + '</span>';
+      let k = src.indexOf('\n', j); if (k < 0) k = n;
+      if (j < k) out += '<span class="st">' + esc(src.slice(j, k)) + '</span>';
+      i = k; continue;
+    }
+    /* 行注释 // */
+    if (c === '/' && src[i+1] === '/'){
+      let j = src.indexOf('\n', i); if (j < 0) j = n;
+      out += '<span class="cm">' + esc(src.slice(i, j)) + '</span>';
+      i = j; continue;
+    }
+    /* 块注释 */
+    if (c === '/' && src[i+1] === '*'){
+      let j = src.indexOf('*/', i + 2); j = j < 0 ? n : j + 2;
+      out += '<span class="cm">' + esc(src.slice(i, j)) + '</span>';
+      i = j; continue;
+    }
+    /* 字符串与字符字面量 */
+    if (c === '"' || c === "'"){
+      let j = i + 1;
+      while (j < n && src[j] !== c){ if (src[j] === '\\') j++; j++; }
+      j = Math.min(j + 1, n);
+      out += '<span class="st">' + esc(src.slice(i, j)) + '</span>';
+      i = j; continue;
+    }
+    /* 数字 */
+    if (/[0-9]/.test(c)){
+      let j = i;
+      while (j < n && /[0-9.]/.test(src[j])) j++;
+      out += '<span class="nu">' + esc(src.slice(i, j)) + '</span>';
+      i = j; continue;
+    }
+    /* 标识符：关键字 / 函数名 / 普通名字 */
+    if (/[A-Za-z_]/.test(c)){
+      let j = i;
+      while (j < n && /[A-Za-z0-9_]/.test(src[j])) j++;
+      const w = src.slice(i, j);
+      if (KEYWORDS.has(w)) out += '<span class="kw">' + esc(w) + '</span>';
+      else if (src[j] === '(') out += '<span class="fn">' + esc(w) + '</span>';
+      else out += esc(w);
+      i = j; continue;
+    }
+    out += esc(c); i++;
+  }
+  return out;
+}
+
+document.querySelectorAll('.code-card pre code').forEach(block => {
+  block.innerHTML = highlight(block.textContent);
+});
+
+if (location.search.indexOf('expand') >= 0) {
+  document.querySelectorAll('details').forEach(d => d.open = true);
+}
+document.querySelectorAll('.sidebar-nav a').forEach(a => {
+  a.addEventListener('click', () => {
+    if (window.innerWidth <= 900) document.querySelector('.sidebar-nav').classList.remove('active');
+  });
+});
+</script>
+</body>
+</html>

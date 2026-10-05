@@ -1,0 +1,940 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="copyright" content="CodeCombat Inc. codecombat.cn">
+<title>雷池漫灌 · 泛洪算法 | 扣哒考级 · GESP C++ 七级</title>
+<style>
+  :root{
+    --primary:#2563eb; --primary-light:#4f8ff0; --primary-lighter:#eaf1fe; --primary-dark:#1b47a8;
+    --brand:#ff6b35; --brand-dark:#e8541f; --brand-soft:#fff3ec;
+    --night:#131c2b; --night-2:#1e2a3a; --gold:#f5b301;
+    --text:#242e3d; --dim:#68788f; --dim2:#93a2b6;
+    --bg:#ffffff; --bg-soft:#f7f9fd; --line:#e2e9f4; --sidebar:274px;
+    --code-bg:#131a26; --code-tx:#c8d3e0;
+    --code-kw:#c678dd; --code-st:#98c379; --code-nu:#d19a66; --code-cm:#5f7488; --code-fn:#e5c07b;
+  }
+  *{margin:0;padding:0;box-sizing:border-box}
+  html{scroll-behavior:smooth}
+  body{font-family:"PingFang SC","Microsoft YaHei","Segoe UI",-apple-system,sans-serif;line-height:1.9;color:var(--text);background:var(--bg);font-size:15.5px}
+  .sidebar-nav{position:fixed;top:0;left:0;width:var(--sidebar);height:100vh;overflow-y:auto;background:linear-gradient(180deg,#0c1626,#14243c);padding:14px 0 40px;z-index:100;border-right:3px solid var(--brand);transition:transform .3s ease}
+  .sidebar-nav::-webkit-scrollbar{width:5px}
+  .sidebar-nav::-webkit-scrollbar-thumb{background:var(--brand);border-radius:4px}
+  .sb-brand{display:flex;align-items:center;gap:10px;padding:10px 13px 12px;border-bottom:1px solid #233752;margin-bottom:8px}
+  .sidebar-nav a.sb-logo{display:flex;align-items:center;justify-content:center;flex-shrink:0;padding:0;border-left:none;transition:.2s}
+  .sb-logo:hover{transform:scale(1.08)}
+  .sb-logo img{height:34px;width:34px;display:block;object-fit:contain;border-radius:8px}
+  .sb-brand b{color:#f2f6fa;font-size:14px;letter-spacing:.5px;display:block;line-height:1.4}
+  .sb-brand span{color:#7f95ab;font-size:11.5px;display:block;line-height:1.4}
+  .nav-title{color:#ffb894;font-size:12px;font-weight:800;padding:10px 18px 6px;letter-spacing:1.2px}
+  .sidebar-nav a{display:block;color:#c3d0dc;text-decoration:none;padding:6px 18px;font-size:12.5px;line-height:1.55;border-left:3px solid transparent;transition:.18s}
+  .sidebar-nav a:hover{color:#fff;background:rgba(255,107,53,.16);border-left-color:var(--brand)}
+  .sidebar-nav a.nav-section{color:#ffb894;font-weight:700;font-size:13px;margin-top:11px;padding-top:10px;border-top:1px solid #233752}
+  .sidebar-nav a.nav-section:first-of-type{border-top:none;margin-top:0;padding-top:6px}
+  .sidebar-nav a.nav-sub{padding-left:30px;color:#93a8bc;font-size:12px}
+  .sidebar-nav a.nav-sub:hover{color:#fff}
+  .sb-back{margin:16px 14px 0;display:block;text-align:center;padding:9px;border-radius:9px;background:#1e304a;color:#a9c0d6 !important;font-size:12px;font-weight:700;border-left:none !important}
+  .sb-back:hover{background:var(--brand) !important;color:#fff !important}
+  .nav-toggle{display:none;position:fixed;top:14px;left:14px;z-index:120;background:var(--brand);color:#fff;border:none;border-radius:9px;padding:9px 13px;font-size:15px;cursor:pointer;box-shadow:0 4px 14px rgba(0,0,0,.25)}
+  .page{margin-left:var(--sidebar)}
+  .hero{position:relative;overflow:hidden;padding:44px 52px;color:#fff;background:linear-gradient(125deg,#0a1220 0%,#16294a 46%,#8a3a16 132%)}
+  .hero::after{content:"";position:absolute;right:-90px;top:-110px;width:400px;height:400px;border-radius:50%;background:radial-gradient(circle,rgba(245,179,1,.30),transparent 68%)}
+  .hero-top{display:flex;gap:36px;align-items:center;position:relative;z-index:2}
+  .hero-txt{flex:1;min-width:0}
+  .hero .crumb{font-size:11.5px;color:#ffb894;letter-spacing:1.5px;font-weight:700;margin-bottom:14px}
+  .hero h1{font-size:31px;font-weight:800;line-height:1.3;letter-spacing:.6px;margin-bottom:8px}
+  .hero h1 .sub{display:block;font-size:18px;font-weight:700;color:#ffd2b3;margin-top:6px;letter-spacing:.3px}
+  .hero .en{font-size:13px;color:#9db4c8;font-style:italic;margin-bottom:18px}
+  .hero .tags{display:flex;flex-wrap:wrap;gap:8px}
+  .tag{font-size:11.5px;padding:4px 12px;border-radius:20px;background:rgba(255,255,255,.12);border:1px solid rgba(255,255,255,.22);color:#e8f0f6;font-weight:600}
+  .tag.hot{background:rgba(255,107,53,.92);border-color:transparent;color:#fff}
+  .hero-card{flex-shrink:0;width:200px;text-align:center}
+  .hero-card .ava{width:148px;height:148px;border-radius:50%;object-fit:cover;object-position:top center;border:4px solid rgba(255,180,140,.6);box-shadow:0 14px 34px rgba(0,0,0,.45);background:#24344a}
+  .hero-card .nm{font-size:15px;font-weight:800;color:#fff;margin-top:10px}
+  .hero-card .ti{font-size:11.5px;color:#ffb894;margin-top:2px}
+  .container{max-width:1080px;margin:0 auto;padding:38px 52px 70px}
+  .lead{font-size:15.5px;line-height:2.05;color:#333f52;background:linear-gradient(120deg,#fff8f3,#f7fbf8);border-left:5px solid var(--brand);border-radius:0 14px 14px 0;padding:22px 26px;margin-bottom:32px}
+  .lead b{color:var(--brand-dark)}
+  .cast{display:flex;gap:16px;align-items:flex-start;border-radius:16px;padding:18px 22px;margin:24px 0}
+  .cast .ava{width:72px;height:72px;border-radius:50%;object-fit:cover;object-position:top center;flex-shrink:0;background:#e8eef5}
+  .cast .bubble{position:relative;font-size:14px;line-height:1.95;padding-top:2px;flex:1}
+  .cast .who{font-size:12px;font-weight:800;margin-bottom:5px;letter-spacing:.5px}
+  .cast.anya{background:var(--brand-soft);border:1px solid #ffdcc9}
+  .cast.anya .who{color:var(--brand-dark)}
+  .cast.anya .bubble{color:#5c4636}
+  .cast.duck{background:#fff5f5;border:1px solid #fbd5d5}
+  .cast.duck .who{color:#b91c1c}
+  .cast.duck .bubble{color:#5c4141}
+  .cast.teacher{background:linear-gradient(120deg,#f4f7fb,#ffffff);border:1px solid #dbe4f0}
+  .cast.teacher .who{color:#1e293b}
+  .cast.teacher .bubble{color:#3c4a5a}
+  .cast.hero{background:#f2f7fd;border:1px solid #cfe0f5}
+  .cast.hero .who{color:#1b47a8}
+  .cast.hero .bubble{color:#3a4658}
+  .goal-grid{display:grid;grid-template-columns:1fr 1fr;gap:16px;margin-bottom:36px}
+  .goal{border:1px solid var(--line);border-radius:15px;padding:19px 21px;background:#fff;box-shadow:0 4px 16px rgba(31,122,68,.05)}
+  .goal h4{font-size:14px;font-weight:800;margin-bottom:11px;display:flex;align-items:center;gap:8px;color:var(--primary-dark)}
+  .goal h4 .ic{width:22px;height:22px;border-radius:7px;background:var(--primary-lighter);display:flex;align-items:center;justify-content:center;font-size:12px}
+  .goal ul{list-style:none}
+  .goal li{font-size:13.5px;color:#48576b;line-height:1.9;padding-left:18px;position:relative}
+  .goal li::before{content:"▸";position:absolute;left:0;color:var(--primary);font-weight:800}
+  .goal.syllabus li::before{content:"✓"}
+  .section-header{margin:52px 0 24px;padding-bottom:12px;border-bottom:3px solid var(--brand);display:flex;align-items:baseline;gap:14px;flex-wrap:wrap}
+  .section-header h2{font-size:22px;font-weight:800;color:var(--night);letter-spacing:.4px}
+  .section-header .en-title{font-size:12px;color:var(--dim2);font-style:italic}
+  h3{font-size:17.5px;font-weight:800;margin:34px 0 14px;color:var(--night);display:flex;align-items:center;gap:10px}
+  h3::before{content:"";width:5px;height:17px;border-radius:3px;background:var(--brand);flex-shrink:0}
+  h4{font-size:15px;font-weight:800;margin:24px 0 10px;color:#2b4260}
+  p{margin:12px 0;color:#3a4658;line-height:2}
+  strong{color:var(--primary-dark)}
+  code.inline{background:var(--primary-lighter);color:var(--primary-dark);padding:2px 7px;border-radius:6px;font-family:"SFMono-Regular",Consolas,Menlo,monospace;font-size:.9em;font-weight:600}
+  .figure{margin:24px 0;text-align:center}
+  .figure svg.diagram{max-width:100%;height:auto;background:#fff;border:1px solid var(--line);border-radius:14px;padding:10px}
+  .figure .caption{font-size:12.5px;color:var(--dim2);margin-top:9px}
+  .pic{margin:26px 0;text-align:center}
+  .pic img{max-width:100%;border-radius:16px;box-shadow:0 10px 28px rgba(30,60,45,.15);display:block;margin:0 auto}
+  .pic figcaption{font-size:12.5px;color:var(--dim2);margin-top:9px}
+  .pic .ph{display:none}
+  .pic.missing img{display:none}
+  .pic.missing .ph{display:flex;flex-direction:column;align-items:center;justify-content:center;gap:9px;border:2px dashed #c9d9e8;border-radius:16px;background:linear-gradient(135deg,#f8fbfe,#eef6ff);padding:40px 26px;color:#7a8fa8}
+  .pic.missing .ph .fn{font-family:Consolas,monospace;font-size:12.5px;color:#2563eb;font-weight:700;word-break:break-all}
+  .pic.missing .ph .ds{font-size:12.5px;line-height:1.8;max-width:560px}
+  .box{border-radius:13px;padding:16px 20px;margin:20px 0;font-size:14px;line-height:1.95}
+  .box .lb{font-weight:800;margin-right:6px}
+  .info{background:#eef6ff;border-left:5px solid #3b82f6;color:#274768}
+  .info .lb{color:#1d4ed8}
+  .tip{background:#fff9ec;border-left:5px solid #f59e0b;color:#6b4e13}
+  .tip .lb{color:#b45309}
+  .remember{background:var(--primary-lighter);border-left:5px solid var(--primary);color:#1d3a6b}
+  .remember .lb{color:var(--primary-dark)}
+  .warn{background:#fef2f2;border-left:5px solid #ef4444;color:#7f2b2b}
+  .warn .lb{color:#b91c1c}
+  .code-card{margin:20px 0;border-radius:14px;overflow:hidden;box-shadow:0 10px 28px rgba(20,40,28,.20)}
+  .code-head{display:flex;align-items:center;gap:9px;background:#1a2434;padding:9px 14px}
+  .code-head .dot{width:10px;height:10px;border-radius:50%}
+  .code-head .d1{background:#ff5f57}.code-head .d2{background:#febc2e}.code-head .d3{background:#28c840}
+  .code-head .file{color:#8fa6c0;font-size:11.5px;font-family:Consolas,monospace;margin-left:6px}
+  .code-head .lang{margin-left:auto;font-size:10.5px;font-weight:800;color:#0d141f;background:#4f8ff0;padding:2px 9px;border-radius:6px;letter-spacing:.4px}
+  .code-card pre{background:var(--code-bg);padding:18px 20px;overflow-x:auto;margin:0;font-family:"SFMono-Regular",Consolas,"Courier New",monospace;font-size:13.5px;line-height:1.85}
+  .code-card pre::-webkit-scrollbar{height:8px}
+  .code-card pre::-webkit-scrollbar-thumb{background:#31445c;border-radius:4px}
+  .code-card code{color:var(--code-tx);white-space:pre}
+  .kw{color:var(--code-kw);font-weight:600}
+  .st{color:var(--code-st)}
+  .nu{color:var(--code-nu)}
+  .cm{color:var(--code-cm);font-style:italic}
+  .fn{color:var(--code-fn)}
+  .out{background:#0f1621;color:#7fb3f5;font-family:Consolas,monospace;font-size:13px;padding:12px 20px;border-top:1px solid #22304a}
+  .out b{color:#c9d6cd;font-weight:600;font-size:11.5px;letter-spacing:1px}
+  .out.err{color:#fca5a5}
+  table.styled{width:100%;border-collapse:collapse;margin:20px 0;font-size:13.5px;border-radius:12px;overflow:hidden;box-shadow:0 4px 16px rgba(31,122,68,.07)}
+  table.styled thead{background:var(--brand)}
+  table.styled th{color:#fff;padding:11px 14px;text-align:left;font-weight:700;font-size:13px}
+  table.styled td{padding:10px 14px;border-bottom:1px solid var(--line);color:#445266;vertical-align:top}
+  table.styled tbody tr:nth-child(even){background:var(--bg-soft)}
+  table.styled tbody tr:last-child td{border-bottom:none}
+  .level-card{border:1px solid var(--line);border-radius:16px;overflow:hidden;margin:22px 0;box-shadow:0 6px 22px rgba(31,122,68,.07)}
+  .level-card .lc-head{background:linear-gradient(100deg,#17283a,#8a3a16);color:#fff;padding:15px 22px;display:flex;align-items:center;gap:12px;flex-wrap:wrap}
+  .level-card .lc-head .n{font-size:12px;font-weight:800;background:rgba(255,255,255,.2);padding:3px 10px;border-radius:20px}
+  .level-card .lc-head h4{margin:0;color:#fff;font-size:16px}
+  .level-card .lc-head .go{margin-left:auto;font-size:11.5px;color:#ffd2b3}
+  .level-card .lc-body{padding:20px 24px;background:#fff}
+  .level-card .story{background:#f9fbfd;border-left:4px solid #93c5fd;border-radius:0 10px 10px 0;padding:13px 18px;margin:0 0 16px;font-size:14px;line-height:1.95;color:#3f5163}
+  .level-card .story b{color:#1d4ed8}
+  .btn-go{display:inline-flex;align-items:center;gap:8px;background:linear-gradient(135deg,var(--brand),var(--brand-dark));color:#fff;text-decoration:none;font-weight:800;font-size:13.5px;padding:10px 22px;border-radius:11px;box-shadow:0 8px 20px rgba(255,107,53,.32);transition:.2s}
+  .btn-go:hover{transform:translateY(-2px);box-shadow:0 12px 26px rgba(255,107,53,.42)}
+  .pit{border:1px solid #f6dede;border-radius:14px;overflow:hidden;margin:16px 0;background:#fff}
+  .pit .pt{display:flex;gap:12px;padding:14px 18px;background:#fffafa;align-items:flex-start}
+  .pit .x{width:26px;height:26px;border-radius:9px;background:#fee;color:#dc2626;display:flex;align-items:center;justify-content:center;font-weight:800;flex-shrink:0;font-size:13px}
+  .pit .t{font-size:13.5px;line-height:1.9;color:#5c4a4a;flex:1}
+  .pit .t b{color:#b91c1c}
+  .pit .duck{display:flex;gap:12px;padding:13px 18px;background:#fff5f5;border-top:1px dashed #f3d0d0;align-items:flex-start}
+  .pit .duck img{width:48px;height:48px;object-fit:contain;flex-shrink:0;margin-top:2px}
+  .pit .duck .dt{font-size:13.5px;line-height:1.9;color:#7a3b3b}
+  .pit .duck .dt b{color:#b91c1c}
+  .pit .fix{padding:12px 18px;background:#f2f7fd;border-top:1px dashed #cfe0f5;font-size:13.5px;color:#1d3a6b}
+  .pit .fix b{color:var(--primary-dark)}
+  .exam{border:1px solid #dfe7f5;border-radius:15px;margin:16px 0;overflow:hidden;background:#fff;box-shadow:0 4px 16px rgba(38,62,120,.06)}
+  .exam .eh{display:flex;align-items:center;gap:10px;padding:11px 18px;background:linear-gradient(100deg,#eef4ff,#f7faff);border-bottom:1px solid #e3ebf8;flex-wrap:wrap}
+  .exam .eh .src{font-size:11px;font-weight:800;color:#fff;background:#2563eb;padding:2.5px 10px;border-radius:20px}
+  .exam .eh .src.ori{background:#4f8ff0}
+  .exam .eh .tp{font-size:11.5px;color:#5b7ba8;font-weight:700}
+  .exam .eb{padding:16px 20px}
+  .exam .q{font-weight:700;font-size:14px;color:#1e2a3e;line-height:1.9;margin-bottom:10px}
+  .exam .opt{font-size:13.5px;color:#48576b;line-height:2.05;padding-left:6px}
+  .exam .opt i{font-style:normal;font-weight:800;color:var(--primary-dark);margin-right:7px}
+  .exam pre{margin:12px 0;background:#1b2a21;border-radius:10px;padding:14px 16px;overflow-x:auto;font-family:Consolas,monospace;font-size:13px;line-height:1.8;color:var(--code-tx)}
+  .exam details{margin-top:10px;border-top:1px dashed var(--line);padding-top:10px}
+  .exam summary{cursor:pointer;font-size:12.5px;font-weight:800;color:#2563eb;outline:none;user-select:none}
+  .exam details .ans{font-size:13.5px;color:#3a4658;line-height:1.95;margin-top:9px;background:var(--bg-soft);padding:13px 16px;border-radius:10px}
+  .exam details .ans b{color:var(--primary-dark)}
+  .exam details .ans .tagline{display:inline-block;font-size:11px;background:#e0f2fe;color:#0e7490;padding:1.5px 8px;border-radius:6px;font-weight:700;margin-right:6px}
+  .summary{margin:40px 0 20px;border-radius:18px;padding:26px 30px;background:linear-gradient(130deg,#fff8f3,#ffffff);border:1px solid #ffe0cf}
+  .summary h3{margin-top:0}
+  .summary ul{list-style:none;margin-top:10px}
+  .summary li{font-size:14px;line-height:2;color:#3d4d66;padding-left:24px;position:relative}
+  .summary li::before{content:"◆";position:absolute;left:0;color:var(--brand);font-size:11px;top:6px}
+  .pager{display:flex;gap:14px;margin-top:30px;flex-wrap:wrap}
+  .pager a{flex:1;min-width:200px;text-decoration:none;border:1px solid var(--line);border-radius:14px;padding:16px 20px;background:#fff;transition:.2s;display:block}
+  .pager a:hover{border-color:var(--brand);box-shadow:0 10px 26px rgba(255,107,53,.14);transform:translateY(-2px)}
+  .pager a .k{font-size:11px;color:var(--dim2);font-weight:700;letter-spacing:1px}
+  .pager a .v{font-size:14px;font-weight:800;color:var(--night);margin-top:5px}
+  .pager a.back{background:var(--brand-soft);border-color:transparent;text-align:center}
+  .pager a.back .v{color:var(--brand-dark)}
+  .cta{margin-top:26px;border-radius:20px;padding:30px 34px;color:#fff;position:relative;overflow:hidden;background:linear-gradient(120deg,#16202f,#2b3a52 46%,#a8431c 132%)}
+  .cta::after{content:"";position:absolute;right:-70px;bottom:-90px;width:280px;height:280px;border-radius:50%;background:radial-gradient(circle,rgba(255,140,80,.45),transparent 68%)}
+  .cta h3{color:#fff;margin:0 0 10px;position:relative;z-index:2}
+  .cta h3::before{background:var(--brand)}
+  .cta p{color:#d8e0ef;font-size:13.5px;margin:0 0 18px;position:relative;z-index:2;max-width:640px}
+  .cta .btn-go{position:relative;z-index:2}
+  @media(max-width:900px){
+    .sidebar-nav{transform:translateX(-100%)}
+    .sidebar-nav.active{transform:translateX(0)}
+    .nav-toggle{display:block}
+    .page{margin-left:0}
+    .hero{padding:70px 22px 34px}
+    .hero-top{flex-direction:column-reverse;text-align:center}
+    .hero-card{width:auto}
+    .container{padding:26px 20px 60px}
+    .goal-grid{grid-template-columns:1fr}
+  }
+</style>
+</head>
+<body>
+
+<button class="nav-toggle" onclick="document.querySelector('.sidebar-nav').classList.toggle('active')">&#9776;</button>
+
+<nav class="sidebar-nav">
+  <div class="sb-brand">
+    <a class="sb-logo" href="https://codecombat.cn/" target="_blank" rel="noopener" title="访问 CodeCombat 扣哒世界官网">
+      <img src="../assets/logo.png" alt="CodeCombat 扣哒世界">
+    </a>
+    <div><b>雷池漫灌</b><span>雷鸣高塔 · C++ 七级 第 4 单元</span></div>
+  </div>
+  <div class="nav-title">本单元目录</div>
+  <a href="#s0" class="nav-section">0　单元导语与目标</a>
+  <a href="#s0-1" class="nav-sub">0.1 学习目标</a>
+  <a href="#s0-2" class="nav-sub">0.2 考纲对照</a>
+  <a href="#s1" class="nav-section">1　水是怎么渗开的</a>
+  <a href="#s1-1" class="nav-sub">1.1 水从起点渗开</a>
+  <a href="#s1-2" class="nav-sub">1.2 泛洪的本质</a>
+  <a href="#s2" class="nav-section">2　泛洪就是特殊的搜索</a>
+  <a href="#s2-1" class="nav-sub">2.1 泛洪就是一次搜索</a>
+  <a href="#s2-2" class="nav-sub">2.2 一句话对应</a>
+  <a href="#s3" class="nav-section">3　四个方向</a>
+  <a href="#s3-1" class="nav-sub">3.1 方向数组</a>
+  <a href="#s3-2" class="nav-sub">3.2 判断这一格能不能走</a>
+  <a href="#s4" class="nav-section">4　典型应用</a>
+  <a href="#s4-1" class="nav-sub">4.1 填色与连通块</a>
+  <a href="#s4-2" class="nav-sub">4.2 注意最后一行</a>
+  <a href="#s5" class="nav-section">5　代码实战</a>
+  <a href="#s6" class="nav-section">6　常见陷阱</a>
+  <a href="#s7" class="nav-section">7　题目练习</a>
+  <a href="#s8" class="nav-section">8　本单元小结</a>
+  <a href="../index.html" target="_top" class="sb-back">返回考纲之路</a>
+</nav>
+
+<div class="page">
+
+<div class="hero">
+  <div class="hero-top">
+    <div class="hero-txt">
+      <div class="crumb">扣哒考级 · GESP C++ 七级 · 第 4 单元　|　雷鸣高塔 THUNDERSPIRE</div>
+      <h1>雷池漫灌
+        <span class="sub">泛洪算法</span>
+      </h1>
+      <div class="en">Flood Fill</div>
+      <div class="tags">        <span class="tag hot">考纲 · 泛洪</span>
+        <span class="tag">四方向扩散</span>
+        <span class="tag">网格搜索</span>
+        <span class="tag">连通块</span>
+        <span class="tag">递归与队列</span></div>
+    </div>
+    <div class="hero-card">
+      <img class="ava" src="../assets/avatars/senick.webp" alt="塞尼克" onerror="this.style.background='#24344a';this.src='../assets/heroes/senick.webp'">
+      <div class="nm">塞尼克</div>
+      <div class="ti">沙海向导 · 你的向导</div>
+    </div>
+  </div>
+</div>
+
+<div class="container">
+
+<div class="lead">
+  雷鸣高塔的底层是一片<b>雷池</b>。你在池子一角倒下一点水，
+  水顺着缝隙慢慢渗开——<b>凡是有缝的地方，它都会流过去</b>，
+  直到整片区域都被淹没。<br>
+  塞尼克看着水面：记住这个过程。<b>有一类算法，就是照着它想出来的。</b>
+</div>
+
+<div class="cast teacher">
+  <img class="ava" src="../assets/avatars/senick.webp" alt="塞尼克" onerror="this.style.display='none'">
+  <div class="bubble">
+    <div class="who">塞尼克 · 沙海向导</div>
+    上一单元我们学会了图。这一单元讲泛洪——<strong>它其实就是"在网格图上做一次搜索"。</strong><br>
+    听起来简单，但它能解决的问题特别多：<b>数连通块、判断区域大小、找最短扩散步数……</b><br>
+    而且它的写法非常有套路，<b>学会一次，能用一辈子。</b>
+  </div>
+</div>
+
+<figure class="pic">
+  <img src="../assets/illustrations/py-L7-04-00_thunder_flood.webp" alt="开篇场景图：雷池漫灌的塔底"
+       onerror="this.closest('.pic').classList.add('missing')">
+  <div class="ph">
+    <div class="fn">assets/illustrations/py-L7-04-00_thunder_flood.webp</div>
+    <div class="ds">【配图位】高塔底部被雷网笼罩的蓄水池：无数道细闪电在水面上下游走，水面每隔几秒便向四周漫开一圈发光的涟漪，把整片池子照亮；英雄站在池边的石台上，手中法杖指着将要漫水的方向。</div>
+  </div>
+  <figcaption>图 1：雷鸣高塔的雷池漫灌——今天要从这里开始</figcaption>
+</figure>
+
+<div class="section-header" id="s0">
+  <h2>0　单元导语与目标</h2>
+  <div class="en-title">Unit Overview</div>
+
+<h3 id="s0-1">0.1 学习目标</h3>
+</div>
+
+<div class="goal-grid">
+  <h3 id="s0-2">0.2 考纲对照</h3>
+
+<div class="goal">
+    <h4><span class="ic">1</span>学完这个单元，你将能……</h4>
+    <ul>
+      <li>说清泛洪算法与 BFS/DFS 的关系</li>
+      <li>用"四方向数组"处理网格上的扩散</li>
+      <li>用递归或队列实现泛洪</li>
+      <li>统计网格中的连通块数量</li>
+      <li>求最大连通块的大小</li>
+      <li>判断哪些问题适合用泛洪</li>
+    </ul>
+  </div>
+  <div class="goal syllabus">
+    <h4><span class="ic">2</span>对标 GESP 考纲（C++ 七级）</h4>
+    <ul>
+      <li>理解泛洪算法（Flood Fill）的基本思想</li>
+      <li>掌握网格上的遍历方法：四方向/八方向扩散</li>
+      <li>能用泛洪解决连通块统计、区域填充等问题</li>
+      <li>考核目标：能写出泛洪程序并正确处理边界与标记</li>
+    </ul>
+  </div>
+</div>
+
+<div class="section-header" id="s1">
+  <h2>1　水是怎么渗开的</h2>
+  <div class="en-title">How Water Spreads</div>
+
+<h3 id="s1-1">1.1 水从起点渗开</h3>
+</div>
+
+<figure class="figure">
+  <svg class="diagram" viewBox="0 0 860 260" role="img" aria-label="泛洪示意">
+    <text x="24" y="34" font-size="14" font-weight="bold" fill="#1f2937">从一格出发，水向上下左右四个方向蔓延</text>
+
+    <g font-family="Consolas,monospace" font-size="12">
+      <rect x="80" y="62" width="44" height="38" rx="6" fill="#f8fcfc" stroke="#cbd5e1" stroke-width="1.5"/><text x="102" y="87" text-anchor="middle" fill="#94a3b8">#</text>
+      <rect x="130" y="62" width="44" height="38" rx="6" fill="#eaf1fe" stroke="#4f8ff0" stroke-width="1.5"/><text x="152" y="87" text-anchor="middle" fill="#1d4ed8">2</text>
+      <rect x="180" y="62" width="44" height="38" rx="6" fill="#eaf1fe" stroke="#4f8ff0" stroke-width="1.5"/><text x="202" y="87" text-anchor="middle" fill="#1d4ed8">2</text>
+      <rect x="230" y="62" width="44" height="38" rx="6" fill="#eaf1fe" stroke="#4f8ff0" stroke-width="1.5"/><text x="252" y="87" text-anchor="middle" fill="#1d4ed8">2</text>
+      <rect x="280" y="62" width="44" height="38" rx="6" fill="#f8fcfc" stroke="#cbd5e1" stroke-width="1.5"/><text x="302" y="87" text-anchor="middle" fill="#94a3b8">#</text>
+
+      <rect x="80" y="106" width="44" height="38" rx="6" fill="#eaf1fe" stroke="#4f8ff0" stroke-width="1.5"/><text x="102" y="131" text-anchor="middle" fill="#1d4ed8">2</text>
+      <rect x="130" y="106" width="44" height="38" rx="6" fill="#cfe0f5" stroke="#2563eb" stroke-width="1.8"/><text x="152" y="131" text-anchor="middle" fill="#1d4ed8">1</text>
+      <rect x="180" y="106" width="44" height="38" rx="6" fill="#2563eb" stroke="#1d4ed8" stroke-width="2.2"/><text x="202" y="131" text-anchor="middle" fill="#fff" font-weight="bold">0</text>
+      <rect x="230" y="106" width="44" height="38" rx="6" fill="#cfe0f5" stroke="#2563eb" stroke-width="1.8"/><text x="252" y="131" text-anchor="middle" fill="#1d4ed8">1</text>
+      <rect x="280" y="106" width="44" height="38" rx="6" fill="#eaf1fe" stroke="#4f8ff0" stroke-width="1.5"/><text x="302" y="131" text-anchor="middle" fill="#1d4ed8">2</text>
+
+      <rect x="80" y="150" width="44" height="38" rx="6" fill="#eaf1fe" stroke="#4f8ff0" stroke-width="1.5"/><text x="102" y="175" text-anchor="middle" fill="#1d4ed8">2</text>
+      <rect x="130" y="150" width="44" height="38" rx="6" fill="#cfe0f5" stroke="#2563eb" stroke-width="1.8"/><text x="152" y="175" text-anchor="middle" fill="#1d4ed8">1</text>
+      <rect x="180" y="150" width="44" height="38" rx="6" fill="#cfe0f5" stroke="#2563eb" stroke-width="1.8"/><text x="202" y="175" text-anchor="middle" fill="#1d4ed8">1</text>
+      <rect x="230" y="150" width="44" height="38" rx="6" fill="#cfe0f5" stroke="#2563eb" stroke-width="1.8"/><text x="252" y="175" text-anchor="middle" fill="#1d4ed8">1</text>
+      <rect x="280" y="150" width="44" height="38" rx="6" fill="#eaf1fe" stroke="#4f8ff0" stroke-width="1.5"/><text x="302" y="175" text-anchor="middle" fill="#1d4ed8">2</text>
+
+      <rect x="80" y="194" width="44" height="38" rx="6" fill="#f8fcfc" stroke="#cbd5e1" stroke-width="1.5"/><text x="102" y="219" text-anchor="middle" fill="#94a3b8">#</text>
+      <rect x="130" y="194" width="44" height="38" rx="6" fill="#eaf1fe" stroke="#4f8ff0" stroke-width="1.5"/><text x="152" y="219" text-anchor="middle" fill="#1d4ed8">2</text>
+      <rect x="180" y="194" width="44" height="38" rx="6" fill="#eaf1fe" stroke="#4f8ff0" stroke-width="1.5"/><text x="202" y="219" text-anchor="middle" fill="#1d4ed8">2</text>
+      <rect x="230" y="194" width="44" height="38" rx="6" fill="#eaf1fe" stroke="#4f8ff0" stroke-width="1.5"/><text x="252" y="219" text-anchor="middle" fill="#1d4ed8">2</text>
+      <rect x="280" y="194" width="44" height="38" rx="6" fill="#f8fcfc" stroke="#cbd5e1" stroke-width="1.5"/><text x="302" y="219" text-anchor="middle" fill="#94a3b8">#</text>
+    </g>
+
+    <rect x="380" y="62" width="436" height="170" rx="12" fill="#0f1621"/>
+    <text x="404" y="90" font-family="Consolas,monospace" font-size="12.5" fill="#cfe0f5">数字 = 水到达这里需要几步</text>
+    <text x="404" y="120" font-family="Consolas,monospace" font-size="12.5" fill="#e8c766">0：起点　　1：第一圈　　2：第二圈</text>
+    <text x="404" y="150" font-family="Consolas,monospace" font-size="12.5" fill="#93b4f0"># 表示墙壁，水过不去</text>
+    <text x="404" y="182" font-family="Consolas,monospace" font-size="12.5" fill="#cfe0f5">水只能上下左右流，不能斜着走</text>
+    <text x="404" y="212" font-family="Consolas,monospace" font-size="12.5" fill="#93a2b6">于是"几步能到"就等于"最短步数"</text>
+  </svg>
+  <div class="caption">图 2（SVG）：泛洪——水从起点向四周渗开</div>
+</figure>
+
+<h3 id="s1-2">1.2 泛洪的本质</h3>
+
+<div class="box remember">
+  <span class="lb">泛洪的本质：</span>
+  <strong>泛洪就是"从起点出发，把能走到的格子全部访问一遍"。</strong><br>
+  · 用<b>队列</b>一层层扩散 → 得到每格的最短步数（本质是 BFS）<br>
+  · 用<b>递归</b>一条道走到黑 → 只关心"能不能到达"（本质是 DFS）<br>
+  <b>所以泛洪不是新算法，而是搜索算法在网格上的应用。</b>
+</div>
+
+<div class="section-header" id="s2">
+  <h2>2　泛洪就是特殊的搜索</h2>
+  <div class="en-title">Flood Fill Is Just Search</div>
+
+<h3 id="s2-1">2.1 泛洪就是一次搜索</h3>
+</div>
+
+<table class="styled">
+  <thead><tr><th>对比项</th><th>图上的搜索（七级第 3 单元）</th><th>网格上的泛洪</th></tr></thead>
+  <tbody>
+    <tr><td>顶点是什么</td><td>抽象的节点</td><td><strong>网格里的每一格</strong></td></tr>
+    <tr><td>邻居是谁</td><td>邻接表里列的邻居</td><td><strong>上下左右四格</strong></td></tr>
+    <tr><td>访问标记</td><td><code class="inline">visited</code> 集合</td><td>直接在网格上改值，或另开一张标记表</td></tr>
+    <tr><td>能不能走</td><td>邻接表里有的就能走</td><td><strong>不是墙、且没出界才能走</strong></td></tr>
+    <tr><td>典型问题</td><td>连通分量、最短路径</td><td>数连通块、区域填充、扩散步数</td></tr>
+  </tbody>
+</table>
+
+<h3 id="s2-2">2.2 一句话对应</h3>
+
+<div class="box tip">
+  <span class="lb">一句话对应：</span>
+  把"网格"看成图，把"上下左右相邻"看成边——<strong>泛洪就是在这个图上做 BFS 或 DFS。</strong><br>
+  所以你在六级学的搜索，在这里直接就能用。
+</div>
+
+<figure class="pic">
+  <img src="../assets/illustrations/py-L7-04-02_flood_spread.webp" alt="水从起点一圈圈漫开"
+       onerror="this.closest('.pic').classList.add('missing')">
+  <div class="ph">
+    <div class="fn">assets/illustrations/py-L7-04-02_flood_spread.webp</div>
+    <div class="ds">【配图位】塔底的方形水池里，一小股水从中心涌出，已经淹到的格子泛着浅蓝、正在漫的格子边缘亮着水光、还没淹到的格子干着；每漫一圈，水头都往外推进一格。</div>
+  </div>
+  <figcaption>图 3：水从起点一圈圈漫开</figcaption>
+</figure>
+
+<div class="section-header" id="s3">
+  <h2>3　四个方向</h2>
+  <div class="en-title">Four Directions</div>
+
+<h3 id="s3-1">3.1 方向数组</h3>
+</div>
+
+<p>网格题里最常用的一个技巧：<strong>把四个方向写成数组，循环着试。</strong></p>
+
+<div class="code-card">
+  <div class="code-head">
+    <span class="dot d1"></span><span class="dot d2"></span><span class="dot d3"></span>
+    <span class="file">方向数组：比写四个 if 清爽得多</span>
+    <span class="lang">C++</span>
+  </div>
+  <pre><code>// 上、下、左、右 对应的行号与列号变化
+int DIRS[4][2] = {{-1, 0}, {1, 0}, {0, -1}, {0, 1}};
+
+// 用的时候循环一遍
+for (int k = 0; k &lt; 4; k++) {
+    int dr = DIRS[k][0], dc = DIRS[k][1];
+    int nr = r + dr;          // 新行号
+    int nc = c + dc;          // 新列号
+    // 然后判断 (nr, nc) 是否合法
+}
+</code></pre>
+  <div class="out"><b>要点</b>　一个循环顶四个 if-elif；想改成八方向，只要往数组里再加四个</div>
+</div>
+
+<h3 id="s3-2">3.2 判断这一格能不能走</h3>
+
+<div class="code-card">
+  <div class="code-head">
+    <span class="dot d1"></span><span class="dot d2"></span><span class="dot d3"></span>
+    <span class="file">判断"这一格能不能走"</span>
+    <span class="lang">C++</span>
+  </div>
+  <pre><code>bool canGo(vector&lt;string&gt;&amp; grid, int nr, int nc) {
+    // ① 不能出界
+    if (nr &lt; 0 || nr &gt;= grid.size()) return false;
+    if (nc &lt; 0 || nc &gt;= grid[0].size()) return false;
+    // ② 不能是墙，也不能已经走过
+    if (grid[nr][nc] == '#') return false;
+    return true;
+}
+</code></pre>
+  <div class="out"><b>三件事</b>　出界检查 → 障碍检查 → 是否访问过</div>
+</div>
+
+<div class="section-header" id="s4">
+  <h2>4　典型应用</h2>
+  <div class="en-title">Typical Uses</div>
+
+<h3 id="s4-1">4.1 填色与连通块</h3>
+</div>
+
+<table class="styled">
+  <thead><tr><th>问题</th><th>怎么做</th><th>用队列还是递归</th></tr></thead>
+  <tbody>
+    <tr><td><strong>数连通块</strong></td><td>遍历每个格子，遇到没访问过的就泛洪一次，计数加一</td><td>都行</td></tr>
+    <tr><td><strong>最大连通块大小</strong></td><td>每次泛洪时数一数覆盖了多少格，取最大</td><td>都行（递归时用全局计数）</td></tr>
+    <tr><td><strong>能不能走到某处</strong></td><td>从起点泛洪，最后看目标点有没有被标记</td><td>都行</td></tr>
+    <tr><td><strong>最少几步到达</strong></td><td>用<strong>队列</strong>一层层扩散，记录步数</td><td><b>必须用队列（BFS）</b></td></tr>
+    <tr><td><strong>区域填色</strong></td><td>把连通区域的颜色统一改掉</td><td>都行</td></tr>
+  </tbody>
+</table>
+
+<h3 id="s4-2">4.2 注意最后一行</h3>
+
+<div class="box warn">
+  <span class="lb">注意最后一行：</span>
+  <strong>问"最少几步"时，必须用队列（BFS），不能用递归。</strong><br>
+  因为递归是"一条道走到黑"，它到达目标时走的未必是最短的路——<b>这一点在六级就强调过了。</b>
+</div>
+
+<figure class="pic">
+  <img src="../assets/illustrations/py-L7-04-03_direction_arrows.webp" alt="四个方向的箭头"
+       onerror="this.closest('.pic').classList.add('missing')">
+  <div class="ph">
+    <div class="fn">assets/illustrations/py-L7-04-03_direction_arrows.webp</div>
+    <div class="ds">【配图位】池边一格上画着四支朝向不同的发光箭头：上、下、左、右，每支箭头旁标着一对偏移量"-1,0 / 1,0 / 0,-1 / 0,1"；一名学徒把这四对数字抄进一块写着"方向数组"的石板里。</div>
+  </div>
+  <figcaption>图 4：四个方向——用数组一次写清</figcaption>
+</figure>
+
+<div class="section-header" id="s5">
+  <h2>5　代码实战</h2>
+  <div class="en-title">Level Practice</div>
+</div>
+
+<div class="level-card">
+  <div class="lc-head"><span class="n">关卡</span><h4>网格雷区</h4><span class="go">进入关卡 →</span></div>
+  <div class="lc-body">
+    <div class="story">
+      <b>故事：</b>面前是一片 100×100 的雷区，你要<b>把每一格都走一遍</b>，
+      才能确定哪几块地方是安全的。<br>
+      一格一格走太慢？塞尼克摇头，可这就是最稳的办法——
+      <b>系统地走完每一格，一个都不会漏。</b>
+    </div>
+    
+    <p><strong>思路：</strong>用双重循环把网格的每个交点都访问一遍。
+    <b>这正是泛洪的"表亲"——只不过这里不是从一点扩散，而是系统地扫过全域。</b></p><figure class="pic">
+      <img src="../assets/stages/py-L7-04-stage1_grid_mines.webp" alt="网格雷区 关卡截图"
+           onerror="this.closest('.pic').classList.add('missing')">
+      <div class="ph">
+        <div class="fn">assets/stages/py-L7-04-stage1_grid_mines.webp</div>
+        <div class="ds">【关卡截图位】请把《网格雷区》的游戏画面截图放到此处（放入 assets/stages/ 目录，文件名为 py-L7-04-stage1_grid_mines.webp）。</div>
+      </div>
+      <figcaption>关卡实况：网格雷区</figcaption>
+    </figure>
+    <div class="code-card">
+      <div class="code-head">
+        <span class="dot d1"></span><span class="dot d2"></span><span class="dot d3"></span>
+        <span class="file">重点示例：双重循环扫过整个网格</span>
+        <span class="lang">C++</span>
+      </div>
+      <pre><code>for (int x = 10; x &lt; 100; x += 10) {      // 横向：10, 20, ..., 90
+    for (int y = 10; y &lt; 100; y += 10) {  // 纵向：10, 20, ..., 90
+        hero.moveXY(x, y);
+        // 每一格都走到，就不会漏
+    }
+}
+</code></pre>
+      <div class="out"><b>输出顺序</b>　(10,10) → (10,20) → … → (10,90) → (20,10) → …</div>
+    </div>
+    <div class="box info">
+      <span class="lb">和泛洪的关系：</span>
+      <b>系统扫描</b>是"把每一格都看一遍"，适合"全局普查"；<br>
+      <b>泛洪</b>是"从一点出发，只走向能到的地方"，适合"局部扩散"。<br>
+      <strong>如果题目问"有几块区域"，就要两者配合：外层扫描找起点，内层泛洪圈出整块。</strong>
+    </div>
+    <a class="btn-go" href="https://codecombat.cn/" target="_blank" rel="noopener">去扣哒世界闯这一关 →</a>
+  </div>
+</div>
+
+<div class="section-header" id="s6">
+  <h2>6　常见陷阱</h2>
+  <div class="en-title">Common Pitfalls</div>
+</div>
+
+<div class="cast duck">
+  <img class="ava" src="../assets/ducks/duck_senick.webp" alt="扣哒鸭" onerror="this.style.display='none'">
+  <div class="bubble">
+    <div class="who">扣哒鸭 · 调试官</div>
+    泛洪的代码不长，但边界和标记最要命。四条，前两条能救你半条命。
+  </div>
+</div>
+
+<div class="pit">
+  <div class="pt">
+    <div class="x">1</div>
+    <div class="t"><b>忘记检查数组越界。</b>直接访问 <code class="inline">grid[nr][nc]</code>。</div>
+  </div>
+  <div class="duck">
+    <img src="../assets/ducks/duck_zana.webp" alt="扣哒鸭" onerror="this.style.display='none'">
+    <div class="dt"><b>扣哒鸭：</b>先判断 <code>0 &lt;= nr &lt; n</code> 和 <code>0 &lt;= nc &lt; m</code>，
+    <strong>再访问格子</strong>。<br>
+    顺序反了会报 IndexError；更糟的是 C++ 里负下标同样不报错，
+    而是<b>跑到数组外面去读写</b>，结果莫名其妙。</div>
+  </div>
+  <div class="fix"><b>正确顺序：</b>先判出界 → 再判障碍 → 再判访问</div>
+</div>
+
+<div class="pit">
+  <div class="pt">
+    <div class="x">2</div>
+    <div class="t"><b>忘了标记，程序无限递归。</b></div>
+  </div>
+  <div class="duck">
+    <img src="../assets/ducks/duck_naria.webp" alt="扣哒鸭" onerror="this.style.display='none'">
+    <div class="dt"><b>扣哒鸭：</b>泛洪时 A 走到 B，B 又能走回 A——<b>不标记就会来回弹</b>。<br>
+    <strong>进入格子时立刻标记（把格子改成墙、或标记成已访问）。</strong>
+    这一步和图的遍历完全一样。</div>
+  </div>
+  <div class="fix"><b>正确做法：</b>一进格子就标记，再扩散到邻居</div>
+</div>
+
+<div class="pit">
+  <div class="pt">
+    <div class="x">3</div>
+    <div class="t"><b>求"最少步数"却用了递归泛洪。</b></div>
+  </div>
+  <div class="duck">
+    <img src="../assets/ducks/duck_hattori.webp" alt="扣哒鸭" onerror="this.style.display='none'">
+    <div class="dt"><b>扣哒鸭：</b>递归只保证"能到"，不保证"最近"。<br>
+    <strong>求最短步数必须用队列，一层层往外扩。</strong></div>
+  </div>
+  <div class="fix"><b>正确做法：</b>求最短 → 队列（BFS）；求连通 → 递归也行</div>
+</div>
+
+<div class="pit">
+  <div class="pt">
+    <div class="x">4</div>
+    <div class="t"><b>递归层数太深导致栈溢出。</b></div>
+  </div>
+  <div class="duck">
+    <img src="../assets/ducks/duck_illia.webp" alt="扣哒鸭" onerror="this.style.display='none'">
+    <div class="dt"><b>扣哒鸭：</b>网格一大（比如 1000×1000），递归泛洪可能有几百万层，
+    C++ 会因为栈空间耗尽直接崩溃。<br>
+    <strong>大网格建议改用队列写泛洪，或者用栈模拟递归。</strong></div>
+  </div>
+  <div class="fix"><b>建议：</b>网格较大时用队列（迭代）代替递归</div>
+</div>
+
+<div class="section-header" id="s7">
+  <h2>7　题目练习</h2>
+  <div class="en-title">Practice</div>
+</div>
+
+<p>第 1 题改编自 2026 年 9 月 · C++ 七级 第 8 题，其余为原创练习题。</p>
+
+<div class="exam">
+  <div class="eh"><span class="src">改编自 2026 年 9 月 · C++ 七级 · 第 8 题</span><span class="tp">单选题</span></div>
+  <div class="eb">
+    <div class="q">在二维网格上实现泛洪填充时，为了防止递归层数过深，最适合的非递归实现方式是（　　）。</div>
+    <div class="opt"><i>A.</i>使用哈希表记录每个格子被访问的次数<br>
+      <i>B.</i>使用快速排序预处理网格<br>
+      <i>C.</i>使用二分查找定位边界<br>
+      <i>D.</i>使用队列实现 BFS，或使用显式栈模拟 DFS</div>
+    <details><summary>查看答案与详解</summary>
+      <div class="ans"><b>答案：D</b>。递归版泛洪的问题在于：<strong>每一格都压一层函数调用栈</strong>，网格一大（比如 1000 × 1000）栈就爆了。<br>要摆脱递归，就把"<strong>接下来要去哪儿</strong>"自己存起来：<br>· 用<strong>队列</strong>——先进先出，就是 BFS，一圈一圈往外漫；<br>· 用<strong>显式栈</strong>——后进先出，效果等同于原来的递归 DFS，但栈是建在堆上的，不会爆。<br><b>A 错：</b>统计访问次数既不能减少递归深度，还会让逻辑变复杂；<br><b>B、C 错：</b>排序和二分查找跟"遍历连通格子"没有关系，网格也不是有序数组。<br><b>一句话记：</b>递归怕深就用<strong>自己开的容器</strong>存待访问点 —— 队列做 BFS、栈做 DFS。<br><span class="tagline">对应小节</span>3 大网格怎么办。</div>
+    </details>
+  </div>
+</div>
+<div class="exam">
+  <div class="eh"><span class="src ori">原创练习题</span><span class="tp">单选题</span></div>
+  <div class="eb">
+    <div class="q">关于泛洪算法，下列说法正确的是（　　）。</div>
+    <div class="opt">
+      <i>A.</i>它是一种全新的、与搜索无关的算法<br>
+      <i>B.</i>它本质上是网格图上的 BFS 或 DFS<br>
+      <i>C.</i>它只能用来填色<br>
+      <i>D.</i>它不需要访问标记
+    </div>
+    <details><summary>查看答案与详解</summary>
+      <div class="ans"><b>答案：B</b>。泛洪就是"在网格图上做一次搜索"——
+      用队列时是 BFS，用递归时是 DFS。<br>
+      <b>用途也很广：</b>数连通块、求区域大小、算扩散步数、填色都行。<br>
+      <span class="tagline">对应小节</span>1 水是怎么渗开的；2 泛洪就是特殊的搜索。</div>
+    </details>
+  </div>
+</div>
+
+<div class="exam">
+  <div class="eh"><span class="src ori">原创练习题</span><span class="tp">单选题</span></div>
+  <div class="eb">
+    <div class="q">在网格中，表示"上、下、左、右"四个方向的行列变化数组，正确的是（　　）。</div>
+    <div class="opt">
+      <i>A.</i><code class="inline">{{-1,0}, {1,0}, {0,-1}, {0,1}}</code><br>
+      <i>B.</i><code class="inline">{{0,1}, {0,2}, {0,3}, {0,4}}</code><br>
+      <i>C.</i><code class="inline">{{1,1}, {2,2}, {3,3}, {4,4}}</code><br>
+      <i>D.</i><code class="inline">{{0,0}, {0,0}, {0,0}, {0,0}}</code>
+    </div>
+    <details><summary>查看答案与详解</summary>
+      <div class="ans"><b>答案：A</b>。<b>上行行号减 1</b>（行号越小越往上），<b>下行行号加 1</b>，
+      <b>左列列号减 1</b>，<b>右列列号加 1</b>。<br>
+      <b>记忆：</b>行列的变化量只会是 -1、0、1 的组合。<br>
+      <span class="tagline">对应小节</span>3 四个方向。</div>
+    </details>
+  </div>
+</div>
+
+<div class="exam">
+  <div class="eh"><span class="src ori">原创练习题</span><span class="tp">判断题</span></div>
+  <div class="eb">
+    <div class="q">用泛洪求"从起点到某格的最少步数"时，应该用队列实现而不是递归。（　　）</div>
+    <details><summary>查看答案与详解</summary>
+      <div class="ans"><b>答案：正确（√）</b>。队列实现的是 BFS，一层层往外扩，
+      <strong>第一次到达某格时的步数一定最少</strong>。<br>
+      递归是"一条道走到黑"，到达时未必是最短路径。<br>
+      <span class="tagline">对应小节</span>4 典型应用。</div>
+    </details>
+  </div>
+</div>
+
+<div class="exam">
+  <div class="eh"><span class="src ori">原创练习题</span><span class="tp">单选题</span></div>
+  <div class="eb">
+    <div class="q">一个 3×3 的网格全是通路（没有墙），从左上角 (0,0) 泛洪，
+    几格会被访问到？（　　）</div>
+    <div class="opt"><i>A.</i>3　　<i>B.</i>6　　<i>C.</i>9　　<i>D.</i>12</div>
+    <details><summary>查看答案与详解</summary>
+      <div class="ans"><b>答案：C</b>。网格一共 9 格，全都是通路且互相连通，
+      所以从任何一格出发都能访问到<b>全部 9 格</b>。<br>
+      <b>注意：</b>如果中间有墙把网格隔开，被隔开的那部分就访问不到——这正是"连通块"的概念。<br>
+      <span class="tagline">对应小节</span>4 典型应用。</div>
+    </details>
+  </div>
+</div>
+
+<div class="exam">
+  <div class="eh"><span class="src ori">原创练习题</span><span class="tp">判断题</span></div>
+  <div class="eb">
+    <div class="q">统计网格中有几个连通块时，应遍历每个格子；每遇到一个"未访问且可通行"的格子，
+    就从它泛洪一次，并把计数加一。（　　）</div>
+    <details><summary>查看答案与详解</summary>
+      <div class="ans"><b>答案：正确（√）</b>。这正是标准的"数连通块"套路：<br>
+      <b>外层系统扫描每个格子，内层泛洪圈出一整块。</b><br>
+      泛洪结束后那一块全部被标记，外层继续找下一个没标记的，就是新的一块。<br>
+      <span class="tagline">对应小节</span>4 典型应用。</div>
+    </details>
+  </div>
+</div>
+
+<div class="exam">
+  <div class="eh"><span class="src ori">原创练习题</span><span class="tp">单选题</span></div>
+  <div class="eb">
+    <div class="q">写"判断某格能不能走"的函数时，<strong>第一件</strong>要做的事是（　　）。</div>
+    <div class="opt">
+      <i>A.</i>判断这一格是不是墙<br>
+      <i>B.</i>判断是否已经访问过<br>
+      <i>C.</i>判断行号列号有没有越界<br>
+      <i>D.</i>把这一格标记为已访问
+    </div>
+    <details><summary>查看答案与详解</summary>
+      <div class="ans"><b>答案：C</b>。<b>必须先用行号列号判断有没有出界</b>，
+      再谈其他条件——否则访问 <code class="inline">grid[nr][nc]</code> 时就已经越界了。<br>
+      <b>顺序：</b>出界检查 → 障碍检查 → 访问检查。<br>
+      <span class="tagline">对应小节</span>3 四个方向；6 常见陷阱。</div>
+    </details>
+  </div>
+</div>
+
+<div class="exam">
+  <div class="eh"><span class="src ori">原创练习题</span><span class="tp">编程题</span></div>
+  <div class="eb">
+    <div class="q">题目要求：用泛洪统计下面网格中有几个连通块（<code class="inline">#</code> 表示墙，
+    <code class="inline">.</code> 表示通路），并输出最大连通块的格子数。</div>
+    <pre>grid = [
+  "..##..",
+  "..##..",
+  "######",
+  "..#...",
+  "..#..."
+]</pre>
+    <details><summary>查看参考答案与要点</summary>
+      <div class="ans">
+<pre style="margin:0;background:#131a26;color:#c8d3e0;border-radius:10px;padding:14px 16px">vector&lt;string&gt; grid = {
+    "..##..",
+    "..##..",
+    "######",
+    "..#...",
+    "..#..."
+};
+
+int n = grid.size();
+int m = grid[0].size();
+vector&lt;vector&lt;bool&gt;&gt; visited(n, vector&lt;bool&gt;(m, false));
+int DIRS[4][2] = {{-1, 0}, {1, 0}, {0, -1}, {0, 1}};
+
+int flood(int r, int c) {
+    vector&lt;pair&lt;int, int&gt;&gt; st;
+    st.push_back({r, c});
+    visited[r][c] = true;
+    int size = 0;
+    while (!st.empty()) {
+        int cr = st.back().first, cc = st.back().second;
+        st.pop_back();
+        size = size + 1;
+        for (int k = 0; k &lt; 4; k++) {
+            int nr = cr + DIRS[k][0], nc = cc + DIRS[k][1];
+            if (0 &lt;= nr &amp;&amp; nr &lt; n &amp;&amp; 0 &lt;= nc &amp;&amp; nc &lt; m) {   // 先判出界
+                if (grid[nr][nc] == '.' &amp;&amp; !visited[nr][nc]) {
+                    visited[nr][nc] = true;               // 立即标记
+                    st.push_back({nr, nc});
+                }
+            }
+        }
+    }
+    return size;
+}
+
+int count = 0, biggest = 0;
+for (int i = 0; i &lt; n; i++) {
+    for (int j = 0; j &lt; m; j++) {
+        if (grid[i][j] == '.' &amp;&amp; !visited[i][j]) {
+            int size = flood(i, j);
+            count = count + 1;
+            if (size &gt; biggest) biggest = size;
+        }
+    }
+}
+
+cout &lt;&lt; "连通块个数：" &lt;&lt; count &lt;&lt; endl;
+cout &lt;&lt; "最大连通块大小：" &lt;&lt; biggest &lt;&lt; endl;</pre>
+      <p style="margin-top:12px"><b>输出：</b>连通块个数 <b>4</b>，最大连通块大小 <b>4</b><br>
+      <b>分析：</b>左上 2×2 一块（4 格）、右上 2×2 一块（4 格）、左下竖着的 2 格一块、第 4 行单格一块。<br>
+      <b>要点：</b><br>
+      ① 用 <code class="inline">visited</code> 二维表做标记，比直接改网格更清晰；<br>
+      ② 这里用<b>栈</b>模拟递归，避免网格大时递归太深；<br>
+      ③ 边界判断必须在访问格子之前；<br>
+      ④ 外层双重循环负责"找新起点"，内层泛洪负责"圈出整块"。<br>
+      <span class="tagline">对应小节</span>3 四个方向；5 代码实战。</p>
+      </div>
+    </details>
+  </div>
+</div>
+
+<div class="section-header" id="s8">
+  <h2>8　本单元小结</h2>
+  <div class="en-title">Unit Summary</div>
+</div>
+
+<div class="cast teacher">
+  <img class="ava" src="../assets/avatars/senick.webp" alt="塞尼克" onerror="this.style.display='none'">
+  <div class="bubble">
+    <div class="who">塞尼克 · 沙海向导</div>
+    三句话记住泛洪：<br>
+    <strong>一、泛洪就是网格上的 BFS/DFS，不是新东西。</strong><br>
+    <strong>二、四个方向写成数组，循环着试，比写四个 if 清爽。</strong><br>
+    <strong>三、先判出界、再判障碍、最后判访问；一进格子就标记。</strong><br>
+    再说一次最关键的一条：<b>求最少步数必须用队列，不能用递归。</b>
+  </div>
+</div>
+
+<div class="summary">
+  <h3>你在雷池边收获了什么</h3>
+  <ul>
+    <li><strong>泛洪</strong>——从起点出发把能到达的格子全部访问一遍，本质是网格上的搜索。</li>
+    <li><strong>与搜索的对应</strong>——格子就是顶点，上下左右相邻就是边。</li>
+    <li><strong>方向数组</strong>——<code class="inline">int DIRS[4][2] = {{-1,0}, {1,0}, {0,-1}, {0,1}}</code>，循环处理。</li>
+    <li><strong>合法性检查顺序</strong>——先判出界，再判障碍，最后判是否访问过。</li>
+    <li><strong>标记时机</strong>——进入格子立刻标记（入队/入栈时）。</li>
+    <li><strong>典型应用</strong>——数连通块、求最大块、判断能否到达、算最短步数、区域填色。</li>
+    <li><strong>选型</strong>——求最短用队列；求连通用递归或栈都行；大网格建议避免深递归。</li>
+  </ul>
+</div>
+
+<div class="pager">
+  <a href="cpp-7-03.html"><div class="k">← 上一单元</div><div class="v">塔身回廊 · 图与图的遍历</div></a>
+  <a href="../index.html" target="_top" class="back"><div class="k">返回</div><div class="v">考纲之路 · 总目录</div></a>
+  <a href="cpp-7-05.html"><div class="k">下一单元 →</div><div class="v">铭牌索引库 · 哈希表</div></a>
+</div>
+
+<div class="cta">
+  <h3>下一站：铭牌索引库</h3>
+  <p>塔底的索引库里挂着成千上万块铭牌，每块写着一个名字。
+  <b>怎么做到"报出名字，立刻就找到"？</b>最后一单元，我们聊哈希表。</p>
+  <a class="btn-go" href="https://codecombat.cn/" target="_blank" rel="noopener">加入扣哒世界，把这条考纲之路走一遍 →</a>
+</div>
+</div><!-- /container -->
+</div><!-- /page -->
+
+<script>
+const KEYWORDS = new Set([
+  "int", "long", "short", "unsigned", "signed", "float", "double", "char", "bool", "void",
+  "const", "if", "else", "for", "while", "do", "switch", "case", "default", "break",
+  "continue", "return", "goto", "struct", "class", "union", "enum", "using", "namespace",
+  "std", "main", "true", "false", "cin", "cout", "cerr", "endl", "string", "sizeof",
+  "include", "define", "new", "delete", "public", "private", "static", "inline", "nullptr"
+]);
+
+function esc(s){ return s.replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;'); }
+
+function highlight(src){
+  let out = '', i = 0;
+  const n = src.length;
+  while (i < n){
+    const c = src[i];
+    /* 预处理指令：#include / #define，整行只在行首生效 */
+    if (c === '#' && (i === 0 || src[i-1] === '\n')){
+      let j = i;
+      while (j < n && /[A-Za-z]/.test(src[j])) j++;
+      out += '<span class="kw">' + esc(src.slice(i, j)) + '</span>';
+      let k = src.indexOf('\n', j); if (k < 0) k = n;
+      if (j < k) out += '<span class="st">' + esc(src.slice(j, k)) + '</span>';
+      i = k; continue;
+    }
+    /* 行注释 // */
+    if (c === '/' && src[i+1] === '/'){
+      let j = src.indexOf('\n', i); if (j < 0) j = n;
+      out += '<span class="cm">' + esc(src.slice(i, j)) + '</span>';
+      i = j; continue;
+    }
+    /* 块注释 */
+    if (c === '/' && src[i+1] === '*'){
+      let j = src.indexOf('*/', i + 2); j = j < 0 ? n : j + 2;
+      out += '<span class="cm">' + esc(src.slice(i, j)) + '</span>';
+      i = j; continue;
+    }
+    /* 字符串与字符字面量 */
+    if (c === '"' || c === "'"){
+      let j = i + 1;
+      while (j < n && src[j] !== c){ if (src[j] === '\\') j++; j++; }
+      j = Math.min(j + 1, n);
+      out += '<span class="st">' + esc(src.slice(i, j)) + '</span>';
+      i = j; continue;
+    }
+    /* 数字 */
+    if (/[0-9]/.test(c)){
+      let j = i;
+      while (j < n && /[0-9.]/.test(src[j])) j++;
+      out += '<span class="nu">' + esc(src.slice(i, j)) + '</span>';
+      i = j; continue;
+    }
+    /* 标识符：关键字 / 函数名 / 普通名字 */
+    if (/[A-Za-z_]/.test(c)){
+      let j = i;
+      while (j < n && /[A-Za-z0-9_]/.test(src[j])) j++;
+      const w = src.slice(i, j);
+      if (KEYWORDS.has(w)) out += '<span class="kw">' + esc(w) + '</span>';
+      else if (src[j] === '(') out += '<span class="fn">' + esc(w) + '</span>';
+      else out += esc(w);
+      i = j; continue;
+    }
+    out += esc(c); i++;
+  }
+  return out;
+}
+
+document.querySelectorAll('.code-card pre code').forEach(block => {
+  block.innerHTML = highlight(block.textContent);
+});
+
+if (location.search.indexOf('expand') >= 0) {
+  document.querySelectorAll('details').forEach(d => d.open = true);
+}
+document.querySelectorAll('.sidebar-nav a').forEach(a => {
+  a.addEventListener('click', () => {
+    if (window.innerWidth <= 900) document.querySelector('.sidebar-nav').classList.remove('active');
+  });
+});
+</script>
+</body>
+</html>

@@ -1,0 +1,1433 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="copyright" content="CodeCombat Inc. codecombat.cn">
+<title>造物工坊 · 面向对象思想与类的创建 | 扣哒考级 · GESP C++ 六级</title>
+<style>
+  :root{
+    --primary:#2563eb; --primary-light:#4f8ff0; --primary-lighter:#eaf1fe; --primary-dark:#1b47a8;
+    --brand:#ff6b35; --brand-dark:#e8541f; --brand-soft:#fff3ec;
+    --night:#131c2b; --night-2:#1e2a3a; --gold:#f5b301;
+    --text:#242e3d; --dim:#68788f; --dim2:#93a2b6;
+    --bg:#ffffff; --bg-soft:#f7f9fd; --line:#e2e9f4; --sidebar:274px;
+    --code-bg:#131a26; --code-tx:#c8d3e0;
+    --code-kw:#c678dd; --code-st:#98c379; --code-nu:#d19a66; --code-cm:#5f7488; --code-fn:#e5c07b;
+  }
+  *{margin:0;padding:0;box-sizing:border-box}
+  html{scroll-behavior:smooth}
+  body{font-family:"PingFang SC","Microsoft YaHei","Segoe UI",-apple-system,sans-serif;line-height:1.9;color:var(--text);background:var(--bg);font-size:15.5px}
+  .sidebar-nav{position:fixed;top:0;left:0;width:var(--sidebar);height:100vh;overflow-y:auto;background:linear-gradient(180deg,#0c1626,#14243c);padding:14px 0 40px;z-index:100;border-right:3px solid var(--brand);transition:transform .3s ease}
+  .sidebar-nav::-webkit-scrollbar{width:5px}
+  .sidebar-nav::-webkit-scrollbar-thumb{background:var(--brand);border-radius:4px}
+  .sb-brand{display:flex;align-items:center;gap:10px;padding:10px 13px 12px;border-bottom:1px solid #233752;margin-bottom:8px}
+  .sidebar-nav a.sb-logo{display:flex;align-items:center;justify-content:center;flex-shrink:0;padding:0;border-left:none;transition:.2s}
+  .sb-logo:hover{transform:scale(1.08)}
+  .sb-logo img{height:34px;width:34px;display:block;object-fit:contain;border-radius:8px}
+  .sb-brand b{color:#f2f6fa;font-size:14px;letter-spacing:.5px;display:block;line-height:1.4}
+  .sb-brand span{color:#7f95ab;font-size:11.5px;display:block;line-height:1.4}
+  .nav-title{color:#ffb894;font-size:12px;font-weight:800;padding:10px 18px 6px;letter-spacing:1.2px}
+  .sidebar-nav a{display:block;color:#c3d0dc;text-decoration:none;padding:6px 18px;font-size:12.5px;line-height:1.55;border-left:3px solid transparent;transition:.18s}
+  .sidebar-nav a:hover{color:#fff;background:rgba(255,107,53,.16);border-left-color:var(--brand)}
+  .sidebar-nav a.nav-section{color:#ffb894;font-weight:700;font-size:13px;margin-top:11px;padding-top:10px;border-top:1px solid #233752}
+  .sidebar-nav a.nav-section:first-of-type{border-top:none;margin-top:0;padding-top:6px}
+  .sidebar-nav a.nav-sub{padding-left:30px;color:#93a8bc;font-size:12px}
+  .sidebar-nav a.nav-sub:hover{color:#fff}
+  .sb-back{margin:16px 14px 0;display:block;text-align:center;padding:9px;border-radius:9px;background:#1e304a;color:#a9c0d6 !important;font-size:12px;font-weight:700;border-left:none !important}
+  .sb-back:hover{background:var(--brand) !important;color:#fff !important}
+  .nav-toggle{display:none;position:fixed;top:14px;left:14px;z-index:120;background:var(--brand);color:#fff;border:none;border-radius:9px;padding:9px 13px;font-size:15px;cursor:pointer;box-shadow:0 4px 14px rgba(0,0,0,.25)}
+  .page{margin-left:var(--sidebar)}
+  .hero{position:relative;overflow:hidden;padding:44px 52px;color:#fff;background:linear-gradient(125deg,#0a1220 0%,#16294a 46%,#8a3a16 132%)}
+  .hero::after{content:"";position:absolute;right:-90px;top:-110px;width:400px;height:400px;border-radius:50%;background:radial-gradient(circle,rgba(245,179,1,.30),transparent 68%)}
+  .hero-top{display:flex;gap:36px;align-items:center;position:relative;z-index:2}
+  .hero-txt{flex:1;min-width:0}
+  .hero .crumb{font-size:11.5px;color:#ffb894;letter-spacing:1.5px;font-weight:700;margin-bottom:14px}
+  .hero h1{font-size:31px;font-weight:800;line-height:1.3;letter-spacing:.6px;margin-bottom:8px}
+  .hero h1 .sub{display:block;font-size:18px;font-weight:700;color:#ffd2b3;margin-top:6px;letter-spacing:.3px}
+  .hero .en{font-size:13px;color:#9db4c8;font-style:italic;margin-bottom:18px}
+  .hero .tags{display:flex;flex-wrap:wrap;gap:8px}
+  .tag{font-size:11.5px;padding:4px 12px;border-radius:20px;background:rgba(255,255,255,.12);border:1px solid rgba(255,255,255,.22);color:#e8f0f6;font-weight:600}
+  .tag.hot{background:rgba(255,107,53,.92);border-color:transparent;color:#fff}
+  .hero-card{flex-shrink:0;width:200px;text-align:center}
+  .hero-card .ava{width:148px;height:148px;border-radius:50%;object-fit:cover;object-position:top center;border:4px solid rgba(255,180,140,.6);box-shadow:0 14px 34px rgba(0,0,0,.45);background:#24344a}
+  .hero-card .nm{font-size:15px;font-weight:800;color:#fff;margin-top:10px}
+  .hero-card .ti{font-size:11.5px;color:#ffb894;margin-top:2px}
+  .container{max-width:1080px;margin:0 auto;padding:38px 52px 70px}
+  .lead{font-size:15.5px;line-height:2.05;color:#333f52;background:linear-gradient(120deg,#fff8f3,#f7fbf8);border-left:5px solid var(--brand);border-radius:0 14px 14px 0;padding:22px 26px;margin-bottom:32px}
+  .lead b{color:var(--brand-dark)}
+  .cast{display:flex;gap:16px;align-items:flex-start;border-radius:16px;padding:18px 22px;margin:24px 0}
+  .cast .ava{width:72px;height:72px;border-radius:50%;object-fit:cover;object-position:top center;flex-shrink:0;background:#e8eef5}
+  .cast .bubble{position:relative;font-size:14px;line-height:1.95;padding-top:2px;flex:1}
+  .cast .who{font-size:12px;font-weight:800;margin-bottom:5px;letter-spacing:.5px}
+  .cast.anya{background:var(--brand-soft);border:1px solid #ffdcc9}
+  .cast.anya .who{color:var(--brand-dark)}
+  .cast.anya .bubble{color:#5c4636}
+  .cast.duck{background:#fff5f5;border:1px solid #fbd5d5}
+  .cast.duck .who{color:#b91c1c}
+  .cast.duck .bubble{color:#5c4141}
+  .cast.teacher{background:linear-gradient(120deg,#f4f7fb,#ffffff);border:1px solid #dbe4f0}
+  .cast.teacher .who{color:#1e293b}
+  .cast.teacher .bubble{color:#3c4a5a}
+  .cast.hero{background:#f2f7fd;border:1px solid #cfe0f5}
+  .cast.hero .who{color:#1b47a8}
+  .cast.hero .bubble{color:#3a4658}
+  .goal-grid{display:grid;grid-template-columns:1fr 1fr;gap:16px;margin-bottom:36px}
+  .goal{border:1px solid var(--line);border-radius:15px;padding:19px 21px;background:#fff;box-shadow:0 4px 16px rgba(31,122,68,.05)}
+  .goal h4{font-size:14px;font-weight:800;margin-bottom:11px;display:flex;align-items:center;gap:8px;color:var(--primary-dark)}
+  .goal h4 .ic{width:22px;height:22px;border-radius:7px;background:var(--primary-lighter);display:flex;align-items:center;justify-content:center;font-size:12px}
+  .goal ul{list-style:none}
+  .goal li{font-size:13.5px;color:#48576b;line-height:1.9;padding-left:18px;position:relative}
+  .goal li::before{content:"▸";position:absolute;left:0;color:var(--primary);font-weight:800}
+  .goal.syllabus li::before{content:"✓"}
+  .section-header{margin:52px 0 24px;padding-bottom:12px;border-bottom:3px solid var(--brand);display:flex;align-items:baseline;gap:14px;flex-wrap:wrap}
+  .section-header h2{font-size:22px;font-weight:800;color:var(--night);letter-spacing:.4px}
+  .section-header .en-title{font-size:12px;color:var(--dim2);font-style:italic}
+  h3{font-size:17.5px;font-weight:800;margin:34px 0 14px;color:var(--night);display:flex;align-items:center;gap:10px}
+  h3::before{content:"";width:5px;height:17px;border-radius:3px;background:var(--brand);flex-shrink:0}
+  h4{font-size:15px;font-weight:800;margin:24px 0 10px;color:#2b4260}
+  p{margin:12px 0;color:#3a4658;line-height:2}
+  strong{color:var(--primary-dark)}
+  code.inline{background:var(--primary-lighter);color:var(--primary-dark);padding:2px 7px;border-radius:6px;font-family:"SFMono-Regular",Consolas,Menlo,monospace;font-size:.9em;font-weight:600}
+  .figure{margin:24px 0;text-align:center}
+  .figure svg.diagram{max-width:100%;height:auto;background:#fff;border:1px solid var(--line);border-radius:14px;padding:10px}
+  .figure .caption{font-size:12.5px;color:var(--dim2);margin-top:9px}
+  .pic{margin:26px 0;text-align:center}
+  .pic img{max-width:100%;border-radius:16px;box-shadow:0 10px 28px rgba(30,60,45,.15);display:block;margin:0 auto}
+  .pic figcaption{font-size:12.5px;color:var(--dim2);margin-top:9px}
+  .pic .ph{display:none}
+  .pic.missing img{display:none}
+  .pic.missing .ph{display:flex;flex-direction:column;align-items:center;justify-content:center;gap:9px;border:2px dashed #c9d9e8;border-radius:16px;background:linear-gradient(135deg,#f8fbfe,#eef6ff);padding:40px 26px;color:#7a8fa8}
+  .pic.missing .ph .fn{font-family:Consolas,monospace;font-size:12.5px;color:#2563eb;font-weight:700;word-break:break-all}
+  .pic.missing .ph .ds{font-size:12.5px;line-height:1.8;max-width:560px}
+  .box{border-radius:13px;padding:16px 20px;margin:20px 0;font-size:14px;line-height:1.95}
+  .box .lb{font-weight:800;margin-right:6px}
+  .info{background:#eef6ff;border-left:5px solid #3b82f6;color:#274768}
+  .info .lb{color:#1d4ed8}
+  .tip{background:#fff9ec;border-left:5px solid #f59e0b;color:#6b4e13}
+  .tip .lb{color:#b45309}
+  .remember{background:var(--primary-lighter);border-left:5px solid var(--primary);color:#1d3a6b}
+  .remember .lb{color:var(--primary-dark)}
+  .warn{background:#fef2f2;border-left:5px solid #ef4444;color:#7f2b2b}
+  .warn .lb{color:#b91c1c}
+  .code-card{margin:20px 0;border-radius:14px;overflow:hidden;box-shadow:0 10px 28px rgba(20,40,28,.20)}
+  .code-head{display:flex;align-items:center;gap:9px;background:#1a2434;padding:9px 14px}
+  .code-head .dot{width:10px;height:10px;border-radius:50%}
+  .code-head .d1{background:#ff5f57}.code-head .d2{background:#febc2e}.code-head .d3{background:#28c840}
+  .code-head .file{color:#8fa6c0;font-size:11.5px;font-family:Consolas,monospace;margin-left:6px}
+  .code-head .lang{margin-left:auto;font-size:10.5px;font-weight:800;color:#0d141f;background:#4f8ff0;padding:2px 9px;border-radius:6px;letter-spacing:.4px}
+  .code-card pre{background:var(--code-bg);padding:18px 20px;overflow-x:auto;margin:0;font-family:"SFMono-Regular",Consolas,"Courier New",monospace;font-size:13.5px;line-height:1.85}
+  .code-card pre::-webkit-scrollbar{height:8px}
+  .code-card pre::-webkit-scrollbar-thumb{background:#31445c;border-radius:4px}
+  .code-card code{color:var(--code-tx);white-space:pre}
+  .kw{color:var(--code-kw);font-weight:600}
+  .st{color:var(--code-st)}
+  .nu{color:var(--code-nu)}
+  .cm{color:var(--code-cm);font-style:italic}
+  .fn{color:var(--code-fn)}
+  .out{background:#0f1621;color:#7fb3f5;font-family:Consolas,monospace;font-size:13px;padding:12px 20px;border-top:1px solid #22304a}
+  .out b{color:#c9d6cd;font-weight:600;font-size:11.5px;letter-spacing:1px}
+  .out.err{color:#fca5a5}
+  table.styled{width:100%;border-collapse:collapse;margin:20px 0;font-size:13.5px;border-radius:12px;overflow:hidden;box-shadow:0 4px 16px rgba(31,122,68,.07)}
+  table.styled thead{background:var(--brand)}
+  table.styled th{color:#fff;padding:11px 14px;text-align:left;font-weight:700;font-size:13px}
+  table.styled td{padding:10px 14px;border-bottom:1px solid var(--line);color:#445266;vertical-align:top}
+  table.styled tbody tr:nth-child(even){background:var(--bg-soft)}
+  table.styled tbody tr:last-child td{border-bottom:none}
+  .level-card{border:1px solid var(--line);border-radius:16px;overflow:hidden;margin:22px 0;box-shadow:0 6px 22px rgba(31,122,68,.07)}
+  .level-card .lc-head{background:linear-gradient(100deg,#17283a,#8a3a16);color:#fff;padding:15px 22px;display:flex;align-items:center;gap:12px;flex-wrap:wrap}
+  .level-card .lc-head .n{font-size:12px;font-weight:800;background:rgba(255,255,255,.2);padding:3px 10px;border-radius:20px}
+  .level-card .lc-head h4{margin:0;color:#fff;font-size:16px}
+  .level-card .lc-head .go{margin-left:auto;font-size:11.5px;color:#ffd2b3}
+  .level-card .lc-body{padding:20px 24px;background:#fff}
+  .level-card .story{background:#f9fbfd;border-left:4px solid #93c5fd;border-radius:0 10px 10px 0;padding:13px 18px;margin:0 0 16px;font-size:14px;line-height:1.95;color:#3f5163}
+  .level-card .story b{color:#1d4ed8}
+  .btn-go{display:inline-flex;align-items:center;gap:8px;background:linear-gradient(135deg,var(--brand),var(--brand-dark));color:#fff;text-decoration:none;font-weight:800;font-size:13.5px;padding:10px 22px;border-radius:11px;box-shadow:0 8px 20px rgba(255,107,53,.32);transition:.2s}
+  .btn-go:hover{transform:translateY(-2px);box-shadow:0 12px 26px rgba(255,107,53,.42)}
+  .pit{border:1px solid #f6dede;border-radius:14px;overflow:hidden;margin:16px 0;background:#fff}
+  .pit .pt{display:flex;gap:12px;padding:14px 18px;background:#fffafa;align-items:flex-start}
+  .pit .x{width:26px;height:26px;border-radius:9px;background:#fee;color:#dc2626;display:flex;align-items:center;justify-content:center;font-weight:800;flex-shrink:0;font-size:13px}
+  .pit .t{font-size:13.5px;line-height:1.9;color:#5c4a4a;flex:1}
+  .pit .t b{color:#b91c1c}
+  .pit .duck{display:flex;gap:12px;padding:13px 18px;background:#fff5f5;border-top:1px dashed #f3d0d0;align-items:flex-start}
+  .pit .duck img{width:48px;height:48px;object-fit:contain;flex-shrink:0;margin-top:2px}
+  .pit .duck .dt{font-size:13.5px;line-height:1.9;color:#7a3b3b}
+  .pit .duck .dt b{color:#b91c1c}
+  .pit .fix{padding:12px 18px;background:#f2f7fd;border-top:1px dashed #cfe0f5;font-size:13.5px;color:#1d3a6b}
+  .pit .fix b{color:var(--primary-dark)}
+  .exam{border:1px solid #dfe7f5;border-radius:15px;margin:16px 0;overflow:hidden;background:#fff;box-shadow:0 4px 16px rgba(38,62,120,.06)}
+  .exam .eh{display:flex;align-items:center;gap:10px;padding:11px 18px;background:linear-gradient(100deg,#eef4ff,#f7faff);border-bottom:1px solid #e3ebf8;flex-wrap:wrap}
+  .exam .eh .src{font-size:11px;font-weight:800;color:#fff;background:#2563eb;padding:2.5px 10px;border-radius:20px}
+  .exam .eh .src.ori{background:#8b5cf6}
+  .exam .eh .tp{font-size:11.5px;color:#5b7ba8;font-weight:700}
+  .exam .eb{padding:16px 20px}
+  .exam .q{font-weight:700;font-size:14px;color:#1e2a3e;line-height:1.9;margin-bottom:10px}
+  .exam .opt{font-size:13.5px;color:#48576b;line-height:2.05;padding-left:6px}
+  .exam .opt i{font-style:normal;font-weight:800;color:var(--primary-dark);margin-right:7px}
+  .exam pre{margin:12px 0;background:#1b2a21;border-radius:10px;padding:14px 16px;overflow-x:auto;font-family:Consolas,monospace;font-size:13px;line-height:1.8;color:var(--code-tx)}
+  .exam details{margin-top:10px;border-top:1px dashed var(--line);padding-top:10px}
+  .exam summary{cursor:pointer;font-size:12.5px;font-weight:800;color:#2563eb;outline:none;user-select:none}
+  .exam details .ans{font-size:13.5px;color:#3a4658;line-height:1.95;margin-top:9px;background:var(--bg-soft);padding:13px 16px;border-radius:10px}
+  .exam details .ans b{color:var(--primary-dark)}
+  .exam details .ans .tagline{display:inline-block;font-size:11px;background:#e0f2fe;color:#0e7490;padding:1.5px 8px;border-radius:6px;font-weight:700;margin-right:6px}
+  .summary{margin:40px 0 20px;border-radius:18px;padding:26px 30px;background:linear-gradient(130deg,#fff8f3,#ffffff);border:1px solid #ffe0cf}
+  .summary h3{margin-top:0}
+  .summary ul{list-style:none;margin-top:10px}
+  .summary li{font-size:14px;line-height:2;color:#3d4d66;padding-left:24px;position:relative}
+  .summary li::before{content:"◆";position:absolute;left:0;color:var(--brand);font-size:11px;top:6px}
+  .pager{display:flex;gap:14px;margin-top:30px;flex-wrap:wrap}
+  .pager a{flex:1;min-width:200px;text-decoration:none;border:1px solid var(--line);border-radius:14px;padding:16px 20px;background:#fff;transition:.2s;display:block}
+  .pager a:hover{border-color:var(--brand);box-shadow:0 10px 26px rgba(255,107,53,.14);transform:translateY(-2px)}
+  .pager a .k{font-size:11px;color:var(--dim2);font-weight:700;letter-spacing:1px}
+  .pager a .v{font-size:14px;font-weight:800;color:var(--night);margin-top:5px}
+  .pager a.back{background:var(--brand-soft);border-color:transparent;text-align:center}
+  .pager a.back .v{color:var(--brand-dark)}
+  .cta{margin-top:26px;border-radius:20px;padding:30px 34px;color:#fff;position:relative;overflow:hidden;background:linear-gradient(120deg,#16202f,#2b3a52 46%,#a8431c 132%)}
+  .cta::after{content:"";position:absolute;right:-70px;bottom:-90px;width:280px;height:280px;border-radius:50%;background:radial-gradient(circle,rgba(255,140,80,.45),transparent 68%)}
+  .cta h3{color:#fff;margin:0 0 10px;position:relative;z-index:2}
+  .cta h3::before{background:var(--brand)}
+  .cta p{color:#d8e0ef;font-size:13.5px;margin:0 0 18px;position:relative;z-index:2;max-width:640px}
+  .cta .btn-go{position:relative;z-index:2}
+  @media(max-width:900px){
+    .sidebar-nav{transform:translateX(-100%)}
+    .sidebar-nav.active{transform:translateX(0)}
+    .nav-toggle{display:block}
+    .page{margin-left:0}
+    .hero{padding:70px 22px 34px}
+    .hero-top{flex-direction:column-reverse;text-align:center}
+    .hero-card{width:auto}
+    .container{padding:26px 20px 60px}
+    .goal-grid{grid-template-columns:1fr}
+  }
+</style>
+</head>
+<body>
+
+<button class="nav-toggle" onclick="document.querySelector('.sidebar-nav').classList.toggle('active')">&#9776;</button>
+
+<nav class="sidebar-nav">
+  <div class="sb-brand">
+    <a class="sb-logo" href="https://codecombat.cn/" target="_blank" rel="noopener" title="访问 CodeCombat 扣哒世界官网">
+      <img src="../assets/logo.png" alt="CodeCombat 扣哒世界">
+    </a>
+    <div><b>造物工坊</b><span>云髓天阶 · C++ 六级 第 5 单元</span></div>
+  </div>
+  <div class="nav-title">本单元目录</div>
+
+  <a href="#s0" class="nav-section">0　单元导语与目标</a>
+  <a href="#s0-1" class="nav-sub">0.1 学习目标</a>
+  <a href="#s0-2" class="nav-sub">0.2 考纲对照</a>
+  <a href="#s1" class="nav-section">1　从蓝图到产品</a>
+  <a href="#s1-1" class="nav-sub">1.1 为什么要"类"</a>
+  <a href="#s1-2" class="nav-sub">1.2 类与对象的关系</a>
+  <a href="#s2" class="nav-section">2　定义一个类</a>
+  <a href="#s2-1" class="nav-sub">2.1 class 的基本写法</a>
+  <a href="#s2-2" class="nav-sub">2.2 访问控制：public 与 private</a>
+  <a href="#s3" class="nav-section">3　构造函数与析构函数</a>
+  <a href="#s3-1" class="nav-sub">3.1 创建时就初始化好</a>
+  <a href="#s3-2" class="nav-sub">3.2 带参数的构造函数与初始化列表</a>
+  <a href="#s4" class="nav-section">4　封装</a>
+  <a href="#s4-1" class="nav-sub">4.1 把数据藏起来</a>
+  <a href="#s4-2" class="nav-sub">4.2 通过方法访问</a>
+  <a href="#s5" class="nav-section">5　继承与多态</a>
+  <a href="#s5-1" class="nav-sub">5.1 继承：在蓝图上扩展</a>
+  <a href="#s5-2" class="nav-sub">5.2 虚函数与多态</a>
+  <a href="#s6" class="nav-section">6　代码实战</a>
+  <a href="#s7" class="nav-section">7　常见陷阱</a>
+  <a href="#s8" class="nav-section">8　题目练习</a>
+  <a href="#s9" class="nav-section">9　本单元小结</a>
+
+  <a href="../index.html" target="_top" class="sb-back">返回考纲之路</a>
+</nav>
+
+<div class="page">
+
+<div class="hero">
+  <div class="hero-top">
+    <div class="hero-txt">
+      <div class="crumb">扣哒考级 · GESP C++ 六级 · 第 5 单元　|　云髓天阶 CLOUDMARROW STEPS</div>
+      <h1>造物工坊
+        <span class="sub">面向对象思想与类的创建</span>
+      </h1>
+      <div class="en">Classes &amp; OOP</div>
+      <div class="tags">        <span class="tag hot">考纲 · 面向对象</span>
+        <span class="tag">class 定义</span>
+        <span class="tag">构造函数</span>
+        <span class="tag">封装</span>
+        <span class="tag">继承与多态</span></div>
+    </div>
+    <div class="hero-card">
+      <img class="ava" src="../assets/avatars/hushbaum.webp" alt="贺舒曼" onerror="this.style.background='#24344a';this.src='../assets/heroes/hushbaum.webp'">
+      <div class="nm">贺舒曼</div>
+      <div class="ti">镜中先知 · 你的向导</div>
+    </div>
+  </div>
+</div>
+
+<div class="container">
+
+<div class="lead">
+  云天之上一座工坊里，<b>墙上悬着一张巨大的发光蓝图。</b><br>
+  图上画着一只机械鹰的完整结构：<b>翼展、速度、攻击模块，全都标得清清楚楚。</b><br>
+  而下方流水线上，<b>一只只与蓝图一模一样的成品正滚出来，各自贴着不同的编号。</b><br>
+  贺舒曼敲了敲蓝图：<strong>这张图是"设计"，那些鹰是"实物"。
+  同一份设计，可以造出无数只鹰——这就是"类"和"对象"。</strong>
+</div>
+
+<div class="cast hushbaum">
+  <img class="ava" src="../assets/avatars/hushbaum.webp" alt="贺舒曼" onerror="this.style.display='none'">
+  <div class="bubble">
+    <div class="who">贺舒曼 · 镜中先知</div>
+    前面几课，我们的数据都是"散着放"的——一个结构体，或者几个变量。<br>
+    这一课换个思路：<strong>把"数据"和"操作这些数据的方法"绑在一起，做成一个整体。</strong><br>
+    <b>这就是面向对象。C++ 里实现它的工具，叫"类"。</b>
+  </div>
+</div>
+
+<figure class="pic">
+  <img src="../assets/illustrations/py-L6-05-01_creation_workshop.webp" alt="造物工坊"
+       onerror="this.closest('.pic').classList.add('missing')">
+  <div class="ph">
+    <div class="fn">assets/illustrations/py-L6-05-01_creation_workshop.webp</div>
+    <div class="ds">【配图位】云中工坊的内部：墙面上悬挂着一张巨大的发光蓝图，图上画出机械鹰的结构标注（翼展、速度、攻击模块等用抽象符号表示）；下方工作台上并排站着三只外形完全一致、但贴着不同编号铭牌的成品机械鹰；一名戴眼镜的先知正把蓝图递向学徒，另一只手比着流水线的方向。</div>
+  </div>
+  <figcaption>图 1：云髓天阶的造物工坊——今天要从这里开始</figcaption>
+</figure>
+
+<!-- ============ 0 ============ -->
+<div class="section-header" id="s0">
+  <h2>0　单元导语与目标</h2>
+  <div class="en-title">Unit Overview</div>
+</div>
+
+<h3 id="s0-1">0.1 学习目标</h3>
+<div class="goal-grid">
+  <div class="goal">
+    <h4><span class="ic">1</span>学完这个单元，你将能……</h4>
+    <ul>
+      <li>说清"类"和"对象"的区别</li>
+      <li>定义一个类，并创建它的对象</li>
+      <li>分清 <code class="inline">public</code> 与 <code class="inline">private</code></li>
+      <li>写出构造函数（含带参数的）与析构函数</li>
+      <li>说出"封装"的好处</li>
+      <li>读懂继承与虚函数（多态）的代码</li>
+    </ul>
+  </div>
+  <div class="goal syllabus">
+    <h4><span class="ic">2</span>对标 GESP 考纲（C++ 六级）</h4>
+    <ul>
+      <li>理解面向对象的基本思想</li>
+      <li>掌握类的定义、成员的访问控制</li>
+      <li>掌握构造函数与析构函数的写法与调用时机</li>
+      <li>理解封装的意义</li>
+      <li>了解继承与多态（虚函数）的基本用法</li>
+      <li>考核目标：能读懂面向对象代码的输出、能补全构造函数</li>
+    </ul>
+  </div>
+</div>
+
+<h3 id="s0-2">0.2 考纲对照</h3>
+<table class="styled">
+  <thead><tr><th>本单元小节</th><th>对应考纲条目</th><th>真题常考形式</th></tr></thead>
+  <tbody>
+    <tr><td>1　从蓝图到产品</td><td>面向对象思想</td><td>类与对象的关系</td></tr>
+    <tr><td>2　定义一个类</td><td>类的定义与访问控制</td><td>成员能不能直接访问</td></tr>
+    <tr><td>3　构造函数与析构函数</td><td>构造与析构</td><td>调用时机、带参构造的写法（必考）</td></tr>
+    <tr><td>4　封装</td><td>封装</td><td>私有成员怎么访问</td></tr>
+    <tr><td>5　继承与多态</td><td>继承与虚函数</td><td>输出哪个版本的函数（必考）</td></tr>
+  </tbody>
+</table>
+
+<!-- ============ 1 ============ -->
+<div class="section-header" id="s1">
+  <h2>1　从蓝图到产品</h2>
+  <div class="en-title">From Blueprint to Product</div>
+</div>
+
+<h3 id="s1-1">1.1 为什么要"类"</h3>
+
+<div class="code-card">
+  <div class="code-head">
+    <span class="dot d1"></span><span class="dot d2"></span><span class="dot d3"></span>
+    <span class="file">先看看"结构体"不够用的地方</span>
+    <span class="lang">C++</span>
+  </div>
+  <pre><code>// 用结构体表示一只机械鹰
+struct Eagle {
+    string name;
+    int    speed;
+    int    hp;
+};
+
+// 结构体只能"装数据"，不能"带动作"。
+// 想让鹰飞一下、掉一点血，只能在外面写函数：
+void fly(Eagle &amp;e) {
+    e.hp -= 5;
+    cout &lt;&lt; e.name &lt;&lt; " 飞了一圈，血量 " &lt;&lt; e.hp &lt;&lt; endl;
+}
+
+// 问题：数据和行为是分开的。
+//   · 谁都可以直接改 e.hp —— 想绕过 fly 就绕过去了
+//   · 函数一多，得记住"哪个函数管哪只鹰"，很累</code></pre>
+  <div class="out"><b>两个痛点</b>　
+  ① <strong>数据和操作它的是分开的</strong>，用起来得两边都记着；<br>
+  ② <strong>数据完全敞开</strong>，谁都能随手改，改坏了也查不出来</div>
+</div>
+
+<div class="box remember">
+  <span class="lb">面向对象的核心想法：</span>
+  <b>把"数据"和"操作这些数据的函数"<strong>打包成一个整体</strong>，
+  这个整体就叫<strong>类（class）</strong>。</b><br>
+  <b>而且还可以给数据加上"门禁"——</b>
+  <strong>不让外面直接碰，只能通过类自己提供的函数来操作。</strong><br>
+  <b>这样一来，数据从哪来、被谁改的，全都管得住了。</b>
+</div>
+
+<h3 id="s1-2">1.2 类与对象的关系</h3>
+
+<div class="box remember">
+  <span class="lb">一句话分清"类"和"对象"：</span>
+  <b>类 = 蓝图（设计图）；对象 = 按这张图造出来的实物。</b><br>
+  <b>类只描述"应该长什么样、能做什么"</b>——
+  <strong>它本身不占内存、也不是任何一只具体的鹰。</strong><br>
+  <b>对象才是真正存在的那一只</b>——
+  <strong>它有自己具体的属性值（这只鹰叫"小灰"、速度 80）。</strong><br>
+  <b>一张蓝图可以造出无数个对象</b>——
+  <strong>它们的"结构"相同，但"内容"各不相同。</strong>
+</div>
+
+<div class="code-card">
+  <div class="code-head">
+    <span class="dot d1"></span><span class="dot d2"></span><span class="dot d3"></span>
+    <span class="file">对照着看</span>
+    <span class="lang">C++</span>
+  </div>
+  <pre><code>class Eagle {          // ★ 这是"类"——蓝图
+    ...
+};
+
+Eagle a;               // ★ 这是"对象"——照蓝图造的一只
+Eagle b;               // ★ 这是另一个对象——同一张图造的又一只
+
+a.name = "小灰";
+b.name = "小白";
+// 它们结构一样，但内容各管各的</code></pre>
+  <div class="out"><b>最容易记的一句话</b>　
+  <b>类是一种"类型"，对象是这个类型的"变量"</b><br>
+  <b>就像 <code>int</code> 是类型、<code>int x;</code> 里的 x 是变量——<br>
+  <code>Eagle</code> 是类型、<code>Eagle a;</code> 里的 a 是变量</b></div>
+</div>
+
+<!-- ============ 2 ============ -->
+<div class="section-header" id="s2">
+  <h2>2　定义一个类</h2>
+  <div class="en-title">Defining a Class</div>
+</div>
+
+<h3 id="s2-1">2.1 class 的基本写法</h3>
+
+<div class="code-card">
+  <div class="code-head">
+    <span class="dot d1"></span><span class="dot d2"></span><span class="dot d3"></span>
+    <span class="file">把一个"计数器"做成类</span>
+    <span class="lang">C++</span>
+  </div>
+  <pre><code>class Counter {
+public:                      // ★ 冒号，不是分号
+    int value;               // 成员变量（数据）
+
+    void add() {             // 成员函数（行为）
+        value++;
+    }
+    void reset() {
+        value = 0;
+    }
+};                           // ★ 末尾这个分号不能丢！
+
+int main() {
+    Counter c;               // 创建对象
+    c.value = 10;            // 用点号访问成员
+    c.add();                 // 调用成员函数
+    cout &lt;&lt; c.value &lt;&lt; endl;  // 11
+    return 0;
+}</code></pre>
+  <div class="out"><b>OUTPUT</b>　11<br>
+  <b>三处格式要求</b>　
+  ① <code>class</code> 开头；② 成员写在花括号里；
+  <b>③ 右大括号后必须有分号</b>——<strong>和结构体一样</strong></div>
+</div>
+
+<div class="box tip">
+  <span class="lb">类和结构体，其实非常像。</span>
+  <b>在 C++ 里，<code class="inline">struct</code> 和 <code class="inline">class</code> 几乎是一回事</b>——
+  <strong>它们都能装数据、都能带函数、都能继承。</strong><br>
+  <b>唯一的区别是"默认的访问权限"：</b><br>
+  <code class="inline">struct</code> 里默认是 <strong><code class="inline">public</code></strong>（外面能直接访问）；<br>
+  <code class="inline">class</code> 里默认是 <strong><code class="inline">private</code></strong>（外面不能直接访问）。<br>
+  <strong>所以写类的时候，<code class="inline">public:</code> 那一行基本是必须写的。</strong>
+</div>
+
+<h3 id="s2-2">2.2 访问控制：public 与 private</h3>
+
+<table class="styled">
+  <thead><tr><th>关键字</th><th>含义</th><th>谁能访问</th></tr></thead>
+  <tbody>
+    <tr><td><code class="inline">public:</code></td><td>公开的</td><td><strong>类里面的成员、外面的使用者，都能访问</strong></td></tr>
+    <tr><td><code class="inline">private:</code></td><td>私有的</td><td><strong>只有类自己的成员函数能访问</strong></td></tr>
+    <tr><td><code class="inline">protected:</code></td><td>受保护的</td><td><strong>类自己 + 它的派生类</strong>能访问</td></tr>
+  </tbody>
+</table>
+
+<div class="code-card">
+  <div class="code-head">
+    <span class="dot d1"></span><span class="dot d2"></span><span class="dot d3"></span>
+    <span class="file">私有成员外面碰不到</span>
+    <span class="lang">C++</span>
+  </div>
+  <pre><code>class Base {
+private:
+    int value = 10;          // 私有
+};
+
+class Child : public Base {
+public:
+    int get() {
+        return value;        // ★ 编译错误！
+    }                        //   value 是 Base 的私有成员，
+};                           //   派生类也不能直接访问
+
+// 正确做法一：把 value 改成 protected
+// 正确做法二：Base 提供一个 public 的 getValue() 方法，
+//             派生类通过这个方法来读</code></pre>
+  <div class="out"><b>关键区别</b>　
+  <b><code>private</code> 连派生类都不给看；<code>protected</code> 给派生类看</b><br>
+  <b>所以"派生类能不能直接访问基类成员"要看清是私有还是受保护</b></div>
+</div>
+
+<!-- ============ 3 ============ -->
+<div class="section-header" id="s3">
+  <h2>3　构造函数与析构函数</h2>
+  <div class="en-title">Constructors &amp; Destructors</div>
+</div>
+
+<h3 id="s3-1">3.1 创建时就初始化好</h3>
+
+<div class="code-card">
+  <div class="code-head">
+    <span class="dot d1"></span><span class="dot d2"></span><span class="dot d3"></span>
+    <span class="file">构造函数：名字和类名一样，没有返回值</span>
+    <span class="lang">C++</span>
+  </div>
+  <pre><code>class Student {
+public:
+    int age;
+
+    Student() {                    // ★ 构造函数：名字 = 类名，没有返回类型
+        age = 18;                  //   创建对象时自动执行
+        cout &lt;&lt; "新建了一个学生" &lt;&lt; endl;
+    }
+
+    ~Student() {                   // ★ 析构函数：名字前面加 ~
+        cout &lt;&lt; "这个学生被销毁了" &lt;&lt; endl;
+    }
+};
+
+int main() {
+    Student s;                     // ← 这里自动调用构造函数
+    cout &lt;&lt; s.age &lt;&lt; endl;          // 18
+    return 0;                      // ← 这里自动调用析构函数
+}</code></pre>
+  <div class="out"><b>OUTPUT</b><br>
+  新建了一个学生<br>
+  18<br>
+  这个学生被销毁了<br>
+  <b>两个函数都不用你手动调用——一个在创建时、一个在销毁时自动执行</b></div>
+</div>
+
+<div class="box remember">
+  <span class="lb">两个函数的四个特点：</span>
+  <b>① 名字</b>——构造函数和类名<strong>完全一样</strong>；
+  析构函数是<strong>类名前面加一个 <code class="inline">~</code></strong>；<br>
+  <b>② 没有返回类型</b>——<strong>连 <code class="inline">void</code> 都不写</strong>；<br>
+  <b>③ 自动调用</b>——构造函数在<strong>创建对象时</strong>，
+  析构函数在<strong>对象销毁时</strong>（比如函数结束、<code class="inline">delete</code> 时）；<br>
+  <b>④ 可以重载</b>——<strong>构造函数可以有多个版本（参数不同）</strong>；
+  析构函数<strong>只能有一个</strong>。
+</div>
+
+<div class="box warn">
+  <span class="lb">一条很容易被考到的规则：一旦自己写了构造函数，编译器就不再生成默认的。</span>
+  <b>如果你只写了 <code class="inline">Student(int x)</code> 这一个带参数的构造函数，</b>
+  <strong>那么 <code class="inline">Student s;</code> 这种"不带参数"的写法就会<strong>编译报错</strong>——</strong>
+  <b>因为编译器看到你定义了构造函数，就不会再自动生成那个无参的默认版本了。</b><br>
+  <b>解法：</b>要么再补一个无参的构造函数，要么创建对象时就把参数写上。<br>
+  <b>所以"编译器会自动生成无参构造函数"这句话，
+  只有在"你一个构造函数都没写"的时候才成立。</b>
+</div>
+
+<h3 id="s3-2">3.2 带参数的构造函数与初始化列表</h3>
+
+<div class="code-card">
+  <div class="code-head">
+    <span class="dot d1"></span><span class="dot d2"></span><span class="dot d3"></span>
+    <span class="file">创建对象时就给好参数</span>
+    <span class="lang">C++</span>
+  </div>
+  <pre><code>class Student {
+public:
+    string name;
+    int    age;
+
+    Student(string n, int a) {     // 带参数的构造函数
+        name = n;
+        age  = a;
+    }
+};
+
+Student s("小明", 12);             // ★ 创建时就把参数传进去
+cout &lt;&lt; s.name &lt;&lt; " " &lt;&lt; s.age &lt;&lt; endl;   // 小明 12
+
+// 更推荐的写法：初始化列表
+class Point {
+public:
+    int x, y;
+    Point(int a, int b) : x(a), y(b) {}    // ★ 冒号后面直接初始化
+};</code></pre>
+  <div class="out"><b>两种写法效果一样</b>　
+  在函数体里赋值，或者用<strong>初始化列表</strong>（冒号后面那一串）<br>
+  <b>初始化列表更高效</b>——<strong>它是"直接构造"，而不是"先默认构造再赋值"</strong></div>
+</div>
+
+<div class="code-card">
+  <div class="code-head">
+    <span class="dot d1"></span><span class="dot d2"></span><span class="dot d3"></span>
+    <span class="file">派生类怎么调用基类的带参构造函数</span>
+    <span class="lang">C++</span>
+  </div>
+  <pre><code>class Machine {
+protected:
+    string id;
+public:
+    Machine(string s) : id(s) {}        // 基类的带参构造函数
+};
+
+class Robot : public Machine {
+    int level;
+public:
+    // ★ 在初始化列表里"点名"调用基类的构造函数
+    Robot(string s, int n) : Machine(s), level(n) {}
+    //                       ↑ 这里写基类名(参数)，不是 id(s)！
+};
+
+Robot r("R-01", 3);        // 先构造基类部分（id = "R-01"），再构造自己的 level</code></pre>
+  <div class="out"><b>横线上该填 <code>Machine(s)</code></b>　
+  <b>调用基类的构造函数，写法是"基类名(参数)"</b><br>
+  <b>注意</b>　<strong>不能写 <code>id(s)</code>（那是成员变量，不是构造函数）；
+  也不能写 <code>Machine::id(s)</code>（那是在访问名叫 id 的成员）</strong></div>
+</div>
+
+<figure class="figure">
+  <svg class="diagram" viewBox="0 0 830 250" role="img" aria-label="构造与析构的顺序">
+    <text x="24" y="28" font-size="14" font-weight="bold" fill="#1f2937">构造是"先基类后派生"，析构正好反过来</text>
+
+    <rect x="46" y="52" width="360" height="176" rx="12" fill="#e9f8ef" stroke="#2e9e5b" stroke-width="2"/>
+    <text x="226" y="78" text-anchor="middle" font-size="12.5" fill="#1f7a44" font-weight="bold">构造顺序（从外到内）</text>
+    <text x="70" y="110" font-size="12.5" fill="#1f7a44">① 先构造基类部分</text>
+    <text x="94" y="136" font-size="11.5" fill="#3b7c5b">输出 "B "（Base 的构造函数）</text>
+    <text x="70" y="168" font-size="12.5" fill="#1f7a44">② 再构造派生类部分</text>
+    <text x="94" y="194" font-size="11.5" fill="#3b7c5b">输出 "D "（Derived 的构造函数）</text>
+    <text x="70" y="220" font-size="11.5" fill="#b45309">★ 先把"地基"打好，再盖上面的部分</text>
+
+    <rect x="424" y="52" width="360" height="176" rx="12" fill="#fff9ec" stroke="#f59e0b" stroke-width="2"/>
+    <text x="604" y="78" text-anchor="middle" font-size="12.5" fill="#b45309" font-weight="bold">析构顺序（从内到外）</text>
+    <text x="448" y="110" font-size="12.5" fill="#b45309">① 先析构派生类部分</text>
+    <text x="472" y="136" font-size="11.5" fill="#a15c1c">输出 "~D "</text>
+    <text x="448" y="168" font-size="12.5" fill="#b45309">② 再析构基类部分</text>
+    <text x="472" y="194" font-size="11.5" fill="#a15c1c">输出 "~B "</text>
+    <text x="448" y="220" font-size="11.5" fill="#b45309">★ 像拆房子，先拆上面、再拆地基</text>
+
+    <text x="46" y="246" font-size="12" fill="#334155">合起来：构造 "B D "，析构 "~D ~B " —— 注意析构的次序和构造<strong>完全相反</strong></text>
+  </svg>
+  <div class="caption">图 2（SVG）：构造与析构的顺序</div>
+</figure>
+
+<!-- ============ 4 ============ -->
+<div class="section-header" id="s4">
+  <h2>4　封装</h2>
+  <div class="en-title">Encapsulation</div>
+</div>
+
+<h3 id="s4-1">4.1 把数据藏起来</h3>
+
+<div class="code-card">
+  <div class="code-head">
+    <span class="dot d1"></span><span class="dot d2"></span><span class="dot d3"></span>
+    <span class="file">把成员变量设成 private，对外只留方法</span>
+    <span class="lang">C++</span>
+  </div>
+  <pre><code>class Account {
+private:                          // ★ 余额藏起来
+    int balance;
+
+public:
+    Account(int b) : balance(b) {}
+
+    void deposit(int x) {         // 存钱：提供接口
+        if (x &gt; 0) balance += x;  // ★ 顺便做合法性检查
+    }
+
+    int getBalance() const {      // 查余额：只读接口
+        return balance;
+    }
+};
+
+Account a(100);
+a.deposit(50);
+cout &lt;&lt; a.getBalance() &lt;&lt; endl;    // 150
+// a.balance = 99999;             // ✘ 编译错误！私有成员外面碰不到</code></pre>
+  <div class="out"><b>OUTPUT</b>　150<br>
+  <b>封装的三个好处</b>　
+  ① <strong>外面改不了余额</strong>，只能走 <code>deposit</code>；<br>
+  ② <strong>可以在方法里做检查</strong>（比如负数不让存）；<br>
+  ③ <strong>内部怎么实现，外面不用知道</strong></div>
+</div>
+
+<h3 id="s4-2">4.2 通过方法访问</h3>
+
+<div class="box remember">
+  <span class="lb">封装的本质：给数据装一扇门。</span>
+  <b>数据藏在屋里（<code class="inline">private</code>），
+  外面的人不许翻墙，<strong>只能从门（<code class="inline">public</code> 的方法）进出。</strong></b><br>
+  <b>这样做的好处是：既然所有改动都要经过这扇门，
+  你就可以在门口设一个"检查员"——</b>
+  <strong>看看这次改动合不合理、要不要记录一笔。</strong><br>
+  <b>而如果数据完全敞开（全 public），</b>
+  <strong>谁都能随手改，出了问题根本查不出是谁改的。</strong>
+</div>
+
+<div class="box tip">
+  <span class="lb">打个比方：</span>
+  封装就像<b>一台封闭的机器</b>——<strong>内部齿轮怎么转，外面看不见；
+  但你给了几个接口（开关、进料口、出料口）。</strong><br>
+  <b>你要它干活，就走接口；它内部怎么实现，你不需要知道，也不该去戳。</b><br>
+  <strong>好处是：哪天它内部换了零件，只要你没改接口，用它的代码一行都不用动。</strong>
+</div>
+
+<figure class="pic">
+  <img src="../assets/illustrations/py-L6-05-02_encapsulation.webp" alt="封死的石人外壳"
+       onerror="this.closest('.pic').classList.add('missing')">
+  <div class="ph">
+    <div class="fn">assets/illustrations/py-L6-05-02_encapsulation.webp</div>
+    <div class="ds">【配图位】一只机械石人立在工坊中央，胸口的水晶核心与内部齿轮通过半透明的外壳隐约可见（表示"内部存在但被包住"）；外壳已完全封死、没有可开启的缝隙，只有侧面三条小滑道作为接口（分别刻着"存""取""查"的抽象记号）；一名戴眼镜的先知正把手伸向其中一条滑道操作。</div>
+  </div>
+  <figcaption>图 3：外壳封死，只留几个接口——这就是封装</figcaption>
+</figure>
+
+<!-- ============ 5 ============ -->
+<div class="section-header" id="s5">
+  <h2>5　继承与多态</h2>
+  <div class="en-title">Inheritance &amp; Polymorphism</div>
+</div>
+
+<h3 id="s5-1">5.1 继承：在蓝图上扩展</h3>
+
+<div class="code-card">
+  <div class="code-head">
+    <span class="dot d1"></span><span class="dot d2"></span><span class="dot d3"></span>
+    <span class="file">派生类自动拥有基类的成员</span>
+    <span class="lang">C++</span>
+  </div>
+  <pre><code>class Animal {                 // 基类（父类）
+public:
+    string name;
+    void eat() { cout &lt;&lt; name &lt;&lt; " 在吃东西" &lt;&lt; endl; }
+};
+
+class Cat : public Animal {    // ★ 冒号 + public + 基类名 = 继承
+public:
+    void meow() { cout &lt;&lt; name &lt;&lt; " 喵了一声" &lt;&lt; endl; }
+};
+
+Cat c;
+c.name = "小白";               // ★ 从 Animal 继承来的
+c.eat();                       // ★ 也是继承来的
+c.meow();                      // 自己新加的
+
+// 结果：Cat 不用重写 name 和 eat，就都有了。</code></pre>
+  <div class="out"><b>继承的好处</b>　
+  <b>共同的成员写在基类里，派生类只管加自己特有的部分</b>——<br>
+  <b>不用重复写、改起来也只改一处</b></div>
+</div>
+
+<h3 id="s5-2">5.2 虚函数与多态</h3>
+
+<div class="code-card">
+  <div class="code-head">
+    <span class="dot d1"></span><span class="dot d2"></span><span class="dot d3"></span>
+    <span class="file">同一个调用，不同对象给出不同结果</span>
+    <span class="lang">C++</span>
+  </div>
+  <pre><code>class Animal {
+public:
+    virtual void speak() {              // ★ virtual 关键字
+        cout &lt;&lt; "Animal ";
+    }
+    virtual ~Animal() = default;        // 虚析构函数（重要！）
+};
+
+class Cat : public Animal {
+public:
+    void speak() override {             // ★ override 表示"我重写了基类的"
+        cout &lt;&lt; "Cat ";
+    }
+};
+
+int main() {
+    Animal *p = new Cat();              // 基类指针，指向派生类对象
+    p-&gt;speak();                         // ★ 输出 "Cat "，不是 "Animal "
+    delete p;
+    return 0;
+}</code></pre>
+  <div class="out"><b>OUTPUT</b>　Cat<br>
+  <b>为什么不是 Animal？</b>　
+  <b>因为 <code>speak</code> 是虚函数——程序会在<strong>运行时</strong>看指针实际指向哪个对象，
+  然后调用那个对象自己的版本</b><br>
+  <b>这就叫"多态"：同一个调用，因对象不同而有不同表现</b></div>
+</div>
+
+<div class="box remember">
+  <span class="lb">三句话理解多态：</span>
+  <b>① 基类的函数前面加 <code class="inline">virtual</code></b>，
+  <strong>它就变成了"虚函数"；</strong><br>
+  <b>② 派生类里写一个同名、同参数的函数（可以标 <code class="inline">override</code>）</b>，
+  <strong>这叫"重写"；</strong><br>
+  <b>③ 用"基类指针/引用"去调用时，</b>
+  <strong>程序会看它实际指的是哪个对象，去调那个对象的版本。</strong><br>
+  <b>关键差别：</b>
+  <strong>如果没有 <code class="inline">virtual</code>，编译时按"指针的类型"来定，输出的是基类版本；
+  有了 <code class="inline">virtual</code>，运行时按"实际对象的类型"来定。</strong>
+</div>
+
+<div class="box warn">
+  <span class="lb">两个非常容易考的"不能"：</span>
+  <b>① 构造函数不能是虚函数。</b>
+  <strong>因为创建对象时，"到底要造哪个类"还没确定下来——
+  虚函数的前提是"对象已经存在、才知道调用谁"，两者矛盾。</strong><br>
+  <strong>② 通过"基类指针"delete 派生类对象时，如果基类的析构函数"不是"虚函数，
+  派生类的析构函数就不会被调用。</strong>
+  <strong>正确做法是把基类的析构函数也写成 <code class="inline">virtual</code>。</strong>
+  （就像上面代码里的 <code class="inline">virtual ~Animal() = default;</code>）。<br>
+  <b>记忆：构造函数不能虚，基类析构要虚。</b>
+</div>
+
+<figure class="pic">
+  <img src="../assets/illustrations/py-L6-05-03_inheritance.webp" alt="蓝图上的扩展"
+       onerror="this.closest('.pic').classList.add('missing')">
+  <div class="ph">
+    <div class="fn">assets/illustrations/py-L6-05-03_inheritance.webp</div>
+    <div class="ds">【配图位】工坊墙上并排挂着两张蓝图：左边是"基础机械兽"的通用蓝图（画着通用躯干与移动模块），右边是从它延伸出去的一张更大的蓝图——通用部分被淡色叠印在其中作为基础，上面新增了一对翅膀与一条尾翼的模块标注；两张图纸之间用一根发光的分叉线相连，示意"从这张长出那张"；一名戴眼镜的先知站在两张图之间对比。</div>
+  </div>
+  <figcaption>图 4：在已有的蓝图上继续扩展——继承</figcaption>
+</figure>
+
+<!-- ============ 6 ============ -->
+<div class="section-header" id="s6">
+  <h2>6　代码实战</h2>
+  <div class="en-title">Level Practice</div>
+</div>
+
+<div class="level-card">
+  <div class="lc-head"><span class="n">关卡</span><h4>王牌程序员</h4><span class="go">进入关卡 →</span></div>
+  <div class="lc-body">
+    <div class="story">
+      <b>故事：</b>工坊里的机械鹰需要统一管理——<b>要能记名字、能飞、能报状态。</b><br>
+      贺舒曼把蓝图铺在桌上：<strong>别把数据和方法分开写。
+      把它们一起装进"图纸"里，用的时候造一只就行。</strong><br>
+      你照着写了一个类：<b>名字和血量放在里面，飞和报告也放在里面。</b><br>
+      对了。她点头，<strong>这就是面向对象——数据管住自己，别人只跟你谈接口。</strong>
+    </div>
+    <p><strong>思路：</strong>用<strong>类</strong>把数据和行为打包，
+    再加一个<strong>构造函数</strong>让它一出生就是完整状态。</p><figure class="pic">
+  <img src="../assets/stages/py-L6-05-stage1_ace_programmer.webp" alt="王牌程序员 关卡截图"
+       onerror="this.closest('.pic').classList.add('missing')">
+  <div class="ph">
+    <div class="fn">assets/stages/py-L6-05-stage1_ace_programmer.webp</div>
+    <div class="ds">【截图位】王牌程序员关卡：工坊流水线与成品机械兽同框，代码编辑区可见 class 定义与构造函数。</div>
+  </div>
+  <figcaption>关卡实况：王牌程序员</figcaption>
+</figure>
+    <div class="code-card">
+      <div class="code-head">
+        <span class="dot d1"></span><span class="dot d2"></span><span class="dot d3"></span>
+        <span class="file">一个完整的类：构造、封装、方法</span>
+        <span class="lang">C++</span>
+      </div>
+      <pre><code>#include &lt;iostream&gt;
+#include &lt;string&gt;
+using namespace std;
+
+class Eagle {
+private:                            // ★ 数据藏起来
+    string name;
+    int    speed;
+    int    hp;
+
+public:
+    Eagle(string n, int s, int h)   // ★ 构造函数：一出生就完整
+        : name(n), speed(s), hp(h) {}
+
+    void fly() {                    // 成员函数：改自己的数据
+        if (hp &gt; 0) {
+            hp -= 5;
+            cout &lt;&lt; name &lt;&lt; " 飞了一圈，血量 " &lt;&lt; hp &lt;&lt; endl;
+        } else {
+            cout &lt;&lt; name &lt;&lt; " 已经飞不动了" &lt;&lt; endl;
+        }
+    }
+
+    void report() const {           // const 表示"不改自己的数据"
+        cout &lt;&lt; name &lt;&lt; " 速度 " &lt;&lt; speed
+             &lt;&lt; "，血量 " &lt;&lt; hp &lt;&lt; endl;
+    }
+
+    ~Eagle() {                      // 析构函数
+        cout &lt;&lt; name &lt;&lt; " 归巢了" &lt;&lt; endl;
+    }
+};
+
+int main() {
+    Eagle a("小灰", 80, 20);
+    Eagle b("小白", 95, 10);
+
+    a.report();
+    a.fly();
+    b.fly();
+    b.report();
+
+    return 0;                       // 程序结束时，b 先析构、a 后析构
+}</code></pre>
+      <div class="out"><b>OUTPUT</b><br>
+      小灰 速度 80，血量 20<br>
+      小灰 飞了一圈，血量 15<br>
+      小白 飞了一圈，血量 5<br>
+      小白 速度 95，血量 5<br>
+      小白 归巢了<br>
+      小灰 归巢了<br>
+      <b>注意最后两行</b>　<strong>析构顺序和创建顺序相反——后创建的 b 先销毁</strong></div>
+    </div>
+    <div class="box info">
+      <span class="lb">和本单元的关系：</span>
+      <strong>这个类把本单元的要点全都用上了。</strong><br>
+      <b>① 封装：</b><code class="inline">name</code>、<code class="inline">speed</code>、<code class="inline">hp</code>
+      都是 <code class="inline">private</code>——<strong>外面拿不到，只能通过 <code class="inline">fly()</code> 和 <code class="inline">report()</code> 操作</strong>；<br>
+      <b>② 构造函数：</b>用<strong>初始化列表</strong>一次把三个成员都设好，
+      <strong>保证对象一被造出来就是"完整可用"的状态</strong>；<br>
+      <b>③ <code class="inline">const</code> 成员函数：</b><code class="inline">report()</code>
+      只读不写，<strong>加 <code class="inline">const</code> 说明"我不会改自己"</strong>——这是个好习惯；<br>
+      <b>④ 析构函数：</b><strong>对象销毁时自动调用</strong>；
+      <strong>同一作用域里的多个对象，销毁顺序和创建顺序正好相反。</strong>
+    </div>
+    <a class="btn-go" href="https://codecombat.cn/" target="_blank" rel="noopener">去扣哒世界闯这一关 →</a>
+  </div>
+</div>
+
+
+
+<!-- ============ 7 ============ -->
+<div class="section-header" id="s7">
+  <h2>7　常见陷阱</h2>
+  <div class="en-title">Common Pitfalls</div>
+</div>
+
+<div class="cast duck">
+  <img class="ava" src="../assets/ducks/duck_hushbaum.webp" alt="扣哒鸭" onerror="this.style.display='none'">
+  <div class="bubble">
+    <div class="who">扣哒鸭 · 调试官</div>
+    面向对象的坑，全在"能不能访问""调用哪一个"上。四条，前三条真题都考过。
+  </div>
+</div>
+
+<div class="pit">
+  <div class="pt">
+    <div class="x">1</div>
+    <div class="t"><b>以为"派生类可以直接访问基类的私有成员"。</b></div>
+  </div>
+  <div class="duck">
+    <img src="../assets/ducks/duck_zana.webp" alt="扣哒鸭" onerror="this.style.display='none'">
+    <div class="dt"><b>扣哒鸭：</b><strong><code>private</code> 连派生类都不给看。</strong><br>
+    基类里 <code>private int value;</code>，派生类里写 <code>return value;</code> ——
+    <strong>编译直接报错。</strong><br>
+    <b>想让派生类能访问，得改成 <code>protected</code>；
+    或者由基类提供一个 public 的方法，派生类通过方法去读。</b></div>
+  </div>
+  <div class="fix"><b>记牢：</b><code class="inline">private</code> 自己都不给派生类；<code class="inline">protected</code> 才给</div>
+</div>
+
+<div class="pit">
+  <div class="pt">
+    <div class="x">2</div>
+    <div class="t"><b>以为"写了带参构造函数，编译器还会补一个无参的"。</b></div>
+  </div>
+  <div class="duck">
+    <img src="../assets/ducks/duck_naria.webp" alt="扣哒鸭" onerror="this.style.display='none'">
+    <div class="dt"><b>扣哒鸭：</b><strong>只要你自己写了任何一个构造函数，编译器就不再生成默认的无参版本。</strong><br>
+    <b>所以类里只有 <code>Student(int x)</code> 时，写 <code>Student s;</code> 会编译报错——</b>
+    <strong>找不到可以不带参数调用的构造函数。</strong></div>
+  </div>
+  <div class="fix"><b>解法：</b>要么补一个无参构造，要么创建时把参数写上</div>
+</div>
+
+<div class="pit">
+  <div class="pt">
+    <div class="x">3</div>
+    <div class="t"><b>漏了 <code class="inline">virtual</code>，多态不生效。</b></div>
+  </div>
+  <div class="duck">
+    <img src="../assets/ducks/duck_hattori.webp" alt="扣哒鸭" onerror="this.style.display='none'">
+    <div class="dt"><b>扣哒鸭：</b><strong>基类的函数前面必须写 <code>virtual</code>。</strong><br>
+    少了它，<code>Animal *p = new Cat(); p-&gt;speak();</code> 会输出 <code>Animal</code>——
+    <b>因为编译器按"指针的类型"来决定了，而不是按对象实际是谁。</b></div>
+  </div>
+  <div class="fix"><b>记牢：</b>要多态就得 <code class="inline">virtual</code></div>
+</div>
+
+<div class="pit">
+  <div class="pt">
+    <div class="x">4</div>
+    <div class="t"><b>调用基类构造时写成 <code class="inline">id(s)</code> 或 <code class="inline">Machine::id(s)</code>。</b></div>
+  </div>
+  <div class="duck">
+    <img src="../assets/ducks/duck_illia.webp" alt="扣哒鸭" onerror="this.style.display='none'">
+    <div class="dt"><b>扣哒鸭：</b><strong>调用基类构造函数的写法是"基类名(参数)"，也就是 <code>Machine(s)</code>。</strong><br>
+    <code>Machine::id(s)</code> 是在访问名叫 id 的成员，
+    <code>id(s)</code> 更是在把成员变量当函数调——<b>两个都不对。</b></div>
+  </div>
+  <div class="fix"><b>正确写法：</b><code class="inline">Robot(...) : Machine(s), level(n) {}</code></div>
+</div>
+
+<!-- ============ 8 ============ -->
+<div class="section-header" id="s8">
+  <h2>8　题目练习</h2>
+  <div class="en-title">Practice</div>
+</div>
+
+<p>前 5 题改编自 C++ 六级真题，其余为原创练习题。</p>
+
+<div class="exam">
+  <div class="eh"><span class="src">改编自 2026 年 9 月 · C++ 六级 · 第 1 题</span><span class="tp">单选题</span></div>
+  <div class="eb">
+    <div class="q">下列代码执行后的输出结果是（　　）。</div>
+    <pre>class Animal {
+public:
+    virtual void speak() { cout &lt;&lt; "Animal "; }
+    virtual ~Animal() = default;
+};
+class Cat : public Animal {
+public:
+    void speak() override { cout &lt;&lt; "Cat "; }
+};
+int main() {
+    Animal *p = new Cat();
+    p-&gt;speak();
+    delete p;
+    return 0;
+}</pre>
+    <div class="opt"><i>A.</i><code class="inline">Animal</code>　　<i>B.</i><code class="inline">Cat</code>　　<i>C.</i><code class="inline">Animal Cat</code>　　<i>D.</i>编译错误</div>
+    <details><summary>查看答案与详解</summary>
+      <div class="ans"><b>答案：B</b>。输出的是 <code class="inline">Cat</code>——这正是<strong>多态</strong>在起作用。<br>
+      <b>关键在于基类的 <code class="inline">speak</code> 前面有 <code class="inline">virtual</code>。</b><br>
+      <b>有了 virtual：</b>
+      <strong><code class="inline">p-&gt;speak()</code> 会在<strong>运行</strong>时检查"p 实际指向什么对象"——
+      它指向的是一个 <code class="inline">Cat</code>，所以调用 <code class="inline">Cat::speak()</code>，输出 "Cat "。</strong><br>
+      <b>如果没有 virtual：</b>
+      <strong>编译时就按"<code class="inline">p</code> 的静态类型"（也就是 <code class="inline">Animal*</code>）来定，
+      调用的是 <code class="inline">Animal::speak()</code>，输出 "Animal "。</strong><br>
+      <b>C 项</b>是误以为两个版本都会执行——
+      <strong>而实际上只会走其中一个，因为它们是"重写"关系，不是"都调用"。</strong><br>
+      <b>D 项</b>说编译错误也不对：
+      <strong>这段代码完全合法——基类指针指向派生类对象是 C++ 的正常用法。</strong><br>
+      <b>顺带注意最后那行 <code class="inline">virtual ~Animal() = default;</code></b>——
+      <strong>基类的析构函数也写成了虚函数，这样 <code class="inline">delete p</code> 时
+      Cat 的析构函数才会被正确调用。</strong><b>这是个好习惯。</b><br>
+      <span class="tagline">对应小节</span>5.2 虚函数与多态。</div>
+    </details>
+  </div>
+</div>
+
+<div class="exam">
+  <div class="eh"><span class="src">改编自 2026 年 9 月 · C++ 六级 · 第 2 题</span><span class="tp">单选题</span></div>
+  <div class="eb">
+    <div class="q">下列代码中，横线处应填写（　　），才能正确调用基类的带参数构造函数。</div>
+    <pre>class Machine {
+protected:
+    string id;
+public:
+    Machine(string s) : id(s) {}
+};
+class Robot : public Machine {
+    int level;
+public:
+    Robot(string s, int n) : __________, level(n) {}
+};</pre>
+    <div class="opt"><i>A.</i><code class="inline">Machine(s)</code>　　<i>B.</i><code class="inline">Machine::id(s)</code><br>
+    <i>C.</i><code class="inline">super(s)</code>　　<i>D.</i><code class="inline">id(s)</code></div>
+    <details><summary>查看答案与详解</summary>
+      <div class="ans"><b>答案：A</b>。C++ 里调用基类构造函数的写法就是<strong>"基类名(参数)"</strong>——
+      写在派生类构造函数的<strong>初始化列表</strong>里 ✔<br>
+      <b>这一行在做什么？</b>
+      <strong>创建 Robot 对象时，编译器要先把它的"基类部分"构造好。
+      <code class="inline">Machine(s)</code> 就是告诉编译器："基类那部分请用 <code class="inline">Machine(string)</code> 这个构造函数，参数是 s"。</strong><br>
+      <b>B 项</b><code class="inline">Machine::id(s)</code> 的含义是"访问 Machine 里名叫 id 的那个成员"——
+      <strong>id 是个 <code class="inline">string</code> 变量，不是函数，后面加括号是在试图调用它，语义完全不对。</strong><br>
+      <b>C 项</b><code class="inline">super(s)</code> 是<strong>别的语言（比如 Java）的写法</strong>，
+      C++ 里根本没有 <code class="inline">super</code> 这个关键字。<br>
+      <b>D 项</b><code class="inline">id(s)</code> 把成员变量当函数调用了——
+      <strong>而且初始化列表里的问题是"怎么初始化基类"，不是"怎么给成员赋值"。</strong><br>
+      <b>顺带说一下顺序：</b>
+      <strong>初始化列表的执行顺序是"先基类、再成员"——
+      所以 <code class="inline">Machine(s)</code> 会先执行，然后才是 <code class="inline">level(n)</code>。</strong><br>
+      <span class="tagline">对应小节</span>3.2 带参数的构造函数与初始化列表。</div>
+    </details>
+  </div>
+</div>
+
+<div class="exam">
+  <div class="eh"><span class="src">改编自 2026 年 9 月 · C++ 六级 · 第 3 题</span><span class="tp">单选题</span></div>
+  <div class="eb">
+    <div class="q">下列代码执行后的输出顺序是（　　）。</div>
+    <pre>class Base {
+public:
+    Base() { cout &lt;&lt; "B "; }
+    virtual ~Base() { cout &lt;&lt; "~B "; }
+};
+class Derived : public Base {
+public:
+    Derived() { cout &lt;&lt; "D "; }
+    ~Derived() { cout &lt;&lt; "~D "; }
+};
+int main() {
+    Base *p = new Derived();
+    delete p;
+    return 0;
+}</pre>
+    <div class="opt">
+      <i>A.</i><code class="inline">B D ~B ~D</code>　　<i>B.</i><code class="inline">D B ~D ~B</code><br>
+      <i>C.</i><code class="inline">B D ~D ~B</code>　　<i>D.</i><code class="inline">B D ~B</code>
+    </div>
+    <details><summary>查看答案与详解</summary>
+      <div class="ans"><b>答案：C</b>。要<strong>把"构造"和"析构"分开看</strong>，它们的顺序正好相反。<br>
+      <b>构造阶段（<code class="inline">new Derived()</code>）：</b><br>
+      <strong>先构造基类部分</strong> → 输出 <code class="inline">"B "</code>；<br>
+      <strong>再构造派生类部分</strong> → 输出 <code class="inline">"D "</code>。<br>
+      <b>道理：</b><strong>先把"地基"打好，才能往上盖。</strong>
+      派生类的构造函数要用到基类的东西，<strong>所以基类必须先构造完。</strong><br>
+      <b>析构阶段（<code class="inline">delete p</code>）：</b><br>
+      <strong>先析构派生类部分</strong> → 输出 <code class="inline">"~D "</code>；<br>
+      <strong>再析构基类部分</strong> → 输出 <code class="inline">"~B "</code>。<br>
+      <b>道理：</b><strong>像拆房子，先拆上面、最后拆地基。</strong><br>
+      合起来：<b>"B D ~D ~B "</b> ✔<br>
+      <b>A 项</b>把析构的顺序写反了；<b>B 项</b>把构造的顺序写反了；
+      <b>D 项</b>漏掉了派生类的析构——<strong>注意：这里基类的析构函数写了 <code class="inline">virtual</code>，
+      所以 <code class="inline">~D</code> 一定会被调用；如果基类析构不是虚函数，就真的会漏掉 <code class="inline">~D</code>，
+      造成资源泄漏。</strong><br>
+      <b>口诀：构造"先基后派"，析构"先派后基"。</b><br>
+      <span class="tagline">对应小节</span>3.1 创建时就初始化好。</div>
+    </details>
+  </div>
+</div>
+
+<div class="exam">
+  <div class="eh"><span class="src">改编自 2026 年 9 月 · C++ 六级 · 判断题 第 1 题</span><span class="tp">判断题</span></div>
+  <div class="eb">
+    <div class="q">下列代码可以正常编译，因为编译器会自动为 <code class="inline">Student</code> 类生成一个无参数构造函数。（　　）</div>
+    <pre>class Student {
+public:
+    Student(int x) { age = x; }
+private:
+    int age;
+};
+int main() {
+    Student s;
+}</pre>
+    <details><summary>查看答案与详解</summary>
+      <div class="ans"><b>答案：错误（×）</b>。<strong>这段代码编译不过——<code class="inline">Student s;</code> 会报错。</strong><br>
+      <b>原因：</b>
+      <strong>编译器"自动生成无参构造函数"这件事，只在你<strong>一个构造函数都没写</strong>的时候才发生。</strong><br>
+      <b>而这里已经写了 <code class="inline">Student(int x)</code>——</b>
+      <strong>编译器看到你自己定义了构造函数，就不再帮你生成默认版本了。</strong><br>
+      <b>于是 <code class="inline">Student s;</code> 找不到"可以不带参数调用"的构造函数，
+      编译直接失败。</b><br>
+      <b>怎么改？两种办法：</b><br>
+      ① <strong>补一个无参构造函数</strong>：<code class="inline">Student() { age = 0; }</code>；<br>
+      ② <strong>创建时就把参数写上</strong>：<code class="inline">Student s(12);</code>。<br>
+      <b>实际写代码时的建议：</b>
+      <strong>如果一个类既可能被无参创建、又可能被带参创建，
+      那最好把两个构造函数都写上。</strong>
+      <b>否则用的人会莫名其妙地撞上编译错误。</b><br>
+      <span class="tagline">对应小节</span>3.1 创建时就初始化好。</div>
+    </details>
+  </div>
+</div>
+
+<div class="exam">
+  <div class="eh"><span class="src">改编自 2026 年 6 月 · C++ 六级 · 判断题 第 1 题</span><span class="tp">判断题</span></div>
+  <div class="eb">
+    <div class="q">C++ 中构造函数可以声明为虚函数，从而实现运行时多态。（　　）</div>
+    <details><summary>查看答案与详解</summary>
+      <div class="ans"><b>答案：错误（×）</b>。<strong>构造函数不能是虚函数。</strong><br>
+      <b>为什么？这里有两条理由：</b><br>
+      <b>① 逻辑上矛盾。</b>
+      "虚函数"的意思是"运行时才知道该调用哪个版本"，<strong>前提是对象已经存在</strong>。
+      而构造函数要做的恰恰是<strong>"把这个对象造出来"</strong>——
+      <strong>在造出来之前，根本谈不上"调用哪个对象的函数"。</strong><br>
+      <b>② 语法上也不允许。</b>
+      构造函数没有名字（它的名字就是类名）、<strong>也没有返回类型</strong>，
+      <strong>C++ 标准明确禁止把构造函数声明成虚函数</strong>，写了直接编译报错。<br>
+      <b>那"运行时多态"靠什么实现？</b>
+      <strong>靠"普通成员函数 + virtual"，也就是虚函数</strong>——
+      这才是正确的做法。<br>
+      <b>顺便记住另一条相关的规则：</b>
+      <strong>析构函数<strong>可以且经常应该</strong>是虚函数</strong>——
+      <b>因为"用基类指针 delete 派生类对象"时，只有虚析构才能保证派生类的析构函数也被调到。</b><br>
+      <b>一句话记牢：构造函数不能虚，基类析构要虚。</b><br>
+      <span class="tagline">对应小节</span>5.2 虚函数与多态。</div>
+    </details>
+  </div>
+</div>
+
+<div class="exam">
+  <div class="eh"><span class="src ori">原创练习题</span><span class="tp">单选题</span></div>
+  <div class="eb">
+    <div class="q">下列关于"类"和"对象"的说法，正确的是（　　）。</div>
+    <div class="opt">
+      <i>A.</i>类就是对象，只是叫法不同<br>
+      <i>B.</i>类是模板/图纸，对象是按这个模板创建的实例，一个类可以创建多个对象<br>
+      <i>C.</i>一个对象只能属于一个类，但一个类只能创建一个对象<br>
+      <i>D.</i>对象在程序运行前就存在于内存中，类在运行时才被创建
+    </div>
+    <details><summary>查看答案与详解</summary>
+      <div class="ans"><b>答案：B</b>。<strong>类是"图纸"，对象是"按图纸造出来的实物"。</strong><br>
+      <b>更准确地说：</b>
+      <strong>类是一种<strong>类型</strong>，对象是这个类型的<strong>实例（变量）</strong>。</strong>
+      就像 <code class="inline">int</code> 是类型、而 <code class="inline">int x;</code> 中的 x 是一个实例——
+      <strong>你可以写很多个 <code class="inline">int</code> 变量，也可以创建很多个同类对象。</strong><br>
+      <b>A 项错：</b>二者完全不是一回事——
+      <strong>类只描述"长什么样"，本身不占内存；对象才真正占用内存、持有具体的数据。</strong><br>
+      <b>C 项错：</b>前半句对（每个对象确实由某个类创建），
+      <strong>但后半句不对——一个类当然可以创建任意多个对象。</strong>
+      <b>这正是类存在的意义：<strong>一份设计，多次使用</strong>。</b><br>
+      <b>D 项错：</b>说反了——<strong>类是"编译时"就确定下来的类型，
+      对象才是"运行时"才被创建的。</strong><br>
+      <b>一句话记牢：</b><strong>类不占内存、只是设计；对象占内存、是实物。</strong><br>
+      <span class="tagline">对应小节</span>1.2 类与对象的关系。</div>
+    </details>
+  </div>
+</div>
+
+<div class="exam">
+  <div class="eh"><span class="src ori">原创练习题</span><span class="tp">编程题</span></div>
+  <div class="eb">
+    <div class="q">题目要求：定义一个 <code class="inline">Rectangle</code> 类，
+    用<strong>私有</strong>成员变量保存宽和高，
+    提供<strong>构造函数</strong>（从外面传入宽高）、
+    一个求面积的 <code class="inline">area()</code> 方法、一个求周长的方法，
+    并在 <code class="inline">main</code> 里创建对象输出面积和周长。<br>
+    <b>样例：</b>输入 <code class="inline">4 6</code>，输出 <code class="inline">24 20</code>。</div>
+    <details><summary>查看参考答案与要点</summary>
+      <div class="ans">
+<pre style="margin:0;background:#131a26;color:#c8d3e0;border-radius:10px;padding:14px 16px">#include &lt;iostream&gt;
+using namespace std;
+
+class Rectangle {
+private:                          // ★ 数据藏起来（封装）
+    int w, h;
+
+public:
+    Rectangle(int a, int b) : w(a), h(b) {}   // ★ 构造函数 + 初始化列表
+
+    int area() const {            // 只读，加 const
+        return w * h;
+    }
+    int perimeter() const {
+        return 2 * (w + h);
+    }
+};
+
+int main() {
+    int a, b;
+    cin &gt;&gt; a &gt;&gt; b;
+
+    Rectangle r(a, b);            // ★ 创建对象时就初始化好
+    cout &lt;&lt; r.area() &lt;&lt; " " &lt;&lt; r.perimeter() &lt;&lt; endl;
+    return 0;
+}</pre>
+      <p style="margin-top:12px"><b>输入 <code>4 6</code> 输出：</b><code>24 20</code><br>
+      <b>要点：</b><br>
+      ① <strong><code class="inline">w</code>、<code class="inline">h</code> 设成 <code class="inline">private</code></strong>——
+      外面不能直接改，<strong>只能通过 <code class="inline">area()</code> / <code class="inline">perimeter()</code> 去用</strong>；<br>
+      ② <strong>构造函数用初始化列表 <code class="inline">: w(a), h(b)</code></strong>——
+      这样对象<strong>一被创建就是完整可用的状态</strong>，不会出现"宽度已设、高度还没设"的中间状态；<br>
+      ③ <strong>两个方法后面都加 <code class="inline">const</code></strong>——
+      表示"我不会修改对象自己的数据"，<strong>这是只读方法的好习惯</strong>；<br>
+      ④ <strong>创建对象时写 <code class="inline">Rectangle r(a, b);</code></strong>——
+      因为类里只有带参构造函数，<strong>不能写成 <code class="inline">Rectangle r;</code></strong>；<br>
+      ⑤ 想验证封装的效果，可以试着在 <code class="inline">main</code> 里写
+      <code class="inline">r.w = 100;</code>——<strong>编译器会直接报错，这正是封装在起作用。</strong><br>
+      <span class="tagline">对应小节</span>4.1 把数据藏起来；6 代码实战。</p>
+      </div>
+    </details>
+  </div>
+</div>
+
+<!-- ============ 9 ============ -->
+<div class="section-header" id="s9">
+  <h2>9　本单元小结</h2>
+  <div class="en-title">Unit Summary</div>
+</div>
+
+<div class="cast hushbaum">
+  <img class="ava" src="../assets/avatars/hushbaum.webp" alt="贺舒曼" onerror="this.style.display='none'">
+  <div class="bubble">
+    <div class="who">贺舒曼 · 镜中先知</div>
+    四句话记住面向对象：<br>
+    <strong>一、类 = 蓝图（不占内存）；对象 = 实物（占内存）；一个类能造很多对象。</strong><br>
+    <strong>二、构造函数在创建时自动跑（名字=类名、无返回类型）；析构在销毁时自动跑（名字前加 ~）。</strong><br>
+    <strong>三、封装 = 数据设 private、对外只留 public 方法；<code>private</code> 连派生类都不给访问。</strong><br>
+    <strong>四、构造"先基后派"、析构"先派后基"；要多态就得 <code>virtual</code>，构造函数不能虚。</strong><br>
+    工坊看完了。最后一站是双塔栈队——<b>那里有两座塔，一座只留顶上的口，一座两头都能进出。</b>
+  </div>
+</div>
+
+<div class="summary">
+  <h3>你在造物工坊里收获了什么</h3>
+  <ul>
+    <li><strong>面向对象的核心</strong>——<strong>把数据和操作它的函数打包成一个整体</strong>。</li>
+    <li><strong>类 vs 对象</strong>——<strong>类是图纸/类型（不占内存）；对象是实物/实例（占内存）</strong>；
+      一个类能造多个对象。</li>
+    <li><strong>类的定义</strong>——<code class="inline">class 名字 { ... };</code>，
+      <strong>右大括号后的分号不能丢</strong>。</li>
+    <li><strong>class 与 struct 的区别</strong>——<strong>只差默认访问权限</strong>：
+      <code class="inline">struct</code> 默认 public，<code class="inline">class</code> 默认 private。</li>
+    <li><strong>访问控制</strong>——<code class="inline">public</code> 谁都能用；
+      <code class="inline">private</code> <strong>只有自己能用（派生类也不行）</strong>；
+      <code class="inline">protected</code> 自己 + 派生类能用。</li>
+    <li><strong>构造函数</strong>——<strong>名字等于类名、没有返回类型、创建对象时自动调用</strong>；
+      可以有多个（重载）。</li>
+    <li><strong>析构函数</strong>——<strong>名字前加 <code class="inline">~</code></strong>，
+      销毁时自动调用，<strong>只能有一个</strong>。</li>
+    <li><strong>重要规则</strong>——<strong>只要自己写了任何构造函数，编译器就不再生成默认无参版本</strong>。</li>
+    <li><strong>初始化列表</strong>——<code class="inline">Point(int a, int b) : x(a), y(b) {}</code>，
+      <strong>比在函数体里赋值更高效</strong>。</li>
+    <li><strong>调用基类构造函数</strong>——写<strong>"基类名(参数)"</strong>，即 <code class="inline">Machine(s)</code>。</li>
+    <li><strong>构造与析构的顺序</strong>——<strong>构造"先基类后派生"，析构"先派生后基类"</strong>。</li>
+    <li><strong>封装</strong>——<strong>数据设成 private，对外只留 public 的方法</strong>；
+      <strong>好处是能在方法里做检查、也方便以后改内部实现。</strong></li>
+    <li><strong>继承</strong>——<code class="inline">class Cat : public Animal</code>；
+      <strong>派生类自动拥有基类的成员</strong>。</li>
+    <li><strong>多态</strong>——基类函数加 <code class="inline">virtual</code>，
+      <strong>用基类指针调用时会执行实际对象那个版本</strong>。</li>
+    <li><strong>两条禁令</strong>——<strong>构造函数不能是虚函数</strong>；
+      <strong>基类析构函数应该写成虚函数</strong>（否则 delete 时派生类析构不会被调）。</li>
+  </ul>
+</div>
+
+<div class="pager">
+  <a href="cpp-6-04.html"><div class="k">← 上一单元</div><div class="v">云梯补给 · 简单动态规划</div></a>
+  <a href="../index.html" target="_top" class="back"><div class="k">返回</div><div class="v">考纲之路 · 总目录</div></a>
+  <a href="cpp-6-06.html"><div class="k">下一单元 →</div><div class="v">双塔栈队 · 栈、队列与循环队列</div></a>
+</div>
+
+<div class="cta">
+  <h3>下一站：双塔栈队</h3>
+  <p>云海之上立着<b>两座塔</b>——<br>
+  <b>左边那座只有一个斜顶开口，里面的东西一层层叠着，最上面那片才拿得出来；</b><br>
+  <b>右边那座两头各有一个口，一队光点从左边流进去、从右边流出来。</b><br>
+  下一单元我们学<b>栈、队列与循环队列</b>：
+  <b>两种最基础的"存取规则"，以及怎么用一圈座位把它们变得不浪费。</b></p>
+  <a class="btn-go" href="https://codecombat.cn/" target="_blank" rel="noopener">加入扣哒世界，把这条考纲之路走一遍 →</a>
+</div>
+</div><!-- /container -->
+</div><!-- /page -->
+
+<script>
+const KEYWORDS = new Set([
+  "int", "long", "short", "unsigned", "signed", "float", "double", "char", "bool", "void",
+  "const", "if", "else", "for", "while", "do", "switch", "case", "default", "break",
+  "continue", "return", "goto", "struct", "class", "union", "enum", "using", "namespace",
+  "std", "main", "true", "false", "cin", "cout", "cerr", "endl", "string", "sizeof",
+  "include", "define", "new", "delete", "public", "private", "static", "inline", "nullptr"
+]);
+
+function esc(s){ return s.replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;'); }
+
+function highlight(src){
+  let out = '', i = 0;
+  const n = src.length;
+  while (i < n){
+    const c = src[i];
+    /* 预处理指令：#include / #define，整行只在行首生效 */
+    if (c === '#' && (i === 0 || src[i-1] === '\n')){
+      let j = i;
+      while (j < n && /[A-Za-z]/.test(src[j])) j++;
+      out += '<span class="kw">' + esc(src.slice(i, j)) + '</span>';
+      let k = src.indexOf('\n', j); if (k < 0) k = n;
+      if (j < k) out += '<span class="st">' + esc(src.slice(j, k)) + '</span>';
+      i = k; continue;
+    }
+    /* 行注释 // */
+    if (c === '/' && src[i+1] === '/'){
+      let j = src.indexOf('\n', i); if (j < 0) j = n;
+      out += '<span class="cm">' + esc(src.slice(i, j)) + '</span>';
+      i = j; continue;
+    }
+    /* 块注释 */
+    if (c === '/' && src[i+1] === '*'){
+      let j = src.indexOf('*/', i + 2); j = j < 0 ? n : j + 2;
+      out += '<span class="cm">' + esc(src.slice(i, j)) + '</span>';
+      i = j; continue;
+    }
+    /* 字符串与字符字面量 */
+    if (c === '"' || c === "'"){
+      let j = i + 1;
+      while (j < n && src[j] !== c){ if (src[j] === '\\') j++; j++; }
+      j = Math.min(j + 1, n);
+      out += '<span class="st">' + esc(src.slice(i, j)) + '</span>';
+      i = j; continue;
+    }
+    /* 数字 */
+    if (/[0-9]/.test(c)){
+      let j = i;
+      while (j < n && /[0-9.]/.test(src[j])) j++;
+      out += '<span class="nu">' + esc(src.slice(i, j)) + '</span>';
+      i = j; continue;
+    }
+    /* 标识符：关键字 / 函数名 / 普通名字 */
+    if (/[A-Za-z_]/.test(c)){
+      let j = i;
+      while (j < n && /[A-Za-z0-9_]/.test(src[j])) j++;
+      const w = src.slice(i, j);
+      if (KEYWORDS.has(w)) out += '<span class="kw">' + esc(w) + '</span>';
+      else if (src[j] === '(') out += '<span class="fn">' + esc(w) + '</span>';
+      else out += esc(w);
+      i = j; continue;
+    }
+    out += esc(c); i++;
+  }
+  return out;
+}
+
+document.querySelectorAll('.code-card pre code').forEach(block => {
+  block.innerHTML = highlight(block.textContent);
+});
+
+if (location.search.indexOf('expand') >= 0) {
+  document.querySelectorAll('details').forEach(d => d.open = true);
+}
+document.querySelectorAll('.sidebar-nav a').forEach(a => {
+  a.addEventListener('click', () => {
+    if (window.innerWidth <= 900) document.querySelector('.sidebar-nav').classList.remove('active');
+  });
+});
+</script>
+</body>
+</html>

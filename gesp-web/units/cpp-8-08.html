@@ -1,0 +1,1027 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="copyright" content="CodeCombat Inc. codecombat.cn">
+<title>王座终试 · 综合算法优化 | 扣哒考级 · GESP C++ 八级</title>
+<style>
+  :root{
+    --primary:#2563eb; --primary-light:#4f8ff0; --primary-lighter:#eaf1fe; --primary-dark:#1b47a8;
+    --brand:#ff6b35; --brand-dark:#e8541f; --brand-soft:#fff3ec;
+    --night:#131c2b; --night-2:#1e2a3a; --gold:#f5b301;
+    --text:#242e3d; --dim:#68788f; --dim2:#93a2b6;
+    --bg:#ffffff; --bg-soft:#f7f9fd; --line:#e2e9f4; --sidebar:274px;
+    --code-bg:#131a26; --code-tx:#c8d3e0;
+    --code-kw:#c678dd; --code-st:#98c379; --code-nu:#d19a66; --code-cm:#5f7488; --code-fn:#e5c07b;
+  }
+  *{margin:0;padding:0;box-sizing:border-box}
+  html{scroll-behavior:smooth}
+  body{font-family:"PingFang SC","Microsoft YaHei","Segoe UI",-apple-system,sans-serif;line-height:1.9;color:var(--text);background:var(--bg);font-size:15.5px}
+  .sidebar-nav{position:fixed;top:0;left:0;width:var(--sidebar);height:100vh;overflow-y:auto;background:linear-gradient(180deg,#0c1626,#14243c);padding:14px 0 40px;z-index:100;border-right:3px solid var(--brand);transition:transform .3s ease}
+  .sidebar-nav::-webkit-scrollbar{width:5px}
+  .sidebar-nav::-webkit-scrollbar-thumb{background:var(--brand);border-radius:4px}
+  .sb-brand{display:flex;align-items:center;gap:10px;padding:10px 13px 12px;border-bottom:1px solid #233752;margin-bottom:8px}
+  .sidebar-nav a.sb-logo{display:flex;align-items:center;justify-content:center;flex-shrink:0;padding:0;border-left:none;transition:.2s}
+  .sb-logo:hover{transform:scale(1.08)}
+  .sb-logo img{height:34px;width:34px;display:block;object-fit:contain;border-radius:8px}
+  .sb-brand b{color:#f2f6fa;font-size:14px;letter-spacing:.5px;display:block;line-height:1.4}
+  .sb-brand span{color:#7f95ab;font-size:11.5px;display:block;line-height:1.4}
+  .nav-title{color:#ffb894;font-size:12px;font-weight:800;padding:10px 18px 6px;letter-spacing:1.2px}
+  .sidebar-nav a{display:block;color:#c3d0dc;text-decoration:none;padding:6px 18px;font-size:12.5px;line-height:1.55;border-left:3px solid transparent;transition:.18s}
+  .sidebar-nav a:hover{color:#fff;background:rgba(255,107,53,.16);border-left-color:var(--brand)}
+  .sidebar-nav a.nav-section{color:#ffb894;font-weight:700;font-size:13px;margin-top:11px;padding-top:10px;border-top:1px solid #233752}
+  .sidebar-nav a.nav-section:first-of-type{border-top:none;margin-top:0;padding-top:6px}
+  .sidebar-nav a.nav-sub{padding-left:30px;color:#93a8bc;font-size:12px}
+  .sidebar-nav a.nav-sub:hover{color:#fff}
+  .sb-back{margin:16px 14px 0;display:block;text-align:center;padding:9px;border-radius:9px;background:#1e304a;color:#a9c0d6 !important;font-size:12px;font-weight:700;border-left:none !important}
+  .sb-back:hover{background:var(--brand) !important;color:#fff !important}
+  .nav-toggle{display:none;position:fixed;top:14px;left:14px;z-index:120;background:var(--brand);color:#fff;border:none;border-radius:9px;padding:9px 13px;font-size:15px;cursor:pointer;box-shadow:0 4px 14px rgba(0,0,0,.25)}
+  .page{margin-left:var(--sidebar)}
+  .hero{position:relative;overflow:hidden;padding:44px 52px;color:#fff;background:linear-gradient(125deg,#0a1220 0%,#16294a 46%,#8a3a16 132%)}
+  .hero::after{content:"";position:absolute;right:-90px;top:-110px;width:400px;height:400px;border-radius:50%;background:radial-gradient(circle,rgba(245,179,1,.30),transparent 68%)}
+  .hero-top{display:flex;gap:36px;align-items:center;position:relative;z-index:2}
+  .hero-txt{flex:1;min-width:0}
+  .hero .crumb{font-size:11.5px;color:#ffb894;letter-spacing:1.5px;font-weight:700;margin-bottom:14px}
+  .hero h1{font-size:31px;font-weight:800;line-height:1.3;letter-spacing:.6px;margin-bottom:8px}
+  .hero h1 .sub{display:block;font-size:18px;font-weight:700;color:#ffd2b3;margin-top:6px;letter-spacing:.3px}
+  .hero .en{font-size:13px;color:#9db4c8;font-style:italic;margin-bottom:18px}
+  .hero .tags{display:flex;flex-wrap:wrap;gap:8px}
+  .tag{font-size:11.5px;padding:4px 12px;border-radius:20px;background:rgba(255,255,255,.12);border:1px solid rgba(255,255,255,.22);color:#e8f0f6;font-weight:600}
+  .tag.hot{background:rgba(255,107,53,.92);border-color:transparent;color:#fff}
+  .hero-card{flex-shrink:0;width:200px;text-align:center}
+  .hero-card .ava{width:148px;height:148px;border-radius:50%;object-fit:cover;object-position:top center;border:4px solid rgba(255,180,140,.6);box-shadow:0 14px 34px rgba(0,0,0,.45);background:#24344a}
+  .hero-card .nm{font-size:15px;font-weight:800;color:#fff;margin-top:10px}
+  .hero-card .ti{font-size:11.5px;color:#ffb894;margin-top:2px}
+  .container{max-width:1080px;margin:0 auto;padding:38px 52px 70px}
+  .lead{font-size:15.5px;line-height:2.05;color:#333f52;background:linear-gradient(120deg,#fff8f3,#f7fbf8);border-left:5px solid var(--brand);border-radius:0 14px 14px 0;padding:22px 26px;margin-bottom:32px}
+  .lead b{color:var(--brand-dark)}
+  .cast{display:flex;gap:16px;align-items:flex-start;border-radius:16px;padding:18px 22px;margin:24px 0}
+  .cast .ava{width:72px;height:72px;border-radius:50%;object-fit:cover;object-position:top center;flex-shrink:0;background:#e8eef5}
+  .cast .bubble{position:relative;font-size:14px;line-height:1.95;padding-top:2px;flex:1}
+  .cast .who{font-size:12px;font-weight:800;margin-bottom:5px;letter-spacing:.5px}
+  .cast.anya{background:var(--brand-soft);border:1px solid #ffdcc9}
+  .cast.anya .who{color:var(--brand-dark)}
+  .cast.anya .bubble{color:#5c4636}
+  .cast.duck{background:#fff5f5;border:1px solid #fbd5d5}
+  .cast.duck .who{color:#b91c1c}
+  .cast.duck .bubble{color:#5c4141}
+  .cast.teacher{background:linear-gradient(120deg,#f4f7fb,#ffffff);border:1px solid #dbe4f0}
+  .cast.teacher .who{color:#1e293b}
+  .cast.teacher .bubble{color:#3c4a5a}
+  .cast.hero{background:#f2f7fd;border:1px solid #cfe0f5}
+  .cast.hero .who{color:#1b47a8}
+  .cast.hero .bubble{color:#3a4658}
+  .goal-grid{display:grid;grid-template-columns:1fr 1fr;gap:16px;margin-bottom:36px}
+  .goal{border:1px solid var(--line);border-radius:15px;padding:19px 21px;background:#fff;box-shadow:0 4px 16px rgba(31,122,68,.05)}
+  .goal h4{font-size:14px;font-weight:800;margin-bottom:11px;display:flex;align-items:center;gap:8px;color:var(--primary-dark)}
+  .goal h4 .ic{width:22px;height:22px;border-radius:7px;background:var(--primary-lighter);display:flex;align-items:center;justify-content:center;font-size:12px}
+  .goal ul{list-style:none}
+  .goal li{font-size:13.5px;color:#48576b;line-height:1.9;padding-left:18px;position:relative}
+  .goal li::before{content:"▸";position:absolute;left:0;color:var(--primary);font-weight:800}
+  .goal.syllabus li::before{content:"✓"}
+  .section-header{margin:52px 0 24px;padding-bottom:12px;border-bottom:3px solid var(--brand);display:flex;align-items:baseline;gap:14px;flex-wrap:wrap}
+  .section-header h2{font-size:22px;font-weight:800;color:var(--night);letter-spacing:.4px}
+  .section-header .en-title{font-size:12px;color:var(--dim2);font-style:italic}
+  h3{font-size:17.5px;font-weight:800;margin:34px 0 14px;color:var(--night);display:flex;align-items:center;gap:10px}
+  h3::before{content:"";width:5px;height:17px;border-radius:3px;background:var(--brand);flex-shrink:0}
+  h4{font-size:15px;font-weight:800;margin:24px 0 10px;color:#2b4260}
+  p{margin:12px 0;color:#3a4658;line-height:2}
+  strong{color:var(--primary-dark)}
+  code.inline{background:var(--primary-lighter);color:var(--primary-dark);padding:2px 7px;border-radius:6px;font-family:"SFMono-Regular",Consolas,Menlo,monospace;font-size:.9em;font-weight:600}
+  .figure{margin:24px 0;text-align:center}
+  .figure svg.diagram{max-width:100%;height:auto;background:#fff;border:1px solid var(--line);border-radius:14px;padding:10px}
+  .figure .caption{font-size:12.5px;color:var(--dim2);margin-top:9px}
+  .pic{margin:26px 0;text-align:center}
+  .pic img{max-width:100%;border-radius:16px;box-shadow:0 10px 28px rgba(30,60,45,.15);display:block;margin:0 auto}
+  .pic figcaption{font-size:12.5px;color:var(--dim2);margin-top:9px}
+  .pic .ph{display:none}
+  .pic.missing img{display:none}
+  .pic.missing .ph{display:flex;flex-direction:column;align-items:center;justify-content:center;gap:9px;border:2px dashed #c9d9e8;border-radius:16px;background:linear-gradient(135deg,#f8fbfe,#eef6ff);padding:40px 26px;color:#7a8fa8}
+  .pic.missing .ph .fn{font-family:Consolas,monospace;font-size:12.5px;color:#2563eb;font-weight:700;word-break:break-all}
+  .pic.missing .ph .ds{font-size:12.5px;line-height:1.8;max-width:560px}
+  .box{border-radius:13px;padding:16px 20px;margin:20px 0;font-size:14px;line-height:1.95}
+  .box .lb{font-weight:800;margin-right:6px}
+  .info{background:#eef6ff;border-left:5px solid #3b82f6;color:#274768}
+  .info .lb{color:#1d4ed8}
+  .tip{background:#fff9ec;border-left:5px solid #f59e0b;color:#6b4e13}
+  .tip .lb{color:#b45309}
+  .remember{background:var(--primary-lighter);border-left:5px solid var(--primary);color:#1d3a6b}
+  .remember .lb{color:var(--primary-dark)}
+  .warn{background:#fef2f2;border-left:5px solid #ef4444;color:#7f2b2b}
+  .warn .lb{color:#b91c1c}
+  .code-card{margin:20px 0;border-radius:14px;overflow:hidden;box-shadow:0 10px 28px rgba(20,40,28,.20)}
+  .code-head{display:flex;align-items:center;gap:9px;background:#1a2434;padding:9px 14px}
+  .code-head .dot{width:10px;height:10px;border-radius:50%}
+  .code-head .d1{background:#ff5f57}.code-head .d2{background:#febc2e}.code-head .d3{background:#28c840}
+  .code-head .file{color:#8fa6c0;font-size:11.5px;font-family:Consolas,monospace;margin-left:6px}
+  .code-head .lang{margin-left:auto;font-size:10.5px;font-weight:800;color:#0d141f;background:#4f8ff0;padding:2px 9px;border-radius:6px;letter-spacing:.4px}
+  .code-card pre{background:var(--code-bg);padding:18px 20px;overflow-x:auto;margin:0;font-family:"SFMono-Regular",Consolas,"Courier New",monospace;font-size:13.5px;line-height:1.85}
+  .code-card pre::-webkit-scrollbar{height:8px}
+  .code-card pre::-webkit-scrollbar-thumb{background:#31445c;border-radius:4px}
+  .code-card code{color:var(--code-tx);white-space:pre}
+  .kw{color:var(--code-kw);font-weight:600}
+  .st{color:var(--code-st)}
+  .nu{color:var(--code-nu)}
+  .cm{color:var(--code-cm);font-style:italic}
+  .fn{color:var(--code-fn)}
+  .out{background:#0f1621;color:#7fb3f5;font-family:Consolas,monospace;font-size:13px;padding:12px 20px;border-top:1px solid #22304a}
+  .out b{color:#c9d6cd;font-weight:600;font-size:11.5px;letter-spacing:1px}
+  .out.err{color:#fca5a5}
+  table.styled{width:100%;border-collapse:collapse;margin:20px 0;font-size:13.5px;border-radius:12px;overflow:hidden;box-shadow:0 4px 16px rgba(31,122,68,.07)}
+  table.styled thead{background:var(--brand)}
+  table.styled th{color:#fff;padding:11px 14px;text-align:left;font-weight:700;font-size:13px}
+  table.styled td{padding:10px 14px;border-bottom:1px solid var(--line);color:#445266;vertical-align:top}
+  table.styled tbody tr:nth-child(even){background:var(--bg-soft)}
+  table.styled tbody tr:last-child td{border-bottom:none}
+  .level-card{border:1px solid var(--line);border-radius:16px;overflow:hidden;margin:22px 0;box-shadow:0 6px 22px rgba(31,122,68,.07)}
+  .level-card .lc-head{background:linear-gradient(100deg,#17283a,#8a3a16);color:#fff;padding:15px 22px;display:flex;align-items:center;gap:12px;flex-wrap:wrap}
+  .level-card .lc-head .n{font-size:12px;font-weight:800;background:rgba(255,255,255,.2);padding:3px 10px;border-radius:20px}
+  .level-card .lc-head h4{margin:0;color:#fff;font-size:16px}
+  .level-card .lc-head .go{margin-left:auto;font-size:11.5px;color:#ffd2b3}
+  .level-card .lc-body{padding:20px 24px;background:#fff}
+  .level-card .story{background:#f9fbfd;border-left:4px solid #93c5fd;border-radius:0 10px 10px 0;padding:13px 18px;margin:0 0 16px;font-size:14px;line-height:1.95;color:#3f5163}
+  .level-card .story b{color:#1d4ed8}
+  .btn-go{display:inline-flex;align-items:center;gap:8px;background:linear-gradient(135deg,var(--brand),var(--brand-dark));color:#fff;text-decoration:none;font-weight:800;font-size:13.5px;padding:10px 22px;border-radius:11px;box-shadow:0 8px 20px rgba(255,107,53,.32);transition:.2s}
+  .btn-go:hover{transform:translateY(-2px);box-shadow:0 12px 26px rgba(255,107,53,.42)}
+  .pit{border:1px solid #f6dede;border-radius:14px;overflow:hidden;margin:16px 0;background:#fff}
+  .pit .pt{display:flex;gap:12px;padding:14px 18px;background:#fffafa;align-items:flex-start}
+  .pit .x{width:26px;height:26px;border-radius:9px;background:#fee;color:#dc2626;display:flex;align-items:center;justify-content:center;font-weight:800;flex-shrink:0;font-size:13px}
+  .pit .t{font-size:13.5px;line-height:1.9;color:#5c4a4a;flex:1}
+  .pit .t b{color:#b91c1c}
+  .pit .duck{display:flex;gap:12px;padding:13px 18px;background:#fff5f5;border-top:1px dashed #f3d0d0;align-items:flex-start}
+  .pit .duck img{width:48px;height:48px;object-fit:contain;flex-shrink:0;margin-top:2px}
+  .pit .duck .dt{font-size:13.5px;line-height:1.9;color:#7a3b3b}
+  .pit .duck .dt b{color:#b91c1c}
+  .pit .fix{padding:12px 18px;background:#f2f7fd;border-top:1px dashed #cfe0f5;font-size:13.5px;color:#1d3a6b}
+  .pit .fix b{color:var(--primary-dark)}
+  .exam{border:1px solid #dfe7f5;border-radius:15px;margin:16px 0;overflow:hidden;background:#fff;box-shadow:0 4px 16px rgba(38,62,120,.06)}
+  .exam .eh{display:flex;align-items:center;gap:10px;padding:11px 18px;background:linear-gradient(100deg,#eef4ff,#f7faff);border-bottom:1px solid #e3ebf8;flex-wrap:wrap}
+  .exam .eh .src{font-size:11px;font-weight:800;color:#fff;background:#2563eb;padding:2.5px 10px;border-radius:20px}
+  .exam .eh .src.ori{background:#4f8ff0}
+  .exam .eh .tp{font-size:11.5px;color:#5b7ba8;font-weight:700}
+  .exam .eb{padding:16px 20px}
+  .exam .q{font-weight:700;font-size:14px;color:#1e2a3e;line-height:1.9;margin-bottom:10px}
+  .exam .opt{font-size:13.5px;color:#48576b;line-height:2.05;padding-left:6px}
+  .exam .opt i{font-style:normal;font-weight:800;color:var(--primary-dark);margin-right:7px}
+  .exam pre{margin:12px 0;background:#1b2a21;border-radius:10px;padding:14px 16px;overflow-x:auto;font-family:Consolas,monospace;font-size:13px;line-height:1.8;color:var(--code-tx)}
+  .exam details{margin-top:10px;border-top:1px dashed var(--line);padding-top:10px}
+  .exam summary{cursor:pointer;font-size:12.5px;font-weight:800;color:#2563eb;outline:none;user-select:none}
+  .exam details .ans{font-size:13.5px;color:#3a4658;line-height:1.95;margin-top:9px;background:var(--bg-soft);padding:13px 16px;border-radius:10px}
+  .exam details .ans b{color:var(--primary-dark)}
+  .exam details .ans .tagline{display:inline-block;font-size:11px;background:#e0f2fe;color:#0e7490;padding:1.5px 8px;border-radius:6px;font-weight:700;margin-right:6px}
+  .summary{margin:40px 0 20px;border-radius:18px;padding:26px 30px;background:linear-gradient(130deg,#fff8f3,#ffffff);border:1px solid #ffe0cf}
+  .summary h3{margin-top:0}
+  .summary ul{list-style:none;margin-top:10px}
+  .summary li{font-size:14px;line-height:2;color:#3d4d66;padding-left:24px;position:relative}
+  .summary li::before{content:"◆";position:absolute;left:0;color:var(--brand);font-size:11px;top:6px}
+  .pager{display:flex;gap:14px;margin-top:30px;flex-wrap:wrap}
+  .pager a{flex:1;min-width:200px;text-decoration:none;border:1px solid var(--line);border-radius:14px;padding:16px 20px;background:#fff;transition:.2s;display:block}
+  .pager a:hover{border-color:var(--brand);box-shadow:0 10px 26px rgba(255,107,53,.14);transform:translateY(-2px)}
+  .pager a .k{font-size:11px;color:var(--dim2);font-weight:700;letter-spacing:1px}
+  .pager a .v{font-size:14px;font-weight:800;color:var(--night);margin-top:5px}
+  .pager a.back{background:var(--brand-soft);border-color:transparent;text-align:center}
+  .pager a.back .v{color:var(--brand-dark)}
+  .cta{margin-top:26px;border-radius:20px;padding:30px 34px;color:#fff;position:relative;overflow:hidden;background:linear-gradient(120deg,#16202f,#2b3a52 46%,#a8431c 132%)}
+  .cta::after{content:"";position:absolute;right:-70px;bottom:-90px;width:280px;height:280px;border-radius:50%;background:radial-gradient(circle,rgba(255,140,80,.45),transparent 68%)}
+  .cta h3{color:#fff;margin:0 0 10px;position:relative;z-index:2}
+  .cta h3::before{background:var(--brand)}
+  .cta p{color:#d8e0ef;font-size:13.5px;margin:0 0 18px;position:relative;z-index:2;max-width:640px}
+  .cta .btn-go{position:relative;z-index:2}
+  @media(max-width:900px){
+    .sidebar-nav{transform:translateX(-100%)}
+    .sidebar-nav.active{transform:translateX(0)}
+    .nav-toggle{display:block}
+    .page{margin-left:0}
+    .hero{padding:70px 22px 34px}
+    .hero-top{flex-direction:column-reverse;text-align:center}
+    .hero-card{width:auto}
+    .container{padding:26px 20px 60px}
+    .goal-grid{grid-template-columns:1fr}
+  }
+</style>
+</head>
+<body>
+
+<button class="nav-toggle" onclick="document.querySelector('.sidebar-nav').classList.toggle('active')">&#9776;</button>
+
+<nav class="sidebar-nav">
+  <div class="sb-brand">
+    <a class="sb-logo" href="https://codecombat.cn/" target="_blank" rel="noopener" title="访问 CodeCombat 扣哒世界官网">
+      <img src="../assets/logo.png" alt="CodeCombat 扣哒世界">
+    </a>
+    <div><b>王座终试</b><span>寂灭王座 · C++ 八级 第 8 单元</span></div>
+  </div>
+  <div class="nav-title">本单元目录</div>
+  <a href="#s0" class="nav-section">0　单元导语与目标</a>
+  <a href="#s0-1" class="nav-sub">0.1 学习目标</a>
+  <a href="#s0-2" class="nav-sub">0.2 考纲对照</a>
+  <a href="#s1" class="nav-section">1　综合题的四步解法</a>
+  <a href="#s1-1" class="nav-sub">1.1 综合题的四步解法</a>
+  <a href="#s1-2" class="nav-sub">1.2 为什么要先写朴素解法</a>
+  <a href="#s2" class="nav-section">2　一个完整的优化案例</a>
+  <a href="#s2-1" class="nav-sub">2.1 第一版：朴素双重循环</a>
+  <a href="#s2-2" class="nav-sub">2.2 第二版：用哈希表，一遍扫完</a>
+  <a href="#s2-3" class="nav-sub">2.3 优化的关键一步在哪里</a>
+  <a href="#s2-4" class="nav-sub">2.4 从 O(n²) 到 O(n) 的这一步</a>
+  <a href="#s3" class="nav-section">3　四把常用的"优化刀"</a>
+  <a href="#s3-1" class="nav-sub">3.1 四把常用的"优化刀"</a>
+  <a href="#s3-2" class="nav-sub">3.2 前缀和长什么样</a>
+  <a href="#s3-3" class="nav-sub">3.3 用公式换掉循环：等差、等比数列</a>
+  <a href="#s4" class="nav-section">4　代码实战</a>
+  <a href="#s5" class="nav-section">5　常见陷阱</a>
+  <a href="#s6" class="nav-section">6　题目练习</a>
+  <a href="#s7" class="nav-section">7　考纲之路全程回顾</a>
+  <a href="#s8" class="nav-section">8　本单元小结</a>
+  <a href="../index.html" target="_top" class="sb-back">返回考纲之路</a>
+</nav>
+
+<div class="page">
+
+<div class="hero">
+  <div class="hero-top">
+    <div class="hero-txt">
+      <div class="crumb">扣哒考级 · GESP C++ 八级 · 第 8 单元　|　寂灭王座 THE THRONE</div>
+      <h1>王座终试
+        <span class="sub">综合算法优化</span>
+      </h1>
+      <div class="en">Algorithm Optimization</div>
+      <div class="tags">        <span class="tag hot">考纲 · 综合优化</span>
+        <span class="tag">解题步骤</span>
+        <span class="tag">换数据结构</span>
+        <span class="tag">预处理</span>
+        <span class="tag">取舍</span></div>
+    </div>
+    <div class="hero-card">
+      <img class="ava" src="../assets/avatars/hushbaum.webp" alt="贺舒曼" onerror="this.style.background='#24344a';this.src='../assets/heroes/hushbaum.webp'">
+      <div class="nm">贺舒曼</div>
+      <div class="ti">镜中先知 · 你的向导</div>
+    </div>
+  </div>
+</div>
+
+<div class="container">
+
+<div class="lead">
+  最后一道门打开了。王座就在眼前，可守门人拦住了你。<br>
+  最后一试。他把一路上的东西全摆了出来——
+  <b>符文、水晶、数列、链子、网格、石壁、星图……</b><br>
+  不看你会不会某一招，<b>只看你能不能把学过的东西凑到一起，解决一个新问题。</b><br>
+  贺舒曼站在你身后，轻声说：<b>别想着用什么高级算法。先写个能跑的，再想办法让它更快。</b>
+</div>
+
+<div class="cast teacher">
+  <img class="ava" src="../assets/avatars/hushbaum.webp" alt="贺舒曼" onerror="this.style.display='none'">
+  <div class="bubble">
+    <div class="who">贺舒曼 · 镜中先知</div>
+    这是考纲之路的最后一站。这一单元不教新知识，<strong>而是教你"怎么把前面学的用出来"。</strong><br>
+    我陪你走过了三级、四级、五级、六级、七级、八级——<b>现在，是时候把它们串成一条线了。</b>
+  </div>
+</div>
+
+<figure class="pic">
+  <img src="../assets/illustrations/py-L8-08-01_final_trial.webp" alt="王座终试"
+       onerror="this.closest('.pic').classList.add('missing')">
+  <div class="ph">
+    <div class="fn">assets/illustrations/py-L8-08-01_final_trial.webp</div>
+    <div class="ds">【配图位】寂灭王座大殿全景：空荡的王座居于高处，座前地面上浮现出六层同心光纹，每层刻着不同的符号（数论、结构、算法、图、几何、效率）；一名少年站在最外圈，手中握着一支发光的笔。</div>
+  </div>
+  <figcaption>图 1：寂灭王座的王座终试——今天要从这里开始</figcaption>
+</figure>
+
+<div class="section-header" id="s0">
+  <h2>0　单元导语与目标</h2>
+  <div class="en-title">Unit Overview</div>
+
+<h3 id="s0-1">0.1 学习目标</h3>
+</div>
+
+<div class="goal-grid">
+  <h3 id="s0-2">0.2 考纲对照</h3>
+
+<div class="goal">
+    <h4><span class="ic">1</span>学完这个单元，你将能……</h4>
+    <ul>
+      <li>按四步流程拆解一道综合题</li>
+      <li>先写"朴素解法"，再逐步优化</li>
+      <li>掌握四种常用优化手段（含用等差、等比数列公式替代循环）</li>
+      <li>在时间与空间之间做取舍</li>
+      <li>检查边界与极端数据</li>
+      <li>自信地面对陌生题目</li>
+    </ul>
+  </div>
+  <div class="goal syllabus">
+    <h4><span class="ic">2</span>对标 GESP 考纲（C++ 八级）</h4>
+    <ul>
+      <li>能综合运用多级知识点分析与解决问题</li>
+      <li>掌握从朴素解法到优化解法的改进思路</li>
+      <li>具备基本的算法取舍与正确性检验意识</li>
+      <li>能根据数学知识优化算法（等差、等比数列求和公式等）</li>
+      <li>考核目标：能独立完成中等难度的综合算法题</li>
+    </ul>
+  </div>
+</div>
+
+<div class="section-header" id="s1">
+  <h2>1　综合题的四步解法</h2>
+  <div class="en-title">Four Steps</div>
+</div>
+
+<h3 id="s1-1">1.1 综合题的四步解法</h3>
+
+<figure class="figure">
+  <svg class="diagram" viewBox="0 0 860 280" role="img" aria-label="四步解法">
+    <text x="24" y="34" font-size="14" font-weight="bold" fill="#1f2937">遇到没见过的题，按这四步走</text>
+
+    <rect x="50" y="62" width="180" height="150" rx="12" fill="#eaf1fe" stroke="#2563eb" stroke-width="2"/>
+    <text x="140" y="92" text-anchor="middle" font-size="13" fill="#1d4ed8" font-weight="bold">① 读懂</text>
+    <text x="140" y="122" text-anchor="middle" font-size="11.5" fill="#68788f">输入是什么？</text>
+    <text x="140" y="146" text-anchor="middle" font-size="11.5" fill="#68788f">输出是什么？</text>
+    <text x="140" y="170" text-anchor="middle" font-size="11.5" fill="#68788f">数据范围多大？</text>
+    <text x="140" y="196" text-anchor="middle" font-size="11" fill="#2563eb">先看范围，再想算法</text>
+
+    <rect x="246" y="62" width="180" height="150" rx="12" fill="#eaf1fe" stroke="#2563eb" stroke-width="2"/>
+    <text x="336" y="92" text-anchor="middle" font-size="13" fill="#1d4ed8" font-weight="bold">② 朴素</text>
+    <text x="336" y="122" text-anchor="middle" font-size="11.5" fill="#68788f">先用最笨的办法</text>
+    <text x="336" y="146" text-anchor="middle" font-size="11.5" fill="#68788f">把答案算出来</text>
+    <text x="336" y="170" text-anchor="middle" font-size="11.5" fill="#68788f">（哪怕会很慢）</text>
+    <text x="336" y="196" text-anchor="middle" font-size="11" fill="#2563eb">先跑通，再提速</text>
+
+    <rect x="442" y="62" width="180" height="150" rx="12" fill="#eaf1fe" stroke="#2563eb" stroke-width="2"/>
+    <text x="532" y="92" text-anchor="middle" font-size="13" fill="#1d4ed8" font-weight="bold">③ 优化</text>
+    <text x="532" y="122" text-anchor="middle" font-size="11.5" fill="#68788f">估一下复杂度</text>
+    <text x="532" y="146" text-anchor="middle" font-size="11.5" fill="#68788f">够不够快？</text>
+    <text x="532" y="170" text-anchor="middle" font-size="11.5" fill="#68788f">不够就换结构</text>
+    <text x="532" y="196" text-anchor="middle" font-size="11" fill="#2563eb">用对工具，事半功倍</text>
+
+    <rect x="638" y="62" width="172" height="150" rx="12" fill="#eaf1fe" stroke="#2563eb" stroke-width="2"/>
+    <text x="724" y="92" text-anchor="middle" font-size="13" fill="#1d4ed8" font-weight="bold">④ 检验</text>
+    <text x="724" y="122" text-anchor="middle" font-size="11.5" fill="#68788f">边界数据</text>
+    <text x="724" y="146" text-anchor="middle" font-size="11.5" fill="#68788f">空数据</text>
+    <text x="724" y="170" text-anchor="middle" font-size="11.5" fill="#68788f">重复数据</text>
+    <text x="724" y="196" text-anchor="middle" font-size="11" fill="#2563eb">暴力验一遍最保险</text>
+
+    <text x="430" y="248" text-anchor="middle" font-size="12" fill="#1d4ed8">第 ② 步最重要：<b>先有一个"能跑的答案"，再谈优化</b></text>
+    <text x="430" y="270" text-anchor="middle" font-size="11.5" fill="#68788f">很多同学一上来就想最优解，结果卡住半小时——不如先写个笨的</text>
+  </svg>
+  <div class="caption">图 2（SVG）：综合题的四步流程</div>
+</figure>
+
+<h3 id="s1-2">1.2 为什么要先写朴素解法</h3>
+
+<div class="box remember">
+  <span class="lb">为什么要"先写朴素解法"？</span><br>
+  <b>① 它能保证你有分拿</b>——哪怕只通过一小部分测试数据；<br>
+  <b>② 它可以当"标准答案"</b>——优化之后，用小数据对拍一下，就知道对不对；<br>
+  <b>③ 它让你想清楚问题</b>——写的时候常常会突然发现"这里可以更快"。<br>
+  <strong>考试时最忌讳的，是在"一次写出最优解"上死磕。</strong>
+</div>
+
+<div class="section-header" id="s2">
+  <h2>2　一个完整的优化案例</h2>
+  <div class="en-title">A Complete Example</div>
+
+<h3 id="s2-1">2.1 第一版：朴素双重循环</h3>
+</div>
+
+<p>看一道具体的题：<strong>给定 n 个数，问有多少对数的和等于目标值 k。</strong></p>
+
+<div class="code-card">
+  <div class="code-head">
+    <span class="dot d1"></span><span class="dot d2"></span><span class="dot d3"></span>
+    <span class="file">第一版：朴素双重循环（O(n²)）</span>
+    <span class="lang">C++</span>
+  </div>
+  <pre><code>int a[5] = {1, 3, 5, 7, 9};
+int k = 10;
+int count = 0;
+
+for (int i = 0; i &lt; 5; i++) {
+    for (int j = i + 1; j &lt; 5; j++) {
+        if (a[i] + a[j] == k) {
+            count = count + 1;
+        }
+    }
+}
+
+cout &lt;&lt; count &lt;&lt; endl;
+</code></pre>
+  <div class="out"><b>能跑通</b>　结果 2（(1,9)、(3,7)）。<br>
+  <b>问题</b>　n = 10 万时要比较 50 亿次，肯定超时</div>
+</div>
+
+<h3 id="s2-2">2.2 第二版：用哈希表，一遍扫完</h3>
+
+<div class="code-card">
+  <div class="code-head">
+    <span class="dot d1"></span><span class="dot d2"></span><span class="dot d3"></span>
+    <span class="file">第二版：用哈希表，一遍扫完（O(n)）</span>
+    <span class="lang">C++</span>
+  </div>
+  <pre><code>int a[5] = {1, 3, 5, 7, 9};
+int k = 10;
+int count = 0;
+
+unordered_map&lt;int, int&gt; seen;    // 记录每个数出现过几次
+
+for (int x : a) {
+    int need = k - x;                  // 要配成 k，需要另一个数是几
+    count = count + seen[need];        // 之前见过几个这样的数
+    seen[x] = seen[x] + 1;             // 把当前的数记下来
+}
+
+cout &lt;&lt; count &lt;&lt; endl;
+</code></pre>
+  <div class="out"><b>同样结果 2</b>　但只遍历了一遍，<b>O(n)</b>——n = 10 万时瞬间完成</div>
+</div>
+
+<h3 id="s2-3">2.3 优化的关键一步在哪里</h3>
+
+<h3 id="s2-4">2.4 从 O(n²) 到 O(n) 的这一步</h3>
+
+<div class="box tip">
+  <span class="lb">优化的关键一步在哪里？</span>
+  原版要"<strong>对每个数，回头找有没有配对的</strong>"——这是 O(n) 的查找，套在循环里就变成 O(n²)。<br>
+  优化版把它换成"<strong>用字典记住见过的数</strong>"——查找变成 O(1)。<br>
+  <strong>答案没变，复杂度却降了一个量级。这就是"换数据结构"的威力。</strong>
+</div>
+
+<div class="section-header" id="s3">
+  <h2>3　四把常用的"优化刀"</h2>
+  <div class="en-title">Four Optimization Tools</div>
+
+<h3 id="s3-1">3.1 四把常用的"优化刀"</h3>
+</div>
+
+<table class="styled">
+  <thead><tr><th>手段</th><th>怎么做</th><th>效果</th><th>典型例子</th></tr></thead>
+  <tbody>
+    <tr>
+      <td><strong>① 换数据结构</strong></td>
+      <td>把列表的"逐个查找"换成字典/集合</td>
+      <td>O(n) → O(1) 的查找</td>
+      <td>判重、两数之和</td>
+    </tr>
+    <tr>
+      <td><strong>② 预处理</strong></td>
+      <td>先算好一张表，之后直接查</td>
+      <td>多次查询变 O(1)</td>
+      <td>前缀和、素数筛、杨辉三角</td>
+    </tr>
+    <tr>
+      <td><strong>③ 二分 / 倍增</strong></td>
+      <td>用"折半"或"翻倍"代替逐个推进</td>
+      <td>O(n) → O(log n)</td>
+      <td>二分查找、快速幂</td>
+    </tr>
+    <tr>
+      <td><strong>④ 递推 / DP</strong></td>
+      <td>把重复计算的子问题记下来</td>
+      <td>O(2ⁿ) → O(n)</td>
+      <td>斐波那契、路径计数</td>
+    </tr>
+  </tbody>
+</table>
+
+<h3 id="s3-2">3.2 前缀和长什么样</h3>
+
+<div class="code-card">
+  <div class="code-head">
+    <span class="dot d1"></span><span class="dot d2"></span><span class="dot d3"></span>
+    <span class="file">"预处理"长什么样：前缀和</span>
+    <span class="lang">C++</span>
+  </div>
+  <pre><code>vector&lt;int&gt; a = {3, 1, 4, 1, 5, 9, 2, 6};
+
+// 预处理：pre[i] 表示前 i 个数的和
+vector&lt;int&gt; pre(a.size() + 1, 0);
+for (int i = 0; i &lt; a.size(); i++) {
+    pre[i + 1] = pre[i] + a[i];
+}
+
+// 现在"求第 L 到第 R 个数的和"只要两步（O(1)）
+int rangeSum(int L, int R) {
+    return pre[R + 1] - pre[L];
+}
+
+cout &lt;&lt; rangeSum(2, 5) &lt;&lt; endl;    // 4+1+5+9 = 19
+</code></pre>
+  <div class="out"><b>要点</b>　花 O(n) 做一次预处理，以后每次查询都是 O(1)——<b>查询次数越多，越划算</b></div>
+</div>
+
+<h3 id="s3-3">3.3 用公式换掉循环：等差、等比数列</h3>
+
+<p>最后一把刀最"数学"：<b>能一步算出来的，就别循环。</b>八级考纲专门点了这一条——<b>用数学知识优化算法</b>。</p>
+
+<div class="code-card">
+  <div class="code-head">
+    <span class="dot d1"></span><span class="dot d2"></span><span class="dot d3"></span>
+    <span class="file">公式 vs 循环：差了一亿次运算</span>
+    <span class="lang">C++</span>
+  </div>
+<pre><code>int n = 100000000;       // 一亿
+
+// 笨办法：循环一亿次
+long long total = 0;
+for (int i = 1; i &lt;= n; i++) total += i;
+cout &lt;&lt; total &lt;&lt; endl;   // 要等好几秒
+
+// 聪明办法：等差数列求和公式
+cout &lt;&lt; (1LL + n) * n / 2 &lt;&lt; endl;   // 瞬间出结果，两者必须相等
+
+// 等比数列：1 + 2 + 4 + ... + 2^(k-1) = 2^k - 1
+int k = 20;
+cout &lt;&lt; (1 &lt;&lt; k) - 1 &lt;&lt; endl;        // 1048575</code></pre>
+  <div class="out"><b>要点</b> 结果必须一样，但一个瞬间完成、一个要等几秒</div>
+</div>
+
+<table class="styled">
+  <thead><tr><th>数列</th><th>求和公式</th><th>例子</th></tr></thead>
+  <tbody>
+    <tr><td>等差数列（首项 a、末项 b、共 n 项）</td><td><code class="inline">(a + b) × n ÷ 2</code></td><td>1+2+…+100 = (1+100)×100÷2 = 5050</td></tr>
+    <tr><td>等差（从 1 加到 n）</td><td><code class="inline">n(n+1) ÷ 2</code></td><td>1+2+…+10 = 10×11÷2 = 55</td></tr>
+    <tr><td>等比（首项 1、公比 2、共 k 项）</td><td><code class="inline">2^k − 1</code></td><td>1+2+4+8 = 2⁴−1 = 15</td></tr>
+    <tr><td>等比（首项 a、公比 q，共 k 项）</td><td><code class="inline">a × (q^k − 1) ÷ (q − 1)</code></td><td>若用不上，先记前两行即可</td></tr>
+  </tbody>
+</table>
+
+<div class="box remember">
+  <span class="lb">一句话记住这把刀：</span><br>
+  <b>凡是"一加一大片"的循环，先想想能不能用公式一步算出来。</b><br>
+  <b>打个比方：</b>数一摞砖有几块——可以一块块数（O(n)），也可以量出长和宽再相乘（O(1)）。<b>算法优化，往往就是找到那把"尺子"。</b>
+</div>
+
+<div class="section-header" id="s4">
+  <h2>4　代码实战</h2>
+  <div class="en-title">Level Practice</div>
+</div>
+
+<div class="level-card">
+  <div class="lc-head"><span class="n">关卡</span><h4>轰炸行动</h4><span class="go">进入关卡 →</span></div>
+  <div class="lc-body">
+    <div class="story">
+      <b>故事：</b>最后的战场上一片混乱：<b>敌人、友军、建筑混在一起。</b>
+      你要在最短时间内做出判断——<b>谁该打、谁不能碰、先打哪个。</b><br>
+      贺舒曼的声音很平静：别慌。<b>先分类，再定优先级，最后按顺序执行。</b>
+      这就是你这一路学到的全部。
+    </div>
+    
+    <p><strong>思路：</strong>把整场战斗拆成"分类 → 排序 → 执行"三步。
+    <b>这正是综合题的标准解法：先理清结构，再动手。</b></p><figure class="pic">
+      <img src="../assets/stages/py-L8-08-stage1_bombing_run.webp" alt="轰炸行动 关卡截图"
+           onerror="this.closest('.pic').classList.add('missing')">
+      <div class="ph">
+        <div class="fn">assets/stages/py-L8-08-stage1_bombing_run.webp</div>
+        <div class="ds">【关卡截图位】请把《轰炸行动》的游戏画面截图放到此处（放入 assets/stages/ 目录，文件名为 py-L8-08-stage1_bombing_run.webp）。</div>
+      </div>
+      <figcaption>关卡实况：轰炸行动</figcaption>
+    </figure>
+    <div class="code-card">
+      <div class="code-head">
+        <span class="dot d1"></span><span class="dot d2"></span><span class="dot d3"></span>
+        <span class="file">重点示例：先筛选，再按优先级处理</span>
+        <span class="lang">C++</span>
+      </div>
+      <pre><code>// ① 分类：把"该打的目标"挑出来（筛选思想）
+vector&lt;Unit&gt; targets;
+for (Unit e : hero.findEnemies()) {
+    if (e.type != "sand-yak") {      // 友军不要碰
+        targets.push_back(e);
+    }
+}
+
+// ② 排序：按血量从低到高（先打弱的，效率高）
+sort(targets.begin(), targets.end(),
+     [](Unit a, Unit b) { return a.health &lt; b.health; });
+
+// ③ 执行：逐个处理
+for (Unit t : targets) {
+    while (t.health &gt; 0) {
+        hero.attack(t);
+    }
+}
+</code></pre>
+      <div class="out"><b>要点</b>　筛选 → 排序 → 执行；<code>sort(key=...)</code> 可以按任意字段排序</div>
+    </div>
+    <div class="box info">
+      <span class="lb">这三步，你其实全都学过：</span>
+      <b>① 筛选</b>——四级学的"空容器 + 遍历 + push_back"；<br>
+      <b>② 排序</b>——四级学的排序算法（这里直接用了标准库的 sort，更快）；<br>
+      <b>③ 执行</b>——最基础的循环。<br>
+      <strong>综合题就是这样：不考新东西，考的是"你能不能把它们串起来"。</strong>
+    </div>
+    <a class="btn-go" href="https://codecombat.cn/" target="_blank" rel="noopener">去扣哒世界闯这一关 →</a>
+  </div>
+</div>
+
+
+
+<figure class="pic">
+  <img src="../assets/illustrations/py-L8-08-02_optimize_knives.webp" alt="四把优化刀"
+       onerror="this.closest('.pic').classList.add('missing')">
+  <div class="ph">
+    <div class="fn">assets/illustrations/py-L8-08-02_optimize_knives.webp</div>
+    <div class="ds">【配图位】王座终试的石台上插着四把发光的短刀，每把刀柄上刻着一行小字："预处理"、"换数据结构"、"贪心剪枝"、"空间换时间"；一名学徒把其中一把抽出，刀锋指向一张写着 O(n²) 的旧图纸。</div>
+  </div>
+  <figcaption>图 3：四把常用的"优化刀"</figcaption>
+</figure>
+
+<div class="section-header" id="s5">
+  <h2>5　常见陷阱</h2>
+  <div class="en-title">Common Pitfalls</div>
+</div>
+
+<div class="cast duck">
+  <img class="ava" src="../assets/ducks/duck_usara.webp" alt="扣哒鸭" onerror="this.style.display='none'">
+  <div class="bubble">
+    <div class="who">扣哒鸭 · 调试官</div>
+    综合题丢分，往往不是"不会"，而是"没考虑全"。四条，最后再叮嘱你一次。
+  </div>
+</div>
+
+<div class="pit">
+  <div class="pt">
+    <div class="x">1</div>
+    <div class="t"><b>一上来就想最优解，卡住不动。</b></div>
+  </div>
+  <div class="duck">
+    <img src="../assets/ducks/duck_zana.webp" alt="扣哒鸭" onerror="this.style.display='none'">
+    <div class="dt"><b>扣哒鸭：</b><strong>先写个能跑的笨办法。</strong><br>
+    它能帮你拿到部分分，还能当"标准答案"用来对拍。<br>
+    有了笨办法，再去想怎么把它变快——<b>这条路永远比"空想最优解"稳。</b></div>
+  </div>
+  <div class="fix"><b>正确策略：</b>先跑通，再优化</div>
+</div>
+
+<div class="pit">
+  <div class="pt">
+    <div class="x">2</div>
+    <div class="t"><b>不看数据范围就动手。</b></div>
+  </div>
+  <div class="duck">
+    <img src="../assets/ducks/duck_naria.webp" alt="扣哒鸭" onerror="this.style.display='none'">
+    <div class="dt"><b>扣哒鸭：</b>数据范围是题目给你的<b>最重要提示</b>。<br>
+    <strong>n ≤ 20 就放心枚举；n ≤ 10⁵ 就别写双重循环。</strong>
+    花十秒看范围，能省半小时。</div>
+  </div>
+  <div class="fix"><b>正确做法：</b>读题先圈出数据范围</div>
+</div>
+
+<div class="pit">
+  <div class="pt">
+    <div class="x">3</div>
+    <div class="t"><b>只测了样例，没测边界。</b></div>
+  </div>
+  <div class="duck">
+    <img src="../assets/ducks/duck_hattori.webp" alt="扣哒鸭" onerror="this.style.display='none'">
+    <div class="dt"><b>扣哒鸭：</b>一定要试这几种：<br>
+    <strong>空数据（n = 0）、只有一个元素、全是相同元素、极大值、负数。</strong><br>
+    很多"样例过了但不得分"，都是边界没处理。</div>
+  </div>
+  <div class="fix"><b>检验清单：</b>空、单、同、大、负</div>
+</div>
+
+<div class="pit">
+  <div class="pt">
+    <div class="x">4</div>
+    <div class="t"><b>优化之后就不管了，没和笨办法对一下答案。</b></div>
+  </div>
+  <div class="duck">
+    <img src="../assets/ducks/duck_illia.webp" alt="扣哒鸭" onerror="this.style.display='none'">
+    <div class="dt"><b>扣哒鸭：</b>优化很容易改出新 bug。<br>
+    <strong>用几十组小数据，让两版程序各跑一遍，结果一致才敢交。</strong>
+    这个习惯能救你很多次。</div>
+  </div>
+  <div class="fix"><b>正确做法：</b>小数据对拍两版结果</div>
+</div>
+
+<div class="section-header" id="s6">
+  <h2>6　题目练习</h2>
+  <div class="en-title">Practice</div>
+</div>
+
+<p>第 1 题改编自 2026 年 9 月 · C++ 八级 第 14 题，其余为原创练习题。</p>
+
+<div class="exam">
+  <div class="eh"><span class="src">改编自 2026 年 9 月 · C++ 八级 · 第 14 题</span><span class="tp">单选题</span></div>
+  <div class="eb">
+    <div class="q">对长度为 n 的数组，使用<strong>差分数组</strong>支持 m 次区间加操作，最后通过<strong>一次前缀和</strong>还原每个位置的最终值。<br>整个过程的渐进时间复杂度为（　　）。</div>
+    <div class="opt"><i>A.</i>O(nm)　　<i>B.</i>O((n + m) log n)　　<i>C.</i>O(n log m)　　<i>D.</i>O(n + m)</div>
+    <details><summary>查看答案与详解</summary>
+      <div class="ans"><b>答案：D</b>。"差分 + 前缀和"这套组合拳的账最好算：<br>· 每一次区间加操作，只需要改差分数组的<strong>两个位置</strong>（左端 +v、右端后一位 −v）→ 单次 <code class="inline">O(1)</code>，m 次就是 <code class="inline">O(m)</code>；<br>· 最后扫一遍做前缀和还原 → <code class="inline">O(n)</code>。<br>合起来正是 <b>O(n + m)</b>。<br><b>A 错：</b><code class="inline">O(nm)</code> 是"每次区间加都把区间内每个数改一遍"的朴素做法 ——差分数组要解决的正是这个问题；<br><b>B、C 错：</b>这套方法里根本<strong>没有排序、也没有二分</strong>，不会出现 log 因子。<br><b>对比一下（这是常考的"优化前后"）：</b><br>· 朴素：每次 <code class="inline">O(n)</code> × m 次 → <code class="inline">O(nm)</code>；<br>· 差分：每次 <code class="inline">O(1)</code> + 最后 <code class="inline">O(n)</code> → <code class="inline">O(n + m)</code>。<br>当 n、m 都到 10⁵ 时，前者是 10¹⁰（必超时），后者只有 2×10⁵ ——这就是"换一种数据结构/技巧"带来的差距。<br><span class="tagline">对应小节</span>3 四把常用的"优化刀"。</div>
+    </details>
+  </div>
+</div>
+<div class="exam">
+  <div class="eh"><span class="src ori">原创练习题</span><span class="tp">单选题</span></div>
+  <div class="eb">
+    <div class="q">面对一道陌生题目，最推荐的动手顺序是（　　）。</div>
+    <div class="opt">
+      <i>A.</i>直接想最优解<br>
+      <i>B.</i>先读数据范围，写朴素解法，再优化，最后检验边界<br>
+      <i>C.</i>先写代码，边写边想<br>
+      <i>D.</i>先背一个模板套上去
+    </div>
+    <details><summary>查看答案与详解</summary>
+      <div class="ans"><b>答案：B</b>。这是最稳的解题流程：<br>
+      <b>读范围 → 朴素解法 → 估复杂度并优化 → 检验边界与极端数据。</b><br>
+      <b>A 的风险：</b>想不出来就卡死；<b>D 的风险：</b>套错了模板，反而更乱。<br>
+      <span class="tagline">对应小节</span>1 综合题的四步解法。</div>
+    </details>
+  </div>
+</div>
+
+<div class="exam">
+  <div class="eh"><span class="src ori">原创练习题</span><span class="tp">单选题</span></div>
+  <div class="eb">
+    <div class="q">判断"一个列表里有没有重复元素"，用哪种做法最快？（　　）</div>
+    <div class="opt">
+      <i>A.</i>双重循环两两比较<br>
+      <i>B.</i>先排序，再比较相邻元素<br>
+      <i>C.</i>用集合记录见过的元素<br>
+      <i>D.</i>用递归判断
+    </div>
+    <details><summary>查看答案与详解</summary>
+      <div class="ans"><b>答案：C</b>。用集合记录"见过的元素"，
+      每次 <code class="inline">in</code> 判断是 <b>O(1)</b>，整体 <b>O(n)</b>。<br>
+      <b>A 是 O(n²)</b>；<b>B 是 O(n log n)</b>（排序的代价）；D 更慢。<br>
+      <b>这就是"换数据结构"带来的提速。</b><br>
+      <span class="tagline">对应小节</span>3 四把常用的"优化刀"。</div>
+    </details>
+  </div>
+</div>
+
+<div class="exam">
+  <div class="eh"><span class="src ori">原创练习题</span><span class="tp">判断题</span></div>
+  <div class="eb">
+    <div class="q">写"前缀和"数组之后，查询任意区间的和可以在 O(1) 时间内完成。（　　）</div>
+    <details><summary>查看答案与详解</summary>
+      <div class="ans"><b>答案：正确（√）</b>。预处理出 <code class="inline">pre[i]</code>（前 i 个数的和）之后，<br>
+      区间 [L, R] 的和 = <code class="inline">pre[R+1] - pre[L]</code>——<b>一次减法，O(1)</b>。<br>
+      <b>代价：</b>预处理要花 O(n)，并额外用 O(n) 的空间。<b>查询越多越划算。</b><br>
+      <span class="tagline">对应小节</span>3 四把常用的"优化刀"。</div>
+    </details>
+  </div>
+</div>
+
+<div class="exam">
+  <div class="eh"><span class="src ori">原创练习题</span><span class="tp">单选题</span></div>
+  <div class="eb">
+    <div class="q">已知 <code class="inline">a = {3, 1, 4, 1, 5, 9, 2, 6}</code>，
+    求第 2 个到第 5 个数（下标 2 到 5）的和，用前缀和计算，结果是（　　）。</div>
+    <div class="opt"><i>A.</i>19　　<i>B.</i>11　　<i>C.</i>15　　<i>D.</i>17</div>
+    <details><summary>查看答案与详解</summary>
+      <div class="ans"><b>答案：A</b>。下标 2 到 5 的元素是 4、1、5、9，和 = <b>19</b>。<br>
+      <b>用前缀和：</b>pre = [0, 3, 4, 8, 9, 14, 23, 25, 31]，<br>
+      <code class="inline">pre[6] - pre[2] = 23 - 4 = 19</code>。<br>
+      <b>注意：</b>是 <code class="inline">pre[R+1] - pre[L]</code>，不是 <code class="inline">pre[R] - pre[L]</code>。<br>
+      <span class="tagline">对应小节</span>3 四把常用的"优化刀"。</div>
+    </details>
+  </div>
+</div>
+
+<div class="exam">
+  <div class="eh"><span class="src ori">原创练习题</span><span class="tp">判断题</span></div>
+  <div class="eb">
+    <div class="q">优化算法时，"用空间换时间"是一种常见且合理的取舍。（　　）</div>
+    <details><summary>查看答案与详解</summary>
+      <div class="ans"><b>答案：正确（√）</b>。比如用哈希表把查找从 O(n) 降到 O(1)，
+      代价是多用 O(n) 的空间。<br>
+      <b>只要空间没超出限制，这种交换就很值得。</b>
+      前缀和、记忆化搜索、素数筛都是这个思路。<br>
+      <span class="tagline">对应小节</span>3 四把常用的"优化刀"。</div>
+    </details>
+  </div>
+</div>
+
+<div class="exam">
+  <div class="eh"><span class="src ori">原创练习题</span><span class="tp">单选题</span></div>
+  <div class="eb">
+    <div class="q">检验程序时，下面哪一组测试数据最容易被忽略？（　　）</div>
+    <div class="opt">
+      <i>A.</i>题目给的样例<br>
+      <i>B.</i>数据量为 0 或 1 的极端情况<br>
+      <i>C.</i>题目描述里明说的普通情况<br>
+      <i>D.</i>自己随手编的一组普通数据
+    </div>
+    <details><summary>查看答案与详解</summary>
+      <div class="ans"><b>答案：B</b>。样例和普通情况大家都会测，
+      <b>最容易漏的是"空数据、只有一个元素、全相同"这类边界。</b><br>
+      <b>建议的检验清单：</b>空、单、同、大、负（空数据、单个元素、全部相同、极大值、负数）。<br>
+      <span class="tagline">对应小节</span>5 常见陷阱。</div>
+    </details>
+  </div>
+</div>
+
+<div class="exam">
+  <div class="eh"><span class="src ori">原创练习题</span><span class="tp">编程题</span></div>
+  <div class="eb">
+    <div class="q">题目要求：给定一个整数列表，找出<strong>和最大的连续子数组</strong>的和（子数组至少含一个元素），
+    要求时间复杂度为 O(n)。</div>
+    <details><summary>查看参考答案与要点</summary>
+      <div class="ans">
+<pre style="margin:0;background:#131a26;color:#c8d3e0;border-radius:10px;padding:14px 16px">int maxSubArray(const vector&lt;int&gt;&amp; a) {
+    int best = a[0];           // 只含第一个元素时的最大和
+    int cur = a[0];            // 以当前位置结尾的最大子数组和
+
+    for (int i = 1; i &lt; a.size(); i++) {
+        // 要么"接上前面"，要么"从自己重新开始"
+        cur = max(a[i], cur + a[i]);
+        best = max(best, cur);
+    }
+
+    return best;
+}
+
+cout &lt;&lt; maxSubArray({-2, 1, -3, 4, -1, 2, 1, -5, 4}) &lt;&lt; endl;    // 6
+cout &lt;&lt; maxSubArray({-5, -2, -8}) &lt;&lt; endl;                       // -2</pre>
+      <p style="margin-top:12px"><b>输出：</b>6、-2<br>
+      <b>思路解析：</b><br>
+      ① <b>朴素解法</b>是枚举所有起点和终点，复杂度 O(n²)；
+      这里用动态规划降到了 <b>O(n)</b>；<br>
+      ② <b>状态</b>：<code class="inline">cur</code> 表示"以当前位置结尾的最大子数组和"；<br>
+      ③ <b>转移</b>：<code class="inline">cur = max(a[i], cur + a[i])</code>——
+      <b>如果前面的累加还不如从自己重新开始，就丢掉前面</b>；<br>
+      ④ <b>易错点</b>：初值不能设成 0，否则全是负数时会返回 0（而那不是一个合法的子数组和）。<br>
+      <b>这道题综合了"动态规划"和"效率优化"，是八级的典型综合题。</b><br>
+      <span class="tagline">对应小节</span>2 一个完整的优化案例。</p>
+      </div>
+    </details>
+  </div>
+</div>
+
+<figure class="pic">
+  <img src="../assets/illustrations/py-L8-08-03_road_review.webp" alt="考纲之路全程回顾"
+       onerror="this.closest('.pic').classList.add('missing')">
+  <div class="ph">
+    <div class="fn">assets/illustrations/py-L8-08-03_road_review.webp</div>
+    <div class="ds">【配图位】从烛火岗哨一路延伸到寂灭王座的长路俯瞰图：沿途分段标着一~八级的秘境名，每一段都点着灯；一名学徒站在最末端的王座台阶上回头张望整条来路。</div>
+  </div>
+  <figcaption>图 4：考纲之路全程回顾</figcaption>
+</figure>
+
+<div class="section-header" id="s7">
+  <h2>7　考纲之路全程回顾</h2>
+  <div class="en-title">The Whole Journey</div>
+</div>
+
+<div class="cast teacher">
+  <img class="ava" src="../assets/avatars/hushbaum.webp" alt="贺舒曼" onerror="this.style.display='none'">
+  <div class="bubble">
+    <div class="who">贺舒曼 · 镜中先知</div>
+    走到这里，你已经把整条考纲之路走完了。回头看看——<br>
+    <strong>从"让英雄向右走一格"，到"综合运用算法优化一个陌生问题"。</strong><br>
+    这一路上你学过的东西，我都记着。让我替你数一数。
+  </div>
+</div>
+
+<table class="styled">
+  <thead><tr><th>级别</th><th>核心收获</th></tr></thead>
+  <tbody>
+    <tr><td><strong>一级</strong></td><td>指令与函数调用、变量、数值、字符串、if/else、while 循环</td></tr>
+    <tr><td><strong>二级</strong></td><td>坐标与相对位置、数字运算、字符串进阶、嵌套分支、循环与分支配合</td></tr>
+    <tr><td><strong>三级</strong></td><td>原码反码补码、进制转换、位运算、算法与描述、数组与列表、字符串函数、枚举与模拟</td></tr>
+    <tr><td><strong>四级</strong></td><td>复合数据类型嵌套、二维数组、字典、函数与模块化、参数与作用域、递推、排序、文件与异常</td></tr>
+    <tr><td><strong>五级</strong></td><td>初等数论、欧几里得与素数筛、大整数、链表、二分查找、递归、分治、贪心与复杂度</td></tr>
+    <tr><td><strong>六级</strong></td><td>树与遍历、哈夫曼编码、DFS 与 BFS、动态规划、面向对象、栈与队列</td></tr>
+    <tr><td><strong>七级</strong></td><td>数学库、二维 DP、图与遍历、泛洪算法、哈希表</td></tr>
+    <tr><td><strong>八级</strong></td><td>计数原理、排列组合、杨辉三角、倍增、计算几何、图论进阶、效率分析、综合优化</td></tr>
+  </tbody>
+</table>
+
+<div class="box remember">
+  <span class="lb">最后送你三句话：</span><br>
+  <b>一、遇到不会的题，先写朴素解法——能跑通的答案，永远比完美的空想有价值。</b><br>
+  <b>二、看到数据范围，就知道该用什么复杂度——这是最实用的应试技巧。</b><br>
+  <b>三、优化完记得对拍和测边界——细节决定得分。</b><br>
+  <strong>从今天起，你不再只是"会写程序的人"，而是"会设计和优化程序的人"。</strong>
+</div>
+
+<div class="section-header" id="s8">
+  <h2>8　本单元小结</h2>
+  <div class="en-title">Unit Summary</div>
+</div>
+
+<div class="cast teacher">
+  <img class="ava" src="../assets/avatars/hushbaum.webp" alt="贺舒曼" onerror="this.style.display='none'">
+  <div class="bubble">
+    <div class="who">贺舒曼 · 镜中先知</div>
+    王座的门开了，可你回头看了一眼来时的路。<br>
+    <strong>那条路上有河谷、有矿坑、有齿轮、有绿洲、有云阶、有雷塔。</strong><br>
+    你走完了全程。接下来要去哪儿，由你自己决定。<br>
+    <b>我在镜子里，等你带回新的故事。</b>
+  </div>
+</div>
+
+<div class="summary">
+  <h3>你在王座前收获了什么</h3>
+  <ul>
+    <li><strong>四步解法</strong>——读懂（看范围）→ 朴素（先跑通）→ 优化（估复杂度）→ 检验（测边界）。</li>
+    <li><strong>先朴素再优化</strong>——朴素解法能拿部分分，还能当"标准答案"对拍。</li>
+    <li><strong>四把优化刀</strong>——换数据结构、预处理、二分/倍增、递推/DP。</li>
+    <li><strong>换数据结构</strong>——列表查找 O(n) → 字典/集合查找 O(1)。</li>
+    <li><strong>预处理</strong>——前缀和让区间查询从 O(n) 降到 O(1)。</li>
+    <li><strong>数据范围提示</strong>——n ≤ 20 枚举；n ≤ 10⁵ 要 O(n log n) 以上。</li>
+    <li><strong>边界检验清单</strong>——空、单、同、大、负。</li>
+    <li><strong>用空间换时间</strong>——常见的合理取舍；但别让空间超标。</li>
+  </ul>
+</div>
+
+<div class="pager">
+  <a href="cpp-8-07.html"><div class="k">← 上一单元</div><div class="v">秤与沙漏 · 算法效率分析</div></a>
+  <a href="../index.html" target="_top" class="back"><div class="k">返回</div><div class="v">考纲之路 · 总目录</div></a>
+  <a href="cpp-1-01.html"><div class="k">回到起点 →</div><div class="v">英雄觉醒 · C++ 一级第 1 单元</div></a>
+</div>
+
+<div class="cta">
+  <h3>考纲之路，你走完了</h3>
+  <p>从一级到八级，<b>五十多个单元、上万个知识点</b>，你一步没落下。<br>
+  接下来，去扣哒世界里把这些知识真正用起来吧——
+  <b>代码是练出来的，不是看出来的。</b></p>
+  <a class="btn-go" href="https://codecombat.cn/" target="_blank" rel="noopener">加入扣哒世界，把这条考纲之路走一遍 →</a>
+</div>
+</div><!-- /container -->
+</div><!-- /page -->
+
+<script>
+const KEYWORDS = new Set([
+  "int", "long", "short", "unsigned", "signed", "float", "double", "char", "bool", "void",
+  "const", "if", "else", "for", "while", "do", "switch", "case", "default", "break",
+  "continue", "return", "goto", "struct", "class", "union", "enum", "using", "namespace",
+  "std", "main", "true", "false", "cin", "cout", "cerr", "endl", "string", "sizeof",
+  "include", "define", "new", "delete", "public", "private", "static", "inline", "nullptr"
+]);
+
+function esc(s){ return s.replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;'); }
+
+function highlight(src){
+  let out = '', i = 0;
+  const n = src.length;
+  while (i < n){
+    const c = src[i];
+    /* 预处理指令：#include / #define，整行只在行首生效 */
+    if (c === '#' && (i === 0 || src[i-1] === '\n')){
+      let j = i;
+      while (j < n && /[A-Za-z]/.test(src[j])) j++;
+      out += '<span class="kw">' + esc(src.slice(i, j)) + '</span>';
+      let k = src.indexOf('\n', j); if (k < 0) k = n;
+      if (j < k) out += '<span class="st">' + esc(src.slice(j, k)) + '</span>';
+      i = k; continue;
+    }
+    /* 行注释 // */
+    if (c === '/' && src[i+1] === '/'){
+      let j = src.indexOf('\n', i); if (j < 0) j = n;
+      out += '<span class="cm">' + esc(src.slice(i, j)) + '</span>';
+      i = j; continue;
+    }
+    /* 块注释 */
+    if (c === '/' && src[i+1] === '*'){
+      let j = src.indexOf('*/', i + 2); j = j < 0 ? n : j + 2;
+      out += '<span class="cm">' + esc(src.slice(i, j)) + '</span>';
+      i = j; continue;
+    }
+    /* 字符串与字符字面量 */
+    if (c === '"' || c === "'"){
+      let j = i + 1;
+      while (j < n && src[j] !== c){ if (src[j] === '\\') j++; j++; }
+      j = Math.min(j + 1, n);
+      out += '<span class="st">' + esc(src.slice(i, j)) + '</span>';
+      i = j; continue;
+    }
+    /* 数字 */
+    if (/[0-9]/.test(c)){
+      let j = i;
+      while (j < n && /[0-9.]/.test(src[j])) j++;
+      out += '<span class="nu">' + esc(src.slice(i, j)) + '</span>';
+      i = j; continue;
+    }
+    /* 标识符：关键字 / 函数名 / 普通名字 */
+    if (/[A-Za-z_]/.test(c)){
+      let j = i;
+      while (j < n && /[A-Za-z0-9_]/.test(src[j])) j++;
+      const w = src.slice(i, j);
+      if (KEYWORDS.has(w)) out += '<span class="kw">' + esc(w) + '</span>';
+      else if (src[j] === '(') out += '<span class="fn">' + esc(w) + '</span>';
+      else out += esc(w);
+      i = j; continue;
+    }
+    out += esc(c); i++;
+  }
+  return out;
+}
+
+document.querySelectorAll('.code-card pre code').forEach(block => {
+  block.innerHTML = highlight(block.textContent);
+});
+
+if (location.search.indexOf('expand') >= 0) {
+  document.querySelectorAll('details').forEach(d => d.open = true);
+}
+document.querySelectorAll('.sidebar-nav a').forEach(a => {
+  a.addEventListener('click', () => {
+    if (window.innerWidth <= 900) document.querySelector('.sidebar-nav').classList.remove('active');
+  });
+});
+</script>
+</body>
+</html>

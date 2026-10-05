@@ -1,0 +1,950 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="copyright" content="CodeCombat Inc. codecombat.cn">
+<title>王座前的岔数 · 计数原理 | 扣哒考级 · GESP C++ 八级</title>
+<style>
+  :root{
+    --primary:#2563eb; --primary-light:#4f8ff0; --primary-lighter:#eaf1fe; --primary-dark:#1b47a8;
+    --brand:#ff6b35; --brand-dark:#e8541f; --brand-soft:#fff3ec;
+    --night:#131c2b; --night-2:#1e2a3a; --gold:#f5b301;
+    --text:#242e3d; --dim:#68788f; --dim2:#93a2b6;
+    --bg:#ffffff; --bg-soft:#f7f9fd; --line:#e2e9f4; --sidebar:274px;
+    --code-bg:#131a26; --code-tx:#c8d3e0;
+    --code-kw:#c678dd; --code-st:#98c379; --code-nu:#d19a66; --code-cm:#5f7488; --code-fn:#e5c07b;
+  }
+  *{margin:0;padding:0;box-sizing:border-box}
+  html{scroll-behavior:smooth}
+  body{font-family:"PingFang SC","Microsoft YaHei","Segoe UI",-apple-system,sans-serif;line-height:1.9;color:var(--text);background:var(--bg);font-size:15.5px}
+  .sidebar-nav{position:fixed;top:0;left:0;width:var(--sidebar);height:100vh;overflow-y:auto;background:linear-gradient(180deg,#0c1626,#14243c);padding:14px 0 40px;z-index:100;border-right:3px solid var(--brand);transition:transform .3s ease}
+  .sidebar-nav::-webkit-scrollbar{width:5px}
+  .sidebar-nav::-webkit-scrollbar-thumb{background:var(--brand);border-radius:4px}
+  .sb-brand{display:flex;align-items:center;gap:10px;padding:10px 13px 12px;border-bottom:1px solid #233752;margin-bottom:8px}
+  .sidebar-nav a.sb-logo{display:flex;align-items:center;justify-content:center;flex-shrink:0;padding:0;border-left:none;transition:.2s}
+  .sb-logo:hover{transform:scale(1.08)}
+  .sb-logo img{height:34px;width:34px;display:block;object-fit:contain;border-radius:8px}
+  .sb-brand b{color:#f2f6fa;font-size:14px;letter-spacing:.5px;display:block;line-height:1.4}
+  .sb-brand span{color:#7f95ab;font-size:11.5px;display:block;line-height:1.4}
+  .nav-title{color:#ffb894;font-size:12px;font-weight:800;padding:10px 18px 6px;letter-spacing:1.2px}
+  .sidebar-nav a{display:block;color:#c3d0dc;text-decoration:none;padding:6px 18px;font-size:12.5px;line-height:1.55;border-left:3px solid transparent;transition:.18s}
+  .sidebar-nav a:hover{color:#fff;background:rgba(255,107,53,.16);border-left-color:var(--brand)}
+  .sidebar-nav a.nav-section{color:#ffb894;font-weight:700;font-size:13px;margin-top:11px;padding-top:10px;border-top:1px solid #233752}
+  .sidebar-nav a.nav-section:first-of-type{border-top:none;margin-top:0;padding-top:6px}
+  .sidebar-nav a.nav-sub{padding-left:30px;color:#93a8bc;font-size:12px}
+  .sidebar-nav a.nav-sub:hover{color:#fff}
+  .sb-back{margin:16px 14px 0;display:block;text-align:center;padding:9px;border-radius:9px;background:#1e304a;color:#a9c0d6 !important;font-size:12px;font-weight:700;border-left:none !important}
+  .sb-back:hover{background:var(--brand) !important;color:#fff !important}
+  .nav-toggle{display:none;position:fixed;top:14px;left:14px;z-index:120;background:var(--brand);color:#fff;border:none;border-radius:9px;padding:9px 13px;font-size:15px;cursor:pointer;box-shadow:0 4px 14px rgba(0,0,0,.25)}
+  .page{margin-left:var(--sidebar)}
+  .hero{position:relative;overflow:hidden;padding:44px 52px;color:#fff;background:linear-gradient(125deg,#0a1220 0%,#16294a 46%,#8a3a16 132%)}
+  .hero::after{content:"";position:absolute;right:-90px;top:-110px;width:400px;height:400px;border-radius:50%;background:radial-gradient(circle,rgba(245,179,1,.30),transparent 68%)}
+  .hero-top{display:flex;gap:36px;align-items:center;position:relative;z-index:2}
+  .hero-txt{flex:1;min-width:0}
+  .hero .crumb{font-size:11.5px;color:#ffb894;letter-spacing:1.5px;font-weight:700;margin-bottom:14px}
+  .hero h1{font-size:31px;font-weight:800;line-height:1.3;letter-spacing:.6px;margin-bottom:8px}
+  .hero h1 .sub{display:block;font-size:18px;font-weight:700;color:#ffd2b3;margin-top:6px;letter-spacing:.3px}
+  .hero .en{font-size:13px;color:#9db4c8;font-style:italic;margin-bottom:18px}
+  .hero .tags{display:flex;flex-wrap:wrap;gap:8px}
+  .tag{font-size:11.5px;padding:4px 12px;border-radius:20px;background:rgba(255,255,255,.12);border:1px solid rgba(255,255,255,.22);color:#e8f0f6;font-weight:600}
+  .tag.hot{background:rgba(255,107,53,.92);border-color:transparent;color:#fff}
+  .hero-card{flex-shrink:0;width:200px;text-align:center}
+  .hero-card .ava{width:148px;height:148px;border-radius:50%;object-fit:cover;object-position:top center;border:4px solid rgba(255,180,140,.6);box-shadow:0 14px 34px rgba(0,0,0,.45);background:#24344a}
+  .hero-card .nm{font-size:15px;font-weight:800;color:#fff;margin-top:10px}
+  .hero-card .ti{font-size:11.5px;color:#ffb894;margin-top:2px}
+  .container{max-width:1080px;margin:0 auto;padding:38px 52px 70px}
+  .lead{font-size:15.5px;line-height:2.05;color:#333f52;background:linear-gradient(120deg,#fff8f3,#f7fbf8);border-left:5px solid var(--brand);border-radius:0 14px 14px 0;padding:22px 26px;margin-bottom:32px}
+  .lead b{color:var(--brand-dark)}
+  .cast{display:flex;gap:16px;align-items:flex-start;border-radius:16px;padding:18px 22px;margin:24px 0}
+  .cast .ava{width:72px;height:72px;border-radius:50%;object-fit:cover;object-position:top center;flex-shrink:0;background:#e8eef5}
+  .cast .bubble{position:relative;font-size:14px;line-height:1.95;padding-top:2px;flex:1}
+  .cast .who{font-size:12px;font-weight:800;margin-bottom:5px;letter-spacing:.5px}
+  .cast.anya{background:var(--brand-soft);border:1px solid #ffdcc9}
+  .cast.anya .who{color:var(--brand-dark)}
+  .cast.anya .bubble{color:#5c4636}
+  .cast.duck{background:#fff5f5;border:1px solid #fbd5d5}
+  .cast.duck .who{color:#b91c1c}
+  .cast.duck .bubble{color:#5c4141}
+  .cast.teacher{background:linear-gradient(120deg,#f4f7fb,#ffffff);border:1px solid #dbe4f0}
+  .cast.teacher .who{color:#1e293b}
+  .cast.teacher .bubble{color:#3c4a5a}
+  .cast.hero{background:#f2f7fd;border:1px solid #cfe0f5}
+  .cast.hero .who{color:#1b47a8}
+  .cast.hero .bubble{color:#3a4658}
+  .goal-grid{display:grid;grid-template-columns:1fr 1fr;gap:16px;margin-bottom:36px}
+  .goal{border:1px solid var(--line);border-radius:15px;padding:19px 21px;background:#fff;box-shadow:0 4px 16px rgba(31,122,68,.05)}
+  .goal h4{font-size:14px;font-weight:800;margin-bottom:11px;display:flex;align-items:center;gap:8px;color:var(--primary-dark)}
+  .goal h4 .ic{width:22px;height:22px;border-radius:7px;background:var(--primary-lighter);display:flex;align-items:center;justify-content:center;font-size:12px}
+  .goal ul{list-style:none}
+  .goal li{font-size:13.5px;color:#48576b;line-height:1.9;padding-left:18px;position:relative}
+  .goal li::before{content:"▸";position:absolute;left:0;color:var(--primary);font-weight:800}
+  .goal.syllabus li::before{content:"✓"}
+  .section-header{margin:52px 0 24px;padding-bottom:12px;border-bottom:3px solid var(--brand);display:flex;align-items:baseline;gap:14px;flex-wrap:wrap}
+  .section-header h2{font-size:22px;font-weight:800;color:var(--night);letter-spacing:.4px}
+  .section-header .en-title{font-size:12px;color:var(--dim2);font-style:italic}
+  h3{font-size:17.5px;font-weight:800;margin:34px 0 14px;color:var(--night);display:flex;align-items:center;gap:10px}
+  h3::before{content:"";width:5px;height:17px;border-radius:3px;background:var(--brand);flex-shrink:0}
+  h4{font-size:15px;font-weight:800;margin:24px 0 10px;color:#2b4260}
+  p{margin:12px 0;color:#3a4658;line-height:2}
+  strong{color:var(--primary-dark)}
+  code.inline{background:var(--primary-lighter);color:var(--primary-dark);padding:2px 7px;border-radius:6px;font-family:"SFMono-Regular",Consolas,Menlo,monospace;font-size:.9em;font-weight:600}
+  .figure{margin:24px 0;text-align:center}
+  .figure svg.diagram{max-width:100%;height:auto;background:#fff;border:1px solid var(--line);border-radius:14px;padding:10px}
+  .figure .caption{font-size:12.5px;color:var(--dim2);margin-top:9px}
+  .pic{margin:26px 0;text-align:center}
+  .pic img{max-width:100%;border-radius:16px;box-shadow:0 10px 28px rgba(30,60,45,.15);display:block;margin:0 auto}
+  .pic figcaption{font-size:12.5px;color:var(--dim2);margin-top:9px}
+  .pic .ph{display:none}
+  .pic.missing img{display:none}
+  .pic.missing .ph{display:flex;flex-direction:column;align-items:center;justify-content:center;gap:9px;border:2px dashed #c9d9e8;border-radius:16px;background:linear-gradient(135deg,#f8fbfe,#eef6ff);padding:40px 26px;color:#7a8fa8}
+  .pic.missing .ph .fn{font-family:Consolas,monospace;font-size:12.5px;color:#2563eb;font-weight:700;word-break:break-all}
+  .pic.missing .ph .ds{font-size:12.5px;line-height:1.8;max-width:560px}
+  .box{border-radius:13px;padding:16px 20px;margin:20px 0;font-size:14px;line-height:1.95}
+  .box .lb{font-weight:800;margin-right:6px}
+  .info{background:#eef6ff;border-left:5px solid #3b82f6;color:#274768}
+  .info .lb{color:#1d4ed8}
+  .tip{background:#fff9ec;border-left:5px solid #f59e0b;color:#6b4e13}
+  .tip .lb{color:#b45309}
+  .remember{background:var(--primary-lighter);border-left:5px solid var(--primary);color:#1d3a6b}
+  .remember .lb{color:var(--primary-dark)}
+  .warn{background:#fef2f2;border-left:5px solid #ef4444;color:#7f2b2b}
+  .warn .lb{color:#b91c1c}
+  .code-card{margin:20px 0;border-radius:14px;overflow:hidden;box-shadow:0 10px 28px rgba(20,40,28,.20)}
+  .code-head{display:flex;align-items:center;gap:9px;background:#1a2434;padding:9px 14px}
+  .code-head .dot{width:10px;height:10px;border-radius:50%}
+  .code-head .d1{background:#ff5f57}.code-head .d2{background:#febc2e}.code-head .d3{background:#28c840}
+  .code-head .file{color:#8fa6c0;font-size:11.5px;font-family:Consolas,monospace;margin-left:6px}
+  .code-head .lang{margin-left:auto;font-size:10.5px;font-weight:800;color:#0d141f;background:#4f8ff0;padding:2px 9px;border-radius:6px;letter-spacing:.4px}
+  .code-card pre{background:var(--code-bg);padding:18px 20px;overflow-x:auto;margin:0;font-family:"SFMono-Regular",Consolas,"Courier New",monospace;font-size:13.5px;line-height:1.85}
+  .code-card pre::-webkit-scrollbar{height:8px}
+  .code-card pre::-webkit-scrollbar-thumb{background:#31445c;border-radius:4px}
+  .code-card code{color:var(--code-tx);white-space:pre}
+  .kw{color:var(--code-kw);font-weight:600}
+  .st{color:var(--code-st)}
+  .nu{color:var(--code-nu)}
+  .cm{color:var(--code-cm);font-style:italic}
+  .fn{color:var(--code-fn)}
+  .out{background:#0f1621;color:#7fb3f5;font-family:Consolas,monospace;font-size:13px;padding:12px 20px;border-top:1px solid #22304a}
+  .out b{color:#c9d6cd;font-weight:600;font-size:11.5px;letter-spacing:1px}
+  .out.err{color:#fca5a5}
+  table.styled{width:100%;border-collapse:collapse;margin:20px 0;font-size:13.5px;border-radius:12px;overflow:hidden;box-shadow:0 4px 16px rgba(31,122,68,.07)}
+  table.styled thead{background:var(--brand)}
+  table.styled th{color:#fff;padding:11px 14px;text-align:left;font-weight:700;font-size:13px}
+  table.styled td{padding:10px 14px;border-bottom:1px solid var(--line);color:#445266;vertical-align:top}
+  table.styled tbody tr:nth-child(even){background:var(--bg-soft)}
+  table.styled tbody tr:last-child td{border-bottom:none}
+  .level-card{border:1px solid var(--line);border-radius:16px;overflow:hidden;margin:22px 0;box-shadow:0 6px 22px rgba(31,122,68,.07)}
+  .level-card .lc-head{background:linear-gradient(100deg,#17283a,#8a3a16);color:#fff;padding:15px 22px;display:flex;align-items:center;gap:12px;flex-wrap:wrap}
+  .level-card .lc-head .n{font-size:12px;font-weight:800;background:rgba(255,255,255,.2);padding:3px 10px;border-radius:20px}
+  .level-card .lc-head h4{margin:0;color:#fff;font-size:16px}
+  .level-card .lc-head .go{margin-left:auto;font-size:11.5px;color:#ffd2b3}
+  .level-card .lc-body{padding:20px 24px;background:#fff}
+  .level-card .story{background:#f9fbfd;border-left:4px solid #93c5fd;border-radius:0 10px 10px 0;padding:13px 18px;margin:0 0 16px;font-size:14px;line-height:1.95;color:#3f5163}
+  .level-card .story b{color:#1d4ed8}
+  .btn-go{display:inline-flex;align-items:center;gap:8px;background:linear-gradient(135deg,var(--brand),var(--brand-dark));color:#fff;text-decoration:none;font-weight:800;font-size:13.5px;padding:10px 22px;border-radius:11px;box-shadow:0 8px 20px rgba(255,107,53,.32);transition:.2s}
+  .btn-go:hover{transform:translateY(-2px);box-shadow:0 12px 26px rgba(255,107,53,.42)}
+  .pit{border:1px solid #f6dede;border-radius:14px;overflow:hidden;margin:16px 0;background:#fff}
+  .pit .pt{display:flex;gap:12px;padding:14px 18px;background:#fffafa;align-items:flex-start}
+  .pit .x{width:26px;height:26px;border-radius:9px;background:#fee;color:#dc2626;display:flex;align-items:center;justify-content:center;font-weight:800;flex-shrink:0;font-size:13px}
+  .pit .t{font-size:13.5px;line-height:1.9;color:#5c4a4a;flex:1}
+  .pit .t b{color:#b91c1c}
+  .pit .duck{display:flex;gap:12px;padding:13px 18px;background:#fff5f5;border-top:1px dashed #f3d0d0;align-items:flex-start}
+  .pit .duck img{width:48px;height:48px;object-fit:contain;flex-shrink:0;margin-top:2px}
+  .pit .duck .dt{font-size:13.5px;line-height:1.9;color:#7a3b3b}
+  .pit .duck .dt b{color:#b91c1c}
+  .pit .fix{padding:12px 18px;background:#f2f7fd;border-top:1px dashed #cfe0f5;font-size:13.5px;color:#1d3a6b}
+  .pit .fix b{color:var(--primary-dark)}
+  .exam{border:1px solid #dfe7f5;border-radius:15px;margin:16px 0;overflow:hidden;background:#fff;box-shadow:0 4px 16px rgba(38,62,120,.06)}
+  .exam .eh{display:flex;align-items:center;gap:10px;padding:11px 18px;background:linear-gradient(100deg,#eef4ff,#f7faff);border-bottom:1px solid #e3ebf8;flex-wrap:wrap}
+  .exam .eh .src{font-size:11px;font-weight:800;color:#fff;background:#2563eb;padding:2.5px 10px;border-radius:20px}
+  .exam .eh .src.ori{background:#4f8ff0}
+  .exam .eh .tp{font-size:11.5px;color:#5b7ba8;font-weight:700}
+  .exam .eb{padding:16px 20px}
+  .exam .q{font-weight:700;font-size:14px;color:#1e2a3e;line-height:1.9;margin-bottom:10px}
+  .exam .opt{font-size:13.5px;color:#48576b;line-height:2.05;padding-left:6px}
+  .exam .opt i{font-style:normal;font-weight:800;color:var(--primary-dark);margin-right:7px}
+  .exam pre{margin:12px 0;background:#1b2a21;border-radius:10px;padding:14px 16px;overflow-x:auto;font-family:Consolas,monospace;font-size:13px;line-height:1.8;color:var(--code-tx)}
+  .exam details{margin-top:10px;border-top:1px dashed var(--line);padding-top:10px}
+  .exam summary{cursor:pointer;font-size:12.5px;font-weight:800;color:#2563eb;outline:none;user-select:none}
+  .exam details .ans{font-size:13.5px;color:#3a4658;line-height:1.95;margin-top:9px;background:var(--bg-soft);padding:13px 16px;border-radius:10px}
+  .exam details .ans b{color:var(--primary-dark)}
+  .exam details .ans .tagline{display:inline-block;font-size:11px;background:#e0f2fe;color:#0e7490;padding:1.5px 8px;border-radius:6px;font-weight:700;margin-right:6px}
+  .summary{margin:40px 0 20px;border-radius:18px;padding:26px 30px;background:linear-gradient(130deg,#fff8f3,#ffffff);border:1px solid #ffe0cf}
+  .summary h3{margin-top:0}
+  .summary ul{list-style:none;margin-top:10px}
+  .summary li{font-size:14px;line-height:2;color:#3d4d66;padding-left:24px;position:relative}
+  .summary li::before{content:"◆";position:absolute;left:0;color:var(--brand);font-size:11px;top:6px}
+  .pager{display:flex;gap:14px;margin-top:30px;flex-wrap:wrap}
+  .pager a{flex:1;min-width:200px;text-decoration:none;border:1px solid var(--line);border-radius:14px;padding:16px 20px;background:#fff;transition:.2s;display:block}
+  .pager a:hover{border-color:var(--brand);box-shadow:0 10px 26px rgba(255,107,53,.14);transform:translateY(-2px)}
+  .pager a .k{font-size:11px;color:var(--dim2);font-weight:700;letter-spacing:1px}
+  .pager a .v{font-size:14px;font-weight:800;color:var(--night);margin-top:5px}
+  .pager a.back{background:var(--brand-soft);border-color:transparent;text-align:center}
+  .pager a.back .v{color:var(--brand-dark)}
+  .cta{margin-top:26px;border-radius:20px;padding:30px 34px;color:#fff;position:relative;overflow:hidden;background:linear-gradient(120deg,#16202f,#2b3a52 46%,#a8431c 132%)}
+  .cta::after{content:"";position:absolute;right:-70px;bottom:-90px;width:280px;height:280px;border-radius:50%;background:radial-gradient(circle,rgba(255,140,80,.45),transparent 68%)}
+  .cta h3{color:#fff;margin:0 0 10px;position:relative;z-index:2}
+  .cta h3::before{background:var(--brand)}
+  .cta p{color:#d8e0ef;font-size:13.5px;margin:0 0 18px;position:relative;z-index:2;max-width:640px}
+  .cta .btn-go{position:relative;z-index:2}
+  @media(max-width:900px){
+    .sidebar-nav{transform:translateX(-100%)}
+    .sidebar-nav.active{transform:translateX(0)}
+    .nav-toggle{display:block}
+    .page{margin-left:0}
+    .hero{padding:70px 22px 34px}
+    .hero-top{flex-direction:column-reverse;text-align:center}
+    .hero-card{width:auto}
+    .container{padding:26px 20px 60px}
+    .goal-grid{grid-template-columns:1fr}
+  }
+</style>
+</head>
+<body>
+
+<button class="nav-toggle" onclick="document.querySelector('.sidebar-nav').classList.toggle('active')">&#9776;</button>
+
+<nav class="sidebar-nav">
+  <div class="sb-brand">
+    <a class="sb-logo" href="https://codecombat.cn/" target="_blank" rel="noopener" title="访问 CodeCombat 扣哒世界官网">
+      <img src="../assets/logo.png" alt="CodeCombat 扣哒世界">
+    </a>
+    <div><b>王座前的岔数</b><span>寂灭王座 · C++ 八级 第 1 单元</span></div>
+  </div>
+  <div class="nav-title">本单元目录</div>
+  <a href="#s0" class="nav-section">0　单元导语与目标</a>
+  <a href="#s0-1" class="nav-sub">0.1 学习目标</a>
+  <a href="#s0-2" class="nav-sub">0.2 考纲对照</a>
+  <a href="#s1" class="nav-section">1　两种最基本的计数</a>
+  <a href="#s1-1" class="nav-sub">1.1 加法原理管"选哪一类"</a>
+  <a href="#s1-2" class="nav-sub">1.2 两条原理一句话区分</a>
+  <a href="#s2" class="nav-section">2　加法原理：分类相加</a>
+  <a href="#s2-1" class="nav-sub">2.1 分类相加的典型例题</a>
+  <a href="#s2-2" class="nav-sub">2.2 用加法原理的前提</a>
+  <a href="#s3" class="nav-section">3　乘法原理：分步相乘</a>
+  <a href="#s3-1" class="nav-sub">3.1 分步相乘的典型例题</a>
+  <a href="#s3-2" class="nav-sub">3.2 画树形图最不容易错</a>
+  <a href="#s4" class="nav-section">4　两者怎么区分</a>
+  <a href="#s4-1" class="nav-sub">4.1 两条原理一起用</a>
+  <a href="#s5" class="nav-section">5　容斥原理初步</a>
+  <a href="#s5-1" class="nav-sub">5.1 容斥原理：加完再减掉重复</a>
+  <a href="#s5-2" class="nav-sub">5.2 容斥的关键</a>
+  <a href="#s6" class="nav-section">6　代码实战</a>
+  <a href="#s7" class="nav-section">7　常见陷阱</a>
+  <a href="#s8" class="nav-section">8　题目练习</a>
+  <a href="#s9" class="nav-section">9　本单元小结</a>
+  <a href="../index.html" target="_top" class="sb-back">返回考纲之路</a>
+</nav>
+
+<div class="page">
+
+<div class="hero">
+  <div class="hero-top">
+    <div class="hero-txt">
+      <div class="crumb">扣哒考级 · GESP C++ 八级 · 第 1 单元　|　寂灭王座 THE THRONE</div>
+      <h1>王座前的岔数
+        <span class="sub">计数原理</span>
+      </h1>
+      <div class="en">The Principles of Counting</div>
+      <div class="tags">        <span class="tag hot">考纲 · 计数原理</span>
+        <span class="tag">加法原理</span>
+        <span class="tag">乘法原理</span>
+        <span class="tag">容斥</span>
+        <span class="tag">分类与分步</span></div>
+    </div>
+    <div class="hero-card">
+      <img class="ava" src="../assets/avatars/hushbaum.webp" alt="贺舒曼" onerror="this.style.background='#24344a';this.src='../assets/heroes/hushbaum.webp'">
+      <div class="nm">贺舒曼</div>
+      <div class="ti">镜中先知 · 你的向导</div>
+    </div>
+  </div>
+</div>
+
+<div class="container">
+
+<div class="lead">
+  寂灭王座前是一条长廊，廊子每隔一段就分成两个岔口，
+  有的岔口再分、有的直接通向王座。<br>
+  你数了数，<b>短廊里有三个岔口，长廊里有五个</b>。守门人问：
+  <b>从这头到那头，一共有多少条不同的路？</b><br>
+  你还没答，贺舒曼已经开口了：先想清楚：这些岔口是<b>并列的</b>，还是<b>依次的</b>。
+</div>
+
+<div class="cast teacher">
+  <img class="ava" src="../assets/avatars/hushbaum.webp" alt="贺舒曼" onerror="this.style.display='none'">
+  <div class="bubble">
+    <div class="who">贺舒曼 · 镜中先知</div>
+    欢迎来到最后一级。八级考的是一门"数数的学问"——计数原理。<br>
+    <strong>说白了就是：把事情数清楚，不多不少。</strong><br>
+    听起来简单，但它是概率、组合、算法复杂度的地基。<br>
+    而这一单元只有两条规则，<b>把这两条分清楚，你就赢了一半。</b>
+  </div>
+</div>
+
+<figure class="pic">
+  <img src="../assets/illustrations/py-L8-01-01_throne_fork.webp" alt="王座前的岔数"
+       onerror="this.closest('.pic').classList.add('missing')">
+  <div class="ph">
+    <div class="fn">assets/illustrations/py-L8-01-01_throne_fork.webp</div>
+    <div class="ds">【配图位】幽暗长廊俯视图，廊道在每个岔口一分为二并延伸向深处的王座，金色暗纹沿路径流动；地砖上刻着数字与加号、乘号，象征两条计数原理。</div>
+  </div>
+  <figcaption>图 1：寂灭王座·王座前的岔数——今天要从这里开始</figcaption>
+</figure>
+
+<div class="section-header" id="s0">
+  <h2>0　单元导语与目标</h2>
+  <div class="en-title">Unit Overview</div>
+
+<h3 id="s0-1">0.1 学习目标</h3>
+</div>
+
+<div class="goal-grid">
+  <h3 id="s0-2">0.2 考纲对照</h3>
+
+<div class="goal">
+    <h4><span class="ic">1</span>学完这个单元，你将能……</h4>
+    <ul>
+      <li>说清加法原理与乘法原理的区别</li>
+      <li>判断一个问题该"分类"还是"分步"</li>
+      <li>用两条原理解决路径、搭配、编号问题</li>
+      <li>初步使用容斥原理解"至少"类问题</li>
+      <li>把计数过程翻译成程序</li>
+      <li>检验答案是否"不重不漏"</li>
+    </ul>
+  </div>
+  <div class="goal syllabus">
+    <h4><span class="ic">2</span>对标 GESP 考纲（C++ 八级）</h4>
+    <ul>
+      <li>掌握加法原理与乘法原理及其应用</li>
+      <li>理解分类与分步的区别，能正确选择计数方法</li>
+      <li>了解容斥原理的基本思想</li>
+      <li>考核目标：能解决简单的计数问题并编写验证程序</li>
+    </ul>
+  </div>
+</div>
+
+<div class="section-header" id="s1">
+  <h2>1　两种最基本的计数</h2>
+  <div class="en-title">Two Basic Principles</div>
+
+<h3 id="s1-1">1.1 加法原理管"选哪一类"</h3>
+</div>
+
+<figure class="figure">
+  <svg class="diagram" viewBox="0 0 860 270" role="img" aria-label="加法原理与乘法原理">
+    <text x="24" y="34" font-size="14" font-weight="bold" fill="#1f2937">走哪条路？分类相加　　怎么走完？分步相乘</text>
+
+    <rect x="50" y="58" width="370" height="184" rx="12" fill="#eaf1fe" stroke="#2563eb" stroke-width="2"/>
+    <text x="235" y="86" text-anchor="middle" font-size="12.5" fill="#1d4ed8" font-weight="bold">加法原理：分成几类，各类相加</text>
+    <circle cx="100" cy="150" r="20" fill="#fff" stroke="#2563eb" stroke-width="2"/>
+    <text x="100" y="156" text-anchor="middle" font-size="12" fill="#1d4ed8">起</text>
+    <circle cx="330" cy="150" r="20" fill="#fff" stroke="#2563eb" stroke-width="2"/>
+    <text x="330" y="156" text-anchor="middle" font-size="12" fill="#1d4ed8">终</text>
+    <path d="M122 140 L308 104" stroke="#4f8ff0" stroke-width="2.4"/>
+    <path d="M122 150 L308 150" stroke="#4f8ff0" stroke-width="2.4"/>
+    <path d="M122 160 L308 196" stroke="#4f8ff0" stroke-width="2.4"/>
+    <text x="215" y="112" text-anchor="middle" font-size="11.5" fill="#2563eb">路线一</text>
+    <text x="215" y="142" text-anchor="middle" font-size="11.5" fill="#2563eb">路线二</text>
+    <text x="215" y="192" text-anchor="middle" font-size="11.5" fill="#2563eb">路线三</text>
+    <text x="235" y="230" text-anchor="middle" font-size="12" fill="#1d4ed8">3 条路 = 1 + 1 + 1</text>
+
+    <rect x="446" y="58" width="360" height="184" rx="12" fill="#eaf1fe" stroke="#2563eb" stroke-width="2"/>
+    <text x="626" y="86" text-anchor="middle" font-size="12.5" fill="#1d4ed8" font-weight="bold">乘法原理：分成几步，步数相乘</text>
+    <circle cx="510" cy="150" r="18" fill="#fff" stroke="#2563eb" stroke-width="2"/>
+    <text x="510" y="156" text-anchor="middle" font-size="11.5" fill="#1d4ed8">起</text>
+    <circle cx="626" cy="150" r="18" fill="#fff" stroke="#2563eb" stroke-width="2"/>
+    <text x="626" y="156" text-anchor="middle" font-size="11.5" fill="#1d4ed8">中</text>
+    <circle cx="740" cy="150" r="18" fill="#fff" stroke="#2563eb" stroke-width="2"/>
+    <text x="740" y="156" text-anchor="middle" font-size="11.5" fill="#1d4ed8">终</text>
+    <path d="M530 150 L604 150" stroke="#4f8ff0" stroke-width="2.4"/>
+    <path d="M646 150 L718 150" stroke="#4f8ff0" stroke-width="2.4"/>
+    <text x="567" y="140" text-anchor="middle" font-size="11.5" fill="#2563eb">3 种走法</text>
+    <text x="683" y="140" text-anchor="middle" font-size="11.5" fill="#2563eb">2 种走法</text>
+    <text x="626" y="230" text-anchor="middle" font-size="12" fill="#1d4ed8">共 3 × 2 = 6 种走法</text>
+  </svg>
+  <div class="caption">图 2（SVG）：加法原理管"选哪一类"，乘法原理管"分几步做"</div>
+</figure>
+
+<h3 id="s1-2">1.2 两条原理一句话区分</h3>
+
+<div class="box remember">
+  <span class="lb">两条原理，一句话区分：</span><br>
+  <b>加法原理</b>：完成一件事有<b>几类办法</b>，各类之间<b>互不相干</b>，选其一即可 → <strong>各类相加</strong>。<br>
+  <b>乘法原理</b>：完成一件事需要<b>分几步</b>，每一步都<b>必须做</b> → <strong>各步相乘</strong>。<br>
+  <b>关键词：</b>"或者"→ 加法；"并且 / 先…再…"→ 乘法。
+</div>
+
+<div class="section-header" id="s2">
+  <h2>2　加法原理：分类相加</h2>
+  <div class="en-title">Addition Principle</div>
+
+<h3 id="s2-1">2.1 分类相加的典型例题</h3>
+</div>
+
+<div class="code-card">
+  <div class="code-head">
+    <span class="dot d1"></span><span class="dot d2"></span><span class="dot d3"></span>
+    <span class="file">典型例题</span>
+    <span class="lang">分析</span>
+  </div>
+  <pre><code>从王座前出发去议事厅，可以坐车、可以骑马、也可以走暗道：
+  坐车有 4 条线路
+  骑马有 3 条线路
+  暗道有 2 条线路
+
+问：一共有多少种走法？
+
+答：三类办法互不相干，选一种就行 → 4 + 3 + 2 = 9 种</code></pre>
+  <div class="out"><b>要点</b>　"或者"的关系，用加法；关键是<b>各类之间不能有重复</b></div>
+</div>
+
+<h3 id="s2-2">2.2 用加法原理的前提</h3>
+
+<div class="box warn">
+  <span class="lb">用加法原理的前提：</span>
+  <strong>各类办法之间必须"互不重叠"。</strong><br>
+  如果坐车的线路和骑马的线路有重合（同一条路两种方式都能走），直接相加就会<b>把重的那条数两遍</b>。<br>
+  <b>这时候就要用容斥原理——先加起来，再减掉重复的部分。</b>
+</div>
+
+<figure class="pic">
+  <img src="../assets/illustrations/py-L8-01-02_add_multiply_tree.webp" alt="分类相加与分步相乘"
+       onerror="this.closest('.pic').classList.add('missing')">
+  <div class="ph">
+    <div class="fn">assets/illustrations/py-L8-01-02_add_multiply_tree.webp</div>
+    <div class="ds">【配图位】王座前的岔道口：左边一条路分出三个并排的岔口（任选一条即可）——对应"分类相加"；右边一条路上依次设了三道门，必须一扇一扇依次通过——对应"分步相乘"；一名学徒站在路口，手里举着一棵分枝状的树形图。</div>
+  </div>
+  <figcaption>图 3：分类相加 vs 分步相乘</figcaption>
+</figure>
+
+<div class="section-header" id="s3">
+  <h2>3　乘法原理：分步相乘</h2>
+  <div class="en-title">Multiplication Principle</div>
+
+<h3 id="s3-1">3.1 分步相乘的典型例题</h3>
+</div>
+
+<div class="code-card">
+  <div class="code-head">
+    <span class="dot d1"></span><span class="dot d2"></span><span class="dot d3"></span>
+    <span class="file">典型例题</span>
+    <span class="lang">分析</span>
+  </div>
+  <pre><code>要造一顶王冠：先选底座，再选宝石，最后选刻字。
+
+  底座有 3 种选法
+  宝石有 5 种选法
+  刻字有 4 种选法
+
+问：一共能造出多少种不同的王冠？
+
+答：三步必须都做，每步的选择互相独立
+    → 3 × 5 × 4 = 60 种</code></pre>
+  <div class="out"><b>要点</b>　"先…再…最后…"的关系，用乘法；每一层的选择数可以不同</div>
+</div>
+
+<h3 id="s3-2">3.2 画树形图最不容易错</h3>
+
+<div class="box tip">
+  <span class="lb">画"树形图"最不容易错：</span>
+  第一步有 3 个分叉，每个分叉下面再分 5 个，每个再分 4 个——<br>
+  <strong>最后数一数树叶有多少片，就是答案。3 × 5 × 4 = 60 片。</strong><br>
+  拿不准用加法还是乘法时，<b>画个两层的小树形图，一眼就清楚了。</b>
+</div>
+
+<div class="section-header" id="s4">
+  <h2>4　两者怎么区分</h2>
+  <div class="en-title">Tell Them Apart</div>
+
+<h3 id="s4-1">4.1 两条原理一起用</h3>
+</div>
+
+<table class="styled">
+  <thead><tr><th>问题里的说法</th><th>用哪条原理</th><th>怎么做</th></tr></thead>
+  <tbody>
+    <tr><td>"<strong>或者</strong>"、"要么…要么…"</td><td>加法原理</td><td>分成几类，各类相加</td></tr>
+    <tr><td>"<strong>并且</strong>"、"先…再…"、"既要…又要…"</td><td>乘法原理</td><td>分成几步，步数相乘</td></tr>
+    <tr><td>"只有一种方式能完成"</td><td>两种都可能</td><td>看它是"一个选项"还是"一个步骤"</td></tr>
+    <tr><td>"至少…"、"最多…"</td><td>容斥 / 分类讨论</td><td>先按大类分，注意别漏别重</td></tr>
+  </tbody>
+</table>
+
+<div class="code-card">
+  <div class="code-head">
+    <span class="dot d1"></span><span class="dot d2"></span><span class="dot d3"></span>
+    <span class="file">两条原理一起用的例子</span>
+    <span class="lang">分析</span>
+  </div>
+  <pre><code>从 A 到 C：可以先到 B 再到 C（分步，用乘法）
+   A → B 有 2 条路，B → C 有 3 条路  →  2 × 3 = 6 条
+
+从 A 到 D：可以走 C 方向，也可以走 E 方向（分类，用加法）
+   走 C 方向有 6 条，走 E 方向有 5 条  →  6 + 5 = 11 条</code></pre>
+  <div class="out"><b>规律</b>　复杂的计数题，往往是"先分类、类内分步"——两层配合着用</div>
+</div>
+
+<div class="section-header" id="s5">
+  <h2>5　容斥原理初步</h2>
+  <div class="en-title">Inclusion-Exclusion</div>
+</div>
+
+<p>当两类里有"重复的部分"时，简单相加会把重复的算两遍。<strong>容斥原理就是：先加，再把重复的减掉。</strong></p>
+
+<h3 id="s5-1">5.1 容斥原理：加完再减掉重复</h3>
+
+<figure class="figure">
+  <svg class="diagram" viewBox="0 0 860 260" role="img" aria-label="容斥原理">
+    <text x="24" y="34" font-size="14" font-weight="bold" fill="#1f2937">两个圈：加起来，再减掉重叠的那一块</text>
+
+    <circle cx="300" cy="150" r="80" fill="#eaf1fe" stroke="#2563eb" stroke-width="2.2" opacity="0.85"/>
+    <circle cx="440" cy="150" r="80" fill="#eaf1fe" stroke="#2563eb" stroke-width="2.2" opacity="0.85"/>
+    <text x="250" y="146" text-anchor="middle" font-size="12.5" fill="#1d4ed8">会骑马</text>
+    <text x="250" y="168" text-anchor="middle" font-size="12.5" fill="#1d4ed8">18 人</text>
+    <text x="490" y="146" text-anchor="middle" font-size="12.5" fill="#1d4ed8">会射箭</text>
+    <text x="490" y="168" text-anchor="middle" font-size="12.5" fill="#1d4ed8">15 人</text>
+    <text x="370" y="146" text-anchor="middle" font-size="12" fill="#2563eb" font-weight="bold">都会</text>
+    <text x="370" y="168" text-anchor="middle" font-size="12" fill="#2563eb" font-weight="bold">6 人</text>
+
+    <rect x="570" y="76" width="256" height="150" rx="12" fill="#0f1621"/>
+    <text x="594" y="104" font-family="Consolas,monospace" font-size="12.5" fill="#e8c766">至少会一样的：</text>
+    <text x="594" y="132" font-family="Consolas,monospace" font-size="12.5" fill="#cfe0f5">18 + 15 - 6 = 27 人</text>
+    <text x="594" y="166" font-family="Consolas,monospace" font-size="12" fill="#93a2b6">加两次把"都会"的算重了</text>
+    <text x="594" y="192" font-family="Consolas,monospace" font-size="12" fill="#93a2b6">所以要减掉一次</text>
+    <text x="594" y="216" font-family="Consolas,monospace" font-size="12" fill="#4f8ff0">|A ∪ B| = |A| + |B| - |A ∩ B|</text>
+  </svg>
+  <div class="caption">图 4（SVG）：容斥原理——加完再减掉重复</div>
+</figure>
+
+<div class="code-card">
+  <div class="code-head">
+    <span class="dot d1"></span><span class="dot d2"></span><span class="dot d3"></span>
+    <span class="file">用程序验证计数</span>
+    <span class="lang">C++</span>
+  </div>
+  <pre><code>// 1 到 100 中，能被 3 或 5 整除的数有多少个？
+int byThree = 100 / 3;       // 33
+int byFive  = 100 / 5;       // 20
+int byBoth  = 100 / 15;      // 6   （能同时被 3 和 5 整除 = 被 15 整除）
+
+cout &lt;&lt; byThree + byFive - byBoth &lt;&lt; endl;    // 47
+
+// 用程序直接数一遍，验证答案
+int cnt = 0;
+for (int i = 1; i &lt;= 100; i++) {
+    if (i % 3 == 0 || i % 5 == 0) cnt = cnt + 1;
+}
+cout &lt;&lt; cnt &lt;&lt; endl;         // 47  —— 一致
+</code></pre>
+  <div class="out"><b>OUTPUT</b>　47　47</div>
+</div>
+
+<h3 id="s5-2">5.2 容斥的关键</h3>
+
+<div class="box remember">
+  <span class="lb">容斥的关键：先想清楚"重复了哪一部分"。</span>
+  两个集合：<code class="inline">|A ∪ B| = |A| + |B| - |A ∩ B|</code><br>
+  三个集合会稍复杂一些：<code class="inline">加单个、减两两、加三个</code>。<br>
+  <b>考试里能用程序验证一遍，是最稳的习惯。</b>
+</div>
+
+<figure class="pic">
+  <img src="../assets/illustrations/py-L8-01-03_inclusion_exclusion_scene.webp" alt="加完再减掉重复的部分"
+       onerror="this.closest('.pic').classList.add('missing')">
+  <div class="ph">
+    <div class="fn">assets/illustrations/py-L8-01-03_inclusion_exclusion_scene.webp</div>
+    <div class="ds">【配图位】王座前厅地面画着两个交叠发光的光圈，两个圈里的符文数量分别标在圈边，交叠那一小块被单独照亮、画了个"减号"；一名学徒把两块石板并在一起，又把交叠处那块拿开。</div>
+  </div>
+  <figcaption>图 5：加完再减掉重复的部分</figcaption>
+</figure>
+
+<div class="section-header" id="s6">
+  <h2>6　代码实战</h2>
+  <div class="en-title">Level Practice</div>
+</div>
+
+<div class="level-card">
+  <div class="lc-head"><span class="n">关卡</span><h4>无暇的宝石对</h4><span class="go">进入关卡 →</span></div>
+  <div class="lc-body">
+    <div class="story">
+      <b>故事：</b>王座的台阶上散着许多宝石，守门人要求你找出<b>成对</b>的两颗。<br>
+      怎么找？你问。<br>
+      <b>一个一个地配。</b>他说，第一颗跟后面每一颗都试一次，
+      再换第二颗……<b>这样才不会漏掉任何一对。</b>
+    </div>
+    
+    <p><strong>思路：</strong>外层固定一个，内层只跟<b>它后面</b>的比——这样每一对只被检查一次，
+    <b>正好对应"组合数"不重不漏的计数思想。</b></p><figure class="pic">
+      <img src="../assets/stages/py-L8-01-stage1_flawless_pair.webp" alt="无暇的宝石对 关卡截图"
+           onerror="this.closest('.pic').classList.add('missing')">
+      <div class="ph">
+        <div class="fn">assets/stages/py-L8-01-stage1_flawless_pair.webp</div>
+        <div class="ds">【关卡截图位】请把《无暇的宝石对》的游戏画面截图放到此处（放入 assets/stages/ 目录，文件名为 py-L8-01-stage1_flawless_pair.webp）。</div>
+      </div>
+      <figcaption>关卡实况：无暇的宝石对</figcaption>
+    </figure>
+    <div class="code-card">
+      <div class="code-head">
+        <span class="dot d1"></span><span class="dot d2"></span><span class="dot d3"></span>
+        <span class="file">重点示例：每一对只查一次</span>
+        <span class="lang">C++</span>
+      </div>
+      <pre><code>for (int i = 0; i &lt; array.size() - 1; i++) {
+    int elemI = array[i];
+    for (int j = i + 1; j &lt; array.size(); j++) {    // 只跟后面的比
+        int elemJ = array[j];
+        // 检查这一对是否满足条件
+    }
+}
+</code></pre>
+      <div class="out"><b>要点</b>　内层从 <code>i + 1</code> 开始，就避免了"自己和自己配"以及"重复配对"</div>
+    </div>
+    <div class="box info">
+      <span class="lb">为什么内层要从 i+1 开始？</span>
+      如果内层从 0 开始，那么 (1,3) 和 (3,1) 会被当成两对——<b>重复计数了。</b><br>
+      从 <code class="inline">i + 1</code> 开始，每对只在 i 较小时被查一次，<strong>总数正好是 n(n-1)/2。</strong><br>
+      <b>这个数字，就是"从 n 个里选 2 个"的组合数。</b>
+    </div>
+    <a class="btn-go" href="https://codecombat.cn/" target="_blank" rel="noopener">去扣哒世界闯这一关 →</a>
+  </div>
+</div>
+
+
+
+<div class="section-header" id="s7">
+  <h2>7　常见陷阱</h2>
+  <div class="en-title">Common Pitfalls</div>
+</div>
+
+<div class="cast duck">
+  <img class="ava" src="../assets/ducks/duck_nalfar.webp" alt="扣哒鸭" onerror="this.style.display='none'">
+  <div class="bubble">
+    <div class="who">扣哒鸭 · 调试官</div>
+    计数的错，全在"该加还是该乘"和"重复没重复"上。四条，条条都能让答案差一倍。
+  </div>
+</div>
+
+<div class="pit">
+  <div class="pt">
+    <div class="x">1</div>
+    <div class="t"><b>把"分步"当成"分类"，该乘的用了加。</b></div>
+  </div>
+  <div class="duck">
+    <img src="../assets/ducks/duck_zana.webp" alt="扣哒鸭" onerror="this.style.display='none'">
+    <div class="dt"><b>扣哒鸭：</b>判断标准很简单：<br>
+    <strong>这件事"只做一步就完成"→ 加法；"每一步都得做才完成"→ 乘法。</strong><br>
+    拿不准就画树形图，数叶子。</div>
+  </div>
+  <div class="fix"><b>正确做法：</b>看是否"每步都必须做"</div>
+</div>
+
+<div class="pit">
+  <div class="pt">
+    <div class="x">2</div>
+    <div class="t"><b>分类时漏掉一类，或两类有重叠。</b></div>
+  </div>
+  <div class="duck">
+    <img src="../assets/ducks/duck_naria.webp" alt="扣哒鸭" onerror="this.style.display='none'">
+    <div class="dt"><b>扣哒鸭：</b>用加法原理前，先问自己：<br>
+    <strong>这些类加起来，是不是刚好覆盖了所有情况？有没有哪两种能同时成立？</strong><br>
+    重叠了就要用容斥减掉。</div>
+  </div>
+  <div class="fix"><b>正确做法：</b>检查"覆盖面"和"是否互斥"</div>
+</div>
+
+<div class="pit">
+  <div class="pt">
+    <div class="x">3</div>
+    <div class="t"><b>配对时重复计数。</b>内层也从 0 开始循环。</div>
+  </div>
+  <div class="duck">
+    <img src="../assets/ducks/duck_hattori.webp" alt="扣哒鸭" onerror="this.style.display='none'">
+    <div class="dt"><b>扣哒鸭：</b>(A,B) 和 (B,A) 是同一对！<br>
+    <strong>内层必须从 <code>i + 1</code> 开始</strong>，这样每对只数一次。</div>
+  </div>
+  <div class="fix"><b>正确写法：</b><code class="inline">for (int j = i + 1; j &lt; array.size(); j++)</code></div>
+</div>
+
+<div class="pit">
+  <div class="pt">
+    <div class="x">4</div>
+    <div class="t"><b>容斥时忘了减重复部分。</b></div>
+  </div>
+  <div class="duck">
+    <img src="../assets/ducks/duck_senick.webp" alt="扣哒鸭" onerror="this.style.display='none'">
+    <div class="dt"><b>扣哒鸭：</b>"能被 3 <b>或</b> 5 整除"——<br>
+    直接写 33 + 20 会把 <b>15、30、45…</b> 这些数数两遍。<br>
+    <strong>必须再减去"能被 15 整除"的 6 个。</strong></div>
+  </div>
+  <div class="fix"><b>正确做法：</b><code class="inline">33 + 20 - 6 = 47</code></div>
+</div>
+
+<div class="section-header" id="s8">
+  <h2>8　题目练习</h2>
+  <div class="en-title">Practice</div>
+</div>
+
+<p>第 1 题改编自 2026 年 9 月 · C++ 八级 第 1 题，其余为原创练习题。</p>
+
+<div class="exam">
+  <div class="eh"><span class="src">改编自 2026 年 9 月 · C++ 八级 · 第 1 题</span><span class="tp">单选题</span></div>
+  <div class="eb">
+    <div class="q">寂灭王座的门牌要用数字 <code class="inline">0、1、2、3、4、5</code> 组成<strong>没有重复数字</strong>的三位数，且这个三位数<strong>能被 3 整除</strong>。<br>这样的三位数共有（　　）个。</div>
+    <div class="opt"><i>A.</i>36　　<i>B.</i>40　　<i>C.</i>44　　<i>D.</i>48</div>
+    <details><summary>查看答案与详解</summary>
+      <div class="ans"><b>答案：B</b>。先<strong>分类</strong>挑数字、再<strong>分步</strong>排位置 —— 这正是加法原理与乘法原理的配合。<br>① <b>挑数字</b>：能被 3 整除要求各位数字之和是 3 的倍数。把 6 个数字按余数分三组：{0, 3}、{1, 4}、{2, 5}，只有"三组各取一个"才能凑成 3 的倍数，共 2 × 2 × 2 = 8 组数字。<br>② <b>排位置</b>（首位不能是 0）：<br>· 含 0 的 4 组：每组 3! − 2! = 4 个 → 16 个；<br>· 不含 0 的 4 组：每组 3! = 6 个 → 24 个。<br>合计 16 + 24 = <b>40</b>。<br><b>易错点：</b>忘了"首位不能为 0"，直接 8 × 6 = 48 就会错选 D。<br><b>两步走：</b>先用整除法则<b>挑数字</b>（组合），再按"首位特殊"<b>排位置</b>（排列）。<br><span class="tagline">对应小节</span>1 加法原理与乘法原理。</div>
+    </details>
+  </div>
+</div>
+<div class="exam">
+  <div class="eh"><span class="src ori">原创练习题</span><span class="tp">单选题</span></div>
+  <div class="eb">
+    <div class="q">从甲地到乙地，可以坐火车（5 个车次）、坐汽车（3 个班次）或坐飞机（2 个航班）。
+    共有多少种走法？（　　）</div>
+    <div class="opt"><i>A.</i>10　　<i>B.</i>30　　<i>C.</i>3　　<i>D.</i>7</div>
+    <details><summary>查看答案与详解</summary>
+      <div class="ans"><b>答案：A</b>。三类办法<b>互不相干</b>，选一种就能到达——
+      这是<b>加法原理</b>：5 + 3 + 2 = <b>10</b> 种。<br>
+      <b>易错点：</b>B 项 30 是把它们乘起来了，那是"三种都要坐一遍"的情况。<br>
+      <span class="tagline">对应小节</span>2 加法原理。</div>
+    </details>
+  </div>
+</div>
+
+<div class="exam">
+  <div class="eh"><span class="src ori">原创练习题</span><span class="tp">单选题</span></div>
+  <div class="eb">
+    <div class="q">做一套服装需要先选上衣（4 种）、再选裤子（3 种）、最后选鞋子（2 种）。
+    共有多少种不同的搭配？（　　）</div>
+    <div class="opt"><i>A.</i>9　　<i>B.</i>24　　<i>C.</i>12　　<i>D.</i>6</div>
+    <details><summary>查看答案与详解</summary>
+      <div class="ans"><b>答案：B</b>。三步<b>都必须做</b>，这是<b>乘法原理</b>：
+      4 × 3 × 2 = <b>24</b> 种。<br>
+      <b>对比上一题：</b>"或者"用加法，"先…再…"用乘法。<br>
+      <span class="tagline">对应小节</span>3 乘法原理。</div>
+    </details>
+  </div>
+</div>
+
+<div class="exam">
+  <div class="eh"><span class="src ori">原创练习题</span><span class="tp">判断题</span></div>
+  <div class="eb">
+    <div class="q">使用加法原理时，要求各类办法之间互不重叠。（　　）</div>
+    <details><summary>查看答案与详解</summary>
+      <div class="ans"><b>答案：正确（√）</b>。如果两类有重叠，重叠部分会被数两遍。<br>
+      <b>补救办法：</b>用容斥原理减去重复的部分，或者<b>重新划分</b>成互斥的类别。<br>
+      <span class="tagline">对应小节</span>2 加法原理；5 容斥原理初步。</div>
+    </details>
+  </div>
+</div>
+
+<div class="exam">
+  <div class="eh"><span class="src ori">原创练习题</span><span class="tp">单选题</span></div>
+  <div class="eb">
+    <div class="q">1 到 100 中，能被 4 或 6 整除的数有多少个？（　　）</div>
+    <div class="opt"><i>A.</i>41　　<i>B.</i>33　　<i>C.</i>25　　<i>D.</i>8</div>
+    <details><summary>查看答案与详解</summary>
+      <div class="ans"><b>答案：B</b>。用容斥原理：<br>
+      能被 4 整除：100 ÷ 4 = <b>25</b> 个；<br>
+      能被 6 整除：100 ÷ 6 = <b>16</b> 个；<br>
+      能同时被 4 和 6 整除 = 能被 12 整除：100 ÷ 12 = <b>8</b> 个。<br>
+      结果：25 + 16 - 8 = <b>33</b> 个。<br>
+      <b>关键：</b>"同时被 4 和 6 整除"等价于"能被 lcm(4,6) = 12 整除"。<br>
+      <span class="tagline">对应小节</span>5 容斥原理初步。</div>
+    </details>
+  </div>
+</div>
+
+<div class="exam">
+  <div class="eh"><span class="src ori">原创练习题</span><span class="tp">单选题</span></div>
+  <div class="eb">
+    <div class="q">从 5 个同学中选出 2 个组成一队，共有多少种选法？（　　）</div>
+    <div class="opt"><i>A.</i>10　　<i>B.</i>20　　<i>C.</i>25　　<i>D.</i>5</div>
+    <details><summary>查看答案与详解</summary>
+      <div class="ans"><b>答案：A</b>。用 <code class="inline">n(n-1)/2</code> 计算：
+      5 × 4 ÷ 2 = <b>10</b> 种。<br>
+      <b>为什么要除以 2？</b>因为 (甲,乙) 和 (乙,甲) 是<b>同一队</b>。<br>
+      <b>也可以理解为：</b>第一个位置有 5 种选法，第二个位置剩下 4 种，
+      但因为顺序无所谓，要除以 2。<br>
+      <span class="tagline">对应小节</span>6 代码实战。</div>
+    </details>
+  </div>
+</div>
+
+<div class="exam">
+  <div class="eh"><span class="src ori">原创练习题</span><span class="tp">判断题</span></div>
+  <div class="eb">
+    <div class="q">"从 3 件上衣和 4 条裤子中挑一套穿"应该用乘法原理，答案是 12。（　　）</div>
+    <details><summary>查看答案与详解</summary>
+      <div class="ans"><b>答案：正确（√）</b>。一套衣服 = 一件上衣 + 一条裤子，
+      <b>两样都必须选</b>，是"分步"关系。<br>
+      所以用乘法：3 × 4 = <b>12</b> 种搭配。<br>
+      <span class="tagline">对应小节</span>3 乘法原理。</div>
+    </details>
+  </div>
+</div>
+
+<div class="exam">
+  <div class="eh"><span class="src ori">原创练习题</span><span class="tp">编程题</span></div>
+  <div class="eb">
+    <div class="q">题目要求：用程序验证"1 到 100 中能被 3 或 5 整除的数有 47 个"，
+    并统计其中"只被 3 整除"（不被 5 整除）的数有多少个。</div>
+    <details><summary>查看参考答案与要点</summary>
+      <div class="ans">
+<pre style="margin:0;background:#131a26;color:#c8d3e0;border-radius:10px;padding:14px 16px">// ① 理论计算
+int byThree = 100 / 3;          // 33
+int byFive  = 100 / 5;          // 20
+int byBoth  = 100 / 15;         // 6
+cout &lt;&lt; "能被 3 或 5 整除：" &lt;&lt; byThree + byFive - byBoth &lt;&lt; endl;     // 47
+
+// ② 程序暴力验证
+int cntOr = 0;
+int cntOnlyThree = 0;
+for (int i = 1; i &lt;= 100; i++) {
+    if (i % 3 == 0 || i % 5 == 0)
+        cntOr = cntOr + 1;
+    if (i % 3 == 0 &amp;&amp; i % 5 != 0)
+        cntOnlyThree = cntOnlyThree + 1;
+}
+
+cout &lt;&lt; "程序数出来：" &lt;&lt; cntOr &lt;&lt; endl;                 // 47
+cout &lt;&lt; "只被 3 整除：" &lt;&lt; cntOnlyThree &lt;&lt; endl;          // 27</pre>
+      <p style="margin-top:12px"><b>输出：</b>47、47、27<br>
+      <b>要点：</b><br>
+      ① 理论值 <code class="inline">33 + 20 - 6 = 47</code> 与程序结果一致；<br>
+      ② "只被 3 整除"的条件是 <code class="inline">i % 3 == 0 and i % 5 != 0</code>——<b>注意是 and 加不等于</b>；<br>
+      ③ 也可以用 <code class="inline">33 - 6 = 27</code> 直接算出来；<br>
+      ④ <b>考试时用程序验证理论答案，是很实用的检查手段。</b><br>
+      <span class="tagline">对应小节</span>5 容斥原理初步。</p>
+      </div>
+    </details>
+  </div>
+</div>
+
+<div class="section-header" id="s9">
+  <h2>9　本单元小结</h2>
+  <div class="en-title">Unit Summary</div>
+</div>
+
+<div class="cast teacher">
+  <img class="ava" src="../assets/avatars/hushbaum.webp" alt="贺舒曼" onerror="this.style.display='none'">
+  <div class="bubble">
+    <div class="who">贺舒曼 · 镜中先知</div>
+    三句话记住计数原理：<br>
+    <strong>一、"或者"用加法，各类互不重叠。</strong><br>
+    <strong>二、"先…再…"用乘法，每步都必须做。</strong><br>
+    <strong>三、有重叠就用容斥：先加，再减掉重复的。</strong><br>
+    拿不准的时候，<b>画一棵树形图，数叶子</b>——永远不会错。
+  </div>
+</div>
+
+<div class="summary">
+  <h3>你在王座长廊里收获了什么</h3>
+  <ul>
+    <li><strong>加法原理</strong>——完成一件事有几类互斥办法，各类相加。</li>
+    <li><strong>乘法原理</strong>——完成一件事需要分几步，各步相乘。</li>
+    <li><strong>怎么判断</strong>——"或者"→ 加法；"先…再… / 并且"→ 乘法。</li>
+    <li><strong>画树形图</strong>——拿不准时画两三层，数叶子最直观。</li>
+    <li><strong>容斥原理</strong>——<code class="inline">|A ∪ B| = |A| + |B| - |A ∩ B|</code>。</li>
+    <li><strong>整除计数</strong>——"同时被 a 和 b 整除"就是"能被 lcm(a,b) 整除"。</li>
+    <li><strong>组合计数</strong>——从 n 个里选 2 个有 <code class="inline">n(n-1)/2</code> 种；内层循环从 <code class="inline">i+1</code> 开始就能不重不漏。</li>
+  </ul>
+</div>
+
+<div class="pager">
+  <a href="cpp-7-05.html"><div class="k">← 上一级别</div><div class="v">铭牌索引库 · C++ 七级第 5 单元</div></a>
+  <a href="../index.html" target="_top" class="back"><div class="k">返回</div><div class="v">考纲之路 · 总目录</div></a>
+  <a href="cpp-8-02.html"><div class="k">下一单元 →</div><div class="v">王冠的排列 · 排列与组合</div></a>
+</div>
+
+<div class="cta">
+  <h3>下一站：王冠的排列</h3>
+  <p>王冠上有五个空位，要塞进五颗不同的宝石。
+  <b>顺序变了，王冠就不一样。</b>下一单元，我们正式学排列与组合。</p>
+  <a class="btn-go" href="https://codecombat.cn/" target="_blank" rel="noopener">加入扣哒世界，把这条考纲之路走一遍 →</a>
+</div>
+</div><!-- /container -->
+</div><!-- /page -->
+
+<script>
+const KEYWORDS = new Set([
+  "int", "long", "short", "unsigned", "signed", "float", "double", "char", "bool", "void",
+  "const", "if", "else", "for", "while", "do", "switch", "case", "default", "break",
+  "continue", "return", "goto", "struct", "class", "union", "enum", "using", "namespace",
+  "std", "main", "true", "false", "cin", "cout", "cerr", "endl", "string", "sizeof",
+  "include", "define", "new", "delete", "public", "private", "static", "inline", "nullptr"
+]);
+
+function esc(s){ return s.replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;'); }
+
+function highlight(src){
+  let out = '', i = 0;
+  const n = src.length;
+  while (i < n){
+    const c = src[i];
+    /* 预处理指令：#include / #define，整行只在行首生效 */
+    if (c === '#' && (i === 0 || src[i-1] === '\n')){
+      let j = i;
+      while (j < n && /[A-Za-z]/.test(src[j])) j++;
+      out += '<span class="kw">' + esc(src.slice(i, j)) + '</span>';
+      let k = src.indexOf('\n', j); if (k < 0) k = n;
+      if (j < k) out += '<span class="st">' + esc(src.slice(j, k)) + '</span>';
+      i = k; continue;
+    }
+    /* 行注释 // */
+    if (c === '/' && src[i+1] === '/'){
+      let j = src.indexOf('\n', i); if (j < 0) j = n;
+      out += '<span class="cm">' + esc(src.slice(i, j)) + '</span>';
+      i = j; continue;
+    }
+    /* 块注释 */
+    if (c === '/' && src[i+1] === '*'){
+      let j = src.indexOf('*/', i + 2); j = j < 0 ? n : j + 2;
+      out += '<span class="cm">' + esc(src.slice(i, j)) + '</span>';
+      i = j; continue;
+    }
+    /* 字符串与字符字面量 */
+    if (c === '"' || c === "'"){
+      let j = i + 1;
+      while (j < n && src[j] !== c){ if (src[j] === '\\') j++; j++; }
+      j = Math.min(j + 1, n);
+      out += '<span class="st">' + esc(src.slice(i, j)) + '</span>';
+      i = j; continue;
+    }
+    /* 数字 */
+    if (/[0-9]/.test(c)){
+      let j = i;
+      while (j < n && /[0-9.]/.test(src[j])) j++;
+      out += '<span class="nu">' + esc(src.slice(i, j)) + '</span>';
+      i = j; continue;
+    }
+    /* 标识符：关键字 / 函数名 / 普通名字 */
+    if (/[A-Za-z_]/.test(c)){
+      let j = i;
+      while (j < n && /[A-Za-z0-9_]/.test(src[j])) j++;
+      const w = src.slice(i, j);
+      if (KEYWORDS.has(w)) out += '<span class="kw">' + esc(w) + '</span>';
+      else if (src[j] === '(') out += '<span class="fn">' + esc(w) + '</span>';
+      else out += esc(w);
+      i = j; continue;
+    }
+    out += esc(c); i++;
+  }
+  return out;
+}
+
+document.querySelectorAll('.code-card pre code').forEach(block => {
+  block.innerHTML = highlight(block.textContent);
+});
+
+if (location.search.indexOf('expand') >= 0) {
+  document.querySelectorAll('details').forEach(d => d.open = true);
+}
+document.querySelectorAll('.sidebar-nav a').forEach(a => {
+  a.addEventListener('click', () => {
+    if (window.innerWidth <= 900) document.querySelector('.sidebar-nav').classList.remove('active');
+  });
+});
+</script>
+</body>
+</html>

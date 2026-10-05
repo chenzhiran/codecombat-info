@@ -1,0 +1,1324 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="copyright" content="CodeCombat Inc. codecombat.cn">
+<title>最省水的路线 · 贪心算法与复杂度估算 | 扣哒考级 · GESP C++ 五级</title>
+<style>
+  :root{
+    --primary:#2563eb; --primary-light:#4f8ff0; --primary-lighter:#eaf1fe; --primary-dark:#1b47a8;
+    --brand:#ff6b35; --brand-dark:#e8541f; --brand-soft:#fff3ec;
+    --night:#131c2b; --night-2:#1e2a3a; --gold:#f5b301;
+    --text:#242e3d; --dim:#68788f; --dim2:#93a2b6;
+    --bg:#ffffff; --bg-soft:#f7f9fd; --line:#e2e9f4; --sidebar:274px;
+    --code-bg:#131a26; --code-tx:#c8d3e0;
+    --code-kw:#c678dd; --code-st:#98c379; --code-nu:#d19a66; --code-cm:#5f7488; --code-fn:#e5c07b;
+  }
+  *{margin:0;padding:0;box-sizing:border-box}
+  html{scroll-behavior:smooth}
+  body{font-family:"PingFang SC","Microsoft YaHei","Segoe UI",-apple-system,sans-serif;line-height:1.9;color:var(--text);background:var(--bg);font-size:15.5px}
+  .sidebar-nav{position:fixed;top:0;left:0;width:var(--sidebar);height:100vh;overflow-y:auto;background:linear-gradient(180deg,#0c1626,#14243c);padding:14px 0 40px;z-index:100;border-right:3px solid var(--brand);transition:transform .3s ease}
+  .sidebar-nav::-webkit-scrollbar{width:5px}
+  .sidebar-nav::-webkit-scrollbar-thumb{background:var(--brand);border-radius:4px}
+  .sb-brand{display:flex;align-items:center;gap:10px;padding:10px 13px 12px;border-bottom:1px solid #233752;margin-bottom:8px}
+  .sidebar-nav a.sb-logo{display:flex;align-items:center;justify-content:center;flex-shrink:0;padding:0;border-left:none;transition:.2s}
+  .sb-logo:hover{transform:scale(1.08)}
+  .sb-logo img{height:34px;width:34px;display:block;object-fit:contain;border-radius:8px}
+  .sb-brand b{color:#f2f6fa;font-size:14px;letter-spacing:.5px;display:block;line-height:1.4}
+  .sb-brand span{color:#7f95ab;font-size:11.5px;display:block;line-height:1.4}
+  .nav-title{color:#ffb894;font-size:12px;font-weight:800;padding:10px 18px 6px;letter-spacing:1.2px}
+  .sidebar-nav a{display:block;color:#c3d0dc;text-decoration:none;padding:6px 18px;font-size:12.5px;line-height:1.55;border-left:3px solid transparent;transition:.18s}
+  .sidebar-nav a:hover{color:#fff;background:rgba(255,107,53,.16);border-left-color:var(--brand)}
+  .sidebar-nav a.nav-section{color:#ffb894;font-weight:700;font-size:13px;margin-top:11px;padding-top:10px;border-top:1px solid #233752}
+  .sidebar-nav a.nav-section:first-of-type{border-top:none;margin-top:0;padding-top:6px}
+  .sidebar-nav a.nav-sub{padding-left:30px;color:#93a8bc;font-size:12px}
+  .sidebar-nav a.nav-sub:hover{color:#fff}
+  .sb-back{margin:16px 14px 0;display:block;text-align:center;padding:9px;border-radius:9px;background:#1e304a;color:#a9c0d6 !important;font-size:12px;font-weight:700;border-left:none !important}
+  .sb-back:hover{background:var(--brand) !important;color:#fff !important}
+  .nav-toggle{display:none;position:fixed;top:14px;left:14px;z-index:120;background:var(--brand);color:#fff;border:none;border-radius:9px;padding:9px 13px;font-size:15px;cursor:pointer;box-shadow:0 4px 14px rgba(0,0,0,.25)}
+  .page{margin-left:var(--sidebar)}
+  .hero{position:relative;overflow:hidden;padding:44px 52px;color:#fff;background:linear-gradient(125deg,#0a1220 0%,#16294a 46%,#8a3a16 132%)}
+  .hero::after{content:"";position:absolute;right:-90px;top:-110px;width:400px;height:400px;border-radius:50%;background:radial-gradient(circle,rgba(245,179,1,.30),transparent 68%)}
+  .hero-top{display:flex;gap:36px;align-items:center;position:relative;z-index:2}
+  .hero-txt{flex:1;min-width:0}
+  .hero .crumb{font-size:11.5px;color:#ffb894;letter-spacing:1.5px;font-weight:700;margin-bottom:14px}
+  .hero h1{font-size:31px;font-weight:800;line-height:1.3;letter-spacing:.6px;margin-bottom:8px}
+  .hero h1 .sub{display:block;font-size:18px;font-weight:700;color:#ffd2b3;margin-top:6px;letter-spacing:.3px}
+  .hero .en{font-size:13px;color:#9db4c8;font-style:italic;margin-bottom:18px}
+  .hero .tags{display:flex;flex-wrap:wrap;gap:8px}
+  .tag{font-size:11.5px;padding:4px 12px;border-radius:20px;background:rgba(255,255,255,.12);border:1px solid rgba(255,255,255,.22);color:#e8f0f6;font-weight:600}
+  .tag.hot{background:rgba(255,107,53,.92);border-color:transparent;color:#fff}
+  .hero-card{flex-shrink:0;width:200px;text-align:center}
+  .hero-card .ava{width:148px;height:148px;border-radius:50%;object-fit:cover;object-position:top center;border:4px solid rgba(255,180,140,.6);box-shadow:0 14px 34px rgba(0,0,0,.45);background:#24344a}
+  .hero-card .nm{font-size:15px;font-weight:800;color:#fff;margin-top:10px}
+  .hero-card .ti{font-size:11.5px;color:#ffb894;margin-top:2px}
+  .container{max-width:1080px;margin:0 auto;padding:38px 52px 70px}
+  .lead{font-size:15.5px;line-height:2.05;color:#333f52;background:linear-gradient(120deg,#fff8f3,#f7fbf8);border-left:5px solid var(--brand);border-radius:0 14px 14px 0;padding:22px 26px;margin-bottom:32px}
+  .lead b{color:var(--brand-dark)}
+  .cast{display:flex;gap:16px;align-items:flex-start;border-radius:16px;padding:18px 22px;margin:24px 0}
+  .cast .ava{width:72px;height:72px;border-radius:50%;object-fit:cover;object-position:top center;flex-shrink:0;background:#e8eef5}
+  .cast .bubble{position:relative;font-size:14px;line-height:1.95;padding-top:2px;flex:1}
+  .cast .who{font-size:12px;font-weight:800;margin-bottom:5px;letter-spacing:.5px}
+  .cast.anya{background:var(--brand-soft);border:1px solid #ffdcc9}
+  .cast.anya .who{color:var(--brand-dark)}
+  .cast.anya .bubble{color:#5c4636}
+  .cast.duck{background:#fff5f5;border:1px solid #fbd5d5}
+  .cast.duck .who{color:#b91c1c}
+  .cast.duck .bubble{color:#5c4141}
+  .cast.teacher{background:linear-gradient(120deg,#f4f7fb,#ffffff);border:1px solid #dbe4f0}
+  .cast.teacher .who{color:#1e293b}
+  .cast.teacher .bubble{color:#3c4a5a}
+  .cast.hero{background:#f2f7fd;border:1px solid #cfe0f5}
+  .cast.hero .who{color:#1b47a8}
+  .cast.hero .bubble{color:#3a4658}
+  .goal-grid{display:grid;grid-template-columns:1fr 1fr;gap:16px;margin-bottom:36px}
+  .goal{border:1px solid var(--line);border-radius:15px;padding:19px 21px;background:#fff;box-shadow:0 4px 16px rgba(31,122,68,.05)}
+  .goal h4{font-size:14px;font-weight:800;margin-bottom:11px;display:flex;align-items:center;gap:8px;color:var(--primary-dark)}
+  .goal h4 .ic{width:22px;height:22px;border-radius:7px;background:var(--primary-lighter);display:flex;align-items:center;justify-content:center;font-size:12px}
+  .goal ul{list-style:none}
+  .goal li{font-size:13.5px;color:#48576b;line-height:1.9;padding-left:18px;position:relative}
+  .goal li::before{content:"▸";position:absolute;left:0;color:var(--primary);font-weight:800}
+  .goal.syllabus li::before{content:"✓"}
+  .section-header{margin:52px 0 24px;padding-bottom:12px;border-bottom:3px solid var(--brand);display:flex;align-items:baseline;gap:14px;flex-wrap:wrap}
+  .section-header h2{font-size:22px;font-weight:800;color:var(--night);letter-spacing:.4px}
+  .section-header .en-title{font-size:12px;color:var(--dim2);font-style:italic}
+  h3{font-size:17.5px;font-weight:800;margin:34px 0 14px;color:var(--night);display:flex;align-items:center;gap:10px}
+  h3::before{content:"";width:5px;height:17px;border-radius:3px;background:var(--brand);flex-shrink:0}
+  h4{font-size:15px;font-weight:800;margin:24px 0 10px;color:#2b4260}
+  p{margin:12px 0;color:#3a4658;line-height:2}
+  strong{color:var(--primary-dark)}
+  code.inline{background:var(--primary-lighter);color:var(--primary-dark);padding:2px 7px;border-radius:6px;font-family:"SFMono-Regular",Consolas,Menlo,monospace;font-size:.9em;font-weight:600}
+  .figure{margin:24px 0;text-align:center}
+  .figure svg.diagram{max-width:100%;height:auto;background:#fff;border:1px solid var(--line);border-radius:14px;padding:10px}
+  .figure .caption{font-size:12.5px;color:var(--dim2);margin-top:9px}
+  .pic{margin:26px 0;text-align:center}
+  .pic img{max-width:100%;border-radius:16px;box-shadow:0 10px 28px rgba(30,60,45,.15);display:block;margin:0 auto}
+  .pic figcaption{font-size:12.5px;color:var(--dim2);margin-top:9px}
+  .pic .ph{display:none}
+  .pic.missing img{display:none}
+  .pic.missing .ph{display:flex;flex-direction:column;align-items:center;justify-content:center;gap:9px;border:2px dashed #c9d9e8;border-radius:16px;background:linear-gradient(135deg,#f8fbfe,#eef6ff);padding:40px 26px;color:#7a8fa8}
+  .pic.missing .ph .fn{font-family:Consolas,monospace;font-size:12.5px;color:#2563eb;font-weight:700;word-break:break-all}
+  .pic.missing .ph .ds{font-size:12.5px;line-height:1.8;max-width:560px}
+  .box{border-radius:13px;padding:16px 20px;margin:20px 0;font-size:14px;line-height:1.95}
+  .box .lb{font-weight:800;margin-right:6px}
+  .info{background:#eef6ff;border-left:5px solid #3b82f6;color:#274768}
+  .info .lb{color:#1d4ed8}
+  .tip{background:#fff9ec;border-left:5px solid #f59e0b;color:#6b4e13}
+  .tip .lb{color:#b45309}
+  .remember{background:var(--primary-lighter);border-left:5px solid var(--primary);color:#1d3a6b}
+  .remember .lb{color:var(--primary-dark)}
+  .warn{background:#fef2f2;border-left:5px solid #ef4444;color:#7f2b2b}
+  .warn .lb{color:#b91c1c}
+  .code-card{margin:20px 0;border-radius:14px;overflow:hidden;box-shadow:0 10px 28px rgba(20,40,28,.20)}
+  .code-head{display:flex;align-items:center;gap:9px;background:#1a2434;padding:9px 14px}
+  .code-head .dot{width:10px;height:10px;border-radius:50%}
+  .code-head .d1{background:#ff5f57}.code-head .d2{background:#febc2e}.code-head .d3{background:#28c840}
+  .code-head .file{color:#8fa6c0;font-size:11.5px;font-family:Consolas,monospace;margin-left:6px}
+  .code-head .lang{margin-left:auto;font-size:10.5px;font-weight:800;color:#0d141f;background:#4f8ff0;padding:2px 9px;border-radius:6px;letter-spacing:.4px}
+  .code-card pre{background:var(--code-bg);padding:18px 20px;overflow-x:auto;margin:0;font-family:"SFMono-Regular",Consolas,"Courier New",monospace;font-size:13.5px;line-height:1.85}
+  .code-card pre::-webkit-scrollbar{height:8px}
+  .code-card pre::-webkit-scrollbar-thumb{background:#31445c;border-radius:4px}
+  .code-card code{color:var(--code-tx);white-space:pre}
+  .kw{color:var(--code-kw);font-weight:600}
+  .st{color:var(--code-st)}
+  .nu{color:var(--code-nu)}
+  .cm{color:var(--code-cm);font-style:italic}
+  .fn{color:var(--code-fn)}
+  .out{background:#0f1621;color:#7fb3f5;font-family:Consolas,monospace;font-size:13px;padding:12px 20px;border-top:1px solid #22304a}
+  .out b{color:#c9d6cd;font-weight:600;font-size:11.5px;letter-spacing:1px}
+  .out.err{color:#fca5a5}
+  table.styled{width:100%;border-collapse:collapse;margin:20px 0;font-size:13.5px;border-radius:12px;overflow:hidden;box-shadow:0 4px 16px rgba(31,122,68,.07)}
+  table.styled thead{background:var(--brand)}
+  table.styled th{color:#fff;padding:11px 14px;text-align:left;font-weight:700;font-size:13px}
+  table.styled td{padding:10px 14px;border-bottom:1px solid var(--line);color:#445266;vertical-align:top}
+  table.styled tbody tr:nth-child(even){background:var(--bg-soft)}
+  table.styled tbody tr:last-child td{border-bottom:none}
+  .level-card{border:1px solid var(--line);border-radius:16px;overflow:hidden;margin:22px 0;box-shadow:0 6px 22px rgba(31,122,68,.07)}
+  .level-card .lc-head{background:linear-gradient(100deg,#17283a,#8a3a16);color:#fff;padding:15px 22px;display:flex;align-items:center;gap:12px;flex-wrap:wrap}
+  .level-card .lc-head .n{font-size:12px;font-weight:800;background:rgba(255,255,255,.2);padding:3px 10px;border-radius:20px}
+  .level-card .lc-head h4{margin:0;color:#fff;font-size:16px}
+  .level-card .lc-head .go{margin-left:auto;font-size:11.5px;color:#ffd2b3}
+  .level-card .lc-body{padding:20px 24px;background:#fff}
+  .level-card .story{background:#f9fbfd;border-left:4px solid #93c5fd;border-radius:0 10px 10px 0;padding:13px 18px;margin:0 0 16px;font-size:14px;line-height:1.95;color:#3f5163}
+  .level-card .story b{color:#1d4ed8}
+  .btn-go{display:inline-flex;align-items:center;gap:8px;background:linear-gradient(135deg,var(--brand),var(--brand-dark));color:#fff;text-decoration:none;font-weight:800;font-size:13.5px;padding:10px 22px;border-radius:11px;box-shadow:0 8px 20px rgba(255,107,53,.32);transition:.2s}
+  .btn-go:hover{transform:translateY(-2px);box-shadow:0 12px 26px rgba(255,107,53,.42)}
+  .pit{border:1px solid #f6dede;border-radius:14px;overflow:hidden;margin:16px 0;background:#fff}
+  .pit .pt{display:flex;gap:12px;padding:14px 18px;background:#fffafa;align-items:flex-start}
+  .pit .x{width:26px;height:26px;border-radius:9px;background:#fee;color:#dc2626;display:flex;align-items:center;justify-content:center;font-weight:800;flex-shrink:0;font-size:13px}
+  .pit .t{font-size:13.5px;line-height:1.9;color:#5c4a4a;flex:1}
+  .pit .t b{color:#b91c1c}
+  .pit .duck{display:flex;gap:12px;padding:13px 18px;background:#fff5f5;border-top:1px dashed #f3d0d0;align-items:flex-start}
+  .pit .duck img{width:48px;height:48px;object-fit:contain;flex-shrink:0;margin-top:2px}
+  .pit .duck .dt{font-size:13.5px;line-height:1.9;color:#7a3b3b}
+  .pit .duck .dt b{color:#b91c1c}
+  .pit .fix{padding:12px 18px;background:#f2f7fd;border-top:1px dashed #cfe0f5;font-size:13.5px;color:#1d3a6b}
+  .pit .fix b{color:var(--primary-dark)}
+  .exam{border:1px solid #dfe7f5;border-radius:15px;margin:16px 0;overflow:hidden;background:#fff;box-shadow:0 4px 16px rgba(38,62,120,.06)}
+  .exam .eh{display:flex;align-items:center;gap:10px;padding:11px 18px;background:linear-gradient(100deg,#eef4ff,#f7faff);border-bottom:1px solid #e3ebf8;flex-wrap:wrap}
+  .exam .eh .src{font-size:11px;font-weight:800;color:#fff;background:#2563eb;padding:2.5px 10px;border-radius:20px}
+  .exam .eh .src.ori{background:#8b5cf6}
+  .exam .eh .tp{font-size:11.5px;color:#5b7ba8;font-weight:700}
+  .exam .eb{padding:16px 20px}
+  .exam .q{font-weight:700;font-size:14px;color:#1e2a3e;line-height:1.9;margin-bottom:10px}
+  .exam .opt{font-size:13.5px;color:#48576b;line-height:2.05;padding-left:6px}
+  .exam .opt i{font-style:normal;font-weight:800;color:var(--primary-dark);margin-right:7px}
+  .exam pre{margin:12px 0;background:#1b2a21;border-radius:10px;padding:14px 16px;overflow-x:auto;font-family:Consolas,monospace;font-size:13px;line-height:1.8;color:var(--code-tx)}
+  .exam details{margin-top:10px;border-top:1px dashed var(--line);padding-top:10px}
+  .exam summary{cursor:pointer;font-size:12.5px;font-weight:800;color:#2563eb;outline:none;user-select:none}
+  .exam details .ans{font-size:13.5px;color:#3a4658;line-height:1.95;margin-top:9px;background:var(--bg-soft);padding:13px 16px;border-radius:10px}
+  .exam details .ans b{color:var(--primary-dark)}
+  .exam details .ans .tagline{display:inline-block;font-size:11px;background:#e0f2fe;color:#0e7490;padding:1.5px 8px;border-radius:6px;font-weight:700;margin-right:6px}
+  .summary{margin:40px 0 20px;border-radius:18px;padding:26px 30px;background:linear-gradient(130deg,#fff8f3,#ffffff);border:1px solid #ffe0cf}
+  .summary h3{margin-top:0}
+  .summary ul{list-style:none;margin-top:10px}
+  .summary li{font-size:14px;line-height:2;color:#3d4d66;padding-left:24px;position:relative}
+  .summary li::before{content:"◆";position:absolute;left:0;color:var(--brand);font-size:11px;top:6px}
+  .pager{display:flex;gap:14px;margin-top:30px;flex-wrap:wrap}
+  .pager a{flex:1;min-width:200px;text-decoration:none;border:1px solid var(--line);border-radius:14px;padding:16px 20px;background:#fff;transition:.2s;display:block}
+  .pager a:hover{border-color:var(--brand);box-shadow:0 10px 26px rgba(255,107,53,.14);transform:translateY(-2px)}
+  .pager a .k{font-size:11px;color:var(--dim2);font-weight:700;letter-spacing:1px}
+  .pager a .v{font-size:14px;font-weight:800;color:var(--night);margin-top:5px}
+  .pager a.back{background:var(--brand-soft);border-color:transparent;text-align:center}
+  .pager a.back .v{color:var(--brand-dark)}
+  .cta{margin-top:26px;border-radius:20px;padding:30px 34px;color:#fff;position:relative;overflow:hidden;background:linear-gradient(120deg,#16202f,#2b3a52 46%,#a8431c 132%)}
+  .cta::after{content:"";position:absolute;right:-70px;bottom:-90px;width:280px;height:280px;border-radius:50%;background:radial-gradient(circle,rgba(255,140,80,.45),transparent 68%)}
+  .cta h3{color:#fff;margin:0 0 10px;position:relative;z-index:2}
+  .cta h3::before{background:var(--brand)}
+  .cta p{color:#d8e0ef;font-size:13.5px;margin:0 0 18px;position:relative;z-index:2;max-width:640px}
+  .cta .btn-go{position:relative;z-index:2}
+  @media(max-width:900px){
+    .sidebar-nav{transform:translateX(-100%)}
+    .sidebar-nav.active{transform:translateX(0)}
+    .nav-toggle{display:block}
+    .page{margin-left:0}
+    .hero{padding:70px 22px 34px}
+    .hero-top{flex-direction:column-reverse;text-align:center}
+    .hero-card{width:auto}
+    .container{padding:26px 20px 60px}
+    .goal-grid{grid-template-columns:1fr}
+  }
+</style>
+</head>
+<body>
+
+<button class="nav-toggle" onclick="document.querySelector('.sidebar-nav').classList.toggle('active')">&#9776;</button>
+
+<nav class="sidebar-nav">
+  <div class="sb-brand">
+    <a class="sb-logo" href="https://codecombat.cn/" target="_blank" rel="noopener" title="访问 CodeCombat 扣哒世界官网">
+      <img src="../assets/logo.png" alt="CodeCombat 扣哒世界">
+    </a>
+    <div><b>最省水的路线</b><span>星砂绿洲 · C++ 五级 第 8 单元</span></div>
+  </div>
+  <div class="nav-title">本单元目录</div>
+
+  <a href="#s0" class="nav-section">0　单元导语与目标</a>
+  <a href="#s0-1" class="nav-sub">0.1 学习目标</a>
+  <a href="#s0-2" class="nav-sub">0.2 考纲对照</a>
+  <a href="#s1" class="nav-section">1　什么是贪心</a>
+  <a href="#s1-1" class="nav-sub">1.1 每一步都选眼前最好的</a>
+  <a href="#s1-2" class="nav-sub">1.2 贪心需要的两个前提</a>
+  <a href="#s2" class="nav-section">2　活动安排问题</a>
+  <a href="#s2-1" class="nav-sub">2.1 按结束时间排序</a>
+  <a href="#s2-2" class="nav-sub">2.2 为什么这样选最优</a>
+  <a href="#s3" class="nav-section">3　最大连续子段和</a>
+  <a href="#s3-1" class="nav-sub">3.1 边走边记</a>
+  <a href="#s3-2" class="nav-sub">3.2 代码与递推式</a>
+  <a href="#s4" class="nav-section">4　贪心不是万能的</a>
+  <a href="#s4-1" class="nav-sub">4.1 找零钱的陷阱</a>
+  <a href="#s4-2" class="nav-sub">4.2 什么时候会失败</a>
+  <a href="#s5" class="nav-section">5　复杂度估算</a>
+  <a href="#s5-1" class="nav-sub">5.1 从代码里数出来</a>
+  <a href="#s5-2" class="nav-sub">5.2 常见量级对照表</a>
+  <a href="#s6" class="nav-section">6　代码实战</a>
+  <a href="#s7" class="nav-section">7　常见陷阱</a>
+  <a href="#s8" class="nav-section">8　题目练习</a>
+  <a href="#s9" class="nav-section">9　本单元小结</a>
+
+  <a href="../index.html" target="_top" class="sb-back">返回考纲之路</a>
+</nav>
+
+<div class="page">
+
+<div class="hero">
+  <div class="hero-top">
+    <div class="hero-txt">
+      <div class="crumb">扣哒考级 · GESP C++ 五级 · 第 8 单元　|　星砂绿洲 STARDUST OASIS</div>
+      <h1>最省水的路线
+        <span class="sub">贪心算法与复杂度估算</span>
+      </h1>
+      <div class="en">Greedy &amp; Complexity</div>
+      <div class="tags">        <span class="tag hot">考纲 · 贪心</span>
+        <span class="tag">局部最优</span>
+        <span class="tag">活动安排</span>
+        <span class="tag">复杂度估算</span>
+        <span class="tag">O(n log n)</span></div>
+    </div>
+    <div class="hero-card">
+      <img class="ava" src="../assets/avatars/senick.webp" alt="塞尼克" onerror="this.style.background='#24344a';this.src='../assets/heroes/senick.webp'">
+      <div class="nm">塞尼克</div>
+      <div class="ti">沙海向导 · 你的向导</div>
+    </div>
+  </div>
+</div>
+
+<div class="container">
+
+<div class="lead">
+  运水队停在了一处岔路口——<b>前方有三条路，通到三处不同的水源。</b><br>
+  队首的向导举起水囊，眯着眼比了比距离，<strong>然后指向最近的那一处。</strong><br>
+  你有点疑惑：<b>不看看整体路线吗？万一绕远反而更省呢？</b><br>
+  塞尼克摇摇头：这条路上，<strong>每次选最近的那处，最后就是最省水的走法。</strong><br>
+  你愣了一下：<b>……原来"每一步都选最好的"，有时候真的就对了。</b>
+</div>
+
+<div class="cast senick">
+  <img class="ava" src="../assets/avatars/senick.webp" alt="塞尼克" onerror="this.style.display='none'">
+  <div class="bubble">
+    <div class="who">塞尼克 · 沙海向导</div>
+    这是五级的最后一课。它讲两件事：<br>
+    <strong>一是贪心——一种"只看眼前"的解题策略；二是复杂度估算——怎么一眼看出一段代码要跑多久。</strong><br>
+    <b>而贪心最需要小心的地方是：它对某些问题管用，对另一些问题会给出错误答案。</b>
+  </div>
+</div>
+
+<figure class="pic">
+  <img src="../assets/illustrations/py-L5-08-01_water_route.webp" alt="最省水的路线"
+       onerror="this.closest('.pic').classList.add('missing')">
+  <div class="ph">
+    <div class="fn">assets/illustrations/py-L5-08-01_water_route.webp</div>
+    <div class="ds">【配图位】黄昏的沙丘之间，运水队停在一处岔路口：前方三条支路分别通向远处三处绿洲，路面上留有细细的足迹；队首的向导举起水囊，正眯眼比量三条路的远近，身后骆驼队顺着最短的那条支路前进；远处几个营地的水缸由近到远依次亮起微弱的光，天边是暖橙色的落日。</div>
+  </div>
+  <figcaption>图 1：星砂绿洲·最省水的路线——今天要从这里开始</figcaption>
+</figure>
+
+<!-- ============ 0 ============ -->
+<div class="section-header" id="s0">
+  <h2>0　单元导语与目标</h2>
+  <div class="en-title">Unit Overview</div>
+</div>
+
+<h3 id="s0-1">0.1 学习目标</h3>
+<div class="goal-grid">
+  <div class="goal">
+    <h4><span class="ic">1</span>学完这个单元，你将能……</h4>
+    <ul>
+      <li>说清"贪心"选的是什么</li>
+      <li>判断一个问题能不能用贪心</li>
+      <li>用贪心解决活动安排问题</li>
+      <li>写出最大连续子段和的解法</li>
+      <li>举出一个"贪心会失败"的例子</li>
+      <li>看代码估算时间复杂度</li>
+    </ul>
+  </div>
+  <div class="goal syllabus">
+    <h4><span class="ic">2</span>对标 GESP 考纲（C++ 五级）</h4>
+    <ul>
+      <li>理解贪心算法的思想与适用条件</li>
+      <li>掌握经典贪心问题的解法与排序策略</li>
+      <li>理解贪心并非总能得到全局最优解</li>
+      <li>掌握时间复杂度的估算方法</li>
+      <li>考核目标：能判断贪心策略是否正确、能从代码估出复杂度</li>
+    </ul>
+  </div>
+</div>
+
+<h3 id="s0-2">0.2 考纲对照</h3>
+<table class="styled">
+  <thead><tr><th>本单元小节</th><th>对应考纲条目</th><th>真题常考形式</th></tr></thead>
+  <tbody>
+    <tr><td>1　什么是贪心</td><td>贪心的思想</td><td>贪心的两个前提是什么</td></tr>
+    <tr><td>2　活动安排问题</td><td>经典贪心</td><td>该按什么排序、选哪个（必考）</td></tr>
+    <tr><td>3　最大连续子段和</td><td>贪心/递推的应用</td><td>给一组数，算出结果</td></tr>
+    <tr><td>4　贪心不是万能的</td><td>贪心的局限</td><td>去找零钱的例子（必考）</td></tr>
+    <tr><td>5　复杂度估算</td><td>时间复杂度</td><td>从几层循环看出量级</td></tr>
+  </tbody>
+</table>
+
+<!-- ============ 1 ============ -->
+<div class="section-header" id="s1">
+  <h2>1　什么是贪心</h2>
+  <div class="en-title">What Is Greedy</div>
+</div>
+
+<h3 id="s1-1">1.1 每一步都选眼前最好的</h3>
+
+<div class="box remember">
+  <span class="lb">贪心算法的思路，一句话就够：</span>
+  <b>在每一步，都选择<strong>当前看起来最好</strong>的那一个——
+  而且<strong>选完之后绝不反悔、绝不回头</strong>。</b><br>
+  <b>它不去"通盘考虑"，也不去"退回来换一条路"。</b>
+  <strong>走一步看一步，一步比一步更接近答案。</strong><br>
+  <b>它的最大优点就是"快"——</b>
+  <strong>通常只要排个序、再扫一遍，就能得出结论。</strong>
+</div>
+
+<div class="code-card">
+  <div class="code-head">
+    <span class="dot d1"></span><span class="dot d2"></span><span class="dot d3"></span>
+    <span class="file">贪心 vs 枚举：两种截然不同的做法</span>
+    <span class="lang">TEXT</span>
+  </div>
+  <pre><code>【枚举】把所有的可能都试一遍，再挑最好的
+   缺点：可能慢得离谱（指数级）
+
+【动态规划】把中间结果存起来，一步步推
+   缺点：不容易想，状态转移方程常常很难写
+
+【贪心】每一步都选眼前最好的，选完就不管了
+   优点：快、代码短
+   缺点：不一定对啊！
+
+关键问题是：什么样的题，贪心能得到正确答案？
+这就是下面两节要回答的事。</code></pre>
+  <div class="out"><b>贪心是"最短的路"</b>　
+  <b>但它只有在满足特定条件时，才保证通向正确答案</b></div>
+</div>
+
+<h3 id="s1-2">1.2 贪心需要的两个前提</h3>
+
+<div class="box remember">
+  <span class="lb">贪心要成立，必须满足两个条件：</span>
+  <b>① 贪心选择性质</b>——<strong>每一步的局部最优选择，一定能通向全局最优解。</strong>
+  也就是说"当下选最好的"这个决定，<b>永远不会让你后悔</b>。<br>
+  <b>② 最优子结构</b>——<strong>做出了这次选择之后，剩下的问题仍然是"同样形状的、更小的问题"。</strong><br>
+  <b>两个条件都满足，贪心才能保证给出正确答案。</b><br>
+  <strong>而这两个条件恰恰是"证明起来很难"的——所以贪心题的正确答案，
+  往往要先想清楚为什么。</strong>
+</div>
+
+<div class="box tip">
+  <span class="lb">打个比方：</span>
+  贪心就像<b>走山路时"每次都挑最平缓的那一步"</b>。<br>
+  <b>在一条一直向上的缓坡上，这么走一定能登顶。</b><br>
+  <strong>但如果山路中间有个坑、需要先下坡再上坡呢？
+  每次都挑"往上走"的那一步，就会卡在原地动不了。</strong><br>
+  <b>这就是贪心"选完不反悔"的代价。</b>
+</div>
+
+<!-- ============ 2 ============ -->
+<div class="section-header" id="s2">
+  <h2>2　活动安排问题</h2>
+  <div class="en-title">Activity Selection</div>
+</div>
+
+<h3 id="s2-1">2.1 按结束时间排序</h3>
+
+<div class="code-card">
+  <div class="code-head">
+    <span class="dot d1"></span><span class="dot d2"></span><span class="dot d3"></span>
+    <span class="file">问题：一间教室，最多能安排几场活动？</span>
+    <span class="lang">TEXT</span>
+  </div>
+  <pre><code>有若干场活动，每场都有开始时间和结束时间。
+一间教室同一时刻只能有一场活动，求最多能安排几场。
+
+【直觉上的几种贪心策略，只有一种是对的】
+
+  ✘ 每次选开始时间最早的
+     ——可能选了一场从早到晚占满全天的活动，把别的全挤掉了
+
+  ✘ 每次选持续时间最短的
+     ——可能选了一场 12:00~12:10 的活动，
+       而它前后各有一场大活动都挤不进去了
+
+  ✘ 每次选参与人数最少的
+     ——人数和"能排几场"根本没关系
+
+  ✔ 按结束时间从早到晚排序，
+    依次选择"与已选活动不冲突"的活动
+
+为什么这个对？——见下一节。</code></pre>
+  <div class="out"><b>正确答案</b>　
+  <b>按 <code>end</code>（结束时间）升序排序，贪心地选"开始时间 ≥ 上一个的结束时间"的活动</b></div>
+</div>
+
+<div class="code-card">
+  <div class="code-head">
+    <span class="dot d1"></span><span class="dot d2"></span><span class="dot d3"></span>
+    <span class="file">活动安排的代码</span>
+    <span class="lang">C++</span>
+  </div>
+  <pre><code>struct Activity { int start, end; };
+
+bool cmp(const Activity &amp;x, const Activity &amp;y) {
+    return x.end &lt; y.end;              // ★ 按结束时间升序
+}
+
+sort(act, act + n, cmp);               // 先排序
+
+int cnt = 0, lastEnd = -1;             // lastEnd：上一场活动的结束时间
+for (int i = 0; i &lt; n; i++) {
+    if (act[i].start &gt;= lastEnd) {     // ★ 不冲突
+        cnt++;
+        lastEnd = act[i].end;          // 更新"上一场的结束时间"
+    }
+}
+cout &lt;&lt; cnt &lt;&lt; endl;</code></pre>
+  <div class="out"><b>排序 <code>O(n log n)</code> + 扫描 <code>O(n)</code></b>　
+  <b>总复杂度 <code>O(n log n)</code></b>——<strong>又快又简单</strong></div>
+</div>
+
+<h3 id="s2-2">2.2 为什么这样选最优</h3>
+
+<div class="box tip">
+  <span class="lb">核心直觉："结束得越早，给后面留的地方越多。"</span>
+  <b>假设我们已经在候选里找了"结束时间最早"的那一场 A。</b><br>
+  <b>那任何一组最优解，都可以把它换掉——</b>
+  <strong>而且换掉之后方案不会变差。</strong><br>
+  <b>理由：</b>设最优解里的第一场是 B。
+  <strong>因为 A 是所有活动里结束最早的，所以 A 结束的时间 ≤ B 结束的时间。</strong><br>
+  <strong>把 B 换成 A 之后，第一场结束得更早——
+  留给后面活动的空余时间只会变多，绝不会变少。</strong><br>
+  <b>所以"选 A"绝不会吃亏，这就是"贪心选择性质"的证明。</b>
+</div>
+
+<div class="box remember">
+  <span class="lb">这一节的通用教训：</span>
+  <b>同一道贪心题，策略可能有好几种，但往往只有一种是正确的。</b><br>
+  <b>"选开始最早的"、"选最短的"、"选人数最少的"——听起来都挺合理，却都是错的。</b><br>
+  <strong>所以做贪心题时，一定要能说清"为什么这样选不会吃亏"，
+  而不是凭感觉挑一个看起来顺眼的。</strong>
+</div>
+
+<figure class="figure">
+  <svg class="diagram" viewBox="0 0 830 240" role="img" aria-label="活动安排">
+    <text x="24" y="30" font-size="14" font-weight="bold" fill="#1f2937">按结束时间排序，能被选中的活动一定排得最密</text>
+
+    <g font-size="11.5" font-family="Consolas,monospace">
+      <rect x="70" y="52" width="180" height="30" rx="6" fill="#e9f8ef" stroke="#2e9e5b" stroke-width="2.2"/>
+      <text x="86" y="72" fill="#1f7a44">活动 A（结束最早）✔</text>
+      <rect x="262" y="52" width="220" height="30" rx="6" fill="#fef2f2" stroke="#ef4444" stroke-width="1.8"/>
+      <text x="278" y="72" fill="#b91c1c">活动 B（启动早但结束晚）✘</text>
+      <rect x="494" y="52" width="150" height="30" rx="6" fill="#f1f5f9" stroke="#94a3b8" stroke-width="1.8"/>
+      <text x="510" y="72" fill="#64748b">活动 C ✘ 与 A 冲突</text>
+
+      <rect x="262" y="98" width="140" height="30" rx="6" fill="#e9f8ef" stroke="#2e9e5b" stroke-width="2.2"/>
+      <text x="278" y="118" fill="#1f7a44">活动 D ✔</text>
+      <rect x="414" y="98" width="200" height="30" rx="6" fill="#e9f8ef" stroke="#2e9e5b" stroke-width="2.2"/>
+      <text x="430" y="118" fill="#1f7a44">活动 E ✔</text>
+    </g>
+
+    <line x1="70" y1="146" x2="790" y2="146" stroke="#cbd5e1" stroke-width="2"/>
+    <text x="70" y="168" font-size="11.5" fill="#68788f">时间 →</text>
+
+    <rect x="70" y="184" width="720" height="44" rx="10" fill="#f7f9fd" stroke="#cbd5e1" stroke-width="1.6"/>
+    <text x="94" y="211" font-size="12" fill="#334155">选了 A（结束最早）之后，B、C 都因为"与 A 冲突"被排除——<tspan font-weight="bold">但留给 D、E 的空间更大，最后选了 3 场</tspan></text>
+  </svg>
+  <div class="caption">图 2（SVG）：活动安排——结束得越早，留给后面的空间越大</div>
+</figure>
+
+<!-- ============ 3 ============ -->
+<div class="section-header" id="s3">
+  <h2>3　最大连续子段和</h2>
+  <div class="en-title">Maximum Subarray Sum</div>
+</div>
+
+<h3 id="s3-1">3.1 边走边记</h3>
+
+<div class="code-card">
+  <div class="code-head">
+    <span class="dot d1"></span><span class="dot d2"></span><span class="dot d3"></span>
+    <span class="file">问题：找一段"连续"的数，让它们的和最大</span>
+    <span class="lang">TEXT</span>
+  </div>
+  <pre><code>数组：  -2   3  -1   5  -6   2
+         ↑
+       从哪一段开始、到哪一段结束，和最大？
+
+一段段数过去：
+  3 + (-1) + 5 = 7   ← 最大
+  而 3 - 1 + 5 - 6 = 1，加了 -6 反而变小了
+  所以取到 5 为止就停。
+
+【贪心的想法】边走边记当前的"连续和"：
+  如果加完变成负数了，说明前面这一段"拖后腿"——
+  干脆从下一个数重新开始。
+  每一步都顺手更新"见过的最大值"。</code></pre>
+  <div class="out"><b>核心决策</b>　
+  <b><code>current</code> 表示"以当前位置结尾的最大和"——
+  一旦加上某个数后它变小了，就说明该重新起头</b></div>
+</div>
+
+<h3 id="s3-2">3.2 代码与递推式</h3>
+
+<div class="code-card">
+  <div class="code-head">
+    <span class="dot d1"></span><span class="dot d2"></span><span class="dot d3"></span>
+    <span class="file">代码只有几行</span>
+    <span class="lang">C++</span>
+  </div>
+  <pre><code>int maxSubArray(const vector&lt;int&gt; &amp;a) {
+    int best = a[0];                // 见过的最大和
+    int current = a[0];             // 以当前位置结尾的最大和
+
+    for (int i = 1; i &lt; (int)a.size(); i++) {
+        current = max(a[i], current + a[i]);   // ★ 要么接着前一段，要么重新起头
+        best = max(best, current);             // ★ 顺手更新答案
+    }
+    return best;
+}</code></pre>
+  <div class="out"><b>用 {-2, 3, -1, 5, -6, 2} 走一遍</b><br>
+  起头：<code>best = −2, current = −2</code><br>
+  i=1：<code>current = max(3, −2+3=1) = 3</code>，<code>best = 3</code><br>
+  i=2：<code>current = max(−1, 3−1=2) = 2</code>，<code>best = 3</code><br>
+  i=3：<code>current = max(5, 2+5=7) = 7</code>，<code>best = <b>7</b></code><br>
+  i=4：<code>current = max(−6, 7−6=1) = 1</code>，<code>best = 7</code><br>
+  i=5：<code>current = max(2, 1+2=3) = 3</code>，<code>best = 7</code><br>
+  <b>答案：7</b></div>
+</div>
+
+<div class="box remember">
+  <span class="lb">这段代码的"递推式"：</span>
+  <b><code class="inline">current[i] = max(a[i], current[i−1] + a[i])</code></b><br>
+  <b>读作：</b>"<strong>要么把 a[i] 接到前面那一段后面，
+  要么干脆从 a[i] 这里重新起一段——哪个更大就选哪个。</strong>"<br>
+  <b>而 <code class="inline">best</code> 全程记着"见过的最大值"，最后就是答案。</b><br>
+  <strong>时间复杂度 <code class="inline">O(n)</code>、空间 <code class="inline">O(1)</code>——
+  扫一遍就完事。</strong>
+</div>
+
+<div class="box tip">
+  <span class="lb">为什么"重新起头"是对的？</span>
+  <b>如果加完 <code class="inline">current + a[i]</code> 比单独的 <code class="inline">a[i]</code> 还小，</b>
+  <strong>说明前面那一段的整体贡献是"负的"——拖了后腿。</strong><br>
+  <b>既然拖着它只会让结果更小，那不如扔掉它、从 a[i] 重新开始。</b><br>
+  <strong>这就是"贪心"的味道：一旦发现前面那段不划算，立刻舍弃，绝不回头。</strong>
+</div>
+
+<!-- ============ 4 ============ -->
+<div class="section-header" id="s4">
+  <h2>4　贪心不是万能的</h2>
+  <div class="en-title">When Greedy Fails</div>
+</div>
+
+<h3 id="s4-1">4.1 找零钱的陷阱</h3>
+
+<div class="code-card">
+  <div class="code-head">
+    <span class="dot d1"></span><span class="dot d2"></span><span class="dot d3"></span>
+    <span class="file">经典反例：用最少的硬币凑出某个金额</span>
+    <span class="lang">TEXT</span>
+  </div>
+  <pre><code>【贪心做法】每次都用面额最大的硬币，能用就用
+   代码很简单：
+     int count = 0;
+     for (int coin : coins) {   // coins 按面额从大到小排好
+         count += money / coin;
+         money %= coin;
+     }
+
+【在人民币上，它是对的】
+   面额 1、5、10、20、50、100 → 贪心能得到最少硬币数 ✔
+
+【换个面额集合就错了】
+   面额集合：{1, 3, 4}，要凑 6
+
+   贪心：先拿最大的 4，剩 2 → 再拿 1、1
+         一共 3 枚（4 + 1 + 1）
+
+   最优：拿两个 3
+         一共 2 枚（3 + 3）✔
+
+   贪心给出 3 枚，最优是 2 枚 —— 贪心错了！</code></pre>
+  <div class="out"><b>结论</b>　
+  <b>"每次选最大面额"这个贪心策略，<strong>对任意硬币面额集合并不成立</strong></b><br>
+  <b>这类问题的通用解法要用动态规划（六级的内容）</b></div>
+</div>
+
+<h3 id="s4-2">4.2 什么时候会失败</h3>
+
+<div class="box warn">
+  <span class="lb">"贪心算法只要每一步选当前最优，就一定能得到全局最优解"——这句话是错的。</span>
+  <b>错在哪？</b>因为<strong>"局部最优"不自动等于"全局最优"。</strong><br>
+  <b>找零钱的例子就是铁证：</b>
+  <strong>第一步拿 4 确实是"当前最优"（拿得最多），可它把路走窄了——
+  剩下 2 只能用两个 1 凑，最终用了 3 枚，而不是最优的 2 枚。</strong><br>
+  <b>所以贪心能否成立，必须针对具体问题去证明——
+  "贪心选择性质"和"最优子结构"这两条不是白写的。</b><br>
+  <b>拿到一道贪心题，先问自己三句话：</b><br>
+  ① 我的策略是什么？（选哪个、按什么排序）；<br>
+  ② <strong>为什么这样选绝不会吃亏？</strong>；<br>
+  ③ <strong>能不能举出一个反例？</strong>——举不出来，才敢放心用。
+</div>
+
+<div class="box tip">
+  <span class="lb">几种思路，怎么选？</span>
+  <b>枚举</b>——范围小、想不到别的办法时用，<strong>最稳但最慢</strong>。<br>
+  <b>贪心</b>——能证明"选眼前最优不吃亏"时用，<strong>最快最简洁</strong>。<br>
+  <b>动态规划</b>——贪心不成立、但问题有"最优子结构"时用，<strong>最通用</strong>。<br>
+  <strong>顺序建议：先想贪心（快），贪心证不出来就换动态规划（稳）。</strong>
+</div>
+
+<figure class="pic">
+  <img src="../assets/illustrations/py-L5-08-02_coin_change.webp" alt="钱币兑换台"
+       onerror="this.closest('.pic').classList.add('missing')">
+  <div class="ph">
+    <div class="fn">assets/illustrations/py-L5-08-02_coin_change.webp</div>
+    <div class="ds">【配图位】绿洲帐篷内的兑换台：一只木盘里摆着大小不同的发光钱币，柜台后的商人先递出最大的一枚、再逐次递出越来越小的硬币（表示"每次都用最大的"）；柜台一角另有一只小盘，里面只摆着两枚同样大的中等硬币、被一圈光晕圈出（表示真正的最优解）；一名披沙色斗篷的向导站在台前，手指在两只盘子之间犹豫。</div>
+  </div>
+  <figcaption>图 3：找零钱——贪心给 3 枚，最优只要 2 枚</figcaption>
+</figure>
+
+<!-- ============ 5 ============ -->
+<div class="section-header" id="s5">
+  <h2>5　复杂度估算</h2>
+  <div class="en-title">Estimating Complexity</div>
+</div>
+
+<h3 id="s5-1">5.1 从代码里数出来</h3>
+
+<div class="box remember">
+  <span class="lb">估算复杂度的三步：</span>
+  <b>① 数循环层数</b>——单层、两层、三层……；<br>
+  <b>② 看每层跑多少次</b>——<strong>"每次加 1"是 n 次，"每次乘 2"是 log n 次</strong>；<br>
+  <b>③ 乘起来，只留最高次项</b>——<strong>常数和低次项都扔掉。</strong><br>
+  <strong>比如 <code class="inline">3n² + 5n + 100</code>，就记作 <code class="inline">O(n²)</code>。</strong>
+</div>
+
+<div class="code-card">
+  <div class="code-head">
+    <span class="dot d1"></span><span class="dot d2"></span><span class="dot d3"></span>
+    <span class="file">从几段代码看复杂度</span>
+    <span class="lang">C++</span>
+  </div>
+  <pre><code>// ① 单层循环，每轮 +1 → O(n)
+for (int i = 0; i &lt; n; i++) sum += a[i];
+
+// ② 两层嵌套，各 n 次 → O(n²)
+for (int i = 0; i &lt; n; i++)
+    for (int j = 0; j &lt; n; j++)
+        cnt++;
+
+// ③ 外层 n 次，内层每次翻倍 → O(n log n)
+for (int i = 0; i &lt; n; i++)
+    for (int j = 1; j &lt; n; j *= 2)
+        cnt++;
+
+// ④ 单层循环，但每轮翻倍 → O(log n)
+for (int i = 1; i &lt; n; i *= 2) cnt++;
+
+// ⑤ 三层嵌套，各 n 次 → O(n³)
+for (int i = 0; i &lt; n; i++)
+    for (int j = 0; j &lt; n; j++)
+        for (int k = 0; k &lt; n; k++) cnt++;</code></pre>
+  <div class="out"><b>判据</b>　
+  <b>看"内层到底跑多少次"，而不是单纯数几层循环</b><br>
+  <b><code>j *= 2</code> 是 log n 次，<code>j++</code> 才是 n 次</b></div>
+</div>
+
+<h3 id="s5-2">5.2 常见量级对照表</h3>
+
+<table class="styled">
+  <thead><tr><th>复杂度</th><th>叫法</th><th>n = 10⁶ 时的量级</th><th>典型算法</th></tr></thead>
+  <tbody>
+    <tr><td><code class="inline">O(1)</code></td><td>常数阶</td><td>1</td><td>按公式直接算</td></tr>
+    <tr><td><code class="inline">O(log n)</code></td><td>对数阶</td><td>约 20</td><td>二分查找、快速幂</td></tr>
+    <tr><td><code class="inline">O(n)</code></td><td>线性阶</td><td>100 万</td><td>遍历数组、埃氏筛</td></tr>
+    <tr><td><code class="inline">O(n log n)</code></td><td>线性对数阶</td><td>约 2000 万</td><td>归并排序、快速排序、贪心加排序</td></tr>
+    <tr><td><code class="inline">O(n²)</code></td><td>平方阶</td><td>1 万亿（<strong>必超时</strong>）</td><td>冒泡排序、选择排序、两层枚举</td></tr>
+    <tr><td><code class="inline">O(2ⁿ)</code></td><td>指数阶</td><td>天文数字</td><td>枚举所有子集、朴素递归斐波那契</td></tr>
+  </tbody>
+</table>
+
+<div class="box warn">
+  <span class="lb">怎么判断"会不会超时"？</span>
+  一般的题目，<strong>1 秒内大约能做 10⁸ 次简单运算</strong>。<br>
+  <b>所以拿 n 的上限代进去估一估：</b><br>
+  <b><code class="inline">n = 10⁵</code>：</b><code class="inline">O(n²)</code> 是 10¹⁰——
+  <strong>超时！必须用 <code class="inline">O(n log n)</code> 或更快的算法。</strong><br>
+  <b><code class="inline">n = 10³</code>：</b><code class="inline">O(n²)</code> 是 10⁶——
+  <strong>完全没问题，随便写。</strong><br>
+  <b><code class="inline">n = 10⁹</code>：</b>连 <code class="inline">O(n)</code> 都跑不完，
+  <strong>必须用 <code class="inline">O(log n)</code> 或 <code class="inline">O(1)</code> 的做法。</strong><br>
+  <strong>养成习惯：写代码前先看数据范围，反推"我最多能用什么复杂度的算法"。</strong>
+</div>
+
+<figure class="figure">
+  <svg class="diagram" viewBox="0 0 830 250" role="img" aria-label="复杂度阶梯">
+    <text x="24" y="30" font-size="14" font-weight="bold" fill="#1f2937">复杂度阶梯：越往上越慢，差距是"数量级"的</text>
+
+    <g font-family="Consolas,monospace" font-size="12.5">
+      <rect x="60" y="52" width="330" height="26" rx="6" fill="#e9f8ef" stroke="#2e9e5b" stroke-width="1.8"/>
+      <text x="76" y="70" fill="#1f7a44">O(1)　常数阶　—— 和数据量无关</text>
+      <rect x="60" y="84" width="370" height="26" rx="6" fill="#e9f8ef" stroke="#2e9e5b" stroke-width="1.8"/>
+      <text x="76" y="102" fill="#1f7a44">O(log n)　对数阶　—— 指数级地省</text>
+      <rect x="60" y="116" width="420" height="26" rx="6" fill="#eaf1fe" stroke="#2563eb" stroke-width="1.8"/>
+      <text x="76" y="134" fill="#1d4ed8">O(n)　线性阶　—— 一次遍历</text>
+      <rect x="60" y="148" width="490" height="26" rx="6" fill="#eaf1fe" stroke="#2563eb" stroke-width="1.8"/>
+      <text x="76" y="166" fill="#1d4ed8">O(n log n)　—— 排序类的标准水平</text>
+      <rect x="60" y="180" width="600" height="26" rx="6" fill="#fff9ec" stroke="#f59e0b" stroke-width="1.8"/>
+      <text x="76" y="198" fill="#b45309">O(n²)　平方阶　—— 数据量一上来就超时</text>
+      <rect x="60" y="212" width="720" height="26" rx="6" fill="#fef2f2" stroke="#ef4444" stroke-width="1.8"/>
+      <text x="76" y="230" fill="#b91c1c">O(2ⁿ) / O(n!)　—— 只能处理很小的 n</text>
+    </g>
+
+    <text x="470" y="70" font-size="11.5" fill="#68788f">n 翻一倍，几乎没变化</text>
+    <text x="470" y="102" font-size="11.5" fill="#68788f">n 翻一倍，只多 1 步</text>
+    <text x="470" y="134" font-size="11.5" fill="#68788f">n 翻一倍，工作量也翻一倍</text>
+    <text x="470" y="166" font-size="11.5" fill="#68788f">翻一倍，工作量多一倍多一点</text>
+    <text x="470" y="198" font-size="11.5" fill="#b45309">翻一倍，工作量翻四倍！</text>
+    <text x="470" y="230" font-size="11.5" fill="#b91c1c">翻一倍，工作量直接平方级暴涨</text>
+  </svg>
+  <div class="caption">图 4（SVG）：复杂度阶梯——从快到慢</div>
+</figure>
+
+<figure class="pic">
+  <img src="../assets/illustrations/py-L5-08-03_complexity_ladder.webp" alt="复杂度石阶"
+       onerror="this.closest('.pic').classList.add('missing')">
+  <div class="ph">
+    <div class="fn">assets/illustrations/py-L5-08-03_complexity_ladder.webp</div>
+    <div class="ds">【配图位】绿洲外的沙丘上凿着一道石阶，台阶自下而上依次变陡：最下面几级平缓明亮（代表 O(1)、O(log n)），中间几级开始抬升（O(n)、O(n log n)），上面几级陡峭发红、几乎垂直（O(n²)、O(2ⁿ)）；一名披沙色斗篷的向导站在中段台阶上，仰头看着上方陡坡，脚边沙粒正沿着陡坡滚落。</div>
+  </div>
+  <figcaption>图 5：复杂度石阶——越往上越陡，越难爬</figcaption>
+</figure>
+
+<!-- ============ 6 ============ -->
+<div class="section-header" id="s6">
+  <h2>6　代码实战</h2>
+  <div class="en-title">Level Practice</div>
+</div>
+
+<div class="level-card">
+  <div class="lc-head"><span class="n">关卡</span><h4>第一个出局</h4><span class="go">进入关卡 →</span></div>
+  <div class="lc-body">
+    <div class="story">
+      <b>故事：</b>运水队要按顺序通过一处窄口，<b>每一批都只能过一部分人。</b><br>
+      塞尼克把路线图铺在沙地上：<strong>好消息是，每次只要选"最早能出发的那一趟"，
+      就能过最多的人。</strong><br>
+      你有点不放心：<b>万一选早了反而亏呢？</b><br>
+      这就要看清楚了——他敲了敲图上的时间刻度，<strong>结束得越早，留给后面的余地越大。所以这样选，永远不会亏。</strong>
+    </div>
+    <p><strong>思路：</strong>用<strong>贪心</strong>——先按结束时间排序，
+    再依次挑选互不冲突的时段。</p><figure class="pic">
+  <img src="../assets/stages/py-L5-08-stage1_first_out.webp" alt="第一个出局 关卡截图"
+       onerror="this.closest('.pic').classList.add('missing')">
+  <div class="ph">
+    <div class="fn">assets/stages/py-L5-08-stage1_first_out.webp</div>
+    <div class="ds">【截图位】第一个出局关卡：绿洲窄口与排队单位同框，代码编辑区可见排序比较函数与贪心扫描循环。</div>
+  </div>
+  <figcaption>关卡实况：第一个出局</figcaption>
+</figure>
+    <div class="code-card">
+      <div class="code-head">
+        <span class="dot d1"></span><span class="dot d2"></span><span class="dot d3"></span>
+        <span class="file">排序 + 一趟扫描，解决活动安排</span>
+        <span class="lang">C++</span>
+      </div>
+      <pre><code>#include &lt;iostream&gt;
+#include &lt;algorithm&gt;
+using namespace std;
+
+struct Task { int s, e; };
+
+Task a[100005];
+
+bool cmp(const Task &amp;x, const Task &amp;y) {
+    return x.e &lt; y.e;              // ★ 按结束时间从小到大
+}
+
+int main() {
+    int n;
+    cin &gt;&gt; n;
+    for (int i = 0; i &lt; n; i++) cin &gt;&gt; a[i].s &gt;&gt; a[i].e;
+
+    sort(a, a + n, cmp);           // ① 先排序
+
+    int cnt = 0, last = -1;        // last：上一个被选中任务的结束时间
+    for (int i = 0; i &lt; n; i++) {
+        if (a[i].s &gt;= last) {      // ② 不冲突就选它（贪心）
+            cnt++;
+            last = a[i].e;
+        }
+    }
+
+    cout &lt;&lt; cnt &lt;&lt; endl;
+    return 0;
+}</code></pre>
+      <div class="out"><b>输入</b>　4　/　1 3　/　2 4　/　3 5　/　4 6　　<b>输出</b>　<b>2</b><br>
+      <b>选中的是 [1,3] 和 [3,5]</b>（或 [1,3] 和 [4,6]）——<b>最多 2 场</b></div>
+    </div>
+    <div class="box info">
+      <span class="lb">和本单元的关系：</span>
+      <strong>这段代码把"贪心"的两个动作都体现出来了：排序 + 一趟扫描。</strong><br>
+      <b>排序是为了让贪心"每次都能挑到当前最好的"——</b>
+      <strong>按结束时间排好之后，"第一个不冲突的"就是当轮的最优选择。</strong><br>
+      <b>复杂度是 <code class="inline">O(n log n)</code>：</b>
+      <strong>排序花 <code class="inline">O(n log n)</code>，扫描只花 <code class="inline">O(n)</code>——排序是瓶颈。</strong><br>
+      <b>顺便练一下估算：</b>
+      n 要是到了 10⁵，<code class="inline">O(n log n)</code> 大约 170 万次运算，
+      <strong>一秒内轻松跑完。</strong>而如果写成 <code class="inline">O(n²)</code> 的两两比较，就是 100 亿次——
+      <b>必然超时。</b>
+    </div>
+    <a class="btn-go" href="https://codecombat.cn/" target="_blank" rel="noopener">去扣哒世界闯这一关 →</a>
+  </div>
+</div>
+
+
+
+<!-- ============ 7 ============ -->
+<div class="section-header" id="s7">
+  <h2>7　常见陷阱</h2>
+  <div class="en-title">Common Pitfalls</div>
+</div>
+
+<div class="cast duck">
+  <img class="ava" src="../assets/ducks/duck_usara.webp" alt="扣哒鸭" onerror="this.style.display='none'">
+  <div class="bubble">
+    <div class="who">扣哒鸭 · 调试官</div>
+    贪心的坑只有一个核心：<strong>你以为它是对的，其实它不是。</strong>四条。
+  </div>
+</div>
+
+<div class="pit">
+  <div class="pt">
+    <div class="x">1</div>
+    <div class="t"><b>以为"局部最优"一定能凑成"全局最优"。</b></div>
+  </div>
+  <div class="duck">
+    <img src="../assets/ducks/duck_zana.webp" alt="扣哒鸭" onerror="this.style.display='none'">
+    <div class="dt"><b>扣哒鸭：</b><b>"贪心算法只要每一步选当前最优，就一定能得到全局最优解"——这句话是错的。</b><br>
+    找零钱的例子就是铁证：<strong>面额 {1,3,4} 凑 6，贪心给 3 枚，最优只要 2 枚。</strong></div>
+  </div>
+  <div class="fix"><b>正确认识：</b>贪心成立需要额外条件（贪心选择性质 + 最优子结构）</div>
+</div>
+
+<div class="pit">
+  <div class="pt">
+    <div class="x">2</div>
+    <div class="t"><b>认为"每次选面额最大的硬币"在任何面额下都对。</b></div>
+  </div>
+  <div class="duck">
+    <img src="../assets/ducks/duck_naria.webp" alt="扣哒鸭" onerror="this.style.display='none'">
+    <div class="dt"><b>扣哒鸭：</b>它在人民币、美元这些"标准面额"上确实对，
+    <strong>可换成 {1, 3, 4} 这种集合就错了。</strong><br>
+    <b>题目里没保证"面额是标准的"，就不能用这个贪心。</b></div>
+  </div>
+  <div class="fix"><b>记牢：</b>找零钱求最少硬币数，通用解法要用动态规划</div>
+</div>
+
+<div class="pit">
+  <div class="pt">
+    <div class="x">3</div>
+    <div class="t"><b>活动安排按"开始时间"或"持续时间"排序。</b></div>
+  </div>
+  <div class="duck">
+    <img src="../assets/ducks/duck_hattori.webp" alt="扣哒鸭" onerror="this.style.display='none'">
+    <div class="dt"><b>扣哒鸭：</b><b>这两种都是错的。</b><br>
+    按开始时间排，<strong>可能一上来就选了一场占满全天的活动，把别的全挤掉。</strong><br>
+    按持续时间排，<strong>可能选了一场卡在两场大活动中间的小活动。</strong><br>
+    唯一正确的做法是<strong>按结束时间排。</strong></div>
+  </div>
+  <div class="fix"><b>正确做法：</b>按 <code class="inline">end</code> 升序，选不冲突的</div>
+</div>
+
+<div class="pit">
+  <div class="pt">
+    <div class="x">4</div>
+    <div class="t"><b>估复杂度时只数循环层数，不看内层跑多少次。</b></div>
+  </div>
+  <div class="duck">
+    <img src="../assets/ducks/duck_senick.webp" alt="扣哒鸭" onerror="this.style.display='none'">
+    <div class="dt"><b>扣哒鸭：</b><b>两层循环不等于 O(n²)。</b><br>
+    如果内层写的是 <code>j *= 2</code>，<strong>它只跑 log n 次，
+    两层合起来是 O(n log n)，不是 O(n²)。</strong></div>
+  </div>
+  <div class="fix"><b>判据：</b>"每次加 1"是 n 次，"每次乘 2"是 log n 次</div>
+</div>
+
+<!-- ============ 8 ============ -->
+<div class="section-header" id="s8">
+  <h2>8　题目练习</h2>
+  <div class="en-title">Practice</div>
+</div>
+
+<p>前 4 题改编自 C++ 五级真题，其余为原创练习题。</p>
+
+<div class="exam">
+  <div class="eh"><span class="src">改编自 2026 年 9 月 · C++ 五级 · 第 13 题</span><span class="tp">单选题</span></div>
+  <div class="eb">
+    <div class="q">小杨要在一个教室安排尽可能多场活动，每场活动具有开始时间 <code class="inline">start</code>
+    和结束时间 <code class="inline">end</code>。采用贪心算法时，正确的选择策略是（　　）。</div>
+    <div class="opt">
+      <i>A.</i>每次选择开始时间最早的活动<br>
+      <i>B.</i>每次选择持续时间最短的活动<br>
+      <i>C.</i>每次选择参与人数最少的活动<br>
+      <i>D.</i>按结束时间从早到晚排序，依次选择与已选活动不冲突的活动
+    </div>
+    <details><summary>查看答案与详解</summary>
+      <div class="ans"><b>答案：D</b>。<strong>核心直觉是："结束得越早，给后面留的空间越大。"</strong><br>
+      <b>为什么 D 对？</b>假设所有活动里"结束最早"的那一场是 A，
+      而某组最优解里的第一场是 B——
+      <strong>因为 A 结束得最早，所以 A 的结束时间不会晚于 B。</strong><br>
+      <strong>把 B 换成 A 之后，第一场结束得更早，
+      留给后面活动的余地只会变多、不会变少。</strong>
+      所以这样选永远不会吃亏——<strong>这正是"贪心选择性质"。</strong><br>
+      <b>A 项为什么错？</b>
+      <strong>如果一上来就选了一场"从早到晚占满全天"的活动，
+      后面所有活动都被挤掉了，只能排 1 场。</strong><br>
+      <b>B 项为什么错？</b>
+      <strong>可能选中一场"卡在两场大活动中间"的短活动——
+      看起来它很短很划算，可它把前后两场都挡住了，反而少排了一场。</strong><br>
+      <b>C 项为什么错？</b>
+      <strong>参与人数和"能排几场"根本没有任何关系。</strong><br>
+      <b>本题最值得记住的一点：</b>
+      <strong>同一道贪心题往往有好几种"听起来都挺合理"的策略，但只有一种是对的——
+      必须能说清"为什么这样选不吃亏"。</strong><br>
+      <span class="tagline">对应小节</span>2.1 按结束时间排序。</div>
+    </details>
+  </div>
+</div>
+
+<div class="exam">
+  <div class="eh"><span class="src">改编自 2026 年 9 月 · C++ 五级 · 第 14 题</span><span class="tp">单选题</span></div>
+  <div class="eb">
+    <div class="q">下面函数使用迭代方法求最大连续子段和。
+    对于数组 <code class="inline">{-2, 3, -1, 5, -6, 2}</code>，函数返回值是（　　）。</div>
+    <pre>int maxSubArray(const vector&lt;int&gt; &amp;a) {
+    int best = a[0];
+    int current = a[0];
+    for (int i = 1; i &lt; (int)a.size(); i++) {
+        current = max(a[i], current + a[i]);
+        best = max(best, current);
+    }
+    return best;
+}</pre>
+    <div class="opt"><i>A.</i><code class="inline">5</code>　　<i>B.</i><code class="inline">6</code>　　<i>C.</i><code class="inline">7</code>　　<i>D.</i><code class="inline">8</code></div>
+    <details><summary>查看答案与详解</summary>
+      <div class="ans"><b>答案：C</b>。一步一步跟着走（这一类题<strong>千万不要心算跳步</strong>）：<br>
+      <b>初始：</b><code class="inline">best = −2</code>，<code class="inline">current = −2</code><br>
+      <b>i=1（a[1]=3）：</b><code class="inline">current = max(3, −2+3=1) = 3</code>；
+      <code class="inline">best = max(−2, 3) = 3</code><br>
+      <b>i=2（a[2]=−1）：</b><code class="inline">current = max(−1, 3−1=2) = 2</code>；
+      <code class="inline">best = 3</code><br>
+      <b>i=3（a[3]=5）：</b><code class="inline">current = max(5, 2+5=7) = <b>7</b></code>；
+      <code class="inline">best = <b>7</b></code><br>
+      <b>i=4（a[4]=−6）：</b><code class="inline">current = max(−6, 7−6=1) = 1</code>；
+      <code class="inline">best = 7</code><br>
+      <b>i=5（a[5]=2）：</b><code class="inline">current = max(2, 1+2=3) = 3</code>；
+      <code class="inline">best = 7</code><br>
+      返回 <b>7</b> ✔<br>
+      <b>验算一下：</b>最大的一段是 <code class="inline">3 + (−1) + 5 = 7</code>，
+      从下标 1 到下标 3。<strong>再往后加 −6 就掉到 1 了，所以取到 5 为止。</strong><br>
+      <b>A 项（5）</b>是只取了单个元素 5；
+      <b>D 项（8）</b>可能是漏算了 −1。<br>
+      <b>关键理解：</b>
+      <code class="inline">current = max(a[i], current + a[i])</code> 的意思是
+      <strong>"要么接着前一段，要么从 a[i] 重新起头"。</strong><br>
+      <span class="tagline">对应小节</span>3.2 代码与递推式。</div>
+    </details>
+  </div>
+</div>
+
+<div class="exam">
+  <div class="eh"><span class="src">改编自 2026 年 9 月 · C++ 五级 · 判断题 第 9 题</span><span class="tp">判断题</span></div>
+  <div class="eb">
+    <div class="q">下面的贪心代码<strong>一定能</strong>对任意硬币面值集合 <code class="inline">coins</code>
+    求出 <code class="inline">money</code> 所需的最少硬币数。（　　）</div>
+    <pre>int count = 0;
+for (int coin : coins) {   // coins 按面值从大到小排列
+    count += money / coin;
+    money %= coin;
+}</pre>
+    <details><summary>查看答案与详解</summary>
+      <div class="ans"><b>答案：错误（×）</b>。这是<strong>贪心算法最经典的反例</strong>。<br>
+      <b>反例：面额集合 {1, 3, 4}，要凑出 6。</b><br>
+      <b>贪心做法：</b>先拿最大的 4，剩 2；再拿两个 1——
+      <strong>一共 3 枚（4 + 1 + 1）。</strong><br>
+      <b>最优做法：</b>拿两个 3——
+      <strong>一共 2 枚（3 + 3）。</strong><br>
+      <b>贪心要用 3 枚，最优只要 2 枚——它给出的是错答案。</b><br>
+      <b>为什么贪心在这里失灵？</b>
+      因为第一步拿 4 虽然是"当前最优"（拿得最多），
+      <strong>但它把剩下的路走窄了：只剩 2，只能用两个 1 去凑。</strong><br>
+      <b>"局部最优"不自动等于"全局最优"——这就是问题的根源。</b><br>
+      <b>那它什么时候是对的？</b>
+      <strong>在人民币、美元这类"标准面额体系"下，每个面额都是前一个的倍数左右，
+      这时贪心确实成立。</strong><br>
+      <strong>但题目说的是"任意硬币面值集合"——没有这个保证，所以说法是错的。</strong><br>
+      <b>这类"最少硬币数"问题，通用解法要用动态规划（六级的内容）。</b><br>
+      <span class="tagline">对应小节</span>4.1 找零钱的陷阱。</div>
+    </details>
+  </div>
+</div>
+
+<div class="exam">
+  <div class="eh"><span class="src">改编自 2026 年 6 月 · C++ 五级 · 判断题 第 6 题</span><span class="tp">判断题</span></div>
+  <div class="eb">
+    <div class="q">贪心算法只要每一步选择当前最优解，就一定能得到全局最优解。（　　）</div>
+    <details><summary>查看答案与详解</summary>
+      <div class="ans"><b>答案：错误（×）</b>。<strong>这句话是贪心这一课最需要纠正的误解。</strong><br>
+      <b>正确的说法是：</b>
+      <strong>只有当问题满足"贪心选择性质"和"最优子结构"这两个条件时，
+      贪心才能保证得到全局最优解。</strong><br>
+      <b>"贪心选择性质"是什么意思？</b>
+      <strong>每一步的局部最优选择，一定能通向某个全局最优解——换句话说，
+      这样选永远不会让你后悔。</strong><br>
+      <b>为什么它不总是成立？</b>还是那个找零钱的例子：<br>
+      <strong>面额 {1, 3, 4} 凑 6——第一步拿 4 是"当前最优"，可结果用了 3 枚，而最优只要 2 枚。</strong><br>
+      <b>所以"当前最优"和"全局最优"之间，并没有必然的桥。</b><br>
+      <b>拿到一道题，正确的思考顺序是：</b><br>
+      ① 先想一个贪心策略；<br>
+      ② <strong>努力证明它不会吃亏</strong>（或者找反例）；<br>
+      ③ <strong>证不出来就换动态规划。</strong><br>
+      <b>一句话记住：</b>
+      <strong>贪心是一种"猜想"，猜对了才成立——所以它总是需要证明或者反例检验。</strong><br>
+      <span class="tagline">对应小节</span>4.2 什么时候会失败。</div>
+    </details>
+  </div>
+</div>
+
+<div class="exam">
+  <div class="eh"><span class="src ori">原创练习题</span><span class="tp">单选题</span></div>
+  <div class="eb">
+    <div class="q">下面代码的时间复杂度是（　　）。</div>
+    <pre>for (int i = 0; i &lt; n; i++) {
+    for (int j = 1; j &lt; n; j *= 2) {
+        cout &lt;&lt; i + j &lt;&lt; " ";
+    }
+}</pre>
+    <div class="opt"><i>A.</i><code class="inline">O(n)</code>　　<i>B.</i><code class="inline">O(n log n)</code>　　<i>C.</i><code class="inline">O(n²)</code>　　<i>D.</i><code class="inline">O(2ⁿ)</code></div>
+    <details><summary>查看答案与详解</summary>
+      <div class="ans"><b>答案：B</b>。<strong>关键在内层循环的推进方式——是"乘 2"，不是"加 1"。</strong><br>
+      <b>内层：</b><code class="inline">j</code> 从 1 开始，每次乘以 2：1 → 2 → 4 → 8 → 16……<br>
+      要几次才能到 n？<strong>大约 <code class="inline">log₂n</code> 次。</strong><br>
+      <b>外层：</b>跑 n 次。<br>
+      <b>合起来：</b><code class="inline">n × log n</code>，也就是 <code class="inline">O(n log n)</code> ✔<br>
+      <b>C 项（O(n²)）</b>是"只数循环层数、不看内层跑多少次"的典型错误——
+      <strong>如果把内层改成 <code class="inline">j++</code>，那才是 O(n²)。</strong><br>
+      <b>记忆口诀：</b>
+      <strong>"每次乘 2 / 除 2"→ log n 次；"每次加 1"→ n 次。</strong><br>
+      <b>顺带说说实际意义：</b>
+      n = 10⁶ 时，<code class="inline">O(n log n)</code> 约 2000 万次（<b>能过</b>），
+      而 <code class="inline">O(n²)</code> 是 10¹² 次（<b>必然超时</b>）——
+      <strong>看清内层怎么走，直接决定了你的程序能不能过。</strong><br>
+      <span class="tagline">对应小节</span>5.1 从代码里数出来。</div>
+    </details>
+  </div>
+</div>
+
+<div class="exam">
+  <div class="eh"><span class="src ori">原创练习题</span><span class="tp">判断题</span></div>
+  <div class="eb">
+    <div class="q">在最大连续子段和问题中，若当前得到的"以 i 结尾的最大和"加上
+    <code class="inline">a[i+1]</code> 之后反而变小了，说明前面那一段整体的贡献是负的，
+    此时从 <code class="inline">a[i+1]</code> 重新起一段更划算。（　　）</div>
+    <details><summary>查看答案与详解</summary>
+      <div class="ans"><b>答案：正确（√）</b>。这正是那段代码里 <code class="inline">max</code> 的用意所在。<br>
+      <b>看这句：</b><code class="inline">current = max(a[i], current + a[i]);</code><br>
+      它表达的是<strong>"二选一"</strong>：<br>
+      <b>选 <code class="inline">current + a[i]</code></b> —— 把 a[i] 接到前面那一段的后面；<br>
+      <b>选 <code class="inline">a[i]</code></b> —— 扔掉前面，从 a[i] 重新起一段。<br>
+      <strong>取两者的较大值，就是"以 i 结尾的最大和"。</strong><br>
+      <b>什么时候"重新起头"会赢？</b>
+      当 <code class="inline">current</code> 是负数时——
+      <strong>接着它只会让新和更小，说明前面那段是"拖后腿"的，扔掉它反而更好。</strong><br>
+      <b>举个具体例子：</b>数组 <code class="inline">{3, −10, 5}</code>——<br>
+      <code class="inline">current</code> 走到 −10 时，<code class="inline">max(−10, 3−10=−7) = −7</code>（还是负的）；<br>
+      到 5 时，<code class="inline">max(5, −7+5=−2) = 5</code> ——
+      <strong>这时候就"重新起头"了，前面的 3 和 −10 全被扔掉。</strong><br>
+      <b>这正是贪心的味道：</b>
+      <strong>一旦发现前面那段不再划算，立刻舍弃、绝不回头。</strong><br>
+      <span class="tagline">对应小节</span>3.2 代码与递推式。</div>
+    </details>
+  </div>
+</div>
+
+<div class="exam">
+  <div class="eh"><span class="src ori">原创练习题</span><span class="tp">编程题</span></div>
+  <div class="eb">
+    <div class="q">题目要求：读入 <code class="inline">n</code> 个整数，
+    求它们的<strong>最大连续子段和</strong>（至少取一个数）。<br>
+    <b>样例：</b>输入 <code class="inline">6</code> / <code class="inline">-2 3 -1 5 -6 2</code>，
+    输出 <code class="inline">7</code>。</div>
+    <details><summary>查看参考答案与要点</summary>
+      <div class="ans">
+<pre style="margin:0;background:#131a26;color:#c8d3e0;border-radius:10px;padding:14px 16px">#include &lt;iostream&gt;
+#include &lt;algorithm&gt;
+using namespace std;
+
+int a[100005];
+
+int main() {
+    int n;
+    cin &gt;&gt; n;
+    for (int i = 0; i &lt; n; i++) cin &gt;&gt; a[i];
+
+    int best = a[0];                 // 见过的最大和
+    int cur  = a[0];                 // 以当前位置结尾的最大和
+
+    for (int i = 1; i &lt; n; i++) {
+        cur  = max(a[i], cur + a[i]);  // 接着前一段 或 重新起头
+        best = max(best, cur);         // 顺手更新答案
+    }
+
+    cout &lt;&lt; best &lt;&lt; endl;
+    return 0;
+}</pre>
+      <p style="margin-top:12px"><b>输入 <code>6 / -2 3 -1 5 -6 2</code> 输出：</b>7<br>
+      <b>要点：</b><br>
+      ① <strong>核心就是那一句 <code class="inline">cur = max(a[i], cur + a[i]);</code></strong>——
+      "接着前一段"还是"重新起头"，取更大的那个；<br>
+      ② <strong>两个变量的初值都取 <code class="inline">a[0]</code>，不能取 0</strong>——
+      因为题目要求"<strong>至少取一个数</strong>"，如果全是负数，
+      <strong>答案应该是那个最大的负数，而不是 0。</strong>；<br>
+      ③ <strong>循环从 <code class="inline">i = 1</code> 开始</strong>，因为下标 0 已经当初值用掉了；<br>
+      ④ <strong>每一步都要更新 <code class="inline">best</code></strong>——
+      因为最大的一段<strong>不一定结束在最后</strong>；<br>
+      ⑤ 复杂度 <code class="inline">O(n)</code>、空间 <code class="inline">O(1)</code>，
+      <strong>扫一遍就完事——这比"枚举所有区间"的 O(n²) 快得多。</strong><br>
+      <b>（如果一定要允许"一个都不取"，那就把 <code class="inline">best</code> 的初值改成 0 即可。）</b><br>
+      <span class="tagline">对应小节</span>3.2 代码与递推式。</p>
+      </div>
+    </details>
+  </div>
+</div>
+
+<!-- ============ 9 ============ -->
+<div class="section-header" id="s9">
+  <h2>9　本单元小结</h2>
+  <div class="en-title">Unit Summary</div>
+</div>
+
+<div class="cast senick">
+  <img class="ava" src="../assets/avatars/senick.webp" alt="塞尼克" onerror="this.style.display='none'">
+  <div class="bubble">
+    <div class="who">塞尼克 · 沙海向导</div>
+    四句话记住这一课：<br>
+    <strong>一、贪心就是"每一步都选眼前最好的，选完不反悔"——快，但需要条件。</strong><br>
+    <strong>二、活动安排按"结束时间"排序才正确；开始时间、持续时间都不行。</strong><br>
+    <strong>三、贪心不总是对的——{1,3,4} 凑 6 就是反例（贪心 3 枚，最优 2 枚）。</strong><br>
+    <strong>四、估复杂度要看"内层跑多少次"：加 1 是 n 次，乘 2 是 log n 次。</strong><br>
+    绿洲走完了，五级也走完了。下一站我们登上<b>云髓天阶</b>——
+    <b>那里会长出一棵树，从根到枝，一路分叉到云里。</b>
+  </div>
+</div>
+
+<div class="summary">
+  <h3>你在最省水的路上收获了什么</h3>
+  <ul>
+    <li><strong>贪心</strong>——每一步都选<strong>当前最好</strong>的，<strong>选完绝不反悔</strong>。</li>
+    <li><strong>贪心的两个前提</strong>——<strong>贪心选择性质</strong>（局部最优能通向全局最优）
+      + <strong>最优子结构</strong>。</li>
+    <li><strong>贪心的优势</strong>——<strong>快、代码短</strong>，通常只要"排序 + 一趟扫描"。</li>
+    <li><strong>活动安排的正确策略</strong>——<strong>按结束时间升序</strong>排序，
+      依次选不冲突的。</li>
+    <li><strong>为什么它对</strong>——<strong>结束得越早，给后面留的空间越大</strong>，所以永远不会吃亏。</li>
+    <li><strong>活动安排的复杂度</strong>——<code class="inline">O(n log n)</code>（排序是瓶颈）。</li>
+    <li><strong>最大连续子段和</strong>——<code class="inline">cur = max(a[i], cur + a[i])</code>，
+      扫一遍 <code class="inline">O(n)</code>。</li>
+    <li><strong>初值取 <code class="inline">a[0]</code></strong>——因为要求"至少取一个数"，
+      <strong>全是负数时答案应是最大的负数值，不是 0</strong>。</li>
+    <li><strong>贪心的经典反例</strong>——<strong>面额 {1, 3, 4} 凑 6</strong>：
+      贪心 3 枚，最优 2 枚。</li>
+    <li><strong>"每步最优就一定全局最优"是错的</strong>——局部最优不自动等于全局最优。</li>
+    <li><strong>复杂度估算法</strong>——<strong>数循环层数 × 看每层跑多少次，只留最高次项</strong>。</li>
+    <li><strong>关键判据</strong>——<strong>"每次加 1"是 n 次，"每次乘 2"是 log n 次</strong>；
+      <strong>两层循环不等于 O(n²)</strong>。</li>
+    <li><strong>常见量级排序</strong>——<code class="inline">O(1) &lt; O(log n) &lt; O(n) &lt; O(n log n) &lt; O(n²) &lt; O(2ⁿ)</code>。</li>
+    <li><strong>会不会超时</strong>——1 秒大约 10⁸ 次运算；
+      <strong>拿 n 的上限代进去估一估就知道</strong>。</li>
+  </ul>
+</div>
+
+<div class="pager">
+  <a href="cpp-5-07.html"><div class="k">← 上一单元</div><div class="v">分沙术 · 分治算法</div></a>
+  <a href="../index.html" target="_top" class="back"><div class="k">返回</div><div class="v">考纲之路 · 总目录</div></a>
+  <a href="cpp-6-01.html"><div class="k">下一级别 →</div><div class="v">天阶枝桠 · C++ 六级第 1 单元</div></a>
+</div>
+
+<div class="cta">
+  <h3>下一站：云髓天阶</h3>
+  <p>星砂绿洲的尽头，石阶一路向上，<b>渐渐没入云海。</b><br>
+  云层之上，一株<b>发光的巨树从台阶缝隙里长出来</b>——
+  <b>枝桠一分二、二分四，一路向天空分叉，每个枝梢都挂着不同颜色的小灯笼。</b><br>
+  <b>下一级我们从"树"开始：一种天生就层层分叉的结构。</b></p>
+  <a class="btn-go" href="https://codecombat.cn/" target="_blank" rel="noopener">加入扣哒世界，把这条考纲之路走一遍 →</a>
+</div>
+</div><!-- /container -->
+</div><!-- /page -->
+
+<script>
+const KEYWORDS = new Set([
+  "int", "long", "short", "unsigned", "signed", "float", "double", "char", "bool", "void",
+  "const", "if", "else", "for", "while", "do", "switch", "case", "default", "break",
+  "continue", "return", "goto", "struct", "class", "union", "enum", "using", "namespace",
+  "std", "main", "true", "false", "cin", "cout", "cerr", "endl", "string", "sizeof",
+  "include", "define", "new", "delete", "public", "private", "static", "inline", "nullptr"
+]);
+
+function esc(s){ return s.replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;'); }
+
+function highlight(src){
+  let out = '', i = 0;
+  const n = src.length;
+  while (i < n){
+    const c = src[i];
+    /* 预处理指令：#include / #define，整行只在行首生效 */
+    if (c === '#' && (i === 0 || src[i-1] === '\n')){
+      let j = i;
+      while (j < n && /[A-Za-z]/.test(src[j])) j++;
+      out += '<span class="kw">' + esc(src.slice(i, j)) + '</span>';
+      let k = src.indexOf('\n', j); if (k < 0) k = n;
+      if (j < k) out += '<span class="st">' + esc(src.slice(j, k)) + '</span>';
+      i = k; continue;
+    }
+    /* 行注释 // */
+    if (c === '/' && src[i+1] === '/'){
+      let j = src.indexOf('\n', i); if (j < 0) j = n;
+      out += '<span class="cm">' + esc(src.slice(i, j)) + '</span>';
+      i = j; continue;
+    }
+    /* 块注释 */
+    if (c === '/' && src[i+1] === '*'){
+      let j = src.indexOf('*/', i + 2); j = j < 0 ? n : j + 2;
+      out += '<span class="cm">' + esc(src.slice(i, j)) + '</span>';
+      i = j; continue;
+    }
+    /* 字符串与字符字面量 */
+    if (c === '"' || c === "'"){
+      let j = i + 1;
+      while (j < n && src[j] !== c){ if (src[j] === '\\') j++; j++; }
+      j = Math.min(j + 1, n);
+      out += '<span class="st">' + esc(src.slice(i, j)) + '</span>';
+      i = j; continue;
+    }
+    /* 数字 */
+    if (/[0-9]/.test(c)){
+      let j = i;
+      while (j < n && /[0-9.]/.test(src[j])) j++;
+      out += '<span class="nu">' + esc(src.slice(i, j)) + '</span>';
+      i = j; continue;
+    }
+    /* 标识符：关键字 / 函数名 / 普通名字 */
+    if (/[A-Za-z_]/.test(c)){
+      let j = i;
+      while (j < n && /[A-Za-z0-9_]/.test(src[j])) j++;
+      const w = src.slice(i, j);
+      if (KEYWORDS.has(w)) out += '<span class="kw">' + esc(w) + '</span>';
+      else if (src[j] === '(') out += '<span class="fn">' + esc(w) + '</span>';
+      else out += esc(w);
+      i = j; continue;
+    }
+    out += esc(c); i++;
+  }
+  return out;
+}
+
+document.querySelectorAll('.code-card pre code').forEach(block => {
+  block.innerHTML = highlight(block.textContent);
+});
+
+if (location.search.indexOf('expand') >= 0) {
+  document.querySelectorAll('details').forEach(d => d.open = true);
+}
+document.querySelectorAll('.sidebar-nav a').forEach(a => {
+  a.addEventListener('click', () => {
+    if (window.innerWidth <= 900) document.querySelector('.sidebar-nav').classList.remove('active');
+  });
+});
+</script>
+</body>
+</html>

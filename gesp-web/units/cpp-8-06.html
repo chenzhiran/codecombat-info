@@ -1,0 +1,1267 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="copyright" content="CodeCombat Inc. codecombat.cn">
+<title>王国交通网 · 树与图的进阶应用 | 扣哒考级 · GESP C++ 八级</title>
+<style>
+  :root{
+    --primary:#2563eb; --primary-light:#4f8ff0; --primary-lighter:#eaf1fe; --primary-dark:#1b47a8;
+    --brand:#ff6b35; --brand-dark:#e8541f; --brand-soft:#fff3ec;
+    --night:#131c2b; --night-2:#1e2a3a; --gold:#f5b301;
+    --text:#242e3d; --dim:#68788f; --dim2:#93a2b6;
+    --bg:#ffffff; --bg-soft:#f7f9fd; --line:#e2e9f4; --sidebar:274px;
+    --code-bg:#131a26; --code-tx:#c8d3e0;
+    --code-kw:#c678dd; --code-st:#98c379; --code-nu:#d19a66; --code-cm:#5f7488; --code-fn:#e5c07b;
+  }
+  *{margin:0;padding:0;box-sizing:border-box}
+  html{scroll-behavior:smooth}
+  body{font-family:"PingFang SC","Microsoft YaHei","Segoe UI",-apple-system,sans-serif;line-height:1.9;color:var(--text);background:var(--bg);font-size:15.5px}
+  .sidebar-nav{position:fixed;top:0;left:0;width:var(--sidebar);height:100vh;overflow-y:auto;background:linear-gradient(180deg,#0c1626,#14243c);padding:14px 0 40px;z-index:100;border-right:3px solid var(--brand);transition:transform .3s ease}
+  .sidebar-nav::-webkit-scrollbar{width:5px}
+  .sidebar-nav::-webkit-scrollbar-thumb{background:var(--brand);border-radius:4px}
+  .sb-brand{display:flex;align-items:center;gap:10px;padding:10px 13px 12px;border-bottom:1px solid #233752;margin-bottom:8px}
+  .sidebar-nav a.sb-logo{display:flex;align-items:center;justify-content:center;flex-shrink:0;padding:0;border-left:none;transition:.2s}
+  .sb-logo:hover{transform:scale(1.08)}
+  .sb-logo img{height:34px;width:34px;display:block;object-fit:contain;border-radius:8px}
+  .sb-brand b{color:#f2f6fa;font-size:14px;letter-spacing:.5px;display:block;line-height:1.4}
+  .sb-brand span{color:#7f95ab;font-size:11.5px;display:block;line-height:1.4}
+  .nav-title{color:#ffb894;font-size:12px;font-weight:800;padding:10px 18px 6px;letter-spacing:1.2px}
+  .sidebar-nav a{display:block;color:#c3d0dc;text-decoration:none;padding:6px 18px;font-size:12.5px;line-height:1.55;border-left:3px solid transparent;transition:.18s}
+  .sidebar-nav a:hover{color:#fff;background:rgba(255,107,53,.16);border-left-color:var(--brand)}
+  .sidebar-nav a.nav-section{color:#ffb894;font-weight:700;font-size:13px;margin-top:11px;padding-top:10px;border-top:1px solid #233752}
+  .sidebar-nav a.nav-section:first-of-type{border-top:none;margin-top:0;padding-top:6px}
+  .sidebar-nav a.nav-sub{padding-left:30px;color:#93a8bc;font-size:12px}
+  .sidebar-nav a.nav-sub:hover{color:#fff}
+  .sb-back{margin:16px 14px 0;display:block;text-align:center;padding:9px;border-radius:9px;background:#1e304a;color:#a9c0d6 !important;font-size:12px;font-weight:700;border-left:none !important}
+  .sb-back:hover{background:var(--brand) !important;color:#fff !important}
+  .nav-toggle{display:none;position:fixed;top:14px;left:14px;z-index:120;background:var(--brand);color:#fff;border:none;border-radius:9px;padding:9px 13px;font-size:15px;cursor:pointer;box-shadow:0 4px 14px rgba(0,0,0,.25)}
+  .page{margin-left:var(--sidebar)}
+  .hero{position:relative;overflow:hidden;padding:44px 52px;color:#fff;background:linear-gradient(125deg,#0a1220 0%,#16294a 46%,#8a3a16 132%)}
+  .hero::after{content:"";position:absolute;right:-90px;top:-110px;width:400px;height:400px;border-radius:50%;background:radial-gradient(circle,rgba(245,179,1,.30),transparent 68%)}
+  .hero-top{display:flex;gap:36px;align-items:center;position:relative;z-index:2}
+  .hero-txt{flex:1;min-width:0}
+  .hero .crumb{font-size:11.5px;color:#ffb894;letter-spacing:1.5px;font-weight:700;margin-bottom:14px}
+  .hero h1{font-size:31px;font-weight:800;line-height:1.3;letter-spacing:.6px;margin-bottom:8px}
+  .hero h1 .sub{display:block;font-size:18px;font-weight:700;color:#ffd2b3;margin-top:6px;letter-spacing:.3px}
+  .hero .en{font-size:13px;color:#9db4c8;font-style:italic;margin-bottom:18px}
+  .hero .tags{display:flex;flex-wrap:wrap;gap:8px}
+  .tag{font-size:11.5px;padding:4px 12px;border-radius:20px;background:rgba(255,255,255,.12);border:1px solid rgba(255,255,255,.22);color:#e8f0f6;font-weight:600}
+  .tag.hot{background:rgba(255,107,53,.92);border-color:transparent;color:#fff}
+  .hero-card{flex-shrink:0;width:200px;text-align:center}
+  .hero-card .ava{width:148px;height:148px;border-radius:50%;object-fit:cover;object-position:top center;border:4px solid rgba(255,180,140,.6);box-shadow:0 14px 34px rgba(0,0,0,.45);background:#24344a}
+  .hero-card .nm{font-size:15px;font-weight:800;color:#fff;margin-top:10px}
+  .hero-card .ti{font-size:11.5px;color:#ffb894;margin-top:2px}
+  .container{max-width:1080px;margin:0 auto;padding:38px 52px 70px}
+  .lead{font-size:15.5px;line-height:2.05;color:#333f52;background:linear-gradient(120deg,#fff8f3,#f7fbf8);border-left:5px solid var(--brand);border-radius:0 14px 14px 0;padding:22px 26px;margin-bottom:32px}
+  .lead b{color:var(--brand-dark)}
+  .cast{display:flex;gap:16px;align-items:flex-start;border-radius:16px;padding:18px 22px;margin:24px 0}
+  .cast .ava{width:72px;height:72px;border-radius:50%;object-fit:cover;object-position:top center;flex-shrink:0;background:#e8eef5}
+  .cast .bubble{position:relative;font-size:14px;line-height:1.95;padding-top:2px;flex:1}
+  .cast .who{font-size:12px;font-weight:800;margin-bottom:5px;letter-spacing:.5px}
+  .cast.anya{background:var(--brand-soft);border:1px solid #ffdcc9}
+  .cast.anya .who{color:var(--brand-dark)}
+  .cast.anya .bubble{color:#5c4636}
+  .cast.duck{background:#fff5f5;border:1px solid #fbd5d5}
+  .cast.duck .who{color:#b91c1c}
+  .cast.duck .bubble{color:#5c4141}
+  .cast.teacher{background:linear-gradient(120deg,#f4f7fb,#ffffff);border:1px solid #dbe4f0}
+  .cast.teacher .who{color:#1e293b}
+  .cast.teacher .bubble{color:#3c4a5a}
+  .cast.hero{background:#f2f7fd;border:1px solid #cfe0f5}
+  .cast.hero .who{color:#1b47a8}
+  .cast.hero .bubble{color:#3a4658}
+  .goal-grid{display:grid;grid-template-columns:1fr 1fr;gap:16px;margin-bottom:36px}
+  .goal{border:1px solid var(--line);border-radius:15px;padding:19px 21px;background:#fff;box-shadow:0 4px 16px rgba(31,122,68,.05)}
+  .goal h4{font-size:14px;font-weight:800;margin-bottom:11px;display:flex;align-items:center;gap:8px;color:var(--primary-dark)}
+  .goal h4 .ic{width:22px;height:22px;border-radius:7px;background:var(--primary-lighter);display:flex;align-items:center;justify-content:center;font-size:12px}
+  .goal ul{list-style:none}
+  .goal li{font-size:13.5px;color:#48576b;line-height:1.9;padding-left:18px;position:relative}
+  .goal li::before{content:"▸";position:absolute;left:0;color:var(--primary);font-weight:800}
+  .goal.syllabus li::before{content:"✓"}
+  .section-header{margin:52px 0 24px;padding-bottom:12px;border-bottom:3px solid var(--brand);display:flex;align-items:baseline;gap:14px;flex-wrap:wrap}
+  .section-header h2{font-size:22px;font-weight:800;color:var(--night);letter-spacing:.4px}
+  .section-header .en-title{font-size:12px;color:var(--dim2);font-style:italic}
+  h3{font-size:17.5px;font-weight:800;margin:34px 0 14px;color:var(--night);display:flex;align-items:center;gap:10px}
+  h3::before{content:"";width:5px;height:17px;border-radius:3px;background:var(--brand);flex-shrink:0}
+  h4{font-size:15px;font-weight:800;margin:24px 0 10px;color:#2b4260}
+  p{margin:12px 0;color:#3a4658;line-height:2}
+  strong{color:var(--primary-dark)}
+  code.inline{background:var(--primary-lighter);color:var(--primary-dark);padding:2px 7px;border-radius:6px;font-family:"SFMono-Regular",Consolas,Menlo,monospace;font-size:.9em;font-weight:600}
+  .figure{margin:24px 0;text-align:center}
+  .figure svg.diagram{max-width:100%;height:auto;background:#fff;border:1px solid var(--line);border-radius:14px;padding:10px}
+  .figure .caption{font-size:12.5px;color:var(--dim2);margin-top:9px}
+  .pic{margin:26px 0;text-align:center}
+  .pic img{max-width:100%;border-radius:16px;box-shadow:0 10px 28px rgba(30,60,45,.15);display:block;margin:0 auto}
+  .pic figcaption{font-size:12.5px;color:var(--dim2);margin-top:9px}
+  .pic .ph{display:none}
+  .pic.missing img{display:none}
+  .pic.missing .ph{display:flex;flex-direction:column;align-items:center;justify-content:center;gap:9px;border:2px dashed #c9d9e8;border-radius:16px;background:linear-gradient(135deg,#f8fbfe,#eef6ff);padding:40px 26px;color:#7a8fa8}
+  .pic.missing .ph .fn{font-family:Consolas,monospace;font-size:12.5px;color:#2563eb;font-weight:700;word-break:break-all}
+  .pic.missing .ph .ds{font-size:12.5px;line-height:1.8;max-width:560px}
+  .box{border-radius:13px;padding:16px 20px;margin:20px 0;font-size:14px;line-height:1.95}
+  .box .lb{font-weight:800;margin-right:6px}
+  .info{background:#eef6ff;border-left:5px solid #3b82f6;color:#274768}
+  .info .lb{color:#1d4ed8}
+  .tip{background:#fff9ec;border-left:5px solid #f59e0b;color:#6b4e13}
+  .tip .lb{color:#b45309}
+  .remember{background:var(--primary-lighter);border-left:5px solid var(--primary);color:#1d3a6b}
+  .remember .lb{color:var(--primary-dark)}
+  .warn{background:#fef2f2;border-left:5px solid #ef4444;color:#7f2b2b}
+  .warn .lb{color:#b91c1c}
+  .code-card{margin:20px 0;border-radius:14px;overflow:hidden;box-shadow:0 10px 28px rgba(20,40,28,.20)}
+  .code-head{display:flex;align-items:center;gap:9px;background:#1a2434;padding:9px 14px}
+  .code-head .dot{width:10px;height:10px;border-radius:50%}
+  .code-head .d1{background:#ff5f57}.code-head .d2{background:#febc2e}.code-head .d3{background:#28c840}
+  .code-head .file{color:#8fa6c0;font-size:11.5px;font-family:Consolas,monospace;margin-left:6px}
+  .code-head .lang{margin-left:auto;font-size:10.5px;font-weight:800;color:#0d141f;background:#4f8ff0;padding:2px 9px;border-radius:6px;letter-spacing:.4px}
+  .code-card pre{background:var(--code-bg);padding:18px 20px;overflow-x:auto;margin:0;font-family:"SFMono-Regular",Consolas,"Courier New",monospace;font-size:13.5px;line-height:1.85}
+  .code-card pre::-webkit-scrollbar{height:8px}
+  .code-card pre::-webkit-scrollbar-thumb{background:#31445c;border-radius:4px}
+  .code-card code{color:var(--code-tx);white-space:pre}
+  .kw{color:var(--code-kw);font-weight:600}
+  .st{color:var(--code-st)}
+  .nu{color:var(--code-nu)}
+  .cm{color:var(--code-cm);font-style:italic}
+  .fn{color:var(--code-fn)}
+  .out{background:#0f1621;color:#7fb3f5;font-family:Consolas,monospace;font-size:13px;padding:12px 20px;border-top:1px solid #22304a}
+  .out b{color:#c9d6cd;font-weight:600;font-size:11.5px;letter-spacing:1px}
+  .out.err{color:#fca5a5}
+  table.styled{width:100%;border-collapse:collapse;margin:20px 0;font-size:13.5px;border-radius:12px;overflow:hidden;box-shadow:0 4px 16px rgba(31,122,68,.07)}
+  table.styled thead{background:var(--brand)}
+  table.styled th{color:#fff;padding:11px 14px;text-align:left;font-weight:700;font-size:13px}
+  table.styled td{padding:10px 14px;border-bottom:1px solid var(--line);color:#445266;vertical-align:top}
+  table.styled tbody tr:nth-child(even){background:var(--bg-soft)}
+  table.styled tbody tr:last-child td{border-bottom:none}
+  .level-card{border:1px solid var(--line);border-radius:16px;overflow:hidden;margin:22px 0;box-shadow:0 6px 22px rgba(31,122,68,.07)}
+  .level-card .lc-head{background:linear-gradient(100deg,#17283a,#8a3a16);color:#fff;padding:15px 22px;display:flex;align-items:center;gap:12px;flex-wrap:wrap}
+  .level-card .lc-head .n{font-size:12px;font-weight:800;background:rgba(255,255,255,.2);padding:3px 10px;border-radius:20px}
+  .level-card .lc-head h4{margin:0;color:#fff;font-size:16px}
+  .level-card .lc-head .go{margin-left:auto;font-size:11.5px;color:#ffd2b3}
+  .level-card .lc-body{padding:20px 24px;background:#fff}
+  .level-card .story{background:#f9fbfd;border-left:4px solid #93c5fd;border-radius:0 10px 10px 0;padding:13px 18px;margin:0 0 16px;font-size:14px;line-height:1.95;color:#3f5163}
+  .level-card .story b{color:#1d4ed8}
+  .btn-go{display:inline-flex;align-items:center;gap:8px;background:linear-gradient(135deg,var(--brand),var(--brand-dark));color:#fff;text-decoration:none;font-weight:800;font-size:13.5px;padding:10px 22px;border-radius:11px;box-shadow:0 8px 20px rgba(255,107,53,.32);transition:.2s}
+  .btn-go:hover{transform:translateY(-2px);box-shadow:0 12px 26px rgba(255,107,53,.42)}
+  .pit{border:1px solid #f6dede;border-radius:14px;overflow:hidden;margin:16px 0;background:#fff}
+  .pit .pt{display:flex;gap:12px;padding:14px 18px;background:#fffafa;align-items:flex-start}
+  .pit .x{width:26px;height:26px;border-radius:9px;background:#fee;color:#dc2626;display:flex;align-items:center;justify-content:center;font-weight:800;flex-shrink:0;font-size:13px}
+  .pit .t{font-size:13.5px;line-height:1.9;color:#5c4a4a;flex:1}
+  .pit .t b{color:#b91c1c}
+  .pit .duck{display:flex;gap:12px;padding:13px 18px;background:#fff5f5;border-top:1px dashed #f3d0d0;align-items:flex-start}
+  .pit .duck img{width:48px;height:48px;object-fit:contain;flex-shrink:0;margin-top:2px}
+  .pit .duck .dt{font-size:13.5px;line-height:1.9;color:#7a3b3b}
+  .pit .duck .dt b{color:#b91c1c}
+  .pit .fix{padding:12px 18px;background:#f2f7fd;border-top:1px dashed #cfe0f5;font-size:13.5px;color:#1d3a6b}
+  .pit .fix b{color:var(--primary-dark)}
+  .exam{border:1px solid #dfe7f5;border-radius:15px;margin:16px 0;overflow:hidden;background:#fff;box-shadow:0 4px 16px rgba(38,62,120,.06)}
+  .exam .eh{display:flex;align-items:center;gap:10px;padding:11px 18px;background:linear-gradient(100deg,#eef4ff,#f7faff);border-bottom:1px solid #e3ebf8;flex-wrap:wrap}
+  .exam .eh .src{font-size:11px;font-weight:800;color:#fff;background:#2563eb;padding:2.5px 10px;border-radius:20px}
+  .exam .eh .src.ori{background:#4f8ff0}
+  .exam .eh .tp{font-size:11.5px;color:#5b7ba8;font-weight:700}
+  .exam .eb{padding:16px 20px}
+  .exam .q{font-weight:700;font-size:14px;color:#1e2a3e;line-height:1.9;margin-bottom:10px}
+  .exam .opt{font-size:13.5px;color:#48576b;line-height:2.05;padding-left:6px}
+  .exam .opt i{font-style:normal;font-weight:800;color:var(--primary-dark);margin-right:7px}
+  .exam pre{margin:12px 0;background:#1b2a21;border-radius:10px;padding:14px 16px;overflow-x:auto;font-family:Consolas,monospace;font-size:13px;line-height:1.8;color:var(--code-tx)}
+  .exam details{margin-top:10px;border-top:1px dashed var(--line);padding-top:10px}
+  .exam summary{cursor:pointer;font-size:12.5px;font-weight:800;color:#2563eb;outline:none;user-select:none}
+  .exam details .ans{font-size:13.5px;color:#3a4658;line-height:1.95;margin-top:9px;background:var(--bg-soft);padding:13px 16px;border-radius:10px}
+  .exam details .ans b{color:var(--primary-dark)}
+  .exam details .ans .tagline{display:inline-block;font-size:11px;background:#e0f2fe;color:#0e7490;padding:1.5px 8px;border-radius:6px;font-weight:700;margin-right:6px}
+  .summary{margin:40px 0 20px;border-radius:18px;padding:26px 30px;background:linear-gradient(130deg,#fff8f3,#ffffff);border:1px solid #ffe0cf}
+  .summary h3{margin-top:0}
+  .summary ul{list-style:none;margin-top:10px}
+  .summary li{font-size:14px;line-height:2;color:#3d4d66;padding-left:24px;position:relative}
+  .summary li::before{content:"◆";position:absolute;left:0;color:var(--brand);font-size:11px;top:6px}
+  .pager{display:flex;gap:14px;margin-top:30px;flex-wrap:wrap}
+  .pager a{flex:1;min-width:200px;text-decoration:none;border:1px solid var(--line);border-radius:14px;padding:16px 20px;background:#fff;transition:.2s;display:block}
+  .pager a:hover{border-color:var(--brand);box-shadow:0 10px 26px rgba(255,107,53,.14);transform:translateY(-2px)}
+  .pager a .k{font-size:11px;color:var(--dim2);font-weight:700;letter-spacing:1px}
+  .pager a .v{font-size:14px;font-weight:800;color:var(--night);margin-top:5px}
+  .pager a.back{background:var(--brand-soft);border-color:transparent;text-align:center}
+  .pager a.back .v{color:var(--brand-dark)}
+  .cta{margin-top:26px;border-radius:20px;padding:30px 34px;color:#fff;position:relative;overflow:hidden;background:linear-gradient(120deg,#16202f,#2b3a52 46%,#a8431c 132%)}
+  .cta::after{content:"";position:absolute;right:-70px;bottom:-90px;width:280px;height:280px;border-radius:50%;background:radial-gradient(circle,rgba(255,140,80,.45),transparent 68%)}
+  .cta h3{color:#fff;margin:0 0 10px;position:relative;z-index:2}
+  .cta h3::before{background:var(--brand)}
+  .cta p{color:#d8e0ef;font-size:13.5px;margin:0 0 18px;position:relative;z-index:2;max-width:640px}
+  .cta .btn-go{position:relative;z-index:2}
+  @media(max-width:900px){
+    .sidebar-nav{transform:translateX(-100%)}
+    .sidebar-nav.active{transform:translateX(0)}
+    .nav-toggle{display:block}
+    .page{margin-left:0}
+    .hero{padding:70px 22px 34px}
+    .hero-top{flex-direction:column-reverse;text-align:center}
+    .hero-card{width:auto}
+    .container{padding:26px 20px 60px}
+    .goal-grid{grid-template-columns:1fr}
+  }
+</style>
+</head>
+<body>
+
+<button class="nav-toggle" onclick="document.querySelector('.sidebar-nav').classList.toggle('active')">&#9776;</button>
+
+<nav class="sidebar-nav">
+  <div class="sb-brand">
+    <a class="sb-logo" href="https://codecombat.cn/" target="_blank" rel="noopener" title="访问 CodeCombat 扣哒世界官网">
+      <img src="../assets/logo.png" alt="CodeCombat 扣哒世界">
+    </a>
+    <div><b>王国交通网</b><span>寂灭王座 · C++ 八级 第 6 单元</span></div>
+  </div>
+  <div class="nav-title">本单元目录</div>
+  <a href="#s0" class="nav-section">0　单元导语与目标</a>
+  <a href="#s0-1" class="nav-sub">0.1 学习目标</a>
+  <a href="#s0-2" class="nav-sub">0.2 考纲对照</a>
+  <a href="#s1" class="nav-section">1　王国地图是一张图</a>
+  <a href="#s1-1" class="nav-sub">1.1 地图就是点加边</a>
+  <a href="#s1-2" class="nav-sub">1.2 本节要回答的三个问题</a>
+  <a href="#s2" class="nav-section">2　生成树：用最少的路连通</a>
+  <a href="#s2-1" class="nav-sub">2.1 生成树的两条性质</a>
+  <a href="#s2-2" class="nav-sub">2.2 最小生成树：贪心挑最短的边</a>
+  <a href="#s2-3" class="nav-sub">2.3 为什么这条贪心是对的</a>
+  <a href="#s2-4" class="nav-sub">2.4 另一种长大方式：Prim 算法</a>
+  <a href="#s3" class="nav-section">3　最短路径：走哪条路最近</a>
+  <a href="#s3-1" class="nav-sub">3.1 Dijkstra 算法</a>
+  <a href="#s3-2" class="nav-sub">3.2 Floyd 算法</a>
+  <a href="#s3-3" class="nav-sub">3.3 三个算法放在一起比一比</a>
+  <a href="#s4" class="nav-section">4　判断连通与成环</a>
+  <a href="#s4-1" class="nav-sub">4.1 并查集思想</a>
+  <a href="#s4-2" class="nav-sub">4.2 并查集的核心思想</a>
+  <a href="#s5" class="nav-section">5　拓扑排序</a>
+  <a href="#s5-1" class="nav-sub">5.1 拓扑排序是什么</a>
+  <a href="#s5-2" class="nav-sub">5.2 反复取"入度为 0"的点</a>
+  <a href="#s6" class="nav-section">6　代码实战</a>
+  <a href="#s7" class="nav-section">7　常见陷阱</a>
+  <a href="#s8" class="nav-section">8　题目练习</a>
+  <a href="#s9" class="nav-section">9　本单元小结</a>
+  <a href="../index.html" target="_top" class="sb-back">返回考纲之路</a>
+</nav>
+
+<div class="page">
+
+<div class="hero">
+  <div class="hero-top">
+    <div class="hero-txt">
+      <div class="crumb">扣哒考级 · GESP C++ 八级 · 第 6 单元　|　寂灭王座 THE THRONE</div>
+      <h1>王国交通网
+        <span class="sub">树与图的进阶应用</span>
+      </h1>
+      <div class="en">Advanced Trees &amp; Graphs</div>
+      <div class="tags">        <span class="tag hot">考纲 · 树与图进阶</span>
+        <span class="tag">生成树</span>
+        <span class="tag">连通性</span>
+        <span class="tag">拓扑排序</span>
+        <span class="tag">并查集思想</span></div>
+    </div>
+    <div class="hero-card">
+      <img class="ava" src="../assets/avatars/hushbaum.webp" alt="贺舒曼" onerror="this.style.background='#24344a';this.src='../assets/heroes/hushbaum.webp'">
+      <div class="nm">贺舒曼</div>
+      <div class="ti">镜中先知 · 你的向导</div>
+    </div>
+  </div>
+</div>
+
+<div class="container">
+
+<div class="lead">
+  王座前摊着一张王国地图：<b>十几座城池，城与城之间画着道路。</b><br>
+  工部尚书开口了：陛下要修路，<b>要求所有城池都连通，但总长度要最短。</b><br>
+  你盯着那团绕来绕去的线，一时不知从哪儿下手。<br>
+  贺舒曼指着其中几条：先别管全部。<b>你只需要挑出"最少的那几条"。</b>
+</div>
+
+<div class="cast teacher">
+  <img class="ava" src="../assets/avatars/hushbaum.webp" alt="贺舒曼" onerror="this.style.display='none'">
+  <div class="bubble">
+    <div class="who">贺舒曼 · 镜中先知</div>
+    七级我们学过"图怎么存、怎么走"。这一单元往前一步：<strong>图能做哪些"有用的事"？</strong><br>
+    比如：<b>用最少的道路把所有的城连起来</b>、<b>判断有没有绕圈的坏路</b>、
+    <b>安排施工顺序</b>……<br>
+    这些都是树与图在真实问题里的应用。
+  </div>
+</div>
+
+<figure class="pic">
+  <img src="../assets/illustrations/py-L8-06-01_kingdom_roads.webp" alt="王国交通网"
+       onerror="this.closest('.pic').classList.add('missing')">
+  <div class="ph">
+    <div class="fn">assets/illustrations/py-L8-06-01_kingdom_roads.webp</div>
+    <div class="ds">【配图位】俯瞰的王国地图：十几座城以光点表示，城与城之间连着发光的道路，其中一部分道路更亮（被选中的生成树），其余较暗；地图一角摊着卷起的工程图纸与铜制圆规。</div>
+  </div>
+  <figcaption>图 1：寂灭王座的王国交通网——今天要从这里开始</figcaption>
+</figure>
+
+<div class="section-header" id="s0">
+  <h2>0　单元导语与目标</h2>
+  <div class="en-title">Unit Overview</div>
+
+<h3 id="s0-1">0.1 学习目标</h3>
+</div>
+
+<div class="goal-grid">
+  <h3 id="s0-2">0.2 考纲对照</h3>
+
+<div class="goal">
+    <h4><span class="ic">1</span>学完这个单元，你将能……</h4>
+    <ul>
+      <li>说清"生成树"是什么</li>
+      <li>用贪心思想理解最小生成树（Kruskal 与 Prim）</li>
+      <li>判断加一条边会不会形成环</li>
+      <li>用出入度理解拓扑排序</li>
+      <li>判断一个有向图有没有环</li>
+      <li>用 Dijkstra 求单源最短路径、用 Floyd 求任意两点最短路</li>
+    </ul>
+  </div>
+  <div class="goal syllabus">
+    <h4><span class="ic">2</span>对标 GESP 考纲（C++ 八级）</h4>
+    <ul>
+      <li>掌握最小生成树的两种算法：Kruskal（按边）与 Prim（按点）</li>
+      <li>掌握判断图连通性、环的基本方法</li>
+      <li>掌握最短路径算法：Dijkstra（单源）与 Floyd（多源）</li>
+      <li>了解拓扑排序的基本思想与应用</li>
+      <li>考核目标：能对图做连通性分析并解决简单的应用问题</li>
+    </ul>
+  </div>
+</div>
+
+<div class="section-header" id="s1">
+  <h2>1　王国地图是一张图</h2>
+  <div class="en-title">The Kingdom Map Is a Graph</div>
+
+<h3 id="s1-1">1.1 地图就是点加边</h3>
+</div>
+
+<p>先回顾一下：地图上的城池就是<strong>顶点</strong>，道路就是<strong>边</strong>。</p>
+
+<table class="styled">
+  <thead><tr><th>王国里的说法</th><th>图论里的说法</th></tr></thead>
+  <tbody>
+    <tr><td>城池</td><td>顶点</td></tr>
+    <tr><td>道路</td><td>边</td></tr>
+    <tr><td>道路长度</td><td>边的权值</td></tr>
+    <tr><td>两个城能互相走到</td><td>两点连通</td></tr>
+    <tr><td>有条路绕了一圈回到原地</td><td>环</td></tr>
+    <tr><td>只有单行道的路线</td><td>有向边</td></tr>
+  </tbody>
+</table>
+
+<h3 id="s1-2">1.2 本节要回答的三个问题</h3>
+
+<div class="box remember">
+  <span class="lb">本节要回答的三个问题：</span><br>
+  <b>① 用最少的道路把所有城池连通 → 生成树</b><br>
+  <b>② 这条路加了会不会形成环 → 连通性判断</b><br>
+  <b>③ 施工必须按什么顺序 → 拓扑排序</b>
+</div>
+
+<div class="section-header" id="s2">
+  <h2>2　生成树：用最少的路连通</h2>
+  <div class="en-title">Spanning Tree</div>
+</div>
+
+<h3 id="s2-1">2.1 生成树的两条性质</h3>
+
+<figure class="figure">
+  <svg class="diagram" viewBox="0 0 860 300" role="img" aria-label="生成树">
+    <text x="24" y="34" font-size="14" font-weight="bold" fill="#1f2937">5 座城：左边原本有环，右边挑出 4 条路就够了</text>
+
+    <rect x="50" y="56" width="370" height="220" rx="12" fill="#eaf1fe" stroke="#2563eb" stroke-width="1.8"/>
+    <text x="235" y="84" text-anchor="middle" font-size="12.5" fill="#1d4ed8" font-weight="bold">原始道路网（有环）</text>
+    <g font-family="Consolas,monospace" font-size="11.5">
+      <circle cx="235" cy="126" r="18" fill="#fff" stroke="#2563eb" stroke-width="2"/>
+      <text x="235" y="132" text-anchor="middle" fill="#1d4ed8">A</text>
+      <circle cx="145" cy="196" r="18" fill="#fff" stroke="#2563eb" stroke-width="2"/>
+      <text x="145" y="202" text-anchor="middle" fill="#1d4ed8">B</text>
+      <circle cx="325" cy="196" r="18" fill="#fff" stroke="#2563eb" stroke-width="2"/>
+      <text x="325" y="202" text-anchor="middle" fill="#1d4ed8">C</text>
+      <circle cx="200" cy="246" r="18" fill="#fff" stroke="#2563eb" stroke-width="2"/>
+      <text x="200" y="252" text-anchor="middle" fill="#1d4ed8">D</text>
+      <circle cx="280" cy="246" r="18" fill="#fff" stroke="#2563eb" stroke-width="2"/>
+      <text x="280" y="252" text-anchor="middle" fill="#1d4ed8">E</text>
+    </g>
+    <path d="M222 142 L158 182" stroke="#2563eb" stroke-width="2"/>
+    <path d="M248 142 L312 182" stroke="#2563eb" stroke-width="2"/>
+    <path d="M152 212 L190 234" stroke="#2563eb" stroke-width="2"/>
+    <path d="M318 212 L290 234" stroke="#2563eb" stroke-width="2"/>
+    <path d="M218 240 L262 240" stroke="#4f8ff0" stroke-width="2.4" stroke-dasharray="6 4"/>
+    <text x="240" y="234" font-size="10.5" fill="#2563eb">多余</text>
+
+    <rect x="446" y="56" width="366" height="220" rx="12" fill="#eaf1fe" stroke="#2563eb" stroke-width="2"/>
+    <text x="629" y="84" text-anchor="middle" font-size="12.5" fill="#1d4ed8" font-weight="bold">生成树（4 条路，无环）</text>
+    <g font-family="Consolas,monospace" font-size="11.5">
+      <circle cx="629" cy="126" r="18" fill="#fff" stroke="#4f8ff0" stroke-width="2.2"/>
+      <text x="629" y="132" text-anchor="middle" fill="#1d4ed8">A</text>
+      <circle cx="539" cy="196" r="18" fill="#fff" stroke="#4f8ff0" stroke-width="2.2"/>
+      <text x="539" y="202" text-anchor="middle" fill="#1d4ed8">B</text>
+      <circle cx="719" cy="196" r="18" fill="#fff" stroke="#4f8ff0" stroke-width="2.2"/>
+      <text x="719" y="202" text-anchor="middle" fill="#1d4ed8">C</text>
+      <circle cx="594" cy="246" r="18" fill="#fff" stroke="#4f8ff0" stroke-width="2.2"/>
+      <text x="594" y="252" text-anchor="middle" fill="#1d4ed8">D</text>
+      <circle cx="674" cy="246" r="18" fill="#fff" stroke="#4f8ff0" stroke-width="2.2"/>
+      <text x="674" y="252" text-anchor="middle" fill="#1d4ed8">E</text>
+    </g>
+    <path d="M616 142 L552 182" stroke="#4f8ff0" stroke-width="2.4"/>
+    <path d="M642 142 L706 182" stroke="#4f8ff0" stroke-width="2.4"/>
+    <path d="M546 212 L584 234" stroke="#4f8ff0" stroke-width="2.4"/>
+    <path d="M712 212 L684 234" stroke="#4f8ff0" stroke-width="2.4"/>
+
+    <text x="430" y="292" text-anchor="middle" font-size="12" fill="#1d4ed8">n 个顶点的生成树，一定恰好有 n-1 条边</text>
+  </svg>
+  <div class="caption">图 2（SVG）：连通所有顶点、且不绕圈的最少边数</div>
+</figure>
+
+<div class="box remember">
+  <span class="lb">生成树的两条性质：</span><br>
+  <b>① 连通</b>——所有顶点都能到达；<br>
+  <b>② 无环</b>——没有任何一圈多余的边。<br>
+  <strong>n 个顶点的生成树，恰好有 n-1 条边——一条不多，一条不少。</strong>
+</div>
+
+<h3 id="s2-2">2.2 最小生成树：贪心挑最短的边</h3>
+
+<div class="code-card">
+  <div class="code-head">
+    <span class="dot d1"></span><span class="dot d2"></span><span class="dot d3"></span>
+    <span class="file">最小生成树：贪心挑最短的边（Kruskal 思想）</span>
+    <span class="lang">C++</span>
+  </div>
+  <pre><code>// 把所有边按"长度"从小到大排序
+sort(edges.begin(), edges.end(),
+     [](const Edge&amp; a, const Edge&amp; b) { return a.w &lt; b.w; });
+
+int total = 0;
+int count = 0;
+
+for (Edge&amp; e : edges) {
+    if (unite(e.u, e.v)) {          // 关键判断：加这条边不会形成环
+        total = total + e.w;
+        count = count + 1;
+        if (count == n - 1) break;  // 已经够 n-1 条了
+    }
+}
+
+cout &lt;&lt; "最短总长度：" &lt;&lt; total &lt;&lt; endl;
+</code></pre>
+  <div class="out"><b>思路</b>　贪心地从最短的边开始挑，只要不绕圈就要它——挑够 n-1 条就停</div>
+</div>
+
+<h3 id="s2-3">2.3 为什么这条贪心是对的</h3>
+
+<div class="box info">
+  <span class="lb">为什么这条贪心是对的？</span>
+  因为"造成环"的边一定是多余的——<strong>去掉它，连通性不受影响。</strong><br>
+  所以每次都优先要"最短且不绕圈"的边，最后得到的一定是最短的连通方案。<br>
+  <b>这是贪心算法里少数能够严格证明正确性的经典例子。</b>
+</div>
+
+<figure class="pic">
+  <img src="../assets/illustrations/py-L8-06-02_spanning_tree_scene.webp" alt="用最少的路把城邦连起来"
+       onerror="this.closest('.pic').classList.add('missing')">
+  <div class="ph">
+    <div class="fn">assets/illustrations/py-L8-06-02_spanning_tree_scene.webp</div>
+    <div class="ds">【配图位】王国地图上散着若干座发光的城邦，其间画着许多条候选道路；其中一部分道路被高亮成金色，恰好把所有城邦连成一片、且没有绕成圈；一名学徒把没被选中的路用细线标灰。</div>
+  </div>
+  <figcaption>图 3：用最少的路把城邦连通</figcaption>
+</figure>
+
+<h3 id="s2-4">2.4 另一种长大方式：Prim 算法</h3>
+
+<div class="box remember">
+  <span class="lb">两种最小生成树算法怎么区分（真题原话）：</span><br>
+<code class="inline">Kruskal</code>：<b>按边做事</b>——把所有边排序，从小到大试着加，用并查集判断会不会成环。适合<b>稀疏图</b>（边少）。<br>
+<code class="inline">Prim</code>：<b>按点做事</b>——从一个点开始"长大"，每次挑一条连接"已连通"与"未连通"的最短边。适合<b>稠密图</b>（边多）。<br>
+  <b>注意：</b>两种算法求出的最小生成树，<b>总权值一定相同</b>，但<b>选中的边集不一定完全一样</b>（答案不唯一时）。
+</div>
+
+<div class="code-card">
+  <div class="code-head">
+    <span class="dot d1"></span><span class="dot d2"></span><span class="dot d3"></span>
+    <span class="file">Prim：从一个点开始长大</span>
+    <span class="lang">C++</span>
+  </div>
+<pre><code>const int INF = 1e9;
+
+int n = 5;                         // 5 个点，邻接矩阵 g[i][j] 存边权
+bool used[5] = {false};            // 这个点进没进"已连通集合"
+int low[5];                        // 每个点连到已连通集合的最短边
+
+used[0] = true;
+for (int j = 0; j &lt; n; j++) low[j] = g[0][j];    // 起点先连出去
+
+int total = 0;
+for (int t = 0; t &lt; n - 1; t++) {                // 一共还要连 n-1 个点
+    int k = -1;
+    for (int j = 0; j &lt; n; j++)                  // ① 找还没用过、且 low 最小的点
+        if (!used[j] &amp;&amp; (k == -1 || low[j] &lt; low[k])) k = j;
+    used[k] = true;
+    total += low[k];
+    for (int j = 0; j &lt; n; j++)                  // ② 用新加入的点更新别人的 low
+        if (!used[j] &amp;&amp; g[k][j] &lt; low[j]) low[j] = g[k][j];
+}
+
+cout &lt;&lt; total &lt;&lt; endl;</code></pre>
+  <div class="out"><b>要点</b> 每轮只要找"还没用过里 low 最小的点"，再用它更新别人</div>
+</div>
+
+<div class="section-header" id="s3">
+  <h2>3　最短路径：走哪条路最近</h2>
+  <div class="en-title">Shortest Path</div>
+</div>
+
+<h3 id="s3-1">3.1 从一个起点出发：Dijkstra 算法</h3>
+
+<p>生成树问的是"<b>怎么连最省</b>"，最短路径问的是"<b>怎么走最近</b>"。<br>
+<b>只关心一个起点到所有点的距离，用 Dijkstra；想一次算出"任意两点之间"，用 Floyd。</b></p>
+
+<figure class="pic">
+  <img src="../assets/illustrations/py-L8-06-04_shortest_path.webp" alt="最短路径"
+       onerror="this.closest('.pic').classList.add('missing')">
+  <div class="ph">
+    <div class="fn">assets/illustrations/py-L8-06-04_shortest_path.webp</div>
+    <div class="ds">【配图位】寂灭王座的王道交通图上，一个发光的小人站在最左边的城市（起点），四条道路分别标着 2、5、4、7 的里程；图中用浅金色的虚线高亮出"到每个城市最省的那条路线"，并在每个城市上方点亮了累计里程的数码牌</div>
+  </div>
+  <figcaption>图 4（PNG）：单源最短路径——从一个起点出发，到每个点的最省路线</figcaption>
+</figure>
+
+<div class="box remember">
+  <span class="lb">Dijkstra 的两步循环：</span><br>
+  <b>① 挑</b>——从"还没确定的点"里，挑出当前 <code class="inline">dist</code> 最小的那个 u；
+  既然它已经是最小的，那它的最短距离就<b>再也不会变了</b>。<br>
+  <b>② 松</b>——用 u 去更新它的所有邻居 v：如果
+  <code class="inline">dist[u] + g[u][v] &lt; dist[v]</code>，就说明"绕道 u 更近"，把 dist[v] 改小。<br>
+  <b>重复 n 次，所有点的最短距离就都确定了。</b>
+</div>
+
+<div class="code-card">
+  <div class="code-head">
+    <span class="dot d1"></span><span class="dot d2"></span><span class="dot d3"></span>
+    <span class="file">Dijkstra：挑最小的，再去松弛</span>
+    <span class="lang">C++</span>
+  </div>
+<pre><code>const int INF = 1e9;
+
+int n = 5;
+int dist[5];                     // dist[i]：从起点到 i 目前找到的最短距离
+bool done[5] = {false};          // 这个点的最短距离"已经确定"了吗
+
+for (int i = 0; i &lt; n; i++) dist[i] = INF;
+dist[0] = 0;                     // 起点是自己，距离 0
+
+while (true) {
+    int u = -1;
+    for (int i = 0; i &lt; n; i++)  // ① 从还没确定的点里挑 dist 最小的
+        if (!done[i] &amp;&amp; (u == -1 || dist[i] &lt; dist[u])) u = i;
+    if (u == -1) break;
+    done[u] = true;
+
+    for (int v = 0; v &lt; n; v++)  // ② 用 u 去"松弛"它的邻居
+        if (g[u][v] &lt; INF &amp;&amp; dist[u] + g[u][v] &lt; dist[v])
+            dist[v] = dist[u] + g[u][v];
+}
+
+for (int i = 0; i &lt; n; i++) cout &lt;&lt; dist[i] &lt;&lt; " ";
+cout &lt;&lt; endl;</code></pre>
+  <div class="out"><b>要点</b> 每轮"挑一个点 + 松弛一圈"，共 n 轮</div>
+</div>
+
+<div class="box warn">
+  <span class="lb">为什么不能有负权边？</span>
+  因为 Dijkstra 的前提是"<b>先确定的一定最短</b>"。
+  <b>打个比方：</b>如果路上有"倒贴钱"的通道，那"现在看着远"的路，绕一圈反而可能更便宜——
+  这个前提就崩了。<b>有负权边时要用 Bellman-Ford / SPFA。</b>
+</div>
+
+<h3 id="s3-2">3.2 一次算出所有点对：Floyd 算法</h3>
+
+<p>如果要问"<b>任意两点</b>之间的最短距离"，就轮到 Floyd 出场了——它短得出奇，只有三重循环。</p>
+
+<figure class="figure">
+  <svg class="diagram" viewBox="0 0 860 250" role="img" aria-label="Dijkstra 与 Floyd 的对比">
+    <rect x="30" y="52" width="380" height="170" rx="12" fill="#eaf1fe" stroke="#2563eb" stroke-width="1.8"/>
+    <text x="52" y="82" font-size="13.5" font-weight="bold" fill="#1d4ed8">Dijkstra：一个起点，铺开去</text>
+    <text x="52" y="112" font-size="12" fill="#1f2937">① 挑"还没确定里最近的"点</text>
+    <text x="52" y="138" font-size="12" fill="#1f2937">② 用它更新所有邻居</text>
+    <text x="52" y="164" font-size="12" fill="#1f2937">③ 重复到全部确定</text>
+    <text x="52" y="192" font-size="12" fill="#b45309">朴素 O(n²)；堆优化 O(m log n)</text>
+    <text x="52" y="212" font-size="11.5" fill="#68788f">要求：边权不能为负</text>
+    <rect x="450" y="52" width="380" height="170" rx="12" fill="#eaf1fe" stroke="#2563eb" stroke-width="1.8"/>
+    <text x="472" y="82" font-size="13.5" font-weight="bold" fill="#1d4ed8">Floyd：一次算出所有点对</text>
+    <text x="472" y="112" font-size="12" fill="#1f2937">for (k) for (i) for (j)</text>
+    <text x="472" y="138" font-size="12" fill="#1f2937">k 是"允许经过的中转点"</text>
+    <text x="472" y="164" font-size="12" fill="#1f2937">三重循环，顺序不能换</text>
+    <text x="472" y="192" font-size="12" fill="#b45309">O(n³)　n 小的时候才好用</text>
+    <text x="472" y="212" font-size="11.5" fill="#68788f">能处理负权边（不能有负环）</text>
+  </svg>
+  <div class="caption">图解：两种最短路算法的分工——单源用 Dijkstra，多源用 Floyd</div>
+</figure>
+
+<div class="code-card">
+  <div class="code-head">
+    <span class="dot d1"></span><span class="dot d2"></span><span class="dot d3"></span>
+    <span class="file">Floyd：三重循环，k 在最外层</span>
+    <span class="lang">C++</span>
+  </div>
+<pre><code>const int INF = 1e9;
+
+int n = 5;
+int d[5][5];                          // d[i][j]：i 到 j 的最短距离
+
+for (int i = 0; i &lt; n; i++)
+    for (int j = 0; j &lt; n; j++)
+        d[i][j] = (i == j ? 0 : INF);   // 自己到自己永远是 0
+
+for (auto&amp; e : edges) {                 // 直接相连的边
+    d[e.u][e.v] = e.w;
+    d[e.v][e.u] = e.w;                  // 无向图两边都要写
+}
+
+for (int k = 0; k &lt; n; k++)             // ① 中转点 k —— 一定要在最外层！
+    for (int i = 0; i &lt; n; i++)         // ② 起点
+        for (int j = 0; j &lt; n; j++)     // ③ 终点
+            if (d[i][k] + d[k][j] &lt; d[i][j])
+                d[i][j] = d[i][k] + d[k][j];
+
+cout &lt;&lt; d[0][4] &lt;&lt; endl;</code></pre>
+  <div class="out"><b>要点</b> k 是"允许经过的中转点"，必须在最外层</div>
+</div>
+
+<h3 id="s3-3">3.3 三个算法放在一起比一比</h3>
+
+<table class="styled">
+  <thead><tr><th>算法</th><th>解决什么</th><th>时间复杂度</th><th>负权边</th></tr></thead>
+  <tbody>
+    <tr><td><strong>Dijkstra</strong></td><td>单源：一个起点到所有点</td><td>朴素 O(n²)，堆优化 O(m log n)</td><td>不能有</td></tr>
+    <tr><td><strong>Floyd</strong></td><td>多源：任意两点之间</td><td>O(n³)</td><td>可以有（不能有负环）</td></tr>
+    <tr><td><strong>BFS</strong></td><td>单源，且<b>每条边权都是 1</b></td><td>O(n + m)</td><td>不涉及</td></tr>
+  </tbody>
+</table>
+
+<div class="box info">
+  <span class="lb">真题演练（2026 年 9 月 · C++ 八级）：</span><br>
+  <b>第 11 题：</b>在使用<b>小根堆（优先队列）优化的 Dijkstra</b> 算法中，堆中每个元素通常存储的是<b>"（到起点的距离，顶点编号）"这一对</b>——因为每次要取出的是<b>距离最小</b>的那个点。<br>
+  <b>第 12 题：</b>Floyd 算法的经典三重循环 <code class="inline">for (k) for (i) for (j)</code> 中，最外层变量 <code class="inline">k</code> 表示<b>"当前允许经过的中转点"</b>。<b>它必须在最外层——这是 Floyd 最容易写错的地方。</b>
+</div>
+
+
+<div class="section-header" id="s4">
+  <h2>4　判断连通与成环</h2>
+  <div class="en-title">Connectivity &amp; Cycles</div>
+
+<h3 id="s4-1">3.1 并查集思想</h3>
+</div>
+
+<div class="code-card">
+  <div class="code-head">
+    <span class="dot d1"></span><span class="dot d2"></span><span class="dot d3"></span>
+    <span class="file">并查集思想：用"代表"判断是否已经连通</span>
+    <span class="lang">C++</span>
+  </div>
+  <pre><code>map&lt;string, string&gt; parent;     // 每个点的"代表"是谁
+
+string findRoot(string x) {
+    while (parent[x] != x) {    // 一路往上找，直到找到代表
+        x = parent[x];
+    }
+    return x;
+}
+
+bool unite(string x, string y) {
+    string rx = findRoot(x), ry = findRoot(y);
+    if (rx == ry) return false; // 本来就连通 → 加这条边会成环
+    parent[ry] = rx;            // 合并两个集合
+    return true;
+}
+
+// 初始化：每个点自成一派
+for (string v : {"A", "B", "C", "D", "E"}) {
+    parent[v] = v;
+}
+
+// 试着加三条边
+cout &lt;&lt; unite("A", "B") &lt;&lt; endl;    // 1  没连通，可以加
+cout &lt;&lt; unite("A", "C") &lt;&lt; endl;    // 1
+cout &lt;&lt; unite("B", "C") &lt;&lt; endl;    // 0  已经通过 A 连通了 → 会成环
+</code></pre>
+  <div class="out"><b>OUTPUT</b>　True<br>True<br>False</div>
+</div>
+
+<h3 id="s4-2">3.2 并查集的核心思想</h3>
+
+<div class="box tip">
+  <span class="lb">并查集的核心思想：</span>
+  给每个"连通块"选一个<b>代表</b>。<br>
+  · 两个点的代表相同 → 它们本来就连通，<strong>再加边就会成环</strong>；<br>
+  · 代表不同 → 可以加边，并把两个集合<b>合并</b>（让一个代表管另一个）。<br>
+  <b>这样"判断是否成环"就变成了"比较两个代表是否相同"，非常快。</b>
+</div>
+
+<div class="section-header" id="s5">
+  <h2>5　拓扑排序</h2>
+  <div class="en-title">Topological Sort</div>
+
+<h3 id="s5-1">4.1 拓扑排序是什么</h3>
+</div>
+
+<p>有些事有<strong>先后顺序</strong>：比如修城墙之前得先烧砖，烧砖之前得先挖土。这种关系用<strong>有向图</strong>表示。</p>
+
+<h3 id="s5-2">4.2 反复取"入度为 0"的点</h3>
+
+<figure class="figure">
+  <svg class="diagram" viewBox="0 0 860 250" role="img" aria-label="拓扑排序">
+    <text x="24" y="34" font-size="14" font-weight="bold" fill="#1f2937">有向无环图：按"入度为 0"的顺序依次取出</text>
+
+    <g font-family="Consolas,monospace" font-size="11.5">
+      <circle cx="140" cy="150" r="24" fill="#fff" stroke="#2563eb" stroke-width="2.2"/>
+      <text x="140" y="156" text-anchor="middle" fill="#1d4ed8">挖土</text>
+      <circle cx="330" cy="110" r="24" fill="#fff" stroke="#2563eb" stroke-width="2.2"/>
+      <text x="330" y="116" text-anchor="middle" fill="#1d4ed8">烧砖</text>
+      <circle cx="330" cy="196" r="24" fill="#fff" stroke="#2563eb" stroke-width="2.2"/>
+      <text x="330" y="202" text-anchor="middle" fill="#1d4ed8">伐木</text>
+      <circle cx="530" cy="110" r="24" fill="#fff" stroke="#2563eb" stroke-width="2.2"/>
+      <text x="530" y="116" text-anchor="middle" fill="#1d4ed8">砌墙</text>
+      <circle cx="530" cy="196" r="24" fill="#fff" stroke="#2563eb" stroke-width="2.2"/>
+      <text x="530" y="202" text-anchor="middle" fill="#1d4ed8">做门</text>
+      <circle cx="700" cy="150" r="24" fill="#fff" stroke="#2563eb" stroke-width="2.2"/>
+      <text x="700" y="156" text-anchor="middle" fill="#1d4ed8">完工</text>
+    </g>
+
+    <path d="M164 142 L306 116" stroke="#4f8ff0" stroke-width="2"/>
+    <path d="M164 158 L306 188" stroke="#4f8ff0" stroke-width="2"/>
+    <path d="M354 116 L506 116" stroke="#4f8ff0" stroke-width="2"/>
+    <path d="M354 190 L506 190" stroke="#4f8ff0" stroke-width="2"/>
+    <path d="M554 118 L678 144" stroke="#4f8ff0" stroke-width="2"/>
+    <path d="M554 188 L678 158" stroke="#4f8ff0" stroke-width="2"/>
+
+    <rect x="756" y="66" width="86" height="170" rx="12" fill="#0f1621"/>
+    <text x="799" y="94" text-anchor="middle" font-size="11.5" fill="#e8c766">顺序</text>
+    <text x="799" y="124" text-anchor="middle" font-size="11.5" fill="#cfe0f5">1 挖土</text>
+    <text x="799" y="152" text-anchor="middle" font-size="11.5" fill="#cfe0f5">2 烧砖</text>
+    <text x="799" y="180" text-anchor="middle" font-size="11.5" fill="#cfe0f5">3 伐木</text>
+    <text x="799" y="208" text-anchor="middle" font-size="11.5" fill="#cfe0f5">4 砌墙</text>
+    <text x="799" y="232" text-anchor="middle" font-size="11.5" fill="#cfe0f5">…</text>
+  </svg>
+  <div class="caption">图 4（SVG）：拓扑排序——先做"没有前置条件"的</div>
+</figure>
+
+<div class="code-card">
+  <div class="code-head">
+    <span class="dot d1"></span><span class="dot d2"></span><span class="dot d3"></span>
+    <span class="file">拓扑排序：反复取"入度为 0"的点</span>
+    <span class="lang">C++</span>
+  </div>
+  <pre><code>// graph[u] 里放"u 之后才能做的事"
+map&lt;string, vector&lt;string&gt;&gt; graph = {
+    {"挖土", {"烧砖", "伐木"}},
+    {"烧砖", {"砌墙"}},
+    {"伐木", {"做门"}},
+    {"砌墙", {"完工"}},
+    {"做门", {"完工"}},
+    {"完工", vector&lt;string&gt;{}}
+};
+
+// ① 统计每个点的"入度"（有多少前置条件）
+map&lt;string, int&gt; indeg;
+for (auto&amp; p : graph) {
+    indeg[p.first];                          // 确保这个点存在
+    for (string v : p.second) {
+        indeg[v] = indeg[v] + 1;
+    }
+}
+
+// ② 把入度为 0 的点放进队列
+queue&lt;string&gt; q;
+for (auto&amp; p : indeg) {
+    if (p.second == 0) q.push(p.first);
+}
+vector&lt;string&gt; order;
+
+while (!q.empty()) {
+    string u = q.front();
+    q.pop();
+    order.push_back(u);
+    for (string v : graph[u]) {
+        indeg[v] = indeg[v] - 1;      // 前置条件少了一个
+        if (indeg[v] == 0) {          // 前置条件都做完了
+            q.push(v);
+        }
+    }
+}
+
+for (string s : order) cout &lt;&lt; s &lt;&lt; " ";
+cout &lt;&lt; endl;
+cout &lt;&lt; "是不是无环图：" &lt;&lt; (order.size() == indeg.size()) &lt;&lt; endl;
+</code></pre>
+  <div class="out"><b>要点</b>　如果最后 <code>order</code> 的长度小于顶点总数，说明<b>图里有环</b>——有些事永远做不完</div>
+</div>
+
+<div class="box remember">
+  <span class="lb">拓扑排序的两个用途：</span><br>
+  <b>① 安排任务顺序</b>——把"必须先做"的关系理成一条可行的执行次序；<br>
+  <b>② 判断有向图有没有环</b>——如果排不完（有点的入度永远大于 0），就说明有环。<br>
+  <strong>考试里"判断能不能完成所有任务"这类题，就是拓扑排序。</strong>
+</div>
+
+<figure class="pic">
+  <img src="../assets/illustrations/py-L8-06-03_topo_order_scene.webp" alt="先做没有前置条件的"
+       onerror="this.closest('.pic').classList.add('missing')">
+  <div class="ph">
+    <div class="fn">assets/illustrations/py-L8-06-03_topo_order_scene.webp</div>
+    <div class="ds">【配图位】一张写着若干事务的石板清单，每条事务上画着指向它的箭头；一条已经排好的执行序列从上往下排开，每一步都恰好是"此刻没有未完成前置"的那件事。</div>
+  </div>
+  <figcaption>图 5：先做"没有前置条件"的</figcaption>
+</figure>
+
+<div class="section-header" id="s6">
+  <h2>6　代码实战</h2>
+  <div class="en-title">Level Practice</div>
+</div>
+
+<div class="level-card">
+  <div class="lc-head"><span class="n">关卡</span><h4>冰块中的宝藏</h4><span class="go">进入关卡 →</span></div>
+  <div class="lc-body">
+    <div class="story">
+      <b>故事：</b>冰室迷宫深处藏着宝藏，可这里的门很灵敏——<b>脚步声一响就会打开，
+    走回头路只会把自己困住。</b><br>
+    <b>更麻烦的是：拿到宝藏还得原路回到出口。</b><br>
+    贺舒曼把镜子举高：<b>先把迷宫当成一张图，把走过的房间一一记下来。</b>
+    </div>
+    <p><strong>思路：</strong>把每个房间看成一个<b>点</b>、两间相通的门看成一条<b>边</b>——迷宫就成了一张图。<br>
+    从入口出发做一次搜索（DFS 或 BFS），<b>用 visited 记住"这个房间来过了"</b>，
+    就不会在原地兜圈子，也不会漏掉任何一条岔路。</p>
+    <figure class="pic">
+      <img src="../assets/stages/py-L8-06-stage1_treasure_in_ice.webp" alt="冰块中的宝藏 关卡截图"
+           onerror="this.closest('.pic').classList.add('missing')">
+      <div class="ph">
+        <div class="fn">assets/stages/py-L8-06-stage1_treasure_in_ice.webp</div>
+        <div class="ds">【关卡截图位】请把《冰块中的宝藏》的游戏画面截图放到此处（放入 assets/stages/ 目录，文件名为 py-L8-06-stage1_treasure_in_ice.webp）。</div>
+      </div>
+      <figcaption>关卡实况：冰块中的宝藏</figcaption>
+    </figure>
+    <div class="code-card">
+      <div class="code-head">
+        <span class="dot d1"></span><span class="dot d2"></span><span class="dot d3"></span>
+        <span class="file">重点示例：把走过的房间记下来，不重复走</span>
+        <span class="lang">C++</span>
+      </div>
+      <pre><code>map&lt;string, bool&gt; visited;           // 记录"这个房间来过了"
+
+void explore(Unit room) {
+    if (visited[room.id]) return;     // 来过就回头，不兜圈子
+    visited[room.id] = true;
+
+    hero.moveXY(room.pos.x, room.pos.y);
+    if (room.hasTreasure) hero.pickUpItem(room.treasure);
+
+    for (Unit door : room.doors) {    // 顺着每条边继续探
+        if (hero.isPathClear(room.pos, door.pos)) {
+            explore(door);
+        }
+    }
+}
+</code></pre>
+      <div class="out"><b>要点</b>　<b>一进房间就标记 visited</b>；再顺着每条边递归下去——这就是图的深度优先遍历</div>
+    </div>
+    <div class="box info">
+      <span class="lb">和本单元的关系：</span>
+      图论算法落地时就三件事：<strong>把场景抽象成"点 + 边" → 选一种遍历方式（DFS / BFS） → 用 visited 防止绕圈。</strong><br>
+    <b>最短路径用 BFS，连通块和回路用 DFS——选对了方法，剩下的就是照模板写。</b>
+    </div>
+    <a class="btn-go" href="https://codecombat.cn/" target="_blank" rel="noopener">去扣哒世界闯这一关 →</a>
+  </div>
+</div>
+
+
+
+<div class="section-header" id="s7">
+  <h2>7　常见陷阱</h2>
+  <div class="en-title">Common Pitfalls</div>
+</div>
+
+<div class="cast duck">
+  <img class="ava" src="../assets/ducks/duck_nalfar.webp" alt="扣哒鸭" onerror="this.style.display='none'">
+  <div class="bubble">
+    <div class="who">扣哒鸭 · 调试官</div>
+    图论进阶题的坑，集中在"忘了判环"和"顺序搞错"。四条，条条都能让答案不对。
+  </div>
+</div>
+
+<div class="pit">
+  <div class="pt">
+    <div class="x">1</div>
+    <div class="t"><b>挑生成树时忘了判环，多挑了边。</b></div>
+  </div>
+  <div class="duck">
+    <img src="../assets/ducks/duck_zana.webp" alt="扣哒鸭" onerror="this.style.display='none'">
+    <div class="dt"><b>扣哒鸭：</b><strong>生成树的边数必须是 n-1。</strong><br>
+    如果挑出了 n 条边，说明其中一定有环——多出来的那条是多余的。<br>
+    <b>每加一条边之前，都要先判断"加上去会不会成环"。</b></div>
+  </div>
+  <div class="fix"><b>正确做法：</b>用并查集判断；或最后检查边数是否为 n-1</div>
+</div>
+
+<div class="pit">
+  <div class="pt">
+    <div class="x">2</div>
+    <div class="t"><b>把无向图当成有向图统计入度。</b></div>
+  </div>
+  <div class="duck">
+    <img src="../assets/ducks/duck_naria.webp" alt="扣哒鸭" onerror="this.style.display='none'">
+    <div class="dt"><b>扣哒鸭：</b><strong>拓扑排序只适用于"有向无环图"。</strong>
+    无向图里每条边都是双向的，根本谈不上"先后顺序"。<br>
+    读题时先确认：这是有向图还是无向图？</div>
+  </div>
+  <div class="fix"><b>正确认识：</b>拓扑排序用于有向图；无向图用连通性分析</div>
+</div>
+
+<div class="pit">
+  <div class="pt">
+    <div class="x">3</div>
+    <div class="t"><b>忘了在生成树里"合并集合"。</b></div>
+  </div>
+  <div class="duck">
+    <img src="../assets/ducks/duck_hattori.webp" alt="扣哒鸭" onerror="this.style.display='none'">
+    <div class="dt"><b>扣哒鸭：</b>并查集用到 <code>find</code> 找到代表后，
+    <strong>还要把两个集合真的合并起来</strong>（<code>parent[ry] = rx</code>）。<br>
+    只判断不合并，后面就会误判成"不连通"，挑出一堆环。</div>
+  </div>
+  <div class="fix"><b>正确写法：</b>判断通过后立即合并</div>
+</div>
+
+<div class="pit">
+  <div class="pt">
+    <div class="x">4</div>
+    <div class="t"><b>循环里修改了正在遍历的字典。</b></div>
+  </div>
+  <div class="duck">
+    <img src="../assets/ducks/duck_senick.webp" alt="扣哒鸭" onerror="this.style.display='none'">
+    <div class="dt"><b>扣哒鸭：</b>统计入度时如果一边 for 一边往字典里加键，会报错。<br>
+    <strong>先把所有顶点收集成一个列表，或者用 <code>get</code> 安全地累加。</strong></div>
+  </div>
+  <div class="fix"><b>正确写法：</b><code class="inline">indeg[v] = indeg[v] + 1</code></div>
+</div>
+
+<div class="section-header" id="s8">
+  <h2>8　题目练习</h2>
+  <div class="en-title">Practice</div>
+</div>
+
+<p>前 2 题改编自 2026 年 9 月 · C++ 八级 第 9、10 题，其余为原创练习题。</p>
+
+<div class="exam">
+  <div class="eh"><span class="src">改编自 2026 年 9 月 · C++ 八级 · 第 10 题</span><span class="tp">单选题</span></div>
+  <div class="eb">
+    <div class="q">王国交通网是一张连通带权无向简单图，边集合为 <code class="inline">{(1,2,5), (1,3,1), (2,3,3), (2,4,4), (3,4,2), (3,5,6), (4,5,7)}</code>。<br>使用 Kruskal 算法按边权<strong>从小到大</strong>扫描，第 3 条被选入最小生成树的边是（　　）。</div>
+    <div class="opt"><i>A.</i>(1, 2, 5)　　<i>B.</i>(2, 3, 3)　　<i>C.</i>(3, 4, 2)　　<i>D.</i>(4, 5, 7)</div>
+    <details><summary>查看答案与详解</summary>
+      <div class="ans"><b>答案：B</b>。先把边按权值排好：(1,3,1)、(3,4,2)、(2,3,3)、(2,4,4)、(1,2,5)、(3,5,6)、(4,5,7)。<br>再一条条试着加（<strong>加之前先判断会不会成环</strong>）：<br>第 1 条 (1,3,1)：{1,3}，不成环 ✓ 选入；<br>第 2 条 (3,4,2)：{1,3,4}，不成环 ✓ 选入；<br><b>第 3 条 (2,3,3)：2 还没进过集合，不成环 ✓ 选入</b> ——正是第 3 条被选入的边。<br><b>继续验证：</b>第 4 条 (2,4,4) 会成环，跳过；第 5 条 (1,2,5) 也成环，跳过；第 6 条 (3,5,6) 选入 —— 此时已有 4 条边，连通 5 个点正好需要 n−1 = 4 条，结束。<br><b>要点：</b>Kruskal 是"<strong>按边贪心 + 判环</strong>"，判环常用并查集；选够 n−1 条边就可以停下。<br><span class="tagline">对应小节</span>2.2 最小生成树：贪心挑最短的边。</div>
+    </details>
+  </div>
+</div>
+<div class="exam">
+  <div class="eh"><span class="src">改编自 2026 年 9 月 · C++ 八级 · 第 9 题</span><span class="tp">单选题</span></div>
+  <div class="eb">
+    <div class="q">关于<strong>最小生成树（MST）</strong>算法，下列说法<b>正确</b>的是（　　）。</div>
+    <div class="opt"><i>A.</i>Prim 算法适用于稠密图，Kruskal 算法适用于稀疏图<br>
+      <i>B.</i>Prim 算法和 Kruskal 算法得到的最小生成树边集一定完全相同<br>
+      <i>C.</i>Kruskal 算法必须使用邻接矩阵存储图<br>
+      <i>D.</i>Prim 算法只能处理有向图</div>
+    <details><summary>查看答案与详解</summary>
+      <div class="ans"><b>答案：A</b>。两种算法的"做事方式"不同，适用的图也不同：<br><b>Prim</b> 从一个点开始"长大"，每轮找连接"已选集合"与"未选点"的最短边 ——它要反复比较<strong>点到集合</strong>的距离，在<strong>稠密图</strong>（边多）上表现好；<br><b>Kruskal</b> 先把所有边排序再逐条试 —— 边少的时候排序和检查都更省事，适合<strong>稀疏图</strong>。<br><b>B 错：</b>当图里有权值相同的边时，最小生成树可能不唯一，两种算法选出的边集就未必一样（但<strong>总权值一定相同</strong>）；<br><b>C 错：</b>Kruskal 的核心是"排序 + 判环"，用<strong>边表</strong>就够了；<br><b>D 错：</b>Prim 处理的是<strong>连通无向图</strong>（生成树本来就是对无向图说的）。<br><b>一句话记：</b>稠密用 Prim（按点长大）、稀疏用 Kruskal（按边挑）。<br><span class="tagline">对应小节</span>2.4 另一种长大方式：Prim 算法。</div>
+    </details>
+  </div>
+</div>
+<div class="exam">
+  <div class="eh"><span class="src ori">原创练习题</span><span class="tp">单选题</span></div>
+  <div class="eb">
+    <div class="q">一个有 8 个顶点的连通图，它的生成树有几条边？（　　）</div>
+    <div class="opt"><i>A.</i>7　　<i>B.</i>8　　<i>C.</i>16　　<i>D.</i>64</div>
+    <details><summary>查看答案与详解</summary>
+      <div class="ans"><b>答案：A</b>。生成树的边数恒为 <b>n - 1</b>，8 个顶点就是 <b>7</b> 条边。<br>
+      <b>直观理解：</b>要有 8 个点连成一张"不绕圈"的网，
+      每次连一个新点只需 1 条边，连 7 次就够。<br>
+      <span class="tagline">对应小节</span>2 生成树。</div>
+    </details>
+  </div>
+</div>
+
+<div class="exam">
+  <div class="eh"><span class="src ori">原创练习题</span><span class="tp">判断题</span></div>
+  <div class="eb">
+    <div class="q">生成树中一定不存在环。（　　）</div>
+    <details><summary>查看答案与详解</summary>
+      <div class="ans"><b>答案：正确（√）</b>。生成树的定义就是"<b>连通且无环</b>"。<br>
+      如果有环，就可以去掉环上的一条边，连通性不变——<b>说明原来的边数多了，不是最少的。</b><br>
+      <span class="tagline">对应小节</span>2 生成树。</div>
+    </details>
+  </div>
+</div>
+
+<div class="exam">
+  <div class="eh"><span class="src ori">原创练习题</span><span class="tp">单选题</span></div>
+  <div class="eb">
+    <div class="q">用并查集判断"加一条边会不会成环"，判断依据是（　　）。</div>
+    <div class="opt">
+      <i>A.</i>两个顶点是否相邻<br>
+      <i>B.</i>两个顶点所在集合的代表是否相同<br>
+      <i>C.</i>两个顶点的度数是否相等<br>
+      <i>D.</i>两个顶点的编号大小
+    </div>
+    <details><summary>查看答案与详解</summary>
+      <div class="ans"><b>答案：B</b>。两个点如果<b>已经在同一个连通块里</b>（代表相同），
+      再加一条边就会形成环。<br>
+      <b>如果代表不同</b>，说明它们本来不连通，加边是"有用的"，同时要把两个集合合并。<br>
+      <span class="tagline">对应小节</span>3 判断连通与成环。</div>
+    </details>
+  </div>
+</div>
+
+<div class="exam">
+  <div class="eh"><span class="src ori">原创练习题</span><span class="tp">判断题</span></div>
+  <div class="eb">
+    <div class="q">拓扑排序只能用于有向无环图。（　　）</div>
+    <details><summary>查看答案与详解</summary>
+      <div class="ans"><b>答案：正确（√）</b>。只有"有向"才谈得上前后的方向；
+      只有"无环"才排得完顺序。<br>
+      <b>反过来说：</b>如果一个有向图排不完拓扑序，就说明<b>图里有环</b>——
+      这正是一个判断环的实用方法。<br>
+      <span class="tagline">对应小节</span>4 拓扑排序。</div>
+    </details>
+  </div>
+</div>
+
+<div class="exam">
+  <div class="eh"><span class="src ori">原创练习题</span><span class="tp">单选题</span></div>
+  <div class="eb">
+    <div class="q">拓扑排序的第一步，应该把哪些点放进队列？（　　）</div>
+    <div class="opt">
+      <i>A.</i>出度为 0 的点　　<i>B.</i>入度为 0 的点<br>
+      <i>C.</i>编号最小的点　　<i>D.</i>度数最大的点
+    </div>
+    <details><summary>查看答案与详解</summary>
+      <div class="ans"><b>答案：B</b>。入度为 0 表示"<b>没有任何前置条件</b>"，
+      这样的任务可以立刻执行。<br>
+      <b>执行完一个任务后</b>，把它指向的那些点的入度减 1；减到 0 的就可以进队列了。<br>
+      <span class="tagline">对应小节</span>4 拓扑排序。</div>
+    </details>
+  </div>
+</div>
+
+<div class="exam">
+  <div class="eh"><span class="src ori">原创练习题</span><span class="tp">单选题</span></div>
+  <div class="eb">
+    <div class="q">对有 5 个顶点的有向图做拓扑排序，最后排出来的序列只有 4 个顶点，
+    说明（　　）。</div>
+    <div class="opt">
+      <i>A.</i>图里有孤立的顶点<br>
+      <i>B.</i>图里有环<br>
+      <i>C.</i>程序写错了<br>
+      <i>D.</i>这是正常的
+    </div>
+    <details><summary>查看答案与详解</summary>
+      <div class="ans"><b>答案：B</b>。如果所有点都排完了，序列长度应该等于顶点总数。<br>
+      少了点，说明<b>有些点的入度永远减不到 0</b>——它们互相等待，
+      形成了一个<b>环</b>。<br>
+      <b>这是判断有向图是否有环的标准方法。</b><br>
+      <span class="tagline">对应小节</span>4 拓扑排序。</div>
+    </details>
+  </div>
+</div>
+
+<div class="exam">
+  <div class="eh"><span class="src ori">原创练习题</span><span class="tp">编程题</span></div>
+  <div class="eb">
+    <div class="q">题目要求：已知若干课程及其先修关系（先修课必须在前面），
+    用拓扑排序输出一种可行的学习顺序；若存在循环依赖则输出"无法完成"。</div>
+    <details><summary>查看参考答案与要点</summary>
+      <div class="ans">
+<pre style="margin:0;background:#131a26;color:#c8d3e0;border-radius:10px;padding:14px 16px">// 先修关系：key 是课程，value 是"必须先修完的课"
+map&lt;string, vector&lt;string&gt;&gt; prereq = {
+    {"数学", {}},
+    {"编程", {}},
+    {"数据结构", {"编程"}},
+    {"算法", {"数据结构", "数学"}},
+    {"机器学习", {"数学", "算法"}}
+};
+
+// ① 统计入度
+map&lt;string, int&gt; indeg;
+for (auto&amp; p : prereq) {
+    indeg[p.first];                       // 先让这门课出现在表里
+    for (string&amp; pre : p.second) {
+        indeg[p.first] = indeg[p.first] + 1;
+    }
+}
+
+// ② 入度为 0 的先入队
+queue&lt;string&gt; q;
+for (auto&amp; p : indeg) {
+    if (p.second == 0) q.push(p.first);
+}
+vector&lt;string&gt; order;
+
+while (!q.empty()) {
+    string c = q.front();
+    q.pop();
+    order.push_back(c);
+    // 找出"以 c 为先修课"的课程，把它们的入度减一
+    for (auto&amp; p : prereq) {
+        for (string&amp; pre : p.second) {
+            if (pre == c) {
+                indeg[p.first] = indeg[p.first] - 1;
+                if (indeg[p.first] == 0) q.push(p.first);
+            }
+        }
+    }
+}
+
+if (order.size() == indeg.size()) {
+    cout &lt;&lt; "可行顺序：";
+    for (string&amp; s : order) cout &lt;&lt; s &lt;&lt; " ";
+    cout &lt;&lt; endl;
+} else {
+    cout &lt;&lt; "无法完成（存在循环依赖）" &lt;&lt; endl;
+}</pre>
+      <p style="margin-top:12px"><b>输出：</b>可行顺序：['数学', '编程', '数据结构', '算法', '机器学习']（也可能先出"编程"）<br>
+      <b>要点：</b><br>
+      ① 入度就是"有多少个前置条件还没满足"；<br>
+      ② 每次处理完一门课，就要去减那些"以它为前置"的课的入度；<br>
+      ③ 最后比较 <code class="inline">order.size()</code> 与课程总数，判断是否有环；<br>
+      ④ 拓扑序<b>可能不唯一</b>（数学和编程谁先都行），题目一般会说"输出任意一种"。<br>
+      <span class="tagline">对应小节</span>4 拓扑排序。</p>
+      </div>
+    </details>
+  </div>
+</div>
+
+<div class="section-header" id="s9">
+  <h2>9　本单元小结</h2>
+  <div class="en-title">Unit Summary</div>
+</div>
+
+<div class="cast teacher">
+  <img class="ava" src="../assets/avatars/hushbaum.webp" alt="贺舒曼" onerror="this.style.display='none'">
+  <div class="bubble">
+    <div class="who">贺舒曼 · 镜中先知</div>
+    三句话记住图的应用：<br>
+    <strong>一、生成树：连通所有点且无环，边数恰好 n-1。</strong><br>
+    <strong>二、最小生成树用贪心：从最短的边开始挑，不要会成环的。</strong><br>
+    <strong>三、拓扑排序：反复取入度为 0 的点；排不完就说明有环。</strong><br>
+    图形化地把现实问题画成图，<b>是解决这类问题的第一步，也是最关键的一步。</b>
+  </div>
+</div>
+
+<div class="summary">
+  <h3>你在王国地图前收获了什么</h3>
+  <ul>
+    <li><strong>生成树</strong>——连通且无环；n 个顶点恰好 n-1 条边。</li>
+    <li><strong>最小生成树</strong>——按边的长度从小到大贪心挑选，跳过会成环的边。</li>
+    <li><strong>并查集思想</strong>——给每个连通块选代表；代表相同则会成环。</li>
+    <li><strong>拓扑排序</strong>——反复取入度为 0 的点；用队列实现。</li>
+    <li><strong>判断有向环</strong>——拓扑序长度小于顶点数，就说明有环。</li>
+    <li><strong>应用场景</strong>——修路规划、任务排期、课程安排、依赖解析。</li>
+    <li><strong>建模思维</strong>——先把现实关系画成图，再想用什么算法。</li>
+  </ul>
+</div>
+
+<div class="pager">
+  <a href="cpp-8-05.html"><div class="k">← 上一单元</div><div class="v">机关几何室 · 基础计算几何</div></a>
+  <a href="../index.html" target="_top" class="back"><div class="k">返回</div><div class="v">考纲之路 · 总目录</div></a>
+  <a href="cpp-8-07.html"><div class="k">下一单元 →</div><div class="v">秤与沙漏 · 算法效率分析</div></a>
+</div>
+
+<div class="cta">
+  <h3>下一站：秤与沙漏</h3>
+  <p>王座旁的桌上放着一杆秤和一只沙漏。守门人说：
+  <b>算法也要称一称、量一量——看看它到底要花多少时间。</b>
+  下一单元，我们聊效率分析。</p>
+  <a class="btn-go" href="https://codecombat.cn/" target="_blank" rel="noopener">加入扣哒世界，把这条考纲之路走一遍 →</a>
+</div>
+</div><!-- /container -->
+</div><!-- /page -->
+
+<script>
+const KEYWORDS = new Set([
+  "int", "long", "short", "unsigned", "signed", "float", "double", "char", "bool", "void",
+  "const", "if", "else", "for", "while", "do", "switch", "case", "default", "break",
+  "continue", "return", "goto", "struct", "class", "union", "enum", "using", "namespace",
+  "std", "main", "true", "false", "cin", "cout", "cerr", "endl", "string", "sizeof",
+  "include", "define", "new", "delete", "public", "private", "static", "inline", "nullptr"
+]);
+
+function esc(s){ return s.replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;'); }
+
+function highlight(src){
+  let out = '', i = 0;
+  const n = src.length;
+  while (i < n){
+    const c = src[i];
+    /* 预处理指令：#include / #define，整行只在行首生效 */
+    if (c === '#' && (i === 0 || src[i-1] === '\n')){
+      let j = i;
+      while (j < n && /[A-Za-z]/.test(src[j])) j++;
+      out += '<span class="kw">' + esc(src.slice(i, j)) + '</span>';
+      let k = src.indexOf('\n', j); if (k < 0) k = n;
+      if (j < k) out += '<span class="st">' + esc(src.slice(j, k)) + '</span>';
+      i = k; continue;
+    }
+    /* 行注释 // */
+    if (c === '/' && src[i+1] === '/'){
+      let j = src.indexOf('\n', i); if (j < 0) j = n;
+      out += '<span class="cm">' + esc(src.slice(i, j)) + '</span>';
+      i = j; continue;
+    }
+    /* 块注释 */
+    if (c === '/' && src[i+1] === '*'){
+      let j = src.indexOf('*/', i + 2); j = j < 0 ? n : j + 2;
+      out += '<span class="cm">' + esc(src.slice(i, j)) + '</span>';
+      i = j; continue;
+    }
+    /* 字符串与字符字面量 */
+    if (c === '"' || c === "'"){
+      let j = i + 1;
+      while (j < n && src[j] !== c){ if (src[j] === '\\') j++; j++; }
+      j = Math.min(j + 1, n);
+      out += '<span class="st">' + esc(src.slice(i, j)) + '</span>';
+      i = j; continue;
+    }
+    /* 数字 */
+    if (/[0-9]/.test(c)){
+      let j = i;
+      while (j < n && /[0-9.]/.test(src[j])) j++;
+      out += '<span class="nu">' + esc(src.slice(i, j)) + '</span>';
+      i = j; continue;
+    }
+    /* 标识符：关键字 / 函数名 / 普通名字 */
+    if (/[A-Za-z_]/.test(c)){
+      let j = i;
+      while (j < n && /[A-Za-z0-9_]/.test(src[j])) j++;
+      const w = src.slice(i, j);
+      if (KEYWORDS.has(w)) out += '<span class="kw">' + esc(w) + '</span>';
+      else if (src[j] === '(') out += '<span class="fn">' + esc(w) + '</span>';
+      else out += esc(w);
+      i = j; continue;
+    }
+    out += esc(c); i++;
+  }
+  return out;
+}
+
+document.querySelectorAll('.code-card pre code').forEach(block => {
+  block.innerHTML = highlight(block.textContent);
+});
+
+if (location.search.indexOf('expand') >= 0) {
+  document.querySelectorAll('details').forEach(d => d.open = true);
+}
+document.querySelectorAll('.sidebar-nav a').forEach(a => {
+  a.addEventListener('click', () => {
+    if (window.innerWidth <= 900) document.querySelector('.sidebar-nav').classList.remove('active');
+  });
+});
+</script>
+</body>
+</html>

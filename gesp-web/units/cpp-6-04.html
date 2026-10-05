@@ -1,0 +1,1384 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="copyright" content="CodeCombat Inc. codecombat.cn">
+<title>云梯补给 · 简单动态规划 | 扣哒考级 · GESP C++ 六级</title>
+<style>
+  :root{
+    --primary:#2563eb; --primary-light:#4f8ff0; --primary-lighter:#eaf1fe; --primary-dark:#1b47a8;
+    --brand:#ff6b35; --brand-dark:#e8541f; --brand-soft:#fff3ec;
+    --night:#131c2b; --night-2:#1e2a3a; --gold:#f5b301;
+    --text:#242e3d; --dim:#68788f; --dim2:#93a2b6;
+    --bg:#ffffff; --bg-soft:#f7f9fd; --line:#e2e9f4; --sidebar:274px;
+    --code-bg:#131a26; --code-tx:#c8d3e0;
+    --code-kw:#c678dd; --code-st:#98c379; --code-nu:#d19a66; --code-cm:#5f7488; --code-fn:#e5c07b;
+  }
+  *{margin:0;padding:0;box-sizing:border-box}
+  html{scroll-behavior:smooth}
+  body{font-family:"PingFang SC","Microsoft YaHei","Segoe UI",-apple-system,sans-serif;line-height:1.9;color:var(--text);background:var(--bg);font-size:15.5px}
+  .sidebar-nav{position:fixed;top:0;left:0;width:var(--sidebar);height:100vh;overflow-y:auto;background:linear-gradient(180deg,#0c1626,#14243c);padding:14px 0 40px;z-index:100;border-right:3px solid var(--brand);transition:transform .3s ease}
+  .sidebar-nav::-webkit-scrollbar{width:5px}
+  .sidebar-nav::-webkit-scrollbar-thumb{background:var(--brand);border-radius:4px}
+  .sb-brand{display:flex;align-items:center;gap:10px;padding:10px 13px 12px;border-bottom:1px solid #233752;margin-bottom:8px}
+  .sidebar-nav a.sb-logo{display:flex;align-items:center;justify-content:center;flex-shrink:0;padding:0;border-left:none;transition:.2s}
+  .sb-logo:hover{transform:scale(1.08)}
+  .sb-logo img{height:34px;width:34px;display:block;object-fit:contain;border-radius:8px}
+  .sb-brand b{color:#f2f6fa;font-size:14px;letter-spacing:.5px;display:block;line-height:1.4}
+  .sb-brand span{color:#7f95ab;font-size:11.5px;display:block;line-height:1.4}
+  .nav-title{color:#ffb894;font-size:12px;font-weight:800;padding:10px 18px 6px;letter-spacing:1.2px}
+  .sidebar-nav a{display:block;color:#c3d0dc;text-decoration:none;padding:6px 18px;font-size:12.5px;line-height:1.55;border-left:3px solid transparent;transition:.18s}
+  .sidebar-nav a:hover{color:#fff;background:rgba(255,107,53,.16);border-left-color:var(--brand)}
+  .sidebar-nav a.nav-section{color:#ffb894;font-weight:700;font-size:13px;margin-top:11px;padding-top:10px;border-top:1px solid #233752}
+  .sidebar-nav a.nav-section:first-of-type{border-top:none;margin-top:0;padding-top:6px}
+  .sidebar-nav a.nav-sub{padding-left:30px;color:#93a8bc;font-size:12px}
+  .sidebar-nav a.nav-sub:hover{color:#fff}
+  .sb-back{margin:16px 14px 0;display:block;text-align:center;padding:9px;border-radius:9px;background:#1e304a;color:#a9c0d6 !important;font-size:12px;font-weight:700;border-left:none !important}
+  .sb-back:hover{background:var(--brand) !important;color:#fff !important}
+  .nav-toggle{display:none;position:fixed;top:14px;left:14px;z-index:120;background:var(--brand);color:#fff;border:none;border-radius:9px;padding:9px 13px;font-size:15px;cursor:pointer;box-shadow:0 4px 14px rgba(0,0,0,.25)}
+  .page{margin-left:var(--sidebar)}
+  .hero{position:relative;overflow:hidden;padding:44px 52px;color:#fff;background:linear-gradient(125deg,#0a1220 0%,#16294a 46%,#8a3a16 132%)}
+  .hero::after{content:"";position:absolute;right:-90px;top:-110px;width:400px;height:400px;border-radius:50%;background:radial-gradient(circle,rgba(245,179,1,.30),transparent 68%)}
+  .hero-top{display:flex;gap:36px;align-items:center;position:relative;z-index:2}
+  .hero-txt{flex:1;min-width:0}
+  .hero .crumb{font-size:11.5px;color:#ffb894;letter-spacing:1.5px;font-weight:700;margin-bottom:14px}
+  .hero h1{font-size:31px;font-weight:800;line-height:1.3;letter-spacing:.6px;margin-bottom:8px}
+  .hero h1 .sub{display:block;font-size:18px;font-weight:700;color:#ffd2b3;margin-top:6px;letter-spacing:.3px}
+  .hero .en{font-size:13px;color:#9db4c8;font-style:italic;margin-bottom:18px}
+  .hero .tags{display:flex;flex-wrap:wrap;gap:8px}
+  .tag{font-size:11.5px;padding:4px 12px;border-radius:20px;background:rgba(255,255,255,.12);border:1px solid rgba(255,255,255,.22);color:#e8f0f6;font-weight:600}
+  .tag.hot{background:rgba(255,107,53,.92);border-color:transparent;color:#fff}
+  .hero-card{flex-shrink:0;width:200px;text-align:center}
+  .hero-card .ava{width:148px;height:148px;border-radius:50%;object-fit:cover;object-position:top center;border:4px solid rgba(255,180,140,.6);box-shadow:0 14px 34px rgba(0,0,0,.45);background:#24344a}
+  .hero-card .nm{font-size:15px;font-weight:800;color:#fff;margin-top:10px}
+  .hero-card .ti{font-size:11.5px;color:#ffb894;margin-top:2px}
+  .container{max-width:1080px;margin:0 auto;padding:38px 52px 70px}
+  .lead{font-size:15.5px;line-height:2.05;color:#333f52;background:linear-gradient(120deg,#fff8f3,#f7fbf8);border-left:5px solid var(--brand);border-radius:0 14px 14px 0;padding:22px 26px;margin-bottom:32px}
+  .lead b{color:var(--brand-dark)}
+  .cast{display:flex;gap:16px;align-items:flex-start;border-radius:16px;padding:18px 22px;margin:24px 0}
+  .cast .ava{width:72px;height:72px;border-radius:50%;object-fit:cover;object-position:top center;flex-shrink:0;background:#e8eef5}
+  .cast .bubble{position:relative;font-size:14px;line-height:1.95;padding-top:2px;flex:1}
+  .cast .who{font-size:12px;font-weight:800;margin-bottom:5px;letter-spacing:.5px}
+  .cast.anya{background:var(--brand-soft);border:1px solid #ffdcc9}
+  .cast.anya .who{color:var(--brand-dark)}
+  .cast.anya .bubble{color:#5c4636}
+  .cast.duck{background:#fff5f5;border:1px solid #fbd5d5}
+  .cast.duck .who{color:#b91c1c}
+  .cast.duck .bubble{color:#5c4141}
+  .cast.teacher{background:linear-gradient(120deg,#f4f7fb,#ffffff);border:1px solid #dbe4f0}
+  .cast.teacher .who{color:#1e293b}
+  .cast.teacher .bubble{color:#3c4a5a}
+  .cast.hero{background:#f2f7fd;border:1px solid #cfe0f5}
+  .cast.hero .who{color:#1b47a8}
+  .cast.hero .bubble{color:#3a4658}
+  .goal-grid{display:grid;grid-template-columns:1fr 1fr;gap:16px;margin-bottom:36px}
+  .goal{border:1px solid var(--line);border-radius:15px;padding:19px 21px;background:#fff;box-shadow:0 4px 16px rgba(31,122,68,.05)}
+  .goal h4{font-size:14px;font-weight:800;margin-bottom:11px;display:flex;align-items:center;gap:8px;color:var(--primary-dark)}
+  .goal h4 .ic{width:22px;height:22px;border-radius:7px;background:var(--primary-lighter);display:flex;align-items:center;justify-content:center;font-size:12px}
+  .goal ul{list-style:none}
+  .goal li{font-size:13.5px;color:#48576b;line-height:1.9;padding-left:18px;position:relative}
+  .goal li::before{content:"▸";position:absolute;left:0;color:var(--primary);font-weight:800}
+  .goal.syllabus li::before{content:"✓"}
+  .section-header{margin:52px 0 24px;padding-bottom:12px;border-bottom:3px solid var(--brand);display:flex;align-items:baseline;gap:14px;flex-wrap:wrap}
+  .section-header h2{font-size:22px;font-weight:800;color:var(--night);letter-spacing:.4px}
+  .section-header .en-title{font-size:12px;color:var(--dim2);font-style:italic}
+  h3{font-size:17.5px;font-weight:800;margin:34px 0 14px;color:var(--night);display:flex;align-items:center;gap:10px}
+  h3::before{content:"";width:5px;height:17px;border-radius:3px;background:var(--brand);flex-shrink:0}
+  h4{font-size:15px;font-weight:800;margin:24px 0 10px;color:#2b4260}
+  p{margin:12px 0;color:#3a4658;line-height:2}
+  strong{color:var(--primary-dark)}
+  code.inline{background:var(--primary-lighter);color:var(--primary-dark);padding:2px 7px;border-radius:6px;font-family:"SFMono-Regular",Consolas,Menlo,monospace;font-size:.9em;font-weight:600}
+  .figure{margin:24px 0;text-align:center}
+  .figure svg.diagram{max-width:100%;height:auto;background:#fff;border:1px solid var(--line);border-radius:14px;padding:10px}
+  .figure .caption{font-size:12.5px;color:var(--dim2);margin-top:9px}
+  .pic{margin:26px 0;text-align:center}
+  .pic img{max-width:100%;border-radius:16px;box-shadow:0 10px 28px rgba(30,60,45,.15);display:block;margin:0 auto}
+  .pic figcaption{font-size:12.5px;color:var(--dim2);margin-top:9px}
+  .pic .ph{display:none}
+  .pic.missing img{display:none}
+  .pic.missing .ph{display:flex;flex-direction:column;align-items:center;justify-content:center;gap:9px;border:2px dashed #c9d9e8;border-radius:16px;background:linear-gradient(135deg,#f8fbfe,#eef6ff);padding:40px 26px;color:#7a8fa8}
+  .pic.missing .ph .fn{font-family:Consolas,monospace;font-size:12.5px;color:#2563eb;font-weight:700;word-break:break-all}
+  .pic.missing .ph .ds{font-size:12.5px;line-height:1.8;max-width:560px}
+  .box{border-radius:13px;padding:16px 20px;margin:20px 0;font-size:14px;line-height:1.95}
+  .box .lb{font-weight:800;margin-right:6px}
+  .info{background:#eef6ff;border-left:5px solid #3b82f6;color:#274768}
+  .info .lb{color:#1d4ed8}
+  .tip{background:#fff9ec;border-left:5px solid #f59e0b;color:#6b4e13}
+  .tip .lb{color:#b45309}
+  .remember{background:var(--primary-lighter);border-left:5px solid var(--primary);color:#1d3a6b}
+  .remember .lb{color:var(--primary-dark)}
+  .warn{background:#fef2f2;border-left:5px solid #ef4444;color:#7f2b2b}
+  .warn .lb{color:#b91c1c}
+  .code-card{margin:20px 0;border-radius:14px;overflow:hidden;box-shadow:0 10px 28px rgba(20,40,28,.20)}
+  .code-head{display:flex;align-items:center;gap:9px;background:#1a2434;padding:9px 14px}
+  .code-head .dot{width:10px;height:10px;border-radius:50%}
+  .code-head .d1{background:#ff5f57}.code-head .d2{background:#febc2e}.code-head .d3{background:#28c840}
+  .code-head .file{color:#8fa6c0;font-size:11.5px;font-family:Consolas,monospace;margin-left:6px}
+  .code-head .lang{margin-left:auto;font-size:10.5px;font-weight:800;color:#0d141f;background:#4f8ff0;padding:2px 9px;border-radius:6px;letter-spacing:.4px}
+  .code-card pre{background:var(--code-bg);padding:18px 20px;overflow-x:auto;margin:0;font-family:"SFMono-Regular",Consolas,"Courier New",monospace;font-size:13.5px;line-height:1.85}
+  .code-card pre::-webkit-scrollbar{height:8px}
+  .code-card pre::-webkit-scrollbar-thumb{background:#31445c;border-radius:4px}
+  .code-card code{color:var(--code-tx);white-space:pre}
+  .kw{color:var(--code-kw);font-weight:600}
+  .st{color:var(--code-st)}
+  .nu{color:var(--code-nu)}
+  .cm{color:var(--code-cm);font-style:italic}
+  .fn{color:var(--code-fn)}
+  .out{background:#0f1621;color:#7fb3f5;font-family:Consolas,monospace;font-size:13px;padding:12px 20px;border-top:1px solid #22304a}
+  .out b{color:#c9d6cd;font-weight:600;font-size:11.5px;letter-spacing:1px}
+  .out.err{color:#fca5a5}
+  table.styled{width:100%;border-collapse:collapse;margin:20px 0;font-size:13.5px;border-radius:12px;overflow:hidden;box-shadow:0 4px 16px rgba(31,122,68,.07)}
+  table.styled thead{background:var(--brand)}
+  table.styled th{color:#fff;padding:11px 14px;text-align:left;font-weight:700;font-size:13px}
+  table.styled td{padding:10px 14px;border-bottom:1px solid var(--line);color:#445266;vertical-align:top}
+  table.styled tbody tr:nth-child(even){background:var(--bg-soft)}
+  table.styled tbody tr:last-child td{border-bottom:none}
+  .level-card{border:1px solid var(--line);border-radius:16px;overflow:hidden;margin:22px 0;box-shadow:0 6px 22px rgba(31,122,68,.07)}
+  .level-card .lc-head{background:linear-gradient(100deg,#17283a,#8a3a16);color:#fff;padding:15px 22px;display:flex;align-items:center;gap:12px;flex-wrap:wrap}
+  .level-card .lc-head .n{font-size:12px;font-weight:800;background:rgba(255,255,255,.2);padding:3px 10px;border-radius:20px}
+  .level-card .lc-head h4{margin:0;color:#fff;font-size:16px}
+  .level-card .lc-head .go{margin-left:auto;font-size:11.5px;color:#ffd2b3}
+  .level-card .lc-body{padding:20px 24px;background:#fff}
+  .level-card .story{background:#f9fbfd;border-left:4px solid #93c5fd;border-radius:0 10px 10px 0;padding:13px 18px;margin:0 0 16px;font-size:14px;line-height:1.95;color:#3f5163}
+  .level-card .story b{color:#1d4ed8}
+  .btn-go{display:inline-flex;align-items:center;gap:8px;background:linear-gradient(135deg,var(--brand),var(--brand-dark));color:#fff;text-decoration:none;font-weight:800;font-size:13.5px;padding:10px 22px;border-radius:11px;box-shadow:0 8px 20px rgba(255,107,53,.32);transition:.2s}
+  .btn-go:hover{transform:translateY(-2px);box-shadow:0 12px 26px rgba(255,107,53,.42)}
+  .pit{border:1px solid #f6dede;border-radius:14px;overflow:hidden;margin:16px 0;background:#fff}
+  .pit .pt{display:flex;gap:12px;padding:14px 18px;background:#fffafa;align-items:flex-start}
+  .pit .x{width:26px;height:26px;border-radius:9px;background:#fee;color:#dc2626;display:flex;align-items:center;justify-content:center;font-weight:800;flex-shrink:0;font-size:13px}
+  .pit .t{font-size:13.5px;line-height:1.9;color:#5c4a4a;flex:1}
+  .pit .t b{color:#b91c1c}
+  .pit .duck{display:flex;gap:12px;padding:13px 18px;background:#fff5f5;border-top:1px dashed #f3d0d0;align-items:flex-start}
+  .pit .duck img{width:48px;height:48px;object-fit:contain;flex-shrink:0;margin-top:2px}
+  .pit .duck .dt{font-size:13.5px;line-height:1.9;color:#7a3b3b}
+  .pit .duck .dt b{color:#b91c1c}
+  .pit .fix{padding:12px 18px;background:#f2f7fd;border-top:1px dashed #cfe0f5;font-size:13.5px;color:#1d3a6b}
+  .pit .fix b{color:var(--primary-dark)}
+  .exam{border:1px solid #dfe7f5;border-radius:15px;margin:16px 0;overflow:hidden;background:#fff;box-shadow:0 4px 16px rgba(38,62,120,.06)}
+  .exam .eh{display:flex;align-items:center;gap:10px;padding:11px 18px;background:linear-gradient(100deg,#eef4ff,#f7faff);border-bottom:1px solid #e3ebf8;flex-wrap:wrap}
+  .exam .eh .src{font-size:11px;font-weight:800;color:#fff;background:#2563eb;padding:2.5px 10px;border-radius:20px}
+  .exam .eh .src.ori{background:#8b5cf6}
+  .exam .eh .tp{font-size:11.5px;color:#5b7ba8;font-weight:700}
+  .exam .eb{padding:16px 20px}
+  .exam .q{font-weight:700;font-size:14px;color:#1e2a3e;line-height:1.9;margin-bottom:10px}
+  .exam .opt{font-size:13.5px;color:#48576b;line-height:2.05;padding-left:6px}
+  .exam .opt i{font-style:normal;font-weight:800;color:var(--primary-dark);margin-right:7px}
+  .exam pre{margin:12px 0;background:#1b2a21;border-radius:10px;padding:14px 16px;overflow-x:auto;font-family:Consolas,monospace;font-size:13px;line-height:1.8;color:var(--code-tx)}
+  .exam details{margin-top:10px;border-top:1px dashed var(--line);padding-top:10px}
+  .exam summary{cursor:pointer;font-size:12.5px;font-weight:800;color:#2563eb;outline:none;user-select:none}
+  .exam details .ans{font-size:13.5px;color:#3a4658;line-height:1.95;margin-top:9px;background:var(--bg-soft);padding:13px 16px;border-radius:10px}
+  .exam details .ans b{color:var(--primary-dark)}
+  .exam details .ans .tagline{display:inline-block;font-size:11px;background:#e0f2fe;color:#0e7490;padding:1.5px 8px;border-radius:6px;font-weight:700;margin-right:6px}
+  .summary{margin:40px 0 20px;border-radius:18px;padding:26px 30px;background:linear-gradient(130deg,#fff8f3,#ffffff);border:1px solid #ffe0cf}
+  .summary h3{margin-top:0}
+  .summary ul{list-style:none;margin-top:10px}
+  .summary li{font-size:14px;line-height:2;color:#3d4d66;padding-left:24px;position:relative}
+  .summary li::before{content:"◆";position:absolute;left:0;color:var(--brand);font-size:11px;top:6px}
+  .pager{display:flex;gap:14px;margin-top:30px;flex-wrap:wrap}
+  .pager a{flex:1;min-width:200px;text-decoration:none;border:1px solid var(--line);border-radius:14px;padding:16px 20px;background:#fff;transition:.2s;display:block}
+  .pager a:hover{border-color:var(--brand);box-shadow:0 10px 26px rgba(255,107,53,.14);transform:translateY(-2px)}
+  .pager a .k{font-size:11px;color:var(--dim2);font-weight:700;letter-spacing:1px}
+  .pager a .v{font-size:14px;font-weight:800;color:var(--night);margin-top:5px}
+  .pager a.back{background:var(--brand-soft);border-color:transparent;text-align:center}
+  .pager a.back .v{color:var(--brand-dark)}
+  .cta{margin-top:26px;border-radius:20px;padding:30px 34px;color:#fff;position:relative;overflow:hidden;background:linear-gradient(120deg,#16202f,#2b3a52 46%,#a8431c 132%)}
+  .cta::after{content:"";position:absolute;right:-70px;bottom:-90px;width:280px;height:280px;border-radius:50%;background:radial-gradient(circle,rgba(255,140,80,.45),transparent 68%)}
+  .cta h3{color:#fff;margin:0 0 10px;position:relative;z-index:2}
+  .cta h3::before{background:var(--brand)}
+  .cta p{color:#d8e0ef;font-size:13.5px;margin:0 0 18px;position:relative;z-index:2;max-width:640px}
+  .cta .btn-go{position:relative;z-index:2}
+  @media(max-width:900px){
+    .sidebar-nav{transform:translateX(-100%)}
+    .sidebar-nav.active{transform:translateX(0)}
+    .nav-toggle{display:block}
+    .page{margin-left:0}
+    .hero{padding:70px 22px 34px}
+    .hero-top{flex-direction:column-reverse;text-align:center}
+    .hero-card{width:auto}
+    .container{padding:26px 20px 60px}
+    .goal-grid{grid-template-columns:1fr}
+  }
+</style>
+</head>
+<body>
+
+<button class="nav-toggle" onclick="document.querySelector('.sidebar-nav').classList.toggle('active')">&#9776;</button>
+
+<nav class="sidebar-nav">
+  <div class="sb-brand">
+    <a class="sb-logo" href="https://codecombat.cn/" target="_blank" rel="noopener" title="访问 CodeCombat 扣哒世界官网">
+      <img src="../assets/logo.png" alt="CodeCombat 扣哒世界">
+    </a>
+    <div><b>云梯补给</b><span>云髓天阶 · C++ 六级 第 4 单元</span></div>
+  </div>
+  <div class="nav-title">本单元目录</div>
+
+  <a href="#s0" class="nav-section">0　单元导语与目标</a>
+  <a href="#s0-1" class="nav-sub">0.1 学习目标</a>
+  <a href="#s0-2" class="nav-sub">0.2 考纲对照</a>
+  <a href="#s1" class="nav-section">1　重复计算的浪费</a>
+  <a href="#s1-1" class="nav-sub">1.1 从斐波那契说起</a>
+  <a href="#s1-2" class="nav-sub">1.2 算过就别再算</a>
+  <a href="#s2" class="nav-section">2　记忆化：自顶向下</a>
+  <a href="#s2-1" class="nav-sub">2.1 加一个数组记住结果</a>
+  <a href="#s2-2" class="nav-sub">2.2 代码与复杂度</a>
+  <a href="#s3" class="nav-section">3　递推表：自底向上</a>
+  <a href="#s3-1" class="nav-sub">3.1 从小往大填表</a>
+  <a href="#s3-2" class="nav-sub">3.2 代码与两种写法的取舍</a>
+  <a href="#s4" class="nav-section">4　状态与转移方程</a>
+  <a href="#s4-1" class="nav-sub">4.1 什么叫"状态"</a>
+  <a href="#s4-2" class="nav-sub">4.2 怎么找出转移方程</a>
+  <a href="#s5" class="nav-section">5　两个经典模型</a>
+  <a href="#s5-1" class="nav-sub">5.1 爬楼梯与不相邻取数</a>
+  <a href="#s5-2" class="nav-sub">5.2 0/1 背包</a>
+  <a href="#s6" class="nav-section">6　代码实战</a>
+  <a href="#s7" class="nav-section">7　常见陷阱</a>
+  <a href="#s8" class="nav-section">8　题目练习</a>
+  <a href="#s9" class="nav-section">9　本单元小结</a>
+
+  <a href="../index.html" target="_top" class="sb-back">返回考纲之路</a>
+</nav>
+
+<div class="page">
+
+<div class="hero">
+  <div class="hero-top">
+    <div class="hero-txt">
+      <div class="crumb">扣哒考级 · GESP C++ 六级 · 第 4 单元　|　云髓天阶 CLOUDMARROW STEPS</div>
+      <h1>云梯补给
+        <span class="sub">简单动态规划</span>
+      </h1>
+      <div class="en">Dynamic Programming</div>
+      <div class="tags">        <span class="tag hot">考纲 · 动态规划</span>
+        <span class="tag">记忆化</span>
+        <span class="tag">递推表</span>
+        <span class="tag">状态转移方程</span>
+        <span class="tag">0/1 背包</span></div>
+    </div>
+    <div class="hero-card">
+      <img class="ava" src="../assets/avatars/hushbaum.webp" alt="贺舒曼" onerror="this.style.background='#24344a';this.src='../assets/heroes/hushbaum.webp'">
+      <div class="nm">贺舒曼</div>
+      <div class="ti">镜中先知 · 你的向导</div>
+    </div>
+  </div>
+</div>
+
+<div class="container">
+
+<div class="lead">
+  一条由云块构成的阶梯，直插入云海深处。<br>
+  贺舒曼站在第 6 级台阶上，回头望着身后：<b>每一级台阶侧面都刻着一个数字，
+  随着他的目光依次亮起。</b><br>
+  你顺着看过去：<strong>这些数字……好像每一级都由下面级推出来的？</strong><br>
+  对。她点头，<strong>而且算过一次的，就不用再算了——
+  这正是"动态规划"最重要的一句话。</strong>
+</div>
+
+<div class="cast hushbaum">
+  <img class="ava" src="../assets/avatars/hushbaum.webp" alt="贺舒曼" onerror="this.style.display='none'">
+  <div class="bubble">
+    <div class="who">贺舒曼 · 镜中先知</div>
+    上一课我们学了搜索。搜索的毛病是：<strong>它可能把同一件事反复算很多遍。</strong><br>
+    这一课学动态规划——<b>把算过的结果记下来，下次直接查表，不重复劳动。</b><br>
+    <strong>它有点抽象，但只要抓住"状态"和"转移方程"两条线，就顺了。</strong>
+  </div>
+</div>
+
+<figure class="pic">
+  <img src="../assets/illustrations/py-L6-04-01_cloud_ladder.webp" alt="云梯补给"
+       onerror="this.closest('.pic').classList.add('missing')">
+  <div class="ph">
+    <div class="fn">assets/illustrations/py-L6-04-01_cloud_ladder.webp</div>
+    <div class="ds">【配图位】一条由云块垒成的阶梯直插云海，每级台阶侧面刻着一个数字，数字从下往上依次递增（如 1、1、2、3、5、8、13）；一名戴眼镜的先知站在较高的那一级回头望向已走过的台阶，身后的数字依次亮起、形成一串发光序列；云梯底部还留在云层之下，顶端没入更深的云中。</div>
+  </div>
+  <figcaption>图 1：云髓天阶的云梯补给——今天要从这里开始</figcaption>
+</figure>
+
+<!-- ============ 0 ============ -->
+<div class="section-header" id="s0">
+  <h2>0　单元导语与目标</h2>
+  <div class="en-title">Unit Overview</div>
+</div>
+
+<h3 id="s0-1">0.1 学习目标</h3>
+<div class="goal-grid">
+  <div class="goal">
+    <h4><span class="ic">1</span>学完这个单元，你将能……</h4>
+    <ul>
+      <li>说出"重复计算"到底浪费在哪里</li>
+      <li>用记忆化改造一个慢递归</li>
+      <li>用递推表（自底向上）写出解法</li>
+      <li>说出"状态"和"转移方程"是什么</li>
+      <li>解决爬楼梯、不相邻取数问题</li>
+      <li>写出 0/1 背包的一维写法并解释为什么要倒序</li>
+    </ul>
+  </div>
+  <div class="goal syllabus">
+    <h4><span class="ic">2</span>对标 GESP 考纲（C++ 六级）</h4>
+    <ul>
+      <li>理解动态规划的基本思想</li>
+      <li>掌握记忆化搜索与递推表两种实现方式</li>
+      <li>能找出问题的状态与状态转移方程</li>
+      <li>掌握简单背包问题的解法</li>
+      <li>考核目标：能补全转移方程、能解释初始化与枚举顺序</li>
+    </ul>
+  </div>
+</div>
+
+<h3 id="s0-2">0.2 考纲对照</h3>
+<table class="styled">
+  <thead><tr><th>本单元小节</th><th>对应考纲条目</th><th>真题常考形式</th></tr></thead>
+  <tbody>
+    <tr><td>1　重复计算的浪费</td><td>动态规划的动机</td><td>递归斐波那契为什么会慢</td></tr>
+    <tr><td>2　记忆化</td><td>自顶向下的 DP</td><td>加一个数组前后复杂度对比</td></tr>
+    <tr><td>3　递推表</td><td>自底向上的 DP</td><td>循环的起点与边界怎么定</td></tr>
+    <tr><td>4　状态与转移方程</td><td>DP 的两个核心概念</td><td>"状态"取什么；方程怎么写</td></tr>
+    <tr><td>5　两个经典模型</td><td>DP 应用</td><td>爬楼梯、不相邻取数、0/1 背包（必考）</td></tr>
+  </tbody>
+</table>
+
+<!-- ============ 1 ============ -->
+<div class="section-header" id="s1">
+  <h2>1　重复计算的浪费</h2>
+  <div class="en-title">Wasted Recomputation</div>
+</div>
+
+<h3 id="s1-1">1.1 从斐波那契说起</h3>
+
+<div class="code-card">
+  <div class="code-head">
+    <span class="dot d1"></span><span class="dot d2"></span><span class="dot d3"></span>
+    <span class="file">那个"看着优雅、跑起来很慢"的递归</span>
+    <span class="lang">C++</span>
+  </div>
+  <pre><code>int fib(int n) {
+    if (n &lt;= 1) return n;
+    return fib(n - 1) + fib(n - 2);
+}
+
+// 调用 fib(5) 时，看看都调用了什么：
+//
+//                    fib(5)
+//                  /        \
+//            fib(4)           fib(3)     ← fib(3) 第一次
+//           /     \          /     \
+//      fib(3)    fib(2)   fib(2)  fib(1)
+//      ↑ 第二次！
+//      /    \
+//   fib(2)  fib(1)
+//   ↑ 第三次！
+//
+// ★ fib(3) 被算了 2 次、fib(2) 被算了 3 次……
+//   越往下，重复得越离谱。总调用次数是"指数级"的。</code></pre>
+  <div class="out"><b>问题所在</b>　
+  <b>同一个子问题被反复计算</b>——
+  <code>fib(40)</code> 的调用次数是十亿量级，<strong>根本跑不完</strong></div>
+</div>
+
+<h3 id="s1-2">1.2 算过就别再算</h3>
+
+<div class="box remember">
+  <span class="lb">动态规划最重要的一句话：</span>
+  <b>如果同一个子问题会被反复用到，那就算一次、把结果<strong>存起来</strong>，
+  下次直接用。</b><br>
+  <b>这样一来，每个子问题只会被真正计算一次——</b>
+  <strong>原本指数级的次数，一下子降到了线性级。</strong><br>
+  <b>斐波那契从 <code class="inline">O(2ⁿ)</code> 降到 <code class="inline">O(n)</code>，
+  靠的就是这一句话。</b>
+</div>
+
+<div class="box tip">
+  <span class="lb">打个比方：</span>
+  递归不管不顾的做法，就像<b>每次要用到"37 × 58 等于多少"都重新手算一遍</b>。<br>
+  <b>动态规划则是：算一次，写在纸上；下次要用直接看纸。</b><br>
+  <strong>题目越大、重复越多，这个"记笔记"的动作就越值钱。</strong>
+</div>
+
+<!-- ============ 2 ============ -->
+<div class="section-header" id="s2">
+  <h2>2　记忆化：自顶向下</h2>
+  <div class="en-title">Memoization</div>
+</div>
+
+<h3 id="s2-1">2.1 加一个数组记住结果</h3>
+
+<div class="code-card">
+  <div class="code-head">
+    <span class="dot d1"></span><span class="dot d2"></span><span class="dot d3"></span>
+    <span class="file">改造只加了三行</span>
+    <span class="lang">C++</span>
+  </div>
+  <pre><code>long long memo[100];          // ★ ① 加一个"备忘录"数组
+                              //    初始全为 0（或一个不可能的值）
+
+long long fib(int n) {
+    if (n &lt;= 1) return n;
+
+    if (memo[n] != 0) return memo[n];    // ★ ② 查过笔记就直接返回
+
+    memo[n] = fib(n - 1) + fib(n - 2);   // ★ ③ 算完立刻记下来
+    return memo[n];
+}</code></pre>
+  <div class="out"><b>三处改动</b>　
+  ① 加数组；② 开头查表；③ 算完存表<br>
+  <b>结果</b>　<code>fib(40)</code> 从"十亿次调用"变成 <b>"40 次计算"</b></div>
+</div>
+
+<div class="box warn">
+  <span class="lb">备忘录的初值要选一个"不可能出现的值"。</span>
+  <b>上面用 <code class="inline">0</code> 当"还没算过"的标记</b>——
+  这要求答案<strong>不可能是 0</strong>。<br>
+  <b>如果答案有可能是 0，那就不能用 0 当标记</b>——
+  <strong>得另外开一个 <code class="inline">bool used[]</code> 数组记录"算没算过"，
+  或者把 memo 全部初始化成一个特殊值。</strong><br>
+  <b>斐波那契里 <code class="inline">fib(0) = 0</code></b>——但它在出口处就返回了，
+  <strong>不会走到查表那一步，所以用 0 当标记是安全的。</strong>
+</div>
+
+<h3 id="s2-2">2.2 代码与复杂度</h3>
+
+<table class="styled">
+  <thead><tr><th></th><th>朴素递归</th><th>加了记忆化</th></tr></thead>
+  <tbody>
+    <tr><td>时间</td><td><strong><code class="inline">O(2ⁿ)</code></strong></td><td><strong><code class="inline">O(n)</code></strong></td></tr>
+    <tr><td>空间</td><td><code class="inline">O(n)</code>（递归栈）</td><td><code class="inline">O(n)</code>（备忘录 + 栈）</td></tr>
+    <tr><td>fib(40) 的规模</td><td>约 10⁹ 次调用（<strong>跑不完</strong>）</td><td>约 <strong>40 次</strong>计算</td></tr>
+    <tr><td>代码改动</td><td>—</td><td>只加三行</td></tr>
+  </tbody>
+</table>
+
+<div class="box remember">
+  <span class="lb">记忆化为什么这么有效？</span>
+  <b>因为"每个子问题只算一次"。</b>
+  <b>斐波那契一共有 n 个子问题（<code class="inline">fib(0)</code> 到 <code class="inline">fib(n)</code>），
+  每个只被真正计算一次，所以是 <code class="inline">O(n)</code>。</b><br>
+  <strong>而它"想"的顺序没变——还是从 fib(n) 出发、往下问，
+  只是问之前先看一眼"这个问题我是不是已经答过了"。</strong><br>
+  <b>所以记忆化又叫"自顶向下的动态规划"——</b>
+  <strong>从大问题出发，往下找小问题。</strong>
+</div>
+
+<figure class="figure">
+  <svg class="diagram" viewBox="0 0 830 250" role="img" aria-label="记忆化的效果">
+    <text x="24" y="28" font-size="14" font-weight="bold" fill="#1f2937">有了备忘录，重复的分支直接"剪掉"</text>
+
+    <g font-family="Consolas,monospace" font-size="11.5">
+      <text x="40" y="58" fill="#b91c1c" font-weight="bold">没有备忘录：</text>
+      <circle cx="120" cy="92" r="16" fill="#fef2f2" stroke="#ef4444" stroke-width="1.6"/>
+      <text x="120" y="97" text-anchor="middle" fill="#b91c1c">5</text>
+      <circle cx="76" cy="146" r="15" fill="#fef2f2" stroke="#ef4444" stroke-width="1.6"/>
+      <text x="76" y="151" text-anchor="middle" fill="#b91c1c">4</text>
+      <circle cx="164" cy="146" r="15" fill="#fef2f2" stroke="#ef4444" stroke-width="1.6"/>
+      <text x="164" y="151" text-anchor="middle" fill="#b91c1c">3</text>
+      <circle cx="46" cy="196" r="13" fill="#fef2f2" stroke="#ef4444" stroke-width="1.6"/>
+      <text x="46" y="200" text-anchor="middle" font-size="10.5" fill="#b91c1c">3</text>
+      <circle cx="106" cy="196" r="13" fill="#fef2f2" stroke="#ef4444" stroke-width="1.6"/>
+      <text x="106" y="200" text-anchor="middle" font-size="10.5" fill="#b91c1c">2</text>
+      <circle cx="140" cy="196" r="13" fill="#fef2f2" stroke="#ef4444" stroke-width="1.6"/>
+      <text x="140" y="200" text-anchor="middle" font-size="10.5" fill="#b91c1c">2</text>
+      <circle cx="188" cy="196" r="13" fill="#fef2f2" stroke="#ef4444" stroke-width="1.6"/>
+      <text x="188" y="200" text-anchor="middle" font-size="10.5" fill="#b91c1c">1</text>
+    </g>
+    <line x1="112" y1="106" x2="82" y2="132" stroke="#fca5a5" stroke-width="1.4"/>
+    <line x1="128" y1="106" x2="158" y2="132" stroke="#fca5a5" stroke-width="1.4"/>
+    <line x1="68" y1="160" x2="50" y2="184" stroke="#fca5a5" stroke-width="1.4"/>
+    <line x1="84" y1="160" x2="102" y2="184" stroke="#fca5a5" stroke-width="1.4"/>
+    <line x1="156" y1="160" x2="142" y2="184" stroke="#fca5a5" stroke-width="1.4"/>
+    <line x1="172" y1="160" x2="186" y2="184" stroke="#fca5a5" stroke-width="1.4"/>
+    <text x="40" y="234" font-size="11" fill="#b91c1c">3 和 2 都被重复算了多次</text>
+
+    <g font-family="Consolas,monospace" font-size="11.5">
+      <text x="440" y="58" fill="#1f7a44" font-weight="bold">有备忘录：</text>
+      <circle cx="520" cy="92" r="16" fill="#e9f8ef" stroke="#2e9e5b" stroke-width="1.8"/>
+      <text x="520" y="97" text-anchor="middle" fill="#1f7a44">5</text>
+      <circle cx="476" cy="146" r="15" fill="#e9f8ef" stroke="#2e9e5b" stroke-width="1.6"/>
+      <text x="476" y="151" text-anchor="middle" fill="#1f7a44">4</text>
+      <circle cx="564" cy="146" r="15" fill="#e9f8ef" stroke="#2e9e5b" stroke-width="1.6"/>
+      <text x="564" y="151" text-anchor="middle" fill="#1f7a44">3</text>
+      <circle cx="446" cy="196" r="13" fill="#e9f8ef" stroke="#2e9e5b" stroke-width="1.6"/>
+      <text x="446" y="200" text-anchor="middle" font-size="10.5" fill="#1f7a44">3</text>
+      <circle cx="506" cy="196" r="13" fill="#e9f8ef" stroke="#2e9e5b" stroke-width="1.6"/>
+      <text x="506" y="200" text-anchor="middle" font-size="10.5" fill="#1f7a44">2</text>
+      <circle cx="540" cy="196" r="13" fill="#f1f5f9" stroke="#94a3b8" stroke-width="1.6" stroke-dasharray="4 3"/>
+      <text x="540" y="200" text-anchor="middle" font-size="10.5" fill="#94a3b8">2</text>
+    </g>
+    <line x1="512" y1="106" x2="482" y2="132" stroke="#86efac" stroke-width="1.4"/>
+    <line x1="528" y1="106" x2="558" y2="132" stroke="#86efac" stroke-width="1.4"/>
+    <line x1="468" y1="160" x2="450" y2="184" stroke="#86efac" stroke-width="1.4"/>
+    <line x1="484" y1="160" x2="502" y2="184" stroke="#86efac" stroke-width="1.4"/>
+    <line x1="556" y1="160" x2="542" y2="184" stroke="#94a3b8" stroke-width="1.2" stroke-dasharray="4 3"/>
+    <text x="440" y="234" font-size="11" fill="#1f7a44">重复的那一支直接查表 → 不再展开</text>
+
+    <rect x="620" y="80" width="180" height="130" rx="12" fill="#f7f9fd" stroke="#cbd5e1" stroke-width="1.6"/>
+    <text x="640" y="106" font-size="12" fill="#334155" font-weight="bold">效果</text>
+    <text x="640" y="132" font-size="11.5" fill="#475569">时间：O(2ⁿ) → O(n)</text>
+    <text x="640" y="158" font-size="11.5" fill="#475569">代码：只加三行</text>
+    <text x="640" y="188" font-size="11.5" fill="#b45309">★ 每个子问题只真算一次</text>
+  </svg>
+  <div class="caption">图 2（SVG）：记忆化——重复的分支直接剪掉</div>
+</figure>
+
+<!-- ============ 3 ============ -->
+<div class="section-header" id="s3">
+  <h2>3　递推表：自底向上</h2>
+  <div class="en-title">Bottom-Up DP</div>
+</div>
+
+<h3 id="s3-1">3.1 从小往大填表</h3>
+
+<div class="code-card">
+  <div class="code-head">
+    <span class="dot d1"></span><span class="dot d2"></span><span class="dot d3"></span>
+    <span class="file">换个方向想：不从 n 往下问，从 0 往上填</span>
+    <span class="lang">TEXT</span>
+  </div>
+  <pre><code>记忆化是"自顶向下"：从 fib(10) 出发，缺谁就问谁。
+递推表是"自底向上"：先把小的算好，再一层层往上推。
+
+【填表的顺序】
+   dp[0] = 0                ← 已知条件，直接填
+   dp[1] = 1                ← 已知条件，直接填
+   dp[2] = dp[1] + dp[0] = 1
+   dp[3] = dp[2] + dp[1] = 2
+   dp[4] = dp[3] + dp[2] = 3
+   dp[5] = dp[4] + dp[3] = 5
+   ……
+   ← 每一格都只用到它左边那两格，而它们早就填好了
+
+★ 好处：
+   · 没有递归，不会栈溢出
+   · 没有函数调用开销
+   · 还能"边算边扔"——如果只需要最后一项，
+     开两个变量滚动就够了，空间降到 O(1)</code></pre>
+  <div class="out"><b>核心</b>　
+  <b>先定好"哪些格子是已知的"（边界），再按大小顺序一路填过去</b></div>
+</div>
+
+<h3 id="s3-2">3.2 代码与两种写法的取舍</h3>
+
+<div class="code-card">
+  <div class="code-head">
+    <span class="dot d1"></span><span class="dot d2"></span><span class="dot d3"></span>
+    <span class="file">递推表写法</span>
+    <span class="lang">C++</span>
+  </div>
+  <pre><code>long long dp[100];
+dp[0] = 0;
+dp[1] = 1;
+
+for (int i = 2; i &lt;= n; i++) {
+    dp[i] = dp[i - 1] + dp[i - 2];   // ★ 转移方程
+}
+cout &lt;&lt; dp[n] &lt;&lt; endl;</code></pre>
+  <div class="out"><b>三段式</b>　
+  ① 定边界（<code>dp[0]</code>、<code>dp[1]</code>）；<br>
+  ② 按顺序循环填表；<br>
+  ③ 输出目标</div>
+</div>
+
+<table class="styled">
+  <thead><tr><th></th><th>记忆化（自顶向下）</th><th>递推表（自底向上）</th></tr></thead>
+  <tbody>
+    <tr><td>思考方向</td><td>从大问题往下拆</td><td>从小问题往上堆</td></tr>
+    <tr><td>实现</td><td>递归 + 数组</td><td>循环 + 数组</td></tr>
+    <tr><td>会不会栈溢出</td><td><strong>可能</strong></td><td><strong>不会</strong></td></tr>
+    <tr><td>速度</td><td>稍慢（有函数调用开销）</td><td><strong>更快</strong></td></tr>
+    <tr><td>好不好想</td><td><strong>更贴近直觉</strong>（顺着题意就能写）</td><td>要先想清"填表顺序"</td></tr>
+    <tr><td>能不能省空间</td><td>不太能</td><td><strong>常常能滚动优化</strong></td></tr>
+  </tbody>
+</table>
+
+<div class="box remember">
+  <span class="lb">怎么选？</span>
+  <b>先想清楚"转移方程"，再挑写法。</b><br>
+  <b>顺着题意好想的（比如"走迷宫有多少种走法"）→ 先写记忆化，改起来快；</b><br>
+  <b>转移关系清楚的（比如"每一项等于前两项之和"）→ 直接写递推表，稳又快；</b><br>
+  <strong>n 很大（10⁵ 以上）→ 一律用递推表，递归可能栈溢出。</strong><br>
+  <b>两种写法算出来的答案一定一样——因为它们用的是同一个转移方程。</b>
+</div>
+
+<!-- ============ 4 ============ -->
+<div class="section-header" id="s4">
+  <h2>4　状态与转移方程</h2>
+  <div class="en-title">State &amp; Transition</div>
+</div>
+
+<h3 id="s4-1">4.1 什么叫"状态"</h3>
+
+<div class="box remember">
+  <span class="lb">状态：你要记下来的那个"中间答案"。</span>
+  <b>做动态规划时，第一件事就是想清楚：</b>
+  <strong>"我打算用一个数组来记什么？"</strong><br>
+  <b><code class="inline">dp[i]</code> 的含义，就是所谓的"状态"。</b><br>
+  <b>举例：</b><br>
+  · 斐波那契：<code class="inline">dp[i]</code> = <strong>第 i 项的值</strong>；<br>
+  · 爬楼梯：<code class="inline">dp[i]</code> = <strong>走到第 i 级台阶的方法数</strong>；<br>
+  · 不相邻取数：<code class="inline">dp[i]</code> = <strong>从前 i 个里选、能得到的最大和</strong>；<br>
+  · 0/1 背包：<code class="inline">dp[w]</code> = <strong>容量为 w 时能装的最大价值</strong>。<br>
+  <strong>把这句话用中文完整说一遍，就是"定义状态"。</strong>
+</div>
+
+<div class="box warn">
+  <span class="lb">状态定义错了，后面全错。</span>
+  <b>最常见的错法是"少了一个维度"或者"含义含糊"。</b><br>
+  <b>比如 0/1 背包：</b>
+  <strong>如果你把状态定义成"前 i 个物品能取得的最大价值"，
+  那就完全表达不了"背包还剩多少容量"这个关键信息——后面的转移根本写不下去。</strong><br>
+  <b>正确的状态必须<strong>刚好够用</strong>：</b>
+  <strong>让"当前决策"能够只依赖这几种状态。</strong><br>
+  <b>一个实用的检查办法：</b>
+  <strong>把状态的中文含义写出来，再问自己"知道这些状态，下一步能不能决定怎么走？"</strong>
+</div>
+
+<h3 id="s4-2">4.2 怎么找出转移方程</h3>
+
+<div class="box remember">
+  <span class="lb">找转移方程的通用问法：</span>
+  <b>"最后一步有几种可能？"</b><br>
+  <b>把最后一步分类讨论，每一类都对应"从哪个更小的状态转移过来"。</b><br>
+  <b>举例：</b><br>
+  <b>爬楼梯</b>——最后一步要么从 <code class="inline">i−1</code> 跨 1 级、要么从 <code class="inline">i−2</code> 跨 2 级，
+  <strong>所以 <code class="inline">dp[i] = dp[i−1] + dp[i−2]</code>。</strong><br>
+  <b>不相邻取数</b>——对第 <code class="inline">i</code> 个元素，要么<strong>不选它</strong>（那答案就是 <code class="inline">dp[i−1]</code>）、
+  要么<strong>选它</strong>（那就不能选 <code class="inline">i−1</code>，答案是 <code class="inline">dp[i−2] + a[i]</code>），
+  <strong>所以 <code class="inline">dp[i] = max(dp[i−1], dp[i−2] + a[i])</code>。</strong><br>
+  <strong>这个方法几乎万能——先想"最后一步"，方程自然就浮出来了。</strong>
+</div>
+
+<div class="box tip">
+  <span class="lb">三个边界要一起想清楚。</span>
+  <b>写转移方程之后，还要回答三个问题：</b><br>
+  <b>① 最小的几个状态是什么值？</b>（边界初始化）；<br>
+  <b>② 循环从几开始、到几结束？</b>（保证用到的一定算过）；<br>
+  <b>③ 答案是哪一个状态？</b>（<code class="inline">dp[n]</code> 还是 <code class="inline">max(dp[...])</code>）。<br>
+  <strong>三个问题都答对了，DP 才算写完。</strong>
+</div>
+
+<!-- ============ 5 ============ -->
+<div class="section-header" id="s5">
+  <h2>5　两个经典模型</h2>
+  <div class="en-title">Classic Models</div>
+</div>
+
+<h3 id="s5-1">5.1 爬楼梯与不相邻取数</h3>
+
+<div class="code-card">
+  <div class="code-head">
+    <span class="dot d1"></span><span class="dot d2"></span><span class="dot d3"></span>
+    <span class="file">模型一：爬楼梯（每次 1 级或 2 级）</span>
+    <span class="lang">C++</span>
+  </div>
+  <pre><code>int ways(int n) {
+    if (n &lt;= 2) return n;              // ways(1)=1, ways(2)=2
+    vector&lt;int&gt; dp(n + 1);
+    dp[1] = 1;
+    dp[2] = 2;
+    for (int i = 3; i &lt;= n; ++i)
+        dp[i] = dp[i - 1] + dp[i - 2];   // ★ 最后一步分两类
+    return dp[n];
+}</code></pre>
+  <div class="out"><b>状态</b>　<code>dp[i]</code> = 走到第 i 级的方法数<br>
+  <b>方程</b>　<code>dp[i] = dp[i−1] + dp[i−2]</code>——
+  <b>最后一步要么从 i−1 跨 1 级、要么从 i−2 跨 2 级</b><br>
+  <b>答案</b>　<code>dp[n]</code>（n = 3 时是 3；n = 5 时是 8）</div>
+</div>
+
+<div class="code-card">
+  <div class="code-head">
+    <span class="dot d1"></span><span class="dot d2"></span><span class="dot d3"></span>
+    <span class="file">模型二：不相邻取数（选出的数不能相邻）</span>
+    <span class="lang">C++</span>
+  </div>
+  <pre><code>int maxSum(vector&lt;int&gt; &amp;a) {
+    int n = a.size();
+    if (n == 0) return 0;
+    if (n == 1) return a[0];
+
+    vector&lt;int&gt; dp(n);
+    dp[0] = a[0];
+    dp[1] = max(a[0], a[1]);           // 前两个里挑大的
+    for (int i = 2; i &lt; n; ++i)
+        dp[i] = max(dp[i - 1], dp[i - 2] + a[i]);   // ★ 选 或 不选
+    return dp[n - 1];
+}</code></pre>
+  <div class="out"><b>状态</b>　<code>dp[i]</code> = 从前 <code>i+1</code> 个数里选、能得到的最大和<br>
+  <b>方程</b>　<code>dp[i] = max(dp[i−1], dp[i−2] + a[i])</code>——<br>
+  <b>不选 a[i] → 答案是 <code>dp[i−1]</code>；选 a[i] → 就不能选 a[i−1]，答案是 <code>dp[i−2] + a[i]</code></b></div>
+</div>
+
+<figure class="pic">
+  <img src="../assets/illustrations/py-L6-04-03_memo_note.webp" alt="算过就记在石板上"
+       onerror="this.closest('.pic').classList.add('missing')">
+  <div class="ph">
+    <div class="fn">assets/illustrations/py-L6-04-03_memo_note.webp</div>
+    <div class="ds">【配图位】云梯旁的石壁上挂着一长排小石板，每块石板上用发光刻痕写着一个已经算好的数字（按顺序排列、依次递增）；一名戴眼镜的先知正把刚算出的结果刻到新的那块石板上，另一只手伸向已经刻好字的一块旧石板（表示"直接查，不再重算"）；石板上方有一串淡去的、被划掉的重复刻痕，暗示"这些原来要算很多遍"。</div>
+  </div>
+  <figcaption>图 3：一长排刻满数字的石板——先把表填好，再直接查表</figcaption>
+</figure>
+
+<figure class="figure">
+  <svg class="diagram" viewBox="0 0 830 240" role="img" aria-label="不相邻取数">
+    <text x="24" y="28" font-size="14" font-weight="bold" fill="#1f2937">不相邻取数：选了它，就不能选旁边那个</text>
+
+    <g font-family="Consolas,monospace" font-size="13">
+      <rect x="60" y="56" width="70" height="44" rx="8" fill="#e9f8ef" stroke="#2e9e5b" stroke-width="2.6"/>
+      <text x="95" y="84" text-anchor="middle" fill="#1f7a44" font-weight="bold">2</text>
+      <rect x="140" y="56" width="70" height="44" rx="8" fill="#fef2f2" stroke="#ef4444" stroke-width="1.8" stroke-dasharray="5 4"/>
+      <text x="175" y="84" text-anchor="middle" fill="#b91c1c">7</text>
+      <rect x="220" y="56" width="70" height="44" rx="8" fill="#e9f8ef" stroke="#2e9e5b" stroke-width="2.6"/>
+      <text x="255" y="84" text-anchor="middle" fill="#1f7a44" font-weight="bold">9</text>
+      <rect x="300" y="56" width="70" height="44" rx="8" fill="#fef2f2" stroke="#ef4444" stroke-width="1.8" stroke-dasharray="5 4"/>
+      <text x="335" y="84" text-anchor="middle" fill="#b91c1c">3</text>
+      <rect x="380" y="56" width="70" height="44" rx="8" fill="#e9f8ef" stroke="#2e9e5b" stroke-width="2.6"/>
+      <text x="415" y="84" text-anchor="middle" fill="#1f7a44" font-weight="bold">1</text>
+    </g>
+    <text x="95" y="120" text-anchor="middle" font-size="10.5" fill="#68788f">选</text>
+    <text x="175" y="120" text-anchor="middle" font-size="10.5" fill="#b91c1c">不选</text>
+    <text x="255" y="120" text-anchor="middle" font-size="10.5" fill="#68788f">选</text>
+    <text x="335" y="120" text-anchor="middle" font-size="10.5" fill="#b91c1c">不选</text>
+    <text x="415" y="120" text-anchor="middle" font-size="10.5" fill="#68788f">选</text>
+
+    <text x="490" y="84" font-size="12.5" fill="#1f7a44" font-weight="bold">2 + 9 + 1 = 12</text>
+
+    <rect x="60" y="146" width="740" height="72" rx="12" fill="#f7f9fd" stroke="#cbd5e1" stroke-width="1.6"/>
+    <text x="84" y="172" font-size="12" fill="#334155"><tspan font-family="Consolas,monospace">dp[i] = max(dp[i-1], dp[i-2] + a[i])</tspan></text>
+    <text x="84" y="198" font-size="11.5" fill="#475569">不选 a[i] → 沿用 dp[i-1]　｜　选 a[i] → 跳过 a[i-1]，用 dp[i-2] + a[i]</text>
+    <text x="630" y="208" font-size="11.5" fill="#b45309">★ 两者取大的</text>
+  </svg>
+  <div class="caption">图 4（SVG）：不相邻取数——选或不选，分两种情况比大小</div>
+</figure>
+
+<h3 id="s5-2">5.2 0/1 背包</h3>
+
+<div class="code-card">
+  <div class="code-head">
+    <span class="dot d1"></span><span class="dot d2"></span><span class="dot d3"></span>
+    <span class="file">0/1 背包：每件物品只有"拿"或"不拿"两种选择</span>
+    <span class="lang">C++</span>
+  </div>
+  <pre><code>// 二维写法（更好理解）
+// dp[i][w] = 只考虑前 i 件物品、容量为 w 时能装的最大价值
+for (int i = 1; i &lt;= n; i++) {
+    for (int w = 0; w &lt;= W; w++) {
+        dp[i][w] = dp[i - 1][w];                    // 不拿第 i 件
+        if (w &gt;= weight[i]) {
+            dp[i][w] = max(dp[i][w],
+                           dp[i - 1][w - weight[i]] + value[i]);  // 拿
+        }
+    }
+}</code></pre>
+  <div class="out"><b>两种选择</b>　
+  <b>不拿第 i 件 → <code>dp[i−1][w]</code>；拿 → <code>dp[i−1][w − weight[i]] + value[i]</code></b><br>
+  <b>注意"拿"那一项用的是 <code>i − 1</code></b>——<strong>因为每件只能拿一次</strong></div>
+</div>
+
+<div class="code-card">
+  <div class="code-head">
+    <span class="dot d1"></span><span class="dot d2"></span><span class="dot d3"></span>
+    <span class="file">一维写法：省掉一维，容量必须"倒着枚举"</span>
+    <span class="lang">C++</span>
+  </div>
+  <pre><code>// dp[w] = 容量为 w 时能装的最大价值
+for (int i = 0; i &lt; n; ++i) {
+    for (int w = W; w &gt;= weight[i]; --w) {          // ★ 从大到小！
+        dp[w] = max(dp[w], dp[w - weight[i]] + value[i]);
+    }
+}</code></pre>
+  <div class="out"><b>关键就是那个 <code>--w</code>（倒着枚举容量）</b>　
+  <b>它保证每件物品最多被选一次</b>——
+  <strong>这是 0/1 背包一维写法的命脉，真题专门考过</strong></div>
+</div>
+
+<div class="box remember">
+  <span class="lb">为什么一维写法必须倒着枚举容量？</span>
+  <b>看这一句：</b><code class="inline">dp[w] = max(dp[w], dp[w − weight[i]] + value[i])</code><br>
+  <b>它用到的是"<code class="inline">dp[w − weight[i]]</code>"——一个<strong>更小容量</strong>的位置。</b><br>
+  <b>如果从小到大枚举 <code class="inline">w</code>：</b>
+  <strong>那么较小的那个位置<strong>本轮已经被更新过了</strong>——
+  于是 <code class="inline">dp[w]</code> 用到了"已经拿过第 i 件物品"的结果，
+  等于第 i 件物品被拿了<strong>不止一次</strong>。</strong><br>
+  <b>如果从大到小枚举 <code class="inline">w</code>：</b>
+  <strong>较小的位置还是"上一轮（没考虑第 i 件）"的值，
+  所以每件物品只会被拿一次 ✔</strong><br>
+  <b>一句话记牢：</b>
+  <strong>倒序 → 0/1 背包（每件至多一次）；正序 → 完全背包（每件可以拿无数次）。</strong>
+</div>
+
+<figure class="pic">
+  <img src="../assets/illustrations/py-L6-04-02_knapsack.webp" alt="背包容量有限"
+       onerror="this.closest('.pic').classList.add('missing')">
+  <div class="ph">
+    <div class="fn">assets/illustrations/py-L6-04-02_knapsack.webp</div>
+    <div class="ds">【配图位】云海平台的石桌上摆着若干件重量与价值各不相同的物品，每件物品上方都浮着两个发光数字（重量、价值）；一只行者的背包敞口放在一旁，包口边缘刻着容量刻度并发出微光；其中一组物品被一圈光晕框出、正被一件件放进背包，其余物品留在原地；一名戴眼镜的先知站在桌旁权衡。</div>
+  </div>
+  <figcaption>图 5：0/1 背包——容量有限，每件东西只能拿或不拿</figcaption>
+</figure>
+
+<!-- ============ 6 ============ -->
+<div class="section-header" id="s6">
+  <h2>6　代码实战</h2>
+  <div class="en-title">Level Practice</div>
+</div>
+
+<div class="level-card">
+  <div class="lc-head"><span class="n">关卡</span><h4>诱骗耗牛</h4><span class="go">进入关卡 →</span></div>
+  <div class="lc-body">
+    <div class="story">
+      <b>故事：</b>云梯上的补给箱一个比一个沉，<b>可背篓的容量是有限的。</b><br>
+      贺舒曼把镜子举到补给箱前：<strong>每一箱都有重量和价值。
+      你不能全带走——得挑一组，让总价值最大。</strong><br>
+      你看着满地的箱子：<b>每箱只有"拿"和"不拿"两种可能……
+      那就一个个考虑过去，记下每个容量下能装到的最好结果。</b><br>
+      对。她点头，<strong>这就是背包问题，也是动态规划最经典的模型。</strong>
+    </div>
+    <p><strong>思路：</strong>用 <strong>0/1 背包</strong>的一维写法——
+    <strong>外层枚举物品、内层倒着枚举容量</strong>。</p><figure class="pic">
+  <img src="../assets/stages/py-L6-04-stage1_deceptive_yak.webp" alt="诱骗耗牛 关卡截图"
+       onerror="this.closest('.pic').classList.add('missing')">
+  <div class="ph">
+    <div class="fn">assets/stages/py-L6-04-stage1_deceptive_yak.webp</div>
+    <div class="ds">【截图位】诱骗耗牛关卡：云梯平台与补给箱同框，代码编辑区可见 DP 数组与转移方程。</div>
+  </div>
+  <figcaption>关卡实况：诱骗耗牛</figcaption>
+</figure>
+    <div class="code-card">
+      <div class="code-head">
+        <span class="dot d1"></span><span class="dot d2"></span><span class="dot d3"></span>
+        <span class="file">0/1 背包一维写法（完整代码）</span>
+        <span class="lang">C++</span>
+      </div>
+      <pre><code>#include &lt;iostream&gt;
+#include &lt;algorithm&gt;
+using namespace std;
+
+int weight[1005], value[1005];
+int dp[100005];
+
+int main() {
+    int n, W;
+    cin &gt;&gt; n &gt;&gt; W;                       // n 件物品、背包容量 W
+
+    for (int i = 0; i &lt; n; i++) {
+        cin &gt;&gt; weight[i] &gt;&gt; value[i];
+    }
+
+    for (int i = 0; i &lt; n; ++i) {
+        for (int w = W; w &gt;= weight[i]; --w) {     // ★ 倒着枚举容量
+            dp[w] = max(dp[w], dp[w - weight[i]] + value[i]);
+        }
+    }
+
+    cout &lt;&lt; dp[W] &lt;&lt; endl;
+    return 0;
+}</code></pre>
+      <div class="out"><b>输入</b>　3 10　/　5 8　/　4 6　/　6 10　　<b>输出</b>　<b>14</b><br>
+      <b>验算</b>　选第 2 件（重 4 价 6）和第 3 件（重 6 价 10），
+      <b>总重 10 刚好装满，总价 6 + 10 = 14</b>——<strong>比只拿第 1 件的 8 更好</strong></div>
+    </div>
+    <div class="box info">
+      <span class="lb">和本单元的关系：</span>
+      <strong>这道题把本单元的所有概念都用上了：状态、转移方程、初始化、枚举顺序。</strong><br>
+      <b>① 状态：</b><code class="inline">dp[w]</code> = 容量为 <code class="inline">w</code> 时能装的最大价值；<br>
+      <b>② 转移：</b><code class="inline">dp[w] = max(dp[w], dp[w − weight[i]] + value[i])</code>——
+      <strong>"不拿"就是原来的 <code class="inline">dp[w]</code>，"拿"就是 <code class="inline">dp[w − weight[i]] + value[i]</code>；</strong><br>
+      <b>③ 枚举顺序：容量必须倒着来</b>——
+      <strong>这样每件物品最多被选一次（0/1 背包的本质）。</strong><br>
+      <b>把内层改成 <code class="inline">for (int w = weight[i]; w &lt;= W; ++w)</code>（正序），
+      它就变成了"完全背包"——每件物品可以拿任意多次。</b><br>
+      <strong>这一个符号的差别，是六级真题里反复出现的考点。</strong>
+    </div>
+    <a class="btn-go" href="https://codecombat.cn/" target="_blank" rel="noopener">去扣哒世界闯这一关 →</a>
+  </div>
+</div>
+
+
+
+<!-- ============ 7 ============ -->
+<div class="section-header" id="s7">
+  <h2>7　常见陷阱</h2>
+  <div class="en-title">Common Pitfalls</div>
+</div>
+
+<div class="cast duck">
+  <img class="ava" src="../assets/ducks/duck_naria.webp" alt="扣哒鸭" onerror="this.style.display='none'">
+  <div class="bubble">
+    <div class="who">扣哒鸭 · 调试官</div>
+    DP 的坑集中在"边界"和"顺序"上。四条，后两条真题都考过。
+  </div>
+</div>
+
+<div class="pit">
+  <div class="pt">
+    <div class="x">1</div>
+    <div class="t"><b>忘了给 dp 数组设初值。</b></div>
+  </div>
+  <div class="duck">
+    <img src="../assets/ducks/duck_zana.webp" alt="扣哒鸭" onerror="this.style.display='none'">
+    <div class="dt"><b>扣哒鸭：</b><strong>边界值必须手动填好，否则整个表都是错的。</strong><br>
+    比如爬楼梯要写 <code>dp[1] = 1; dp[2] = 2;</code>，
+    背包要保证 <code>dp</code> 全为 0（表示"什么也不装价值为 0"）。<br>
+    <b>循环从 <code>i = 3</code> 还是 <code>i = 2</code> 开始，也取决于边界填到了哪儿。</b></div>
+  </div>
+  <div class="fix"><b>习惯：</b>先写边界，再写循环</div>
+</div>
+
+<div class="pit">
+  <div class="pt">
+    <div class="x">2</div>
+    <div class="t"><b>求最大值时把初值设成了 0，结果全错。</b></div>
+  </div>
+  <div class="duck">
+    <img src="../assets/ducks/duck_hattori.webp" alt="扣哒鸭" onerror="this.style.display='none'">
+    <div class="dt"><b>扣哒鸭：</b><b>要看清楚"能不能什么都不选"。</b><br>
+    <b>不相邻取数里，<code>dp[0]</code> 必须等于 <code>a[0]</code>、<code>dp[1]</code> 取前两个的较大值</b>——
+    <strong>因为题目要求"至少选一个"，不能设成 0。</strong><br>
+    <b>而背包里 <code>dp</code> 全设 0 是对的</b>——因为"什么都不装"确实价值为 0。<br>
+    <b>同样一个 0，在两种题里一个对一个错。</b></div>
+  </div>
+  <div class="fix"><b>判断：</b>"允许什么都不选吗？"允许才用 0 当边界</div>
+</div>
+
+<div class="pit">
+  <div class="pt">
+    <div class="x">3</div>
+    <div class="t"><b>0/1 背包的容量写成了"从小到大"。</b></div>
+  </div>
+  <div class="duck">
+    <img src="../assets/ducks/duck_senick.webp" alt="扣哒鸭" onerror="this.style.display='none'">
+    <div class="dt"><b>扣哒鸭：</b><strong><code>for (int w = W; w &gt;= weight[i]; --w)</code> ——
+    必须是倒序！</strong><br>
+    <b>正序的话，<code>dp[w - weight[i]]</code> 可能这一轮已经被更新过了，
+    等于第 i 件物品被拿了不止一次。</b><br>
+    <strong>那就变成完全背包了。</strong></div>
+  </div>
+  <div class="fix"><b>记牢：</b>0/1 背包倒序；完全背包正序</div>
+</div>
+
+<div class="pit">
+  <div class="pt">
+    <div class="x">4</div>
+    <div class="t"><b>把递归斐波那契的时间和空间复杂度记成"都是 O(n)"。</b></div>
+  </div>
+  <div class="duck">
+    <img src="../assets/ducks/duck_illia.webp" alt="扣哒鸭" onerror="this.style.display='none'">
+    <div class="dt"><b>扣哒鸭：</b><b>空间确实是 O(n)，因为递归栈最深只有 n 层。</b><br>
+    但<b>时间是 <code>O(2ⁿ)</code></b>——<strong>因为同一个子问题被重复算了指数多次。</strong><br>
+    <b>口诀：空间看"最深的层数"，时间看"一共算了多少次"。</b></div>
+  </div>
+  <div class="fix"><b>记牢：</b>朴素递归 fib → 时间 <code class="inline">O(2ⁿ)</code>、空间 <code class="inline">O(n)</code></div>
+</div>
+
+<!-- ============ 8 ============ -->
+<div class="section-header" id="s8">
+  <h2>8　题目练习</h2>
+  <div class="en-title">Practice</div>
+</div>
+
+<p>前 5 题改编自 C++ 六级真题，其余为原创练习题。</p>
+
+<div class="exam">
+  <div class="eh"><span class="src">改编自 2026 年 9 月 · C++ 六级 · 第 13 题</span><span class="tp">单选题</span></div>
+  <div class="eb">
+    <div class="q">下面代码计算走到第 <code class="inline">n</code> 级台阶的方法数，
+    每次可以走 1 级或 2 级。横线处应填写（　　）。</div>
+    <pre>int ways(int n) {
+    if (n &lt;= 2)
+        return n;
+    vector&lt;int&gt; dp(n + 1);
+    dp[1] = 1;
+    dp[2] = 2;
+    for (int i = 3; i &lt;= n; ++i)
+        dp[i] = __________________________;
+    return dp[n];
+}</pre>
+    <div class="opt">
+      <i>A.</i><code class="inline">dp[i - 1] + 1</code>　　<i>B.</i><code class="inline">dp[i - 1] + dp[i - 2]</code><br>
+      <i>C.</i><code class="inline">dp[i - 2] + 2</code>　　<i>D.</i><code class="inline">2 * dp[i - 1]</code>
+    </div>
+    <details><summary>查看答案与详解</summary>
+      <div class="ans"><b>答案：B</b>。用"最后一步分几类"这个通用办法：<br>
+      <strong>走到第 i 级台阶的"最后一步"，只有两种可能：</strong><br>
+      ① <strong>从第 i−1 级跨 1 级上来</strong>——那么之前必须已经走到了 i−1，方法数是 <code class="inline">dp[i−1]</code>；<br>
+      ② <strong>从第 i−2 级跨 2 级上来</strong>——之前走到了 i−2，方法数是 <code class="inline">dp[i−2]</code>。<br>
+      <strong>这两类覆盖了全部情况、而且互不重叠，所以加起来：</strong>
+      <code class="inline">dp[i] = dp[i−1] + dp[i−2]</code> ✔<br>
+      <b>验算一下：</b><code class="inline">dp[3] = dp[2] + dp[1] = 2 + 1 = 3</code>
+      （1+1+1、1+2、2+1，<strong>确实是 3 种</strong>）；
+      <code class="inline">dp[4] = 3 + 2 = 5</code>；<code class="inline">dp[5] = 5 + 3 = 8</code> ✔<br>
+      <b>A、C 项</b>加的是常数（1 或 2），<strong>而"方法数"是会成倍增长的，加常数根本表达不出来</strong>；<br>
+      <b>D 项</b>只乘了 <code class="inline">dp[i−1]</code>，<strong>漏掉了"从 i−2 跨 2 级"这一整类情况</strong>。<br>
+      <b>顺带注意：</b>这个转移方程和斐波那契<strong>长得一模一样</strong>，
+      只是初始值不同（这里 <code class="inline">dp[1]=1, dp[2]=2</code>）——
+      <b>所以它是斐波那契的"错位版"。</b><br>
+      <span class="tagline">对应小节</span>5.1 爬楼梯与不相邻取数。</div>
+    </details>
+  </div>
+</div>
+
+<div class="exam">
+  <div class="eh"><span class="src">改编自 2026 年 9 月 · C++ 六级 · 第 14 题</span><span class="tp">单选题</span></div>
+  <div class="eb">
+    <div class="q">下面代码求从包含非负元素的数组中选择若干个<strong>互不相邻</strong>元素
+    所能得到的最大和。横线处应填写（　　）。</div>
+    <pre>int maxSum(vector&lt;int&gt; &amp;a) {
+    int n = a.size();
+    if (n == 0) return 0;
+    if (n == 1) return a[0];
+    vector&lt;int&gt; dp(n);
+    dp[0] = a[0];
+    dp[1] = max(a[0], a[1]);
+    for (int i = 2; i &lt; n; ++i)
+        dp[i] = __________________________;
+    return dp[n - 1];
+}</pre>
+    <div class="opt">
+      <i>A.</i><code class="inline">dp[i - 1] + a[i]</code>　　<i>B.</i><code class="inline">dp[i - 2] + a[i]</code><br>
+      <i>C.</i><code class="inline">max(dp[i - 1], dp[i - 2] + a[i])</code>　　<i>D.</i><code class="inline">max(dp[i - 1], a[i])</code>
+    </div>
+    <details><summary>查看答案与详解</summary>
+      <div class="ans"><b>答案：C</b>。还是那个办法——<strong>对第 i 个元素，只有"选"和"不选"两种情况。</strong><br>
+      <b>情况一：不选 a[i]。</b>
+      那么答案就是"从前 i−1 个里能取得的最大和"，也就是 <code class="inline">dp[i−1]</code>。<br>
+      <b>情况二：选 a[i]。</b>
+      因为<strong>不能选相邻的</strong>，所以 <code class="inline">a[i−1]</code> 一定不能选——
+      只能从"前 i−2 个"里去找最优，再加上 <code class="inline">a[i]</code>，
+      也就是 <code class="inline">dp[i−2] + a[i]</code>。<br>
+      <b>两种情况取大的：</b>
+      <code class="inline">dp[i] = max(dp[i−1], dp[i−2] + a[i])</code> ✔<br>
+      <b>A 项</b>漏了"不能相邻"的限制——<strong>它等于允许选相邻的</strong>，
+      那就变成"全部加起来"了；<br>
+      <b>B 项</b>只考虑了"选"的情况，<strong>完全丢掉了"不选"这一整类</strong>；<br>
+      <b>D 项</b>里 <code class="inline">max(dp[i−1], a[i])</code> 的比较对象不对劲——
+      它是在"以前的最优"和"单个 a[i]"之间比，<strong>却忘了选 a[i] 之后还能接上前面的 <code class="inline">dp[i−2]</code></strong>。<br>
+      <b>验算（数组 2 7 9 3 1）：</b>
+      <code class="inline">dp[0]=2</code>、<code class="inline">dp[1]=max(2,7)=7</code>、
+      <code class="inline">dp[2]=max(7, 2+9)=11</code>、
+      <code class="inline">dp[3]=max(11, 7+3)=11</code>、
+      <code class="inline">dp[4]=max(11, 11+1)=12</code> ✔
+      ——<strong>选 2、9、1，正好 12。</strong><br>
+      <span class="tagline">对应小节</span>5.1 爬楼梯与不相邻取数。</div>
+    </details>
+  </div>
+</div>
+
+<div class="exam">
+  <div class="eh"><span class="src">改编自 2026 年 9 月 · C++ 六级 · 第 15 题</span><span class="tp">单选题</span></div>
+  <div class="eb">
+    <div class="q">下面是一维数组实现的 0/1 背包。内层循环<strong>必须从大到小</strong>枚举容量，
+    主要原因是（　　）。</div>
+    <pre>for (int i = 0; i &lt; n; ++i) {
+    for (int w = W; w &gt;= weight[i]; --w) {
+        dp[w] = max(dp[w], dp[w - weight[i]] + value[i]);
+    }
+}</pre>
+    <div class="opt">
+      <i>A.</i>保证每件物品最多被选择一次<br>
+      <i>B.</i>保证物品必须按照重量从大到小选择<br>
+      <i>C.</i>降低时间复杂度<br>
+      <i>D.</i>防止数组 <code class="inline">dp</code> 发生越界
+    </div>
+    <details><summary>查看答案与详解</summary>
+      <div class="ans"><b>答案：A</b>。关键要看这一句用到了谁：
+      <code class="inline">dp[w − weight[i]]</code> ——
+      <strong>一个<strong>更小容量</strong>的位置。</strong><br>
+      <b>如果从小到大枚举 w：</b>
+      <strong>当我们处理 <code class="inline">dp[w]</code> 时，那个更小的容量<strong>本轮已经被更新过了</strong>。</strong>
+      于是 <code class="inline">dp[w − weight[i]]</code> 里已经包含了"拿过第 i 件物品"的结果——
+      <strong>再用它来算 <code class="inline">dp[w]</code>，等于第 i 件物品被拿了不止一次。</strong><br>
+      <b>如果从大到小枚举 w：</b>
+      <strong>轮到 <code class="inline">dp[w]</code> 时，更小的位置还是"上一轮（没考虑第 i 件）"的值 ✔</strong>
+      ——<strong>所以每件物品只会被拿一次，这正是 0/1 背包的要求。</strong><br>
+      <b>B 项</b>完全无关：<strong>物品的重量大小和枚举顺序没有关系</strong>，
+      外层循环本来就是按输入顺序一件件考虑的；<br>
+      <b>C 项</b>不对：<strong>正序和倒序的时间复杂度完全一样</strong>，都是 <code class="inline">O(nW)</code>；<br>
+      <b>D 项</b>也不对：越界与否只取决于循环的<strong>上下界</strong>，
+      和"从哪一端开始"没有关系。<br>
+      <b>一句话记牢：</b>
+      <strong>倒序 → 0/1 背包（每件至多一次）；正序 → 完全背包（每件可拿无数次）。</strong>
+      <b>把 <code class="inline">--w</code> 改成 <code class="inline">++w</code>，问题的性质就变了。</b><br>
+      <span class="tagline">对应小节</span>5.2 0/1 背包。</div>
+    </details>
+  </div>
+</div>
+
+<div class="exam">
+  <div class="eh"><span class="src">改编自 2026 年 9 月 · C++ 六级 · 判断题 第 9 题</span><span class="tp">判断题</span></div>
+  <div class="eb">
+    <div class="q">下面的一维动态规划代码实现的是<strong>完全背包</strong>问题，
+    因为在处理第 i 种物品时，同一种物品可能被重复选择。（　　）</div>
+    <pre>for (int i = 0; i &lt; n; ++i) {
+    for (int w = weight[i]; w &lt;= W; ++w) {
+        dp[w] = max(dp[w], dp[w - weight[i]] + value[i]);
+    }
+}</pre>
+    <details><summary>查看答案与详解</summary>
+      <div class="ans"><b>答案：正确（√）</b>。<strong>判别的关键就是内层容量是"正序"还是"倒序"。</strong><br>
+      <strong>这段代码里写的是 <code class="inline">w = weight[i]; w &lt;= W; ++w</code>——正序（从小到大）。</strong><br>
+      <b>正序会导致什么？</b>
+      处理 <code class="inline">dp[w]</code> 时，<strong>更小的容量 <code class="inline">dp[w − weight[i]]</code> 本轮已经更新过了</strong>——
+      它里面已经包含了"拿过第 i 件物品"的结果。<br>
+      <strong>于是拿着它来算 <code class="inline">dp[w]</code>，相当于第 i 件物品又被拿了一次——
+      同一种物品可以拿任意多次，这正是完全背包的定义</strong> ✔<br>
+      <b>对比一下 0/1 背包：</b>
+      <strong>它写的是 <code class="inline">w = W; w &gt;= weight[i]; --w</code>（倒序）</strong>——
+      保证用到的一定是"上一轮"的值，<strong>所以每件物品至多一次。</strong><br>
+      <b>两者的代码差别只有 <code class="inline">--w</code> 和 <code class="inline">++w</code> 这一个符号，</b>
+      但解决的问题完全不同。<strong>这是六级 DP 部分最经典的一个对比，务必记牢。</strong><br>
+      <span class="tagline">对应小节</span>5.2 0/1 背包。</div>
+    </details>
+  </div>
+</div>
+
+<div class="exam">
+  <div class="eh"><span class="src">改编自 2026 年 6 月 · C++ 六级 · 判断题 第 10 题</span><span class="tp">判断题</span></div>
+  <div class="eb">
+    <div class="q">动态规划问题通常要求具有<strong>最优子结构</strong>，
+    并且常常存在<strong>重叠子问题</strong>。（　　）</div>
+    <details><summary>查看答案与详解</summary>
+      <div class="ans"><b>答案：正确（√）</b>。这句话点出了动态规划能够成立的<strong>两个前提</strong>。<br>
+      <b>① 最优子结构：</b>
+      <strong>大问题的最优解，可以由子问题的最优解拼出来。</strong><br>
+      <b>举例：</b>爬楼梯里，<strong>"走到第 5 级的方法数"是由"走到第 4 级"和"走到第 3 级"的方法数相加得到的</strong>——
+      子问题的最优（这里就是"方法数最多"的完整计数）能直接支撑大问题。<br>
+      <b>反过来说：</b><strong>如果一个问题的最优解没法从小问题的最优解推出来，那它就不能用 DP。</strong><br>
+      <b>② 重叠子问题：</b>
+      <strong>不同的分支会反复用到同一个子问题。</strong><br>
+      <b>举例：</b>递归斐波那契里，<code class="inline">fib(3)</code> 被算了 2 次、<code class="inline">fib(2)</code> 被算了 3 次——
+      <strong>这就是"重叠"。</strong>
+      <b>正是因为有重叠，"记下来别重算"才有意义。</b><br>
+      <b>如果子问题之间完全互不重叠</b>（比如普通的二分查找、归并排序的分支），
+      <strong>那只叫"分治"，不需要 DP——因为压根没有重复可省。</strong><br>
+      <b>一句话总结这两个前提的分工：</b>
+      <strong>"最优子结构"决定了 DP 能不能用；"重叠子问题"决定了 DP 值不值得用。</strong><br>
+      <span class="tagline">对应小节</span>1.2 算过就别再算；4.1 什么叫"状态"。</div>
+    </details>
+  </div>
+</div>
+
+<div class="exam">
+  <div class="eh"><span class="src ori">原创练习题</span><span class="tp">判断题</span></div>
+  <div class="eb">
+    <div class="q">把朴素递归的斐波那契函数加上"记忆化"（用一个数组记下已算出的结果）之后，
+    时间复杂度从 <code class="inline">O(2ⁿ)</code> 降到了 <code class="inline">O(n)</code>。（　　）</div>
+    <details><summary>查看答案与详解</summary>
+      <div class="ans"><b>答案：正确（√）</b>。这是记忆化最经典的效果。<br>
+      <b>为什么能从指数级降到线性？</b><br>
+      <b>朴素递归的问题在于：</b>
+      <code class="inline">fib(3)</code> 会被算 2 次、<code class="inline">fib(2)</code> 被算 3 次，越往下重复越多——
+      <strong>总调用次数约等于 2ⁿ。</strong><br>
+      <b>加上记忆化之后：</b>
+      <strong>每个 <code class="inline">fib(k)</code> 第一次被调用时算出结果并存入 <code class="inline">memo[k]</code>；
+      之后再需要 fib(k)，直接查表返回，不再往下展开。</strong><br>
+      <b>而 fib 一共有几个子问题？</b>
+      <strong><code class="inline">fib(0)</code> 到 <code class="inline">fib(n)</code>，一共 n + 1 个。</strong>
+      每个<strong>只被真正计算一次</strong>，所以总工作量是 <code class="inline">O(n)</code> ✔<br>
+      <b>代码改动有多大？</b>
+      <strong>只加三行：</strong>开头查表、算完存表、以及一个数组。
+      <b>"性价比"高得惊人。</b><br>
+      <b>顺便对比空间：</b>
+      <strong>两者都是 <code class="inline">O(n)</code></strong>——
+      递归栈的深度最多 n 层，<b>记忆化并不会让空间变差（只多了一个长度 n 的数组）。</b><br>
+      <span class="tagline">对应小节</span>2.2 代码与复杂度。</div>
+    </details>
+  </div>
+</div>
+
+<div class="exam">
+  <div class="eh"><span class="src ori">原创练习题</span><span class="tp">编程题</span></div>
+  <div class="eb">
+    <div class="q">题目要求：有 <code class="inline">n</code> 件物品，第 <code class="inline">i</code> 件重量为
+    <code class="inline">w[i]</code>、价值为 <code class="inline">v[i]</code>；
+    背包容量为 <code class="inline">W</code>，每件物品<strong>最多拿一次</strong>。
+    求能获得的最大总价值。<br>
+    <b>样例：</b>输入 <code class="inline">3 10</code> 和三件物品
+    <code class="inline">5 8 / 4 6 / 6 10</code>，输出 <code class="inline">14</code>。</div>
+    <details><summary>查看参考答案与要点</summary>
+      <div class="ans">
+<pre style="margin:0;background:#131a26;color:#c8d3e0;border-radius:10px;padding:14px 16px">#include &lt;iostream&gt;
+#include &lt;algorithm&gt;
+using namespace std;
+
+int weight[1005], value[1005];
+int dp[100005];
+
+int main() {
+    int n, W;
+    cin &gt;&gt; n &gt;&gt; W;
+    for (int i = 0; i &lt; n; i++)
+        cin &gt;&gt; weight[i] &gt;&gt; value[i];
+
+    for (int i = 0; i &lt; n; ++i) {
+        for (int w = W; w &gt;= weight[i]; --w) {   // ★ 倒着枚举容量
+            dp[w] = max(dp[w], dp[w - weight[i]] + value[i]);
+        }
+    }
+
+    cout &lt;&lt; dp[W] &lt;&lt; endl;
+    return 0;
+}</pre>
+      <p style="margin-top:12px"><b>输入 <code>3 10</code> + <code>5 8 / 4 6 / 6 10</code> 输出：</b><code>14</code><br>
+      <b>要点：</b><br>
+      ① <strong>状态：<code class="inline">dp[w]</code> 表示"容量为 w 时能装的最大价值"</strong>——
+      这句话要先说清楚，代码才写得对；<br>
+      ② <strong>转移：<code class="inline">max(dp[w], dp[w − weight[i]] + value[i])</code></strong>——
+      前者是"不拿第 i 件"（沿用原值），后者是"拿"（容量少了一截、价值增加）；<br>
+      ③ <strong>倒序枚举容量是命脉</strong>：
+      写成 <code class="inline">++w</code> 就变成完全背包了（每件可拿多次）；<br>
+      ④ <strong>内层下界是 <code class="inline">weight[i]</code></strong>——
+      再小的容量根本装不下这件物品，<strong>循环到它就停</strong>；<br>
+      ⑤ <strong><code class="inline">dp</code> 数组默认全为 0 正好是正确答案的边界</strong>——
+      表示"什么也不装，价值为 0"；<br>
+      ⑥ 复杂度 <code class="inline">O(nW)</code>，空间 <code class="inline">O(W)</code>（一维写法省掉了一维）。<br>
+      <span class="tagline">对应小节</span>5.2 0/1 背包；6 代码实战。</p>
+      </div>
+    </details>
+  </div>
+</div>
+
+<!-- ============ 9 ============ -->
+<div class="section-header" id="s9">
+  <h2>9　本单元小结</h2>
+  <div class="en-title">Unit Summary</div>
+</div>
+
+<div class="cast hushbaum">
+  <img class="ava" src="../assets/avatars/hushbaum.webp" alt="贺舒曼" onerror="this.style.display='none'">
+  <div class="bubble">
+    <div class="who">贺舒曼 · 镜中先知</div>
+    四句话记住动态规划：<br>
+    <strong>一、核心只有一句：算过的就记下来，别再重算。指数级能降到线性级。</strong><br>
+    <strong>二、两种写法：记忆化（自顶向下，递归+数组）；递推表（自底向上，循环填表）。</strong><br>
+    <strong>三、两步思考：先定义状态（<code>dp[i]</code> 是什么），再想"最后一步有几种可能"写出方程。</strong><br>
+    <strong>四、0/1 背包倒序枚举容量；改成正序就变成完全背包。</strong><br>
+    云梯爬上来了。下一站是造物工坊——<b>那里有一张蓝图，和流水线上滚出来的一模一样的成品。</b>
+  </div>
+</div>
+
+<div class="summary">
+  <h3>你在云梯上收获了什么</h3>
+  <ul>
+    <li><strong>重复计算的浪费</strong>——朴素递归斐波那契的时间是 <code class="inline">O(2ⁿ)</code>，
+      <strong>同一个子问题被算了很多遍</strong>。</li>
+    <li><strong>DP 的核心一句话</strong>——<strong>算过的记下来，下次直接查表</strong>。</li>
+    <li><strong>记忆化（自顶向下）</strong>——递归 + 一个备忘录数组；
+      <strong>三行改动，时间从 O(2ⁿ) 降到 O(n)</strong>。</li>
+    <li><strong>备忘录的初值</strong>——要选"答案不可能出现的值"；
+      <strong>答案可能是 0 时，得另开 <code class="inline">used[]</code> 数组</strong>。</li>
+    <li><strong>递推表（自底向上）</strong>——<strong>先定边界，再从小到大填表</strong>；
+      <strong>不会栈溢出、更快、还能滚动优化空间</strong>。</li>
+    <li><strong>两种写法等价</strong>——<strong>用的是同一个转移方程，答案一定一样</strong>。</li>
+    <li><strong>状态</strong>——<code class="inline">dp[i]</code> 的含义；
+      <strong>用中文完整说一遍就是"定义状态"</strong>。</li>
+    <li><strong>找转移方程的通用办法</strong>——<strong>问"最后一步有几种可能"，分类讨论</strong>。</li>
+    <li><strong>三个边界要一起想</strong>——最小状态的值、循环范围、答案是哪一个。</li>
+    <li><strong>爬楼梯</strong>——<code class="inline">dp[i] = dp[i−1] + dp[i−2]</code>；
+      <strong>最后一步要么跨 1 级、要么跨 2 级</strong>。</li>
+    <li><strong>不相邻取数</strong>——<code class="inline">dp[i] = max(dp[i−1], dp[i−2] + a[i])</code>；
+      <strong>不选 / 选（选了就不能选相邻的）</strong>。</li>
+    <li><strong>0/1 背包状态</strong>——<code class="inline">dp[w]</code> = 容量为 <code class="inline">w</code> 时的最大价值。</li>
+    <li><strong>0/1 背包必须倒序枚举容量</strong>——<strong>保证每件物品最多被选一次</strong>。</li>
+    <li><strong>正序 = 完全背包</strong>——只差一个符号，问题性质完全不同。</li>
+    <li><strong>DP 的两个前提</strong>——<strong>最优子结构（能不能用）+ 重叠子问题（值不值得用）</strong>。</li>
+  </ul>
+</div>
+
+<div class="pager">
+  <a href="cpp-6-03.html"><div class="k">← 上一单元</div><div class="v">双路侦骑 · 搜索算法：DFS 与 BFS</div></a>
+  <a href="../index.html" target="_top" class="back"><div class="k">返回</div><div class="v">考纲之路 · 总目录</div></a>
+  <a href="cpp-6-05.html"><div class="k">下一单元 →</div><div class="v">造物工坊 · 面向对象思想与类的创建</div></a>
+</div>
+
+<div class="cta">
+  <h3>下一站：造物工坊</h3>
+  <p>云天之上一座工坊里，<b>墙上悬着一张巨大的发光蓝图</b>——
+  <b>图上画着机械鹰的结构标注；而下方流水线上，正滚出一只只与蓝图一模一样的成品。</b><br>
+  下一单元我们学<b>面向对象思想与类的创建</b>：
+  <b>怎么把"蓝图"和"产品"分开，让同一份设计造出无数个对象。</b></p>
+  <a class="btn-go" href="https://codecombat.cn/" target="_blank" rel="noopener">加入扣哒世界，把这条考纲之路走一遍 →</a>
+</div>
+</div><!-- /container -->
+</div><!-- /page -->
+
+<script>
+const KEYWORDS = new Set([
+  "int", "long", "short", "unsigned", "signed", "float", "double", "char", "bool", "void",
+  "const", "if", "else", "for", "while", "do", "switch", "case", "default", "break",
+  "continue", "return", "goto", "struct", "class", "union", "enum", "using", "namespace",
+  "std", "main", "true", "false", "cin", "cout", "cerr", "endl", "string", "sizeof",
+  "include", "define", "new", "delete", "public", "private", "static", "inline", "nullptr"
+]);
+
+function esc(s){ return s.replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;'); }
+
+function highlight(src){
+  let out = '', i = 0;
+  const n = src.length;
+  while (i < n){
+    const c = src[i];
+    /* 预处理指令：#include / #define，整行只在行首生效 */
+    if (c === '#' && (i === 0 || src[i-1] === '\n')){
+      let j = i;
+      while (j < n && /[A-Za-z]/.test(src[j])) j++;
+      out += '<span class="kw">' + esc(src.slice(i, j)) + '</span>';
+      let k = src.indexOf('\n', j); if (k < 0) k = n;
+      if (j < k) out += '<span class="st">' + esc(src.slice(j, k)) + '</span>';
+      i = k; continue;
+    }
+    /* 行注释 // */
+    if (c === '/' && src[i+1] === '/'){
+      let j = src.indexOf('\n', i); if (j < 0) j = n;
+      out += '<span class="cm">' + esc(src.slice(i, j)) + '</span>';
+      i = j; continue;
+    }
+    /* 块注释 */
+    if (c === '/' && src[i+1] === '*'){
+      let j = src.indexOf('*/', i + 2); j = j < 0 ? n : j + 2;
+      out += '<span class="cm">' + esc(src.slice(i, j)) + '</span>';
+      i = j; continue;
+    }
+    /* 字符串与字符字面量 */
+    if (c === '"' || c === "'"){
+      let j = i + 1;
+      while (j < n && src[j] !== c){ if (src[j] === '\\') j++; j++; }
+      j = Math.min(j + 1, n);
+      out += '<span class="st">' + esc(src.slice(i, j)) + '</span>';
+      i = j; continue;
+    }
+    /* 数字 */
+    if (/[0-9]/.test(c)){
+      let j = i;
+      while (j < n && /[0-9.]/.test(src[j])) j++;
+      out += '<span class="nu">' + esc(src.slice(i, j)) + '</span>';
+      i = j; continue;
+    }
+    /* 标识符：关键字 / 函数名 / 普通名字 */
+    if (/[A-Za-z_]/.test(c)){
+      let j = i;
+      while (j < n && /[A-Za-z0-9_]/.test(src[j])) j++;
+      const w = src.slice(i, j);
+      if (KEYWORDS.has(w)) out += '<span class="kw">' + esc(w) + '</span>';
+      else if (src[j] === '(') out += '<span class="fn">' + esc(w) + '</span>';
+      else out += esc(w);
+      i = j; continue;
+    }
+    out += esc(c); i++;
+  }
+  return out;
+}
+
+document.querySelectorAll('.code-card pre code').forEach(block => {
+  block.innerHTML = highlight(block.textContent);
+});
+
+if (location.search.indexOf('expand') >= 0) {
+  document.querySelectorAll('details').forEach(d => d.open = true);
+}
+document.querySelectorAll('.sidebar-nav a').forEach(a => {
+  a.addEventListener('click', () => {
+    if (window.innerWidth <= 900) document.querySelector('.sidebar-nav').classList.remove('active');
+  });
+});
+</script>
+</body>
+</html>

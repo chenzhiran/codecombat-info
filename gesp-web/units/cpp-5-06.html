@@ -1,0 +1,1240 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="copyright" content="CodeCombat Inc. codecombat.cn">
+<title>回音螺旋 · 递归算法 | 扣哒考级 · GESP C++ 五级</title>
+<style>
+  :root{
+    --primary:#2563eb; --primary-light:#4f8ff0; --primary-lighter:#eaf1fe; --primary-dark:#1b47a8;
+    --brand:#ff6b35; --brand-dark:#e8541f; --brand-soft:#fff3ec;
+    --night:#131c2b; --night-2:#1e2a3a; --gold:#f5b301;
+    --text:#242e3d; --dim:#68788f; --dim2:#93a2b6;
+    --bg:#ffffff; --bg-soft:#f7f9fd; --line:#e2e9f4; --sidebar:274px;
+    --code-bg:#131a26; --code-tx:#c8d3e0;
+    --code-kw:#c678dd; --code-st:#98c379; --code-nu:#d19a66; --code-cm:#5f7488; --code-fn:#e5c07b;
+  }
+  *{margin:0;padding:0;box-sizing:border-box}
+  html{scroll-behavior:smooth}
+  body{font-family:"PingFang SC","Microsoft YaHei","Segoe UI",-apple-system,sans-serif;line-height:1.9;color:var(--text);background:var(--bg);font-size:15.5px}
+  .sidebar-nav{position:fixed;top:0;left:0;width:var(--sidebar);height:100vh;overflow-y:auto;background:linear-gradient(180deg,#0c1626,#14243c);padding:14px 0 40px;z-index:100;border-right:3px solid var(--brand);transition:transform .3s ease}
+  .sidebar-nav::-webkit-scrollbar{width:5px}
+  .sidebar-nav::-webkit-scrollbar-thumb{background:var(--brand);border-radius:4px}
+  .sb-brand{display:flex;align-items:center;gap:10px;padding:10px 13px 12px;border-bottom:1px solid #233752;margin-bottom:8px}
+  .sidebar-nav a.sb-logo{display:flex;align-items:center;justify-content:center;flex-shrink:0;padding:0;border-left:none;transition:.2s}
+  .sb-logo:hover{transform:scale(1.08)}
+  .sb-logo img{height:34px;width:34px;display:block;object-fit:contain;border-radius:8px}
+  .sb-brand b{color:#f2f6fa;font-size:14px;letter-spacing:.5px;display:block;line-height:1.4}
+  .sb-brand span{color:#7f95ab;font-size:11.5px;display:block;line-height:1.4}
+  .nav-title{color:#ffb894;font-size:12px;font-weight:800;padding:10px 18px 6px;letter-spacing:1.2px}
+  .sidebar-nav a{display:block;color:#c3d0dc;text-decoration:none;padding:6px 18px;font-size:12.5px;line-height:1.55;border-left:3px solid transparent;transition:.18s}
+  .sidebar-nav a:hover{color:#fff;background:rgba(255,107,53,.16);border-left-color:var(--brand)}
+  .sidebar-nav a.nav-section{color:#ffb894;font-weight:700;font-size:13px;margin-top:11px;padding-top:10px;border-top:1px solid #233752}
+  .sidebar-nav a.nav-section:first-of-type{border-top:none;margin-top:0;padding-top:6px}
+  .sidebar-nav a.nav-sub{padding-left:30px;color:#93a8bc;font-size:12px}
+  .sidebar-nav a.nav-sub:hover{color:#fff}
+  .sb-back{margin:16px 14px 0;display:block;text-align:center;padding:9px;border-radius:9px;background:#1e304a;color:#a9c0d6 !important;font-size:12px;font-weight:700;border-left:none !important}
+  .sb-back:hover{background:var(--brand) !important;color:#fff !important}
+  .nav-toggle{display:none;position:fixed;top:14px;left:14px;z-index:120;background:var(--brand);color:#fff;border:none;border-radius:9px;padding:9px 13px;font-size:15px;cursor:pointer;box-shadow:0 4px 14px rgba(0,0,0,.25)}
+  .page{margin-left:var(--sidebar)}
+  .hero{position:relative;overflow:hidden;padding:44px 52px;color:#fff;background:linear-gradient(125deg,#0a1220 0%,#16294a 46%,#8a3a16 132%)}
+  .hero::after{content:"";position:absolute;right:-90px;top:-110px;width:400px;height:400px;border-radius:50%;background:radial-gradient(circle,rgba(245,179,1,.30),transparent 68%)}
+  .hero-top{display:flex;gap:36px;align-items:center;position:relative;z-index:2}
+  .hero-txt{flex:1;min-width:0}
+  .hero .crumb{font-size:11.5px;color:#ffb894;letter-spacing:1.5px;font-weight:700;margin-bottom:14px}
+  .hero h1{font-size:31px;font-weight:800;line-height:1.3;letter-spacing:.6px;margin-bottom:8px}
+  .hero h1 .sub{display:block;font-size:18px;font-weight:700;color:#ffd2b3;margin-top:6px;letter-spacing:.3px}
+  .hero .en{font-size:13px;color:#9db4c8;font-style:italic;margin-bottom:18px}
+  .hero .tags{display:flex;flex-wrap:wrap;gap:8px}
+  .tag{font-size:11.5px;padding:4px 12px;border-radius:20px;background:rgba(255,255,255,.12);border:1px solid rgba(255,255,255,.22);color:#e8f0f6;font-weight:600}
+  .tag.hot{background:rgba(255,107,53,.92);border-color:transparent;color:#fff}
+  .hero-card{flex-shrink:0;width:200px;text-align:center}
+  .hero-card .ava{width:148px;height:148px;border-radius:50%;object-fit:cover;object-position:top center;border:4px solid rgba(255,180,140,.6);box-shadow:0 14px 34px rgba(0,0,0,.45);background:#24344a}
+  .hero-card .nm{font-size:15px;font-weight:800;color:#fff;margin-top:10px}
+  .hero-card .ti{font-size:11.5px;color:#ffb894;margin-top:2px}
+  .container{max-width:1080px;margin:0 auto;padding:38px 52px 70px}
+  .lead{font-size:15.5px;line-height:2.05;color:#333f52;background:linear-gradient(120deg,#fff8f3,#f7fbf8);border-left:5px solid var(--brand);border-radius:0 14px 14px 0;padding:22px 26px;margin-bottom:32px}
+  .lead b{color:var(--brand-dark)}
+  .cast{display:flex;gap:16px;align-items:flex-start;border-radius:16px;padding:18px 22px;margin:24px 0}
+  .cast .ava{width:72px;height:72px;border-radius:50%;object-fit:cover;object-position:top center;flex-shrink:0;background:#e8eef5}
+  .cast .bubble{position:relative;font-size:14px;line-height:1.95;padding-top:2px;flex:1}
+  .cast .who{font-size:12px;font-weight:800;margin-bottom:5px;letter-spacing:.5px}
+  .cast.anya{background:var(--brand-soft);border:1px solid #ffdcc9}
+  .cast.anya .who{color:var(--brand-dark)}
+  .cast.anya .bubble{color:#5c4636}
+  .cast.duck{background:#fff5f5;border:1px solid #fbd5d5}
+  .cast.duck .who{color:#b91c1c}
+  .cast.duck .bubble{color:#5c4141}
+  .cast.teacher{background:linear-gradient(120deg,#f4f7fb,#ffffff);border:1px solid #dbe4f0}
+  .cast.teacher .who{color:#1e293b}
+  .cast.teacher .bubble{color:#3c4a5a}
+  .cast.hero{background:#f2f7fd;border:1px solid #cfe0f5}
+  .cast.hero .who{color:#1b47a8}
+  .cast.hero .bubble{color:#3a4658}
+  .goal-grid{display:grid;grid-template-columns:1fr 1fr;gap:16px;margin-bottom:36px}
+  .goal{border:1px solid var(--line);border-radius:15px;padding:19px 21px;background:#fff;box-shadow:0 4px 16px rgba(31,122,68,.05)}
+  .goal h4{font-size:14px;font-weight:800;margin-bottom:11px;display:flex;align-items:center;gap:8px;color:var(--primary-dark)}
+  .goal h4 .ic{width:22px;height:22px;border-radius:7px;background:var(--primary-lighter);display:flex;align-items:center;justify-content:center;font-size:12px}
+  .goal ul{list-style:none}
+  .goal li{font-size:13.5px;color:#48576b;line-height:1.9;padding-left:18px;position:relative}
+  .goal li::before{content:"▸";position:absolute;left:0;color:var(--primary);font-weight:800}
+  .goal.syllabus li::before{content:"✓"}
+  .section-header{margin:52px 0 24px;padding-bottom:12px;border-bottom:3px solid var(--brand);display:flex;align-items:baseline;gap:14px;flex-wrap:wrap}
+  .section-header h2{font-size:22px;font-weight:800;color:var(--night);letter-spacing:.4px}
+  .section-header .en-title{font-size:12px;color:var(--dim2);font-style:italic}
+  h3{font-size:17.5px;font-weight:800;margin:34px 0 14px;color:var(--night);display:flex;align-items:center;gap:10px}
+  h3::before{content:"";width:5px;height:17px;border-radius:3px;background:var(--brand);flex-shrink:0}
+  h4{font-size:15px;font-weight:800;margin:24px 0 10px;color:#2b4260}
+  p{margin:12px 0;color:#3a4658;line-height:2}
+  strong{color:var(--primary-dark)}
+  code.inline{background:var(--primary-lighter);color:var(--primary-dark);padding:2px 7px;border-radius:6px;font-family:"SFMono-Regular",Consolas,Menlo,monospace;font-size:.9em;font-weight:600}
+  .figure{margin:24px 0;text-align:center}
+  .figure svg.diagram{max-width:100%;height:auto;background:#fff;border:1px solid var(--line);border-radius:14px;padding:10px}
+  .figure .caption{font-size:12.5px;color:var(--dim2);margin-top:9px}
+  .pic{margin:26px 0;text-align:center}
+  .pic img{max-width:100%;border-radius:16px;box-shadow:0 10px 28px rgba(30,60,45,.15);display:block;margin:0 auto}
+  .pic figcaption{font-size:12.5px;color:var(--dim2);margin-top:9px}
+  .pic .ph{display:none}
+  .pic.missing img{display:none}
+  .pic.missing .ph{display:flex;flex-direction:column;align-items:center;justify-content:center;gap:9px;border:2px dashed #c9d9e8;border-radius:16px;background:linear-gradient(135deg,#f8fbfe,#eef6ff);padding:40px 26px;color:#7a8fa8}
+  .pic.missing .ph .fn{font-family:Consolas,monospace;font-size:12.5px;color:#2563eb;font-weight:700;word-break:break-all}
+  .pic.missing .ph .ds{font-size:12.5px;line-height:1.8;max-width:560px}
+  .box{border-radius:13px;padding:16px 20px;margin:20px 0;font-size:14px;line-height:1.95}
+  .box .lb{font-weight:800;margin-right:6px}
+  .info{background:#eef6ff;border-left:5px solid #3b82f6;color:#274768}
+  .info .lb{color:#1d4ed8}
+  .tip{background:#fff9ec;border-left:5px solid #f59e0b;color:#6b4e13}
+  .tip .lb{color:#b45309}
+  .remember{background:var(--primary-lighter);border-left:5px solid var(--primary);color:#1d3a6b}
+  .remember .lb{color:var(--primary-dark)}
+  .warn{background:#fef2f2;border-left:5px solid #ef4444;color:#7f2b2b}
+  .warn .lb{color:#b91c1c}
+  .code-card{margin:20px 0;border-radius:14px;overflow:hidden;box-shadow:0 10px 28px rgba(20,40,28,.20)}
+  .code-head{display:flex;align-items:center;gap:9px;background:#1a2434;padding:9px 14px}
+  .code-head .dot{width:10px;height:10px;border-radius:50%}
+  .code-head .d1{background:#ff5f57}.code-head .d2{background:#febc2e}.code-head .d3{background:#28c840}
+  .code-head .file{color:#8fa6c0;font-size:11.5px;font-family:Consolas,monospace;margin-left:6px}
+  .code-head .lang{margin-left:auto;font-size:10.5px;font-weight:800;color:#0d141f;background:#4f8ff0;padding:2px 9px;border-radius:6px;letter-spacing:.4px}
+  .code-card pre{background:var(--code-bg);padding:18px 20px;overflow-x:auto;margin:0;font-family:"SFMono-Regular",Consolas,"Courier New",monospace;font-size:13.5px;line-height:1.85}
+  .code-card pre::-webkit-scrollbar{height:8px}
+  .code-card pre::-webkit-scrollbar-thumb{background:#31445c;border-radius:4px}
+  .code-card code{color:var(--code-tx);white-space:pre}
+  .kw{color:var(--code-kw);font-weight:600}
+  .st{color:var(--code-st)}
+  .nu{color:var(--code-nu)}
+  .cm{color:var(--code-cm);font-style:italic}
+  .fn{color:var(--code-fn)}
+  .out{background:#0f1621;color:#7fb3f5;font-family:Consolas,monospace;font-size:13px;padding:12px 20px;border-top:1px solid #22304a}
+  .out b{color:#c9d6cd;font-weight:600;font-size:11.5px;letter-spacing:1px}
+  .out.err{color:#fca5a5}
+  table.styled{width:100%;border-collapse:collapse;margin:20px 0;font-size:13.5px;border-radius:12px;overflow:hidden;box-shadow:0 4px 16px rgba(31,122,68,.07)}
+  table.styled thead{background:var(--brand)}
+  table.styled th{color:#fff;padding:11px 14px;text-align:left;font-weight:700;font-size:13px}
+  table.styled td{padding:10px 14px;border-bottom:1px solid var(--line);color:#445266;vertical-align:top}
+  table.styled tbody tr:nth-child(even){background:var(--bg-soft)}
+  table.styled tbody tr:last-child td{border-bottom:none}
+  .level-card{border:1px solid var(--line);border-radius:16px;overflow:hidden;margin:22px 0;box-shadow:0 6px 22px rgba(31,122,68,.07)}
+  .level-card .lc-head{background:linear-gradient(100deg,#17283a,#8a3a16);color:#fff;padding:15px 22px;display:flex;align-items:center;gap:12px;flex-wrap:wrap}
+  .level-card .lc-head .n{font-size:12px;font-weight:800;background:rgba(255,255,255,.2);padding:3px 10px;border-radius:20px}
+  .level-card .lc-head h4{margin:0;color:#fff;font-size:16px}
+  .level-card .lc-head .go{margin-left:auto;font-size:11.5px;color:#ffd2b3}
+  .level-card .lc-body{padding:20px 24px;background:#fff}
+  .level-card .story{background:#f9fbfd;border-left:4px solid #93c5fd;border-radius:0 10px 10px 0;padding:13px 18px;margin:0 0 16px;font-size:14px;line-height:1.95;color:#3f5163}
+  .level-card .story b{color:#1d4ed8}
+  .btn-go{display:inline-flex;align-items:center;gap:8px;background:linear-gradient(135deg,var(--brand),var(--brand-dark));color:#fff;text-decoration:none;font-weight:800;font-size:13.5px;padding:10px 22px;border-radius:11px;box-shadow:0 8px 20px rgba(255,107,53,.32);transition:.2s}
+  .btn-go:hover{transform:translateY(-2px);box-shadow:0 12px 26px rgba(255,107,53,.42)}
+  .pit{border:1px solid #f6dede;border-radius:14px;overflow:hidden;margin:16px 0;background:#fff}
+  .pit .pt{display:flex;gap:12px;padding:14px 18px;background:#fffafa;align-items:flex-start}
+  .pit .x{width:26px;height:26px;border-radius:9px;background:#fee;color:#dc2626;display:flex;align-items:center;justify-content:center;font-weight:800;flex-shrink:0;font-size:13px}
+  .pit .t{font-size:13.5px;line-height:1.9;color:#5c4a4a;flex:1}
+  .pit .t b{color:#b91c1c}
+  .pit .duck{display:flex;gap:12px;padding:13px 18px;background:#fff5f5;border-top:1px dashed #f3d0d0;align-items:flex-start}
+  .pit .duck img{width:48px;height:48px;object-fit:contain;flex-shrink:0;margin-top:2px}
+  .pit .duck .dt{font-size:13.5px;line-height:1.9;color:#7a3b3b}
+  .pit .duck .dt b{color:#b91c1c}
+  .pit .fix{padding:12px 18px;background:#f2f7fd;border-top:1px dashed #cfe0f5;font-size:13.5px;color:#1d3a6b}
+  .pit .fix b{color:var(--primary-dark)}
+  .exam{border:1px solid #dfe7f5;border-radius:15px;margin:16px 0;overflow:hidden;background:#fff;box-shadow:0 4px 16px rgba(38,62,120,.06)}
+  .exam .eh{display:flex;align-items:center;gap:10px;padding:11px 18px;background:linear-gradient(100deg,#eef4ff,#f7faff);border-bottom:1px solid #e3ebf8;flex-wrap:wrap}
+  .exam .eh .src{font-size:11px;font-weight:800;color:#fff;background:#2563eb;padding:2.5px 10px;border-radius:20px}
+  .exam .eh .src.ori{background:#8b5cf6}
+  .exam .eh .tp{font-size:11.5px;color:#5b7ba8;font-weight:700}
+  .exam .eb{padding:16px 20px}
+  .exam .q{font-weight:700;font-size:14px;color:#1e2a3e;line-height:1.9;margin-bottom:10px}
+  .exam .opt{font-size:13.5px;color:#48576b;line-height:2.05;padding-left:6px}
+  .exam .opt i{font-style:normal;font-weight:800;color:var(--primary-dark);margin-right:7px}
+  .exam pre{margin:12px 0;background:#1b2a21;border-radius:10px;padding:14px 16px;overflow-x:auto;font-family:Consolas,monospace;font-size:13px;line-height:1.8;color:var(--code-tx)}
+  .exam details{margin-top:10px;border-top:1px dashed var(--line);padding-top:10px}
+  .exam summary{cursor:pointer;font-size:12.5px;font-weight:800;color:#2563eb;outline:none;user-select:none}
+  .exam details .ans{font-size:13.5px;color:#3a4658;line-height:1.95;margin-top:9px;background:var(--bg-soft);padding:13px 16px;border-radius:10px}
+  .exam details .ans b{color:var(--primary-dark)}
+  .exam details .ans .tagline{display:inline-block;font-size:11px;background:#e0f2fe;color:#0e7490;padding:1.5px 8px;border-radius:6px;font-weight:700;margin-right:6px}
+  .summary{margin:40px 0 20px;border-radius:18px;padding:26px 30px;background:linear-gradient(130deg,#fff8f3,#ffffff);border:1px solid #ffe0cf}
+  .summary h3{margin-top:0}
+  .summary ul{list-style:none;margin-top:10px}
+  .summary li{font-size:14px;line-height:2;color:#3d4d66;padding-left:24px;position:relative}
+  .summary li::before{content:"◆";position:absolute;left:0;color:var(--brand);font-size:11px;top:6px}
+  .pager{display:flex;gap:14px;margin-top:30px;flex-wrap:wrap}
+  .pager a{flex:1;min-width:200px;text-decoration:none;border:1px solid var(--line);border-radius:14px;padding:16px 20px;background:#fff;transition:.2s;display:block}
+  .pager a:hover{border-color:var(--brand);box-shadow:0 10px 26px rgba(255,107,53,.14);transform:translateY(-2px)}
+  .pager a .k{font-size:11px;color:var(--dim2);font-weight:700;letter-spacing:1px}
+  .pager a .v{font-size:14px;font-weight:800;color:var(--night);margin-top:5px}
+  .pager a.back{background:var(--brand-soft);border-color:transparent;text-align:center}
+  .pager a.back .v{color:var(--brand-dark)}
+  .cta{margin-top:26px;border-radius:20px;padding:30px 34px;color:#fff;position:relative;overflow:hidden;background:linear-gradient(120deg,#16202f,#2b3a52 46%,#a8431c 132%)}
+  .cta::after{content:"";position:absolute;right:-70px;bottom:-90px;width:280px;height:280px;border-radius:50%;background:radial-gradient(circle,rgba(255,140,80,.45),transparent 68%)}
+  .cta h3{color:#fff;margin:0 0 10px;position:relative;z-index:2}
+  .cta h3::before{background:var(--brand)}
+  .cta p{color:#d8e0ef;font-size:13.5px;margin:0 0 18px;position:relative;z-index:2;max-width:640px}
+  .cta .btn-go{position:relative;z-index:2}
+  @media(max-width:900px){
+    .sidebar-nav{transform:translateX(-100%)}
+    .sidebar-nav.active{transform:translateX(0)}
+    .nav-toggle{display:block}
+    .page{margin-left:0}
+    .hero{padding:70px 22px 34px}
+    .hero-top{flex-direction:column-reverse;text-align:center}
+    .hero-card{width:auto}
+    .container{padding:26px 20px 60px}
+    .goal-grid{grid-template-columns:1fr}
+  }
+</style>
+</head>
+<body>
+
+<button class="nav-toggle" onclick="document.querySelector('.sidebar-nav').classList.toggle('active')">&#9776;</button>
+
+<nav class="sidebar-nav">
+  <div class="sb-brand">
+    <a class="sb-logo" href="https://codecombat.cn/" target="_blank" rel="noopener" title="访问 CodeCombat 扣哒世界官网">
+      <img src="../assets/logo.png" alt="CodeCombat 扣哒世界">
+    </a>
+    <div><b>回音螺旋</b><span>星砂绿洲 · C++ 五级 第 6 单元</span></div>
+  </div>
+  <div class="nav-title">本单元目录</div>
+
+  <a href="#s0" class="nav-section">0　单元导语与目标</a>
+  <a href="#s0-1" class="nav-sub">0.1 学习目标</a>
+  <a href="#s0-2" class="nav-sub">0.2 考纲对照</a>
+  <a href="#s1" class="nav-section">1　什么是递归</a>
+  <a href="#s1-1" class="nav-sub">1.1 函数可以调用自己</a>
+  <a href="#s1-2" class="nav-sub">1.2 一个最简单的例子</a>
+  <a href="#s2" class="nav-section">2　递归的两个要素</a>
+  <a href="#s2-1" class="nav-sub">2.1 出口：什么时候停</a>
+  <a href="#s2-2" class="nav-sub">2.2 缩小：每次往哪儿走</a>
+  <a href="#s3" class="nav-section">3　递归的执行过程</a>
+  <a href="#s3-1" class="nav-sub">3.1 一层层往下钻</a>
+  <a href="#s3-2" class="nav-sub">3.2 再一层层往回弹</a>
+  <a href="#s4" class="nav-section">4　递归与循环</a>
+  <a href="#s4-1" class="nav-sub">4.1 能互相改写</a>
+  <a href="#s4-2" class="nav-sub">4.2 递归的代价：调用栈</a>
+  <a href="#s5" class="nav-section">5　两个经典递归</a>
+  <a href="#s5-1" class="nav-sub">5.1 阶乘与斐波那契</a>
+  <a href="#s5-2" class="nav-sub">5.2 汉诺塔</a>
+  <a href="#s6" class="nav-section">6　代码实战</a>
+  <a href="#s7" class="nav-section">7　常见陷阱</a>
+  <a href="#s8" class="nav-section">8　题目练习</a>
+  <a href="#s9" class="nav-section">9　本单元小结</a>
+
+  <a href="../index.html" target="_top" class="sb-back">返回考纲之路</a>
+</nav>
+
+<div class="page">
+
+<div class="hero">
+  <div class="hero-top">
+    <div class="hero-txt">
+      <div class="crumb">扣哒考级 · GESP C++ 五级 · 第 6 单元　|　星砂绿洲 STARDUST OASIS</div>
+      <h1>回音螺旋
+        <span class="sub">递归算法</span>
+      </h1>
+      <div class="en">Recursion</div>
+      <div class="tags">        <span class="tag hot">考纲 · 递归</span>
+        <span class="tag">递归两要素</span>
+        <span class="tag">出口与缩小</span>
+        <span class="tag">调用栈</span>
+        <span class="tag">汉诺塔</span></div>
+    </div>
+    <div class="hero-card">
+      <img class="ava" src="../assets/avatars/senick.webp" alt="塞尼克" onerror="this.style.background='#24344a';this.src='../assets/heroes/senick.webp'">
+      <div class="nm">塞尼克</div>
+      <div class="ti">沙海向导 · 你的向导</div>
+    </div>
+  </div>
+</div>
+
+<div class="container">
+
+<div class="lead">
+  绿洲岩壁上有一道<b>螺旋通道</b>。<br>
+  塞尼克让你把手贴在石壁上：喊一声。<br>
+  你喊了——<b>回声沿着螺旋一圈圈向里传，每到一圈就轻一点，却始终是同一个声音的形状。</b><br>
+  你愣了一下：<strong>每一圈里，都套着一模一样的、更小的一圈？</strong><br>
+  对。他点头，<strong>这就是递归：一个大问题里，藏着一个同样形状的小问题。</strong>
+</div>
+
+<div class="cast senick">
+  <img class="ava" src="../assets/avatars/senick.webp" alt="塞尼克" onerror="this.style.display='none'">
+  <div class="bubble">
+    <div class="who">塞尼克 · 沙海向导</div>
+    上一课我们学了"用二分砍一半"。<br>
+    这一课学另一种拆法：<strong>把一个问题和它的"缩小版"联系起来，让函数自己调用自己。</strong><br>
+    <b>它看着有点绕，但一旦想通，很多题会突然变得特别短。</b>
+  </div>
+</div>
+
+<figure class="pic">
+  <img src="../assets/illustrations/py-L5-06-01_echo_spiral.webp" alt="回音螺旋"
+       onerror="this.closest('.pic').classList.add('missing')">
+  <div class="ph">
+    <div class="fn">assets/illustrations/py-L5-06-01_echo_spiral.webp</div>
+    <div class="ds">【配图位】绿洲岩壁上的螺旋通道俯视剖面：一圈圈同心弧由外向内收拢，形状完全相同、只是逐层变小；音波沿着弧线层层回旋并向内传递，越往内纹路越细；螺旋最中心处有一盏小灯，光晕恰好与最内圈重合；一名披沙色斗篷的向导把手掌贴在入口的岩壁上。</div>
+  </div>
+  <figcaption>图 1：星砂绿洲的回音螺旋——今天要从这里开始</figcaption>
+</figure>
+
+<!-- ============ 0 ============ -->
+<div class="section-header" id="s0">
+  <h2>0　单元导语与目标</h2>
+  <div class="en-title">Unit Overview</div>
+</div>
+
+<h3 id="s0-1">0.1 学习目标</h3>
+<div class="goal-grid">
+  <div class="goal">
+    <h4><span class="ic">1</span>学完这个单元，你将能……</h4>
+    <ul>
+      <li>说清"递归"两个字的含义</li>
+      <li>写出递归的两个必备要素（出口与缩小）</li>
+      <li>跟着调用过程一步步推出结果</li>
+      <li>判断一段递归代码会不会"停不下来"</li>
+      <li>把简单的递归改写成循环</li>
+      <li>用递归解决阶乘、斐波那契、汉诺塔</li>
+    </ul>
+  </div>
+  <div class="goal syllabus">
+    <h4><span class="ic">2</span>对标 GESP 考纲（C++ 五级）</h4>
+    <ul>
+      <li>理解递归的思想与适用条件</li>
+      <li>掌握递归的出口与递推关系</li>
+      <li>理解递归调用的执行过程（调用栈）</li>
+      <li>了解递归与循环的对应关系</li>
+      <li>考核目标：能跟踪递归调用并算出结果</li>
+    </ul>
+  </div>
+</div>
+
+<h3 id="s0-2">0.2 考纲对照</h3>
+<table class="styled">
+  <thead><tr><th>本单元小节</th><th>对应考纲条目</th><th>真题常考形式</th></tr></thead>
+  <tbody>
+    <tr><td>1　什么是递归</td><td>递归的概念</td><td>递归和自己调用自己的含义</td></tr>
+    <tr><td>2　递归的两个要素</td><td>出口与缩小</td><td>少了出口会怎样（必考）</td></tr>
+    <tr><td>3　递归的执行过程</td><td>调用栈</td><td>写出每一层的调用、算出返回值</td></tr>
+    <tr><td>4　递归与循环</td><td>两种写法的取舍</td><td>递归的空间代价、栈溢出</td></tr>
+    <tr><td>5　经典递归</td><td>递归的应用</td><td>阶乘、斐波那契、汉诺塔</td></tr>
+  </tbody>
+</table>
+
+<!-- ============ 1 ============ -->
+<div class="section-header" id="s1">
+  <h2>1　什么是递归</h2>
+  <div class="en-title">What Is Recursion</div>
+</div>
+
+<h3 id="s1-1">1.1 函数可以调用自己</h3>
+
+<div class="box remember">
+  <span class="lb">递归的定义，一句话就够：</span>
+  <b>一个函数在执行的过程中，<strong>又调用了它自己</strong>。</b><br>
+  <b>听起来有点"自我循环"的意思，好像会有问题——但只要加一个"什么时候停"的条件，
+  它就是完全合法的写法。</b><br>
+  <strong>它的思想是：把一个大问题，转化成一个"同样形状、但更小"的问题。</strong>
+</div>
+
+<div class="code-card">
+  <div class="code-head">
+    <span class="dot d1"></span><span class="dot d2"></span><span class="dot d3"></span>
+    <span class="file">先看一个"停不下来"的错误例子</span>
+    <span class="lang">C++</span>
+  </div>
+  <pre><code>void f() {
+    cout &lt;&lt; "我在调用自己" &lt;&lt; endl;
+    f();              // ★ 又调用自己，而且没有任何"停"的条件
+}
+
+// 结果：一行一行地打印，永远停不下来
+// 直到内存被耗尽 → 程序崩溃（这叫"栈溢出"）</code></pre>
+  <div class="out"><b>问题在哪</b>　
+  <b>它会无限地"往下钻"，永远没有回头的那一天</b></div>
+</div>
+
+<h3 id="s1-2">1.2 一个最简单的例子</h3>
+
+<div class="code-card">
+  <div class="code-head">
+    <span class="dot d1"></span><span class="dot d2"></span><span class="dot d3"></span>
+    <span class="file">倒计时：从 n 数到 1</span>
+    <span class="lang">C++</span>
+  </div>
+  <pre><code>void countdown(int n) {
+    if (n == 0) return;          // ★ 出口：到了 0 就停
+    cout &lt;&lt; n &lt;&lt; " ";
+    countdown(n - 1);            // ★ 缩小：把问题变小一号，再交给"自己"
+}
+
+countdown(5);                    // 输出：5 4 3 2 1</code></pre>
+  <div class="out"><b>OUTPUT</b>　5 4 3 2 1<br>
+  <b>看这两行</b>　
+  ① <code>if (n == 0) return;</code> 是<b>出口</b>；<br>
+  ② <code>countdown(n - 1)</code> 是<b>缩小</b>——<strong>把"从 5 数到 1"变成"从 4 数到 1"</strong></div>
+</div>
+
+<div class="box tip">
+  <span class="lb">打个比方：</span>
+  递归就像<b>传话游戏</b>——<strong>我告诉你一件事，让你把几乎一样的事再告诉下一个人。</strong><br>
+  <b>但必须有人说一句"到我为止，不用再传了"——</b>
+  <strong>否则传话会一直传到天边去，这就是"出口"的作用。</strong><br>
+  <b>而每一轮传的话都比上一轮少一点、小一点，这就是"缩小"。</b>
+</div>
+
+<!-- ============ 2 ============ -->
+<div class="section-header" id="s2">
+  <h2>2　递归的两个要素</h2>
+  <div class="en-title">Two Essential Parts</div>
+</div>
+
+<h3 id="s2-1">2.1 出口：什么时候停</h3>
+
+<div class="box remember">
+  <span class="lb">要素一：出口（终止条件）。</span>
+  <b>必须有一句判断，在"问题已经小到不用再拆"的时候，<strong>直接给出答案、不再递归</strong>。</b><br>
+  <b>最常见的就是这两种：</b><br>
+  <b>① 数值到了边界</b>：<code class="inline">if (n == 0) return 1;</code>、
+  <code class="inline">if (n &lt;= 1) return n;</code>；<br>
+  <b>② 指针走到了尽头</b>：<code class="inline">if (p == nullptr) return;</code>。<br>
+  <strong>没有出口的递归，一定会在某一刻"栈溢出"崩溃。</strong>
+</div>
+
+<div class="code-card">
+  <div class="code-head">
+    <span class="dot d1"></span><span class="dot d2"></span><span class="dot d3"></span>
+    <span class="file">出口写错会怎样</span>
+    <span class="lang">C++</span>
+  </div>
+  <pre><code>// ✘ 错误一：没有出口
+int f(int n) { return n + f(n - 1); }
+
+// ✘ 错误二：出口永远到不了（方向反了）
+int g(int n) {
+    if (n == 0) return 0;      // 想让 n 减到 0
+    return n + g(n + 1);       // 可这里每次都 +1，越走越远
+}
+
+// ✔ 正确：出口能到达，而且每次都在靠近它
+int h(int n) {
+    if (n == 0) return 0;      // 出口
+    return n + h(n - 1);       // 每次 n 减 1，一定会到 0
+}</code></pre>
+  <div class="out"><b>判断口诀</b>　
+  <b>"出口写了没有？每一次递归，是不是真的在往出口靠近？"</b>——<b>两个都要答"是"</b></div>
+</div>
+
+<h3 id="s2-2">2.2 缩小：每次往哪儿走</h3>
+
+<div class="box remember">
+  <span class="lb">要素二：缩小规模。</span>
+  <b>每一次递归调用，都要把问题<strong>变得比原来小一点</strong>——
+  而且这个"变小"要能<strong>有限步之内到达出口</strong>。</b><br>
+  <b>常见的缩小方式：</b><br>
+  <b><code class="inline">n − 1</code></b>（每次少一个）、
+  <b><code class="inline">n / 2</code></b>（每次砍一半）、
+  <b><code class="inline">n % 10</code></b>（每次取掉一位）、
+  <b><code class="inline">p->next</code></b>（每次往后一个结点）。<br>
+  <strong>写递归时先把这两句话写出来，代码就成型了。</strong>
+</div>
+
+<div class="code-card">
+  <div class="code-head">
+    <span class="dot d1"></span><span class="dot d2"></span><span class="dot d3"></span>
+    <span class="file">递归的通用模板</span>
+    <span class="lang">C++</span>
+  </div>
+  <pre><code>返回类型 f(参数) {
+    if (到了最小的情况) {          // ① 出口
+        return 直接能算出的答案;
+    }
+    // ② 把大问题拆成"更小的同一个问题"
+    return 用 f(更小的参数) 算出的结果;
+}</code></pre>
+  <div class="out"><b>两步走</b>　
+  <b>先处理"小到不用再拆"的情况，再把大问题交给"缩小版"的自己</b></div>
+</div>
+
+<figure class="figure">
+  <svg class="diagram" viewBox="0 0 830 250" role="img" aria-label="递归的两个要素">
+    <text x="24" y="30" font-size="14" font-weight="bold" fill="#1f2937">递归的两个要素：一个负责"停"，一个负责"走"</text>
+
+    <rect x="46" y="54" width="350" height="170" rx="12" fill="#e9f8ef" stroke="#2e9e5b" stroke-width="2"/>
+    <text x="221" y="82" text-anchor="middle" font-size="13" fill="#1f7a44" font-weight="bold">要素一：出口</text>
+    <text x="70" y="114" font-size="12" fill="#3b7c5b">什么时候不用再往下拆了？</text>
+    <text x="70" y="146" font-size="12" font-family="Consolas,monospace" fill="#1f7a44">if (n == 0) return 1;</text>
+    <text x="70" y="176" font-size="12" fill="#3b7c5b">没有它 → 无限递归 → 栈溢出崩溃</text>
+    <text x="70" y="206" font-size="11.5" fill="#b45309">★ 写递归，先把出口想清楚</text>
+
+    <rect x="434" y="54" width="350" height="170" rx="12" fill="#eaf1fe" stroke="#2563eb" stroke-width="2"/>
+    <text x="609" y="82" text-anchor="middle" font-size="13" fill="#1d4ed8" font-weight="bold">要素二：缩小规模</text>
+    <text x="458" y="114" font-size="12" fill="#3b6ea8">每一层要比上一层"小"</text>
+    <text x="458" y="146" font-size="12" font-family="Consolas,monospace" fill="#1d4ed8">return n * f(n - 1);</text>
+    <text x="458" y="176" font-size="12" fill="#3b6ea8">而且要能有限步走到出口</text>
+    <text x="458" y="206" font-size="11.5" fill="#b45309">★ 方向不能反（该减却写成了加）</text>
+  </svg>
+  <div class="caption">图 2（SVG）：出口负责"停"，缩小负责"走"</div>
+</figure>
+
+<!-- ============ 3 ============ -->
+<div class="section-header" id="s3">
+  <h2>3　递归的执行过程</h2>
+  <div class="en-title">How It Runs</div>
+</div>
+
+<h3 id="s3-1">3.1 一层层往下钻</h3>
+
+<div class="code-card">
+  <div class="code-head">
+    <span class="dot d1"></span><span class="dot d2"></span><span class="dot d3"></span>
+    <span class="file">跟踪 f(n) = n + f(n-1)，算 f(4)</span>
+    <span class="lang">C++</span>
+  </div>
+  <pre><code>int f(int n) {
+    if (n == 1) return 1;          // 出口
+    return n + f(n - 1);           // 缩小
+}
+
+【往下钻】（每调用一次，就压一层"栈"）
+   f(4) 需要 4 + f(3)      ← 卡住，等 f(3)
+     f(3) 需要 3 + f(2)    ← 卡住，等 f(2)
+       f(2) 需要 2 + f(1)  ← 卡住，等 f(1)
+         f(1) → 命中出口，直接返回 1 ✔
+
+【往回弹】（拿到下层的结果，才能算出自己）
+       f(2) = 2 + 1 = 3
+     f(3) = 3 + 3 = 6
+   f(4) = 4 + 6 = 10
+
+答案：f(4) = 10</code></pre>
+  <div class="out"><b>注意顺序</b>　
+  <b>先是"一路往下钻"到出口，然后才是"一层层往回弹"算出结果</b><br>
+  <b>4 + 3 + 2 + 1 = 10</b>——<b>这其实就是从 1 加到 4 的和</b></div>
+</div>
+
+<h3 id="s3-2">3.2 再一层层往回弹</h3>
+
+<div class="box tip">
+  <span class="lb">为什么"往下钻"的时候算不出结果？</span>
+  因为 <code class="inline">f(4)</code> 要算 <code class="inline">4 + f(3)</code>，
+  <strong>可它不知道 <code class="inline">f(3)</code> 是多少——只能先停下来，去问 <code class="inline">f(3)</code>。</strong><br>
+  <b><code class="inline">f(3)</code> 又不知道 <code class="inline">f(2)</code>，于是再往下问……</b><br>
+  <strong>一直问到 <code class="inline">f(1)</code>——
+  这时候"出口"直接给出了答案，不需要再问了。</strong><br>
+  <b>于是信息的流向掉了个头：答案从最底层一层层往上"弹"回来，
+  每一层拿到下一层的值，再加上自己的那一部分。</b><br>
+  <strong>这个过程，就像回声从螺旋最里面一层层传回来。</strong>
+</div>
+
+<figure class="figure">
+  <svg class="diagram" viewBox="0 0 830 300" role="img" aria-label="递归调用栈">
+    <text x="24" y="28" font-size="14" font-weight="bold" fill="#1f2937">调用栈：往下钻时一层层压入，往回弹时一层层弹出</text>
+
+    <g font-size="12.5" font-family="Consolas,monospace">
+      <rect x="60" y="46" width="200" height="38" rx="7" fill="#eaf1fe" stroke="#2563eb" stroke-width="1.8"/>
+      <text x="76" y="70" fill="#1d4ed8">f(4) → 4 + f(3)</text>
+      <rect x="60" y="90" width="200" height="38" rx="7" fill="#eaf1fe" stroke="#2563eb" stroke-width="1.8"/>
+      <text x="76" y="114" fill="#1d4ed8">f(3) → 3 + f(2)</text>
+      <rect x="60" y="134" width="200" height="38" rx="7" fill="#eaf1fe" stroke="#2563eb" stroke-width="1.8"/>
+      <text x="76" y="158" fill="#1d4ed8">f(2) → 2 + f(1)</text>
+      <rect x="60" y="178" width="200" height="38" rx="7" fill="#e9f8ef" stroke="#2e9e5b" stroke-width="2.6"/>
+      <text x="76" y="202" fill="#1f7a44" font-weight="bold">f(1) → 1  ★出口</text>
+    </g>
+
+    <line x1="272" y1="180" x2="272" y2="60" stroke="#8b5cf6" stroke-width="2.4"/>
+    <polygon points="272,58 265,70 279,70" fill="#8b5cf6"/>
+    <text x="288" y="112" font-size="12" fill="#6d28d9">往回弹</text>
+    <text x="288" y="134" font-size="11.5" fill="#9a86d4">拿到下层结果才能算</text>
+
+    <rect x="470" y="46" width="314" height="170" rx="12" fill="#f7f9fd" stroke="#cbd5e1" stroke-width="1.6"/>
+    <text x="494" y="74" font-size="12.5" fill="#334155" font-weight="bold">结果是这样算出来的</text>
+    <text x="494" y="104" font-size="12" font-family="Consolas,monospace" fill="#1f7a44">f(1) = 1</text>
+    <text x="494" y="132" font-size="12" font-family="Consolas,monospace" fill="#1f7a44">f(2) = 2 + 1 = 3</text>
+    <text x="494" y="160" font-size="12" font-family="Consolas,monospace" fill="#1f7a44">f(3) = 3 + 3 = 6</text>
+    <text x="494" y="188" font-size="12" font-family="Consolas,monospace" fill="#1d4ed8" font-weight="bold">f(4) = 4 + 6 = 10</text>
+    <text x="494" y="208" font-size="11.5" fill="#b45309">★ 一共压了 4 层栈，所以空间是 O(n)</text>
+
+    <text x="60" y="252" font-size="12" fill="#8d9d94">★ 每调用一次就"压一层栈"，所以递归的层数不能太深——太深会栈溢出（通常几千到几万层）</text>
+    <text x="60" y="278" font-size="12" fill="#b45309">★ 跟踪递归时，最稳的办法是像这样把每一层的"待算式"和"结果"都列出来</text>
+  </svg>
+  <div class="caption">图 3（SVG）：递归的执行——先往下钻，再往回弹</div>
+</figure>
+
+<figure class="pic">
+  <img src="../assets/illustrations/py-L5-06-02_stack_frames.webp" alt="一层层叠起的石台"
+       onerror="this.closest('.pic').classList.add('missing')">
+  <div class="ph">
+    <div class="fn">assets/illustrations/py-L5-06-02_stack_frames.webp</div>
+    <div class="ds">【配图位】螺旋峡谷内一摞自下而上叠起的发光石台，每层石台比下一层小一圈，台面都刻着同一句未算完的算式（前几层的数字互不相同）；一名披沙色斗篷的向导正把最新一层石台放到最顶上，而最底下那层石台已刻满数字并亮起绿光（表示出口已命中）。</div>
+  </div>
+  <figcaption>图 4：一层层叠起来的石台——这就是"调用栈"</figcaption>
+</figure>
+
+<!-- ============ 4 ============ -->
+<div class="section-header" id="s4">
+  <h2>4　递归与循环</h2>
+  <div class="en-title">Recursion vs Loop</div>
+</div>
+
+<h3 id="s4-1">4.1 能互相改写</h3>
+
+<div class="code-card">
+  <div class="code-head">
+    <span class="dot d1"></span><span class="dot d2"></span><span class="dot d3"></span>
+    <span class="file">同一个"从 1 加到 n"，两种写法</span>
+    <span class="lang">C++</span>
+  </div>
+  <pre><code>// 【递归写法】
+int sum1(int n) {
+    if (n == 0) return 0;
+    return n + sum1(n - 1);
+}
+
+// 【循环写法】—— 结果完全一样
+int sum2(int n) {
+    int s = 0;
+    for (int i = 1; i &lt;= n; i++) s += i;
+    return s;
+}
+
+// 【更聪明的循环】直接用等差数列公式
+int sum3(int n) {
+    return n * (n + 1) / 2;
+}</code></pre>
+  <div class="out"><b>三种写法结果相同</b>　
+  但<strong>递归版每层都要压栈，循环版不用</strong>——<b>所以能用循环就别用递归</b></div>
+</div>
+
+<div class="box remember">
+  <span class="lb">"能改成循环的，就改成循环。"</span>
+  <b>这不是口味问题，是有实际原因的：</b><br>
+  <b>① 递归每调一层就占一点栈空间</b>，层数多了会栈溢出；<br>
+  <b>② 递归有"函数调用"的额外开销</b>，<strong>同样一件事，循环通常更快</strong>；<br>
+  <b>③ 但有些问题用递归写就是要短得多、也更好懂</b>——
+  <strong>比如汉诺塔、树的遍历、快速排序。</strong><br>
+  <strong>所以原则是：好写又好跑就用循环；结构天然"层层嵌套"的，用递归。</strong>
+</div>
+
+<h3 id="s4-2">4.2 递归的代价：调用栈</h3>
+
+<table class="styled">
+  <thead><tr><th></th><th>递归</th><th>循环</th></tr></thead>
+  <tbody>
+    <tr><td>代码长度</td><td><strong>通常更短</strong></td><td>往往更长</td></tr>
+    <tr><td>可读性</td><td>结构嵌套的问题上<strong>更好懂</strong></td><td>层层依赖的问题上更难懂</td></tr>
+    <tr><td>空间开销</td><td><strong>每层占栈空间，O(深度)</strong></td><td><strong>通常 O(1)</strong></td></tr>
+    <tr><td>运行速度</td><td>有函数调用开销，稍慢</td><td><strong>通常更快</strong></td></tr>
+    <tr><td>最大风险</td><td><strong>层数太深 → 栈溢出崩溃</strong></td><td>几乎没有</td></tr>
+  </tbody>
+</table>
+
+<div class="box warn">
+  <span class="lb">"栈溢出"是怎么发生的？</span>
+  <b>每次函数调用，系统都要在"调用栈"上记一笔：<strong>参数是什么、返回后该回到哪一行。</strong></b><br>
+  <b>而调用栈的大小是有限的（通常几 MB）。</b><br>
+  <strong>递归层数太多（比如十万层），这一笔笔记不下，就会"栈溢出"——
+  程序直接崩溃，报一句类似 <code class="inline">stack overflow</code> 的错。</strong><br>
+  <b>所以：n 很大（比如 10⁶）的时候，别用递归，改用循环或递推。</b>
+</div>
+
+<!-- ============ 5 ============ -->
+<div class="section-header" id="s5">
+  <h2>5　两个经典递归</h2>
+  <div class="en-title">Classic Examples</div>
+</div>
+
+<h3 id="s5-1">5.1 阶乘与斐波那契</h3>
+
+<div class="code-card">
+  <div class="code-head">
+    <span class="dot d1"></span><span class="dot d2"></span><span class="dot d3"></span>
+    <span class="file">阶乘：n! = n × (n−1)!</span>
+    <span class="lang">C++</span>
+  </div>
+  <pre><code>long long fact(int n) {
+    if (n &lt;= 1) return 1;          // 出口：0! = 1! = 1
+    return n * fact(n - 1);        // 缩小：n! = n × (n−1)!
+}
+// fact(4) = 4 × 3 × 2 × 1 = 24</code></pre>
+  <div class="out"><b>fact(4) = 24</b>　
+  <b>和上一课的"递推"是同一个数学关系，只是实现方式不同</b></div>
+</div>
+
+<div class="code-card">
+  <div class="code-head">
+    <span class="dot d1"></span><span class="dot d2"></span><span class="dot d3"></span>
+    <span class="file">斐波那契：这就是"慢递归"的典型例子</span>
+    <span class="lang">C++</span>
+  </div>
+  <pre><code>int fib(int n) {
+    if (n &lt;= 1) return n;          // 出口：fib(0)=0, fib(1)=1
+    return fib(n - 1) + fib(n - 2);  // 一次要调两个自己
+}
+
+// 看着很优雅，但非常慢！
+// fib(5) 会算 fib(4) + fib(3)
+// fib(4) 又算 fib(3) + fib(2)   ← fib(3) 被重复算了
+// fib(3) 被算了 2 次、fib(2) 被算了 3 次 ……
+// 越往下重复得越离谱，总次数是"指数级"的</code></pre>
+  <div class="out"><b>问题</b>　
+  <b>同一个子问题被反复计算</b>——
+  <code>fib(40)</code> 的调用次数是十亿量级，<strong>递归版根本跑不完</strong><br>
+  <b>而用递推（循环）算 <code>fib(40)</code>，只要 40 次</b></div>
+</div>
+
+<div class="box warn">
+  <span class="lb">斐波那契递归：时间复杂度 O(2ⁿ)，空间复杂度 O(n)。</span>
+  <b>这两个数字不一样，很容易被考到。</b><br>
+  <b>① 时间是指数级的</b>——因为同一项被重复计算了指数多次；<br>
+  <b>② 空间是 O(n)</b>——因为递归<strong>不会同时展开所有分支</strong>，
+  它是一条路走到底再回头的，<strong>栈的最大深度只有 n 层</strong>。<br>
+  <strong>所以"时间复杂度和空间复杂度都是 O(n)"这个说法是错的——
+  空间是 O(n)，但时间是 O(2ⁿ)。</strong><br>
+  <b>记忆：空间看"最深的层数"，时间看"一共算了多少次"。</b>
+</div>
+
+<h3 id="s5-2">5.2 汉诺塔</h3>
+
+<div class="code-card">
+  <div class="code-head">
+    <span class="dot d1"></span><span class="dot d2"></span><span class="dot d3"></span>
+    <span class="file">汉诺塔：递归的"招牌菜"</span>
+    <span class="lang">C++</span>
+  </div>
+  <pre><code>// 把 n 个盘从 a 借助 b 移到 c
+void hanoi(int n, char a, char b, char c) {
+    if (n == 1) {                            // 出口：只剩一个盘，直接搬
+        cout &lt;&lt; a &lt;&lt; " -> " &lt;&lt; c &lt;&lt; endl;
+        return;
+    }
+    hanoi(n - 1, a, c, b);                   // ① 把上面 n-1 个挪到 b
+    cout &lt;&lt; a &lt;&lt; " -> " &lt;&lt; c &lt;&lt; endl;          // ② 把最大的那个搬到 c
+    hanoi(n - 1, b, a, c);                   // ③ 再把 n-1 个从 b 挪到 c
+}</code></pre>
+  <div class="out"><b>三句话就把规则说完了</b>　
+  ① 先把上面一摞挪开；② 搬最大的那个；③ 再把那一摞挪过来<br>
+  <b>移动次数</b>　<code>2ⁿ − 1</code>（n = 3 时是 7 次）</div>
+</div>
+
+<div class="box tip">
+  <span class="lb">为什么汉诺塔用递归写这么短？</span>
+  因为<strong>这个问题本身就是"层层嵌套"的形状</strong>：<br>
+  <b>要搬 n 个盘，先得搬 n−1 个；要搬 n−1 个，先得搬 n−2 个……</b><br>
+  <strong>每一层的做法一模一样，只是盘子少一个——
+  这正是递归最擅长的事情。</strong><br>
+  <b>你要是想用循环写，得自己模拟一堆状态，代码会又长又难懂。</b><br>
+  <strong>所以：结构天然是"层层套娃"的问题，交给递归。</strong>
+</div>
+
+<figure class="pic">
+  <img src="../assets/illustrations/py-L5-06-03_base_case_door.webp" alt="最内圈的出口"
+       onerror="this.closest('.pic').classList.add('missing')">
+  <div class="ph">
+    <div class="fn">assets/illustrations/py-L5-06-03_base_case_door.webp</div>
+    <div class="ds">【配图位】螺旋通道的最内圈特写：一扇小小的石门嵌在弧壁尽头，门缝里透出温暖的灯光，门楣上刻着一个最小的数字（像"1"），标示"到此为止"；门前的回声纹路已经收拢到最小、不再继续向内传递；一名披沙色斗篷的向导弯腰把手按在门上。</div>
+  </div>
+  <figcaption>图 5：最里面那扇门——递归的"出口"</figcaption>
+</figure>
+
+<!-- ============ 6 ============ -->
+<div class="section-header" id="s6">
+  <h2>6　代码实战</h2>
+  <div class="en-title">Level Practice</div>
+</div>
+
+<div class="level-card">
+  <div class="lc-head"><span class="n">关卡</span><h4>命令链</h4><span class="go">进入关卡 →</span></div>
+  <div class="lc-body">
+    <div class="story">
+      <b>故事：</b>绿洲的哨站排成一条长链，<b>每一站只负责把同样的命令传给下一站。</b><br>
+      塞尼克把第一张纸条递给你：<strong>你看，命令的内容几乎一样，
+      只是"还剩几站"少了一个。</strong><br>
+      你顺着传下去：<b>那最后一站就得说一句"到此为止，不用再传了"。</b><br>
+      对。他点点头，<strong>有出口、有缩小——这就是一条完整的递归链。</strong>
+    </div>
+    <p><strong>思路：</strong>把"从 n 累加到 1"写成递归，
+    再<strong>对照着写一个递推版</strong>，看看两者的区别。</p><figure class="pic">
+  <img src="../assets/stages/py-L5-06-stage1_command_chain.webp" alt="命令链 关卡截图"
+       onerror="this.closest('.pic').classList.add('missing')">
+  <div class="ph">
+    <div class="fn">assets/stages/py-L5-06-stage1_command_chain.webp</div>
+    <div class="ds">【截图位】命令链关卡：绿洲哨站一字排开，代码编辑区可见递归函数与出口判断。</div>
+  </div>
+  <figcaption>关卡实况：命令链</figcaption>
+</figure>
+    <div class="code-card">
+      <div class="code-head">
+        <span class="dot d1"></span><span class="dot d2"></span><span class="dot d3"></span>
+        <span class="file">两种写法对照，结果完全一致</span>
+        <span class="lang">C++</span>
+      </div>
+      <pre><code>#include &lt;iostream&gt;
+using namespace std;
+
+// 【递归版】一层层往下钻，再往回弹
+long long sumRec(int n) {
+    if (n == 0) return 0;              // 出口
+    return n + sumRec(n - 1);          // 缩小
+}
+
+// 【递推版】从小到大一路累加
+long long sumLoop(int n) {
+    long long s = 0;
+    for (int i = 1; i &lt;= n; i++) s += i;
+    return s;
+}
+
+int main() {
+    int n = 10;
+    cout &lt;&lt; sumRec(n) &lt;&lt; endl;         // 55
+    cout &lt;&lt; sumLoop(n) &lt;&lt; endl;        // 55
+    return 0;
+}</code></pre>
+      <div class="out"><b>OUTPUT</b>　55 / 55<br>
+      <b>结果一样，但代价不同</b>　
+      递归版<b>压了 11 层栈</b>；递推版<b>只用了几个变量</b></div>
+    </div>
+    <div class="box info">
+      <span class="lb">和本单元的关系：</span>
+      <strong>"同一个关系，两种实现"是这一课的核心。</strong><br>
+      <b>递归是"从 n 问到底"（自顶向下），递推是"从 1 加到 n"（自底向上）。</b><br>
+      <strong>数学关系完全一样：都是 <code class="inline">f(n) = n + f(n−1)</code>、<code class="inline">f(0) = 0</code>。</strong><br>
+      <b>选哪个？</b>
+      <strong>n 小、结构复杂 → 递归写起来轻松；n 大、结构简单 → 循环稳当又快。</strong><br>
+      <b>考试里两种都可能出现，看到能认出来就行。</b>
+    </div>
+    <a class="btn-go" href="https://codecombat.cn/" target="_blank" rel="noopener">去扣哒世界闯这一关 →</a>
+  </div>
+</div>
+
+
+
+<!-- ============ 7 ============ -->
+<div class="section-header" id="s7">
+  <h2>7　常见陷阱</h2>
+  <div class="en-title">Common Pitfalls</div>
+</div>
+
+<div class="cast duck">
+  <img class="ava" src="../assets/ducks/duck_illia.webp" alt="扣哒鸭" onerror="this.style.display='none'">
+  <div class="bubble">
+    <div class="who">扣哒鸭 · 调试官</div>
+    递归的错只有两类：停不下来，和算得太慢。四条。
+  </div>
+</div>
+
+<div class="pit">
+  <div class="pt">
+    <div class="x">1</div>
+    <div class="t"><b>忘了写出口。</b></div>
+  </div>
+  <div class="duck">
+    <img src="../assets/ducks/duck_zana.webp" alt="扣哒鸭" onerror="this.style.display='none'">
+    <div class="dt"><b>扣哒鸭：</b><code>int f(int n) { return n * f(n-1); }</code> ——
+    <strong>少了 <code>if (n &lt;= 1) return 1;</code> 这一句，它会一直算到天荒地老。</strong><br>
+    <b>最后的结果是"栈溢出"崩溃，屏幕上只有一句报错。</b></div>
+  </div>
+  <div class="fix"><b>正确做法：</b>写递归前先想清出口</div>
+</div>
+
+<div class="pit">
+  <div class="pt">
+    <div class="x">2</div>
+    <div class="t"><b>出口写了，但方向反了、永远到不了。</b></div>
+  </div>
+  <div class="duck">
+    <img src="../assets/ducks/duck_naria.webp" alt="扣哒鸭" onerror="this.style.display='none'">
+    <div class="dt"><b>扣哒鸭：</b>出口写的是 <code>n == 0</code>，
+    可递归时却写成了 <code>g(n + 1)</code> ——<br>
+    <strong>n 越来越大，永远碰不到 0。</strong><br>
+    <b>要通过出口，参数必须真的在往那个方向变。</b></div>
+  </div>
+  <div class="fix"><b>检查：</b>出口条件里那个值，每次递归是不是真的在靠近它</div>
+</div>
+
+<div class="pit">
+  <div class="pt">
+    <div class="x">3</div>
+    <div class="t"><b>用递归算斐波那契，程序跑不完。</b></div>
+  </div>
+  <div class="duck">
+    <img src="../assets/ducks/duck_senick.webp" alt="扣哒鸭" onerror="this.style.display='none'">
+    <div class="dt"><b>扣哒鸭：</b><code>fib(n-1) + fib(n-2)</code> 每次裂成两支，
+    <strong>同一项被重复算成指数多次。</strong><br>
+    <b>n = 40 时调用次数是十亿量级——早就超时了。</b><br>
+    改用<strong>递推（循环）</strong>，40 次就搞定。</div>
+  </div>
+  <div class="fix"><b>改法：</b>用两个变量滚动递推</div>
+</div>
+
+<div class="pit">
+  <div class="pt">
+    <div class="x">4</div>
+    <div class="t"><b>n 很大时用递归，结果栈溢出。</b></div>
+  </div>
+  <div class="duck">
+    <img src="../assets/ducks/duck_hattori.webp" alt="扣哒鸭" onerror="this.style.display='none'">
+    <div class="dt"><b>扣哒鸭：</b>递归一层压一次栈，<strong>调用栈只有几 MB。
+    十万层就撑不住了。</strong><br>
+    <b>题目里 n 到 10⁵、10⁶ 的时候，老老实实写循环。</b></div>
+  </div>
+  <div class="fix"><b>原则：</b>层数可能上万，就用循环/递推</div>
+</div>
+
+<!-- ============ 8 ============ -->
+<div class="section-header" id="s8">
+  <h2>8　题目练习</h2>
+  <div class="en-title">Practice</div>
+</div>
+
+<p>前 3 题改编自 C++ 五、六级真题，其余为原创练习题。</p>
+
+<div class="exam">
+  <div class="eh"><span class="src">改编自 2026 年 9 月 · C++ 五级 · 第 8 题</span><span class="tp">单选题</span></div>
+  <div class="eb">
+    <div class="q">函数 <code class="inline">f(int n)</code> 定义如下，则 <code class="inline">f(4)</code>
+    的结果是（　　）。</div>
+    <pre>int f(int n) {
+    if (n == 1)
+        return 1;
+    return n + f(n - 1);
+}</pre>
+    <div class="opt"><i>A.</i><code class="inline">4</code>　　<i>B.</i><code class="inline">7</code>　　<i>C.</i><code class="inline">9</code>　　<i>D.</i><code class="inline">10</code></div>
+    <details><summary>查看答案与详解</summary>
+      <div class="ans"><b>答案：D</b>。跟着递归走一遍，<strong>先往下钻、再往回弹</strong>：<br>
+      <b>往下钻：</b><br>
+      <code class="inline">f(4)</code> 需要 <code class="inline">4 + f(3)</code><br>
+      <code class="inline">f(3)</code> 需要 <code class="inline">3 + f(2)</code><br>
+      <code class="inline">f(2)</code> 需要 <code class="inline">2 + f(1)</code><br>
+      <code class="inline">f(1)</code> → <strong>命中出口，直接返回 1</strong><br>
+      <b>往回弹：</b><br>
+      <code class="inline">f(2) = 2 + 1 = 3</code><br>
+      <code class="inline">f(3) = 3 + 3 = 6</code><br>
+      <code class="inline">f(4) = 4 + 6 = <b>10</b></code> ✔<br>
+      <b>换一个角度验算：</b>这个函数算的其实就是
+      <code class="inline">4 + 3 + 2 + 1</code>，<strong>也就是从 1 加到 4 的和 = 10。</strong><br>
+      <b>A 项（4）</b>是误以为只返回 n；<b>B、C 项</b>是在某一步少加了一层。<br>
+      <b>跟踪递归最稳的办法：</b>
+      <strong>把每一层的"待算式"和"结果"都列成清单，一层都不要跳。</strong><br>
+      <span class="tagline">对应小节</span>3.1 一层层往下钻。</div>
+    </details>
+  </div>
+</div>
+
+<div class="exam">
+  <div class="eh"><span class="src">改编自 2026 年 9 月 · C++ 六级 · 判断题 第 10 题</span><span class="tp">判断题</span></div>
+  <div class="eb">
+    <div class="q">下面这个递归程序能得到正确的斐波那契数，
+    其<strong>时间复杂度和空间复杂度都是 <code class="inline">O(n)</code></strong>。（　　）</div>
+    <pre>int fib(int n) {
+    if (n &lt;= 1)
+        return n;
+    return fib(n - 1) + fib(n - 2);
+}</pre>
+    <details><summary>查看答案与详解</summary>
+      <div class="ans"><b>答案：错误（×）</b>。<strong>它的答案确实是对的，但两个复杂度的结论错了一个。</strong><br>
+      <b>空间复杂度确实是 <code class="inline">O(n)</code>：</b><br>
+      递归并不是"把整棵调用树同时展开在内存里"——
+      它是<strong>一条路走到底、再回头走另一条路</strong>。<br>
+      <strong>所以调用栈的最大深度只有 n 层（沿着 <code class="inline">fib(n-1)</code> 那条最长的路下来），
+      空间是 O(n)。</strong><br>
+      <b>但时间复杂度是指数级的 <code class="inline">O(2ⁿ)</code>：</b><br>
+      因为它<strong>把同一个子问题算了无数遍</strong>。<br>
+      <code class="inline">fib(n)</code> 调用 <code class="inline">fib(n-1)</code> 和 <code class="inline">fib(n-2)</code>；<br>
+      而 <code class="inline">fib(n-1)</code> 又会再调用一次 <code class="inline">fib(n-2)</code>——
+      <strong>于是 <code class="inline">fib(n-2)</code> 一共被算了两遍。</strong><br>
+      往下走，重复的层数呈指数增长——<strong>调用总次数约等于 2ⁿ。</strong><br>
+      <b>对比一下：用递推（循环）算 fib(n) 只要 n 次，
+      时间 O(n)、空间 O(1)——所以斐波那契的递归写法是个反面教材。</b><br>
+      <b>记忆口诀：空间看"最深的层数"，时间看"一共算了多少次"。</b><br>
+      <span class="tagline">对应小节</span>5.1 阶乘与斐波那契。</div>
+    </details>
+  </div>
+</div>
+
+<div class="exam">
+  <div class="eh"><span class="src">改编自 2026 年 6 月 · C++ 六级 · 判断题 第 10 题</span><span class="tp">判断题</span></div>
+  <div class="eb">
+    <div class="q">用栈非递归实现二叉树前序遍历时，若希望<strong>先访问左子树</strong>，
+    通常应先将右孩子入栈，再将左孩子入栈。（　　）</div>
+    <details><summary>查看答案与详解</summary>
+      <div class="ans"><b>答案：正确（√）</b>。这个"反着压入"的技巧，正是<strong>用栈模拟递归</strong>的关键。<br>
+      <b>关键在于栈的特性：后进先出。</b><br>
+      <strong>后压进去的会先被取出来——所以要"想先访问谁，就后压谁"。</strong><br>
+      <b>前序遍历的顺序是"根 → 左 → 右"</b>，那么处理完根之后：<br>
+      希望<strong>下一个访问左孩子</strong> →
+      <strong>就得让左孩子处在栈顶</strong> →
+      <strong>也就是要最后压入左孩子。</strong><br>
+      所以顺序是：<code class="inline">先 push 右，再 push 左</code> ✔<br>
+      <b>如果反过来（先压左、再压右）：</b>
+      弹出时右孩子在栈顶，<strong>会先访问右子树——那就变成"根 → 右 → 左"了。</strong><br>
+      <b>这道题还藏着一个更深的道理：</b>
+      <strong>递归本质上就是"用系统的调用栈"完成这件事，
+      而"栈非递归写法"只是把这个栈搬到我们自己手里，手动压、手动弹。</strong><br>
+      <b>所以两者能互相翻译：递归能写的，用栈也能写。</b><br>
+      <span class="tagline">对应小节</span>4.2 递归的代价：调用栈。</div>
+    </details>
+  </div>
+</div>
+
+<div class="exam">
+  <div class="eh"><span class="src ori">原创练习题</span><span class="tp">单选题</span></div>
+  <div class="eb">
+    <div class="q">执行下面的代码，输出是（　　）。</div>
+    <pre>void f(int n) {
+    if (n == 0) return;
+    cout &lt;&lt; n &lt;&lt; " ";
+    f(n - 1);
+    cout &lt;&lt; n &lt;&lt; " ";
+}
+f(3);</pre>
+    <div class="opt">
+      <i>A.</i><code class="inline">3 2 1</code>　　<i>B.</i><code class="inline">3 2 1 1 2 3</code><br>
+      <i>C.</i><code class="inline">1 2 3 3 2 1</code>　　<i>D.</i><code class="inline">3 2 1 3 2 1</code>
+    </div>
+    <details><summary>查看答案与详解</summary>
+      <div class="ans"><b>答案：B</b>。<strong>这题的关键在于：递归调用前后的两句输出，执行时机完全不同。</strong><br>
+      <b>第一句 <code class="inline">cout</code> 在递归之前</b>——
+      它是<strong>"往下钻"的过程中打印的</strong>，所以顺序是 3、2、1；<br>
+      <b>第二句 <code class="inline">cout</code> 在递归之后</b>——
+      它是<strong>"往回弹"的过程中打印的</strong>，所以顺序反过来，是 1、2、3。<br>
+      <b>完整过程：</b><br>
+      <code class="inline">f(3)</code> 打印 <b>3</b> → 调用 <code class="inline">f(2)</code>……<br>
+      　<code class="inline">f(2)</code> 打印 <b>2</b> → 调用 <code class="inline">f(1)</code>……<br>
+      　　<code class="inline">f(1)</code> 打印 <b>1</b> → 调用 <code class="inline">f(0)</code> 直接返回<br>
+      　　回来后 <code class="inline">f(1)</code> 打印 <b>1</b><br>
+      　回来后 <code class="inline">f(2)</code> 打印 <b>2</b><br>
+      回来后 <code class="inline">f(3)</code> 打印 <b>3</b><br>
+      合起来：<b>3 2 1 1 2 3</b> ✔<br>
+      <b>D 项</b>是误以为两句都在"往下钻"时打印。<br>
+      <b>这题的意义：</b><strong>递归调用"之前"和"之后"的代码，
+      执行顺序是相反的——这个特性是很多精妙递归写法的基础。</strong><br>
+      <span class="tagline">对应小节</span>3.2 再一层层往回弹。</div>
+    </details>
+  </div>
+</div>
+
+<div class="exam">
+  <div class="eh"><span class="src ori">原创练习题</span><span class="tp">判断题</span></div>
+  <div class="eb">
+    <div class="q">任何一个用递归能解决的问题，都可以改写成用循环解决。（　　）</div>
+    <details><summary>查看答案与详解</summary>
+      <div class="ans"><b>答案：正确（√）</b>。这是一个<strong>理论上的结论</strong>：递归和循环（迭代）的计算能力是等价的。<br>
+      <b>为什么？</b>因为<strong>递归靠的是"系统的调用栈"，
+      而我们可以自己用一个数组或 <code class="inline">stack</code> 来模拟这个栈</strong>——
+      <strong>手动压、手动弹，就得到了等价的非递归写法。</strong><br>
+      <b>这就是"栈非递归写法"的来源：</b>
+      比如二叉树的三种遍历，<strong>递归写只要三行，用栈写要十几行，但两者做的事完全一样。</strong><br>
+      <b>那为什么还要用递归？</b>
+      <strong>因为它"好写、好读"</strong>——
+      在结构天然层层嵌套的问题上，<strong>递归能让代码短到只剩几行。</strong><br>
+      <b>至于该选哪个，看具体情况：</b><br>
+      ① 结构复杂、层次不深 → <strong>递归</strong>（写得快）；<br>
+      ② 层次可能很深（n 到 10⁵ 以上）→ <strong>必须用循环或栈</strong>（否则栈溢出）；<br>
+      ③ 逻辑简单、直接能循环 → <strong>优先循环</strong>（更快更省空间）。<br>
+      <span class="tagline">对应小节</span>4.1 能互相改写。</div>
+    </details>
+  </div>
+</div>
+
+<div class="exam">
+  <div class="eh"><span class="src ori">原创练习题</span><span class="tp">编程题</span></div>
+  <div class="eb">
+    <div class="q">题目要求：读入一个正整数 <code class="inline">n</code>（<code class="inline">1 ≤ n ≤ 20</code>），
+    用<strong>递归</strong>求出 <code class="inline">n!</code> 的值，并输出。<br>
+    <b>样例：</b>输入 <code class="inline">5</code>，输出 <code class="inline">120</code>。</div>
+    <details><summary>查看参考答案与要点</summary>
+      <div class="ans">
+<pre style="margin:0;background:#131a26;color:#c8d3e0;border-radius:10px;padding:14px 16px">#include &lt;iostream&gt;
+using namespace std;
+
+long long fact(int n) {
+    if (n &lt;= 1) return 1;          // ★ 出口：0! = 1! = 1
+    return n * fact(n - 1);        // ★ 缩小：n! = n × (n−1)!
+}
+
+int main() {
+    int n;
+    cin &gt;&gt; n;
+    cout &lt;&lt; fact(n) &lt;&lt; endl;
+    return 0;
+}</pre>
+      <p style="margin-top:12px"><b>输入 5 输出：</b>120；<b>输入 1 输出：</b>1<br>
+      <b>要点：</b><br>
+      ① <strong>出口必须写成 <code class="inline">n &lt;= 1</code> 而不是 <code class="inline">n == 1</code></strong>——
+      因为 n 可能传来 0（<code class="inline">0! = 1</code>），
+      <strong>写 <code class="inline">== 1</code> 的话 n = 0 时会一直减下去，陷入无限递归。</strong>；<br>
+      ② <strong>递推关系是 <code class="inline">n! = n × (n−1)!</code></strong>，
+      这正是"把大问题化成同样形状的小问题"；<br>
+      ③ <strong>用 <code class="inline">long long</code></strong>：<code class="inline">20!</code> 约 2.4 × 10¹⁸，
+      已经接近 <code class="inline">long long</code> 的上限，<strong>用 <code class="inline">int</code> 早就溢出好几轮了。</strong>；<br>
+      ④ 本题 n ≤ 20，递归深度最多 20 层，
+      <strong>远不到栈溢出的程度，用递归完全安全。</strong><br>
+      <b>顺带对比：</b>如果没有 n ≤ 20 这个限制、n 能到 10⁶，
+      <strong>那就必须改成循环写法了——层数太深会崩。</strong><br>
+      <span class="tagline">对应小节</span>5.1 阶乘与斐波那契。</p>
+      </div>
+    </details>
+  </div>
+</div>
+
+<!-- ============ 9 ============ -->
+<div class="section-header" id="s9">
+  <h2>9　本单元小结</h2>
+  <div class="en-title">Unit Summary</div>
+</div>
+
+<div class="cast senick">
+  <img class="ava" src="../assets/avatars/senick.webp" alt="塞尼克" onerror="this.style.display='none'">
+  <div class="bubble">
+    <div class="who">塞尼克 · 沙海向导</div>
+    四句话记住递归：<br>
+    <strong>一、递归就是"函数调用自己"——把大问题化成同样形状的小问题。</strong><br>
+    <strong>二、两个要素缺一不可：出口（什么时候停）+ 缩小（每次往哪儿走）。</strong><br>
+    <strong>三、执行过程是"先一路往下钻到出口，再一层层往回弹"算结果。</strong><br>
+    <strong>四、能用循环就别用递归——除非问题结构天然层层嵌套。</strong><br>
+    回声听完了。下一站是分沙术——<b>那里要把一堆沙劈成两半，各自处理，再拼回去。</b>
+  </div>
+</div>
+
+<div class="summary">
+  <h3>你在回音螺旋中收获了什么</h3>
+  <ul>
+    <li><strong>递归</strong>——函数在执行过程中<strong>又调用自己</strong>。</li>
+    <li><strong>要素一：出口</strong>——<code class="inline">if (n == 0) return 1;</code>；
+      <strong>没有出口一定栈溢出崩溃</strong>。</li>
+    <li><strong>出口的方向要对</strong>——递归的参数必须<strong>真的在往出口靠近</strong>。</li>
+    <li><strong>要素二：缩小规模</strong>——<code class="inline">n − 1</code>、<code class="inline">n / 2</code>、
+      <code class="inline">p-&gt;next</code> 等等。</li>
+    <li><strong>执行过程</strong>——<strong>先一路往下钻到出口，再一层层往回弹算结果</strong>。</li>
+    <li><strong>调用栈</strong>——每调一层压一次栈；<strong>栈的大小有限，
+      层数太多就会栈溢出（通常几千到几万层）</strong>。</li>
+    <li><strong>递归前的语句与递归后的语句</strong>——<strong>执行顺序是相反的</strong>。</li>
+    <li><strong>递归与循环可以互改</strong>——任何递归都能用栈改写成循环。</li>
+    <li><strong>取舍</strong>——<strong>结构复杂、层次不深 → 递归；层次可能很深 → 循环</strong>。</li>
+    <li><strong>阶乘</strong>——<code class="inline">fact(n) = n × fact(n−1)</code>，
+      出口写 <code class="inline">n &lt;= 1</code>。</li>
+    <li><strong>斐波那契的递归很慢</strong>——时间 <code class="inline">O(2ⁿ)</code>（重复计算），
+      但<strong>空间仍是 <code class="inline">O(n)</code></strong>（栈深度只有 n 层）。</li>
+    <li><strong>汉诺塔</strong>——递归的招牌题，三句话写完；
+      <strong>移动次数 <code class="inline">2ⁿ − 1</code></strong>。</li>
+    <li><strong>用栈模拟递归的口诀</strong>——<strong>"想先访问谁，就后压谁"</strong>。</li>
+  </ul>
+</div>
+
+<div class="pager">
+  <a href="cpp-5-05.html"><div class="k">← 上一单元</div><div class="v">折半寻宝 · 二分查找与二分答案</div></a>
+  <a href="../index.html" target="_top" class="back"><div class="k">返回</div><div class="v">考纲之路 · 总目录</div></a>
+  <a href="cpp-5-07.html"><div class="k">下一单元 →</div><div class="v">分沙术 · 分治算法</div></a>
+</div>
+
+<div class="cta">
+  <h3>下一站：分沙术</h3>
+  <p>绿洲的工匠跪坐在沙地上分沙——<b>一大堆沙被分成两小堆，
+  两小堆又各自分成更小的堆，形成一片树状的分裂纹路。</b><br>
+  下一单元我们学<b>分治算法</b>：
+  <b>怎么"把问题劈成几块、各自解决、再合起来"——这是归并排序和快速排序背后的总纲。</b></p>
+  <a class="btn-go" href="https://codecombat.cn/" target="_blank" rel="noopener">加入扣哒世界，把这条考纲之路走一遍 →</a>
+</div>
+</div><!-- /container -->
+</div><!-- /page -->
+
+<script>
+const KEYWORDS = new Set([
+  "int", "long", "short", "unsigned", "signed", "float", "double", "char", "bool", "void",
+  "const", "if", "else", "for", "while", "do", "switch", "case", "default", "break",
+  "continue", "return", "goto", "struct", "class", "union", "enum", "using", "namespace",
+  "std", "main", "true", "false", "cin", "cout", "cerr", "endl", "string", "sizeof",
+  "include", "define", "new", "delete", "public", "private", "static", "inline", "nullptr"
+]);
+
+function esc(s){ return s.replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;'); }
+
+function highlight(src){
+  let out = '', i = 0;
+  const n = src.length;
+  while (i < n){
+    const c = src[i];
+    /* 预处理指令：#include / #define，整行只在行首生效 */
+    if (c === '#' && (i === 0 || src[i-1] === '\n')){
+      let j = i;
+      while (j < n && /[A-Za-z]/.test(src[j])) j++;
+      out += '<span class="kw">' + esc(src.slice(i, j)) + '</span>';
+      let k = src.indexOf('\n', j); if (k < 0) k = n;
+      if (j < k) out += '<span class="st">' + esc(src.slice(j, k)) + '</span>';
+      i = k; continue;
+    }
+    /* 行注释 // */
+    if (c === '/' && src[i+1] === '/'){
+      let j = src.indexOf('\n', i); if (j < 0) j = n;
+      out += '<span class="cm">' + esc(src.slice(i, j)) + '</span>';
+      i = j; continue;
+    }
+    /* 块注释 */
+    if (c === '/' && src[i+1] === '*'){
+      let j = src.indexOf('*/', i + 2); j = j < 0 ? n : j + 2;
+      out += '<span class="cm">' + esc(src.slice(i, j)) + '</span>';
+      i = j; continue;
+    }
+    /* 字符串与字符字面量 */
+    if (c === '"' || c === "'"){
+      let j = i + 1;
+      while (j < n && src[j] !== c){ if (src[j] === '\\') j++; j++; }
+      j = Math.min(j + 1, n);
+      out += '<span class="st">' + esc(src.slice(i, j)) + '</span>';
+      i = j; continue;
+    }
+    /* 数字 */
+    if (/[0-9]/.test(c)){
+      let j = i;
+      while (j < n && /[0-9.]/.test(src[j])) j++;
+      out += '<span class="nu">' + esc(src.slice(i, j)) + '</span>';
+      i = j; continue;
+    }
+    /* 标识符：关键字 / 函数名 / 普通名字 */
+    if (/[A-Za-z_]/.test(c)){
+      let j = i;
+      while (j < n && /[A-Za-z0-9_]/.test(src[j])) j++;
+      const w = src.slice(i, j);
+      if (KEYWORDS.has(w)) out += '<span class="kw">' + esc(w) + '</span>';
+      else if (src[j] === '(') out += '<span class="fn">' + esc(w) + '</span>';
+      else out += esc(w);
+      i = j; continue;
+    }
+    out += esc(c); i++;
+  }
+  return out;
+}
+
+document.querySelectorAll('.code-card pre code').forEach(block => {
+  block.innerHTML = highlight(block.textContent);
+});
+
+if (location.search.indexOf('expand') >= 0) {
+  document.querySelectorAll('details').forEach(d => d.open = true);
+}
+document.querySelectorAll('.sidebar-nav a').forEach(a => {
+  a.addEventListener('click', () => {
+    if (window.innerWidth <= 900) document.querySelector('.sidebar-nav').classList.remove('active');
+  });
+});
+</script>
+</body>
+</html>

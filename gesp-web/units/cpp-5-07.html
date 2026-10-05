@@ -1,0 +1,1331 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="copyright" content="CodeCombat Inc. codecombat.cn">
+<title>分沙术 · 分治算法 | 扣哒考级 · GESP C++ 五级</title>
+<style>
+  :root{
+    --primary:#2563eb; --primary-light:#4f8ff0; --primary-lighter:#eaf1fe; --primary-dark:#1b47a8;
+    --brand:#ff6b35; --brand-dark:#e8541f; --brand-soft:#fff3ec;
+    --night:#131c2b; --night-2:#1e2a3a; --gold:#f5b301;
+    --text:#242e3d; --dim:#68788f; --dim2:#93a2b6;
+    --bg:#ffffff; --bg-soft:#f7f9fd; --line:#e2e9f4; --sidebar:274px;
+    --code-bg:#131a26; --code-tx:#c8d3e0;
+    --code-kw:#c678dd; --code-st:#98c379; --code-nu:#d19a66; --code-cm:#5f7488; --code-fn:#e5c07b;
+  }
+  *{margin:0;padding:0;box-sizing:border-box}
+  html{scroll-behavior:smooth}
+  body{font-family:"PingFang SC","Microsoft YaHei","Segoe UI",-apple-system,sans-serif;line-height:1.9;color:var(--text);background:var(--bg);font-size:15.5px}
+  .sidebar-nav{position:fixed;top:0;left:0;width:var(--sidebar);height:100vh;overflow-y:auto;background:linear-gradient(180deg,#0c1626,#14243c);padding:14px 0 40px;z-index:100;border-right:3px solid var(--brand);transition:transform .3s ease}
+  .sidebar-nav::-webkit-scrollbar{width:5px}
+  .sidebar-nav::-webkit-scrollbar-thumb{background:var(--brand);border-radius:4px}
+  .sb-brand{display:flex;align-items:center;gap:10px;padding:10px 13px 12px;border-bottom:1px solid #233752;margin-bottom:8px}
+  .sidebar-nav a.sb-logo{display:flex;align-items:center;justify-content:center;flex-shrink:0;padding:0;border-left:none;transition:.2s}
+  .sb-logo:hover{transform:scale(1.08)}
+  .sb-logo img{height:34px;width:34px;display:block;object-fit:contain;border-radius:8px}
+  .sb-brand b{color:#f2f6fa;font-size:14px;letter-spacing:.5px;display:block;line-height:1.4}
+  .sb-brand span{color:#7f95ab;font-size:11.5px;display:block;line-height:1.4}
+  .nav-title{color:#ffb894;font-size:12px;font-weight:800;padding:10px 18px 6px;letter-spacing:1.2px}
+  .sidebar-nav a{display:block;color:#c3d0dc;text-decoration:none;padding:6px 18px;font-size:12.5px;line-height:1.55;border-left:3px solid transparent;transition:.18s}
+  .sidebar-nav a:hover{color:#fff;background:rgba(255,107,53,.16);border-left-color:var(--brand)}
+  .sidebar-nav a.nav-section{color:#ffb894;font-weight:700;font-size:13px;margin-top:11px;padding-top:10px;border-top:1px solid #233752}
+  .sidebar-nav a.nav-section:first-of-type{border-top:none;margin-top:0;padding-top:6px}
+  .sidebar-nav a.nav-sub{padding-left:30px;color:#93a8bc;font-size:12px}
+  .sidebar-nav a.nav-sub:hover{color:#fff}
+  .sb-back{margin:16px 14px 0;display:block;text-align:center;padding:9px;border-radius:9px;background:#1e304a;color:#a9c0d6 !important;font-size:12px;font-weight:700;border-left:none !important}
+  .sb-back:hover{background:var(--brand) !important;color:#fff !important}
+  .nav-toggle{display:none;position:fixed;top:14px;left:14px;z-index:120;background:var(--brand);color:#fff;border:none;border-radius:9px;padding:9px 13px;font-size:15px;cursor:pointer;box-shadow:0 4px 14px rgba(0,0,0,.25)}
+  .page{margin-left:var(--sidebar)}
+  .hero{position:relative;overflow:hidden;padding:44px 52px;color:#fff;background:linear-gradient(125deg,#0a1220 0%,#16294a 46%,#8a3a16 132%)}
+  .hero::after{content:"";position:absolute;right:-90px;top:-110px;width:400px;height:400px;border-radius:50%;background:radial-gradient(circle,rgba(245,179,1,.30),transparent 68%)}
+  .hero-top{display:flex;gap:36px;align-items:center;position:relative;z-index:2}
+  .hero-txt{flex:1;min-width:0}
+  .hero .crumb{font-size:11.5px;color:#ffb894;letter-spacing:1.5px;font-weight:700;margin-bottom:14px}
+  .hero h1{font-size:31px;font-weight:800;line-height:1.3;letter-spacing:.6px;margin-bottom:8px}
+  .hero h1 .sub{display:block;font-size:18px;font-weight:700;color:#ffd2b3;margin-top:6px;letter-spacing:.3px}
+  .hero .en{font-size:13px;color:#9db4c8;font-style:italic;margin-bottom:18px}
+  .hero .tags{display:flex;flex-wrap:wrap;gap:8px}
+  .tag{font-size:11.5px;padding:4px 12px;border-radius:20px;background:rgba(255,255,255,.12);border:1px solid rgba(255,255,255,.22);color:#e8f0f6;font-weight:600}
+  .tag.hot{background:rgba(255,107,53,.92);border-color:transparent;color:#fff}
+  .hero-card{flex-shrink:0;width:200px;text-align:center}
+  .hero-card .ava{width:148px;height:148px;border-radius:50%;object-fit:cover;object-position:top center;border:4px solid rgba(255,180,140,.6);box-shadow:0 14px 34px rgba(0,0,0,.45);background:#24344a}
+  .hero-card .nm{font-size:15px;font-weight:800;color:#fff;margin-top:10px}
+  .hero-card .ti{font-size:11.5px;color:#ffb894;margin-top:2px}
+  .container{max-width:1080px;margin:0 auto;padding:38px 52px 70px}
+  .lead{font-size:15.5px;line-height:2.05;color:#333f52;background:linear-gradient(120deg,#fff8f3,#f7fbf8);border-left:5px solid var(--brand);border-radius:0 14px 14px 0;padding:22px 26px;margin-bottom:32px}
+  .lead b{color:var(--brand-dark)}
+  .cast{display:flex;gap:16px;align-items:flex-start;border-radius:16px;padding:18px 22px;margin:24px 0}
+  .cast .ava{width:72px;height:72px;border-radius:50%;object-fit:cover;object-position:top center;flex-shrink:0;background:#e8eef5}
+  .cast .bubble{position:relative;font-size:14px;line-height:1.95;padding-top:2px;flex:1}
+  .cast .who{font-size:12px;font-weight:800;margin-bottom:5px;letter-spacing:.5px}
+  .cast.anya{background:var(--brand-soft);border:1px solid #ffdcc9}
+  .cast.anya .who{color:var(--brand-dark)}
+  .cast.anya .bubble{color:#5c4636}
+  .cast.duck{background:#fff5f5;border:1px solid #fbd5d5}
+  .cast.duck .who{color:#b91c1c}
+  .cast.duck .bubble{color:#5c4141}
+  .cast.teacher{background:linear-gradient(120deg,#f4f7fb,#ffffff);border:1px solid #dbe4f0}
+  .cast.teacher .who{color:#1e293b}
+  .cast.teacher .bubble{color:#3c4a5a}
+  .cast.hero{background:#f2f7fd;border:1px solid #cfe0f5}
+  .cast.hero .who{color:#1b47a8}
+  .cast.hero .bubble{color:#3a4658}
+  .goal-grid{display:grid;grid-template-columns:1fr 1fr;gap:16px;margin-bottom:36px}
+  .goal{border:1px solid var(--line);border-radius:15px;padding:19px 21px;background:#fff;box-shadow:0 4px 16px rgba(31,122,68,.05)}
+  .goal h4{font-size:14px;font-weight:800;margin-bottom:11px;display:flex;align-items:center;gap:8px;color:var(--primary-dark)}
+  .goal h4 .ic{width:22px;height:22px;border-radius:7px;background:var(--primary-lighter);display:flex;align-items:center;justify-content:center;font-size:12px}
+  .goal ul{list-style:none}
+  .goal li{font-size:13.5px;color:#48576b;line-height:1.9;padding-left:18px;position:relative}
+  .goal li::before{content:"▸";position:absolute;left:0;color:var(--primary);font-weight:800}
+  .goal.syllabus li::before{content:"✓"}
+  .section-header{margin:52px 0 24px;padding-bottom:12px;border-bottom:3px solid var(--brand);display:flex;align-items:baseline;gap:14px;flex-wrap:wrap}
+  .section-header h2{font-size:22px;font-weight:800;color:var(--night);letter-spacing:.4px}
+  .section-header .en-title{font-size:12px;color:var(--dim2);font-style:italic}
+  h3{font-size:17.5px;font-weight:800;margin:34px 0 14px;color:var(--night);display:flex;align-items:center;gap:10px}
+  h3::before{content:"";width:5px;height:17px;border-radius:3px;background:var(--brand);flex-shrink:0}
+  h4{font-size:15px;font-weight:800;margin:24px 0 10px;color:#2b4260}
+  p{margin:12px 0;color:#3a4658;line-height:2}
+  strong{color:var(--primary-dark)}
+  code.inline{background:var(--primary-lighter);color:var(--primary-dark);padding:2px 7px;border-radius:6px;font-family:"SFMono-Regular",Consolas,Menlo,monospace;font-size:.9em;font-weight:600}
+  .figure{margin:24px 0;text-align:center}
+  .figure svg.diagram{max-width:100%;height:auto;background:#fff;border:1px solid var(--line);border-radius:14px;padding:10px}
+  .figure .caption{font-size:12.5px;color:var(--dim2);margin-top:9px}
+  .pic{margin:26px 0;text-align:center}
+  .pic img{max-width:100%;border-radius:16px;box-shadow:0 10px 28px rgba(30,60,45,.15);display:block;margin:0 auto}
+  .pic figcaption{font-size:12.5px;color:var(--dim2);margin-top:9px}
+  .pic .ph{display:none}
+  .pic.missing img{display:none}
+  .pic.missing .ph{display:flex;flex-direction:column;align-items:center;justify-content:center;gap:9px;border:2px dashed #c9d9e8;border-radius:16px;background:linear-gradient(135deg,#f8fbfe,#eef6ff);padding:40px 26px;color:#7a8fa8}
+  .pic.missing .ph .fn{font-family:Consolas,monospace;font-size:12.5px;color:#2563eb;font-weight:700;word-break:break-all}
+  .pic.missing .ph .ds{font-size:12.5px;line-height:1.8;max-width:560px}
+  .box{border-radius:13px;padding:16px 20px;margin:20px 0;font-size:14px;line-height:1.95}
+  .box .lb{font-weight:800;margin-right:6px}
+  .info{background:#eef6ff;border-left:5px solid #3b82f6;color:#274768}
+  .info .lb{color:#1d4ed8}
+  .tip{background:#fff9ec;border-left:5px solid #f59e0b;color:#6b4e13}
+  .tip .lb{color:#b45309}
+  .remember{background:var(--primary-lighter);border-left:5px solid var(--primary);color:#1d3a6b}
+  .remember .lb{color:var(--primary-dark)}
+  .warn{background:#fef2f2;border-left:5px solid #ef4444;color:#7f2b2b}
+  .warn .lb{color:#b91c1c}
+  .code-card{margin:20px 0;border-radius:14px;overflow:hidden;box-shadow:0 10px 28px rgba(20,40,28,.20)}
+  .code-head{display:flex;align-items:center;gap:9px;background:#1a2434;padding:9px 14px}
+  .code-head .dot{width:10px;height:10px;border-radius:50%}
+  .code-head .d1{background:#ff5f57}.code-head .d2{background:#febc2e}.code-head .d3{background:#28c840}
+  .code-head .file{color:#8fa6c0;font-size:11.5px;font-family:Consolas,monospace;margin-left:6px}
+  .code-head .lang{margin-left:auto;font-size:10.5px;font-weight:800;color:#0d141f;background:#4f8ff0;padding:2px 9px;border-radius:6px;letter-spacing:.4px}
+  .code-card pre{background:var(--code-bg);padding:18px 20px;overflow-x:auto;margin:0;font-family:"SFMono-Regular",Consolas,"Courier New",monospace;font-size:13.5px;line-height:1.85}
+  .code-card pre::-webkit-scrollbar{height:8px}
+  .code-card pre::-webkit-scrollbar-thumb{background:#31445c;border-radius:4px}
+  .code-card code{color:var(--code-tx);white-space:pre}
+  .kw{color:var(--code-kw);font-weight:600}
+  .st{color:var(--code-st)}
+  .nu{color:var(--code-nu)}
+  .cm{color:var(--code-cm);font-style:italic}
+  .fn{color:var(--code-fn)}
+  .out{background:#0f1621;color:#7fb3f5;font-family:Consolas,monospace;font-size:13px;padding:12px 20px;border-top:1px solid #22304a}
+  .out b{color:#c9d6cd;font-weight:600;font-size:11.5px;letter-spacing:1px}
+  .out.err{color:#fca5a5}
+  table.styled{width:100%;border-collapse:collapse;margin:20px 0;font-size:13.5px;border-radius:12px;overflow:hidden;box-shadow:0 4px 16px rgba(31,122,68,.07)}
+  table.styled thead{background:var(--brand)}
+  table.styled th{color:#fff;padding:11px 14px;text-align:left;font-weight:700;font-size:13px}
+  table.styled td{padding:10px 14px;border-bottom:1px solid var(--line);color:#445266;vertical-align:top}
+  table.styled tbody tr:nth-child(even){background:var(--bg-soft)}
+  table.styled tbody tr:last-child td{border-bottom:none}
+  .level-card{border:1px solid var(--line);border-radius:16px;overflow:hidden;margin:22px 0;box-shadow:0 6px 22px rgba(31,122,68,.07)}
+  .level-card .lc-head{background:linear-gradient(100deg,#17283a,#8a3a16);color:#fff;padding:15px 22px;display:flex;align-items:center;gap:12px;flex-wrap:wrap}
+  .level-card .lc-head .n{font-size:12px;font-weight:800;background:rgba(255,255,255,.2);padding:3px 10px;border-radius:20px}
+  .level-card .lc-head h4{margin:0;color:#fff;font-size:16px}
+  .level-card .lc-head .go{margin-left:auto;font-size:11.5px;color:#ffd2b3}
+  .level-card .lc-body{padding:20px 24px;background:#fff}
+  .level-card .story{background:#f9fbfd;border-left:4px solid #93c5fd;border-radius:0 10px 10px 0;padding:13px 18px;margin:0 0 16px;font-size:14px;line-height:1.95;color:#3f5163}
+  .level-card .story b{color:#1d4ed8}
+  .btn-go{display:inline-flex;align-items:center;gap:8px;background:linear-gradient(135deg,var(--brand),var(--brand-dark));color:#fff;text-decoration:none;font-weight:800;font-size:13.5px;padding:10px 22px;border-radius:11px;box-shadow:0 8px 20px rgba(255,107,53,.32);transition:.2s}
+  .btn-go:hover{transform:translateY(-2px);box-shadow:0 12px 26px rgba(255,107,53,.42)}
+  .pit{border:1px solid #f6dede;border-radius:14px;overflow:hidden;margin:16px 0;background:#fff}
+  .pit .pt{display:flex;gap:12px;padding:14px 18px;background:#fffafa;align-items:flex-start}
+  .pit .x{width:26px;height:26px;border-radius:9px;background:#fee;color:#dc2626;display:flex;align-items:center;justify-content:center;font-weight:800;flex-shrink:0;font-size:13px}
+  .pit .t{font-size:13.5px;line-height:1.9;color:#5c4a4a;flex:1}
+  .pit .t b{color:#b91c1c}
+  .pit .duck{display:flex;gap:12px;padding:13px 18px;background:#fff5f5;border-top:1px dashed #f3d0d0;align-items:flex-start}
+  .pit .duck img{width:48px;height:48px;object-fit:contain;flex-shrink:0;margin-top:2px}
+  .pit .duck .dt{font-size:13.5px;line-height:1.9;color:#7a3b3b}
+  .pit .duck .dt b{color:#b91c1c}
+  .pit .fix{padding:12px 18px;background:#f2f7fd;border-top:1px dashed #cfe0f5;font-size:13.5px;color:#1d3a6b}
+  .pit .fix b{color:var(--primary-dark)}
+  .exam{border:1px solid #dfe7f5;border-radius:15px;margin:16px 0;overflow:hidden;background:#fff;box-shadow:0 4px 16px rgba(38,62,120,.06)}
+  .exam .eh{display:flex;align-items:center;gap:10px;padding:11px 18px;background:linear-gradient(100deg,#eef4ff,#f7faff);border-bottom:1px solid #e3ebf8;flex-wrap:wrap}
+  .exam .eh .src{font-size:11px;font-weight:800;color:#fff;background:#2563eb;padding:2.5px 10px;border-radius:20px}
+  .exam .eh .src.ori{background:#8b5cf6}
+  .exam .eh .tp{font-size:11.5px;color:#5b7ba8;font-weight:700}
+  .exam .eb{padding:16px 20px}
+  .exam .q{font-weight:700;font-size:14px;color:#1e2a3e;line-height:1.9;margin-bottom:10px}
+  .exam .opt{font-size:13.5px;color:#48576b;line-height:2.05;padding-left:6px}
+  .exam .opt i{font-style:normal;font-weight:800;color:var(--primary-dark);margin-right:7px}
+  .exam pre{margin:12px 0;background:#1b2a21;border-radius:10px;padding:14px 16px;overflow-x:auto;font-family:Consolas,monospace;font-size:13px;line-height:1.8;color:var(--code-tx)}
+  .exam details{margin-top:10px;border-top:1px dashed var(--line);padding-top:10px}
+  .exam summary{cursor:pointer;font-size:12.5px;font-weight:800;color:#2563eb;outline:none;user-select:none}
+  .exam details .ans{font-size:13.5px;color:#3a4658;line-height:1.95;margin-top:9px;background:var(--bg-soft);padding:13px 16px;border-radius:10px}
+  .exam details .ans b{color:var(--primary-dark)}
+  .exam details .ans .tagline{display:inline-block;font-size:11px;background:#e0f2fe;color:#0e7490;padding:1.5px 8px;border-radius:6px;font-weight:700;margin-right:6px}
+  .summary{margin:40px 0 20px;border-radius:18px;padding:26px 30px;background:linear-gradient(130deg,#fff8f3,#ffffff);border:1px solid #ffe0cf}
+  .summary h3{margin-top:0}
+  .summary ul{list-style:none;margin-top:10px}
+  .summary li{font-size:14px;line-height:2;color:#3d4d66;padding-left:24px;position:relative}
+  .summary li::before{content:"◆";position:absolute;left:0;color:var(--brand);font-size:11px;top:6px}
+  .pager{display:flex;gap:14px;margin-top:30px;flex-wrap:wrap}
+  .pager a{flex:1;min-width:200px;text-decoration:none;border:1px solid var(--line);border-radius:14px;padding:16px 20px;background:#fff;transition:.2s;display:block}
+  .pager a:hover{border-color:var(--brand);box-shadow:0 10px 26px rgba(255,107,53,.14);transform:translateY(-2px)}
+  .pager a .k{font-size:11px;color:var(--dim2);font-weight:700;letter-spacing:1px}
+  .pager a .v{font-size:14px;font-weight:800;color:var(--night);margin-top:5px}
+  .pager a.back{background:var(--brand-soft);border-color:transparent;text-align:center}
+  .pager a.back .v{color:var(--brand-dark)}
+  .cta{margin-top:26px;border-radius:20px;padding:30px 34px;color:#fff;position:relative;overflow:hidden;background:linear-gradient(120deg,#16202f,#2b3a52 46%,#a8431c 132%)}
+  .cta::after{content:"";position:absolute;right:-70px;bottom:-90px;width:280px;height:280px;border-radius:50%;background:radial-gradient(circle,rgba(255,140,80,.45),transparent 68%)}
+  .cta h3{color:#fff;margin:0 0 10px;position:relative;z-index:2}
+  .cta h3::before{background:var(--brand)}
+  .cta p{color:#d8e0ef;font-size:13.5px;margin:0 0 18px;position:relative;z-index:2;max-width:640px}
+  .cta .btn-go{position:relative;z-index:2}
+  @media(max-width:900px){
+    .sidebar-nav{transform:translateX(-100%)}
+    .sidebar-nav.active{transform:translateX(0)}
+    .nav-toggle{display:block}
+    .page{margin-left:0}
+    .hero{padding:70px 22px 34px}
+    .hero-top{flex-direction:column-reverse;text-align:center}
+    .hero-card{width:auto}
+    .container{padding:26px 20px 60px}
+    .goal-grid{grid-template-columns:1fr}
+  }
+</style>
+</head>
+<body>
+
+<button class="nav-toggle" onclick="document.querySelector('.sidebar-nav').classList.toggle('active')">&#9776;</button>
+
+<nav class="sidebar-nav">
+  <div class="sb-brand">
+    <a class="sb-logo" href="https://codecombat.cn/" target="_blank" rel="noopener" title="访问 CodeCombat 扣哒世界官网">
+      <img src="../assets/logo.png" alt="CodeCombat 扣哒世界">
+    </a>
+    <div><b>分沙术</b><span>星砂绿洲 · C++ 五级 第 7 单元</span></div>
+  </div>
+  <div class="nav-title">本单元目录</div>
+
+  <a href="#s0" class="nav-section">0　单元导语与目标</a>
+  <a href="#s0-1" class="nav-sub">0.1 学习目标</a>
+  <a href="#s0-2" class="nav-sub">0.2 考纲对照</a>
+  <a href="#s1" class="nav-section">1　分治的三步</a>
+  <a href="#s1-1" class="nav-sub">1.1 分、治、合</a>
+  <a href="#s1-2" class="nav-sub">1.2 分治与递归的关系</a>
+  <a href="#s2" class="nav-section">2　二分查找就是分治</a>
+  <a href="#s2-1" class="nav-sub">2.1 回头看二分</a>
+  <a href="#s2-2" class="nav-sub">2.2 为什么它算分治</a>
+  <a href="#s3" class="nav-section">3　归并排序</a>
+  <a href="#s3-1" class="nav-sub">3.1 劈成两半，各自排好</a>
+  <a href="#s3-2" class="nav-sub">3.2 像拉链一样合并</a>
+  <a href="#s4" class="nav-section">4　快速排序</a>
+  <a href="#s4-1" class="nav-sub">4.1 选一个基准，小的往左</a>
+  <a href="#s4-2" class="nav-sub">4.2 划分的代码</a>
+  <a href="#s5" class="nav-section">5　快速幂</a>
+  <a href="#s5-1" class="nav-sub">5.1 把指数砍一半</a>
+  <a href="#s5-2" class="nav-sub">5.2 代码与效率</a>
+  <a href="#s6" class="nav-section">6　代码实战</a>
+  <a href="#s7" class="nav-section">7　常见陷阱</a>
+  <a href="#s8" class="nav-section">8　题目练习</a>
+  <a href="#s9" class="nav-section">9　本单元小结</a>
+
+  <a href="../index.html" target="_top" class="sb-back">返回考纲之路</a>
+</nav>
+
+<div class="page">
+
+<div class="hero">
+  <div class="hero-top">
+    <div class="hero-txt">
+      <div class="crumb">扣哒考级 · GESP C++ 五级 · 第 7 单元　|　星砂绿洲 STARDUST OASIS</div>
+      <h1>分沙术
+        <span class="sub">分治算法</span>
+      </h1>
+      <div class="en">Divide &amp; Conquer</div>
+      <div class="tags">        <span class="tag hot">考纲 · 分治</span>
+        <span class="tag">分治三步</span>
+        <span class="tag">归并排序</span>
+        <span class="tag">快速排序</span>
+        <span class="tag">快速幂</span></div>
+    </div>
+    <div class="hero-card">
+      <img class="ava" src="../assets/avatars/senick.webp" alt="塞尼克" onerror="this.style.background='#24344a';this.src='../assets/heroes/senick.webp'">
+      <div class="nm">塞尼克</div>
+      <div class="ti">沙海向导 · 你的向导</div>
+    </div>
+  </div>
+</div>
+
+<div class="container">
+
+<div class="lead">
+  绿洲的工匠跪坐在沙地上，<b>面前是一大堆刚筛好的细沙。</b><br>
+  塞尼克看着他的动作：<strong>注意看——他不是一点一点挑，而是先把这一堆分成两半。</strong><br>
+  果然，工匠把沙分成两堆，两堆又各自分成更小的堆，
+  <b>沙面上渐渐浮现出一片树状的分裂纹路。</b><br>
+  分到够小了，再一堆堆处理；他指了指，<strong>最后又一层层拼回去——这就是分治。</strong>
+</div>
+
+<div class="cast senick">
+  <img class="ava" src="../assets/avatars/senick.webp" alt="塞尼克" onerror="this.style.display='none'">
+  <div class="bubble">
+    <div class="who">塞尼克 · 沙海向导</div>
+    上一课学递归的时候我说过：<strong>把大问题化成同样形状的小问题。</strong><br>
+    这一课就是那个想法最漂亮的用法——<strong>不光要拆，还要把结果合并回来。</strong><br>
+    <b>排序里最快的两种算法（归并、快排），背后都是这一招。</b>
+  </div>
+</div>
+
+<figure class="pic">
+  <img src="../assets/illustrations/py-L5-07-01_sand_sifting.webp" alt="分沙术"
+       onerror="this.closest('.pic').classList.add('missing')">
+  <div class="ph">
+    <div class="fn">assets/illustrations/py-L5-07-01_sand_sifting.webp</div>
+    <div class="ds">【配图位】俯视构图：一座巨大的沙丘被法师的法杖从中央划开，依次分成四座更小的沙丘，每座小沙丘又被各自处理；沙面上留着一片规整的树状分裂纹路，纹路越往外越细；旁边有几只按粗细排成一列的筛子，最细的一只下面接着发光的细沙；一名披沙色斗篷的向导站着看向这片分纹。</div>
+  </div>
+  <figcaption>图 1：星砂绿洲的分沙术——今天要从这里开始</figcaption>
+</figure>
+
+<!-- ============ 0 ============ -->
+<div class="section-header" id="s0">
+  <h2>0　单元导语与目标</h2>
+  <div class="en-title">Unit Overview</div>
+</div>
+
+<h3 id="s0-1">0.1 学习目标</h3>
+<div class="goal-grid">
+  <div class="goal">
+    <h4><span class="ic">1</span>学完这个单元，你将能……</h4>
+    <ul>
+      <li>说出分治的三步：分、治、合</li>
+      <li>说出分治和递归的关系</li>
+      <li>讲清归并排序的思路</li>
+      <li>讲清快速排序的划分过程</li>
+      <li>用分治理解快速幂</li>
+      <li>说出这三种算法的复杂度</li>
+    </ul>
+  </div>
+  <div class="goal syllabus">
+    <h4><span class="ic">2</span>对标 GESP 考纲（C++ 五级）</h4>
+    <ul>
+      <li>理解分治算法的思想与三步结构</li>
+      <li>掌握归并排序与快速排序的原理</li>
+      <li>理解合并与划分的关键代码</li>
+      <li>掌握快速幂的分治实现</li>
+      <li>考核目标：能补全合并/划分的关键语句、能判断复杂度</li>
+    </ul>
+  </div>
+</div>
+
+<h3 id="s0-2">0.2 考纲对照</h3>
+<table class="styled">
+  <thead><tr><th>本单元小节</th><th>对应考纲条目</th><th>真题常考形式</th></tr></thead>
+  <tbody>
+    <tr><td>1　分治的三步</td><td>分治的思想</td><td>分、治、合各自做什么</td></tr>
+    <tr><td>2　二分查找就是分治</td><td>分治的应用</td><td>为什么二分算分治</td></tr>
+    <tr><td>3　归并排序</td><td>归并排序的实现</td><td>合并时取哪边（稳定性）（必考）</td></tr>
+    <tr><td>4　快速排序</td><td>快速排序的划分</td><td>划分条件怎么写；最坏复杂度</td></tr>
+    <tr><td>5　快速幂</td><td>分治的典型应用</td><td>体现了什么算法思想</td></tr>
+  </tbody>
+</table>
+
+<!-- ============ 1 ============ -->
+<div class="section-header" id="s1">
+  <h2>1　分治的三步</h2>
+  <div class="en-title">Three Steps</div>
+</div>
+
+<h3 id="s1-1">1.1 分、治、合</h3>
+
+<div class="box remember">
+  <span class="lb">分治三步，一步都不能少：</span>
+  <b>① 分（Divide）</b>——把一个大问题<strong>拆成几个规模更小的同类子问题</strong>；<br>
+  <b>② 治（Conquer）</b>——<strong>分别解决</strong>每个子问题
+  （如果还太大，就<strong>继续拆</strong>；小到能直接算，就直接算）；<br>
+  <b>③ 合（Combine）</b>——<strong>把子问题的答案合并</strong>成原问题的答案。<br>
+  <strong>一句话：拆开、各自搞定、拼回来。</strong>
+</div>
+
+<div class="code-card">
+  <div class="code-head">
+    <span class="dot d1"></span><span class="dot d2"></span><span class="dot d3"></span>
+    <span class="file">分治的通用骨架——它天生就是递归的形状</span>
+    <span class="lang">C++</span>
+  </div>
+  <pre><code>返回类型 solve(问题) {
+    if (问题已经足够小) {
+        return 直接算出答案;          // ① 出口（小到不用再拆）
+    }
+
+    把问题拆成 子问题1, 子问题2, …;   // ② 分（Divide）
+
+    答案1 = solve(子问题1);           // ③ 治（Conquer）
+    答案2 = solve(子问题2);
+
+    return 合并(答案1, 答案2);        // ④ 合（Combine）
+}</code></pre>
+  <div class="out"><b>注意</b>　
+  <b>分治的代码"长得就是递归"</b>——<strong>因为它天然要"自己处理更小的问题"</strong></div>
+</div>
+
+<h3 id="s1-2">1.2 分治与递归的关系</h3>
+
+<div class="box tip">
+  <span class="lb">分治是"想法"，递归是"写法"。</span>
+  <b>它们不是一回事，但几乎总是一起出现。</b><br>
+  <b>分治是一种<strong>解题策略</strong>：</b>
+  "我打算把问题拆成小块，分别解决再合并"——这是<strong>思路</strong>。<br>
+  <b>递归是一种<strong>编程手段</strong>：</b>
+  "让函数调用自己"——这是<strong>写法</strong>。<br>
+  <strong>因为"拆出来的子问题和原问题形状一样"，所以实现分治最自然的方式就是递归。</strong><br>
+  <b>但反过来不成立：</b>
+  <strong>递归不一定是分治</strong>——比如上一课的阶乘，
+  它只是"从 n 问到 n−1"，<strong>只拆出一个子问题，也没有"合并"这一步。</strong>
+</div>
+
+<div class="box warn">
+  <span class="lb">判断"是不是分治"，看有没有"合"这一步。</span>
+  <b>阶乘递归：</b><code class="inline">n × fact(n-1)</code> ——
+  <strong>只拆一份，而且"合并"只是乘一下自己，不算真的合。</strong><br>
+  <b>归并排序：</b>拆两半分别排好，<strong>再"合并两个有序数组"——这一步才是分治的灵魂。</strong><br>
+  <strong>所以严格说：分治 = 拆成多个子问题 + 有实质的合并步骤。</strong>
+</div>
+
+<!-- ============ 2 ============ -->
+<div class="section-header" id="s2">
+  <h2>2　二分查找就是分治</h2>
+  <div class="en-title">Binary Search Revisited</div>
+</div>
+
+<h3 id="s2-1">2.1 回头看二分</h3>
+
+<div class="box remember">
+  <span class="lb">上一课的二分，其实也是分治。</span>
+  <b>① 分</b>——看一眼中间，<strong>把范围砍掉一半</strong>；<br>
+  <b>② 治</b>——<strong>只在剩下的那一半里继续找</strong>；<br>
+  <b>③ 合</b>——<strong>不需要合并</strong>（因为答案只可能在一边）。<br>
+  <strong>所以二分是一种"特殊的、退化的分治"——每次只留一个子问题。</strong>
+</div>
+
+<h3 id="s2-2">2.2 为什么它算分治</h3>
+
+<div class="box tip">
+  <span class="lb">分治有两种常见的"拆法"。</span>
+  <b>拆成多个子问题</b>（归并排序、快速排序、快速幂）——
+  <strong>子问题都要解决，最后得"合"起来。</strong><br>
+  <b>只留一个子问题</b>（二分查找）——
+  <strong>因为一眼就能判断"答案在哪半边"，另一边直接扔掉，不用合。</strong><br>
+  <strong>两种都是分治思想：把大范围化成小范围，只是"砍法"不同。</strong><br>
+  <b>而且它们的复杂度都靠同一个式子算出来：</b>
+  <strong>每层要做的工作 × 层数。</strong>
+</div>
+
+<div class="code-card">
+  <div class="code-head">
+    <span class="dot d1"></span><span class="dot d2"></span><span class="dot d3"></span>
+    <span class="file">复杂度是怎么算出来的（递推式）</span>
+    <span class="lang">TEXT</span>
+  </div>
+  <pre><code>【归并排序】每次拆成两个"一半大小"的子问题，
+            合并两个有序数组要扫一遍 O(n)
+   T(n) = 2 × T(n/2) + O(n)  →  O(n log n)
+
+【快速排序】平均情况下也拆成两半左右，
+            划分一遍要扫一遍 O(n)
+   T(n) = 2 × T(n/2) + O(n)  →  O(n log n)
+
+【二分查找】只留一个子问题，每层只做 O(1) 的比对
+   T(n) = T(n/2) + O(1)      →  O(log n)
+
+记忆方法：层数是 log n，每层的工作量是 O(n) 或 O(1)。</code></pre>
+  <div class="out"><b>关键</b>　
+  <b>"拆成两半"这个动作本身就带来 log n 层</b>——
+  <strong>而每一层都要把 n 个元素过一遍，所以合起来是 n log n</strong></div>
+</div>
+
+<!-- ============ 3 ============ -->
+<div class="section-header" id="s3">
+  <h2>3　归并排序</h2>
+  <div class="en-title">Merge Sort</div>
+</div>
+
+<h3 id="s3-1">3.1 劈成两半，各自排好</h3>
+
+<div class="code-card">
+  <div class="code-head">
+    <span class="dot d1"></span><span class="dot d2"></span><span class="dot d3"></span>
+    <span class="file">归并排序的两步</span>
+    <span class="lang">C++</span>
+  </div>
+  <pre><code>void mergeSort(int a[], int l, int r) {
+    if (l &gt;= r) return;             // ① 出口：只剩一个元素，天然有序
+
+    int mid = l + (r - l) / 2;      // ② 分：从中间劈开
+    mergeSort(a, l, mid);           // ③ 治：左半边自己排好
+    mergeSort(a, mid + 1, r);       //    治：右半边自己排好
+
+    merge(a, l, mid, r);            // ④ 合：把两个有序段并成一个
+}</code></pre>
+  <div class="out"><b>先"劈到只剩一个"，再"一层层并回来"</b>　
+  因为<strong>一个元素天然就是有序的</strong>——<b>这就是它的出口</b></div>
+</div>
+
+<div class="code-card">
+  <div class="code-head">
+    <span class="dot d1"></span><span class="dot d2"></span><span class="dot d3"></span>
+    <span class="file">用 5 个数走一遍</span>
+    <span class="lang">TEXT</span>
+  </div>
+  <pre><code>原始：        5   9   3   7   2
+
+【分】劈到不能再劈：
+       [5 9 3 7 2]
+      [5 9 3] [7 2]
+     [5 9][3] [7][2]
+    [5][9]           ← 到这里每个只剩 1 个，天然有序
+
+【合】一层层并回来（每次都把两个有序段并成一个有序段）：
+    [5][9]  →  [5 9]
+    [5 9][3] → [3 5 9]
+    [7][2]  →  [2 7]
+    [3 5 9][2 7] → [2 3 5 7 9]  ✔ 排好了
+
+一共 log₂5 ≈ 3 层，每层都要把所有元素过一遍。</code></pre>
+  <div class="out"><b>总工作量</b>　
+  <b>层数 log n × 每层 n 次比较 = <code>O(n log n)</code></b>——<br>
+  <b>比上一级学的冒泡（<code>O(n²)</code>）快得多</b></div>
+</div>
+
+<h3 id="s3-2">3.2 像拉链一样合并</h3>
+
+<div class="code-card">
+  <div class="code-head">
+    <span class="dot d1"></span><span class="dot d2"></span><span class="dot d3"></span>
+    <span class="file">合并两个有序段：两把"尺子"一起走</span>
+    <span class="lang">C++</span>
+  </div>
+  <pre><code>// 把 a[l..mid] 和 a[mid+1..r] 两个有序段合并
+vector&lt;int&gt; temp;
+int i = l, j = mid + 1;
+
+while (i &lt;= mid &amp;&amp; j &lt;= r) {
+    if (__________________) {       // ★ 横线处：a[i] &lt;= a[j]
+        temp.push_back(a[i++]);     //   取左边的
+    } else {
+        temp.push_back(a[j++]);     //   取右边的
+    }
+}
+// 把剩下没走完的那一段直接接上
+while (i &lt;= mid) temp.push_back(a[i++]);
+while (j &lt;= r)   temp.push_back(a[j++]);
+
+// 最后把 temp 写回 a[l..r]</code></pre>
+  <div class="out"><b>横线上填 <code>a[i] &lt;= a[j]</code></b>　
+  <b>带等号——这是"稳定性"的关键</b></div>
+</div>
+
+<div class="box remember">
+  <span class="lb">为什么必须写 <code>a[i] &lt;= a[j]</code>（带等号）？</span>
+  <b>因为我们要让归并排序<strong>稳定</strong>。</b><br>
+  <b>"稳定"的意思是：</b><strong>值相等的元素，排序后相对顺序不变。</strong><br>
+  <b>合并时如果遇到两个相等的值：</b><br>
+  <b>写 <code class="inline">&lt;=</code></b> → 取左边的 →
+  <strong>左边本来就在前面，顺序保住了 ✔（稳定）</strong><br>
+  <b>写 <code class="inline">&lt;</code></b> → 不取左边，转而取右边 →
+  <strong>右边的那一个被放到了前面，顺序颠倒了 ✘（不稳定）</strong><br>
+  <strong>记法："想让排序稳定，遇到相等就取左边的。"</strong>
+</div>
+
+<figure class="figure">
+  <svg class="diagram" viewBox="0 0 830 250" role="img" aria-label="归并排序">
+    <text x="24" y="30" font-size="14" font-weight="bold" fill="#1f2937">归并排序：每次拆两半，再像拉链一样并起来</text>
+
+    <g font-family="Consolas,monospace" font-size="12.5">
+      <rect x="60" y="52" width="140" height="34" rx="7" fill="#eaf1fe" stroke="#2563eb" stroke-width="1.8"/>
+      <text x="130" y="74" text-anchor="middle" fill="#1d4ed8">[5 9]</text>
+      <rect x="220" y="52" width="90" height="34" rx="7" fill="#eaf1fe" stroke="#2563eb" stroke-width="1.8"/>
+      <text x="265" y="74" text-anchor="middle" fill="#1d4ed8">[3]</text>
+      <rect x="330" y="52" width="90" height="34" rx="7" fill="#eaf1fe" stroke="#2563eb" stroke-width="1.8"/>
+      <text x="375" y="74" text-anchor="middle" fill="#1d4ed8">[7]</text>
+      <rect x="440" y="52" width="90" height="34" rx="7" fill="#eaf1fe" stroke="#2563eb" stroke-width="1.8"/>
+      <text x="485" y="74" text-anchor="middle" fill="#1d4ed8">[2]</text>
+
+      <rect x="220" y="104" width="140" height="34" rx="7" fill="#e9f8ef" stroke="#2e9e5b" stroke-width="1.8"/>
+      <text x="290" y="126" text-anchor="middle" fill="#1f7a44">[3 5 9]</text>
+      <rect x="380" y="104" width="140" height="34" rx="7" fill="#e9f8ef" stroke="#2e9e5b" stroke-width="1.8"/>
+      <text x="450" y="126" text-anchor="middle" fill="#1f7a44">[2 7]</text>
+
+      <rect x="220" y="162" width="300" height="38" rx="7" fill="#e9f8ef" stroke="#2e9e5b" stroke-width="2.6"/>
+      <text x="370" y="187" text-anchor="middle" fill="#1f7a44" font-weight="bold">[2 3 5 7 9]  ✔ 排好</text>
+    </g>
+
+    <line x1="280" y1="90" x2="280" y2="100" stroke="#94a3b8" stroke-width="1.8"/>
+    <line x1="440" y1="90" x2="440" y2="100" stroke="#94a3b8" stroke-width="1.8"/>
+    <line x1="290" y1="142" x2="330" y2="158" stroke="#94a3b8" stroke-width="1.8"/>
+    <line x1="450" y1="142" x2="420" y2="158" stroke="#94a3b8" stroke-width="1.8"/>
+
+    <rect x="580" y="52" width="204" height="148" rx="12" fill="#f7f9fd" stroke="#cbd5e1" stroke-width="1.6"/>
+    <text x="604" y="78" font-size="12.5" fill="#334155" font-weight="bold">两个关键动作</text>
+    <text x="604" y="106" font-size="11.5" fill="#475569">分：从中间劈开，一直劈到只剩 1 个</text>
+    <text x="604" y="134" font-size="11.5" fill="#475569">合：两个有序段，用两把尺子一起走</text>
+    <text x="604" y="162" font-size="11.5" fill="#b45309">★ 相等时取左边 → 稳定</text>
+    <text x="604" y="186" font-size="11.5" fill="#b45309">★ 复杂度 O(n log n)</text>
+  </svg>
+  <div class="caption">图 2（SVG）：归并排序——劈到底，再并回来</div>
+</figure>
+
+<figure class="pic">
+  <img src="../assets/illustrations/py-L5-07-02_merge_sort.webp" alt="两半各自排好再合并"
+       onerror="this.closest('.pic').classList.add('missing')">
+  <div class="ph">
+    <div class="fn">assets/illustrations/py-L5-07-02_merge_sort.webp</div>
+    <div class="ds">【配图位】一堆编号沙漠石先被一把发光的刀从中央劈成两半，各自被整成一列（左右两列都按从小到大排好、石上的编号依次增大）；随后左右两列像拉链齿一样交错咬合、合并成一条整齐的长队列；一名披沙色斗篷的向导站在合并处，双手分别指向左右两列的队首。</div>
+  </div>
+  <figcaption>图 3：劈成两半各自排好，再像拉链一样合并</figcaption>
+</figure>
+
+<!-- ============ 4 ============ -->
+<div class="section-header" id="s4">
+  <h2>4　快速排序</h2>
+  <div class="en-title">Quick Sort</div>
+</div>
+
+<h3 id="s4-1">4.1 选一个基准，小的往左</h3>
+
+<div class="code-card">
+  <div class="code-head">
+    <span class="dot d1"></span><span class="dot d2"></span><span class="dot d3"></span>
+    <span class="file">快排的思路：先分开，再各自排</span>
+    <span class="lang">TEXT</span>
+  </div>
+  <pre><code>核心动作叫"划分"（partition）：
+
+  ① 从当前区间里挑一个数当"基准"（pivot）
+  ② 把小于等于基准的挪到左边，大于的挪到右边
+  ③ 划分完成后，基准就待在它最终该在的位置上了
+     ——它左边全都 ≤ 它，右边全都 > 它
+
+举例：对 [5 9 3 7 2] 做划分，取最后那个 2 当基准：
+
+  比 2 大的都往右，比 2 小的往左：
+      [2]  +  [5 9 3 7]
+        ↑
+     2 已经就位了
+
+  再对左边 [ ] 和右边 [5 9 3 7] 分别做同样的事……
+  一路划分下去，自然就排好了。
+
+注意：快排的分和归并的分不一样 ——
+  归并是"先劈开、排好、再合"；
+  快排是"随便分完就各自解决"，而且不需要合并步骤。</code></pre>
+  <div class="out"><b>两个关键差别</b>　
+  ① 归并的"分"是<strong>对半分</strong>，快排的"分"是<strong>按基准的大小分</strong>；<br>
+  ② 归并需要<strong>合并</strong>，快排<strong>不需要</strong>——划完就位了</div>
+</div>
+
+<h3 id="s4-2">4.2 划分的代码</h3>
+
+<div class="code-card">
+  <div class="code-head">
+    <span class="dot d1"></span><span class="dot d2"></span><span class="dot d3"></span>
+    <span class="file">以 a[right] 为枢轴，不大于枢轴的移到左侧</span>
+    <span class="lang">C++</span>
+  </div>
+  <pre><code>int partition(int a[], int left, int right) {
+    int pivot = a[right];           // ★ 取最后一个元素当基准
+    int i = left - 1;               // i 指向"已确认不大于 pivot"的最后一个位置
+
+    for (int j = left; j &lt; right; j++) {
+        if (__________________) {    // ★ 横线处：a[j] &lt;= pivot
+            i++;
+            swap(a[i], a[j]);        // 把小的换到左边去
+        }
+    }
+    swap(a[i + 1], a[right]);        // 把 pivot 放到分界点上
+    return i + 1;                    // 返回 pivot 最终所在的位置
+}</code></pre>
+  <div class="out"><b>横线上填 <code>a[j] &lt;= pivot</code></b>　
+  <b>题目要求"把不大于枢轴的元素移到左侧"——所以条件是"≤"，不是"&lt;"</b></div>
+</div>
+
+<div class="box warn">
+  <span class="lb">快排最怕"基准选得不好"。</span>
+  <b>如果每次都能把区间分成差不多大的两半</b>，那层数是 log n，
+  <strong>总复杂度 <code class="inline">O(n log n)</code>。</strong><br>
+  <b>但如果基准总是挑到最大或最小的那个</b>——<strong>划分后会变成"一边 0 个、一边 n−1 个"，
+  一点没分下去，层数就变成了 n 层。</strong><br>
+  <strong>这时候总复杂度退化到 <code class="inline">O(n²)</code>——和最慢的冒泡一样慢。</strong><br>
+  <b>什么时候会这样？</b>
+  <strong>最典型的例子就是：数组本来已经升序排好，而你的基准每次都取第一个元素。</strong><br>
+  <b>因为第一个元素正好是最小的，划分后右边剩下 n−1 个，一层只减少一个元素。</b>
+</div>
+
+<figure class="figure">
+  <svg class="diagram" viewBox="0 0 830 240" role="img" aria-label="快排的划分">
+    <text x="24" y="30" font-size="14" font-weight="bold" fill="#1f2937">快排的划分：小的往左、大的往右，基准一步到位</text>
+
+    <g font-family="Consolas,monospace" font-size="13">
+      <rect x="60" y="58" width="62" height="42" rx="7" fill="#eaf1fe" stroke="#2563eb" stroke-width="1.8"/>
+      <text x="91" y="85" text-anchor="middle" fill="#1d4ed8">5</text>
+      <rect x="128" y="58" width="62" height="42" rx="7" fill="#eaf1fe" stroke="#2563eb" stroke-width="1.8"/>
+      <text x="159" y="85" text-anchor="middle" fill="#1d4ed8">9</text>
+      <rect x="196" y="58" width="62" height="42" rx="7" fill="#eaf1fe" stroke="#2563eb" stroke-width="1.8"/>
+      <text x="227" y="85" text-anchor="middle" fill="#1d4ed8">3</text>
+      <rect x="264" y="58" width="62" height="42" rx="7" fill="#eaf1fe" stroke="#2563eb" stroke-width="1.8"/>
+      <text x="295" y="85" text-anchor="middle" fill="#1d4ed8">7</text>
+      <rect x="332" y="58" width="62" height="42" rx="7" fill="#fff9ec" stroke="#f59e0b" stroke-width="2.6"/>
+      <text x="363" y="85" text-anchor="middle" fill="#b45309" font-weight="bold">2</text>
+    </g>
+    <text x="406" y="85" font-size="12" fill="#b45309">← 选它当基准</text>
+
+    <g font-family="Consolas,monospace" font-size="13">
+      <rect x="60" y="128" width="62" height="42" rx="7" fill="#e9f8ef" stroke="#2e9e5b" stroke-width="2.6"/>
+      <text x="91" y="155" text-anchor="middle" fill="#1f7a44" font-weight="bold">2</text>
+      <rect x="128" y="128" width="62" height="42" rx="7" fill="#f1f5f9" stroke="#94a3b8" stroke-width="1.8"/>
+      <text x="159" y="155" text-anchor="middle" fill="#64748b">5</text>
+      <rect x="196" y="128" width="62" height="42" rx="7" fill="#f1f5f9" stroke="#94a3b8" stroke-width="1.8"/>
+      <text x="227" y="155" text-anchor="middle" fill="#64748b">9</text>
+      <rect x="264" y="128" width="62" height="42" rx="7" fill="#f1f5f9" stroke="#94a3b8" stroke-width="1.8"/>
+      <text x="295" y="155" text-anchor="middle" fill="#64748b">3</text>
+      <rect x="332" y="128" width="62" height="42" rx="7" fill="#f1f5f9" stroke="#94a3b8" stroke-width="1.8"/>
+      <text x="363" y="155" text-anchor="middle" fill="#64748b">7</text>
+    </g>
+    <text x="406" y="155" font-size="12" fill="#1f7a44">← 2 已就位，左边都比它小、右边都比它大</text>
+
+    <rect x="60" y="186" width="724" height="44" rx="10" fill="#f7f9fd" stroke="#cbd5e1" stroke-width="1.6"/>
+    <text x="84" y="213" font-size="12" fill="#334155">接下来只需对右边这 4 个数重复同样的动作——<tspan font-weight="bold">快排不需要"合并"这一步，划分完自然就位</tspan></text>
+  </svg>
+  <div class="caption">图 4（SVG）：快速排序的划分</div>
+</figure>
+
+<figure class="pic">
+  <img src="../assets/illustrations/py-L5-07-03_quick_partition.webp" alt="小的往左，大的往右"
+       onerror="this.closest('.pic').classList.add('missing')">
+  <div class="ph">
+    <div class="fn">assets/illustrations/py-L5-07-03_quick_partition.webp</div>
+    <div class="ds">【配图位】沙地上一排刻着数字的石块，正中一块被单独高高立起、周身发光（表示基准）；它左边的石块编号都比较小、整体发着冷色光，右边的石块编号都比较大、发着暖色光；一名披沙色斗篷的向导弯腰用一根短杖把石块左右拨动，沙面上留着一道从中间分开的分界线。</div>
+  </div>
+  <figcaption>图 5：划分——基准一步到位，小的往左、大的往右</figcaption>
+</figure>
+
+<!-- ============ 5 ============ -->
+<div class="section-header" id="s5">
+  <h2>5　快速幂</h2>
+  <div class="en-title">Fast Power</div>
+</div>
+
+<h3 id="s5-1">5.1 把指数砍一半</h3>
+
+<div class="code-card">
+  <div class="code-head">
+    <span class="dot d1"></span><span class="dot d2"></span><span class="dot d3"></span>
+    <span class="file">算 a^n，怎么才能快</span>
+    <span class="lang">TEXT</span>
+  </div>
+  <pre><code>【笨办法】一个一个乘
+   a × a × a × … × a       一共乘 n − 1 次
+   n = 10^9 时——根本算不完
+
+【聪明办法】把指数砍一半
+   观察：a^8 = (a^4)^2 = ((a^2)^2)^2
+
+   算 a^8 只需要：
+     a^2 = a × a             乘 1 次
+     a^4 = a^2 × a^2         乘 1 次
+     a^8 = a^4 × a^4         乘 1 次
+   → 一共 3 次！而笨办法要 7 次。
+
+   指数是偶数：a^n = (a^(n/2))²
+   指数是奇数：a^n = a × a^(n−1)
+
+   每处理一次，指数就减半 —— 又见"砍一半"。
+   n = 10^9 时，大约只要 30 次乘法。</code></pre>
+  <div class="out"><b>复杂度</b>　
+  <b><code>O(log n)</code></b>——<strong>因为指数每次减半，层数是 log n</strong></div>
+</div>
+
+<h3 id="s5-2">5.2 代码与效率</h3>
+
+<div class="code-card">
+  <div class="code-head">
+    <span class="dot d1"></span><span class="dot d2"></span><span class="dot d3"></span>
+    <span class="file">快速幂（顺便取模，防止溢出）</span>
+    <span class="lang">C++</span>
+  </div>
+  <pre><code>// 求 a^n % mod
+long long fastPow(long long a, long long n, long long mod) {
+    long long ans = 1;
+    a %= mod;
+
+    while (n &gt; 0) {
+        if (n % 2 == 1) {              // 指数是奇数 → 多乘一个 a
+            ans = ans * a % mod;
+        }
+        a = a * a % mod;               // 底数平方
+        n /= 2;                        // ★ 指数减半
+    }
+    return ans;
+}</code></pre>
+  <div class="out"><b>两个关键点</b>　
+  ① <b><code>n /= 2</code> 每次把指数砍一半</b>——这是分治；<br>
+  ② <b>每一步都取模</b>——<strong>不然数会大到溢出</strong></div>
+</div>
+
+<div class="box remember">
+  <span class="lb">快速幂体现的是什么算法思想？</span>
+  <b>分治。</b><br>
+  <b>因为它把"算 a^8"这件事拆成了"算 a^4、再平方"——
+  子问题是"同样形状、规模减半"的问题，最后再合并（平方）。</b><br>
+  <strong>这正是分治的标准形状：拆成规模更小的同类问题 → 分别解决 → 合并。</strong><br>
+  <b>虽然代码是写成循环的（没有用递归），但思维是分治的——
+  这也说明"分治是想法、递归只是写法"。</b>
+</div>
+
+<div class="box tip">
+  <span class="lb">注意：循环写的快速幂，也是分治。</span>
+  这段代码没有用到递归，<strong>但"把指数减半"这个动作本身就是分治的核心。</strong><br>
+  <b>所以判断"是不是分治"，看的是"有没有把问题拆成更小的同类问题"，
+  而不是"有没有用递归"。</b><br>
+  <strong>这一点在考试里常被考到："快速幂体现的编程思想是什么？"——答：分治。</strong>
+</div>
+
+<!-- ============ 6 ============ -->
+<div class="section-header" id="s6">
+  <h2>6　代码实战</h2>
+  <div class="en-title">Level Practice</div>
+</div>
+
+<div class="level-card">
+  <div class="lc-head"><span class="n">关卡</span><h4>Kelvintaph 柱子</h4><span class="go">进入关卡 →</span></div>
+  <div class="lc-body">
+    <div class="story">
+      <b>故事：</b>零度以下的高山上，僧侣们用一场古老的活动取暖：
+    <b>把一摞大小不同的圆盘，从一根柱子整体搬到另一根柱子。</b><br>
+    规矩只有两条：<b>一次只能搬一个；大盘永远不许压在小盘上。</b><br>
+    贺舒曼把镜子一转：<b>别盯着盘子看，盯着"这一摞怎么化成小一号的一摞"。</b>
+    </div>
+    <p><strong>思路：</strong>想把 n 个盘子搬过去，只要想清楚三件事：<br>
+    <b>① 先把上面 n−1 个搬到中转柱</b>（一个同样形状的小问题）；<br>
+    <b>② 再把最大的那个直接搬过去</b>（一步就能做完）；<br>
+    <b>③ 最后把那 n−1 个从中转柱搬回目标柱。</b><br>
+    <b>把大问题切成两个小一号的同样问题——这就是分治。</b></p>
+    <figure class="pic">
+      <img src="../assets/stages/py-L5-07-stage1_kelvintaph_pillars.webp" alt="Kelvintaph 柱子 关卡截图"
+           onerror="this.closest('.pic').classList.add('missing')">
+      <div class="ph">
+        <div class="fn">assets/stages/py-L5-07-stage1_kelvintaph_pillars.webp</div>
+        <div class="ds">【关卡截图位】请把《Kelvintaph 柱子》的游戏画面截图放到此处（放入 assets/stages/ 目录，文件名为 py-L5-07-stage1_kelvintaph_pillars.webp）。</div>
+      </div>
+      <figcaption>关卡实况：Kelvintaph 柱子</figcaption>
+    </figure>
+    <div class="code-card">
+      <div class="code-head">
+        <span class="dot d1"></span><span class="dot d2"></span><span class="dot d3"></span>
+        <span class="file">重点示例：同一个动作，套小一号的自己</span>
+        <span class="lang">C++</span>
+      </div>
+      <pre><code>void moveTower(int n, int fromPeg, int toPeg, int viaPeg) {
+    if (n == 0) return;                            // 出口：没有盘子可搬
+
+    moveTower(n - 1, fromPeg, viaPeg, toPeg);      // ① 上面 n-1 个 → 中转柱
+    hero.dropItem(toPeg);                          // ② 最大的那个 → 目标柱
+    moveTower(n - 1, viaPeg, toPeg, fromPeg);      // ③ n-1 个 → 目标柱
+}</code></pre>
+      <div class="out"><b>要点</b>　<b>出口 <code>n == 0</code> 不能少</b>；函数里调用了一个"小一号的自己"，这就是分治的骨架</div>
+    </div>
+    <div class="box info">
+      <span class="lb">和本单元的关系：</span>
+      分治的三步是固定套路：<strong>拆成同样形状的小问题 → 分别解决 → 把结果合起来。</strong><br>
+    <b>归并排序拆成"左右两半"，快排拆成"左右两段"，汉诺塔拆成"上下两摞"——形状不同，骨架一模一样。</b>
+    </div>
+    <a class="btn-go" href="https://codecombat.cn/" target="_blank" rel="noopener">去扣哒世界闯这一关 →</a>
+  </div>
+</div>
+
+
+
+<!-- ============ 7 ============ -->
+<div class="section-header" id="s7">
+  <div class="en-title">Common Pitfalls</div>
+  <h2>7　常见陷阱</h2>
+</div>
+
+<div class="cast duck">
+  <img class="ava" src="../assets/ducks/duck_naria.webp" alt="扣哒鸭" onerror="this.style.display='none'">
+  <div class="bubble">
+    <div class="who">扣哒鸭 · 调试官</div>
+    分治的坑有两个特点：<strong>要么忘了递归出口，要么把"合"这一步写错</strong>。四条。
+  </div>
+</div>
+
+<div class="pit">
+  <div class="pt">
+    <div class="x">1</div>
+    <div class="t"><b>分治的递归忘了写出口。</b></div>
+  </div>
+  <div class="duck">
+    <img src="../assets/ducks/duck_zana.webp" alt="扣哒鸭" onerror="this.style.display='none'">
+    <div class="dt"><b>扣哒鸭：</b>归并排序的第一行必须是 <code>if (l &gt;= r) return;</code> ——
+    <strong>它保证"拆到只剩一个元素就停"。</strong><br>
+    <b>少了它，区间永远拆不完，递归会一直往下一路走到栈溢出。</b></div>
+  </div>
+  <div class="fix"><b>正确做法：</b>分治代码第一行先写出口</div>
+</div>
+
+<div class="pit">
+  <div class="pt">
+    <div class="x">2</div>
+    <div class="t"><b>归并合并时忘了写"处理剩下的那一段"。</b></div>
+  </div>
+  <div class="duck">
+    <img src="../assets/ducks/duck_hattori.webp" alt="扣哒鸭" onerror="this.style.display='none'">
+    <div class="dt"><b>扣哒鸭：</b><code>while (i &lt;= mid &amp;&amp; j &lt;= r)</code> 会在<b>某一边先走完时停下</b>。<br>
+    <strong>可另一边还有剩下的元素没搬过去呢！</strong>
+    <b>必须补两个 <code>while</code> 把它们接上——漏了就会丢数据。</b></div>
+  </div>
+  <div class="fix"><b>正确做法：</b>循环后补两个 <code class="inline">while</code></div>
+</div>
+
+<div class="pit">
+  <div class="pt">
+    <div class="x">3</div>
+    <div class="t"><b>写 <code class="inline">&lt;</code> 而不是 <code class="inline">&lt;=</code>，把稳定排序变成了不稳定。</b></div>
+  </div>
+  <div class="duck">
+    <img src="../assets/ducks/duck_senick.webp" alt="扣哒鸭" onerror="this.style.display='none'">
+    <div class="dt"><b>扣哒鸭：</b>合并时遇到相等的两个值，
+    <strong>写 <code>&lt;=</code> 才会取左边那个</strong>——
+    <b>这样相等的元素保持了原来的先后顺序，才是稳定的。</b><br>
+    写成 <code>&lt;</code> 就会取右边的，<strong>顺序被颠倒，稳定性就没了。</strong></div>
+  </div>
+  <div class="fix"><b>记牢：</b>想稳定，相等时取左边 → <code class="inline">a[i] &lt;= a[j]</code></div>
+</div>
+
+<div class="pit">
+  <div class="pt">
+    <div class="x">4</div>
+    <div class="t"><b>以为快排"最坏情况也是 O(n log n)"。</b></div>
+  </div>
+  <div class="duck">
+    <img src="../assets/ducks/duck_illia.webp" alt="扣哒鸭" onerror="this.style.display='none'">
+    <div class="dt"><b>扣哒鸭：</b><code>O(n log n)</code> 说的是<b>平均情况</b>。<br>
+    <strong>如果基准每次都挑到最大或最小——比如数组已经升序、而基准取第一个元素——
+    划分后只剩一边、还只少了一个数，层数变成 n 层，复杂度就退化到 O(n²) 了。</strong></div>
+  </div>
+  <div class="fix"><b>记牢：</b>快排平均 <code class="inline">O(n log n)</code>，最坏 <code class="inline">O(n²)</code></div>
+</div>
+
+<!-- ============ 8 ============ -->
+<div class="section-header" id="s8">
+  <h2>8　题目练习</h2>
+  <div class="en-title">Practice</div>
+</div>
+
+<p>前 5 题改编自 C++ 五级真题，其余为原创练习题。</p>
+
+<div class="exam">
+  <div class="eh"><span class="src">改编自 2026 年 9 月 · C++ 五级 · 第 11 题</span><span class="tp">单选题</span></div>
+  <div class="eb">
+    <div class="q">下面是归并排序中合并两个有序区间（升序排序）的部分代码。
+    若希望排序保持<strong>稳定</strong>，横线处应填写（　　）。</div>
+    <pre>while (i &lt;= mid &amp;&amp; j &lt;= right) {
+    if (__________________) {
+        temp.push_back(a[i++]);
+    } else {
+        temp.push_back(a[j++]);
+    }
+}</pre>
+    <div class="opt">
+      <i>A.</i><code class="inline">a[i] &lt; a[j]</code>　　<i>B.</i><code class="inline">a[i] &gt; a[j]</code><br>
+      <i>C.</i><code class="inline">a[i] &gt;= a[j]</code>　　<i>D.</i><code class="inline">a[i] &lt;= a[j]</code>
+    </div>
+    <details><summary>查看答案与详解</summary>
+      <div class="ans"><b>答案：D</b>。<strong>"稳定"的含义是：值相等的元素，排序后相对顺序不变。</strong><br>
+      <b>在合并这一步，"保持顺序"就等价于：</b>
+      <strong>遇到两边相等的时候，取左边那一个。</strong><br>
+      因为左半边的元素<strong>原本就排在前面</strong>——
+      先取它，顺序就保住了。<br>
+      <b>所以要写 <code class="inline">a[i] &lt;= a[j]</code>（带等号）</b> ✔<br>
+      <b>A 项（<code class="inline">&lt;</code>）为什么不选？</b>
+      当 <code class="inline">a[i] == a[j]</code> 时它不成立，
+      <strong>于是会走 else 分支、去取右边的 <code class="inline">a[j]</code>——
+      右边的元素被放到了前面，顺序就反了，排序不稳定。</strong><br>
+      <b>B、C 项</b>把方向搞反了：先取大的元素，
+      <strong>那根本就不是升序了。</strong><br>
+      <b>一句话记牢：想让排序稳定，遇到相等就取左边。</b><br>
+      <span class="tagline">对应小节</span>3.2 像拉链一样合并。</div>
+    </details>
+  </div>
+</div>
+
+<div class="exam">
+  <div class="eh"><span class="src">改编自 2026 年 9 月 · C++ 五级 · 第 12 题</span><span class="tp">单选题</span></div>
+  <div class="eb">
+    <div class="q">下面快速排序的划分函数以 <code class="inline">a[right]</code> 为枢轴，
+    并把<strong>不大于枢轴</strong>的元素移动到左侧。横线处应填写（　　）。</div>
+    <pre>int partition(int a[], int left, int right) {
+    int pivot = a[right];
+    int i = left - 1;
+    for (int j = left; j &lt; right; j++) {
+        if (__________________) {
+            i++;
+            swap(a[i], a[j]);
+        }
+    }
+    swap(a[i + 1], a[right]);
+    return i + 1;
+}</pre>
+    <div class="opt">
+      <i>A.</i><code class="inline">a[j] &lt;= pivot</code>　　<i>B.</i><code class="inline">a[j] &gt; pivot</code><br>
+      <i>C.</i><code class="inline">a[i] &lt;= pivot</code>　　<i>D.</i><code class="inline">a[right] &lt; a[j]</code>
+    </div>
+    <details><summary>查看答案与详解</summary>
+      <div class="ans"><b>答案：A</b>。<strong>答案就藏在题干里——"把不大于枢轴的元素移动到左侧"。</strong><br>
+      <b>"不大于"翻译成代码就是 <code class="inline">&lt;=</code>。</b>
+      所以判断条件必须写 <code class="inline">a[j] &lt;= pivot</code> ✔<br>
+      <b>这段代码在做什么？</b><br>
+      <code class="inline">i</code> 始终指向"已确认不大于 pivot"的最后一个位置；<br>
+      每遇到一个 <code class="inline">a[j] &lt;= pivot</code>，就<strong>把 i 往前挪一格，
+      再把它换到左区去</strong>。<br>
+      循环结束后，<strong><code class="inline">a[left..i]</code> 全都不大于 pivot</strong>；
+      最后 <code class="inline">swap(a[i+1], a[right])</code> 把<strong>枢轴放到分界点上</strong>——
+      <b>此时它左边全 ≤ 它、右边全 &gt; 它，位置彻底固定。</b><br>
+      <b>B 项方向反了</b>（那会把大的搬到左边）；
+      <b>C 项用的是 <code class="inline">a[i]</code></b>，
+      可 <code class="inline">i</code> 指向的是"已经处理好的最后一个位置"，
+      <strong>拿它来当判断依据毫无意义</strong>；
+      <b>D 项</b>是在拿枢轴和目标元素比大小，<strong>和"要不要交换"没关系。</strong><br>
+      <span class="tagline">对应小节</span>4.2 划分的代码。</div>
+    </details>
+  </div>
+</div>
+
+<div class="exam">
+  <div class="eh"><span class="src">改编自 2026 年 9 月 · C++ 五级 · 判断题 第 7 题</span><span class="tp">判断题</span></div>
+  <div class="eb">
+    <div class="q">快速排序中如果选取区间第一个元素作为枢轴。
+    当输入数组已经<strong>升序排列</strong>时，其最坏时间复杂度<strong>仍为</strong>
+    <code class="inline">O(n log n)</code>。（　　）</div>
+    <details><summary>查看答案与详解</summary>
+      <div class="ans"><b>答案：错误（×）</b>。<strong>这恰恰是快排最坏输入的一个经典例子，
+      此时会退化到 <code class="inline">O(n²)</code>。</strong><br>
+      <b>为什么？</b>假设数组是 <code class="inline">1, 2, 3, …, n</code>，而枢轴取第一个元素：<br>
+      <b>第一个枢轴是 1——它是整个区间里最小的那个。</b><br>
+      划分之后，<strong>左边一个元素都没有，右边剩下 n−1 个</strong>——
+      <b>等于只把问题缩小了 1！</b><br>
+      <b>下一层同样：枢轴又是剩下的最小值，右边剩 n−2 个……</b><br>
+      <strong>于是层数变成了 n 层，每层还要扫一遍 O(n) —— 总复杂度 O(n²)。</strong><br>
+      <b>这正是快排最怕的情形：划分极不均匀。</b>
+      <strong>理想的划分是每次都能分成差不多一半，那样才有 log n 层、达到 O(n log n)。</strong><br>
+      <b>怎么避免？</b>常见做法是<strong>随机选择枢轴</strong>，或者<strong>取首、中、尾三个数的中位数</strong>当枢轴，
+      <strong>这样遇到"已排好序"的输入也不会退化。</strong><br>
+      <b>顺便对比归并排序：</b>
+      <strong>它是对半劈的，无论输入长什么样，层数永远是 log n——所以最坏也是 O(n log n)。</strong><br>
+      <span class="tagline">对应小节</span>4.1 选一个基准，小的往左。</div>
+    </details>
+  </div>
+</div>
+
+<div class="exam">
+  <div class="eh"><span class="src">改编自 2026 年 9 月 · C++ 五级 · 判断题 第 8 题</span><span class="tp">判断题</span></div>
+  <div class="eb">
+    <div class="q">归并排序的递推式为 <code class="inline">T(n) = 2T(n/2) + O(n)</code>，
+    对应的时间复杂度为 <code class="inline">O(n log n)</code>。（　　）</div>
+    <details><summary>查看答案与详解</summary>
+      <div class="ans"><b>答案：正确（√）</b>。这个递推式<strong>把归并排序的每一步都说清楚了</strong>：<br>
+      <b><code class="inline">2T(n/2)</code></b> —— 把问题拆成<strong>两个"一半大小"</strong>的子问题，分别递归处理；<br>
+      <b><code class="inline">+ O(n)</code></b> —— <strong>合并两个有序段要扫一遍，代价是 O(n)。</strong><br>
+      <b>怎么解出 O(n log n)？</b>把它"展开"看：<br>
+      <b>第 1 层：</b>1 个问题，合并工作量 n；<br>
+      <b>第 2 层：</b>2 个问题，每个 n/2，合并工作量合计还是 n；<br>
+      <b>第 3 层：</b>4 个问题，每个 n/4，合计还是 n；<br>
+      <b>……一直到每个问题只剩 1 个元素。</b><br>
+      <strong>因为每拆一次规模减半，一共能拆 log n 层；
+      而每层的合并工作量都是 n。</strong><br>
+      <b>所以总复杂度 = 层数 × 每层工作量 = <code class="inline">log n × n = O(n log n)</code></b> ✔<br>
+      <b>这个"每层都是 O(n)、一共 log n 层"的算法，</b>
+      <strong>是理解和记忆归并/快排复杂度的通用办法——比背公式可靠得多。</strong><br>
+      <span class="tagline">对应小节</span>2.2 为什么它算分治。</div>
+    </details>
+  </div>
+</div>
+
+<div class="exam">
+  <div class="eh"><span class="src">改编自 2026 年 6 月 · C++ 五级 · 第 7 题</span><span class="tp">单选题</span></div>
+  <div class="eb">
+    <div class="q">下面代码实现了计算 <code class="inline">a^n</code> 的快速幂算法，
+    该算法体现的编程思想是（　　）。</div>
+    <pre>long long fastPow(long long a, long long n) {
+    long long ans = 1;
+    while (n &gt; 0) {
+        if (n % 2 == 1) ans *= a;
+        a *= a;
+        n /= 2;
+    }
+    return ans;
+}</pre>
+    <div class="opt"><i>A.</i>贪心　　<i>B.</i>动态规划　　<i>C.</i>分治　　<i>D.</i>枚举</div>
+    <details><summary>查看答案与详解</summary>
+      <div class="ans"><b>答案：C</b>。快速幂体现的是<strong>分治</strong>思想。<br>
+      <b>核心动作是 <code class="inline">n /= 2</code>——把指数"砍掉一半"。</b><br>
+      <b>以 a⁸ 为例：</b><br>
+      <b>笨办法</b>要连乘 7 次；<br>
+      <b>快速幂</b>只做三次平方：<code class="inline">a² → a⁴ → a⁸</code>。<br>
+      <strong>这就是把"算 a⁸"拆成了"先算 a⁴、再平方"——
+      子问题是同样形状、规模减半的问题，算完再合并（平方）。</strong>
+      <b>完全符合分治"分、治、合"的形状。</b><br>
+      <b>复杂度从 O(n) 降到 O(log n)</b>——
+      <b>n = 10⁹ 时，从十亿次乘法变成大约 30 次。</b><br>
+      <b>顺便辨析其他三个选项：</b><br>
+      <b>A 贪心</b>——每一步选当前最优且不回头，快速幂没有"选择"这个动作；<br>
+      <b>B 动态规划</b>——需要"状态 + 转移方程"，而且通常要处理重叠子问题，快速幂没有；<br>
+      <b>D 枚举</b>——把所有可能逐个试，那正是"笨办法"要做的事。<br>
+      <b>还有一点值得注意：</b><strong>这段代码是用循环写的，但思想是分治的——
+      "分治是想法、递归只是写法"再一次得到印证。</strong><br>
+      <span class="tagline">对应小节</span>5.2 代码与效率。</div>
+    </details>
+  </div>
+</div>
+
+<div class="exam">
+  <div class="eh"><span class="src ori">原创练习题</span><span class="tp">判断题</span></div>
+  <div class="eb">
+    <div class="q">归并排序在<strong>任何</strong>输入下的时间复杂度都是
+    <code class="inline">O(n log n)</code>。（　　）</div>
+    <details><summary>查看答案与详解</summary>
+      <div class="ans"><b>答案：正确（√）</b>。这是归并排序相对快速排序的<strong>最大优势</strong>。<br>
+      <b>为什么它能这么稳？</b>因为归并排序的"分"是<strong>永远对半劈</strong>——
+      从中间切开，跟数据本身长什么样完全无关。<br>
+      <strong>所以层数永远是 log n 层，每层的合并工作量永远是 n。</strong>
+      <b>不管输入是随机的、已经排好的、还是完全倒序的，结果都是 <code class="inline">O(n log n)</code>。</b><br>
+      <b>对比快速排序：</b>
+      <strong>它的"分"是按基准的大小分的，划分是否均匀取决于运气和数据的分布</strong>——
+      平均是 <code class="inline">O(n log n)</code>，<b>最坏退化成 <code class="inline">O(n²)</code>。</b><br>
+      <b>所以两者的取舍是：</b><br>
+      <b>归并</b>——<strong>复杂度稳定、且排序稳定</strong>；代价是<strong>需要额外的 O(n) 临时空间</strong>。<br>
+      <b>快排</b>——<strong>原地排序、常数小、实际跑得常常更快</strong>；代价是<strong>最坏会退化，且不稳定</strong>。<br>
+      <b>这类"哪种更好"的问题没有标准答案，关键是说清各自的取舍。</b><br>
+      <span class="tagline">对应小节</span>3.1 劈成两半，各自排好。</div>
+    </details>
+  </div>
+</div>
+
+<div class="exam">
+  <div class="eh"><span class="src ori">原创练习题</span><span class="tp">编程题</span></div>
+  <div class="eb">
+    <div class="q">题目要求：读入 <code class="inline">n</code> 个整数，
+    用<strong>归并排序</strong>把它们从小到大排好并输出。<br>
+    <b>样例：</b>输入 <code class="inline">5</code> / <code class="inline">5 9 3 7 2</code>，
+    输出 <code class="inline">2 3 5 7 9</code>。</div>
+    <details><summary>查看参考答案与要点</summary>
+      <div class="ans">
+<pre style="margin:0;background:#131a26;color:#c8d3e0;border-radius:10px;padding:14px 16px">#include &lt;iostream&gt;
+using namespace std;
+
+int a[100005], tmp[100005];
+
+void mergeArr(int l, int mid, int r) {
+    int i = l, j = mid + 1, k = l;
+
+    while (i &lt;= mid &amp;&amp; j &lt;= r) {
+        if (a[i] &lt;= a[j]) tmp[k++] = a[i++];    // 相等取左边 → 稳定
+        else              tmp[k++] = a[j++];
+    }
+    while (i &lt;= mid) tmp[k++] = a[i++];         // ★ 收尾：左边剩的
+    while (j &lt;= r)   tmp[k++] = a[j++];         // ★ 收尾：右边剩的
+
+    for (int t = l; t &lt;= r; t++) a[t] = tmp[t]; // 写回
+}
+
+void mergeSort(int l, int r) {
+    if (l &gt;= r) return;                         // ★ 出口
+    int mid = l + (r - l) / 2;
+    mergeSort(l, mid);
+    mergeSort(mid + 1, r);
+    mergeArr(l, mid, r);
+}
+
+int main() {
+    int n;
+    cin &gt;&gt; n;
+    for (int i = 0; i &lt; n; i++) cin &gt;&gt; a[i];
+
+    mergeSort(0, n - 1);
+
+    for (int i = 0; i &lt; n; i++) cout &lt;&lt; a[i] &lt;&lt; " ";
+    cout &lt;&lt; endl;
+    return 0;
+}</pre>
+      <p style="margin-top:12px"><b>输入 <code>5 / 5 9 3 7 2</code> 输出：</b><code>2 3 5 7 9</code><br>
+      <b>要点：</b><br>
+      ① <strong>归并排序的三步在这段代码里一步不少：</strong>
+      分（<code class="inline">mid</code> 从中间切）、治（两次递归）、合（<code class="inline">mergeArr</code>）；<br>
+      ② <strong>出口 <code class="inline">if (l &gt;= r) return;</code> 必须写在最前面</strong>——
+      它保证"拆到只剩一个元素就停"；<br>
+      ③ <strong>合并里的两个收尾 <code class="inline">while</code> 千万不能漏</strong>：
+      主循环会在某一边走完时停下，<strong>另一边还剩的元素必须补上去，否则会丢数据。</strong>；<br>
+      ④ 条件写 <code class="inline">a[i] &lt;= a[j]</code>（<b>带等号</b>），
+      这样排序才是<strong>稳定的</strong>；<br>
+      ⑤ 需要一个<strong>临时数组 <code class="inline">tmp</code></strong> 存放合并结果，
+      <strong>合并完再整体写回 <code class="inline">a[l..r]</code>。</strong>；<br>
+      ⑥ 复杂度 <code class="inline">O(n log n)</code>，
+      <strong>而且不管输入什么样都是这个量级</strong>——这正是它比快排稳的地方。<br>
+      <span class="tagline">对应小节</span>3.1 劈成两半，各自排好；6 代码实战。</p>
+      </div>
+    </details>
+  </div>
+</div>
+
+<!-- ============ 9 ============ -->
+<div class="section-header" id="s9">
+  <h2>9　本单元小结</h2>
+  <div class="en-title">Unit Summary</div>
+</div>
+
+<div class="cast senick">
+  <img class="ava" src="../assets/avatars/senick.webp" alt="塞尼克" onerror="this.style.display='none'">
+  <div class="bubble">
+    <div class="who">塞尼克 · 沙海向导</div>
+    四句话记住分治：<br>
+    <strong>一、三步缺一不可：分（拆开）、治（各自解决）、合（拼回来）。</strong><br>
+    <strong>二、分治是想法，递归是写法——但判断"是不是分治"要看有没有"合"这一步。</strong><br>
+    <strong>三、归并排序：对半劈，合并时"相等取左边"才稳定；任何输入都是 O(n log n)。</strong><br>
+    <strong>四、快速排序：按基准分，划分完基准就位、不用合并；最坏会退化到 O(n²)。</strong><br>
+    沙分完了。最后一站是最省水的路线——<b>那里要在每个岔路口，都选眼前最划算的那条。</b>
+  </div>
+</div>
+
+<div class="summary">
+  <h3>你在分沙堆旁收获了什么</h3>
+  <ul>
+    <li><strong>分治三步</strong>——<strong>分、治、合</strong>，一步都不能少。</li>
+    <li><strong>分治的代码形状</strong>——<strong>先写出口，再拆、再递归、最后合并</strong>。</li>
+    <li><strong>分治 vs 递归</strong>——分治是<strong>想法</strong>，递归是<strong>写法</strong>；
+      <strong>有"合"这一步才算分治</strong>。</li>
+    <li><strong>二分查找也是分治</strong>——只是"只留一个子问题"，所以不需要合。</li>
+    <li><strong>复杂度的算法</strong>——<strong>层数 × 每层工作量</strong>；
+      拆两半 → log n 层，每层 O(n) → <code class="inline">O(n log n)</code>。</li>
+    <li><strong>归并排序</strong>——对半劈到只剩一个，再一层层合并。</li>
+    <li><strong>合并的两个要点</strong>——<strong>相等时取左边（稳定）</strong>；
+      <strong>主循环后要补两个 <code class="inline">while</code> 收尾</strong>。</li>
+    <li><strong>归并的复杂度</strong>——<code class="inline">O(n log n)</code>，
+      <strong>任何输入都一样稳</strong>，代价是需要 O(n) 临时空间。</li>
+    <li><strong>快速排序</strong>——选枢轴 → 划分（小的往左）→ 枢轴一步到位 → 递归两边。</li>
+    <li><strong>划分的条件</strong>——题目说"把不大于枢轴的移到左边"，就写 <code class="inline">a[j] &lt;= pivot</code>。</li>
+    <li><strong>快排的复杂度</strong>——平均 <code class="inline">O(n log n)</code>，
+      <strong>最坏 <code class="inline">O(n²)</code></strong>（比如已升序而枢轴取第一个元素）。</li>
+    <li><strong>归并 vs 快排</strong>——归并<strong>稳定、复杂度稳，但要额外空间</strong>；
+      快排<strong>原地、常数小，但最坏会退化且不稳定</strong>。</li>
+    <li><strong>快速幂</strong>——<code class="inline">n /= 2</code> 把指数减半，
+      <strong>复杂度从 O(n) 降到 O(log n)</strong>；<strong>体现的是分治思想</strong>。</li>
+  </ul>
+</div>
+
+<div class="pager">
+  <a href="cpp-5-06.html"><div class="k">← 上一单元</div><div class="v">回音螺旋 · 递归算法</div></a>
+  <a href="../index.html" target="_top" class="back"><div class="k">返回</div><div class="v">考纲之路 · 总目录</div></a>
+  <a href="cpp-5-08.html"><div class="k">下一单元 →</div><div class="v">最省水的路线 · 贪心算法与复杂度估算</div></a>
+</div>
+
+<div class="cta">
+  <h3>下一站：最省水的路线</h3>
+  <p>运水队停在几处绿洲的岔路口。<b>队首的向导举起水囊，
+  比量着通往各处的路——然后选了最近的那一处水源。</b><br>
+  下一单元我们学<b>贪心算法与复杂度估算</b>：
+  <b>怎么"每一步都选眼前最划算的"，什么时候这个办法真的能通向最优解，
+  以及怎么一眼看出一段代码要跑多久。</b></p>
+  <a class="btn-go" href="https://codecombat.cn/" target="_blank" rel="noopener">加入扣哒世界，把这条考纲之路走一遍 →</a>
+</div>
+</div><!-- /container -->
+</div><!-- /page -->
+
+<script>
+const KEYWORDS = new Set([
+  "int", "long", "short", "unsigned", "signed", "float", "double", "char", "bool", "void",
+  "const", "if", "else", "for", "while", "do", "switch", "case", "default", "break",
+  "continue", "return", "goto", "struct", "class", "union", "enum", "using", "namespace",
+  "std", "main", "true", "false", "cin", "cout", "cerr", "endl", "string", "sizeof",
+  "include", "define", "new", "delete", "public", "private", "static", "inline", "nullptr"
+]);
+
+function esc(s){ return s.replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;'); }
+
+function highlight(src){
+  let out = '', i = 0;
+  const n = src.length;
+  while (i < n){
+    const c = src[i];
+    /* 预处理指令：#include / #define，整行只在行首生效 */
+    if (c === '#' && (i === 0 || src[i-1] === '\n')){
+      let j = i;
+      while (j < n && /[A-Za-z]/.test(src[j])) j++;
+      out += '<span class="kw">' + esc(src.slice(i, j)) + '</span>';
+      let k = src.indexOf('\n', j); if (k < 0) k = n;
+      if (j < k) out += '<span class="st">' + esc(src.slice(j, k)) + '</span>';
+      i = k; continue;
+    }
+    /* 行注释 // */
+    if (c === '/' && src[i+1] === '/'){
+      let j = src.indexOf('\n', i); if (j < 0) j = n;
+      out += '<span class="cm">' + esc(src.slice(i, j)) + '</span>';
+      i = j; continue;
+    }
+    /* 块注释 */
+    if (c === '/' && src[i+1] === '*'){
+      let j = src.indexOf('*/', i + 2); j = j < 0 ? n : j + 2;
+      out += '<span class="cm">' + esc(src.slice(i, j)) + '</span>';
+      i = j; continue;
+    }
+    /* 字符串与字符字面量 */
+    if (c === '"' || c === "'"){
+      let j = i + 1;
+      while (j < n && src[j] !== c){ if (src[j] === '\\') j++; j++; }
+      j = Math.min(j + 1, n);
+      out += '<span class="st">' + esc(src.slice(i, j)) + '</span>';
+      i = j; continue;
+    }
+    /* 数字 */
+    if (/[0-9]/.test(c)){
+      let j = i;
+      while (j < n && /[0-9.]/.test(src[j])) j++;
+      out += '<span class="nu">' + esc(src.slice(i, j)) + '</span>';
+      i = j; continue;
+    }
+    /* 标识符：关键字 / 函数名 / 普通名字 */
+    if (/[A-Za-z_]/.test(c)){
+      let j = i;
+      while (j < n && /[A-Za-z0-9_]/.test(src[j])) j++;
+      const w = src.slice(i, j);
+      if (KEYWORDS.has(w)) out += '<span class="kw">' + esc(w) + '</span>';
+      else if (src[j] === '(') out += '<span class="fn">' + esc(w) + '</span>';
+      else out += esc(w);
+      i = j; continue;
+    }
+    out += esc(c); i++;
+  }
+  return out;
+}
+
+document.querySelectorAll('.code-card pre code').forEach(block => {
+  block.innerHTML = highlight(block.textContent);
+});
+
+if (location.search.indexOf('expand') >= 0) {
+  document.querySelectorAll('details').forEach(d => d.open = true);
+}
+document.querySelectorAll('.sidebar-nav a').forEach(a => {
+  a.addEventListener('click', () => {
+    if (window.innerWidth <= 900) document.querySelector('.sidebar-nav').classList.remove('active');
+  });
+});
+</script>
+</body>
+</html>
