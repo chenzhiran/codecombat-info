@@ -1,0 +1,1205 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="copyright" content="CodeCombat Inc. codecombat.cn">
+<title>会记事的木箱 · 变量、常量与数据类型 | 扣哒考级 · GESP C++ 一级</title>
+<style>
+  :root{
+    --primary:#2563eb; --primary-light:#4f8ff0; --primary-lighter:#eaf1fe; --primary-dark:#1b47a8;
+    --brand:#ff6b35; --brand-dark:#e8541f; --brand-soft:#fff3ec;
+    --night:#131c2b; --night-2:#1e2a3a; --gold:#f5b301;
+    --text:#242e3d; --dim:#68788f; --dim2:#93a2b6;
+    --bg:#ffffff; --bg-soft:#f7f9fd; --line:#e2e9f4; --sidebar:274px;
+    --code-bg:#131a26; --code-tx:#c8d3e0;
+    --code-kw:#c678dd; --code-st:#98c379; --code-nu:#d19a66; --code-cm:#5f7488; --code-fn:#e5c07b;
+  }
+  *{margin:0;padding:0;box-sizing:border-box}
+  html{scroll-behavior:smooth}
+  body{font-family:"PingFang SC","Microsoft YaHei","Segoe UI",-apple-system,sans-serif;line-height:1.9;color:var(--text);background:var(--bg);font-size:15.5px}
+  .sidebar-nav{position:fixed;top:0;left:0;width:var(--sidebar);height:100vh;overflow-y:auto;background:linear-gradient(180deg,#0c1626,#14243c);padding:14px 0 40px;z-index:100;border-right:3px solid var(--brand);transition:transform .3s ease}
+  .sidebar-nav::-webkit-scrollbar{width:5px}
+  .sidebar-nav::-webkit-scrollbar-thumb{background:var(--brand);border-radius:4px}
+  .sb-brand{display:flex;align-items:center;gap:10px;padding:10px 13px 12px;border-bottom:1px solid #233752;margin-bottom:8px}
+  .sidebar-nav a.sb-logo{display:flex;align-items:center;justify-content:center;flex-shrink:0;padding:0;border-left:none;transition:.2s}
+  .sb-logo:hover{transform:scale(1.08)}
+  .sb-logo img{height:34px;width:34px;display:block;object-fit:contain;border-radius:8px}
+  .sb-brand b{color:#f2f6fa;font-size:14px;letter-spacing:.5px;display:block;line-height:1.4}
+  .sb-brand span{color:#7f95ab;font-size:11.5px;display:block;line-height:1.4}
+  .nav-title{color:#ffb894;font-size:12px;font-weight:800;padding:10px 18px 6px;letter-spacing:1.2px}
+  .sidebar-nav a{display:block;color:#c3d0dc;text-decoration:none;padding:6px 18px;font-size:12.5px;line-height:1.55;border-left:3px solid transparent;transition:.18s}
+  .sidebar-nav a:hover{color:#fff;background:rgba(255,107,53,.16);border-left-color:var(--brand)}
+  .sidebar-nav a.nav-section{color:#ffb894;font-weight:700;font-size:13px;margin-top:11px;padding-top:10px;border-top:1px solid #233752}
+  .sidebar-nav a.nav-section:first-of-type{border-top:none;margin-top:0;padding-top:6px}
+  .sidebar-nav a.nav-sub{padding-left:30px;color:#93a8bc;font-size:12px}
+  .sidebar-nav a.nav-sub:hover{color:#fff}
+  .sb-back{margin:16px 14px 0;display:block;text-align:center;padding:9px;border-radius:9px;background:#1e304a;color:#a9c0d6 !important;font-size:12px;font-weight:700;border-left:none !important}
+  .sb-back:hover{background:var(--brand) !important;color:#fff !important}
+  .nav-toggle{display:none;position:fixed;top:14px;left:14px;z-index:120;background:var(--brand);color:#fff;border:none;border-radius:9px;padding:9px 13px;font-size:15px;cursor:pointer;box-shadow:0 4px 14px rgba(0,0,0,.25)}
+  .page{margin-left:var(--sidebar)}
+  .hero{position:relative;overflow:hidden;padding:44px 52px;color:#fff;background:linear-gradient(125deg,#0a1220 0%,#16294a 46%,#8a3a16 132%)}
+  .hero::after{content:"";position:absolute;right:-90px;top:-110px;width:400px;height:400px;border-radius:50%;background:radial-gradient(circle,rgba(245,179,1,.30),transparent 68%)}
+  .hero-top{display:flex;gap:36px;align-items:center;position:relative;z-index:2}
+  .hero-txt{flex:1;min-width:0}
+  .hero .crumb{font-size:11.5px;color:#ffb894;letter-spacing:1.5px;font-weight:700;margin-bottom:14px}
+  .hero h1{font-size:31px;font-weight:800;line-height:1.3;letter-spacing:.6px;margin-bottom:8px}
+  .hero h1 .sub{display:block;font-size:18px;font-weight:700;color:#ffd2b3;margin-top:6px;letter-spacing:.3px}
+  .hero .en{font-size:13px;color:#9db4c8;font-style:italic;margin-bottom:18px}
+  .hero .tags{display:flex;flex-wrap:wrap;gap:8px}
+  .tag{font-size:11.5px;padding:4px 12px;border-radius:20px;background:rgba(255,255,255,.12);border:1px solid rgba(255,255,255,.22);color:#e8f0f6;font-weight:600}
+  .tag.hot{background:rgba(255,107,53,.92);border-color:transparent;color:#fff}
+  .hero-card{flex-shrink:0;width:200px;text-align:center}
+  .hero-card .ava{width:148px;height:148px;border-radius:50%;object-fit:cover;object-position:top center;border:4px solid rgba(255,180,140,.6);box-shadow:0 14px 34px rgba(0,0,0,.45);background:#24344a}
+  .hero-card .nm{font-size:15px;font-weight:800;color:#fff;margin-top:10px}
+  .hero-card .ti{font-size:11.5px;color:#ffb894;margin-top:2px}
+  .container{max-width:1080px;margin:0 auto;padding:38px 52px 70px}
+  .lead{font-size:15.5px;line-height:2.05;color:#333f52;background:linear-gradient(120deg,#fff8f3,#f7fbf8);border-left:5px solid var(--brand);border-radius:0 14px 14px 0;padding:22px 26px;margin-bottom:32px}
+  .lead b{color:var(--brand-dark)}
+  .cast{display:flex;gap:16px;align-items:flex-start;border-radius:16px;padding:18px 22px;margin:24px 0}
+  .cast .ava{width:72px;height:72px;border-radius:50%;object-fit:cover;object-position:top center;flex-shrink:0;background:#e8eef5}
+  .cast .bubble{position:relative;font-size:14px;line-height:1.95;padding-top:2px;flex:1}
+  .cast .who{font-size:12px;font-weight:800;margin-bottom:5px;letter-spacing:.5px}
+  .cast.anya{background:var(--brand-soft);border:1px solid #ffdcc9}
+  .cast.anya .who{color:var(--brand-dark)}
+  .cast.anya .bubble{color:#5c4636}
+  .cast.duck{background:#fff5f5;border:1px solid #fbd5d5}
+  .cast.duck .who{color:#b91c1c}
+  .cast.duck .bubble{color:#5c4141}
+  .cast.teacher{background:linear-gradient(120deg,#f4f7fb,#ffffff);border:1px solid #dbe4f0}
+  .cast.teacher .who{color:#1e293b}
+  .cast.teacher .bubble{color:#3c4a5a}
+  .cast.hero{background:#f2f7fd;border:1px solid #cfe0f5}
+  .cast.hero .who{color:#1b47a8}
+  .cast.hero .bubble{color:#3a4658}
+  .goal-grid{display:grid;grid-template-columns:1fr 1fr;gap:16px;margin-bottom:36px}
+  .goal{border:1px solid var(--line);border-radius:15px;padding:19px 21px;background:#fff;box-shadow:0 4px 16px rgba(31,122,68,.05)}
+  .goal h4{font-size:14px;font-weight:800;margin-bottom:11px;display:flex;align-items:center;gap:8px;color:var(--primary-dark)}
+  .goal h4 .ic{width:22px;height:22px;border-radius:7px;background:var(--primary-lighter);display:flex;align-items:center;justify-content:center;font-size:12px}
+  .goal ul{list-style:none}
+  .goal li{font-size:13.5px;color:#48576b;line-height:1.9;padding-left:18px;position:relative}
+  .goal li::before{content:"▸";position:absolute;left:0;color:var(--primary);font-weight:800}
+  .goal.syllabus li::before{content:"✓"}
+  .section-header{margin:52px 0 24px;padding-bottom:12px;border-bottom:3px solid var(--brand);display:flex;align-items:baseline;gap:14px;flex-wrap:wrap}
+  .section-header h2{font-size:22px;font-weight:800;color:var(--night);letter-spacing:.4px}
+  .section-header .en-title{font-size:12px;color:var(--dim2);font-style:italic}
+  h3{font-size:17.5px;font-weight:800;margin:34px 0 14px;color:var(--night);display:flex;align-items:center;gap:10px}
+  h3::before{content:"";width:5px;height:17px;border-radius:3px;background:var(--brand);flex-shrink:0}
+  h4{font-size:15px;font-weight:800;margin:24px 0 10px;color:#2b4260}
+  p{margin:12px 0;color:#3a4658;line-height:2}
+  strong{color:var(--primary-dark)}
+  code.inline{background:var(--primary-lighter);color:var(--primary-dark);padding:2px 7px;border-radius:6px;font-family:"SFMono-Regular",Consolas,Menlo,monospace;font-size:.9em;font-weight:600}
+  .figure{margin:24px 0;text-align:center}
+  .figure svg.diagram{max-width:100%;height:auto;background:#fff;border:1px solid var(--line);border-radius:14px;padding:10px}
+  .figure .caption{font-size:12.5px;color:var(--dim2);margin-top:9px}
+  .pic{margin:26px 0;text-align:center}
+  .pic img{max-width:100%;border-radius:16px;box-shadow:0 10px 28px rgba(30,60,45,.15);display:block;margin:0 auto}
+  .pic figcaption{font-size:12.5px;color:var(--dim2);margin-top:9px}
+  .pic .ph{display:none}
+  .pic.missing img{display:none}
+  .pic.missing .ph{display:flex;flex-direction:column;align-items:center;justify-content:center;gap:9px;border:2px dashed #c9d9e8;border-radius:16px;background:linear-gradient(135deg,#f8fbfe,#eef6ff);padding:40px 26px;color:#7a8fa8}
+  .pic.missing .ph .fn{font-family:Consolas,monospace;font-size:12.5px;color:#2563eb;font-weight:700;word-break:break-all}
+  .pic.missing .ph .ds{font-size:12.5px;line-height:1.8;max-width:560px}
+  .box{border-radius:13px;padding:16px 20px;margin:20px 0;font-size:14px;line-height:1.95}
+  .box .lb{font-weight:800;margin-right:6px}
+  .info{background:#eef6ff;border-left:5px solid #3b82f6;color:#274768}
+  .info .lb{color:#1d4ed8}
+  .tip{background:#fff9ec;border-left:5px solid #f59e0b;color:#6b4e13}
+  .tip .lb{color:#b45309}
+  .remember{background:var(--primary-lighter);border-left:5px solid var(--primary);color:#1d3a6b}
+  .remember .lb{color:var(--primary-dark)}
+  .warn{background:#fef2f2;border-left:5px solid #ef4444;color:#7f2b2b}
+  .warn .lb{color:#b91c1c}
+  .code-card{margin:20px 0;border-radius:14px;overflow:hidden;box-shadow:0 10px 28px rgba(20,40,28,.20)}
+  .code-head{display:flex;align-items:center;gap:9px;background:#1a2434;padding:9px 14px}
+  .code-head .dot{width:10px;height:10px;border-radius:50%}
+  .code-head .d1{background:#ff5f57}.code-head .d2{background:#febc2e}.code-head .d3{background:#28c840}
+  .code-head .file{color:#8fa6c0;font-size:11.5px;font-family:Consolas,monospace;margin-left:6px}
+  .code-head .lang{margin-left:auto;font-size:10.5px;font-weight:800;color:#0d141f;background:#4f8ff0;padding:2px 9px;border-radius:6px;letter-spacing:.4px}
+  .code-card pre{background:var(--code-bg);padding:18px 20px;overflow-x:auto;margin:0;font-family:"SFMono-Regular",Consolas,"Courier New",monospace;font-size:13.5px;line-height:1.85}
+  .code-card pre::-webkit-scrollbar{height:8px}
+  .code-card pre::-webkit-scrollbar-thumb{background:#31445c;border-radius:4px}
+  .code-card code{color:var(--code-tx);white-space:pre}
+  .kw{color:var(--code-kw);font-weight:600}
+  .st{color:var(--code-st)}
+  .nu{color:var(--code-nu)}
+  .cm{color:var(--code-cm);font-style:italic}
+  .fn{color:var(--code-fn)}
+  .out{background:#0f1621;color:#7fb3f5;font-family:Consolas,monospace;font-size:13px;padding:12px 20px;border-top:1px solid #22304a}
+  .out b{color:#c9d6cd;font-weight:600;font-size:11.5px;letter-spacing:1px}
+  .out.err{color:#fca5a5}
+  table.styled{width:100%;border-collapse:collapse;margin:20px 0;font-size:13.5px;border-radius:12px;overflow:hidden;box-shadow:0 4px 16px rgba(31,122,68,.07)}
+  table.styled thead{background:var(--brand)}
+  table.styled th{color:#fff;padding:11px 14px;text-align:left;font-weight:700;font-size:13px}
+  table.styled td{padding:10px 14px;border-bottom:1px solid var(--line);color:#445266;vertical-align:top}
+  table.styled tbody tr:nth-child(even){background:var(--bg-soft)}
+  table.styled tbody tr:last-child td{border-bottom:none}
+  .level-card{border:1px solid var(--line);border-radius:16px;overflow:hidden;margin:22px 0;box-shadow:0 6px 22px rgba(31,122,68,.07)}
+  .level-card .lc-head{background:linear-gradient(100deg,#17283a,#8a3a16);color:#fff;padding:15px 22px;display:flex;align-items:center;gap:12px;flex-wrap:wrap}
+  .level-card .lc-head .n{font-size:12px;font-weight:800;background:rgba(255,255,255,.2);padding:3px 10px;border-radius:20px}
+  .level-card .lc-head h4{margin:0;color:#fff;font-size:16px}
+  .level-card .lc-head .go{margin-left:auto;font-size:11.5px;color:#ffd2b3}
+  .level-card .lc-body{padding:20px 24px;background:#fff}
+  .level-card .story{background:#f9fbfd;border-left:4px solid #93c5fd;border-radius:0 10px 10px 0;padding:13px 18px;margin:0 0 16px;font-size:14px;line-height:1.95;color:#3f5163}
+  .level-card .story b{color:#1d4ed8}
+  .btn-go{display:inline-flex;align-items:center;gap:8px;background:linear-gradient(135deg,var(--brand),var(--brand-dark));color:#fff;text-decoration:none;font-weight:800;font-size:13.5px;padding:10px 22px;border-radius:11px;box-shadow:0 8px 20px rgba(255,107,53,.32);transition:.2s}
+  .btn-go:hover{transform:translateY(-2px);box-shadow:0 12px 26px rgba(255,107,53,.42)}
+  .pit{border:1px solid #f6dede;border-radius:14px;overflow:hidden;margin:16px 0;background:#fff}
+  .pit .pt{display:flex;gap:12px;padding:14px 18px;background:#fffafa;align-items:flex-start}
+  .pit .x{width:26px;height:26px;border-radius:9px;background:#fee;color:#dc2626;display:flex;align-items:center;justify-content:center;font-weight:800;flex-shrink:0;font-size:13px}
+  .pit .t{font-size:13.5px;line-height:1.9;color:#5c4a4a;flex:1}
+  .pit .t b{color:#b91c1c}
+  .pit .duck{display:flex;gap:12px;padding:13px 18px;background:#fff5f5;border-top:1px dashed #f3d0d0;align-items:flex-start}
+  .pit .duck img{width:48px;height:48px;object-fit:contain;flex-shrink:0;margin-top:2px}
+  .pit .duck .dt{font-size:13.5px;line-height:1.9;color:#7a3b3b}
+  .pit .duck .dt b{color:#b91c1c}
+  .pit .fix{padding:12px 18px;background:#f2f7fd;border-top:1px dashed #cfe0f5;font-size:13.5px;color:#1d3a6b}
+  .pit .fix b{color:var(--primary-dark)}
+  .exam{border:1px solid #dfe7f5;border-radius:15px;margin:16px 0;overflow:hidden;background:#fff;box-shadow:0 4px 16px rgba(38,62,120,.06)}
+  .exam .eh{display:flex;align-items:center;gap:10px;padding:11px 18px;background:linear-gradient(100deg,#eef4ff,#f7faff);border-bottom:1px solid #e3ebf8;flex-wrap:wrap}
+  .exam .eh .src{font-size:11px;font-weight:800;color:#fff;background:#2563eb;padding:2.5px 10px;border-radius:20px}
+  .exam .eh .src.ori{background:#8b5cf6}
+  .exam .eh .tp{font-size:11.5px;color:#5b7ba8;font-weight:700}
+  .exam .eb{padding:16px 20px}
+  .exam .q{font-weight:700;font-size:14px;color:#1e2a3e;line-height:1.9;margin-bottom:10px}
+  .exam .opt{font-size:13.5px;color:#48576b;line-height:2.05;padding-left:6px}
+  .exam .opt i{font-style:normal;font-weight:800;color:var(--primary-dark);margin-right:7px}
+  .exam pre{margin:12px 0;background:#1b2a21;border-radius:10px;padding:14px 16px;overflow-x:auto;font-family:Consolas,monospace;font-size:13px;line-height:1.8;color:var(--code-tx)}
+  .exam details{margin-top:10px;border-top:1px dashed var(--line);padding-top:10px}
+  .exam summary{cursor:pointer;font-size:12.5px;font-weight:800;color:#2563eb;outline:none;user-select:none}
+  .exam details .ans{font-size:13.5px;color:#3a4658;line-height:1.95;margin-top:9px;background:var(--bg-soft);padding:13px 16px;border-radius:10px}
+  .exam details .ans b{color:var(--primary-dark)}
+  .exam details .ans .tagline{display:inline-block;font-size:11px;background:#e0f2fe;color:#0e7490;padding:1.5px 8px;border-radius:6px;font-weight:700;margin-right:6px}
+  .summary{margin:40px 0 20px;border-radius:18px;padding:26px 30px;background:linear-gradient(130deg,#fff8f3,#ffffff);border:1px solid #ffe0cf}
+  .summary h3{margin-top:0}
+  .summary ul{list-style:none;margin-top:10px}
+  .summary li{font-size:14px;line-height:2;color:#3d4d66;padding-left:24px;position:relative}
+  .summary li::before{content:"◆";position:absolute;left:0;color:var(--brand);font-size:11px;top:6px}
+  .pager{display:flex;gap:14px;margin-top:30px;flex-wrap:wrap}
+  .pager a{flex:1;min-width:200px;text-decoration:none;border:1px solid var(--line);border-radius:14px;padding:16px 20px;background:#fff;transition:.2s;display:block}
+  .pager a:hover{border-color:var(--brand);box-shadow:0 10px 26px rgba(255,107,53,.14);transform:translateY(-2px)}
+  .pager a .k{font-size:11px;color:var(--dim2);font-weight:700;letter-spacing:1px}
+  .pager a .v{font-size:14px;font-weight:800;color:var(--night);margin-top:5px}
+  .pager a.back{background:var(--brand-soft);border-color:transparent;text-align:center}
+  .pager a.back .v{color:var(--brand-dark)}
+  .cta{margin-top:26px;border-radius:20px;padding:30px 34px;color:#fff;position:relative;overflow:hidden;background:linear-gradient(120deg,#16202f,#2b3a52 46%,#a8431c 132%)}
+  .cta::after{content:"";position:absolute;right:-70px;bottom:-90px;width:280px;height:280px;border-radius:50%;background:radial-gradient(circle,rgba(255,140,80,.45),transparent 68%)}
+  .cta h3{color:#fff;margin:0 0 10px;position:relative;z-index:2}
+  .cta h3::before{background:var(--brand)}
+  .cta p{color:#d8e0ef;font-size:13.5px;margin:0 0 18px;position:relative;z-index:2;max-width:640px}
+  .cta .btn-go{position:relative;z-index:2}
+  @media(max-width:900px){
+    .sidebar-nav{transform:translateX(-100%)}
+    .sidebar-nav.active{transform:translateX(0)}
+    .nav-toggle{display:block}
+    .page{margin-left:0}
+    .hero{padding:70px 22px 34px}
+    .hero-top{flex-direction:column-reverse;text-align:center}
+    .hero-card{width:auto}
+    .container{padding:26px 20px 60px}
+    .goal-grid{grid-template-columns:1fr}
+  }
+</style>
+</head>
+<body>
+
+<button class="nav-toggle" onclick="document.querySelector('.sidebar-nav').classList.toggle('active')">&#9776;</button>
+
+<nav class="sidebar-nav">
+  <div class="sb-brand">
+    <a class="sb-logo" href="https://codecombat.cn/" target="_blank" rel="noopener" title="访问 CodeCombat 扣哒世界官网">
+      <img src="../assets/logo.png" alt="CodeCombat 扣哒世界">
+    </a>
+    <div><b>会记事的木箱</b><span>烛火岗哨 · C++ 一级 第 2 单元</span></div>
+  </div>
+  <div class="nav-title">本单元目录</div>
+
+  <a href="#s0" class="nav-section">0　单元导语与目标</a>
+  <a href="#s0-1" class="nav-sub">0.1 学习目标</a>
+  <a href="#s0-2" class="nav-sub">0.2 考纲对照</a>
+  <a href="#s1" class="nav-section">1　会记事的木箱</a>
+  <a href="#s1-1" class="nav-sub">1.1 先声明，再使用</a>
+  <a href="#s1-2" class="nav-sub">1.2 变量的三个动作</a>
+  <a href="#s1-3" class="nav-sub">1.3 命名规则</a>
+  <a href="#s2" class="nav-section">2　C++ 的基本数据类型</a>
+  <a href="#s2-1" class="nav-sub">2.1 整型：int 与 long long</a>
+  <a href="#s2-2" class="nav-sub">2.2 浮点型：float 与 double</a>
+  <a href="#s2-3" class="nav-sub">2.3 字符型 char</a>
+  <a href="#s2-4" class="nav-sub">2.4 布尔型 bool</a>
+  <a href="#s2-5" class="nav-sub">2.5 五种类型对照</a>
+  <a href="#s3" class="nav-section">3　常量：不许改的箱子</a>
+  <a href="#s3-1" class="nav-sub">3.1 字面量</a>
+  <a href="#s3-2" class="nav-sub">3.2 const 常量</a>
+  <a href="#s4" class="nav-section">4　类型转换</a>
+  <a href="#s4-1" class="nav-sub">4.1 自动转换</a>
+  <a href="#s4-2" class="nav-sub">4.2 强制转换</a>
+  <a href="#s5" class="nav-section">5　代码实战</a>
+  <a href="#s6" class="nav-section">6　常见陷阱</a>
+  <a href="#s7" class="nav-section">7　题目练习</a>
+  <a href="#s8" class="nav-section">8　本单元小结</a>
+
+  <a href="../index.html" target="_top" class="sb-back">返回考纲之路</a>
+</nav>
+
+<div class="page">
+
+<div class="hero">
+  <div class="hero-top">
+    <div class="hero-txt">
+      <div class="crumb">扣哒考级 · GESP C++ 一级 · 第 2 单元　|　烛火岗哨 CANDLEWATCH OUTPOST</div>
+      <h1>会记事的木箱
+        <span class="sub">变量、常量与数据类型</span>
+      </h1>
+      <div class="en">Variables, Constants &amp; Types</div>
+      <div class="tags">        <span class="tag hot">考纲 · 变量与数据类型</span>
+        <span class="tag">声明与赋值</span>
+        <span class="tag">int / double / char / bool</span>
+        <span class="tag">const 常量</span>
+        <span class="tag">类型转换</span></div>
+    </div>
+    <div class="hero-card">
+      <img class="ava" src="../assets/avatars/anya.webp" alt="安雅" onerror="this.style.background='#24344a';this.src='../assets/heroes/anya.webp'">
+      <div class="nm">安雅</div>
+      <div class="ti">红发队长 · 你的向导</div>
+    </div>
+  </div>
+</div>
+
+<div class="container">
+
+
+
+
+
+<div class="lead">
+  岗哨的储藏室里堆着一排木箱，箱盖上贴着发光的名牌：<b>有的写着"金条"，有的写着"药草"。</b><br>
+  安雅随手打开一只箱子，把里面的数字牌从 3 换成了 7，又合上盖子。<br>
+  箱子还是那只箱子，名字没变，<b>里面的东西变了</b>。她说，
+  程序里最重要的东西，就是这个——<b>能装东西、还能换东西的箱子。</b>
+</div>
+
+<div class="cast anya">
+  <img class="ava" src="../assets/avatars/anya.webp" alt="安雅" onerror="this.style.display='none'">
+  <div class="bubble">
+    <div class="who">安雅 · 红发队长</div>
+    这个"箱子"就叫<strong>变量</strong>。它是编程里最基础、也最常考的一块砖。<br>
+    而 C++ 的箱子有个特别之处：<strong>你必须先说清楚"这只箱子装什么类型的东西"，才能用它。</strong><br>
+    这就是 C++ 和其他语言最不一样的地方之一。
+  </div>
+</div>
+
+<figure class="pic">
+  <img src="../assets/illustrations/py-L1-02-01_named_chest.webp" alt="会记事的木箱"
+       onerror="this.closest('.pic').classList.add('missing')">
+  <div class="ph">
+    <div class="fn">assets/illustrations/py-L1-02-01_named_chest.webp</div>
+    <div class="ds">【配图位】岗哨储藏室里的一只木箱，箱盖上贴着发光的名牌；箱内的数字牌正从 3 换成 7（一名新兵正在替换内容）；旁边一只上锁的箱子代表常量；火光下的木架背景。</div>
+  </div>
+  <figcaption>图 1：烛火岗哨·会记事的木箱——今天要从这里开始</figcaption>
+</figure>
+
+<!-- ============ 0 ============ -->
+<div class="section-header" id="s0">
+  <h2>0　单元导语与目标</h2>
+  <div class="en-title">Unit Overview</div>
+</div>
+
+<h3 id="s0-1">0.1 学习目标</h3>
+<div class="goal-grid">
+  <div class="goal">
+    <h4><span class="ic">1</span>学完这个单元，你将能……</h4>
+    <ul>
+      <li>说清变量是什么、为什么必须先声明类型</li>
+      <li>正确写出变量的声明、赋值与读取</li>
+      <li>掌握变量命名规则，避开关键字</li>
+      <li>分辨 C++ 的整型、浮点型、字符型、布尔型</li>
+      <li>用 <code class="inline">const</code> 定义常量，并说清它和变量的区别</li>
+      <li>看懂并预测类型转换的结果</li>
+    </ul>
+  </div>
+  <div class="goal syllabus">
+    <h4><span class="ic">2</span>对标 GESP 考纲（C++ 一级）</h4>
+    <ul>
+      <li>掌握变量的概念、定义与使用</li>
+      <li>掌握基本数据类型：整型、浮点型、字符型、布尔型</li>
+      <li>掌握常量的概念与 <code class="inline">const</code> 的用法</li>
+      <li>了解不同类型之间的转换规则</li>
+      <li>考核目标：能正确定义变量、判断类型转换后的结果</li>
+    </ul>
+  </div>
+</div>
+
+<h3 id="s0-2">0.2 考纲对照</h3>
+<table class="styled">
+  <thead><tr><th>本单元小节</th><th>对应考纲条目</th><th>真题常考形式</th></tr></thead>
+  <tbody>
+    <tr><td>1　变量的声明与使用</td><td>变量的概念与定义</td><td>给一段代码，问输出的两个变量分别是几</td></tr>
+    <tr><td>2　基本数据类型</td><td>整型、浮点型、字符型、布尔型</td><td>给一个数，问该用什么类型；或问某类型的范围</td></tr>
+    <tr><td>3　常量</td><td>常量的概念</td><td><code class="inline">const</code> 声明的变量能不能再赋值</td></tr>
+    <tr><td>4　类型转换</td><td>数据类型转换</td><td>整数除法、赋值给 int 之后的输出结果</td></tr>
+  </tbody>
+</table>
+
+<!-- ============ 1 ============ -->
+<div class="section-header" id="s1">
+  <h2>1　会记事的木箱</h2>
+  <div class="en-title">Variables</div>
+</div>
+
+<h3 id="s1-1">1.1 先声明，再使用</h3>
+
+<p>安雅把一只空箱子推到你面前："用之前，先<b>在箱盖上写清楚它装什么</b>。"</p>
+
+<div class="code-card">
+  <div class="code-head">
+    <span class="dot d1"></span><span class="dot d2"></span><span class="dot d3"></span>
+    <span class="file">声明一只整型箱子</span>
+    <span class="lang">C++</span>
+  </div>
+  <pre><code>int gold;           // 声明：告诉编译器，gold 是一只装整数的箱子
+gold = 100;         // 赋值：把 100 放进这只箱子
+cout &lt;&lt; gold;       // 读取：把箱子里的东西拿出来用
+
+int herb = 25;      // 也可以声明的同时就放东西（这叫"初始化"）</code></pre>
+  <div class="out"><b>OUTPUT</b>　100</div>
+</div>
+
+<figure class="figure">
+  <svg class="diagram" viewBox="0 0 830 260" role="img" aria-label="变量的内存示意">
+    <text x="24" y="32" font-size="14" font-weight="bold" fill="#1f2937">变量就是内存里的一格，名字是标签，类型决定它能装什么</text>
+
+    <rect x="40" y="66" width="760" height="150" rx="12" fill="#f7f9fd" stroke="#cbd5e1" stroke-width="1.6"/>
+    <text x="60" y="92" font-size="12" fill="#64748b">内存（一串带编号的格子）</text>
+
+    <rect x="70" y="110" width="150" height="82" rx="10" fill="#fff" stroke="#2563eb" stroke-width="2.4"/>
+    <text x="145" y="134" text-anchor="middle" font-size="12" fill="#1d4ed8" font-weight="bold">gold</text>
+    <text x="145" y="158" text-anchor="middle" font-size="10.5" fill="#94a3b8">类型：int</text>
+    <text x="145" y="180" text-anchor="middle" font-size="16" font-family="Consolas,monospace" fill="#2563eb" font-weight="bold">100</text>
+
+    <rect x="240" y="110" width="150" height="82" rx="10" fill="#fff" stroke="#8b5cf6" stroke-width="2.4"/>
+    <text x="315" y="134" text-anchor="middle" font-size="12" fill="#6d28d9" font-weight="bold">price</text>
+    <text x="315" y="158" text-anchor="middle" font-size="10.5" fill="#94a3b8">类型：double</text>
+    <text x="315" y="180" text-anchor="middle" font-size="16" font-family="Consolas,monospace" fill="#6d28d9" font-weight="bold">3.5</text>
+
+    <rect x="410" y="110" width="150" height="82" rx="10" fill="#fff" stroke="#2e9e5b" stroke-width="2.4"/>
+    <text x="485" y="134" text-anchor="middle" font-size="12" fill="#1f7a44" font-weight="bold">grade</text>
+    <text x="485" y="158" text-anchor="middle" font-size="10.5" fill="#94a3b8">类型：char</text>
+    <text x="485" y="180" text-anchor="middle" font-size="16" font-family="Consolas,monospace" fill="#1f7a44" font-weight="bold">'A'</text>
+
+    <rect x="580" y="110" width="150" height="82" rx="10" fill="#fff" stroke="#f59e0b" stroke-width="2.4"/>
+    <text x="655" y="134" text-anchor="middle" font-size="12" fill="#b45309" font-weight="bold">ok</text>
+    <text x="655" y="158" text-anchor="middle" font-size="10.5" fill="#94a3b8">类型：bool</text>
+    <text x="655" y="180" text-anchor="middle" font-size="16" font-family="Consolas,monospace" fill="#b45309" font-weight="bold">true</text>
+
+    <text x="24" y="244" font-size="12" fill="#8d9d94">同一个名字，装的东西类型不同，能参与的运算也不同</text>
+  </svg>
+  <div class="caption">图 2（SVG）：变量、名字、类型与值的关系</div>
+</figure>
+
+<div class="box tip">
+  <span class="lb">打个比方：</span>
+  驿站里的每一只箱子，箱盖上都要先<b>贴一张名牌</b>，写上"这箱装整数""那箱装小数"。<br>
+  不贴名牌会怎样？<strong>搬运工不知道往里放什么，也不知道该拿什么出来，只能停下不干。</strong><br>
+  <b>C++ 的变量就是这样：先声明类型，等于先贴好名牌，之后才能使用。</b>
+</div>
+
+<div class="box remember">
+  <span class="lb">C++ 的第一条铁律：</span>
+  <strong>变量必须先声明类型，才能使用。</strong><br>
+  <code class="inline">int gold;</code> 的意思是："请给我留一格能装整数的内存，取名叫 gold。"<br>
+  <b>没有这一句，后面直接写 <code>gold = 100;</code> 编译器就会报错：找不到 gold。</b>
+</div>
+
+<h3 id="s1-2">1.2 变量的三个动作</h3>
+
+<p>用一只箱子，其实只有三个动作，记住这三步，变量就学会了一大半。</p>
+
+<figure class="pic">
+  <img src="../assets/illustrations/cpp-L1-02-03_three_actions.webp" alt="变量的三个动作"
+       onerror="this.closest('.pic').classList.add('missing')">
+  <div class="ph">
+    <div class="fn">assets/illustrations/cpp-L1-02-03_three_actions.webp</div>
+    <div class="ds">【配图位】驿站储藏室里的一只木箱，画面分成左中右三个小场景：左边一名新兵在箱盖上贴写有"int"的发光名牌（声明）；中间他把一块写着数字的牌子放进箱子（赋值）；右边他伸手从箱子里把牌子取出来递给同伴（读取）。三个场景之间有箭头相连，箱子里始终可见同一个数字。扣哒世界卡通风格。</div>
+  </div>
+  <figcaption>图 3：贴名牌、放东西、拿出来——变量的三个动作</figcaption>
+</figure>
+
+<table class="styled">
+  <thead><tr><th>动作</th><th>写法</th><th>含义</th></tr></thead>
+  <tbody>
+    <tr><td><strong>声明</strong></td><td><code class="inline">int a;</code></td><td>申请一格内存，起个名字，说好装什么类型</td></tr>
+    <tr><td><strong>赋值</strong></td><td><code class="inline">a = 5;</code></td><td>把右边的值放进左边这只箱子</td></tr>
+    <tr><td><strong>读取</strong></td><td><code class="inline">cout &lt;&lt; a;</code></td><td>把箱子里的值取出来用</td></tr>
+    <tr><td><strong>初始化</strong></td><td><code class="inline">int a = 5;</code></td><td>声明的同时就放好值，最推荐</td></tr>
+  </tbody>
+</table>
+
+<div class="code-card">
+  <div class="code-head">
+    <span class="dot d1"></span><span class="dot d2"></span><span class="dot d3"></span>
+    <span class="file">经典考题：b 会不会跟着 a 一起变？</span>
+    <span class="lang">C++</span>
+  </div>
+  <pre><code>int a = 3;
+int b = a;          // 把 a 当时的值（3）复制一份给 b
+a = 4;              // 改的是 a，跟 b 没关系
+
+cout &lt;&lt; a &lt;&lt; " " &lt;&lt; b;    // 4 3</code></pre>
+  <div class="out"><b>OUTPUT</b>　4 3　——b 仍然是 3</div>
+</div>
+
+<div class="box tip">
+  <span class="lb">为什么 b 不会跟着变？</span>
+  因为 <code class="inline">int b = a;</code> 做的是<strong>"把值抄一份过去"</strong>，不是"把两只箱子绑在一起"。<br>
+  之后 a 里换成 4，b 里那份 3 依旧在原地。<br>
+  <b>这道题在 C++ 一级真题里出现过，问的就是"输出是什么"。</b>
+</div>
+
+<h3 id="s1-3">1.3 命名规则</h3>
+
+<table class="styled">
+  <thead><tr><th>规则</th><th>说明</th><th>合法 / 非法</th></tr></thead>
+  <tbody>
+    <tr><td>只能用字母、数字、下划线</td><td>不能用 <code class="inline">+</code>、<code class="inline">-</code>、空格、中文</td><td><code class="inline">my_age</code> ✔　<code class="inline">my-age</code> ✘</td></tr>
+    <tr><td>不能以数字开头</td><td>第一位必须是字母或下划线</td><td><code class="inline">a1</code> ✔　<code class="inline">1a</code> ✘</td></tr>
+    <tr><td>不能是关键字</td><td><code class="inline">int</code>、<code class="inline">for</code>、<code class="inline">return</code> 等已被占用</td><td><code class="inline">for</code> ✘　<code class="inline">for1</code> ✔</td></tr>
+    <tr><td>区分大小写</td><td><code class="inline">A</code> 和 <code class="inline">a</code> 是两个不同的名字</td><td><code class="inline">Sum</code> 与 <code class="inline">sum</code> 是两个变量</td></tr>
+  </tbody>
+</table>
+
+<div class="box tip">
+  <span class="lb">打个比方：</span>
+  给变量起名字，就像给同学起外号——<strong>可以起，但有规矩</strong>：<br>
+  ① 只能用<b>字母、数字、下划线</b>三种字符，不能带空格和加减号；<br>
+  ② <b>不能用数字开头</b>，因为搬运工一看数字就以为那是数量，不是名字；<br>
+  ③ 不能跟 C++ 已经占用的词重名（比如 <code class="inline">int</code>、<code class="inline">for</code>）。<br>
+  <b>另外，C++ 分大小写：<code class="inline">Sum</code> 和 <code class="inline">sum</code> 是两个完全不同的名字。</b>
+</div>
+
+<div class="box warn">
+  <span class="lb">关于下划线的一个细节：</span>
+  <code class="inline">_</code> 和 <code class="inline">__</code>（下划线数目不同）在 C++ 里是<strong>两个不同的名字</strong>，
+  一般不会"重复定义"。<br>
+  但<strong>以两个下划线开头、或以下划线加大写字母开头的名字是保留给编译器用的</strong>，自己不要这样命名。
+</div>
+
+<!-- ============ 2 ============ -->
+<div class="section-header" id="s2">
+  <h2>2　C++ 的基本数据类型</h2>
+  <div class="en-title">Basic Data Types</div>
+</div>
+
+<h3 id="s2-1">2.1 整型：int 与 long long</h3>
+
+<div class="code-card">
+  <div class="code-head">
+    <span class="dot d1"></span><span class="dot d2"></span><span class="dot d3"></span>
+    <span class="file">装整数用 int；数太大就用 long long</span>
+    <span class="lang">C++</span>
+  </div>
+  <pre><code>int a = 100;              // 最常用，约 ±21 亿
+int b = -7;               // 负数也没问题
+
+long long c = 10000000000LL;   // 超过 int 范围时要用 long long
+cout &lt;&lt; c;                // 10000000000</code></pre>
+  <div class="out"><b>要点</b>　<code>int</code> 大约能装 21 亿以内的整数；再大就要用 <code>long long</code></div>
+</div>
+
+<table class="styled">
+  <thead><tr><th>类型</th><th>能装什么</th><th>大致范围</th><th>占多少字节</th></tr></thead>
+  <tbody>
+    <tr><td><code class="inline">int</code></td><td>整数</td><td>约 −21 亿 ~ +21 亿</td><td>4</td></tr>
+    <tr><td><code class="inline">long long</code></td><td>更大的整数</td><td>约 ±9.2 × 10<sup>18</sup></td><td>8</td></tr>
+    <tr><td><code class="inline">short</code></td><td>小整数</td><td>约 −32768 ~ 32767</td><td>2</td></tr>
+  </tbody>
+</table>
+
+<div class="box tip">
+  <span class="lb">打个比方：</span>
+  <code class="inline">int</code> 就像一只<b>固定大小的杯子</b>，最多只能装 21 亿这么多水。<br>
+  你硬要往里倒更多的水，多出来的部分就会<strong>洒出去</strong>——杯子里的水位不是你期望的数字。<br>
+  <b>所以题目里的数很大（比如超过十亿），就要换一只更大的杯子：<code class="inline">long long</code>。</b>
+</div>
+
+<div class="box warn">
+  <span class="lb">什么是"溢出"？</span>
+  如果往 <code class="inline">int</code> 里塞一个超过它范围的值，结果就<strong>不再是你想要的那个数</strong>了——
+  这叫溢出。<br>
+  <b>一级阶段记住一句话就够：整数默认用 int，题目里数很大（比如超过十亿）时改用 long long。</b>
+</div>
+
+<h3 id="s2-2">2.2 浮点型：float 与 double</h3>
+
+<div class="code-card">
+  <div class="code-head">
+    <span class="dot d1"></span><span class="dot d2"></span><span class="dot d3"></span>
+    <span class="file">装小数用浮点型</span>
+    <span class="lang">C++</span>
+  </div>
+  <pre><code>float  x = 3.5f;          // 单精度，约 6~7 位有效数字
+double y = 3.14159265;    // 双精度，约 15~16 位有效数字，更常用
+
+cout &lt;&lt; y;                // 3.14159</code></pre>
+  <div class="out"><b>要点</b>　小数默认按 <code>double</code> 处理；想做高精度计算就用 <code>double</code></div>
+</div>
+
+<div class="box tip">
+  <span class="lb">浮点数不是"精确"的：</span>
+  小数在计算机里是用近似值存的，可能出现 <code class="inline">0.1 + 0.2</code> 不等于 <code class="inline">0.3</code> 的情况。<br>
+  <b>所以比较两个浮点数是否相等，一般不直接用 <code class="inline">==</code>，而是看它们的差是否足够小。</b>
+</div>
+
+<h3 id="s2-3">2.3 字符型 char</h3>
+
+<div class="code-card">
+  <div class="code-head">
+    <span class="dot d1"></span><span class="dot d2"></span><span class="dot d3"></span>
+    <span class="file">单个字符用单引号</span>
+    <span class="lang">C++</span>
+  </div>
+  <pre><code>char grade = 'A';        // 单个字符：单引号
+cout &lt;&lt; grade;           // A
+
+char ch = 65;            // 字符本质是一个编号，65 就是 'A'
+cout &lt;&lt; ch;              // A</code></pre>
+  <div class="out"><b>关键区别</b>　<code>'A'</code> 是<b>字符</b>；<code>"A"</code> 是<b>字符串</b>（含结束符，占两个字节）</div>
+</div>
+
+<div class="box remember">
+  <span class="lb">单引号与双引号，绝对不能混：</span><br>
+  <code class="inline">'A'</code> —— 字符，类型是 <code class="inline">char</code>。<br>
+  <code class="inline">"A"</code> —— 字符串，类型是字符数组 / <code class="inline">string</code>。<br>
+  <strong>把 <code>'A'</code> 写成 <code>"A"</code> 赋给 char，编译器会直接报错。</strong>
+</div>
+
+<h3 id="s2-4">2.4 布尔型 bool</h3>
+
+<div class="code-card">
+  <div class="code-head">
+    <span class="dot d1"></span><span class="dot d2"></span><span class="dot d3"></span>
+    <span class="file">真与假</span>
+    <span class="lang">C++</span>
+  </div>
+  <pre><code>bool flag = true;        // 真
+bool ok = false;         // 假
+
+cout &lt;&lt; flag &lt;&lt; " " &lt;&lt; ok;    // 1 0</code></pre>
+  <div class="out"><b>OUTPUT</b>　1 0　——输出时 true 显示为 1，false 显示为 0</div>
+</div>
+
+<div class="box tip">
+  <span class="lb">bool 是干什么用的？</span>
+  它专门用来<strong>记录"条件成不成立"</strong>，第 5 单元的分支结构会大量用到它。<br>
+  <b>记住：输出时 1 代表真、0 代表假；而任何非 0 的值都能当"真"来用。</b>
+</div>
+
+<h3 id="s2-5">2.5 五种类型对照</h3>
+
+<figure class="figure">
+  <svg class="diagram" viewBox="0 0 830 250" role="img" aria-label="C++ 基本数据类型一览">
+    <text x="24" y="32" font-size="14" font-weight="bold" fill="#1f2937">C++ 一级要掌握的五种基本类型</text>
+
+    <rect x="30" y="58" width="148" height="140" rx="12" fill="#eaf1fe" stroke="#2563eb" stroke-width="2.2"/>
+    <text x="104" y="86" text-anchor="middle" font-size="14" font-family="Consolas,monospace" fill="#1d4ed8" font-weight="bold">int</text>
+    <text x="104" y="112" text-anchor="middle" font-size="11.5" fill="#3b6ea8">整数</text>
+    <text x="104" y="140" text-anchor="middle" font-size="14" font-family="Consolas,monospace" fill="#2563eb">42</text>
+    <text x="104" y="176" text-anchor="middle" font-size="11" fill="#7a93b5">最常用</text>
+
+    <rect x="192" y="58" width="148" height="140" rx="12" fill="#eaf1fe" stroke="#2563eb" stroke-width="2.2"/>
+    <text x="266" y="86" text-anchor="middle" font-size="13" font-family="Consolas,monospace" fill="#1d4ed8" font-weight="bold">long long</text>
+    <text x="266" y="112" text-anchor="middle" font-size="11.5" fill="#3b6ea8">更大的整数</text>
+    <text x="266" y="140" text-anchor="middle" font-size="13" font-family="Consolas,monospace" fill="#2563eb">1e10</text>
+    <text x="266" y="176" text-anchor="middle" font-size="11" fill="#7a93b5">超过 21 亿时用</text>
+
+    <rect x="354" y="58" width="148" height="140" rx="12" fill="#f5f3ff" stroke="#8b5cf6" stroke-width="2.2"/>
+    <text x="428" y="86" text-anchor="middle" font-size="14" font-family="Consolas,monospace" fill="#6d28d9" font-weight="bold">double</text>
+    <text x="428" y="112" text-anchor="middle" font-size="11.5" fill="#7c5cd0">小数</text>
+    <text x="428" y="140" text-anchor="middle" font-size="14" font-family="Consolas,monospace" fill="#6d28d9">3.14</text>
+    <text x="428" y="176" text-anchor="middle" font-size="11" fill="#9a86d4">默认的小数类型</text>
+
+    <rect x="516" y="58" width="148" height="140" rx="12" fill="#e9f8ef" stroke="#2e9e5b" stroke-width="2.2"/>
+    <text x="590" y="86" text-anchor="middle" font-size="14" font-family="Consolas,monospace" fill="#1f7a44" font-weight="bold">char</text>
+    <text x="590" y="112" text-anchor="middle" font-size="11.5" fill="#3b7c5b">单个字符</text>
+    <text x="590" y="140" text-anchor="middle" font-size="14" font-family="Consolas,monospace" fill="#1f7a44">'A'</text>
+    <text x="590" y="176" text-anchor="middle" font-size="11" fill="#5f9b7d">单引号，不是双引号</text>
+
+    <rect x="678" y="58" width="126" height="140" rx="12" fill="#fff9ec" stroke="#f59e0b" stroke-width="2.2"/>
+    <text x="741" y="86" text-anchor="middle" font-size="14" font-family="Consolas,monospace" fill="#b45309" font-weight="bold">bool</text>
+    <text x="741" y="112" text-anchor="middle" font-size="11.5" fill="#a15c1c">真 / 假</text>
+    <text x="741" y="140" text-anchor="middle" font-size="13" font-family="Consolas,monospace" fill="#b45309">true</text>
+    <text x="741" y="176" text-anchor="middle" font-size="11" fill="#b58b4a">输出 1 / 0</text>
+
+    <text x="24" y="232" font-size="12" fill="#8d9d94">口诀：整数 int，大数 long long，小数 double，字符 char，真假 bool</text>
+  </svg>
+  <div class="caption">图 4（SVG）：五种基本数据类型一览</div>
+</figure>
+
+<!-- ============ 3 ============ -->
+<div class="section-header" id="s3">
+  <h2>3　常量：不许改的箱子</h2>
+  <div class="en-title">Constants</div>
+</div>
+
+<h3 id="s3-1">3.1 字面量</h3>
+
+<p>直接写在代码里的值，叫<strong>字面量</strong>。它们本身就带着类型。</p>
+
+<table class="styled">
+  <thead><tr><th>写法</th><th>类型</th><th>说明</th></tr></thead>
+  <tbody>
+    <tr><td><code class="inline">100</code></td><td>int</td><td>不带点的整数默认是 int</td></tr>
+    <tr><td><code class="inline">100LL</code></td><td>long long</td><td>加后缀 LL 表示更大的整数</td></tr>
+    <tr><td><code class="inline">3.5</code></td><td>double</td><td>带小数点的默认是 double</td></tr>
+    <tr><td><code class="inline">3.5f</code></td><td>float</td><td>加后缀 f 表示单精度</td></tr>
+    <tr><td><code class="inline">'A'</code></td><td>char</td><td>单引号包一个字符</td></tr>
+    <tr><td><code class="inline">true</code> / <code class="inline">false</code></td><td>bool</td><td>布尔字面量</td></tr>
+  </tbody>
+</table>
+
+<h3 id="s3-2">3.2 const 常量</h3>
+
+<p>有些箱子一旦放好东西，就不许再改——比如"一年有多少个月"。这类东西用 <code class="inline">const</code> 来保护。</p>
+
+<div class="box tip">
+  <span class="lb">打个比方：</span>
+  <code class="inline">const</code> 就是给箱子<b>上了一把锁</b>——里面的东西能看见、能拿来用，但谁也改不了。<br>
+  而且上锁有个前提：<strong>必须先放好东西，才能锁上</strong>。<br>
+  <b>所以 <code class="inline">const</code> 常量必须在定义的同时就赋值，不能先声明、以后再补。</b>
+</div>
+
+<div class="code-card">
+  <div class="code-head">
+    <span class="dot d1"></span><span class="dot d2"></span><span class="dot d3"></span>
+    <span class="file">const：加了锁的箱子</span>
+    <span class="lang">C++</span>
+  </div>
+  <pre><code>const int MONTHS = 12;      // 定义常量，必须当场赋值
+const double PI = 3.14159;
+
+// MONTHS = 13;             // 如果写这一句，编译会直接报错
+int total = MONTHS * 2;     // 读取是完全可以的
+
+cout &lt;&lt; total;              // 24</code></pre>
+  <div class="out"><b>OUTPUT</b>　24</div>
+</div>
+
+<table class="styled">
+  <thead><tr><th>对比项</th><th>变量</th><th>常量（const）</th></tr></thead>
+  <tbody>
+    <tr><td>能不能改</td><td>随时可以改</td><td><strong>一旦赋值就不能再改</strong></td></tr>
+    <tr><td>定义时要不要给值</td><td>可以先声明后赋值</td><td><strong>必须定义时就赋值</strong></td></tr>
+    <tr><td>改了会怎样</td><td>正常执行</td><td><strong>编译报错</strong></td></tr>
+    <tr><td>典型用法</td><td>循环计数、累加和</td><td>圆周率、月份数、数组长度</td></tr>
+  </tbody>
+</table>
+
+<!-- ============ 4 ============ -->
+<div class="section-header" id="s4">
+  <h2>4　类型转换</h2>
+  <div class="en-title">Type Conversion</div>
+</div>
+
+<h3 id="s4-1">4.1 自动转换</h3>
+
+<figure class="figure">
+  <svg class="diagram" viewBox="0 0 830 250" role="img" aria-label="类型转换示意">
+    <text x="24" y="32" font-size="14" font-weight="bold" fill="#1f2937">不同类型一起运算时，C++ 会先"统一类型"</text>
+
+    <rect x="40" y="62" width="330" height="160" rx="12" fill="#e9f8ef" stroke="#2e9e5b" stroke-width="1.8"/>
+    <text x="205" y="88" text-anchor="middle" font-size="12.5" fill="#1f7a44" font-weight="bold">向"更精细"的方向转换（不会丢东西）</text>
+    <text x="70" y="120" font-size="12.5" font-family="Consolas,monospace" fill="#2c5f45">int  →  double</text>
+    <text x="70" y="150" font-size="11.5" fill="#5f9b7d">3 变成 3.0，值不变</text>
+    <text x="70" y="182" font-size="12.5" font-family="Consolas,monospace" fill="#2c5f45">char  →  int</text>
+    <text x="70" y="206" font-size="11.5" fill="#5f9b7d">'A' 变成 65（字符的编号）</text>
+
+    <rect x="400" y="62" width="400" height="160" rx="12" fill="#fef2f2" stroke="#ef4444" stroke-width="1.8"/>
+    <text x="600" y="88" text-anchor="middle" font-size="12.5" fill="#b91c1c" font-weight="bold">向"更粗糙"的方向转换（会丢东西）</text>
+    <text x="430" y="120" font-size="12.5" font-family="Consolas,monospace" fill="#8c3a3a">double  →  int</text>
+    <text x="430" y="144" font-size="11.5" fill="#c08080">3.9 变成 3 —— 小数部分被直接丢掉，不是四舍五入</text>
+    <text x="430" y="176" font-size="12.5" font-family="Consolas,monospace" fill="#8c3a3a">整数 ÷ 整数</text>
+    <text x="430" y="200" font-size="11.5" fill="#c08080">7 / 2 得到 3 —— 而不是 3.5</text>
+
+    <text x="24" y="244" font-size="12" fill="#8d9d94">"丢东西"的转换是考试最爱考的地方，答题时先问一句：这里的结果还是小数吗？</text>
+  </svg>
+  <div class="caption">图 5（SVG）：自动类型转换的两个方向</div>
+</figure>
+
+<figure class="pic">
+  <img src="../assets/illustrations/cpp-L1-02-04_type_funnel.webp" alt="类型转换的两只漏斗"
+       onerror="this.closest('.pic').classList.add('missing')">
+  <div class="ph">
+    <div class="fn">assets/illustrations/cpp-L1-02-04_type_funnel.webp</div>
+    <div class="ds">【配图位】作坊里并排放着两只金属漏斗：左边一只大口进、小口出，水流（小数）经过后被挤成一粒粒石子（整数），地上散落着被漏掉的细碎水珠，旁边标着"double → int"；右边一只水流与石子混在一起从同一个口流出，旁边标着"int → double"，没有任何东西被漏掉。扣哒世界卡通风格，金属与暖光质感。</div>
+  </div>
+  <figcaption>图 6：往小口径走会漏掉东西</figcaption>
+</figure>
+
+<div class="box tip">
+  <span class="lb">打个比方：</span>
+  类型转换就像把东西倒进漏斗。<br>
+  <b>往大口走</b>（整数变小数）：原来的东西一粒不少，只是形状变了——<strong>安全</strong>。<br>
+  <b>往小口走</b>（小数变整数）：口子太窄，<strong>小数部分会被直接漏掉</strong>——例如 <code class="inline">3.9</code> 只剩 <code class="inline">3</code>。<br>
+  <b>记住：这个"漏掉"不是四舍五入，而是直接砍掉，所以 <code class="inline">3.9</code> 不会变成 4。</b>
+</div>
+
+<div class="code-card">
+  <div class="code-head">
+    <span class="dot d1"></span><span class="dot d2"></span><span class="dot d3"></span>
+    <span class="file">三个必须记住的结果</span>
+    <span class="lang">C++</span>
+  </div>
+  <pre><code>cout &lt;&lt; 7 / 2 &lt;&lt; endl;          // 3    整数除整数，小数被丢掉
+cout &lt;&lt; 7 / 2.0 &lt;&lt; endl;        // 3.5  有一个是小数，就按小数算
+
+int n = 3.9;
+cout &lt;&lt; n &lt;&lt; endl;             // 3    赋给 int 时小数被截掉
+
+float a = 3 + 3.5;              // 3 先转成 3.0，再相加
+cout &lt;&lt; a;                      // 6.5</code></pre>
+  <div class="out"><b>OUTPUT</b>　3<br>3.5<br>3<br>6.5</div>
+</div>
+
+<div class="box remember">
+  <span class="lb">三条规律：</span><br>
+  <b>① 整数 ÷ 整数 = 整数</b>（小数部分直接丢，不是四舍五入）；<br>
+  <b>② 只要有一个是小数，结果就是小数</b>（<code class="inline">7 / 2.0 = 3.5</code>）；<br>
+  <b>③ 小数存进整型变量，小数部分被截掉</b>（<code class="inline">int n = 3.9;</code> 得到 3）。
+</div>
+
+<h3 id="s4-2">4.2 强制转换</h3>
+
+<div class="code-card">
+  <div class="code-head">
+    <span class="dot d1"></span><span class="dot d2"></span><span class="dot d3"></span>
+    <span class="file">明确告诉编译器"我要换类型"</span>
+    <span class="lang">C++</span>
+  </div>
+  <pre><code>int a = 7, b = 2;
+
+cout &lt;&lt; a / b &lt;&lt; endl;                  // 3      整数除法
+cout &lt;&lt; (double)a / b &lt;&lt; endl;           // 3.5    把 a 先变成小数再除
+cout &lt;&lt; a / (double)b &lt;&lt; endl;           // 3.5    把 b 先变成小数也可以
+
+double x = 9.87;
+cout &lt;&lt; (int)x &lt;&lt; endl;                  // 9      强制截断</code></pre>
+  <div class="out"><b>关键</b>　<code>(类型)值</code> 是强制转换的写法；<b>只要转换发生在除法之前，结果就变成小数</b></div>
+</div>
+
+<!-- ============ 5 ============ -->
+<div class="section-header" id="s5">
+  <h2>5　代码实战</h2>
+  <div class="en-title">Level Practice</div>
+</div>
+
+<div class="level-card">
+  <div class="lc-head"><span class="n">关卡</span><h4>名称大师</h4><span class="go">进入关卡 →</span></div>
+  <div class="lc-body">
+    <div class="story">
+      <b>故事：</b>岗哨名册上一排排名字，每一个都对应一只箱子。
+      安雅指着册子说：<b>先把名字登记好，才能往里放东西。</b><br>
+      你发现，如果名字写错一个字，整本名册都会报错——
+      <b>这正是 C++ 里"变量必须先声明、命名必须合法"的道理。</b>
+    </div>
+    <p><strong>思路：</strong>把每一只箱子<strong>先声明好类型</strong>，再按顺序装东西、取东西。
+    命名要合法，前缀后缀不能乱用。</p><figure class="pic">
+  <img src="../assets/stages/py-L1-02-stage1_name_master.webp" alt="名称大师 关卡截图"
+       onerror="this.closest('.pic').classList.add('missing')">
+  <div class="ph">
+    <div class="fn">assets/stages/py-L1-02-stage1_name_master.webp</div>
+    <div class="ds">【配图位】游戏实机截图：名册架前排满贴着名牌的箱子，英雄刚把最后一只箱子的名牌贴好并打开箱盖，箱内数字与名牌上的类型标记一致；屏幕下方代码区显示变量声明与赋值语句，右上角显示"关卡完成"提示。</div>
+  </div>
+  <figcaption>关卡实况：名称大师</figcaption>
+</figure>
+    <div class="code-card">
+      <div class="code-head">
+        <span class="dot d1"></span><span class="dot d2"></span><span class="dot d3"></span>
+        <span class="file">重点示例：先声明，再使用</span>
+        <span class="lang">C++</span>
+      </div>
+      <pre><code>#include &lt;iostream&gt;
+using namespace std;
+
+int main() {
+    // 先把两个变量声明好
+    int startX = 10;
+    int startY = 20;
+
+    hero.moveXY(startX, startY);   // 再拿出来用
+
+    return 0;
+}</code></pre>
+      <div class="out"><b>要点</b>　<code>int startX = 10;</code> 是"声明 + 初始化"一步到位；名字用驼峰或下划线都行</div>
+    </div>
+    <div class="box info">
+      <span class="lb">和本单元的关联：</span>
+      这一关出现的每一个名字，都要先在 C++ 里"声明过"才能使用。<br>
+      <strong>变量的三个动作——声明、赋值、读取——在这里全用上了。</strong>
+    </div>
+    <a class="btn-go" href="https://codecombat.cn/" target="_blank" rel="noopener">去扣哒世界闯这一关 →</a>
+  </div>
+</div>
+
+<figure class="pic">
+  <img src="../assets/illustrations/py-L1-02-02_data_types.webp" alt="四种类型的箱子"
+       onerror="this.closest('.pic').classList.add('missing')">
+  <div class="ph">
+    <div class="fn">assets/illustrations/py-L1-02-02_data_types.webp</div>
+    <div class="ds">【配图位】四只形状与颜色各异的箱子并排放置：石箱刻着整数、水滴箱里盛着小数、卷轴箱里是一枚字母、提灯箱亮着"真/假"两色光。</div>
+  </div>
+  <figcaption>图 7：四只箱子，四种类型</figcaption>
+</figure>
+
+
+<!-- ============ 6 ============ -->
+<div class="section-header" id="s6">
+  <h2>6　常见陷阱</h2>
+  <div class="en-title">Common Pitfalls</div>
+</div>
+
+<div class="cast duck">
+  <img class="ava" src="../assets/ducks/duck_nalfar.webp" alt="扣哒鸭" onerror="this.style.display='none'">
+  <div class="bubble">
+    <div class="who">扣哒鸭 · 调试官</div>
+    变量与类型这一块，失分全在"整数除法"和"截断"上。四条，都是真题的常客。
+  </div>
+</div>
+
+<div class="pit">
+  <div class="pt">
+    <div class="x">1</div>
+    <div class="t"><b>以为 <code class="inline">7 / 2</code> 等于 3.5。</b></div>
+  </div>
+  <div class="duck">
+    <img src="../assets/ducks/duck_zana.webp" alt="扣哒鸭" onerror="this.style.display='none'">
+    <div class="dt"><b>扣哒鸭：</b>两个整数相除，结果还是整数，<strong>小数部分被直接丢掉</strong>。<br>
+    <code>7 / 2</code> 是 <b>3</b>，不是 3.5。<br>
+    想要 3.5，得写成 <code>7 / 2.0</code>，或者先强制转换一个操作数。</div>
+  </div>
+  <div class="fix"><b>正确写法：</b><code class="inline">(double)a / b</code> 或 <code class="inline">a / 2.0</code></div>
+</div>
+
+<div class="pit">
+  <div class="pt">
+    <div class="x">2</div>
+    <div class="t"><b>以为 <code class="inline">int n = 3.9;</code> 会四舍五入得到 4。</b></div>
+  </div>
+  <div class="duck">
+    <img src="../assets/ducks/duck_naria.webp" alt="扣哒鸭" onerror="this.style.display='none'">
+    <div class="dt"><b>扣哒鸭：</b><strong>是"截断"不是"四舍五入"</strong>。<code>3.9</code> 存进 int 就是 <b>3</b>。<br>
+    负数的方向也一样：<code>int n = -3.9;</code> 得到的是 <b>-3</b>。</div>
+  </div>
+  <div class="fix"><b>正确认识：</b>小数转整型是"砍掉小数部分"</div>
+</div>
+
+<div class="pit">
+  <div class="pt">
+    <div class="x">3</div>
+    <div class="t"><b>字符用了双引号。</b></div>
+  </div>
+  <div class="duck">
+    <img src="../assets/ducks/duck_hattori.webp" alt="扣哒鸭" onerror="this.style.display='none'">
+    <div class="dt"><b>扣哒鸭：</b><code>char ch = "A";</code> 会编译报错。<br>
+    <strong>单个字符必须用单引号 <code>'A'</code>；双引号 <code>"A"</code> 是字符串。</strong></div>
+  </div>
+  <div class="fix"><b>正确写法：</b><code class="inline">char ch = 'A';</code></div>
+</div>
+
+<div class="pit">
+  <div class="pt">
+    <div class="x">4</div>
+    <div class="t"><b>忘了先声明类型就直接用变量。</b></div>
+  </div>
+  <div class="duck">
+    <img src="../assets/ducks/duck_illia.webp" alt="扣哒鸭" onerror="this.style.display='none'">
+    <div class="dt"><b>扣哒鸭：</b>直接写 <code>x = 5;</code>，编译器会说不认识 x。<br>
+    <strong>C++ 必须先 <code>int x;</code> 声明，才能赋值。</strong>
+    这一点和不少脚本语言不一样，是 C++ 的特色。</div>
+  </div>
+  <div class="fix"><b>正确写法：</b><code class="inline">int x = 5;</code></div>
+</div>
+
+<!-- ============ 7 ============ -->
+<div class="section-header" id="s7">
+  <h2>7　题目练习</h2>
+  <div class="en-title">Practice</div>
+</div>
+
+<p>前 2 题改编自 C++ 一级真题，其余为原创练习题。</p>
+
+<div class="exam">
+  <div class="eh"><span class="src">改编自 2026 年 6 月 · C++ 一级 · 第 3 题</span><span class="tp">单选题</span></div>
+  <div class="eb">
+    <div class="q">关于下面这段 C++ 代码，说法正确的是（　　）。</div>
+    <pre>float a = 3 + 3.5;
+cout &lt;&lt; a;</pre>
+    <div class="opt">
+      <i>A.</i>代码执行会报错，因为 int 和 double 不能相加<br>
+      <i>B.</i>代码执行会报错，必须写成 <code class="inline">3.0 + 3.5</code> 才行<br>
+      <i>C.</i>能正常执行，输出 <code class="inline">6</code><br>
+      <i>D.</i>能正常执行，输出 <code class="inline">6.5</code>
+    </div>
+    <details><summary>查看答案与详解</summary>
+      <div class="ans"><b>答案：D</b>。当 <code class="inline">int</code> 和 <code class="inline">double</code> 一起运算时，
+      C++ 会把 <code class="inline">int</code> <strong>自动转换成 double</strong>：<br>
+      3 先变成 3.0，再与 3.5 相加，得到 <b>6.5</b>；赋给 float 变量也完全没问题。<br>
+      <b>A、B 错在"会报错"</b>——自动类型转换是 C++ 的常规行为；
+      <b>C 错在结果</b>：只有整数除整数才会丢小数，这里是加法。<br>
+      <span class="tagline">对应小节</span>4.1 自动转换。</div>
+    </details>
+  </div>
+</div>
+
+<div class="exam">
+  <div class="eh"><span class="src">改编自 2026 年 6 月 · C++ 一级 · 第 5 题</span><span class="tp">单选题</span></div>
+  <div class="eb">
+    <div class="q">执行下面的 C++ 代码片段，其输出是（　　）。</div>
+    <pre>int a = 3;
+int b = a;
+a = 4;
+printf("%d %d", a, b);</pre>
+    <div class="opt"><i>A.</i>3 3　　<i>B.</i>4 3　　<i>C.</i>4 4　　<i>D.</i>3 4</div>
+    <details><summary>查看答案与详解</summary>
+      <div class="ans"><b>答案：B</b>。<code class="inline">int b = a;</code> 做的是<b>把 a 当时的值复制一份</b>给 b，
+      此时 b 得到 3。<br>
+      之后 <code class="inline">a = 4;</code> 改的只是 a 自己，<strong>b 不受任何影响</strong>，仍然是 3。<br>
+      所以输出 <b>4 3</b>。<br>
+      <span class="tagline">对应小节</span>1.2 变量的三个动作。</div>
+    </details>
+  </div>
+</div>
+
+<div class="exam">
+  <div class="eh"><span class="src ori">原创练习题</span><span class="tp">单选题</span></div>
+  <div class="eb">
+    <div class="q">下列 C++ 变量名中，<strong>不合法</strong>的是（　　）。</div>
+    <div class="opt">
+      <i>A.</i><code class="inline">_count</code>　　<i>B.</i><code class="inline">count2</code>
+      　　<i>C.</i><code class="inline">2count</code>　　<i>D.</i><code class="inline">Count</code>
+    </div>
+    <details><summary>查看答案与详解</summary>
+      <div class="ans"><b>答案：C</b>。变量名<strong>不能以数字开头</strong>，<code class="inline">2count</code> 不合法。<br>
+      <b>A</b> 以下划线开头是合法的（虽然不建议自己这样命名）；<br>
+      <b>B</b> 数字出现在中间没问题；<br>
+      <b>D</b> 大写字母开头完全合法，注意它和 <code class="inline">count</code> 是<b>两个不同的变量</b>。<br>
+      <span class="tagline">对应小节</span>1.3 命名规则。</div>
+    </details>
+  </div>
+</div>
+
+<div class="exam">
+  <div class="eh"><span class="src ori">原创练习题</span><span class="tp">单选题</span></div>
+  <div class="eb">
+    <div class="q">下列 C++ 代码执行后，输出的结果是（　　）。</div>
+    <pre>int a = 9, b = 2;
+cout &lt;&lt; a / b &lt;&lt; " " &lt;&lt; a % b;</pre>
+    <div class="opt"><i>A.</i>4.5 1　　<i>B.</i>4 1　　<i>C.</i>4 0　　<i>D.</i>5 1</div>
+    <details><summary>查看答案与详解</summary>
+      <div class="ans"><b>答案：B</b>。<br>
+      <code class="inline">a / b</code> 是两个整数相除，结果是 <b>4</b>（9÷2 的商，小数被丢掉）；<br>
+      <code class="inline">a % b</code> 是取余数，9÷2 余 <b>1</b>。<br>
+      所以是 <b>4 1</b>。<br>
+      <b>易错点：</b>A 项把整数除法当成实数除法了。<br>
+      <span class="tagline">对应小节</span>4.1 自动转换。</div>
+    </details>
+  </div>
+</div>
+
+<div class="exam">
+  <div class="eh"><span class="src ori">原创练习题</span><span class="tp">判断题</span></div>
+  <div class="eb">
+    <div class="q">用 <code class="inline">const</code> 定义常量时，可以像普通变量一样先声明、以后再赋值。（　　）</div>
+    <details><summary>查看答案与详解</summary>
+      <div class="ans"><b>答案：错误（×）</b>。常量<strong>必须在定义的同时就赋值</strong>，
+      写成 <code class="inline">const int N; N = 10;</code> 会编译报错。<br>
+      原因很简单：常量的意思就是"一次定好、永不改变"，<b>不给它初始值就再也给不了了。</b><br>
+      <span class="tagline">对应小节</span>3.2 const 常量。</div>
+    </details>
+  </div>
+</div>
+
+<div class="exam">
+  <div class="eh"><span class="src ori">原创练习题</span><span class="tp">单选题</span></div>
+  <div class="eb">
+    <div class="q">下列 C++ 代码执行后，输出的结果是（　　）。</div>
+    <pre>double x = 9.87;
+int y = x;
+bool ok = true;
+cout &lt;&lt; y &lt;&lt; " " &lt;&lt; ok;</pre>
+    <div class="opt"><i>A.</i>9 1　　<i>B.</i>10 1　　<i>C.</i>9.87 1　　<i>D.</i>9 true</div>
+    <details><summary>查看答案与详解</summary>
+      <div class="ans"><b>答案：A</b>。把 double 赋给 int 是<strong>截断</strong>，不是四舍五入，
+      <code class="inline">9.87</code> 变成 <b>9</b>；<br>
+      <code class="inline">bool</code> 输出时 <code class="inline">true</code> 显示为 <b>1</b>。<br>
+      所以是 <b>9 1</b>。<br>
+      <b>易错点：</b>B 项误以为会四舍五入；D 项误以为 bool 会输出 true 这个单词。<br>
+      <span class="tagline">对应小节</span>4.1 自动转换；2.4 布尔型 bool。</div>
+    </details>
+  </div>
+</div>
+
+<div class="exam">
+  <div class="eh"><span class="src ori">原创练习题</span><span class="tp">编程题</span></div>
+  <div class="eb">
+    <div class="q">题目要求：把 17 颗宝石平均分给 5 个人，输出每人分到几颗、还剩几颗。
+    要求先定义好变量再计算。</div>
+    <details><summary>查看参考答案与要点</summary>
+      <div class="ans">
+<pre style="margin:0;background:#131a26;color:#c8d3e0;border-radius:10px;padding:14px 16px">#include &lt;iostream&gt;
+using namespace std;
+
+int main() {
+    int total = 17;              // 宝石总数
+    int people = 5;              // 人数
+
+    int each = total / people;   // 每人分到几颗
+    int left = total % people;   // 还剩几颗
+
+    cout &lt;&lt; each &lt;&lt; " " &lt;&lt; left;
+
+    return 0;
+}</pre>
+      <p style="margin-top:12px"><b>输出：</b>3 2<br>
+      <b>要点：</b><br>
+      ① 17 ÷ 5 的商是 <b>3</b>，用 <code class="inline">/</code> 求；<br>
+      ② 余数是 <b>2</b>，用 <code class="inline">%</code> 求；<br>
+      ③ 三个变量都先声明了类型 <code class="inline">int</code>，才能使用；<br>
+      ④ 这一步是整数除法的典型应用——<strong>"分东西"永远用 / 求商、% 求余</strong>。<br>
+      <span class="tagline">对应小节</span>4.1 自动转换。</p>
+      </div>
+    </details>
+  </div>
+</div>
+
+<!-- ============ 8 ============ -->
+<div class="section-header" id="s8">
+  <h2>8　本单元小结</h2>
+  <div class="en-title">Unit Summary</div>
+</div>
+
+<div class="cast anya">
+  <img class="ava" src="../assets/avatars/anya.webp" alt="安雅" onerror="this.style.display='none'">
+  <div class="bubble">
+    <div class="who">安雅 · 红发队长</div>
+    三句话记住这一单元：<br>
+    <strong>一、C++ 的变量必须先声明类型，才能使用。</strong><br>
+    <strong>二、五种基本类型：整数 int、大整数 long long、小数 double、字符 char、真假 bool。</strong><br>
+    <strong>三、整数除以整数结果是整数；小数存进 int 会被截断。</strong><br>
+    箱子已经认全了。下一单元，我们让这些箱子真正"动起来"——用运算符算出结果。
+  </div>
+</div>
+
+<div class="summary">
+  <h3>你在储藏室里学到了什么</h3>
+  <ul>
+    <li><strong>变量</strong>——内存里的一格，有名字、有类型、有值；<strong>必须先声明类型</strong>。</li>
+    <li><strong>三个动作</strong>——声明 <code class="inline">int a;</code>、赋值 <code class="inline">a = 5;</code>、读取 <code class="inline">cout &lt;&lt; a;</code>。</li>
+    <li><strong>赋值是复制</strong>——<code class="inline">int b = a;</code> 之后改 a，b 不会跟着变。</li>
+    <li><strong>命名规则</strong>——字母数字下划线、不以数字开头、不是关键字、区分大小写。</li>
+    <li><strong>五种类型</strong>——<code class="inline">int</code>、<code class="inline">long long</code>、<code class="inline">double</code>、<code class="inline">char</code>、<code class="inline">bool</code>。</li>
+    <li><strong>引号不能混</strong>——字符用单引号 <code class="inline">'A'</code>，字符串用双引号 <code class="inline">"A"</code>。</li>
+    <li><strong>常量</strong>——<code class="inline">const</code> 定义的箱子一旦赋值就不能再改，且定义时必须赋值。</li>
+    <li><strong>整数除法</strong>——<code class="inline">7 / 2 = 3</code>；要得到小数，至少让一个操作数是小数。</li>
+    <li><strong>类型转换</strong>——小数转整型是"截断"，不是四舍五入。</li>
+  </ul>
+</div>
+
+<div class="pager">
+  <a href="cpp-1-01.html"><div class="k">← 上一单元</div><div class="v">哨火初燃 · 计算机基础与开发环境</div></a>
+  <a href="../index.html" target="_top" class="back"><div class="k">返回</div><div class="v">考纲之路 · 总目录</div></a>
+  <a href="cpp-1-03.html"><div class="k">下一单元 →</div><div class="v">炼金配方台 · 运算符与表达式</div></a>
+</div>
+
+<div class="cta">
+  <h3>下一站：炼金配方台</h3>
+  <p>箱子里有了东西，接下来该让它们<b>互相作用</b>了——
+  加、减、乘、除、取余，还有让变量自己增大的 <code>++</code>。
+  下一单元我们把这些运算符号一个个试过来。</p>
+  <a class="btn-go" href="https://codecombat.cn/" target="_blank" rel="noopener">加入扣哒世界，把这条考纲之路走一遍 →</a>
+</div>
+
+
+</div><!-- /container -->
+</div><!-- /page -->
+
+<script>
+const KEYWORDS = new Set([
+  "int", "long", "short", "unsigned", "signed", "float", "double", "char", "bool", "void",
+  "const", "if", "else", "for", "while", "do", "switch", "case", "default", "break",
+  "continue", "return", "goto", "struct", "class", "union", "enum", "using", "namespace",
+  "std", "main", "true", "false", "cin", "cout", "cerr", "endl", "string", "sizeof",
+  "include", "define", "new", "delete", "public", "private", "static", "inline", "nullptr"
+]);
+
+function esc(s){ return s.replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;'); }
+
+function highlight(src){
+  let out = '', i = 0;
+  const n = src.length;
+  while (i < n){
+    const c = src[i];
+    /* 预处理指令：#include / #define，整行只在行首生效 */
+    if (c === '#' && (i === 0 || src[i-1] === '\n')){
+      let j = i;
+      while (j < n && /[A-Za-z]/.test(src[j])) j++;
+      out += '<span class="kw">' + esc(src.slice(i, j)) + '</span>';
+      let k = src.indexOf('\n', j); if (k < 0) k = n;
+      if (j < k) out += '<span class="st">' + esc(src.slice(j, k)) + '</span>';
+      i = k; continue;
+    }
+    /* 行注释 // */
+    if (c === '/' && src[i+1] === '/'){
+      let j = src.indexOf('\n', i); if (j < 0) j = n;
+      out += '<span class="cm">' + esc(src.slice(i, j)) + '</span>';
+      i = j; continue;
+    }
+    /* 块注释 */
+    if (c === '/' && src[i+1] === '*'){
+      let j = src.indexOf('*/', i + 2); j = j < 0 ? n : j + 2;
+      out += '<span class="cm">' + esc(src.slice(i, j)) + '</span>';
+      i = j; continue;
+    }
+    /* 字符串与字符字面量 */
+    if (c === '"' || c === "'"){
+      let j = i + 1;
+      while (j < n && src[j] !== c){ if (src[j] === '\\') j++; j++; }
+      j = Math.min(j + 1, n);
+      out += '<span class="st">' + esc(src.slice(i, j)) + '</span>';
+      i = j; continue;
+    }
+    /* 数字 */
+    if (/[0-9]/.test(c)){
+      let j = i;
+      while (j < n && /[0-9.]/.test(src[j])) j++;
+      out += '<span class="nu">' + esc(src.slice(i, j)) + '</span>';
+      i = j; continue;
+    }
+    /* 标识符：关键字 / 函数名 / 普通名字 */
+    if (/[A-Za-z_]/.test(c)){
+      let j = i;
+      while (j < n && /[A-Za-z0-9_]/.test(src[j])) j++;
+      const w = src.slice(i, j);
+      if (KEYWORDS.has(w)) out += '<span class="kw">' + esc(w) + '</span>';
+      else if (src[j] === '(') out += '<span class="fn">' + esc(w) + '</span>';
+      else out += esc(w);
+      i = j; continue;
+    }
+    out += esc(c); i++;
+  }
+  return out;
+}
+
+document.querySelectorAll('.code-card pre code').forEach(block => {
+  block.innerHTML = highlight(block.textContent);
+});
+
+if (location.search.indexOf('expand') >= 0) {
+  document.querySelectorAll('details').forEach(d => d.open = true);
+}
+document.querySelectorAll('.sidebar-nav a').forEach(a => {
+  a.addEventListener('click', () => {
+    if (window.innerWidth <= 900) document.querySelector('.sidebar-nav').classList.remove('active');
+  });
+});
+</script>
+</body>
+</html>

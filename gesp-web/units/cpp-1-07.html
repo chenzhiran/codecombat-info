@@ -1,0 +1,1328 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="copyright" content="CodeCombat Inc. codecombat.cn">
+<title>迷雾中的脚印 · 注释、调试与综合项目 | 扣哒考级 · GESP C++ 一级</title>
+<style>
+  :root{
+    --primary:#2563eb; --primary-light:#4f8ff0; --primary-lighter:#eaf1fe; --primary-dark:#1b47a8;
+    --brand:#ff6b35; --brand-dark:#e8541f; --brand-soft:#fff3ec;
+    --night:#131c2b; --night-2:#1e2a3a; --gold:#f5b301;
+    --text:#242e3d; --dim:#68788f; --dim2:#93a2b6;
+    --bg:#ffffff; --bg-soft:#f7f9fd; --line:#e2e9f4; --sidebar:274px;
+    --code-bg:#131a26; --code-tx:#c8d3e0;
+    --code-kw:#c678dd; --code-st:#98c379; --code-nu:#d19a66; --code-cm:#5f7488; --code-fn:#e5c07b;
+  }
+  *{margin:0;padding:0;box-sizing:border-box}
+  html{scroll-behavior:smooth}
+  body{font-family:"PingFang SC","Microsoft YaHei","Segoe UI",-apple-system,sans-serif;line-height:1.9;color:var(--text);background:var(--bg);font-size:15.5px}
+  .sidebar-nav{position:fixed;top:0;left:0;width:var(--sidebar);height:100vh;overflow-y:auto;background:linear-gradient(180deg,#0c1626,#14243c);padding:14px 0 40px;z-index:100;border-right:3px solid var(--brand);transition:transform .3s ease}
+  .sidebar-nav::-webkit-scrollbar{width:5px}
+  .sidebar-nav::-webkit-scrollbar-thumb{background:var(--brand);border-radius:4px}
+  .sb-brand{display:flex;align-items:center;gap:10px;padding:10px 13px 12px;border-bottom:1px solid #233752;margin-bottom:8px}
+  .sidebar-nav a.sb-logo{display:flex;align-items:center;justify-content:center;flex-shrink:0;padding:0;border-left:none;transition:.2s}
+  .sb-logo:hover{transform:scale(1.08)}
+  .sb-logo img{height:34px;width:34px;display:block;object-fit:contain;border-radius:8px}
+  .sb-brand b{color:#f2f6fa;font-size:14px;letter-spacing:.5px;display:block;line-height:1.4}
+  .sb-brand span{color:#7f95ab;font-size:11.5px;display:block;line-height:1.4}
+  .nav-title{color:#ffb894;font-size:12px;font-weight:800;padding:10px 18px 6px;letter-spacing:1.2px}
+  .sidebar-nav a{display:block;color:#c3d0dc;text-decoration:none;padding:6px 18px;font-size:12.5px;line-height:1.55;border-left:3px solid transparent;transition:.18s}
+  .sidebar-nav a:hover{color:#fff;background:rgba(255,107,53,.16);border-left-color:var(--brand)}
+  .sidebar-nav a.nav-section{color:#ffb894;font-weight:700;font-size:13px;margin-top:11px;padding-top:10px;border-top:1px solid #233752}
+  .sidebar-nav a.nav-section:first-of-type{border-top:none;margin-top:0;padding-top:6px}
+  .sidebar-nav a.nav-sub{padding-left:30px;color:#93a8bc;font-size:12px}
+  .sidebar-nav a.nav-sub:hover{color:#fff}
+  .sb-back{margin:16px 14px 0;display:block;text-align:center;padding:9px;border-radius:9px;background:#1e304a;color:#a9c0d6 !important;font-size:12px;font-weight:700;border-left:none !important}
+  .sb-back:hover{background:var(--brand) !important;color:#fff !important}
+  .nav-toggle{display:none;position:fixed;top:14px;left:14px;z-index:120;background:var(--brand);color:#fff;border:none;border-radius:9px;padding:9px 13px;font-size:15px;cursor:pointer;box-shadow:0 4px 14px rgba(0,0,0,.25)}
+  .page{margin-left:var(--sidebar)}
+  .hero{position:relative;overflow:hidden;padding:44px 52px;color:#fff;background:linear-gradient(125deg,#0a1220 0%,#16294a 46%,#8a3a16 132%)}
+  .hero::after{content:"";position:absolute;right:-90px;top:-110px;width:400px;height:400px;border-radius:50%;background:radial-gradient(circle,rgba(245,179,1,.30),transparent 68%)}
+  .hero-top{display:flex;gap:36px;align-items:center;position:relative;z-index:2}
+  .hero-txt{flex:1;min-width:0}
+  .hero .crumb{font-size:11.5px;color:#ffb894;letter-spacing:1.5px;font-weight:700;margin-bottom:14px}
+  .hero h1{font-size:31px;font-weight:800;line-height:1.3;letter-spacing:.6px;margin-bottom:8px}
+  .hero h1 .sub{display:block;font-size:18px;font-weight:700;color:#ffd2b3;margin-top:6px;letter-spacing:.3px}
+  .hero .en{font-size:13px;color:#9db4c8;font-style:italic;margin-bottom:18px}
+  .hero .tags{display:flex;flex-wrap:wrap;gap:8px}
+  .tag{font-size:11.5px;padding:4px 12px;border-radius:20px;background:rgba(255,255,255,.12);border:1px solid rgba(255,255,255,.22);color:#e8f0f6;font-weight:600}
+  .tag.hot{background:rgba(255,107,53,.92);border-color:transparent;color:#fff}
+  .hero-card{flex-shrink:0;width:200px;text-align:center}
+  .hero-card .ava{width:148px;height:148px;border-radius:50%;object-fit:cover;object-position:top center;border:4px solid rgba(255,180,140,.6);box-shadow:0 14px 34px rgba(0,0,0,.45);background:#24344a}
+  .hero-card .nm{font-size:15px;font-weight:800;color:#fff;margin-top:10px}
+  .hero-card .ti{font-size:11.5px;color:#ffb894;margin-top:2px}
+  .container{max-width:1080px;margin:0 auto;padding:38px 52px 70px}
+  .lead{font-size:15.5px;line-height:2.05;color:#333f52;background:linear-gradient(120deg,#fff8f3,#f7fbf8);border-left:5px solid var(--brand);border-radius:0 14px 14px 0;padding:22px 26px;margin-bottom:32px}
+  .lead b{color:var(--brand-dark)}
+  .cast{display:flex;gap:16px;align-items:flex-start;border-radius:16px;padding:18px 22px;margin:24px 0}
+  .cast .ava{width:72px;height:72px;border-radius:50%;object-fit:cover;object-position:top center;flex-shrink:0;background:#e8eef5}
+  .cast .bubble{position:relative;font-size:14px;line-height:1.95;padding-top:2px;flex:1}
+  .cast .who{font-size:12px;font-weight:800;margin-bottom:5px;letter-spacing:.5px}
+  .cast.anya{background:var(--brand-soft);border:1px solid #ffdcc9}
+  .cast.anya .who{color:var(--brand-dark)}
+  .cast.anya .bubble{color:#5c4636}
+  .cast.duck{background:#fff5f5;border:1px solid #fbd5d5}
+  .cast.duck .who{color:#b91c1c}
+  .cast.duck .bubble{color:#5c4141}
+  .cast.teacher{background:linear-gradient(120deg,#f4f7fb,#ffffff);border:1px solid #dbe4f0}
+  .cast.teacher .who{color:#1e293b}
+  .cast.teacher .bubble{color:#3c4a5a}
+  .cast.hero{background:#f2f7fd;border:1px solid #cfe0f5}
+  .cast.hero .who{color:#1b47a8}
+  .cast.hero .bubble{color:#3a4658}
+  .goal-grid{display:grid;grid-template-columns:1fr 1fr;gap:16px;margin-bottom:36px}
+  .goal{border:1px solid var(--line);border-radius:15px;padding:19px 21px;background:#fff;box-shadow:0 4px 16px rgba(31,122,68,.05)}
+  .goal h4{font-size:14px;font-weight:800;margin-bottom:11px;display:flex;align-items:center;gap:8px;color:var(--primary-dark)}
+  .goal h4 .ic{width:22px;height:22px;border-radius:7px;background:var(--primary-lighter);display:flex;align-items:center;justify-content:center;font-size:12px}
+  .goal ul{list-style:none}
+  .goal li{font-size:13.5px;color:#48576b;line-height:1.9;padding-left:18px;position:relative}
+  .goal li::before{content:"▸";position:absolute;left:0;color:var(--primary);font-weight:800}
+  .goal.syllabus li::before{content:"✓"}
+  .section-header{margin:52px 0 24px;padding-bottom:12px;border-bottom:3px solid var(--brand);display:flex;align-items:baseline;gap:14px;flex-wrap:wrap}
+  .section-header h2{font-size:22px;font-weight:800;color:var(--night);letter-spacing:.4px}
+  .section-header .en-title{font-size:12px;color:var(--dim2);font-style:italic}
+  h3{font-size:17.5px;font-weight:800;margin:34px 0 14px;color:var(--night);display:flex;align-items:center;gap:10px}
+  h3::before{content:"";width:5px;height:17px;border-radius:3px;background:var(--brand);flex-shrink:0}
+  h4{font-size:15px;font-weight:800;margin:24px 0 10px;color:#2b4260}
+  p{margin:12px 0;color:#3a4658;line-height:2}
+  strong{color:var(--primary-dark)}
+  code.inline{background:var(--primary-lighter);color:var(--primary-dark);padding:2px 7px;border-radius:6px;font-family:"SFMono-Regular",Consolas,Menlo,monospace;font-size:.9em;font-weight:600}
+  .figure{margin:24px 0;text-align:center}
+  .figure svg.diagram{max-width:100%;height:auto;background:#fff;border:1px solid var(--line);border-radius:14px;padding:10px}
+  .figure .caption{font-size:12.5px;color:var(--dim2);margin-top:9px}
+  .pic{margin:26px 0;text-align:center}
+  .pic img{max-width:100%;border-radius:16px;box-shadow:0 10px 28px rgba(30,60,45,.15);display:block;margin:0 auto}
+  .pic figcaption{font-size:12.5px;color:var(--dim2);margin-top:9px}
+  .pic .ph{display:none}
+  .pic.missing img{display:none}
+  .pic.missing .ph{display:flex;flex-direction:column;align-items:center;justify-content:center;gap:9px;border:2px dashed #c9d9e8;border-radius:16px;background:linear-gradient(135deg,#f8fbfe,#eef6ff);padding:40px 26px;color:#7a8fa8}
+  .pic.missing .ph .fn{font-family:Consolas,monospace;font-size:12.5px;color:#2563eb;font-weight:700;word-break:break-all}
+  .pic.missing .ph .ds{font-size:12.5px;line-height:1.8;max-width:560px}
+  .box{border-radius:13px;padding:16px 20px;margin:20px 0;font-size:14px;line-height:1.95}
+  .box .lb{font-weight:800;margin-right:6px}
+  .info{background:#eef6ff;border-left:5px solid #3b82f6;color:#274768}
+  .info .lb{color:#1d4ed8}
+  .tip{background:#fff9ec;border-left:5px solid #f59e0b;color:#6b4e13}
+  .tip .lb{color:#b45309}
+  .remember{background:var(--primary-lighter);border-left:5px solid var(--primary);color:#1d3a6b}
+  .remember .lb{color:var(--primary-dark)}
+  .warn{background:#fef2f2;border-left:5px solid #ef4444;color:#7f2b2b}
+  .warn .lb{color:#b91c1c}
+  .code-card{margin:20px 0;border-radius:14px;overflow:hidden;box-shadow:0 10px 28px rgba(20,40,28,.20)}
+  .code-head{display:flex;align-items:center;gap:9px;background:#1a2434;padding:9px 14px}
+  .code-head .dot{width:10px;height:10px;border-radius:50%}
+  .code-head .d1{background:#ff5f57}.code-head .d2{background:#febc2e}.code-head .d3{background:#28c840}
+  .code-head .file{color:#8fa6c0;font-size:11.5px;font-family:Consolas,monospace;margin-left:6px}
+  .code-head .lang{margin-left:auto;font-size:10.5px;font-weight:800;color:#0d141f;background:#4f8ff0;padding:2px 9px;border-radius:6px;letter-spacing:.4px}
+  .code-card pre{background:var(--code-bg);padding:18px 20px;overflow-x:auto;margin:0;font-family:"SFMono-Regular",Consolas,"Courier New",monospace;font-size:13.5px;line-height:1.85}
+  .code-card pre::-webkit-scrollbar{height:8px}
+  .code-card pre::-webkit-scrollbar-thumb{background:#31445c;border-radius:4px}
+  .code-card code{color:var(--code-tx);white-space:pre}
+  .kw{color:var(--code-kw);font-weight:600}
+  .st{color:var(--code-st)}
+  .nu{color:var(--code-nu)}
+  .cm{color:var(--code-cm);font-style:italic}
+  .fn{color:var(--code-fn)}
+  .out{background:#0f1621;color:#7fb3f5;font-family:Consolas,monospace;font-size:13px;padding:12px 20px;border-top:1px solid #22304a}
+  .out b{color:#c9d6cd;font-weight:600;font-size:11.5px;letter-spacing:1px}
+  .out.err{color:#fca5a5}
+  table.styled{width:100%;border-collapse:collapse;margin:20px 0;font-size:13.5px;border-radius:12px;overflow:hidden;box-shadow:0 4px 16px rgba(31,122,68,.07)}
+  table.styled thead{background:var(--brand)}
+  table.styled th{color:#fff;padding:11px 14px;text-align:left;font-weight:700;font-size:13px}
+  table.styled td{padding:10px 14px;border-bottom:1px solid var(--line);color:#445266;vertical-align:top}
+  table.styled tbody tr:nth-child(even){background:var(--bg-soft)}
+  table.styled tbody tr:last-child td{border-bottom:none}
+  .level-card{border:1px solid var(--line);border-radius:16px;overflow:hidden;margin:22px 0;box-shadow:0 6px 22px rgba(31,122,68,.07)}
+  .level-card .lc-head{background:linear-gradient(100deg,#17283a,#8a3a16);color:#fff;padding:15px 22px;display:flex;align-items:center;gap:12px;flex-wrap:wrap}
+  .level-card .lc-head .n{font-size:12px;font-weight:800;background:rgba(255,255,255,.2);padding:3px 10px;border-radius:20px}
+  .level-card .lc-head h4{margin:0;color:#fff;font-size:16px}
+  .level-card .lc-head .go{margin-left:auto;font-size:11.5px;color:#ffd2b3}
+  .level-card .lc-body{padding:20px 24px;background:#fff}
+  .level-card .story{background:#f9fbfd;border-left:4px solid #93c5fd;border-radius:0 10px 10px 0;padding:13px 18px;margin:0 0 16px;font-size:14px;line-height:1.95;color:#3f5163}
+  .level-card .story b{color:#1d4ed8}
+  .btn-go{display:inline-flex;align-items:center;gap:8px;background:linear-gradient(135deg,var(--brand),var(--brand-dark));color:#fff;text-decoration:none;font-weight:800;font-size:13.5px;padding:10px 22px;border-radius:11px;box-shadow:0 8px 20px rgba(255,107,53,.32);transition:.2s}
+  .btn-go:hover{transform:translateY(-2px);box-shadow:0 12px 26px rgba(255,107,53,.42)}
+  .pit{border:1px solid #f6dede;border-radius:14px;overflow:hidden;margin:16px 0;background:#fff}
+  .pit .pt{display:flex;gap:12px;padding:14px 18px;background:#fffafa;align-items:flex-start}
+  .pit .x{width:26px;height:26px;border-radius:9px;background:#fee;color:#dc2626;display:flex;align-items:center;justify-content:center;font-weight:800;flex-shrink:0;font-size:13px}
+  .pit .t{font-size:13.5px;line-height:1.9;color:#5c4a4a;flex:1}
+  .pit .t b{color:#b91c1c}
+  .pit .duck{display:flex;gap:12px;padding:13px 18px;background:#fff5f5;border-top:1px dashed #f3d0d0;align-items:flex-start}
+  .pit .duck img{width:48px;height:48px;object-fit:contain;flex-shrink:0;margin-top:2px}
+  .pit .duck .dt{font-size:13.5px;line-height:1.9;color:#7a3b3b}
+  .pit .duck .dt b{color:#b91c1c}
+  .pit .fix{padding:12px 18px;background:#f2f7fd;border-top:1px dashed #cfe0f5;font-size:13.5px;color:#1d3a6b}
+  .pit .fix b{color:var(--primary-dark)}
+  .exam{border:1px solid #dfe7f5;border-radius:15px;margin:16px 0;overflow:hidden;background:#fff;box-shadow:0 4px 16px rgba(38,62,120,.06)}
+  .exam .eh{display:flex;align-items:center;gap:10px;padding:11px 18px;background:linear-gradient(100deg,#eef4ff,#f7faff);border-bottom:1px solid #e3ebf8;flex-wrap:wrap}
+  .exam .eh .src{font-size:11px;font-weight:800;color:#fff;background:#2563eb;padding:2.5px 10px;border-radius:20px}
+  .exam .eh .src.ori{background:#8b5cf6}
+  .exam .eh .tp{font-size:11.5px;color:#5b7ba8;font-weight:700}
+  .exam .eb{padding:16px 20px}
+  .exam .q{font-weight:700;font-size:14px;color:#1e2a3e;line-height:1.9;margin-bottom:10px}
+  .exam .opt{font-size:13.5px;color:#48576b;line-height:2.05;padding-left:6px}
+  .exam .opt i{font-style:normal;font-weight:800;color:var(--primary-dark);margin-right:7px}
+  .exam pre{margin:12px 0;background:#1b2a21;border-radius:10px;padding:14px 16px;overflow-x:auto;font-family:Consolas,monospace;font-size:13px;line-height:1.8;color:var(--code-tx)}
+  .exam details{margin-top:10px;border-top:1px dashed var(--line);padding-top:10px}
+  .exam summary{cursor:pointer;font-size:12.5px;font-weight:800;color:#2563eb;outline:none;user-select:none}
+  .exam details .ans{font-size:13.5px;color:#3a4658;line-height:1.95;margin-top:9px;background:var(--bg-soft);padding:13px 16px;border-radius:10px}
+  .exam details .ans b{color:var(--primary-dark)}
+  .exam details .ans .tagline{display:inline-block;font-size:11px;background:#e0f2fe;color:#0e7490;padding:1.5px 8px;border-radius:6px;font-weight:700;margin-right:6px}
+  .summary{margin:40px 0 20px;border-radius:18px;padding:26px 30px;background:linear-gradient(130deg,#fff8f3,#ffffff);border:1px solid #ffe0cf}
+  .summary h3{margin-top:0}
+  .summary ul{list-style:none;margin-top:10px}
+  .summary li{font-size:14px;line-height:2;color:#3d4d66;padding-left:24px;position:relative}
+  .summary li::before{content:"◆";position:absolute;left:0;color:var(--brand);font-size:11px;top:6px}
+  .pager{display:flex;gap:14px;margin-top:30px;flex-wrap:wrap}
+  .pager a{flex:1;min-width:200px;text-decoration:none;border:1px solid var(--line);border-radius:14px;padding:16px 20px;background:#fff;transition:.2s;display:block}
+  .pager a:hover{border-color:var(--brand);box-shadow:0 10px 26px rgba(255,107,53,.14);transform:translateY(-2px)}
+  .pager a .k{font-size:11px;color:var(--dim2);font-weight:700;letter-spacing:1px}
+  .pager a .v{font-size:14px;font-weight:800;color:var(--night);margin-top:5px}
+  .pager a.back{background:var(--brand-soft);border-color:transparent;text-align:center}
+  .pager a.back .v{color:var(--brand-dark)}
+  .cta{margin-top:26px;border-radius:20px;padding:30px 34px;color:#fff;position:relative;overflow:hidden;background:linear-gradient(120deg,#16202f,#2b3a52 46%,#a8431c 132%)}
+  .cta::after{content:"";position:absolute;right:-70px;bottom:-90px;width:280px;height:280px;border-radius:50%;background:radial-gradient(circle,rgba(255,140,80,.45),transparent 68%)}
+  .cta h3{color:#fff;margin:0 0 10px;position:relative;z-index:2}
+  .cta h3::before{background:var(--brand)}
+  .cta p{color:#d8e0ef;font-size:13.5px;margin:0 0 18px;position:relative;z-index:2;max-width:640px}
+  .cta .btn-go{position:relative;z-index:2}
+  @media(max-width:900px){
+    .sidebar-nav{transform:translateX(-100%)}
+    .sidebar-nav.active{transform:translateX(0)}
+    .nav-toggle{display:block}
+    .page{margin-left:0}
+    .hero{padding:70px 22px 34px}
+    .hero-top{flex-direction:column-reverse;text-align:center}
+    .hero-card{width:auto}
+    .container{padding:26px 20px 60px}
+    .goal-grid{grid-template-columns:1fr}
+  }
+</style>
+</head>
+<body>
+
+<button class="nav-toggle" onclick="document.querySelector('.sidebar-nav').classList.toggle('active')">&#9776;</button>
+
+<nav class="sidebar-nav">
+  <div class="sb-brand">
+    <a class="sb-logo" href="https://codecombat.cn/" target="_blank" rel="noopener" title="访问 CodeCombat 扣哒世界官网">
+      <img src="../assets/logo.png" alt="CodeCombat 扣哒世界">
+    </a>
+    <div><b>迷雾中的脚印</b><span>烛火岗哨 · C++ 一级 第 7 单元</span></div>
+  </div>
+  <div class="nav-title">本单元目录</div>
+
+  <a href="#s0" class="nav-section">0　单元导语与目标</a>
+  <a href="#s0-1" class="nav-sub">0.1 学习目标</a>
+  <a href="#s0-2" class="nav-sub">0.2 考纲对照</a>
+  <a href="#s1" class="nav-section">1　注释：写给人的话</a>
+  <a href="#s1-1" class="nav-sub">1.1 两种注释写法</a>
+  <a href="#s1-2" class="nav-sub">1.2 注释有什么用</a>
+  <a href="#s1-3" class="nav-sub">1.3 注释的三个注意点</a>
+  <a href="#s2" class="nav-section">2　读懂程序的"抱怨"</a>
+  <a href="#s2-1" class="nav-sub">2.1 三类错误</a>
+  <a href="#s2-2" class="nav-sub">2.2 最常见的五种编译错误</a>
+  <a href="#s2-3" class="nav-sub">2.3 怎么读错误信息</a>
+  <a href="#s3" class="nav-section">3　调试：把错误找出来</a>
+  <a href="#s3-1" class="nav-sub">3.1 输出中间变量</a>
+  <a href="#s3-2" class="nav-sub">3.2 缩小范围</a>
+  <a href="#s3-3" class="nav-sub">3.3 检查清单</a>
+  <a href="#s4" class="nav-section">4　综合项目：鸡兔同笼</a>
+  <a href="#s4-1" class="nav-sub">4.1 分析问题</a>
+  <a href="#s4-2" class="nav-sub">4.2 用枚举求解</a>
+  <a href="#s4-3" class="nav-sub">4.3 完整程序</a>
+  <a href="#s5" class="nav-section">5　代码实战</a>
+  <a href="#s6" class="nav-section">6　常见陷阱</a>
+  <a href="#s7" class="nav-section">7　题目练习</a>
+  <a href="#s8" class="nav-section">8　本单元小结</a>
+  <a href="#s9" class="nav-section">9　C++ 一级总复习</a>
+
+  <a href="../index.html" target="_top" class="sb-back">返回考纲之路</a>
+</nav>
+
+<div class="page">
+
+<div class="hero">
+  <div class="hero-top">
+    <div class="hero-txt">
+      <div class="crumb">扣哒考级 · GESP C++ 一级 · 第 7 单元　|　烛火岗哨 CANDLEWATCH OUTPOST</div>
+      <h1>迷雾中的脚印
+        <span class="sub">注释、调试与综合项目</span>
+      </h1>
+      <div class="en">Comments, Debugging &amp; Project</div>
+      <div class="tags">        <span class="tag hot">考纲 · 注释与调试</span>
+        <span class="tag">// 与 /* */</span>
+        <span class="tag">编译错误</span>
+        <span class="tag">调试方法</span>
+        <span class="tag">鸡兔同笼</span></div>
+    </div>
+    <div class="hero-card">
+      <img class="ava" src="../assets/avatars/anya.webp" alt="安雅" onerror="this.style.background='#24344a';this.src='../assets/heroes/anya.webp'">
+      <div class="nm">安雅</div>
+      <div class="ti">红发队长 · 你的向导</div>
+    </div>
+  </div>
+</div>
+
+<div class="container">
+
+
+
+
+
+<div class="lead">
+  夜雾从山谷漫上来，把整条山道裹成一片灰白。<br>
+  你低头看路——<b>只有一串发光的脚印，一路向前。</b><br>
+  塔林在后面喊：跟着脚印走。<b>它是之前的人留下的记号，
+  告诉你哪条路能走通、哪条走不通。</b><br>
+  你忽然懂了：<b>程序里的注释，就是这样一串脚印。</b>
+</div>
+
+<div class="cast anya">
+  <img class="ava" src="../assets/avatars/anya.webp" alt="安雅" onerror="this.style.display='none'">
+  <div class="bubble">
+    <div class="who">安雅 · 红发队长</div>
+    这是 C++ 一级的最后一个单元，也是最重要的一单元。<br>
+    前面六个单元教你"怎么写出能跑的代码"，这一单元教你
+    <strong>怎么让代码不出错、出了错怎么找出来</strong>。<br>
+    而且最后我们有一道压轴的综合题——<b>鸡兔同笼</b>。
+  </div>
+</div>
+
+<figure class="pic">
+  <img src="../assets/illustrations/py-L1-07-01_foggy_trail.webp" alt="迷雾中的脚印"
+       onerror="this.closest('.pic').classList.add('missing')">
+  <div class="ph">
+    <div class="fn">assets/illustrations/py-L1-07-01_foggy_trail.webp</div>
+    <div class="ds">【配图位】夜雾笼罩的山道：路边立着一排只有守夜人能读懂的发光路标（象征注释），路标的光柔和地照亮脚下，但不改变道路本身；远处隐约可见岗哨塔尖的青蓝色火光。</div>
+  </div>
+  <figcaption>图 1：烛火岗哨·迷雾中的脚印——今天要从这里开始</figcaption>
+</figure>
+
+<!-- ============ 0 ============ -->
+<div class="section-header" id="s0">
+  <h2>0　单元导语与目标</h2>
+  <div class="en-title">Unit Overview</div>
+</div>
+
+<h3 id="s0-1">0.1 学习目标</h3>
+<div class="goal-grid">
+  <div class="goal">
+    <h4><span class="ic">1</span>学完这个单元，你将能……</h4>
+    <ul>
+      <li>正确使用 <code class="inline">//</code> 与 <code class="inline">/* */</code> 两种注释</li>
+      <li>说清注释在程序里的作用</li>
+      <li>分清编译错误、运行错误与逻辑错误</li>
+      <li>读懂编译器给出的错误提示</li>
+      <li>用"输出中间变量"的办法定位错误</li>
+      <li>独立完成鸡兔同笼这道综合题</li>
+    </ul>
+  </div>
+  <div class="goal syllabus">
+    <h4><span class="ic">2</span>对标 GESP 考纲（C++ 一级）</h4>
+    <ul>
+      <li>掌握注释的写法与作用</li>
+      <li>了解程序错误的类型与常见成因</li>
+      <li>掌握基本的调试方法</li>
+      <li>能综合运用顺序、分支、循环解决实际问题</li>
+      <li>考核目标：能独立写出结构完整、逻辑正确的程序</li>
+    </ul>
+  </div>
+</div>
+
+<h3 id="s0-2">0.2 考纲对照</h3>
+<table class="styled">
+  <thead><tr><th>本单元小节</th><th>对应考纲条目</th><th>真题常考形式</th></tr></thead>
+  <tbody>
+    <tr><td>1　注释</td><td>注释的写法与作用</td><td>"注释里不能混用中英文"对不对</td></tr>
+    <tr><td>2　三类错误</td><td>程序错误的类型</td><td>某句代码是编译不过，还是能编译但结果不对</td></tr>
+    <tr><td>3　调试方法</td><td>调试的基本操作</td><td>怎么找出错误在哪一行</td></tr>
+    <tr><td>4　综合项目</td><td>顺序、分支、循环的综合运用</td><td>鸡兔同笼：判断程序能不能求解</td></tr>
+  </tbody>
+</table>
+
+<!-- ============ 1 ============ -->
+<div class="section-header" id="s1">
+  <h2>1　注释：写给人的话</h2>
+  <div class="en-title">Comments</div>
+</div>
+
+<h3 id="s1-1">1.1 两种注释写法</h3>
+
+<figure class="figure">
+  <svg class="diagram" viewBox="0 0 830 250" role="img" aria-label="两种注释写法">
+    <text x="24" y="32" font-size="14" font-weight="bold" fill="#1f2937">注释：给人看，不给计算机看</text>
+
+    <rect x="40" y="58" width="370" height="170" rx="12" fill="#eaf1fe" stroke="#2563eb" stroke-width="2"/>
+    <text x="225" y="86" text-anchor="middle" font-size="13" font-family="Consolas,monospace" fill="#1d4ed8" font-weight="bold">// 单行注释</text>
+    <text x="66" y="120" font-size="11.5" font-family="Consolas,monospace" fill="#3b6ea8">int a = 5;   // 给 a 赋初值</text>
+    <text x="66" y="148" font-size="11.5" font-family="Consolas,monospace" fill="#3b6ea8">// 这一整行都是注释</text>
+    <text x="66" y="180" font-size="11.5" fill="#7a93b5">从 // 开始，到这一行结束为止</text>
+    <text x="66" y="204" font-size="11.5" fill="#7a93b5">后面的内容程序都不看</text>
+
+    <rect x="430" y="58" width="360" height="170" rx="12" fill="#e9f8ef" stroke="#2e9e5b" stroke-width="2"/>
+    <text x="610" y="86" text-anchor="middle" font-size="13" font-family="Consolas,monospace" fill="#1f7a44" font-weight="bold">/* 多行注释 */</text>
+    <text x="456" y="120" font-size="11.5" font-family="Consolas,monospace" fill="#2c5f45">/* 这一整段都是注释</text>
+    <text x="456" y="146" font-size="11.5" font-family="Consolas,monospace" fill="#2c5f45">   可以写很多行</text>
+    <text x="456" y="172" font-size="11.5" font-family="Consolas,monospace" fill="#2c5f45">   直到遇到 */ 为止  */</text>
+    <text x="456" y="204" font-size="11.5" fill="#5f9b7d">适合写一段说明或临时屏蔽一段代码</text>
+
+    <text x="24" y="248" font-size="12" fill="#8d9d94">两者都不影响程序运行——注释在编译时就被丢掉了</text>
+  </svg>
+  <div class="caption">图 2（SVG）：两种注释写法</div>
+</figure>
+
+<div class="code-card">
+  <div class="code-head">
+    <span class="dot d1"></span><span class="dot d2"></span><span class="dot d3"></span>
+    <span class="file">怎么用注释</span>
+    <span class="lang">C++</span>
+  </div>
+  <pre><code>#include &lt;iostream&gt;
+using namespace std;
+
+int main() {
+    int n;                      // 单行注释：写在语句后面
+    cin &gt;&gt; n;
+
+    /* 下面是计算部分
+       这里可以写好几行说明 */
+    int sum = 0;
+    for (int i = 1; i &lt;= n; i++) {
+        sum += i;               // 累加
+    }
+
+    cout &lt;&lt; sum;
+    return 0;
+}</code></pre>
+  <div class="out"><b>要点</b>　注释里的内容<strong>可以随意写中文、英文、符号</strong>——编译器完全不理它</div>
+</div>
+
+<h3 id="s1-2">1.2 注释有什么用</h3>
+
+<table class="styled">
+  <thead><tr><th>作用</th><th>说明</th></tr></thead>
+  <tbody>
+    <tr><td><strong>说明意图</strong></td><td>告诉别人（和三个月后的自己）这段代码在干什么</td></tr>
+    <tr><td><strong>标记待办</strong></td><td>用 <code class="inline">// TODO:</code> 记下"这里以后要改"</td></tr>
+    <tr><td><strong>临时屏蔽</strong></td><td>把暂时不想执行的一段代码注释掉，方便调试</td></tr>
+    <tr><td><strong>方便协作</strong></td><td>多人共同开发时，注释就是沟通的桥梁</td></tr>
+  </tbody>
+</table>
+
+<div class="box tip">
+  <span class="lb">打个比方：</span>
+  注释就是<b>沿途的发光路标</b>。<br>
+  它<strong>从来不会帮你多走一步路</strong>——路还是那条路，走路的是你的脚；<br>
+  但等你<b>半夜回来、或者换个人来走</b>的时候，是这些路标告诉你"前面是桥""左边有坑"。<br>
+  <b>写注释，就是给未来的自己（和同伴）留一盏灯。</b>
+</div>
+
+<div class="box tip">
+  <span class="lb">注释的"黄金标准"：</span>
+  解释<strong>"为什么这么做"</strong>，而不是"这一行在做什么"。<br>
+  <code class="inline">sum += i;   // 把 i 加到 sum 上</code> —— 这种注释没意义，代码本身就说明了；<br>
+  <code class="inline">sum += i;   // 累加 1 到 n，用于求平均值</code> —— 这种才有价值。
+</div>
+
+<h3 id="s1-3">1.3 注释的三个注意点</h3>
+
+<div class="box tip">
+  <span class="lb">打个比方：</span>
+  多行注释像一只<b>没有拉链、只有"打开"和"合上"两句话的袋子</b>。<br>
+  你刚说"合上"，袋子就真的合上了——<strong>里面再写"打开"它也不会理你</strong>。<br>
+  <b>所以 <code class="inline">/* */</code> 里面不能再套一对 <code class="inline">/* */</code>；真要写好几段说明，就用 <code class="inline">//</code> 一行一行写。</b>
+</div>
+
+<div class="box warn">
+  <span class="lb">① 多行注释不能嵌套：</span><br>
+  <code class="inline">/* 外层 /* 内层 */ 还在外层吗？ */</code> —— <b>程序在第一个 <code>*/</code> 处就认为注释结束了</b>，
+  后面的内容会被当成代码，导致报错。<br>
+  <strong>所以不要在 <code>/* */</code> 里再写一对 <code>/* */</code>。</strong>
+</div>
+
+<div class="box remember">
+  <span class="lb">② 注释里可以随便写中文和英文：</span><br>
+  注释文本中间不能混用中英文这句话是<strong>错的</strong>。<br>
+  注释是给编译器"跳过"的，<b>里面写什么语言、什么符号都不会报错</b>。<br>
+  <strong>真正不能混中英文的是"代码部分"——比如中文的分号、括号、引号。</strong>
+</div>
+
+<div class="box tip">
+  <span class="lb">③ 注释不会让程序变快或变慢：</span><br>
+  注释在<strong>编译阶段就被丢掉了</strong>，运行时完全不存在。<br>
+  <b>所以多写注释不会影响程序性能，只会让代码更好懂。</b>
+</div>
+
+<!-- ============ 2 ============ -->
+<div class="section-header" id="s2">
+  <h2>2　读懂程序的"抱怨"</h2>
+  <div class="en-title">Understanding Errors</div>
+</div>
+
+<h3 id="s2-1">2.1 三类错误</h3>
+
+<figure class="figure">
+  <svg class="diagram" viewBox="0 0 830 290" role="img" aria-label="三类程序错误">
+    <text x="24" y="32" font-size="14" font-weight="bold" fill="#1f2937">三类错误：能不能编译过，结果对不对</text>
+
+    <rect x="30" y="56" width="250" height="212" rx="12" fill="#fef2f2" stroke="#ef4444" stroke-width="2.2"/>
+    <text x="155" y="84" text-anchor="middle" font-size="13" fill="#b91c1c" font-weight="bold">① 编译错误</text>
+    <text x="56" y="114" font-size="11.5" fill="#8c3a3a">程序根本生成不出来</text>
+    <text x="56" y="140" font-size="11.5" fill="#8c3a3a">例子：少分号、括号不配对、</text>
+    <text x="56" y="164" font-size="11.5" fill="#8c3a3a">变量没声明、中文标点</text>
+    <text x="56" y="196" font-size="11.5" fill="#b91c1c" font-weight="bold">表现：IDE 报错，无法运行</text>
+    <text x="56" y="226" font-size="11.5" fill="#c08080">最"友好"的错误 —— 它会告诉你</text>
+    <text x="56" y="248" font-size="11.5" fill="#c08080">错在第几行，照着改就行</text>
+
+    <rect x="290" y="56" width="250" height="212" rx="12" fill="#fff9ec" stroke="#f59e0b" stroke-width="2.2"/>
+    <text x="415" y="84" text-anchor="middle" font-size="13" fill="#b45309" font-weight="bold">② 运行错误</text>
+    <text x="316" y="114" font-size="11.5" fill="#a15c1c">编译过了，一跑就崩</text>
+    <text x="316" y="140" font-size="11.5" fill="#a15c1c">例子：除以 0、数组越界</text>
+    <text x="316" y="196" font-size="11.5" fill="#b45309" font-weight="bold">表现：运行到某一步突然中断</text>
+    <text x="316" y="226" font-size="11.5" fill="#b58b4a">比编译错误难找一些，</text>
+    <text x="316" y="248" font-size="11.5" fill="#b58b4a">要看出错前执行到哪一步</text>
+
+    <rect x="550" y="56" width="250" height="212" rx="12" fill="#eef6ff" stroke="#3b82f6" stroke-width="2.2"/>
+    <text x="675" y="84" text-anchor="middle" font-size="13" fill="#1d4ed8" font-weight="bold">③ 逻辑错误</text>
+    <text x="576" y="114" font-size="11.5" fill="#3b6ea8">能编译、能运行，结果却不对</text>
+    <text x="576" y="140" font-size="11.5" fill="#3b6ea8">例子：条件写反、循环少跑一次、</text>
+    <text x="576" y="164" font-size="11.5" fill="#3b6ea8">整数除法当成了小数除法</text>
+    <text x="576" y="196" font-size="11.5" fill="#1d4ed8" font-weight="bold">表现：没有任何报错</text>
+    <text x="576" y="226" font-size="11.5" fill="#5b7ba8">最"狡猾"的错误 —— 只能靠自己</text>
+    <text x="576" y="248" font-size="11.5" fill="#5b7ba8">一步步检查、对比结果</text>
+
+    <text x="24" y="288" font-size="12" fill="#8d9d94">口诀：编译错误机器帮你找，逻辑错误只能自己找</text>
+  </svg>
+  <div class="caption">图 3（SVG）：编译错误、运行错误与逻辑错误</div>
+</figure>
+
+<div class="box tip">
+  <span class="lb">打个比方：</span>
+  把写程序想成<b>出发去远行</b>，出错有三种情况：<br>
+  ① <b>编译错误</b>——出门前发现<b>行李没打包好</b>，<strong>连门都出不了</strong>。好在有人会告诉你"少了什么"。<br>
+  ② <b>运行错误</b>——出了门，<b>走到半路车坏了</b>，<strong>直接停在原地</strong>。<br>
+  ③ <b>逻辑错误</b>——一路顺顺利利到了终点，<b>却发现来错了地方</b>，<strong>全程没有任何报警</strong>。<br>
+  <b>三种里最麻烦的是第三种，只能靠自己一步步核对。</b>
+</div>
+
+<div class="box remember">
+  <span class="lb">一句话分清三类错误：</span><br>
+  <b>编译错误</b>——<strong>根本过不了编译</strong>，会告诉你第几行。<br>
+  <b>运行错误</b>——<strong>编译能过，跑起来崩</strong>。<br>
+  <b>逻辑错误</b>——<strong>能跑、但结果是错的</strong>，没有任何提示，最需要调试能力。
+</div>
+
+<h3 id="s2-2">2.2 最常见的五种编译错误</h3>
+
+<table class="styled">
+  <thead><tr><th>错误</th><th>错误示例</th><th>怎么改</th></tr></thead>
+  <tbody>
+    <tr><td>少分号</td><td><code class="inline">int a = 5</code></td><td>补上 <code class="inline">;</code></td></tr>
+    <tr><td>括号 / 引号不配对</td><td><code class="inline">cout &lt;&lt; (a + b;</code></td><td>补齐另一半</td></tr>
+    <tr><td>变量没有声明</td><td>直接写 <code class="inline">x = 5;</code></td><td>先写 <code class="inline">int x;</code></td></tr>
+    <tr><td>用了中文标点</td><td><code class="inline">cout &lt;&lt; "你好"；</code></td><td>换成英文半角符号</td></tr>
+    <tr><td>格式符与类型不匹配</td><td><code class="inline">printf("%d", 3.5);</code></td><td>小数改用 <code class="inline">%f</code></td></tr>
+  </tbody>
+</table>
+
+<div class="box warn">
+  <span class="lb">特别提醒：<code>%</code> 只能用于整数。</span><br>
+  写 <code class="inline">2.5 % 2</code>，<strong>编译阶段就会报错</strong>——它不会先生成可执行文件再运行出错。<br>
+  <b>所以"这段代码能生成可执行文件，只是运行时报错"这类说法，往往是错的。</b>
+</div>
+
+<h3 id="s2-3">2.3 怎么读错误信息</h3>
+
+<div class="code-card">
+  <div class="code-head">
+    <span class="dot d1"></span><span class="dot d2"></span><span class="dot d3"></span>
+    <span class="file">编译器其实在告诉你怎么改</span>
+    <span class="lang">C++</span>
+  </div>
+  <pre><code>main.cpp: In function 'int main()':
+main.cpp:7:12: error: expected ';' before 'cout'
+    7 |     int a = 5
+      |            ^
+      |            ;
+main.cpp:9:18: error: 'b' was not declared in this scope
+    9 |     cout &lt;&lt; a + b;</code></pre>
+  <div class="out"><b>读法</b>　<code>main.cpp:7:12</code> = 文件名、第 <b>7</b> 行、第 <b>12</b> 个字符处；<br>
+  <code>expected ';' before 'cout'</code> = "在 cout 前面应该有个分号"——<b>它甚至告诉你缺的是什么</b></div>
+</div>
+
+<div class="box tip">
+  <span class="lb">读错误信息的三个技巧：</span><br>
+  <b>① 只看第一条错误。</b>后面的一堆往往是"连锁反应"，改完第一条就全消失了。<br>
+  <b>② 先看行号，再去那一行找。</b>但要注意：<strong>错误常常在报错行的"上一行"</strong>（比如上一行忘了分号）。<br>
+  <b>③ 看关键词。</b><code class="inline">expected</code>（缺少什么）、<code class="inline">undeclared</code>（没声明）、
+  <code class="inline">unmatched</code>（不配对）——这几个词最常见。
+</div>
+
+<!-- ============ 3 ============ -->
+<div class="section-header" id="s3">
+  <h2>3　调试：把错误找出来</h2>
+  <div class="en-title">Debugging</div>
+</div>
+
+<h3 id="s3-1">3.1 输出中间变量</h3>
+
+<div class="code-card">
+  <div class="code-head">
+    <span class="dot d1"></span><span class="dot d2"></span><span class="dot d3"></span>
+    <span class="file">"打印大法"：最朴素也最好用</span>
+    <span class="lang">C++</span>
+  </div>
+  <pre><code>int sum = 0;
+for (int i = 1; i &lt;= 5; i++) {
+    sum += i;
+    cout &lt;&lt; "第 " &lt;&lt; i &lt;&lt; " 轮：sum = " &lt;&lt; sum &lt;&lt; endl;   // ★ 调试语句
+}
+
+cout &lt;&lt; "最终结果：" &lt;&lt; sum;</code></pre>
+  <div class="out"><b>OUTPUT</b><br>第 1 轮：sum = 1<br>第 2 轮：sum = 3<br>第 3 轮：sum = 6<br>
+  第 4 轮：sum = 10<br>第 5 轮：sum = 15<br>最终结果：15</div>
+</div>
+
+<figure class="pic">
+  <img src="../assets/illustrations/cpp-L1-07-03_print_debug_lantern.webp" alt="沿途点灯"
+       onerror="this.closest('.pic').classList.add('missing')">
+  <div class="ph">
+    <div class="fn">assets/illustrations/cpp-L1-07-03_print_debug_lantern.webp</div>
+    <div class="ds">【配图位】夜雾中的一段山道，一名新兵的帽子/头盔上挂着一串小灯笼，他把其中几盏分别点亮在山道的关键转折处（对应在代码关键位置插入输出语句）；被灯照亮的几段路面清晰可见，两盏灯之间的那段仍然漆黑；旁边一只机械鸭正举着本子记录灯的位置。扣哒世界卡通风格，冷雾与暖灯对比。</div>
+  </div>
+  <figcaption>图 4：在关键处点一盏灯，就能看清哪一段是黑的</figcaption>
+</figure>
+
+<div class="box tip">
+  <span class="lb">打个比方：</span>
+  调试就像<b>夜雾里走夜路</b>。整条路都黑着，你根本看不出哪一段有问题。<br>
+  这时候你<b>每隔几步点一盏灯</b>——灯亮到哪一段，你就知道前面的路是对的；<br>
+  <strong>一旦某两盏灯之间是黑的，问题一定就在那一段里。</strong><br>
+  <b>所以"打印中间变量"就是点灯：在关键位置把变量的值打出来，看它是在哪一步开始不对的。</b>
+</div>
+
+<div class="box remember">
+  <span class="lb">为什么"打印大法"最有效？</span>
+  因为<strong>你能亲眼看见变量每一步的变化</strong>。<br>
+  如果某一轮的值突然不对，那问题就在这一步附近。<br>
+  <b>调试完记得把这些打印语句删掉或注释掉——正式提交的代码不该有多余输出。</b>
+</div>
+
+<h3 id="s3-2">3.2 缩小范围</h3>
+
+<table class="styled">
+  <thead><tr><th>方法</th><th>怎么做</th><th>适合</th></tr></thead>
+  <tbody>
+    <tr><td><strong>打印中间变量</strong></td><td>在关键位置输出变量的值</td><td>不知道哪一步开始出错</td></tr>
+    <tr><td><strong>注释掉一半</strong></td><td>先把后半段注释掉，看前半段对不对</td><td>代码很长、错误范围不明</td></tr>
+    <tr><td><strong>用小数据手算</strong></td><td>拿 n = 3 这样的小输入，自己先算一遍答案</td><td>逻辑错误</td></tr>
+    <tr><td><strong>对照已知答案</strong></td><td>换几种输入，比较程序输出和手算结果</td><td>结果"差不多但不对"</td></tr>
+  </tbody>
+</table>
+
+<div class="box tip">
+  <span class="lb">再打个比方：</span>
+  <b>"把后半段先注释掉"</b>，就像查一条坏掉的灯笼长廊——<br>
+  <strong>先把后半段的灯全灭了，只看前半段亮不亮。前半段亮，问题就在后半段；前半段也不亮，问题就在前面。</strong><br>
+  <b>每查一次，可疑范围就缩小一半。这比从头一行行看快得多。</b>
+</div>
+
+<h3 id="s3-3">3.3 检查清单</h3>
+
+<div class="box remember">
+  <span class="lb">扣哒鸭的五步检查清单：</span><br>
+  <b>① 符号</b>——分号、括号、引号是否齐全？有没有中文标点？<br>
+  <b>② 声明</b>——用到的变量都声明了吗？类型对吗？<br>
+  <b>③ 边界</b>——循环是 <code class="inline">&lt;</code> 还是 <code class="inline">&lt;=</code>？数组下标从 0 还是 1 开始？<br>
+  <b>④ 初始值</b>——累加变量初始化成 0 了吗？<br>
+  <b>⑤ 输出格式</b>——空格、换行、小数位数和题目要求一致吗？<br>
+  <strong>按这个顺序过一遍，八成的错误都能揪出来。</strong>
+</div>
+
+<!-- ============ 4 ============ -->
+<div class="section-header" id="s4">
+  <h2>4　综合项目：鸡兔同笼</h2>
+  <div class="en-title">Chickens &amp; Rabbits</div>
+</div>
+
+<h3 id="s4-1">4.1 分析问题</h3>
+
+<div class="box tip">
+  <span class="lb">题目：</span>
+  笼子里有鸡和兔。<strong>头一共 <code>tou</code> 个，脚一共 <code>jiao</code> 只。</strong>
+  问鸡和兔各有多少只？<br>
+  <b>已知：鸡有 2 只脚，兔有 4 只脚。</b>
+</div>
+
+<p>这道题看起来要用方程，但<strong>用程序做，有一个更简单也更通用的办法：枚举。</strong></p>
+
+<div class="code-card">
+  <div class="code-head">
+    <span class="dot d1"></span><span class="dot d2"></span><span class="dot d3"></span>
+    <span class="file">枚举思路：把所有可能都试一遍</span>
+    <span class="lang">C++</span>
+  </div>
+  <pre><code>假设兔有 tu 只，那么：
+    鸡就有 (tou - tu) 只
+    脚的总数就是 tu * 4 + (tou - tu) * 2
+    如果这个数正好等于 jiao —— 找到了！
+
+让 tu 从 0 一直试到 tou，每个都验算一遍就行。</code></pre>
+  <div class="out"><b>枚举法</b>　不猜、不推，<strong>把所有可能逐个试一遍</strong>——这是计算机最擅长的事</div>
+</div>
+
+<figure class="figure">
+  <svg class="diagram" viewBox="0 0 830 240" role="img" aria-label="鸡兔同笼枚举过程">
+    <text x="24" y="32" font-size="14" font-weight="bold" fill="#1f2937">依次假设兔的只数，验算脚的总数对不对</text>
+
+    <rect x="40" y="60" width="130" height="90" rx="10" fill="#eaf1fe" stroke="#2563eb" stroke-width="2"/>
+    <text x="105" y="88" text-anchor="middle" font-size="12" fill="#1d4ed8">假设兔 = 0</text>
+    <text x="105" y="112" text-anchor="middle" font-size="11" fill="#3b6ea8">鸡 = 头数</text>
+    <text x="105" y="136" text-anchor="middle" font-size="11" font-family="Consolas,monospace" fill="#2563eb">脚 = 0*4+头*2</text>
+
+    <rect x="186" y="60" width="130" height="90" rx="10" fill="#eaf1fe" stroke="#2563eb" stroke-width="2"/>
+    <text x="251" y="88" text-anchor="middle" font-size="12" fill="#1d4ed8">假设兔 = 1</text>
+    <text x="251" y="112" text-anchor="middle" font-size="11" fill="#3b6ea8">鸡 = 头 − 1</text>
+    <text x="251" y="136" text-anchor="middle" font-size="11" font-family="Consolas,monospace" fill="#2563eb">脚 = 1*4+…</text>
+
+    <rect x="332" y="60" width="130" height="90" rx="10" fill="#e9f8ef" stroke="#2e9e5b" stroke-width="2.4"/>
+    <text x="397" y="88" text-anchor="middle" font-size="12" fill="#1f7a44" font-weight="bold">假设兔 = k</text>
+    <text x="397" y="112" text-anchor="middle" font-size="11" fill="#3b6ea8">鸡 = 头 − k</text>
+    <text x="397" y="136" text-anchor="middle" font-size="11" fill="#1f7a44" font-weight="bold">脚数对了 ✔</text>
+
+    <rect x="478" y="60" width="130" height="90" rx="10" fill="#f1f5f9" stroke="#94a3b8" stroke-width="2"/>
+    <text x="543" y="88" text-anchor="middle" font-size="12" fill="#475569">假设兔 = …</text>
+    <text x="543" y="112" text-anchor="middle" font-size="11" fill="#64748b">继续试</text>
+
+    <rect x="624" y="60" width="176" height="90" rx="10" fill="#f1f5f9" stroke="#94a3b8" stroke-width="2"/>
+    <text x="712" y="88" text-anchor="middle" font-size="12" fill="#475569">一直试到 头数</text>
+    <text x="712" y="112" text-anchor="middle" font-size="11" fill="#64748b">都没对上 → 无解</text>
+
+    <line x1="172" y1="105" x2="182" y2="105" stroke="#94a3b8" stroke-width="2"/>
+    <line x1="318" y1="105" x2="328" y2="105" stroke="#2e9e5b" stroke-width="2"/>
+    <line x1="464" y1="105" x2="474" y2="105" stroke="#94a3b8" stroke-width="2"/>
+    <line x1="610" y1="105" x2="620" y2="105" stroke="#94a3b8" stroke-width="2"/>
+
+    <rect x="40" y="172" width="760" height="52" rx="10" fill="#f7f9fd" stroke="#cbd5e1" stroke-width="1.6"/>
+    <text x="64" y="196" font-size="12" fill="#334155">找到以后立刻 break 跳出循环，剩下的不用再试了。</text>
+    <text x="64" y="216" font-size="12" fill="#b45309">如果一圈试完都没找到（循环变量已经等于头数），就说明这组数据无解。</text>
+  </svg>
+  <div class="caption">图 5（SVG）：枚举法求解鸡兔同笼</div>
+</figure>
+
+<figure class="pic">
+  <img src="../assets/illustrations/cpp-L1-07-04_chicken_rabbit_pen.webp" alt="鸡兔同笼"
+       onerror="this.closest('.pic').classList.add('missing')">
+  <div class="ph">
+    <div class="fn">assets/illustrations/cpp-L1-07-04_chicken_rabbit_pen.webp</div>
+    <div class="ds">【配图位】岗哨外的木栅栏围栏里，鸡和兔混在一起；围栏外一名新兵蹲着，手里拿着一块可以翻转数字的木牌（写着兔的只数），他面前摆着几排小木牌，每排记录一次"假设兔几只、那么鸡几只、脚一共几只"；其中一行的木牌被画上圆圈标出"数对了"；旁边一只机械鸭在帮忙数脚。扣哒世界卡通风格，暖色夕阳。</div>
+  </div>
+  <figcaption>图 6：一只一只假设，直到脚数正好对上</figcaption>
+</figure>
+
+<div class="box tip">
+  <span class="lb">打个比方：</span>
+  枚举法就是<b>"一个一个试"</b>——<br>
+  假设兔子有 0 只，算一下脚够不够；不够？<b>那就假设有 1 只</b>；再不够？<b>假设 2 只</b>……<br>
+  <strong>一直试到脚数正好对上，或者试完所有可能都不对（那就无解）。</strong><br>
+  <b>这种"笨办法"看着不聪明，却是计算机最擅长、也最不容易出错的办法——因为它不知疲倦。</b>
+</div>
+
+<h3 id="s4-2">4.2 用枚举求解</h3>
+
+<div class="box remember">
+  <span class="lb">枚举法为什么好用？</span>
+  因为计算机<strong>最擅长的就是"重复做同一件事"</strong>。<br>
+  只要把"验证一种可能"写成几行代码，再套一个循环，就是完整的解法。<br>
+  <b>一级的所有综合题，基本都能用"枚举 + 判断"解决。</b>
+</div>
+
+<h3 id="s4-3">4.3 完整程序</h3>
+
+<div class="code-card">
+  <div class="code-head">
+    <span class="dot d1"></span><span class="dot d2"></span><span class="dot d3"></span>
+    <span class="file">鸡兔同笼 · 完整解法</span>
+    <span class="lang">C++</span>
+  </div>
+  <pre><code>#include &lt;iostream&gt;
+using namespace std;
+
+int main() {
+    int tou, jiao;
+    cin &gt;&gt; tou &gt;&gt; jiao;
+
+    int tu, ji;
+
+    // 枚举兔的只数：从 0 试到 tou
+    for (tu = 0; tu &lt;= tou; tu++) {
+        ji = tou - tu;                       // 剩下的都是鸡
+        if (tu * 4 + ji * 2 == jiao) {       // 脚数对得上吗？
+            cout &lt;&lt; "兔：" &lt;&lt; tu
+                 &lt;&lt; " 鸡：" &lt;&lt; ji &lt;&lt; endl;
+            break;                           // 找到就跳出
+        }
+    }
+
+    // 循环正常结束（没 break）说明没找到
+    if (tu == tou + 1) {
+        cout &lt;&lt; "无解" &lt;&lt; endl;
+    }
+
+    return 0;
+}</code></pre>
+  <div class="out"><b>输入</b>　8 22　　<b>输出</b>　兔：3　鸡：5<br>
+  <b>验算：</b>3 + 5 = 8 个头；3 × 4 + 5 × 2 = 12 + 10 = 22 只脚 ✔</div>
+</div>
+
+<div class="box warn">
+  <span class="lb">"有没有找到"怎么判断？</span>
+  这是本题最容易写错的地方。两种稳妥写法：<br>
+  <b>① 用循环变量的最终值判断</b>——条件写成 <code class="inline">tu &lt;= tou</code>，
+  <strong>循环正常结束时 tu 一定等于 tou + 1</strong>；如果是 break 跳出的，tu 就小于 tou + 1。<br>
+  <b>② 用一个标记变量</b>——开头写 <code class="inline">bool found = false;</code>，
+  找到时改成 true，最后判断 <code class="inline">if (!found)</code>。<br>
+  <b>如果条件写成 <code class="inline">tu &lt; tou + 1</code>（等价于 &lt;= tou），
+  那正常结束时 tu 等于 tou，判断就要改成 <code class="inline">tu == tou</code>——两处必须配套，不能只改一处。</b>
+</div>
+
+<!-- ============ 5 ============ -->
+<div class="section-header" id="s5">
+  <h2>5　代码实战</h2>
+  <div class="en-title">Level Practice</div>
+</div>
+
+<div class="level-card">
+  <div class="lc-head"><span class="n">关卡</span><h4>Kithmaze 最终历险</h4><span class="go">进入关卡 →</span></div>
+  <div class="lc-body">
+    <div class="story">
+      <b>故事：</b>最后一道迷宫。以前你得一步步写指令，<b>现在你手上有全套工具了</b>——
+      顺序、分支、循环。<br>
+      安雅站在入口：这一关没有新东西。
+      <b>它考的是你能不能把学过的凑起来，一口气走到终点。</b>
+    </div>
+    <p><strong>思路：</strong>先<strong>观察迷宫的规律</strong>（比如"右、上、右、下"反复出现），
+    再把它写成循环 + 判断，让英雄自己走完。</p><figure class="pic">
+  <img src="../assets/stages/py-L1-07-stage1_kithmaze_final.webp" alt="Kithmaze 最终历险 关卡截图"
+       onerror="this.closest('.pic').classList.add('missing')">
+  <div class="ph">
+    <div class="fn">assets/stages/py-L1-07-stage1_kithmaze_final.webp</div>
+    <div class="ds">【配图位】游戏实机截图：迷宫终点处的出口，英雄刚走出最后一段直线、完成整条路线；沿途可见依次取走的宝石空位与走过留下的脚印；屏幕下方代码区同时显示循环与判断语句，右上角显示"关卡完成"提示。</div>
+  </div>
+  <figcaption>关卡实况：Kithmaze 最终历险</figcaption>
+</figure>
+    <div class="code-card">
+      <div class="code-head">
+        <span class="dot d1"></span><span class="dot d2"></span><span class="dot d3"></span>
+        <span class="file">重点示例：把规律写成代码</span>
+        <span class="lang">C++</span>
+      </div>
+      <pre><code>#include &lt;iostream&gt;
+using namespace std;
+
+int main() {
+    // 迷宫的规律：走 4 步为一个周期
+    for (int i = 0; i &lt; 4; i++) {
+        hero.moveRight(2);
+        hero.moveUp();
+
+        int enemy = hero.findNearestEnemy();
+        if (enemy) {                  // 有敌人就解决掉
+            hero.attack(enemy);
+        }
+    }
+
+    hero.moveRight(3);                // 最后一段直线
+
+    return 0;
+}</code></pre>
+      <div class="out"><b>要点</b>　<code>for</code> 管重复、<code>if</code> 管判断——<b>这就是一级全部的工具</b></div>
+    </div>
+    <div class="box info">
+      <span class="lb">回头看这一级：</span>
+      你在第 1 单元认识了工具，第 2、3 单元学会了装东西和算东西，<br>
+      第 4、5、6 单元学会了顺序、分支、循环三种结构，<br>
+      而这一单元——<strong>你把它们拼成了一整个能解决问题的程序。</strong><br>
+      <b>这就是编程真正开始的地方。</b>
+    </div>
+    <a class="btn-go" href="https://codecombat.cn/" target="_blank" rel="noopener">去扣哒世界闯这一关 →</a>
+  </div>
+</div>
+
+<figure class="pic">
+  <img src="../assets/illustrations/py-L1-07-02_debug_duck.webp" alt="调试鸭"
+       onerror="this.closest('.pic').classList.add('missing')">
+  <div class="ph">
+    <div class="fn">assets/illustrations/py-L1-07-02_debug_duck.webp</div>
+    <div class="ds">【配图位】岗哨工作台旁：橙色机械鸭叼着一把小扳手，一只发光单眼盯着冒烟的坏齿轮，表情嫌弃；台面上散着几个拆开的零件与一张写满记号的图纸。</div>
+  </div>
+  <figcaption>图 7：调试鸭——它是来帮你找错的，不是来笑话你的</figcaption>
+</figure>
+
+
+<!-- ============ 6 ============ -->
+<div class="section-header" id="s6">
+  <h2>6　常见陷阱</h2>
+  <div class="en-title">Common Pitfalls</div>
+</div>
+
+<div class="cast duck">
+  <img class="ava" src="../assets/ducks/duck_hushbaum.webp" alt="扣哒鸭" onerror="this.style.display='none'">
+  <div class="bubble">
+    <div class="who">扣哒鸭 · 调试官</div>
+    最后四条。它们不光是这一单元的坑，更是这一整级最容易丢分的地方。
+  </div>
+</div>
+
+<div class="pit">
+  <div class="pt">
+    <div class="x">1</div>
+    <div class="t"><b>以为"注释里不能混中英文"。</b></div>
+  </div>
+  <div class="duck">
+    <img src="../assets/ducks/duck_zana.webp" alt="扣哒鸭" onerror="this.style.display='none'">
+    <div class="dt"><b>扣哒鸭：</b>注释是给编译器<strong>跳过</strong>的内容，
+    里面写什么语言、什么符号都不会报错。<br>
+    <b>真正不能用中文的是代码部分的标点</b>——比如中文的分号和引号。</div>
+  </div>
+  <div class="fix"><b>正确认识：</b>注释随便写；代码必须用英文半角符号</div>
+</div>
+
+<div class="pit">
+  <div class="pt">
+    <div class="x">2</div>
+    <div class="t"><b>把"编译错误"说成"运行时报错"。</b></div>
+  </div>
+  <div class="duck">
+    <img src="../assets/ducks/duck_naria.webp" alt="扣哒鸭" onerror="this.style.display='none'">
+    <div class="dt"><b>扣哒鸭：</b><code>2.5 % 2</code> 这种写法<strong>根本编译不过</strong>，
+    不会生成可执行文件，也就谈不上"运行时出错"。<br>
+    <b>看清楚题目问的是哪一类错误。</b></div>
+  </div>
+  <div class="fix"><b>正确认识：</b>编译不通过 → 编译错误，不是运行错误</div>
+</div>
+
+<div class="pit">
+  <div class="pt">
+    <div class="x">3</div>
+    <div class="t"><b>循环条件与"是否找到"的判断不一致。</b></div>
+  </div>
+  <div class="duck">
+    <img src="../assets/ducks/duck_hattori.webp" alt="扣哒鸭" onerror="this.style.display='none'">
+    <div class="dt"><b>扣哒鸭：</b>循环写 <code>tu &lt; tou</code> 时，正常结束 tu 等于 tou；<br>
+    写 <code>tu &lt;= tou</code> 时，正常结束 tu 等于 tou + 1。<br>
+    <strong>循环条件和后面的判断必须配套，改一处就要改另一处。</strong></div>
+  </div>
+  <div class="fix"><b>建议：</b>用 <code class="inline">bool found</code> 标记变量，最不容易错</div>
+</div>
+
+<div class="pit">
+  <div class="pt">
+    <div class="x">4</div>
+    <div class="t"><b>调试用的打印语句忘了删。</b></div>
+  </div>
+  <div class="duck">
+    <img src="../assets/ducks/duck_senick.webp" alt="扣哒鸭" onerror="this.style.display='none'">
+    <div class="dt"><b>扣哒鸭：</b>调试时加的 <code>cout</code> 很管用，
+    但<strong>提交前一定要删掉或注释掉</strong>。<br>
+    <b>多出来的那一行输出，会让判题系统判定"答案错误"。</b></div>
+  </div>
+  <div class="fix"><b>正确做法：</b>调试语句用注释包裹，方便随时开关</div>
+</div>
+
+<!-- ============ 7 ============ -->
+<div class="section-header" id="s7">
+  <h2>7　题目练习</h2>
+  <div class="en-title">Practice</div>
+</div>
+
+<p>前 4 题改编自 C++ 一级真题，其余为原创练习题。</p>
+
+<div class="exam">
+  <div class="eh"><span class="src">改编自 2026 年 6 月 · C++ 一级 · 第 2 题</span><span class="tp">单选题</span></div>
+  <div class="eb">
+    <div class="q">在使用集成开发环境编辑源代码文件时，程序员经常需要在编辑区对代码做各种修改。
+    以下关于编辑区操作的描述，<strong>不正确</strong>的是（　　）。</div>
+    <div class="opt">
+      <i>A.</i>可以将变量名 <code class="inline">count</code> 统一修改为 <code class="inline">number</code><br>
+      <i>B.</i>可以连续撤销最近若干次输入的内容<br>
+      <i>C.</i>可以调整代码行的缩进（如按 Tab 键）<br>
+      <i>D.</i>在注释文本中间不能混用中英文
+    </div>
+    <details><summary>查看答案与详解</summary>
+      <div class="ans"><b>答案：D</b>。注释的作用是<strong>给人看、给编译器跳过</strong>，
+      里面写中文、英文、甚至符号都可以，<strong>不存在"不能混用中英文"的限制</strong>。<br>
+      <b>A、B、C</b> 都是 IDE 编辑区的正常功能：批量替换、撤销、缩进。<br>
+      <b>要小心区分：</b>注释里可以随便写，但<strong>代码部分的标点必须是英文半角</strong>。<br>
+      <span class="tagline">对应小节</span>1.3 注释的三个注意点。</div>
+    </details>
+  </div>
+</div>
+
+<div class="exam">
+  <div class="eh"><span class="src">改编自 2026 年 6 月 · C++ 一级 · 判断题 第 7 题</span><span class="tp">判断题</span></div>
+  <div class="eb">
+    <div class="q">C++ 代码 <code class="inline">cout &lt;&lt; (2.5 % 2)</code> 能够生成可执行代码，
+    但执行时将报错，因为 <code class="inline">%</code> 只能适用于正整数。（　　）</div>
+    <details><summary>查看答案与详解</summary>
+      <div class="ans"><b>答案：错误（×）</b>。取余运算符 <code class="inline">%</code> 的操作数<strong>必须是整数</strong>，
+      <code class="inline">2.5</code> 是小数——<strong>编译器检查到类型不合法，直接报错，根本生成不了可执行文件</strong>。<br>
+      <b>所以这句话错在两处：</b>一是它"不能生成可执行代码"，二是它也谈不上"运行时才报错"。<br>
+      <b>记住：类型不匹配属于编译错误。</b><br>
+      <span class="tagline">对应小节</span>2.1 三类错误；2.2 最常见的五种编译错误。</div>
+    </details>
+  </div>
+</div>
+
+<div class="exam">
+  <div class="eh"><span class="src">改编自 2026 年 9 月 · C++ 一级 · 判断题 第 8 题</span><span class="tp">判断题</span></div>
+  <div class="eb">
+    <div class="q">在 C++ 代码中，如果两个变量都只包含下划线 <code class="inline">_</code>，
+    但数目不同，则可能导致编译器无法识别，而报告变量重复定义。（　　）</div>
+    <details><summary>查看答案与详解</summary>
+      <div class="ans"><b>答案：错误（×）</b>。C++ 里的标识符<strong>是逐字符比较的</strong>：<br>
+      <code class="inline">_</code>、<code class="inline">__</code>、<code class="inline">___</code>
+      <strong>是三个完全不同的名字</strong>，不会互相冲突，编译器能清楚地区分它们。<br>
+      <b>顺带提醒：</b>以两个下划线开头、或以下划线加大写字母开头的名字是<strong>保留给编译器用的</strong>，
+      自己命名时最好避开。<br>
+      <span class="tagline">对应小节</span>2.1 三类错误。</div>
+    </details>
+  </div>
+</div>
+
+<div class="exam">
+  <div class="eh"><span class="src">改编自 2026 年 6 月 · C++ 一级 · 判断题 第 9 题</span><span class="tp">判断题</span></div>
+  <div class="eb">
+    <div class="q">如果 <code class="inline">a</code> 是 C++ 的整型变量，值为 4，
+    则表达式 <code class="inline">(a % 2 == 0) + (a / 2)</code> 的值为 4。（　　）</div>
+    <details><summary>查看答案与详解</summary>
+      <div class="ans"><b>答案：错误（×）</b>。分开算两部分：<br>
+      ① <code class="inline">a % 2 == 0</code>：4 % 2 = 0，0 == 0 成立 → 值为 <b>1</b>（关系运算的结果是 1 或 0）；<br>
+      ② <code class="inline">a / 2</code>：4 / 2 = <b>2</b>（整数除法）。<br>
+      所以整个表达式的值是 1 + 2 = <b>3</b>，不是 4。<br>
+      <b>这道题同时考了三个点：取余、关系运算的结果、整数除法。</b><br>
+      <span class="tagline">对应小节</span>2.1 三类错误（这属于"能跑但结果不对"的逻辑错误）。</div>
+    </details>
+  </div>
+</div>
+
+<div class="exam">
+  <div class="eh"><span class="src ori">原创练习题</span><span class="tp">单选题</span></div>
+  <div class="eb">
+    <div class="q">下列 C++ 注释的写法中，<strong>会出错</strong>的是（　　）。</div>
+    <div class="opt">
+      <i>A.</i><code class="inline">// 这是单行注释</code><br>
+      <i>B.</i><code class="inline">int a = 5;   // 给 a 赋值</code><br>
+      <i>C.</i><code class="inline">/* 外层 /* 内层 */ 还在注释里吗 */</code><br>
+      <i>D.</i><code class="inline">/* 多行
+注释
+写完 */</code>
+    </div>
+    <details><summary>查看答案与详解</summary>
+      <div class="ans"><b>答案：C</b>。<strong>多行注释不能嵌套。</strong><br>
+      程序读到第一个 <code class="inline">*/</code> 就认为注释结束了，
+      于是"还在注释里吗"和最后的 <code class="inline">*/</code> 会被当成代码，导致编译错误。<br>
+      <b>A、B、D</b> 都是合法写法。<br>
+      <span class="tagline">对应小节</span>1.3 注释的三个注意点。</div>
+    </details>
+  </div>
+</div>
+
+<div class="exam">
+  <div class="eh"><span class="src ori">原创练习题</span><span class="tp">单选题</span></div>
+  <div class="eb">
+    <div class="q">下面这段 C++ 代码的问题是（　　）。</div>
+    <pre>int i;
+for (i = 1; i &lt;= 5; i++)
+    cout &lt;&lt; i &lt;&lt; " ";
+cout &lt;&lt; "结束";</pre>
+    <div class="opt">
+      <i>A.</i>会编译错误<br>
+      <i>B.</i>可以正常运行，输出 <code class="inline">1 2 3 4 5 结束</code><br>
+      <i>C.</i>会死循环<br>
+      <i>D.</i>只输出一个 1
+    </div>
+    <details><summary>查看答案与详解</summary>
+      <div class="ans"><b>答案：B</b>。这里的 <code class="inline">for</code> 没有花括号，
+      <strong>它只管紧随其后的第一条语句</strong>，也就是 <code class="inline">cout &lt;&lt; i &lt;&lt; " ";</code>。<br>
+      而 <code class="inline">cout &lt;&lt; "结束";</code> 在循环之外，<b>循环结束后才执行一次</b>。<br>
+      所以输出是 <code class="inline">1 2 3 4 5 结束</code>——<b>结果是对的，只是写法容易让人误会。</b><br>
+      <b>但要注意：</b>如果本意是"每一轮都输出结束"，那就必须加花括号。<br>
+      <span class="tagline">对应小节</span>3.3 检查清单。</div>
+    </details>
+  </div>
+</div>
+
+<div class="exam">
+  <div class="eh"><span class="src">改编自 2026 年 9 月 · C++ 一级 · 编程题 · 鸡兔同笼</span><span class="tp">编程题</span></div>
+  <div class="eb">
+    <div class="q">题目要求：读入头总数 <code class="inline">tou</code> 和脚总数 <code class="inline">jiao</code>，
+    输出兔和鸡的只数；若无解则输出 <code class="inline">无解</code>。<br>
+    <b>样例：</b>输入 <code class="inline">8 22</code>，输出 <code class="inline">兔：3 鸡：5</code>。</div>
+    <details><summary>查看参考答案与要点</summary>
+      <div class="ans">
+<pre style="margin:0;background:#131a26;color:#c8d3e0;border-radius:10px;padding:14px 16px">#include &lt;iostream&gt;
+using namespace std;
+
+int main() {
+    int tou, jiao;
+    cin &gt;&gt; tou &gt;&gt; jiao;
+
+    int tu, ji;
+    bool found = false;                  // ★ 标记变量
+
+    for (tu = 0; tu &lt;= tou; tu++) {
+        ji = tou - tu;
+        if (tu * 4 + ji * 2 == jiao) {
+            cout &lt;&lt; "兔：" &lt;&lt; tu
+                 &lt;&lt; " 鸡：" &lt;&lt; ji &lt;&lt; endl;
+            found = true;
+            break;                       // 找到就跳出
+        }
+    }
+
+    if (!found) {
+        cout &lt;&lt; "无解" &lt;&lt; endl;
+    }
+
+    return 0;
+}</pre>
+      <p style="margin-top:12px"><b>输入 8 22 输出：</b>兔：3 鸡：5；<b>输入 10 25 输出：</b>无解<br>
+      <b>要点：</b><br>
+      ① <strong>枚举思路</strong>：把兔的只数从 0 试到 tou，逐一验算脚数；<br>
+      ② 用 <code class="inline">bool found</code> 标记"有没有找到"，
+      <strong>比依赖循环变量的最终值更稳妥</strong>（循环条件改了也不受影响）；<br>
+      ③ 找到之后立刻 <code class="inline">break</code>，不必继续试；<br>
+      ④ 判断条件 <code class="inline">tu * 4 + ji * 2 == jiao</code> 用的是<strong>两个等号</strong>；<br>
+      ⑤ 输出格式要严格和题目一致——<strong>冒号、空格都不能随意改</strong>。<br>
+      <span class="tagline">对应小节</span>4 综合项目：鸡兔同笼。</p>
+      </div>
+    </details>
+  </div>
+</div>
+
+<!-- ============ 8 ============ -->
+<div class="section-header" id="s8">
+  <h2>8　本单元小结</h2>
+  <div class="en-title">Unit Summary</div>
+</div>
+
+<div class="cast anya">
+  <img class="ava" src="../assets/avatars/anya.webp" alt="安雅" onerror="this.style.display='none'">
+  <div class="bubble">
+    <div class="who">安雅 · 红发队长</div>
+    三句话记住这一单元：<br>
+    <strong>一、注释用 // 或 /* */，给人看、给机器跳过，不能嵌套。</strong><br>
+    <strong>二、错误分三类：编译错误（过不了）、运行错误（一跑就崩）、逻辑错误（结果不对）。</strong><br>
+    <strong>三、调试最实用的办法：把中间变量打印出来，亲眼看着它变。</strong><br>
+    一级到这里就结束了。往前看，你会走得更远。
+  </div>
+</div>
+
+<div class="summary">
+  <h3>你在迷雾中学到了什么</h3>
+  <ul>
+    <li><strong>注释</strong>——<code class="inline">//</code> 单行、<code class="inline">/* */</code> 多行；不影响运行。</li>
+    <li><strong>注释不能嵌套</strong>——第一个 <code class="inline">*/</code> 就结束了。</li>
+    <li><strong>注释里可以随便写</strong>——中英文混用完全没问题；受限的是代码部分的标点。</li>
+    <li><strong>编译错误</strong>——过不了编译，会告诉你行号；如少分号、中文标点、类型不匹配。</li>
+    <li><strong>运行错误</strong>——编译过了但一跑就崩；如除以 0。</li>
+    <li><strong>逻辑错误</strong>——能跑但结果不对，没有任何提示，最需要调试。</li>
+    <li><strong>调试方法</strong>——打印中间变量、注释掉一半、用小数据手算对照。</li>
+    <li><strong>检查清单</strong>——符号 → 声明 → 边界 → 初始值 → 输出格式。</li>
+    <li><strong>枚举法</strong>——把所有可能逐个试一遍，是计算机最擅长的事。</li>
+    <li><strong>鸡兔同笼</strong>——循环枚举兔的只数，验算脚数；<strong>用标记变量判断有没有解</strong>。</li>
+  </ul>
+</div>
+
+<!-- ============ 9 ============ -->
+<div class="section-header" id="s9">
+  <h2>9　C++ 一级总复习</h2>
+  <div class="en-title">Level 1 Review</div>
+</div>
+
+<figure class="figure">
+  <svg class="diagram" viewBox="0 0 830 330" role="img" aria-label="C++ 一级知识地图">
+    <text x="24" y="32" font-size="14" font-weight="bold" fill="#1f2937">C++ 一级知识地图：七个单元，一条线</text>
+
+    <rect x="30" y="56" width="180" height="72" rx="10" fill="#eaf1fe" stroke="#2563eb" stroke-width="2"/>
+    <text x="120" y="82" text-anchor="middle" font-size="12" fill="#1d4ed8" font-weight="bold">① 哨火初燃</text>
+    <text x="120" y="104" text-anchor="middle" font-size="11" fill="#3b6ea8">计算机基础 · IDE · 编译</text>
+    <text x="120" y="120" text-anchor="middle" font-size="10.5" fill="#7a93b5">考试第 1、2 题</text>
+
+    <rect x="228" y="56" width="180" height="72" rx="10" fill="#eaf1fe" stroke="#2563eb" stroke-width="2"/>
+    <text x="318" y="82" text-anchor="middle" font-size="12" fill="#1d4ed8" font-weight="bold">② 会记事的木箱</text>
+    <text x="318" y="104" text-anchor="middle" font-size="11" fill="#3b6ea8">变量 · 数据类型 · const</text>
+    <text x="318" y="120" text-anchor="middle" font-size="10.5" fill="#7a93b5">赋值是复制，不是绑定</text>
+
+    <rect x="426" y="56" width="180" height="72" rx="10" fill="#f5f3ff" stroke="#8b5cf6" stroke-width="2"/>
+    <text x="516" y="82" text-anchor="middle" font-size="12" fill="#6d28d9" font-weight="bold">③ 炼金配方台</text>
+    <text x="516" y="104" text-anchor="middle" font-size="11" fill="#7c5cd0">运算符 · 取余 · 优先级</text>
+    <text x="516" y="120" text-anchor="middle" font-size="10.5" fill="#9a86d4">整除最常考</text>
+
+    <rect x="624" y="56" width="176" height="72" rx="10" fill="#e9f8ef" stroke="#2e9e5b" stroke-width="2"/>
+    <text x="712" y="82" text-anchor="middle" font-size="12" fill="#1f7a44" font-weight="bold">④ 潮汐升降梯</text>
+    <text x="712" y="104" text-anchor="middle" font-size="11" fill="#3b7c5b">顺序结构 · cin / cout</text>
+    <text x="712" y="120" text-anchor="middle" font-size="10.5" fill="#5f9b7d">printf 格式符</text>
+
+    <rect x="130" y="158" width="180" height="72" rx="10" fill="#fff9ec" stroke="#f59e0b" stroke-width="2"/>
+    <text x="220" y="184" text-anchor="middle" font-size="12" fill="#b45309" font-weight="bold">⑤ 岔路口的抉择</text>
+    <text x="220" y="206" text-anchor="middle" font-size="11" fill="#a15c1c">if / else / else if</text>
+    <text x="220" y="222" text-anchor="middle" font-size="10.5" fill="#b58b4a">相等时掉进 else</text>
+
+    <rect x="328" y="158" width="180" height="72" rx="10" fill="#fff9ec" stroke="#f59e0b" stroke-width="2"/>
+    <text x="418" y="184" text-anchor="middle" font-size="12" fill="#b45309" font-weight="bold">⑥ 永不熄的齿轮</text>
+    <text x="418" y="206" text-anchor="middle" font-size="11" fill="#a15c1c">for / while / do-while</text>
+    <text x="418" y="222" text-anchor="middle" font-size="10.5" fill="#b58b4a">i 结束值是几</text>
+
+    <rect x="526" y="158" width="180" height="72" rx="10" fill="#eef6ff" stroke="#3b82f6" stroke-width="2"/>
+    <text x="616" y="184" text-anchor="middle" font-size="12" fill="#1d4ed8" font-weight="bold">⑦ 迷雾中的脚印</text>
+    <text x="616" y="206" text-anchor="middle" font-size="11" fill="#3b6ea8">注释 · 错误 · 调试</text>
+    <text x="616" y="222" text-anchor="middle" font-size="10.5" fill="#5b7ba8">综合项目</text>
+
+    <rect x="30" y="252" width="770" height="62" rx="10" fill="#f7f9fd" stroke="#cbd5e1" stroke-width="1.6"/>
+    <text x="54" y="276" font-size="12" fill="#334155" font-weight="bold">一句话串起来：</text>
+    <text x="54" y="300" font-size="11.5" fill="#475569">先认识环境 → 再装数据 → 用运算符算 → 按顺序输出 → 会做判断 → 会重复 → 最后能自己查错、独立解决问题。</text>
+  </svg>
+  <div class="caption">图 9（SVG）：C++ 一级完整知识地图</div>
+</figure>
+
+<table class="styled">
+  <thead><tr><th>考点</th><th>必须掌握的一句话</th></tr></thead>
+  <tbody>
+    <tr><td>计算机组成</td><td>输入设备、运算器、控制器、存储器、输出设备；运算器与控制器合称 CPU</td></tr>
+    <tr><td>四代计算机</td><td>划分依据是<strong>核心元器件</strong></td></tr>
+    <tr><td>程序与语言</td><td>只有机器语言能被直接执行；C++ 是编译型的高级语言</td></tr>
+    <tr><td>IDE</td><td>能编辑、编译、运行、调试，<strong>但不能直接控制硬件</strong></td></tr>
+    <tr><td>变量</td><td><strong>必须先声明类型</strong>才能使用；<code class="inline">int b = a;</code> 之后改 a 不影响 b</td></tr>
+    <tr><td>数据类型</td><td><code class="inline">int</code>、<code class="inline">long long</code>、<code class="inline">double</code>、<code class="inline">char</code>、<code class="inline">bool</code></td></tr>
+    <tr><td>字符与字符串</td><td>字符用单引号 <code class="inline">'A'</code>，字符串用双引号 <code class="inline">"A"</code></td></tr>
+    <tr><td>常量</td><td><code class="inline">const</code> 定义时必须赋值，之后不能改</td></tr>
+    <tr><td>整除</td><td>整数 ÷ 整数 = 整数；<code class="inline">7 / 2 = 3</code>、<code class="inline">8 / 10 = 0</code></td></tr>
+    <tr><td>取余</td><td><code class="inline">n % 2</code> 判奇偶、<code class="inline">n % 10</code> 取个位；<code class="inline">%</code> 只能用于整数</td></tr>
+    <tr><td>自增自减</td><td><code class="inline">++b *= 2 + 1</code> 要分三步读：先自增、再算右边、最后复合赋值</td></tr>
+    <tr><td>关系运算</td><td>结果是 <strong>1 或 0</strong>，可以当数字参与运算</td></tr>
+    <tr><td>优先级</td><td>括号 → 一元 → 乘除余 → 加减 → 关系 → 逻辑 → 赋值；同级从左往右</td></tr>
+    <tr><td>输出</td><td><code class="inline">cout &lt;&lt;</code> 或 <code class="inline">printf</code>；格式串里非 % 的字符原样输出</td></tr>
+    <tr><td>输入</td><td><code class="inline">cin &gt;&gt;</code> 或 <code class="inline">scanf</code>（<strong>变量前要加 &amp;</strong>）；cin 按类型读，遇非法字符就停</td></tr>
+    <tr><td>换行</td><td><code class="inline">endl</code>、<code class="inline">"\n"</code>、<code class="inline">printf("\n")</code> 三者等价</td></tr>
+    <tr><td>分支</td><td><code class="inline">if</code> 只管第一条语句；<strong>括号后不加分号</strong>；判断相等用 <code class="inline">==</code></td></tr>
+    <tr><td>多分支</td><td><code class="inline">else if</code> 从上往下判断，一成立就跳出，按"由严到宽"排</td></tr>
+    <tr><td>循环</td><td>三要素：起点、条件、推进；<strong>少了推进会死循环</strong></td></tr>
+    <tr><td>循环结束后的 i</td><td>是"第一个让条件不成立的值"，如 <code class="inline">i &lt; 10</code> 结束时 i = 10</td></tr>
+    <tr><td>break / continue</td><td><code class="inline">break</code> 整个退出，<code class="inline">continue</code> 只跳过这一轮；它后面的代码是死代码</td></tr>
+    <tr><td>注释</td><td><code class="inline">//</code> 与 <code class="inline">/* */</code>；<strong>不能嵌套</strong>；不影响运行</td></tr>
+    <tr><td>三类错误</td><td>编译错误（过不了）、运行错误（一跑就崩）、逻辑错误（结果不对）</td></tr>
+  </tbody>
+</table>
+
+<div class="box remember">
+  <span class="lb">给接下来要考级的你三句话：</span><br>
+  <b>一、看到一段代码问"输出什么"，就拿出草稿纸，一个变量一个变量地跟着走一遍。</b><br>
+  <b>二、写程序时先想清楚"顺序、分支、循环"用哪个，再动手敲键盘。</b><br>
+  <b>三、报错不要慌——先看行号，再看关键词，先从第一条错误改起。</b><br>
+  <strong>二级我们会学更细的数据类型、多层分支与多层循环。路还长，但你已经上路了。</strong>
+</div>
+
+<div class="pager">
+  <a href="cpp-1-06.html"><div class="k">← 上一单元</div><div class="v">永不熄的齿轮 · 循环结构：重复执行</div></a>
+  <a href="../index.html" target="_top" class="back"><div class="k">返回</div><div class="v">考纲之路 · 总目录</div></a>
+  <a href="cpp-2-01.html"><div class="k">下一级别 →</div><div class="v">溪谷的耳语 · C++ 二级第 1 单元</div></a>
+</div>
+
+<div class="cta">
+  <h3>C++ 一级，通关</h3>
+  <p>七个单元走完，你已经能独立写出有输入、有判断、有循环、有输出的完整程序了。<br>
+  代码是练出来的，不是看出来的——<b>去扣哒世界里把这一级再走一遍吧。</b></p>
+  <a class="btn-go" href="https://codecombat.cn/" target="_blank" rel="noopener">加入扣哒世界，把这条考纲之路走一遍 →</a>
+</div>
+
+
+</div><!-- /container -->
+</div><!-- /page -->
+
+<script>
+const KEYWORDS = new Set([
+  "int", "long", "short", "unsigned", "signed", "float", "double", "char", "bool", "void",
+  "const", "if", "else", "for", "while", "do", "switch", "case", "default", "break",
+  "continue", "return", "goto", "struct", "class", "union", "enum", "using", "namespace",
+  "std", "main", "true", "false", "cin", "cout", "cerr", "endl", "string", "sizeof",
+  "include", "define", "new", "delete", "public", "private", "static", "inline", "nullptr"
+]);
+
+function esc(s){ return s.replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;'); }
+
+function highlight(src){
+  let out = '', i = 0;
+  const n = src.length;
+  while (i < n){
+    const c = src[i];
+    /* 预处理指令：#include / #define，整行只在行首生效 */
+    if (c === '#' && (i === 0 || src[i-1] === '\n')){
+      let j = i;
+      while (j < n && /[A-Za-z]/.test(src[j])) j++;
+      out += '<span class="kw">' + esc(src.slice(i, j)) + '</span>';
+      let k = src.indexOf('\n', j); if (k < 0) k = n;
+      if (j < k) out += '<span class="st">' + esc(src.slice(j, k)) + '</span>';
+      i = k; continue;
+    }
+    /* 行注释 // */
+    if (c === '/' && src[i+1] === '/'){
+      let j = src.indexOf('\n', i); if (j < 0) j = n;
+      out += '<span class="cm">' + esc(src.slice(i, j)) + '</span>';
+      i = j; continue;
+    }
+    /* 块注释 */
+    if (c === '/' && src[i+1] === '*'){
+      let j = src.indexOf('*/', i + 2); j = j < 0 ? n : j + 2;
+      out += '<span class="cm">' + esc(src.slice(i, j)) + '</span>';
+      i = j; continue;
+    }
+    /* 字符串与字符字面量 */
+    if (c === '"' || c === "'"){
+      let j = i + 1;
+      while (j < n && src[j] !== c){ if (src[j] === '\\') j++; j++; }
+      j = Math.min(j + 1, n);
+      out += '<span class="st">' + esc(src.slice(i, j)) + '</span>';
+      i = j; continue;
+    }
+    /* 数字 */
+    if (/[0-9]/.test(c)){
+      let j = i;
+      while (j < n && /[0-9.]/.test(src[j])) j++;
+      out += '<span class="nu">' + esc(src.slice(i, j)) + '</span>';
+      i = j; continue;
+    }
+    /* 标识符：关键字 / 函数名 / 普通名字 */
+    if (/[A-Za-z_]/.test(c)){
+      let j = i;
+      while (j < n && /[A-Za-z0-9_]/.test(src[j])) j++;
+      const w = src.slice(i, j);
+      if (KEYWORDS.has(w)) out += '<span class="kw">' + esc(w) + '</span>';
+      else if (src[j] === '(') out += '<span class="fn">' + esc(w) + '</span>';
+      else out += esc(w);
+      i = j; continue;
+    }
+    out += esc(c); i++;
+  }
+  return out;
+}
+
+document.querySelectorAll('.code-card pre code').forEach(block => {
+  block.innerHTML = highlight(block.textContent);
+});
+
+if (location.search.indexOf('expand') >= 0) {
+  document.querySelectorAll('details').forEach(d => d.open = true);
+}
+document.querySelectorAll('.sidebar-nav a').forEach(a => {
+  a.addEventListener('click', () => {
+    if (window.innerWidth <= 900) document.querySelector('.sidebar-nav').classList.remove('active');
+  });
+});
+</script>
+</body>
+</html>

@@ -1,0 +1,1236 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="copyright" content="CodeCombat Inc. codecombat.cn">
+<title>炼金配方台 · 运算符与表达式 | 扣哒考级 · GESP C++ 一级</title>
+<style>
+  :root{
+    --primary:#2563eb; --primary-light:#4f8ff0; --primary-lighter:#eaf1fe; --primary-dark:#1b47a8;
+    --brand:#ff6b35; --brand-dark:#e8541f; --brand-soft:#fff3ec;
+    --night:#131c2b; --night-2:#1e2a3a; --gold:#f5b301;
+    --text:#242e3d; --dim:#68788f; --dim2:#93a2b6;
+    --bg:#ffffff; --bg-soft:#f7f9fd; --line:#e2e9f4; --sidebar:274px;
+    --code-bg:#131a26; --code-tx:#c8d3e0;
+    --code-kw:#c678dd; --code-st:#98c379; --code-nu:#d19a66; --code-cm:#5f7488; --code-fn:#e5c07b;
+  }
+  *{margin:0;padding:0;box-sizing:border-box}
+  html{scroll-behavior:smooth}
+  body{font-family:"PingFang SC","Microsoft YaHei","Segoe UI",-apple-system,sans-serif;line-height:1.9;color:var(--text);background:var(--bg);font-size:15.5px}
+  .sidebar-nav{position:fixed;top:0;left:0;width:var(--sidebar);height:100vh;overflow-y:auto;background:linear-gradient(180deg,#0c1626,#14243c);padding:14px 0 40px;z-index:100;border-right:3px solid var(--brand);transition:transform .3s ease}
+  .sidebar-nav::-webkit-scrollbar{width:5px}
+  .sidebar-nav::-webkit-scrollbar-thumb{background:var(--brand);border-radius:4px}
+  .sb-brand{display:flex;align-items:center;gap:10px;padding:10px 13px 12px;border-bottom:1px solid #233752;margin-bottom:8px}
+  .sidebar-nav a.sb-logo{display:flex;align-items:center;justify-content:center;flex-shrink:0;padding:0;border-left:none;transition:.2s}
+  .sb-logo:hover{transform:scale(1.08)}
+  .sb-logo img{height:34px;width:34px;display:block;object-fit:contain;border-radius:8px}
+  .sb-brand b{color:#f2f6fa;font-size:14px;letter-spacing:.5px;display:block;line-height:1.4}
+  .sb-brand span{color:#7f95ab;font-size:11.5px;display:block;line-height:1.4}
+  .nav-title{color:#ffb894;font-size:12px;font-weight:800;padding:10px 18px 6px;letter-spacing:1.2px}
+  .sidebar-nav a{display:block;color:#c3d0dc;text-decoration:none;padding:6px 18px;font-size:12.5px;line-height:1.55;border-left:3px solid transparent;transition:.18s}
+  .sidebar-nav a:hover{color:#fff;background:rgba(255,107,53,.16);border-left-color:var(--brand)}
+  .sidebar-nav a.nav-section{color:#ffb894;font-weight:700;font-size:13px;margin-top:11px;padding-top:10px;border-top:1px solid #233752}
+  .sidebar-nav a.nav-section:first-of-type{border-top:none;margin-top:0;padding-top:6px}
+  .sidebar-nav a.nav-sub{padding-left:30px;color:#93a8bc;font-size:12px}
+  .sidebar-nav a.nav-sub:hover{color:#fff}
+  .sb-back{margin:16px 14px 0;display:block;text-align:center;padding:9px;border-radius:9px;background:#1e304a;color:#a9c0d6 !important;font-size:12px;font-weight:700;border-left:none !important}
+  .sb-back:hover{background:var(--brand) !important;color:#fff !important}
+  .nav-toggle{display:none;position:fixed;top:14px;left:14px;z-index:120;background:var(--brand);color:#fff;border:none;border-radius:9px;padding:9px 13px;font-size:15px;cursor:pointer;box-shadow:0 4px 14px rgba(0,0,0,.25)}
+  .page{margin-left:var(--sidebar)}
+  .hero{position:relative;overflow:hidden;padding:44px 52px;color:#fff;background:linear-gradient(125deg,#0a1220 0%,#16294a 46%,#8a3a16 132%)}
+  .hero::after{content:"";position:absolute;right:-90px;top:-110px;width:400px;height:400px;border-radius:50%;background:radial-gradient(circle,rgba(245,179,1,.30),transparent 68%)}
+  .hero-top{display:flex;gap:36px;align-items:center;position:relative;z-index:2}
+  .hero-txt{flex:1;min-width:0}
+  .hero .crumb{font-size:11.5px;color:#ffb894;letter-spacing:1.5px;font-weight:700;margin-bottom:14px}
+  .hero h1{font-size:31px;font-weight:800;line-height:1.3;letter-spacing:.6px;margin-bottom:8px}
+  .hero h1 .sub{display:block;font-size:18px;font-weight:700;color:#ffd2b3;margin-top:6px;letter-spacing:.3px}
+  .hero .en{font-size:13px;color:#9db4c8;font-style:italic;margin-bottom:18px}
+  .hero .tags{display:flex;flex-wrap:wrap;gap:8px}
+  .tag{font-size:11.5px;padding:4px 12px;border-radius:20px;background:rgba(255,255,255,.12);border:1px solid rgba(255,255,255,.22);color:#e8f0f6;font-weight:600}
+  .tag.hot{background:rgba(255,107,53,.92);border-color:transparent;color:#fff}
+  .hero-card{flex-shrink:0;width:200px;text-align:center}
+  .hero-card .ava{width:148px;height:148px;border-radius:50%;object-fit:cover;object-position:top center;border:4px solid rgba(255,180,140,.6);box-shadow:0 14px 34px rgba(0,0,0,.45);background:#24344a}
+  .hero-card .nm{font-size:15px;font-weight:800;color:#fff;margin-top:10px}
+  .hero-card .ti{font-size:11.5px;color:#ffb894;margin-top:2px}
+  .container{max-width:1080px;margin:0 auto;padding:38px 52px 70px}
+  .lead{font-size:15.5px;line-height:2.05;color:#333f52;background:linear-gradient(120deg,#fff8f3,#f7fbf8);border-left:5px solid var(--brand);border-radius:0 14px 14px 0;padding:22px 26px;margin-bottom:32px}
+  .lead b{color:var(--brand-dark)}
+  .cast{display:flex;gap:16px;align-items:flex-start;border-radius:16px;padding:18px 22px;margin:24px 0}
+  .cast .ava{width:72px;height:72px;border-radius:50%;object-fit:cover;object-position:top center;flex-shrink:0;background:#e8eef5}
+  .cast .bubble{position:relative;font-size:14px;line-height:1.95;padding-top:2px;flex:1}
+  .cast .who{font-size:12px;font-weight:800;margin-bottom:5px;letter-spacing:.5px}
+  .cast.anya{background:var(--brand-soft);border:1px solid #ffdcc9}
+  .cast.anya .who{color:var(--brand-dark)}
+  .cast.anya .bubble{color:#5c4636}
+  .cast.duck{background:#fff5f5;border:1px solid #fbd5d5}
+  .cast.duck .who{color:#b91c1c}
+  .cast.duck .bubble{color:#5c4141}
+  .cast.teacher{background:linear-gradient(120deg,#f4f7fb,#ffffff);border:1px solid #dbe4f0}
+  .cast.teacher .who{color:#1e293b}
+  .cast.teacher .bubble{color:#3c4a5a}
+  .cast.hero{background:#f2f7fd;border:1px solid #cfe0f5}
+  .cast.hero .who{color:#1b47a8}
+  .cast.hero .bubble{color:#3a4658}
+  .goal-grid{display:grid;grid-template-columns:1fr 1fr;gap:16px;margin-bottom:36px}
+  .goal{border:1px solid var(--line);border-radius:15px;padding:19px 21px;background:#fff;box-shadow:0 4px 16px rgba(31,122,68,.05)}
+  .goal h4{font-size:14px;font-weight:800;margin-bottom:11px;display:flex;align-items:center;gap:8px;color:var(--primary-dark)}
+  .goal h4 .ic{width:22px;height:22px;border-radius:7px;background:var(--primary-lighter);display:flex;align-items:center;justify-content:center;font-size:12px}
+  .goal ul{list-style:none}
+  .goal li{font-size:13.5px;color:#48576b;line-height:1.9;padding-left:18px;position:relative}
+  .goal li::before{content:"▸";position:absolute;left:0;color:var(--primary);font-weight:800}
+  .goal.syllabus li::before{content:"✓"}
+  .section-header{margin:52px 0 24px;padding-bottom:12px;border-bottom:3px solid var(--brand);display:flex;align-items:baseline;gap:14px;flex-wrap:wrap}
+  .section-header h2{font-size:22px;font-weight:800;color:var(--night);letter-spacing:.4px}
+  .section-header .en-title{font-size:12px;color:var(--dim2);font-style:italic}
+  h3{font-size:17.5px;font-weight:800;margin:34px 0 14px;color:var(--night);display:flex;align-items:center;gap:10px}
+  h3::before{content:"";width:5px;height:17px;border-radius:3px;background:var(--brand);flex-shrink:0}
+  h4{font-size:15px;font-weight:800;margin:24px 0 10px;color:#2b4260}
+  p{margin:12px 0;color:#3a4658;line-height:2}
+  strong{color:var(--primary-dark)}
+  code.inline{background:var(--primary-lighter);color:var(--primary-dark);padding:2px 7px;border-radius:6px;font-family:"SFMono-Regular",Consolas,Menlo,monospace;font-size:.9em;font-weight:600}
+  .figure{margin:24px 0;text-align:center}
+  .figure svg.diagram{max-width:100%;height:auto;background:#fff;border:1px solid var(--line);border-radius:14px;padding:10px}
+  .figure .caption{font-size:12.5px;color:var(--dim2);margin-top:9px}
+  .pic{margin:26px 0;text-align:center}
+  .pic img{max-width:100%;border-radius:16px;box-shadow:0 10px 28px rgba(30,60,45,.15);display:block;margin:0 auto}
+  .pic figcaption{font-size:12.5px;color:var(--dim2);margin-top:9px}
+  .pic .ph{display:none}
+  .pic.missing img{display:none}
+  .pic.missing .ph{display:flex;flex-direction:column;align-items:center;justify-content:center;gap:9px;border:2px dashed #c9d9e8;border-radius:16px;background:linear-gradient(135deg,#f8fbfe,#eef6ff);padding:40px 26px;color:#7a8fa8}
+  .pic.missing .ph .fn{font-family:Consolas,monospace;font-size:12.5px;color:#2563eb;font-weight:700;word-break:break-all}
+  .pic.missing .ph .ds{font-size:12.5px;line-height:1.8;max-width:560px}
+  .box{border-radius:13px;padding:16px 20px;margin:20px 0;font-size:14px;line-height:1.95}
+  .box .lb{font-weight:800;margin-right:6px}
+  .info{background:#eef6ff;border-left:5px solid #3b82f6;color:#274768}
+  .info .lb{color:#1d4ed8}
+  .tip{background:#fff9ec;border-left:5px solid #f59e0b;color:#6b4e13}
+  .tip .lb{color:#b45309}
+  .remember{background:var(--primary-lighter);border-left:5px solid var(--primary);color:#1d3a6b}
+  .remember .lb{color:var(--primary-dark)}
+  .warn{background:#fef2f2;border-left:5px solid #ef4444;color:#7f2b2b}
+  .warn .lb{color:#b91c1c}
+  .code-card{margin:20px 0;border-radius:14px;overflow:hidden;box-shadow:0 10px 28px rgba(20,40,28,.20)}
+  .code-head{display:flex;align-items:center;gap:9px;background:#1a2434;padding:9px 14px}
+  .code-head .dot{width:10px;height:10px;border-radius:50%}
+  .code-head .d1{background:#ff5f57}.code-head .d2{background:#febc2e}.code-head .d3{background:#28c840}
+  .code-head .file{color:#8fa6c0;font-size:11.5px;font-family:Consolas,monospace;margin-left:6px}
+  .code-head .lang{margin-left:auto;font-size:10.5px;font-weight:800;color:#0d141f;background:#4f8ff0;padding:2px 9px;border-radius:6px;letter-spacing:.4px}
+  .code-card pre{background:var(--code-bg);padding:18px 20px;overflow-x:auto;margin:0;font-family:"SFMono-Regular",Consolas,"Courier New",monospace;font-size:13.5px;line-height:1.85}
+  .code-card pre::-webkit-scrollbar{height:8px}
+  .code-card pre::-webkit-scrollbar-thumb{background:#31445c;border-radius:4px}
+  .code-card code{color:var(--code-tx);white-space:pre}
+  .kw{color:var(--code-kw);font-weight:600}
+  .st{color:var(--code-st)}
+  .nu{color:var(--code-nu)}
+  .cm{color:var(--code-cm);font-style:italic}
+  .fn{color:var(--code-fn)}
+  .out{background:#0f1621;color:#7fb3f5;font-family:Consolas,monospace;font-size:13px;padding:12px 20px;border-top:1px solid #22304a}
+  .out b{color:#c9d6cd;font-weight:600;font-size:11.5px;letter-spacing:1px}
+  .out.err{color:#fca5a5}
+  table.styled{width:100%;border-collapse:collapse;margin:20px 0;font-size:13.5px;border-radius:12px;overflow:hidden;box-shadow:0 4px 16px rgba(31,122,68,.07)}
+  table.styled thead{background:var(--brand)}
+  table.styled th{color:#fff;padding:11px 14px;text-align:left;font-weight:700;font-size:13px}
+  table.styled td{padding:10px 14px;border-bottom:1px solid var(--line);color:#445266;vertical-align:top}
+  table.styled tbody tr:nth-child(even){background:var(--bg-soft)}
+  table.styled tbody tr:last-child td{border-bottom:none}
+  .level-card{border:1px solid var(--line);border-radius:16px;overflow:hidden;margin:22px 0;box-shadow:0 6px 22px rgba(31,122,68,.07)}
+  .level-card .lc-head{background:linear-gradient(100deg,#17283a,#8a3a16);color:#fff;padding:15px 22px;display:flex;align-items:center;gap:12px;flex-wrap:wrap}
+  .level-card .lc-head .n{font-size:12px;font-weight:800;background:rgba(255,255,255,.2);padding:3px 10px;border-radius:20px}
+  .level-card .lc-head h4{margin:0;color:#fff;font-size:16px}
+  .level-card .lc-head .go{margin-left:auto;font-size:11.5px;color:#ffd2b3}
+  .level-card .lc-body{padding:20px 24px;background:#fff}
+  .level-card .story{background:#f9fbfd;border-left:4px solid #93c5fd;border-radius:0 10px 10px 0;padding:13px 18px;margin:0 0 16px;font-size:14px;line-height:1.95;color:#3f5163}
+  .level-card .story b{color:#1d4ed8}
+  .btn-go{display:inline-flex;align-items:center;gap:8px;background:linear-gradient(135deg,var(--brand),var(--brand-dark));color:#fff;text-decoration:none;font-weight:800;font-size:13.5px;padding:10px 22px;border-radius:11px;box-shadow:0 8px 20px rgba(255,107,53,.32);transition:.2s}
+  .btn-go:hover{transform:translateY(-2px);box-shadow:0 12px 26px rgba(255,107,53,.42)}
+  .pit{border:1px solid #f6dede;border-radius:14px;overflow:hidden;margin:16px 0;background:#fff}
+  .pit .pt{display:flex;gap:12px;padding:14px 18px;background:#fffafa;align-items:flex-start}
+  .pit .x{width:26px;height:26px;border-radius:9px;background:#fee;color:#dc2626;display:flex;align-items:center;justify-content:center;font-weight:800;flex-shrink:0;font-size:13px}
+  .pit .t{font-size:13.5px;line-height:1.9;color:#5c4a4a;flex:1}
+  .pit .t b{color:#b91c1c}
+  .pit .duck{display:flex;gap:12px;padding:13px 18px;background:#fff5f5;border-top:1px dashed #f3d0d0;align-items:flex-start}
+  .pit .duck img{width:48px;height:48px;object-fit:contain;flex-shrink:0;margin-top:2px}
+  .pit .duck .dt{font-size:13.5px;line-height:1.9;color:#7a3b3b}
+  .pit .duck .dt b{color:#b91c1c}
+  .pit .fix{padding:12px 18px;background:#f2f7fd;border-top:1px dashed #cfe0f5;font-size:13.5px;color:#1d3a6b}
+  .pit .fix b{color:var(--primary-dark)}
+  .exam{border:1px solid #dfe7f5;border-radius:15px;margin:16px 0;overflow:hidden;background:#fff;box-shadow:0 4px 16px rgba(38,62,120,.06)}
+  .exam .eh{display:flex;align-items:center;gap:10px;padding:11px 18px;background:linear-gradient(100deg,#eef4ff,#f7faff);border-bottom:1px solid #e3ebf8;flex-wrap:wrap}
+  .exam .eh .src{font-size:11px;font-weight:800;color:#fff;background:#2563eb;padding:2.5px 10px;border-radius:20px}
+  .exam .eh .src.ori{background:#8b5cf6}
+  .exam .eh .tp{font-size:11.5px;color:#5b7ba8;font-weight:700}
+  .exam .eb{padding:16px 20px}
+  .exam .q{font-weight:700;font-size:14px;color:#1e2a3e;line-height:1.9;margin-bottom:10px}
+  .exam .opt{font-size:13.5px;color:#48576b;line-height:2.05;padding-left:6px}
+  .exam .opt i{font-style:normal;font-weight:800;color:var(--primary-dark);margin-right:7px}
+  .exam pre{margin:12px 0;background:#1b2a21;border-radius:10px;padding:14px 16px;overflow-x:auto;font-family:Consolas,monospace;font-size:13px;line-height:1.8;color:var(--code-tx)}
+  .exam details{margin-top:10px;border-top:1px dashed var(--line);padding-top:10px}
+  .exam summary{cursor:pointer;font-size:12.5px;font-weight:800;color:#2563eb;outline:none;user-select:none}
+  .exam details .ans{font-size:13.5px;color:#3a4658;line-height:1.95;margin-top:9px;background:var(--bg-soft);padding:13px 16px;border-radius:10px}
+  .exam details .ans b{color:var(--primary-dark)}
+  .exam details .ans .tagline{display:inline-block;font-size:11px;background:#e0f2fe;color:#0e7490;padding:1.5px 8px;border-radius:6px;font-weight:700;margin-right:6px}
+  .summary{margin:40px 0 20px;border-radius:18px;padding:26px 30px;background:linear-gradient(130deg,#fff8f3,#ffffff);border:1px solid #ffe0cf}
+  .summary h3{margin-top:0}
+  .summary ul{list-style:none;margin-top:10px}
+  .summary li{font-size:14px;line-height:2;color:#3d4d66;padding-left:24px;position:relative}
+  .summary li::before{content:"◆";position:absolute;left:0;color:var(--brand);font-size:11px;top:6px}
+  .pager{display:flex;gap:14px;margin-top:30px;flex-wrap:wrap}
+  .pager a{flex:1;min-width:200px;text-decoration:none;border:1px solid var(--line);border-radius:14px;padding:16px 20px;background:#fff;transition:.2s;display:block}
+  .pager a:hover{border-color:var(--brand);box-shadow:0 10px 26px rgba(255,107,53,.14);transform:translateY(-2px)}
+  .pager a .k{font-size:11px;color:var(--dim2);font-weight:700;letter-spacing:1px}
+  .pager a .v{font-size:14px;font-weight:800;color:var(--night);margin-top:5px}
+  .pager a.back{background:var(--brand-soft);border-color:transparent;text-align:center}
+  .pager a.back .v{color:var(--brand-dark)}
+  .cta{margin-top:26px;border-radius:20px;padding:30px 34px;color:#fff;position:relative;overflow:hidden;background:linear-gradient(120deg,#16202f,#2b3a52 46%,#a8431c 132%)}
+  .cta::after{content:"";position:absolute;right:-70px;bottom:-90px;width:280px;height:280px;border-radius:50%;background:radial-gradient(circle,rgba(255,140,80,.45),transparent 68%)}
+  .cta h3{color:#fff;margin:0 0 10px;position:relative;z-index:2}
+  .cta h3::before{background:var(--brand)}
+  .cta p{color:#d8e0ef;font-size:13.5px;margin:0 0 18px;position:relative;z-index:2;max-width:640px}
+  .cta .btn-go{position:relative;z-index:2}
+  @media(max-width:900px){
+    .sidebar-nav{transform:translateX(-100%)}
+    .sidebar-nav.active{transform:translateX(0)}
+    .nav-toggle{display:block}
+    .page{margin-left:0}
+    .hero{padding:70px 22px 34px}
+    .hero-top{flex-direction:column-reverse;text-align:center}
+    .hero-card{width:auto}
+    .container{padding:26px 20px 60px}
+    .goal-grid{grid-template-columns:1fr}
+  }
+</style>
+</head>
+<body>
+
+<button class="nav-toggle" onclick="document.querySelector('.sidebar-nav').classList.toggle('active')">&#9776;</button>
+
+<nav class="sidebar-nav">
+  <div class="sb-brand">
+    <a class="sb-logo" href="https://codecombat.cn/" target="_blank" rel="noopener" title="访问 CodeCombat 扣哒世界官网">
+      <img src="../assets/logo.png" alt="CodeCombat 扣哒世界">
+    </a>
+    <div><b>炼金配方台</b><span>烛火岗哨 · C++ 一级 第 3 单元</span></div>
+  </div>
+  <div class="nav-title">本单元目录</div>
+
+  <a href="#s0" class="nav-section">0　单元导语与目标</a>
+  <a href="#s0-1" class="nav-sub">0.1 学习目标</a>
+  <a href="#s0-2" class="nav-sub">0.2 考纲对照</a>
+  <a href="#s1" class="nav-section">1　算术运算符</a>
+  <a href="#s1-1" class="nav-sub">1.1 加、减、乘、除</a>
+  <a href="#s1-2" class="nav-sub">1.2 取余 %</a>
+  <a href="#s1-3" class="nav-sub">1.3 正负号与负数取余</a>
+  <a href="#s2" class="nav-section">2　赋值与自增自减</a>
+  <a href="#s2-1" class="nav-sub">2.1 赋值与复合赋值</a>
+  <a href="#s2-2" class="nav-sub">2.2 ++ 与 --</a>
+  <a href="#s2-3" class="nav-sub">2.3 前置与后置的区别</a>
+  <a href="#s3" class="nav-section">3　关系运算符</a>
+  <a href="#s3-1" class="nav-sub">3.1 六个关系符</a>
+  <a href="#s3-2" class="nav-sub">3.2 结果是 1 或 0</a>
+  <a href="#s4" class="nav-section">4　逻辑运算符</a>
+  <a href="#s4-1" class="nav-sub">4.1 与、或、非</a>
+  <a href="#s4-2" class="nav-sub">4.2 短路求值</a>
+  <a href="#s5" class="nav-section">5　优先级与结合性</a>
+  <a href="#s5-1" class="nav-sub">5.1 谁先算</a>
+  <a href="#s5-2" class="nav-sub">5.2 拿不准就加括号</a>
+  <a href="#s6" class="nav-section">6　代码实战</a>
+  <a href="#s7" class="nav-section">7　常见陷阱</a>
+  <a href="#s8" class="nav-section">8　题目练习</a>
+  <a href="#s9" class="nav-section">9　本单元小结</a>
+
+  <a href="../index.html" target="_top" class="sb-back">返回考纲之路</a>
+</nav>
+
+<div class="page">
+
+<div class="hero">
+  <div class="hero-top">
+    <div class="hero-txt">
+      <div class="crumb">扣哒考级 · GESP C++ 一级 · 第 3 单元　|　烛火岗哨 CANDLEWATCH OUTPOST</div>
+      <h1>炼金配方台
+        <span class="sub">运算符与表达式</span>
+      </h1>
+      <div class="en">Operators &amp; Expressions</div>
+      <div class="tags">        <span class="tag hot">考纲 · 运算符</span>
+        <span class="tag">算术与取余</span>
+        <span class="tag">自增自减</span>
+        <span class="tag">关系与逻辑</span>
+        <span class="tag">优先级</span></div>
+    </div>
+    <div class="hero-card">
+      <img class="ava" src="../assets/avatars/tharin.webp" alt="塔林" onerror="this.style.background='#24344a';this.src='../assets/heroes/tharin.webp'">
+      <div class="nm">塔林</div>
+      <div class="ti">铁壁骑士 · 你的向导</div>
+    </div>
+  </div>
+</div>
+
+<div class="container">
+
+
+
+
+
+<div class="lead">
+  岗哨地下室的炼金台上，摆满了发光的药剂瓶。<b>每只瓶身上都刻着一个运算符号。</b><br>
+  塔林把两瓶药剂倒进中央的结果水晶杯，杯里的液体变了颜色，冒出星点。<br>
+  看，他说，<b>两样东西碰到一起，就会按瓶身上的符号变出一个新结果。</b>
+  这就是 C++ 的表达式。
+</div>
+
+<div class="cast tharin">
+  <img class="ava" src="../assets/avatars/tharin.webp" alt="塔林" onerror="this.style.display='none'">
+  <div class="bubble">
+    <div class="who">塔林 · 铁壁骑士</div>
+    上一单元我们把东西装进了箱子，可箱子一直是死的。<br>
+    这一单元让它们<b>活起来</b>——用运算符把值算成新的值。<br>
+    这一块是 C++ 一级<strong>考得最密的地方</strong>：真题里一半以上的选择题，都在问"这段代码输出什么"。
+  </div>
+</div>
+
+<figure class="pic">
+  <img src="../assets/illustrations/py-L1-03-01_alchemy_table.webp" alt="炼金配方台"
+       onerror="this.closest('.pic').classList.add('missing')">
+  <div class="ph">
+    <div class="fn">assets/illustrations/py-L1-03-01_alchemy_table.webp</div>
+    <div class="ds">【配图位】岗哨地下室的炼金台：桌上摆满发光的药剂瓶，每只瓶身刻着一个运算符符号；一名新兵把两瓶药剂倒进中央的结果水晶杯，杯内液体变色并冒出星点；暖橙色火光与青色药液对比。</div>
+  </div>
+  <figcaption>图 1：烛火岗哨的炼金配方台——今天要从这里开始</figcaption>
+</figure>
+
+<!-- ============ 0 ============ -->
+<div class="section-header" id="s0">
+  <h2>0　单元导语与目标</h2>
+  <div class="en-title">Unit Overview</div>
+</div>
+
+<h3 id="s0-1">0.1 学习目标</h3>
+<div class="goal-grid">
+  <div class="goal">
+    <h4><span class="ic">1</span>学完这个单元，你将能……</h4>
+    <ul>
+      <li>熟练使用五个算术运算符，特别是整除与取余</li>
+      <li>说清整数除法与小数除法的区别</li>
+      <li>看懂 <code class="inline">++</code>、<code class="inline">--</code> 与复合赋值</li>
+      <li>用关系运算符写出条件，知道结果只有 1 和 0</li>
+      <li>用 <code class="inline">&amp;&amp;</code>、<code class="inline">||</code>、<code class="inline">!</code> 组合条件</li>
+      <li>判断一个复杂表达式的运算顺序与最终结果</li>
+    </ul>
+  </div>
+  <div class="goal syllabus">
+    <h4><span class="ic">2</span>对标 GESP 考纲（C++ 一级）</h4>
+    <ul>
+      <li>掌握算术运算符：<code class="inline">+ - * / %</code> 及正负号</li>
+      <li>掌握赋值运算符与自增自减运算符</li>
+      <li>掌握关系运算符与逻辑运算符</li>
+      <li>了解运算符的优先级与结合性</li>
+      <li>考核目标：能准确计算给定表达式的值，判断输出结果</li>
+    </ul>
+  </div>
+</div>
+
+<h3 id="s0-2">0.2 考纲对照</h3>
+<table class="styled">
+  <thead><tr><th>本单元小节</th><th>对应考纲条目</th><th>真题常考形式</th></tr></thead>
+  <tbody>
+    <tr><td>1　算术运算符</td><td>算术运算与取余</td><td>给一段带负号的混合运算，问结果</td></tr>
+    <tr><td>2　自增自减</td><td>赋值与自增自减</td><td><code class="inline">++b *= 2 + 1</code> 之后 b 是几</td></tr>
+    <tr><td>3　关系运算符</td><td>关系运算</td><td>比较表达式的结果是 1 还是 0</td></tr>
+    <tr><td>4　逻辑运算符</td><td>逻辑运算</td><td>条件成立与否、短路后的输出</td></tr>
+    <tr><td>5　优先级</td><td>运算符优先级</td><td>同一个式子里先算哪一步</td></tr>
+  </tbody>
+</table>
+
+<!-- ============ 1 ============ -->
+<div class="section-header" id="s1">
+  <h2>1　算术运算符</h2>
+  <div class="en-title">Arithmetic Operators</div>
+</div>
+
+<h3 id="s1-1">1.1 加、减、乘、除</h3>
+
+<figure class="figure">
+  <svg class="diagram" viewBox="0 0 830 220" role="img" aria-label="五个算术运算符">
+    <text x="24" y="32" font-size="14" font-weight="bold" fill="#1f2937">C++ 一级要掌握的五个算术运算符</text>
+
+    <rect x="30" y="58" width="150" height="96" rx="12" fill="#eaf1fe" stroke="#2563eb" stroke-width="2.2"/>
+    <text x="105" y="92" text-anchor="middle" font-size="22" font-family="Consolas,monospace" fill="#1d4ed8" font-weight="bold">+</text>
+    <text x="105" y="118" text-anchor="middle" font-size="11.5" fill="#3b6ea8">加法</text>
+    <text x="105" y="140" text-anchor="middle" font-size="11.5" font-family="Consolas,monospace" fill="#2563eb">3 + 2 = 5</text>
+
+    <rect x="192" y="58" width="150" height="96" rx="12" fill="#eaf1fe" stroke="#2563eb" stroke-width="2.2"/>
+    <text x="267" y="92" text-anchor="middle" font-size="22" font-family="Consolas,monospace" fill="#1d4ed8" font-weight="bold">-</text>
+    <text x="267" y="118" text-anchor="middle" font-size="11.5" fill="#3b6ea8">减法</text>
+    <text x="267" y="140" text-anchor="middle" font-size="11.5" font-family="Consolas,monospace" fill="#2563eb">3 - 2 = 1</text>
+
+    <rect x="354" y="58" width="150" height="96" rx="12" fill="#eaf1fe" stroke="#2563eb" stroke-width="2.2"/>
+    <text x="429" y="92" text-anchor="middle" font-size="22" font-family="Consolas,monospace" fill="#1d4ed8" font-weight="bold">*</text>
+    <text x="429" y="118" text-anchor="middle" font-size="11.5" fill="#3b6ea8">乘法</text>
+    <text x="429" y="140" text-anchor="middle" font-size="11.5" font-family="Consolas,monospace" fill="#2563eb">3 * 2 = 6</text>
+
+    <rect x="516" y="58" width="150" height="96" rx="12" fill="#fff6ec" stroke="#ff6b35" stroke-width="2.2"/>
+    <text x="591" y="92" text-anchor="middle" font-size="22" font-family="Consolas,monospace" fill="#c1440e" font-weight="bold">/</text>
+    <text x="591" y="118" text-anchor="middle" font-size="11.5" fill="#a85728">除法（注意整除！）</text>
+    <text x="591" y="140" text-anchor="middle" font-size="11.5" font-family="Consolas,monospace" fill="#c1440e">7 / 2 = 3</text>
+
+    <rect x="678" y="58" width="126" height="96" rx="12" fill="#fff6ec" stroke="#ff6b35" stroke-width="2.2"/>
+    <text x="741" y="92" text-anchor="middle" font-size="22" font-family="Consolas,monospace" fill="#c1440e" font-weight="bold">%</text>
+    <text x="741" y="118" text-anchor="middle" font-size="11.5" fill="#a85728">取余</text>
+    <text x="741" y="140" text-anchor="middle" font-size="11.5" font-family="Consolas,monospace" fill="#c1440e">7 % 2 = 1</text>
+
+    <text x="24" y="190" font-size="12" fill="#8d9d94">口诀：加加减减乘，除求商、余求剩；除号右边不能是 0</text>
+  </svg>
+  <div class="caption">图 2（SVG）：五个算术运算符</div>
+</figure>
+
+<div class="box tip">
+  <span class="lb">打个比方：</span>
+  配方台上有五只瓶子，每只瓶身刻着一个符号，倒进水晶杯就会发生不同的事：<br>
+  ① <b>加号瓶</b>——把两堆东西<b>合成一堆</b>；<br>
+  ② <b>减号瓶</b>——从一堆里<b>拿走一些</b>；<br>
+  ③ <b>乘号瓶</b>——把同一堆东西<b>复制好几份</b>；<br>
+  ④ <b>除号瓶</b>——把一堆<b>平均分</b>给几个人，<strong>只留下"每人分到几份"</strong>；<br>
+  ⑤ <b>百分号瓶</b>——平均分完之后，<strong>只留下"还剩下几个"</strong>。<br>
+  <b>五只瓶子里最容易搞错的是后两只——它们是一对兄弟，一个留商、一个留余。</b>
+</div>
+
+<div class="code-card">
+  <div class="code-head">
+    <span class="dot d1"></span><span class="dot d2"></span><span class="dot d3"></span>
+    <span class="file">最容易被绊倒的一步：整除</span>
+    <span class="lang">C++</span>
+  </div>
+  <pre><code>cout &lt;&lt; 7 / 2 &lt;&lt; endl;        // 3     两个整数相除，结果还是整数
+cout &lt;&lt; 7 % 2 &lt;&lt; endl;        // 1     余数
+
+cout &lt;&lt; 7 / 2.0 &lt;&lt; endl;      // 3.5   有一个是小数，结果就是小数
+
+cout &lt;&lt; 8 / 10 &lt;&lt; endl;       // 0     ★ 商是 0，不是 0.8
+cout &lt;&lt; 8 % 10 &lt;&lt; endl;       // 8     被除数比除数小，余数就是它自己</code></pre>
+  <div class="out"><b>OUTPUT</b>　3<br>1<br>3.5<br>0<br>8</div>
+</div>
+
+<div class="box remember">
+  <span class="lb">整除与取余，记住这两条：</span><br>
+  <b>① 整数 ÷ 整数 = 整数</b>（商取整，小数部分直接丢）：<code class="inline">7 / 2 = 3</code>、<code class="inline">8 / 10 = 0</code>。<br>
+  <b>② 取余 % 求的是"还剩多少"</b>：<code class="inline">7 % 2 = 1</code>、<code class="inline">8 % 10 = 8</code>。<br>
+  <b>口诀：/ 求商，% 求余；分东西就靠这两个。</b>
+</div>
+
+<h3 id="s1-2">1.2 取余 %</h3>
+
+<p>取余是 C++ 一级的"明星运算"，很多题目的核心就是它。</p>
+
+<table class="styled">
+  <thead><tr><th>表达式</th><th>结果</th><th>用途</th></tr></thead>
+  <tbody>
+    <tr><td><code class="inline">17 % 5</code></td><td>2</td><td>17 个东西分给 5 人，还剩 2 个</td></tr>
+    <tr><td><code class="inline">n % 2</code></td><td>0 或 1</td><td><strong>判断奇偶</strong>：0 是偶数，1 是奇数</td></tr>
+    <tr><td><code class="inline">n % 10</code></td><td>0~9</td><td><strong>取出个位数字</strong></td></tr>
+    <tr><td><code class="inline">n / 10</code></td><td>去掉个位</td><td><strong>去掉最后一位</strong>；配合 % 10 可逐位取数</td></tr>
+    <tr><td><code class="inline">n % 100</code></td><td>0~99</td><td>取出末两位</td></tr>
+  </tbody>
+</table>
+
+<div class="code-card">
+  <div class="code-head">
+    <span class="dot d1"></span><span class="dot d2"></span><span class="dot d3"></span>
+    <span class="file">经典组合：拆出一个整数的各位数字</span>
+    <span class="lang">C++</span>
+  </div>
+  <pre><code>int n = 1234;
+
+int ge   = n % 10;          // 4   个位
+int shi  = n / 10 % 10;     // 3   十位
+int bai  = n / 100 % 10;    // 2   百位
+int qian = n / 1000;        // 1   千位
+
+cout &lt;&lt; qian &lt;&lt; bai &lt;&lt; shi &lt;&lt; ge;   // 1234</code></pre>
+  <div class="out"><b>要点</b>　<code>/ 10</code> 去掉末位，<code>% 10</code> 取出末位，两者配合就能逐位拆数</div>
+</div>
+
+<div class="box tip">
+  <span class="lb">打个比方：</span>
+  <b>17 颗糖分给 5 个小朋友</b>，每人先分到 3 颗，最后还剩 2 颗。<br>
+  那个"每人 3 颗"就是 <code class="inline">17 / 5</code> 的结果；<br>
+  那个"还剩 2 颗"就是 <code class="inline">17 % 5</code> 的结果。<br>
+  <b>所以 <code class="inline">/</code> 和 <code class="inline">%</code> 是一对好兄弟：一个回答"分到多少"，一个回答"剩下多少"。</b>
+</div>
+
+<figure class="pic">
+  <img src="../assets/illustrations/cpp-L1-03-02_remainder_machine.webp" alt="分糖机"
+       onerror="this.closest('.pic').classList.add('missing')">
+  <div class="ph">
+    <div class="fn">assets/illustrations/cpp-L1-03-02_remainder_machine.webp</div>
+    <div class="ds">【配图位】炼金台上的黄铜分糖机：一名新兵把 17 颗发光糖果倒进机器顶部的漏斗；机器左侧的出口吐出 5 只小盘子、每只盘里稳稳放着 3 颗糖（标着除号）；右侧的余料口滚出 2 颗糖（标着百分号）；机器正面的铜牌上并排刻着"/ 求商"与"% 求余"。扣哒世界卡通风格，暖光与黄铜质感。</div>
+  </div>
+  <figcaption>图 3：一台同时回答"分到多少"和"剩下多少"的机器</figcaption>
+</figure>
+
+<h3 id="s1-3">1.3 正负号与负数取余</h3>
+
+<div class="code-card">
+  <div class="code-head">
+    <span class="dot d1"></span><span class="dot d2"></span><span class="dot d3"></span>
+    <span class="file">正负号是一元运算符</span>
+    <span class="lang">C++</span>
+  </div>
+  <pre><code>int a = 4 + -2 * 3;      // -2 * 3 先算得 -6，再加 4
+cout &lt;&lt; a &lt;&lt; endl;        // -2
+
+int b = -5;
+cout &lt;&lt; -b &lt;&lt; endl;       // 5     负号可以反转
+
+int c = -7 % 3;          // -1    结果的符号跟着"被除数"走
+cout &lt;&lt; c;</code></pre>
+  <div class="out"><b>OUTPUT</b>　-2<br>5<br>-1</div>
+</div>
+
+<div class="box tip">
+  <span class="lb">易错点：那个负号到底跟谁？</span>
+  在 <code class="inline">4 + -2 * 3</code> 里，<strong><code>-2</code> 是一个整体</strong>（负号是一元运算符，优先级很高），<br>
+  所以先算 <b>-2 × 3 = -6</b>，再算 <b>4 + (-6) = -2</b>。<br>
+  <b>千万不要把它读成"4 减 2 乘 3"。</b>
+</div>
+
+<!-- ============ 2 ============ -->
+<div class="section-header" id="s2">
+  <h2>2　赋值与自增自减</h2>
+  <div class="en-title">Assignment &amp; Increment</div>
+</div>
+
+<h3 id="s2-1">2.1 赋值与复合赋值</h3>
+
+<table class="styled">
+  <thead><tr><th>写法</th><th>等价于</th><th>含义</th></tr></thead>
+  <tbody>
+    <tr><td><code class="inline">a += 3</code></td><td><code class="inline">a = a + 3</code></td><td>在原有基础上加 3</td></tr>
+    <tr><td><code class="inline">a -= 3</code></td><td><code class="inline">a = a - 3</code></td><td>在原有基础上减 3</td></tr>
+    <tr><td><code class="inline">a *= 3</code></td><td><code class="inline">a = a * 3</code></td><td>乘 3 倍</td></tr>
+    <tr><td><code class="inline">a /= 3</code></td><td><code class="inline">a = a / 3</code></td><td>缩小到三分之一（注意整除）</td></tr>
+    <tr><td><code class="inline">a %= 3</code></td><td><code class="inline">a = a % 3</code></td><td>取余后存回去</td></tr>
+  </tbody>
+</table>
+
+<div class="box warn">
+  <span class="lb"><code>+=</code> 和 <code>=+</code> 完全不同！</span><br>
+  <code class="inline">a += 1</code> —— 让 a 增加 1（复合赋值）。<br>
+  <code class="inline">a =+ 1</code> —— 意思是 <code class="inline">a = (+1)</code>，<strong>把 a 直接变成 1</strong>，和原来的值毫无关系！<br>
+  <b>这一个字母的位置，是真题专门设过的陷阱。</b>
+</div>
+
+<h3 id="s2-2">2.2 ++ 与 --</h3>
+
+<div class="code-card">
+  <div class="code-head">
+    <span class="dot d1"></span><span class="dot d2"></span><span class="dot d3"></span>
+    <span class="file">让变量自己加一 / 减一</span>
+    <span class="lang">C++</span>
+  </div>
+  <pre><code>int n = 5;
+
+n++;            // 相当于 n = n + 1，n 变成 6
+n--;            // 相当于 n = n - 1，n 变回 5
+
+++n;            // 前置写法，效果一样，n 变成 6
+--n;            // n 变回 5
+
+cout &lt;&lt; n;      // 5</code></pre>
+  <div class="out"><b>要点</b>　<code>n++</code> 与 <code>++n</code> <b>单独成句时完全等价</b>，都是"加一"</div>
+</div>
+
+<div class="box tip">
+  <span class="lb">打个比方：</span>
+  <code class="inline">++</code> 就像楼梯旁的<b>上升机关</b>——按一下，格子里的数字往上跳一格；<br>
+  <code class="inline">--</code> 则是<b>下降机关</b>，按一下往下跳一格。<br>
+  <b>注意：如果一句话里只有 <code class="inline">n++;</code> 这一件事，按一下就完了，看不出前置后置的区别。</b><br>
+  只有把它<b>塞进更大的句子里</b>（比如 <code class="inline">cout &lt;&lt; n++;</code>），区别才会露出来。
+</div>
+
+<figure class="pic">
+  <img src="../assets/illustrations/cpp-L1-03-03_increment_machine.webp" alt="上升机关"
+       onerror="this.closest('.pic').classList.add('missing')">
+  <div class="ph">
+    <div class="fn">assets/illustrations/cpp-L1-03-03_increment_machine.webp</div>
+    <div class="ds">【配图位】炼金台上并排两台青铜机关：左边一台顶部有向上箭头、内部格子里的数字正从 8 跳到 9（标着 ++）；右边一台顶部有向下箭头、数字从 8 跳到 7（标着 --）；每台机关侧面各有一个小窗口，分别画着"先用再加"与"先加再用"的小图示。扣哒世界卡通风格，青铜与暖光质感。</div>
+  </div>
+  <figcaption>图 4：++ 是上升机关，-- 是下降机关</figcaption>
+</figure>
+
+<h3 id="s2-3">2.3 前置与后置的区别</h3>
+
+<p>当 <code class="inline">++</code> 出现在表达式<strong>里面</strong>时，前置和后置就有区别了。</p>
+
+<table class="styled">
+  <thead><tr><th>写法</th><th>先做什么</th><th>表达式的值</th><th>例子</th></tr></thead>
+  <tbody>
+    <tr><td><code class="inline">++n</code>（前置）</td><td>先加 1</td><td><strong>加完之后</strong>的值</td><td><code class="inline">n=5; cout &lt;&lt; ++n;</code> 输出 6，n 也是 6</td></tr>
+    <tr><td><code class="inline">n++</code>（后置）</td><td>先用原值</td><td><strong>加之前</strong>的值</td><td><code class="inline">n=5; cout &lt;&lt; n++;</code> 输出 5，n 变成 6</td></tr>
+  </tbody>
+</table>
+
+<div class="code-card">
+  <div class="code-head">
+    <span class="dot d1"></span><span class="dot d2"></span><span class="dot d3"></span>
+    <span class="file">真题级的一行：先加，再复合赋值</span>
+    <span class="lang">C++</span>
+  </div>
+  <pre><code>int b = 8;
+++b *= 2 + 1;           // ① ++b：b 先变成 9
+                        // ② 算出 2 + 1 = 3
+                        // ③ b *= 3：b = 9 * 3 = 27
+
+cout &lt;&lt; b;              // 27</code></pre>
+  <div class="out"><b>OUTPUT</b>　27</div>
+</div>
+
+<div class="box tip">
+  <span class="lb">怎么读这种"叠在一起"的式子？</span>
+  把它拆成三步，一步一步来：<br>
+  <b>① 先把 ++ 处理掉</b>（b 从 8 变成 9）；<br>
+  <b>② 再算右边的加法</b>（2 + 1 = 3）；<br>
+  <b>③ 最后做复合赋值</b>（b = 9 × 3 = 27）。<br>
+  <strong>顺序不能反——先自增，再乘。</strong>
+</div>
+
+<!-- ============ 3 ============ -->
+<div class="section-header" id="s3">
+  <h2>3　关系运算符</h2>
+  <div class="en-title">Relational Operators</div>
+</div>
+
+<h3 id="s3-1">3.1 六个关系符</h3>
+
+<figure class="figure">
+  <svg class="diagram" viewBox="0 0 830 200" role="img" aria-label="六个关系运算符">
+    <text x="24" y="32" font-size="14" font-weight="bold" fill="#1f2937">关系运算符算出来的，是一个"判断结果"</text>
+
+    <rect x="30" y="58" width="124" height="76" rx="12" fill="#eaf1fe" stroke="#2563eb" stroke-width="2"/>
+    <text x="92" y="90" text-anchor="middle" font-size="17" font-family="Consolas,monospace" fill="#1d4ed8" font-weight="bold">&lt;</text>
+    <text x="92" y="118" text-anchor="middle" font-size="11" fill="#3b6ea8">小于</text>
+
+    <rect x="164" y="58" width="124" height="76" rx="12" fill="#eaf1fe" stroke="#2563eb" stroke-width="2"/>
+    <text x="226" y="90" text-anchor="middle" font-size="17" font-family="Consolas,monospace" fill="#1d4ed8" font-weight="bold">&gt;</text>
+    <text x="226" y="118" text-anchor="middle" font-size="11" fill="#3b6ea8">大于</text>
+
+    <rect x="298" y="58" width="124" height="76" rx="12" fill="#eaf1fe" stroke="#2563eb" stroke-width="2"/>
+    <text x="360" y="90" text-anchor="middle" font-size="17" font-family="Consolas,monospace" fill="#1d4ed8" font-weight="bold">&lt;=</text>
+    <text x="360" y="118" text-anchor="middle" font-size="11" fill="#3b6ea8">小于等于</text>
+
+    <rect x="432" y="58" width="124" height="76" rx="12" fill="#eaf1fe" stroke="#2563eb" stroke-width="2"/>
+    <text x="494" y="90" text-anchor="middle" font-size="17" font-family="Consolas,monospace" fill="#1d4ed8" font-weight="bold">&gt;=</text>
+    <text x="494" y="118" text-anchor="middle" font-size="11" fill="#3b6ea8">大于等于</text>
+
+    <rect x="566" y="58" width="124" height="76" rx="12" fill="#fff9ec" stroke="#f59e0b" stroke-width="2.2"/>
+    <text x="628" y="90" text-anchor="middle" font-size="17" font-family="Consolas,monospace" fill="#b45309" font-weight="bold">==</text>
+    <text x="628" y="118" text-anchor="middle" font-size="11" fill="#a15c1c">等于（两个等号！）</text>
+
+    <rect x="700" y="58" width="104" height="76" rx="12" fill="#fff9ec" stroke="#f59e0b" stroke-width="2.2"/>
+    <text x="752" y="90" text-anchor="middle" font-size="17" font-family="Consolas,monospace" fill="#b45309" font-weight="bold">!=</text>
+    <text x="752" y="118" text-anchor="middle" font-size="11" fill="#a15c1c">不等于</text>
+
+    <text x="24" y="170" font-size="12" fill="#8d9d94">★ 判断"相等"用 ==（两个等号）；一个 = 是"赋值"，两者完全不同</text>
+  </svg>
+  <div class="caption">图 5（SVG）：六个关系运算符</div>
+</figure>
+
+<h3 id="s3-2">3.2 结果是 1 或 0</h3>
+
+<div class="code-card">
+  <div class="code-head">
+    <span class="dot d1"></span><span class="dot d2"></span><span class="dot d3"></span>
+    <span class="file">关系运算的结果不是"真"这个字，而是数字</span>
+    <span class="lang">C++</span>
+  </div>
+  <pre><code>cout &lt;&lt; (3 &lt; 5) &lt;&lt; endl;      // 1   成立
+cout &lt;&lt; (3 &gt; 5) &lt;&lt; endl;      // 0   不成立
+cout &lt;&lt; (4 == 4) &lt;&lt; endl;     // 1
+cout &lt;&lt; (4 != 4) &lt;&lt; endl;     // 0
+
+int a = (2 &lt; 3) + 1;         // 关系式的结果 1 参与计算
+cout &lt;&lt; a;                    // 2</code></pre>
+  <div class="out"><b>OUTPUT</b>　1<br>0<br>1<br>0<br>2</div>
+</div>
+
+<div class="box tip">
+  <span class="lb">打个比方：</span>
+  关系运算像驿站的<b>验货员</b>——他从不回答"对"或"不对"，只举牌：<br>
+  <b>合格就举 1，不合格就举 0。</b><br>
+  既然是数字牌，那它就能被拿来算——所以 <code class="inline">(2 &lt; 3) + 1</code> 才能算出 2。
+  <strong>千万别写成 <code class="inline">true + 1</code>，那不是 C++ 的写法。</strong>
+</div>
+
+<div class="box remember">
+  <span class="lb">一定要记住：</span>
+  关系运算的结果是 <strong>1（成立）</strong> 或 <strong>0（不成立）</strong>，
+  <b>不是 <code class="inline">true</code> / <code class="inline">false</code> 这两个单词</b>。<br>
+  所以 <code class="inline">(2 &lt; 3) + 1</code> 的结果是 <b>2</b>——<strong>关系式可以当成 0 或 1 直接参与运算。</strong>
+</div>
+
+<!-- ============ 4 ============ -->
+<div class="section-header" id="s4">
+  <h2>4　逻辑运算符</h2>
+  <div class="en-title">Logical Operators</div>
+</div>
+
+<h3 id="s4-1">4.1 与、或、非</h3>
+
+<table class="styled">
+  <thead><tr><th>运算符</th><th>读作</th><th>什么时候为真</th><th>例子</th></tr></thead>
+  <tbody>
+    <tr><td><code class="inline">&amp;&amp;</code></td><td>与（并且）</td><td><strong>两边都成立</strong>才为真</td><td><code class="inline">(3 &gt; 1) &amp;&amp; (2 &gt; 1)</code> → 1</td></tr>
+    <tr><td><code class="inline">||</code></td><td>或（或者）</td><td><strong>只要一边成立</strong>就为真</td><td><code class="inline">(3 &gt; 9) || (2 &gt; 1)</code> → 1</td></tr>
+    <tr><td><code class="inline">!</code></td><td>非（取反）</td><td>原来是真就变假，原来假就变真</td><td><code class="inline">!(3 &gt; 1)</code> → 0</td></tr>
+  </tbody>
+</table>
+
+<div class="code-card">
+  <div class="code-head">
+    <span class="dot d1"></span><span class="dot d2"></span><span class="dot d3"></span>
+    <span class="file">真值表（记住 1 和 0 就够了）</span>
+    <span class="lang">C++</span>
+  </div>
+  <pre><code>cout &lt;&lt; (1 &amp;&amp; 1) &lt;&lt; endl;    // 1    真且真 = 真
+cout &lt;&lt; (1 &amp;&amp; 0) &lt;&lt; endl;    // 0    只要有一个假，与就是假
+cout &lt;&lt; (1 || 0) &lt;&lt; endl;    // 1    有一个真，或就是真
+cout &lt;&lt; (0 || 0) &lt;&lt; endl;    // 0    两个都假，或才假
+cout &lt;&lt; (!0) &lt;&lt; endl;        // 1    非假 = 真</code></pre>
+  <div class="out"><b>OUTPUT</b>　1<br>0<br>1<br>0<br>1</div>
+</div>
+
+<h3 id="s4-2">4.2 短路求值</h3>
+
+<div class="code-card">
+  <div class="code-head">
+    <span class="dot d1"></span><span class="dot d2"></span><span class="dot d3"></span>
+    <span class="file">有时候右边根本不会被算</span>
+    <span class="lang">C++</span>
+  </div>
+  <pre><code>int a = 0;
+
+// &amp;&amp; ：左边已经是假，右边不再计算
+if (a != 0 &amp;&amp; 10 / a &gt; 1) {
+    cout &lt;&lt; "不会进这里";
+}
+
+// || ：左边已经是真，右边不再计算
+if (a == 0 || 10 / a &gt; 1) {
+    cout &lt;&lt; "会进这里";
+}</code></pre>
+  <div class="out"><b>OUTPUT</b>　会进这里</div>
+</div>
+
+<div class="box tip">
+  <span class="lb">打个比方：</span>
+  <b>逻辑与（<code class="inline">&amp;&amp;</code>）</b>就像宝箱上挂了<b>两把锁</b>——<strong>两把都打开，箱盖才掀得起来</strong>；只要一把没开，试都不用试第二把。<br>
+  <b>逻辑或（<code class="inline">||</code>）</b>像走廊上的<b>两扇门</b>——<strong>推开任意一扇，就能走过去</strong>。<br>
+  <b>逻辑非（<code class="inline">!</code>）</b>是<b>翻牌子</b>——原来写"真"的翻成"假"，写"假"的翻成"真"。<br>
+  <b>记牢这三句话，逻辑运算的题基本不会错。</b>
+</div>
+
+<div class="box tip">
+  <span class="lb">短路有什么用？</span>
+  上面那段代码里，如果 <code class="inline">&amp;&amp;</code> 不短路，<code class="inline">10 / a</code> 就会执行，
+  而 <code class="inline">a</code> 是 0——<strong>除以 0 会出错</strong>。<br>
+  <b>短路让程序"提前判断、不必冒险"，也顺便节省了计算时间。</b><br>
+  <strong>记忆：<code>&amp;&amp;</code> 遇到假就停，<code>||</code> 遇到真就停。</strong>
+</div>
+
+<!-- ============ 5 ============ -->
+<div class="section-header" id="s5">
+  <div class="box tip">
+  <span class="lb">再打个比方：</span>
+  <b>逻辑与</b>是一条<b>吊桥</b>，桥面由两块木板拼成——<strong>第一块断了，第二块就不用看了，直接判定"过不去"</strong>。<br>
+  <b>逻辑或</b>是一条<b>分岔路</b>——<strong>左边这条通了，就没必要再去走右边那条，直接判定"能过去"</strong>。<br>
+  <b>"看一眼就知道结果、剩下的不再算"，这就叫短路。</b>
+</div>
+
+<figure class="pic">
+  <img src="../assets/illustrations/cpp-L1-03-04_short_circuit_bridge.webp" alt="短路吊桥"
+       onerror="this.closest('.pic').classList.add('missing')">
+  <div class="ph">
+    <div class="fn">assets/illustrations/cpp-L1-03-04_short_circuit_bridge.webp</div>
+    <div class="ds">【配图位】峡谷上的一条吊桥，桥面由两块判断木板组成：第一块已经断裂下垂、挂着"假"的牌子；后方的第二块木板完好，但被一道光闸挡住，旁边挂着"不用再看了"的牌子；桥的另一侧另有一条分岔小路，第一道门亮着绿灯（真），后面的岔路口挂着"不必再走"的牌子。扣哒世界卡通风格，峡谷雾气与暖色灯火。</div>
+  </div>
+  <figcaption>图 6：第一块木板断了，就不用再看第二块</figcaption>
+</figure>
+
+<h2>5　优先级与结合性</h2>
+  <div class="en-title">Precedence</div>
+</div>
+
+<h3 id="s5-1">5.1 谁先算</h3>
+
+<figure class="figure">
+  <svg class="diagram" viewBox="0 0 830 290" role="img" aria-label="运算符优先级">
+    <text x="24" y="32" font-size="14" font-weight="bold" fill="#1f2937">优先级从高到低：越靠上越先算</text>
+
+    <rect x="60" y="50" width="700" height="42" rx="10" fill="#fff6ec" stroke="#ff6b35" stroke-width="2.2"/>
+    <text x="80" y="77" font-size="12.5" fill="#c1440e" font-weight="bold">① 括号 ( )</text>
+    <text x="700" y="77" text-anchor="end" font-size="11.5" fill="#a85728">括号里的永远最先算</text>
+
+    <rect x="60" y="102" width="700" height="42" rx="10" fill="#eaf1fe" stroke="#2563eb" stroke-width="2"/>
+    <text x="80" y="129" font-size="12.5" fill="#1d4ed8" font-weight="bold">② 一元运算：! ++ -- 正负号</text>
+    <text x="700" y="129" text-anchor="end" font-size="11.5" fill="#3b6ea8">右结合，先把自己处理掉</text>
+
+    <rect x="60" y="154" width="700" height="42" rx="10" fill="#f5f3ff" stroke="#8b5cf6" stroke-width="2"/>
+    <text x="80" y="181" font-size="12.5" fill="#6d28d9" font-weight="bold">③ 乘除取余 *  /  %</text>
+    <text x="700" y="181" text-anchor="end" font-size="11.5" fill="#7c5cd0">同级，从左往右算</text>
+
+    <rect x="60" y="206" width="700" height="42" rx="10" fill="#f5f3ff" stroke="#8b5cf6" stroke-width="2"/>
+    <text x="80" y="233" font-size="12.5" fill="#6d28d9" font-weight="bold">④ 加减 +  -</text>
+    <text x="700" y="233" text-anchor="end" font-size="11.5" fill="#7c5cd0">同级，从左往右算</text>
+
+    <rect x="60" y="258" width="700" height="26" rx="8" fill="#e9f8ef" stroke="#2e9e5b" stroke-width="1.8"/>
+    <text x="80" y="276" font-size="11.5" fill="#1f7a44">⑤ 再往下是关系运算（&lt; &gt; == 等），然后是逻辑运算（&amp;&amp; ||），最后才是赋值 =</text>
+  </svg>
+  <div class="caption">图 7（SVG）：一级需要记住的优先级顺序</div>
+</figure>
+
+<div class="code-card">
+  <div class="code-head">
+    <span class="dot d1"></span><span class="dot d2"></span><span class="dot d3"></span>
+    <span class="file">三步算出一个表达式的值</span>
+    <span class="lang">C++</span>
+  </div>
+  <pre><code>int a = 2 + 3 * 4;          // 先算 3 * 4 = 12，再加 2 → 14
+int b = (2 + 3) * 4;        // 括号先算 → 5 * 4 → 20
+int c = 10 - 4 - 3;         // 同级从左往右 → (10-4)-3 → 3
+int d = 20 / 2 * 5;         // 同级从左往右 → (20/2)*5 → 50
+int e = 2 * -2 % 3;         // 先处理负号 → (2*-2)%3 → -4%3 → -1
+
+cout &lt;&lt; a &lt;&lt; " " &lt;&lt; b &lt;&lt; " " &lt;&lt; c &lt;&lt; " " &lt;&lt; d &lt;&lt; " " &lt;&lt; e;</code></pre>
+  <div class="out"><b>OUTPUT</b>　14 20 3 50 -1</div>
+</div>
+
+<h3 id="s5-2">5.2 拿不准就加括号</h3>
+
+<div class="box tip">
+  <span class="lb">打个比方：</span>
+  优先级就像驿站打饭的<b>排队规矩</b>——<br>
+  <b>括号里的人排在最前面</b>；其次是<b>一元运算符</b>（<code class="inline">!</code>、<code class="inline">++</code>、正负号）；
+  再是<b>乘、除、取余</b>；然后是<b>加、减</b>。<br>
+  <b>同一队里的人不分先后，谁站在左边谁先办</b>——这就是"同级从左往右"。<br>
+  <b>拿不准谁先谁后？给对方加一对括号，他就排到最前面去了。</b>
+</div>
+
+<div class="box remember">
+  <span class="lb">两条保命规则：</span><br>
+  <b>① 同级运算从左往右</b>：<code class="inline">20 / 2 * 5</code> 是 <code class="inline">(20/2)*5 = 50</code>，
+  <b>不是</b> <code class="inline">20/(2*5) = 2</code>。<br>
+  <b>② 不确定就加括号</b>：括号不花钱，却能让你和判卷老师都看懂。<br>
+  <strong>考试里遇到长式子，先在心里给每一步标上序号，再一步一步算。</strong>
+</div>
+
+<!-- ============ 6 ============ -->
+<div class="section-header" id="s6">
+  <h2>6　代码实战</h2>
+  <div class="en-title">Level Practice</div>
+</div>
+
+<div class="level-card">
+  <div class="lc-head"><span class="n">关卡</span><h4>火中取宝</h4><span class="go">进入关卡 →</span></div>
+  <div class="lc-body">
+    <div class="story">
+      <b>故事：</b>前方一片火海，宝石就散落在火焰之间。
+      你要<b>一步步走进去，把宝石一颗颗捡起来</b>，再安全退出来。<br>
+      塔林在旁边提醒：注意<b>顺序</b>——先算好位置，再移动；
+      顺序错了，就会被火烧到。
+    </div>
+    <p><strong>思路：</strong>先用变量<strong>算好目标位置</strong>（这就是表达式的作用），再依次移动。
+    每一步的先后顺序，就是"优先级"的直观体现。</p><figure class="pic">
+  <img src="../assets/stages/py-L1-03-stage1_fire_treasure.webp" alt="火中取宝 关卡截图"
+       onerror="this.closest('.pic').classList.add('missing')">
+  <div class="ph">
+    <div class="fn">assets/stages/py-L1-03-stage1_fire_treasure.webp</div>
+    <div class="ds">【配图位】游戏实机截图：火海走廊中，英雄刚走完最后一步、把散落各处的宝石全部取走；地面火焰格清晰可见，英雄脚下的坐标随移动变化；屏幕下方代码区显示用坐标表达式计算下一步位置的语句，右上角显示"关卡完成"提示。</div>
+  </div>
+  <figcaption>关卡实况：火中取宝</figcaption>
+</figure>
+    <div class="code-card">
+      <div class="code-head">
+        <span class="dot d1"></span><span class="dot d2"></span><span class="dot d3"></span>
+        <span class="file">重点示例：用表达式算位置，再移动</span>
+        <span class="lang">C++</span>
+      </div>
+      <pre><code>int step = 2;
+int nextX = hero.pos.x + step;      // 用表达式算出下一步的横坐标
+
+hero.moveXY(nextX, hero.pos.y);
+
+int left = 5 % 3;                   // 顺手练一下取余
+cout &lt;&lt; left &lt;&lt; endl;                // 2
+
+hero.moveXY(hero.pos.x + 3, hero.pos.y);</code></pre>
+      <div class="out"><b>要点</b>　<code>hero.pos.x + step</code> 就是最简单的表达式；<code>%</code> 的结果是余数</div>
+    </div>
+    <div class="box info">
+      <span class="lb">和本单元的关联：</span>
+      <code class="inline">hero.pos.x + step</code> 里，<strong>先算加法，再把结果给 moveXY 用</strong>——
+      这就是"先算表达式、再使用结果"。<br>
+      <b>变量、运算符、表达式，在实际关卡里就是这样配合的。</b>
+    </div>
+    <a class="btn-go" href="https://codecombat.cn/" target="_blank" rel="noopener">去扣哒世界闯这一关 →</a>
+  </div>
+</div>
+
+
+
+<!-- ============ 7 ============ -->
+<div class="section-header" id="s7">
+  <h2>7　常见陷阱</h2>
+  <div class="en-title">Common Pitfalls</div>
+</div>
+
+<div class="cast duck">
+  <img class="ava" src="../assets/ducks/duck_house.png" alt="扣哒鸭" onerror="this.style.display='none'">
+  <div class="bubble">
+    <div class="who">扣哒鸭 · 调试官</div>
+    运算符这一块，真题几乎年年出。四条，每条都值得抄在草稿纸上。
+  </div>
+</div>
+
+<div class="pit">
+  <div class="pt">
+    <div class="x">1</div>
+    <div class="t"><b>把"赋值 = "当成"相等 =="。</b></div>
+  </div>
+  <div class="duck">
+    <img src="../assets/ducks/duck_zana.webp" alt="扣哒鸭" onerror="this.style.display='none'">
+    <div class="dt"><b>扣哒鸭：</b><code>=</code> 是"把右边放进左边"；<code>==</code> 才是"问它们相不相等"。<br>
+    <strong>判断条件里写成单个等号，是新手最经典的错。</strong></div>
+  </div>
+  <div class="fix"><b>正确写法：</b>判断相等用 <code class="inline">==</code></div>
+</div>
+
+<div class="pit">
+  <div class="pt">
+    <div class="x">2</div>
+    <div class="t"><b>把 <code class="inline">+=</code> 写成了 <code class="inline">=+</code>。</b></div>
+  </div>
+  <div class="duck">
+    <img src="../assets/ducks/duck_naria.webp" alt="扣哒鸭" onerror="this.style.display='none'">
+    <div class="dt"><b>扣哒鸭：</b><code>a += 1</code> 是"加 1"；<br>
+    <code>a =+ 1</code> 是 <code>a = (+1)</code>，<strong>会把 a 直接覆盖成 1</strong>！<br>
+    两个符号的顺序换了，含义天差地别。</div>
+  </div>
+  <div class="fix"><b>正确写法：</b><code class="inline">a += 1</code></div>
+</div>
+
+<div class="pit">
+  <div class="pt">
+    <div class="x">3</div>
+    <div class="t"><b>算 <code class="inline">20 / 2 * 5</code> 时先算了乘法。</b></div>
+  </div>
+  <div class="duck">
+    <img src="../assets/ducks/duck_hattori.webp" alt="扣哒鸭" onerror="this.style.display='none'">
+    <div class="dt"><b>扣哒鸭：</b>乘和除是<strong>同一级</strong>，同级运算<b>从左往右</b>。<br>
+    <code>20 / 2 * 5</code> = <code>(20/2)*5</code> = <b>50</b>，不是 2。</div>
+  </div>
+  <div class="fix"><b>正确做法：</b>同级从左往右；要换顺序就加括号</div>
+</div>
+
+<div class="pit">
+  <div class="pt">
+    <div class="x">4</div>
+    <div class="t"><b>用 <code class="inline">%</code> 做小数运算。</b></div>
+  </div>
+  <div class="duck">
+    <img src="../assets/ducks/duck_senick.webp" alt="扣哒鸭" onerror="this.style.display='none'">
+    <div class="dt"><b>扣哒鸭：</b><strong>取余 <code>%</code> 只能用于整数。</strong><br>
+    <code>2.5 % 2</code> 这种写法编译就通不过。<br>
+    <b>要处理小数的"余数"，得先想清楚题目到底要什么。</b></div>
+  </div>
+  <div class="fix"><b>正确认识：</b><code class="inline">%</code> 的操作数必须是整数</div>
+</div>
+
+<!-- ============ 8 ============ -->
+<div class="section-header" id="s8">
+  <h2>8　题目练习</h2>
+  <div class="en-title">Practice</div>
+</div>
+
+<p>前 5 题改编自 C++ 一级真题，其余为原创练习题。</p>
+
+<div class="exam">
+  <div class="eh"><span class="src">改编自 2026 年 9 月 · C++ 一级 · 第 3 题</span><span class="tp">单选题</span></div>
+  <div class="eb">
+    <div class="q">下列 C++ 代码执行的输出是（　　）。</div>
+    <pre>int a = 4 + -2 * 3;
+cout &lt;&lt; a;</pre>
+    <div class="opt"><i>A.</i>-2　　<i>B.</i>6　　<i>C.</i>18　　<i>D.</i>输出错误提示信息</div>
+    <details><summary>查看答案与详解</summary>
+      <div class="ans"><b>答案：A</b>。这里的 <code class="inline">-2</code> 是一个整体（负号是一元运算符，优先级高于乘法），<br>
+      所以先算 <b>-2 × 3 = -6</b>，再算 <b>4 + (-6) = -2</b>。<br>
+      <b>易错点：</b>读成"4 减 2 再乘 3"会得到 6（B 项），那是把运算顺序搞反了。<br>
+      <span class="tagline">对应小节</span>1.3 正负号与负数取余；5.1 谁先算。</div>
+    </details>
+  </div>
+</div>
+
+<div class="exam">
+  <div class="eh"><span class="src">改编自 2026 年 9 月 · C++ 一级 · 第 4 题</span><span class="tp">单选题</span></div>
+  <div class="eb">
+    <div class="q">下列 C++ 表达式与 <code class="inline">2 * -2 % 3</code> 的值相同的是（　　）。</div>
+    <div class="opt">
+      <i>A.</i><code class="inline">(2 * -2) % 3</code><br>
+      <i>B.</i><code class="inline">2 * (-2 % 3)</code><br>
+      <i>C.</i><code class="inline">2 * -(2 % 3)</code><br>
+      <i>D.</i><code class="inline">2 % -2 * 3</code>
+    </div>
+    <details><summary>查看答案与详解</summary>
+      <div class="ans"><b>答案：A</b>。<code class="inline">*</code> 和 <code class="inline">%</code> <strong>同级，从左往右算</strong>，<br>
+      所以原式 = <code class="inline">(2 * -2) % 3</code> = <code class="inline">-4 % 3</code> = <b>-1</b>，与 A 完全一致。<br>
+      <b>B</b> = 2 × (-2) = -4；<b>C</b> = 2 × (-2) = -4；<b>D</b> = (2 % -2) × 3 = 0 × 3 = 0——都不同。<br>
+      <span class="tagline">对应小节</span>5.1 谁先算。</div>
+    </details>
+  </div>
+</div>
+
+<div class="exam">
+  <div class="eh"><span class="src">改编自 2026 年 9 月 · C++ 一级 · 第 6 题</span><span class="tp">单选题</span></div>
+  <div class="eb">
+    <div class="q">下列 C++ 代码执行后的输出是（　　）。</div>
+    <pre>int a = 8;
+int b = 10;
+cout &lt;&lt; (a % b) &lt;&lt; " " &lt;&lt; (a * 1 / b) &lt;&lt; " " &lt;&lt; (a * 1.0 / b);</pre>
+    <div class="opt"><i>A.</i>8 0.8 0　　<i>B.</i>0 0.8 0　　<i>C.</i>8 0 0.8　　<i>D.</i>0 0 0.8</div>
+    <details><summary>查看答案与详解</summary>
+      <div class="ans"><b>答案：C</b>。一个一个算：<br>
+      ① <code class="inline">a % b</code> = 8 % 10 = <b>8</b>（被除数比除数小，余数就是它自己）；<br>
+      ② <code class="inline">a * 1 / b</code> —— 全是整数，从左往右：8 × 1 = 8，8 ÷ 10 = <b>0</b>（整除）；<br>
+      ③ <code class="inline">a * 1.0 / b</code> —— 出现了小数 1.0，整体按小数算：8.0 ÷ 10 = <b>0.8</b>。<br>
+      所以是 <b>8 0 0.8</b>。<br>
+      <b>这道题把"整除"和"浮点运算"放在一起对比，是典型的考法。</b><br>
+      <span class="tagline">对应小节</span>1.1 加、减、乘、除。</div>
+    </details>
+  </div>
+</div>
+
+<div class="exam">
+  <div class="eh"><span class="src">改编自 2026 年 9 月 · C++ 一级 · 第 7 题</span><span class="tp">单选题</span></div>
+  <div class="eb">
+    <div class="q">执行下面代码后，<code class="inline">b</code> 的值是（　　）。</div>
+    <pre>int b = 8;
+++b *= 2 + 1;</pre>
+    <div class="opt"><i>A.</i>18　　<i>B.</i>17　　<i>C.</i>19　　<i>D.</i>27</div>
+    <details><summary>查看答案与详解</summary>
+      <div class="ans"><b>答案：D</b>。分三步看：<br>
+      ① <code class="inline">++b</code>：b 先自增，从 8 变成 <b>9</b>；<br>
+      ② <code class="inline">2 + 1</code> = <b>3</b>；<br>
+      ③ <code class="inline">b *= 3</code>：b = 9 × 3 = <b>27</b>。<br>
+      <b>易错点：</b>A 项 18 = 6 × 3，是把 b 当成了 6；B、C 都是没先做自增。<br>
+      <span class="tagline">对应小节</span>2.3 前置与后置的区别。</div>
+    </details>
+  </div>
+</div>
+
+<div class="exam">
+  <div class="eh"><span class="src">改编自 2026 年 6 月 · C++ 一级 · 第 8 题</span><span class="tp">单选题</span></div>
+  <div class="eb">
+    <div class="q">已知整型变量 <code class="inline">cnt</code>，下列对 <code class="inline">cnt += 1</code> 的改写中，
+    执行效果<strong>不同</strong>的是（　　）。</div>
+    <div class="opt">
+      <i>A.</i><code class="inline">cnt = cnt + 1</code><br>
+      <i>B.</i><code class="inline">cnt = 1 + cnt</code><br>
+      <i>C.</i><code class="inline">cnt =+ 1</code><br>
+      <i>D.</i><code class="inline">cnt = + 1 + cnt</code>
+    </div>
+    <details><summary>查看答案与详解</summary>
+      <div class="ans"><b>答案：C</b>。<code class="inline">cnt =+ 1</code> 会被理解成 <code class="inline">cnt = (+1)</code>，
+      <strong>把 cnt 直接赋成 1</strong>，与原来的值无关。<br>
+      其余三项展开后都是"原值加 1"，效果相同。<br>
+      <b>这一题专门考 <code>+=</code> 与 <code>=+</code> 的顺序——符号位置不同，含义完全不同。</b><br>
+      <span class="tagline">对应小节</span>2.1 赋值与复合赋值。</div>
+    </details>
+  </div>
+</div>
+
+<div class="exam">
+  <div class="eh"><span class="src ori">原创练习题</span><span class="tp">单选题</span></div>
+  <div class="eb">
+    <div class="q">下列 C++ 代码执行后，输出的结果是（　　）。</div>
+    <pre>int n = 5;
+cout &lt;&lt; n++ &lt;&lt; " ";
+cout &lt;&lt; n;</pre>
+    <div class="opt"><i>A.</i>5 5　　<i>B.</i>5 6　　<i>C.</i>6 6　　<i>D.</i>6 5</div>
+    <details><summary>查看答案与详解</summary>
+      <div class="ans"><b>答案：B</b>。<code class="inline">n++</code> 是<strong>后置</strong>：先输出 n 当前的值 <b>5</b>，然后 n 才变成 6。<br>
+      所以第一个输出 5，第二个输出 6。<br>
+      <b>对比：</b>如果写的是 <code class="inline">++n</code>，就会输出 <b>6 6</b>。<br>
+      <span class="tagline">对应小节</span>2.3 前置与后置的区别。</div>
+    </details>
+  </div>
+</div>
+
+<div class="exam">
+  <div class="eh"><span class="src ori">原创练习题</span><span class="tp">编程题</span></div>
+  <div class="eb">
+    <div class="q">题目要求：输入一个三位正整数，分别输出它的百位、十位、个位数字
+    （每个数字单独一行）。例如输入 <code class="inline">357</code>，输出 <code class="inline">3</code>、<code class="inline">5</code>、<code class="inline">7</code>。</div>
+    <details><summary>查看参考答案与要点</summary>
+      <div class="ans">
+<pre style="margin:0;background:#131a26;color:#c8d3e0;border-radius:10px;padding:14px 16px">#include &lt;iostream&gt;
+using namespace std;
+
+int main() {
+    int n;
+    cin &gt;&gt; n;
+
+    int bai = n / 100;              // 百位：去掉后两位
+    int shi = n / 10 % 10;          // 十位：先去掉个位，再取末位
+    int ge  = n % 10;               // 个位：直接取末位
+
+    cout &lt;&lt; bai &lt;&lt; endl;
+    cout &lt;&lt; shi &lt;&lt; endl;
+    cout &lt;&lt; ge  &lt;&lt; endl;
+
+    return 0;
+}</pre>
+      <p style="margin-top:12px"><b>输入 357 时输出：</b>3、5、7<br>
+      <b>要点：</b><br>
+      ① <strong><code class="inline">/ 10</code> 去掉末位，<code class="inline">% 10</code> 取出末位</strong>——这两个动作是拆数的万能钥匙；<br>
+      ② 百位用 <code class="inline">n / 100</code> 一步到位（因为只有三位）；<br>
+      ③ 十位要"先去后取"：<code class="inline">n / 10</code> 得 35，再 <code class="inline">% 10</code> 得 5；<br>
+      ④ 全是整数运算，结果自然是整数，不会出现小数。<br>
+      <span class="tagline">对应小节</span>1.2 取余 %。</p>
+      </div>
+    </details>
+  </div>
+</div>
+
+<!-- ============ 9 ============ -->
+<div class="section-header" id="s9">
+  <h2>9　本单元小结</h2>
+  <div class="en-title">Unit Summary</div>
+</div>
+
+<div class="cast tharin">
+  <img class="ava" src="../assets/avatars/tharin.webp" alt="塔林" onerror="this.style.display='none'">
+  <div class="bubble">
+    <div class="who">塔林 · 铁壁骑士</div>
+    四句话记住运算符：<br>
+    <strong>一、/ 求商、% 求余；整数除整数，结果还是整数。</strong><br>
+    <strong>二、++ 是加一；前置先加再用，后置先用再加。</strong><br>
+    <strong>三、关系运算的结果是 1 或 0，可以当数字参与计算。</strong><br>
+    <strong>四、括号 > 一元 > 乘除余 > 加减；同级从左往右。</strong><br>
+    配方台已经熟了。下一单元，我们让程序开口"说话"、也让它听得懂"输入"。
+  </div>
+</div>
+
+<div class="summary">
+  <h3>你在炼金台前学到了什么</h3>
+  <ul>
+    <li><strong>五个算术运算符</strong>——<code class="inline">+ - * / %</code>；除号右边不能是 0。</li>
+    <li><strong>整除</strong>——整数 ÷ 整数 = 整数；<code class="inline">7 / 2 = 3</code>、<code class="inline">8 / 10 = 0</code>。</li>
+    <li><strong>取余</strong>——<code class="inline">17 % 5 = 2</code>；<code class="inline">n % 2</code> 判奇偶，<code class="inline">n % 10</code> 取个位。</li>
+    <li><strong>拆数套路</strong>——<code class="inline">/ 10</code> 去末位，<code class="inline">% 10</code> 取末位。</li>
+    <li><strong>复合赋值</strong>——<code class="inline">+= -= *= /= %=</code>；注意别写成 <code class="inline">=+</code>。</li>
+    <li><strong>自增自减</strong>——<code class="inline">++</code> 加一、<code class="inline">--</code> 减一；前置与后置在表达式中不同。</li>
+    <li><strong>关系运算符</strong>——<code class="inline">&lt; &gt; &lt;= &gt;= == !=</code>；结果是 1 或 0。</li>
+    <li><strong>逻辑运算符</strong>——<code class="inline">&amp;&amp;</code> 两边都真、<code class="inline">||</code> 一真即真、<code class="inline">!</code> 取反；有短路效果。</li>
+    <li><strong>优先级</strong>——括号 → 一元 → 乘除余 → 加减 → 关系 → 逻辑 → 赋值；同级从左往右。</li>
+  </ul>
+</div>
+
+<div class="pager">
+  <a href="cpp-1-02.html"><div class="k">← 上一单元</div><div class="v">会记事的木箱 · 变量、常量与数据类型</div></a>
+  <a href="../index.html" target="_top" class="back"><div class="k">返回</div><div class="v">考纲之路 · 总目录</div></a>
+  <a href="cpp-1-04.html"><div class="k">下一单元 →</div><div class="v">潮汐升降梯 · 顺序结构与输入输出</div></a>
+</div>
+
+<div class="cta">
+  <h3>下一站：潮汐升降梯</h3>
+  <p>算出来的结果，得让人看见——这就靠 <code>cout</code>；
+  想让程序处理别人给的数据，就得用 <code>cin</code>。
+  下一单元，我们讲顺序结构与输入输出。</p>
+  <a class="btn-go" href="https://codecombat.cn/" target="_blank" rel="noopener">加入扣哒世界，把这条考纲之路走一遍 →</a>
+</div>
+
+
+</div><!-- /container -->
+</div><!-- /page -->
+
+<script>
+const KEYWORDS = new Set([
+  "int", "long", "short", "unsigned", "signed", "float", "double", "char", "bool", "void",
+  "const", "if", "else", "for", "while", "do", "switch", "case", "default", "break",
+  "continue", "return", "goto", "struct", "class", "union", "enum", "using", "namespace",
+  "std", "main", "true", "false", "cin", "cout", "cerr", "endl", "string", "sizeof",
+  "include", "define", "new", "delete", "public", "private", "static", "inline", "nullptr"
+]);
+
+function esc(s){ return s.replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;'); }
+
+function highlight(src){
+  let out = '', i = 0;
+  const n = src.length;
+  while (i < n){
+    const c = src[i];
+    /* 预处理指令：#include / #define，整行只在行首生效 */
+    if (c === '#' && (i === 0 || src[i-1] === '\n')){
+      let j = i;
+      while (j < n && /[A-Za-z]/.test(src[j])) j++;
+      out += '<span class="kw">' + esc(src.slice(i, j)) + '</span>';
+      let k = src.indexOf('\n', j); if (k < 0) k = n;
+      if (j < k) out += '<span class="st">' + esc(src.slice(j, k)) + '</span>';
+      i = k; continue;
+    }
+    /* 行注释 // */
+    if (c === '/' && src[i+1] === '/'){
+      let j = src.indexOf('\n', i); if (j < 0) j = n;
+      out += '<span class="cm">' + esc(src.slice(i, j)) + '</span>';
+      i = j; continue;
+    }
+    /* 块注释 */
+    if (c === '/' && src[i+1] === '*'){
+      let j = src.indexOf('*/', i + 2); j = j < 0 ? n : j + 2;
+      out += '<span class="cm">' + esc(src.slice(i, j)) + '</span>';
+      i = j; continue;
+    }
+    /* 字符串与字符字面量 */
+    if (c === '"' || c === "'"){
+      let j = i + 1;
+      while (j < n && src[j] !== c){ if (src[j] === '\\') j++; j++; }
+      j = Math.min(j + 1, n);
+      out += '<span class="st">' + esc(src.slice(i, j)) + '</span>';
+      i = j; continue;
+    }
+    /* 数字 */
+    if (/[0-9]/.test(c)){
+      let j = i;
+      while (j < n && /[0-9.]/.test(src[j])) j++;
+      out += '<span class="nu">' + esc(src.slice(i, j)) + '</span>';
+      i = j; continue;
+    }
+    /* 标识符：关键字 / 函数名 / 普通名字 */
+    if (/[A-Za-z_]/.test(c)){
+      let j = i;
+      while (j < n && /[A-Za-z0-9_]/.test(src[j])) j++;
+      const w = src.slice(i, j);
+      if (KEYWORDS.has(w)) out += '<span class="kw">' + esc(w) + '</span>';
+      else if (src[j] === '(') out += '<span class="fn">' + esc(w) + '</span>';
+      else out += esc(w);
+      i = j; continue;
+    }
+    out += esc(c); i++;
+  }
+  return out;
+}
+
+document.querySelectorAll('.code-card pre code').forEach(block => {
+  block.innerHTML = highlight(block.textContent);
+});
+
+if (location.search.indexOf('expand') >= 0) {
+  document.querySelectorAll('details').forEach(d => d.open = true);
+}
+document.querySelectorAll('.sidebar-nav a').forEach(a => {
+  a.addEventListener('click', () => {
+    if (window.innerWidth <= 900) document.querySelector('.sidebar-nav').classList.remove('active');
+  });
+});
+</script>
+</body>
+</html>

@@ -1,0 +1,1291 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="copyright" content="CodeCombat Inc. codecombat.cn">
+<title>岔路口的抉择 · 分支结构：做选择 | 扣哒考级 · GESP C++ 一级</title>
+<style>
+  :root{
+    --primary:#2563eb; --primary-light:#4f8ff0; --primary-lighter:#eaf1fe; --primary-dark:#1b47a8;
+    --brand:#ff6b35; --brand-dark:#e8541f; --brand-soft:#fff3ec;
+    --night:#131c2b; --night-2:#1e2a3a; --gold:#f5b301;
+    --text:#242e3d; --dim:#68788f; --dim2:#93a2b6;
+    --bg:#ffffff; --bg-soft:#f7f9fd; --line:#e2e9f4; --sidebar:274px;
+    --code-bg:#131a26; --code-tx:#c8d3e0;
+    --code-kw:#c678dd; --code-st:#98c379; --code-nu:#d19a66; --code-cm:#5f7488; --code-fn:#e5c07b;
+  }
+  *{margin:0;padding:0;box-sizing:border-box}
+  html{scroll-behavior:smooth}
+  body{font-family:"PingFang SC","Microsoft YaHei","Segoe UI",-apple-system,sans-serif;line-height:1.9;color:var(--text);background:var(--bg);font-size:15.5px}
+  .sidebar-nav{position:fixed;top:0;left:0;width:var(--sidebar);height:100vh;overflow-y:auto;background:linear-gradient(180deg,#0c1626,#14243c);padding:14px 0 40px;z-index:100;border-right:3px solid var(--brand);transition:transform .3s ease}
+  .sidebar-nav::-webkit-scrollbar{width:5px}
+  .sidebar-nav::-webkit-scrollbar-thumb{background:var(--brand);border-radius:4px}
+  .sb-brand{display:flex;align-items:center;gap:10px;padding:10px 13px 12px;border-bottom:1px solid #233752;margin-bottom:8px}
+  .sidebar-nav a.sb-logo{display:flex;align-items:center;justify-content:center;flex-shrink:0;padding:0;border-left:none;transition:.2s}
+  .sb-logo:hover{transform:scale(1.08)}
+  .sb-logo img{height:34px;width:34px;display:block;object-fit:contain;border-radius:8px}
+  .sb-brand b{color:#f2f6fa;font-size:14px;letter-spacing:.5px;display:block;line-height:1.4}
+  .sb-brand span{color:#7f95ab;font-size:11.5px;display:block;line-height:1.4}
+  .nav-title{color:#ffb894;font-size:12px;font-weight:800;padding:10px 18px 6px;letter-spacing:1.2px}
+  .sidebar-nav a{display:block;color:#c3d0dc;text-decoration:none;padding:6px 18px;font-size:12.5px;line-height:1.55;border-left:3px solid transparent;transition:.18s}
+  .sidebar-nav a:hover{color:#fff;background:rgba(255,107,53,.16);border-left-color:var(--brand)}
+  .sidebar-nav a.nav-section{color:#ffb894;font-weight:700;font-size:13px;margin-top:11px;padding-top:10px;border-top:1px solid #233752}
+  .sidebar-nav a.nav-section:first-of-type{border-top:none;margin-top:0;padding-top:6px}
+  .sidebar-nav a.nav-sub{padding-left:30px;color:#93a8bc;font-size:12px}
+  .sidebar-nav a.nav-sub:hover{color:#fff}
+  .sb-back{margin:16px 14px 0;display:block;text-align:center;padding:9px;border-radius:9px;background:#1e304a;color:#a9c0d6 !important;font-size:12px;font-weight:700;border-left:none !important}
+  .sb-back:hover{background:var(--brand) !important;color:#fff !important}
+  .nav-toggle{display:none;position:fixed;top:14px;left:14px;z-index:120;background:var(--brand);color:#fff;border:none;border-radius:9px;padding:9px 13px;font-size:15px;cursor:pointer;box-shadow:0 4px 14px rgba(0,0,0,.25)}
+  .page{margin-left:var(--sidebar)}
+  .hero{position:relative;overflow:hidden;padding:44px 52px;color:#fff;background:linear-gradient(125deg,#0a1220 0%,#16294a 46%,#8a3a16 132%)}
+  .hero::after{content:"";position:absolute;right:-90px;top:-110px;width:400px;height:400px;border-radius:50%;background:radial-gradient(circle,rgba(245,179,1,.30),transparent 68%)}
+  .hero-top{display:flex;gap:36px;align-items:center;position:relative;z-index:2}
+  .hero-txt{flex:1;min-width:0}
+  .hero .crumb{font-size:11.5px;color:#ffb894;letter-spacing:1.5px;font-weight:700;margin-bottom:14px}
+  .hero h1{font-size:31px;font-weight:800;line-height:1.3;letter-spacing:.6px;margin-bottom:8px}
+  .hero h1 .sub{display:block;font-size:18px;font-weight:700;color:#ffd2b3;margin-top:6px;letter-spacing:.3px}
+  .hero .en{font-size:13px;color:#9db4c8;font-style:italic;margin-bottom:18px}
+  .hero .tags{display:flex;flex-wrap:wrap;gap:8px}
+  .tag{font-size:11.5px;padding:4px 12px;border-radius:20px;background:rgba(255,255,255,.12);border:1px solid rgba(255,255,255,.22);color:#e8f0f6;font-weight:600}
+  .tag.hot{background:rgba(255,107,53,.92);border-color:transparent;color:#fff}
+  .hero-card{flex-shrink:0;width:200px;text-align:center}
+  .hero-card .ava{width:148px;height:148px;border-radius:50%;object-fit:cover;object-position:top center;border:4px solid rgba(255,180,140,.6);box-shadow:0 14px 34px rgba(0,0,0,.45);background:#24344a}
+  .hero-card .nm{font-size:15px;font-weight:800;color:#fff;margin-top:10px}
+  .hero-card .ti{font-size:11.5px;color:#ffb894;margin-top:2px}
+  .container{max-width:1080px;margin:0 auto;padding:38px 52px 70px}
+  .lead{font-size:15.5px;line-height:2.05;color:#333f52;background:linear-gradient(120deg,#fff8f3,#f7fbf8);border-left:5px solid var(--brand);border-radius:0 14px 14px 0;padding:22px 26px;margin-bottom:32px}
+  .lead b{color:var(--brand-dark)}
+  .cast{display:flex;gap:16px;align-items:flex-start;border-radius:16px;padding:18px 22px;margin:24px 0}
+  .cast .ava{width:72px;height:72px;border-radius:50%;object-fit:cover;object-position:top center;flex-shrink:0;background:#e8eef5}
+  .cast .bubble{position:relative;font-size:14px;line-height:1.95;padding-top:2px;flex:1}
+  .cast .who{font-size:12px;font-weight:800;margin-bottom:5px;letter-spacing:.5px}
+  .cast.anya{background:var(--brand-soft);border:1px solid #ffdcc9}
+  .cast.anya .who{color:var(--brand-dark)}
+  .cast.anya .bubble{color:#5c4636}
+  .cast.duck{background:#fff5f5;border:1px solid #fbd5d5}
+  .cast.duck .who{color:#b91c1c}
+  .cast.duck .bubble{color:#5c4141}
+  .cast.teacher{background:linear-gradient(120deg,#f4f7fb,#ffffff);border:1px solid #dbe4f0}
+  .cast.teacher .who{color:#1e293b}
+  .cast.teacher .bubble{color:#3c4a5a}
+  .cast.hero{background:#f2f7fd;border:1px solid #cfe0f5}
+  .cast.hero .who{color:#1b47a8}
+  .cast.hero .bubble{color:#3a4658}
+  .goal-grid{display:grid;grid-template-columns:1fr 1fr;gap:16px;margin-bottom:36px}
+  .goal{border:1px solid var(--line);border-radius:15px;padding:19px 21px;background:#fff;box-shadow:0 4px 16px rgba(31,122,68,.05)}
+  .goal h4{font-size:14px;font-weight:800;margin-bottom:11px;display:flex;align-items:center;gap:8px;color:var(--primary-dark)}
+  .goal h4 .ic{width:22px;height:22px;border-radius:7px;background:var(--primary-lighter);display:flex;align-items:center;justify-content:center;font-size:12px}
+  .goal ul{list-style:none}
+  .goal li{font-size:13.5px;color:#48576b;line-height:1.9;padding-left:18px;position:relative}
+  .goal li::before{content:"▸";position:absolute;left:0;color:var(--primary);font-weight:800}
+  .goal.syllabus li::before{content:"✓"}
+  .section-header{margin:52px 0 24px;padding-bottom:12px;border-bottom:3px solid var(--brand);display:flex;align-items:baseline;gap:14px;flex-wrap:wrap}
+  .section-header h2{font-size:22px;font-weight:800;color:var(--night);letter-spacing:.4px}
+  .section-header .en-title{font-size:12px;color:var(--dim2);font-style:italic}
+  h3{font-size:17.5px;font-weight:800;margin:34px 0 14px;color:var(--night);display:flex;align-items:center;gap:10px}
+  h3::before{content:"";width:5px;height:17px;border-radius:3px;background:var(--brand);flex-shrink:0}
+  h4{font-size:15px;font-weight:800;margin:24px 0 10px;color:#2b4260}
+  p{margin:12px 0;color:#3a4658;line-height:2}
+  strong{color:var(--primary-dark)}
+  code.inline{background:var(--primary-lighter);color:var(--primary-dark);padding:2px 7px;border-radius:6px;font-family:"SFMono-Regular",Consolas,Menlo,monospace;font-size:.9em;font-weight:600}
+  .figure{margin:24px 0;text-align:center}
+  .figure svg.diagram{max-width:100%;height:auto;background:#fff;border:1px solid var(--line);border-radius:14px;padding:10px}
+  .figure .caption{font-size:12.5px;color:var(--dim2);margin-top:9px}
+  .pic{margin:26px 0;text-align:center}
+  .pic img{max-width:100%;border-radius:16px;box-shadow:0 10px 28px rgba(30,60,45,.15);display:block;margin:0 auto}
+  .pic figcaption{font-size:12.5px;color:var(--dim2);margin-top:9px}
+  .pic .ph{display:none}
+  .pic.missing img{display:none}
+  .pic.missing .ph{display:flex;flex-direction:column;align-items:center;justify-content:center;gap:9px;border:2px dashed #c9d9e8;border-radius:16px;background:linear-gradient(135deg,#f8fbfe,#eef6ff);padding:40px 26px;color:#7a8fa8}
+  .pic.missing .ph .fn{font-family:Consolas,monospace;font-size:12.5px;color:#2563eb;font-weight:700;word-break:break-all}
+  .pic.missing .ph .ds{font-size:12.5px;line-height:1.8;max-width:560px}
+  .box{border-radius:13px;padding:16px 20px;margin:20px 0;font-size:14px;line-height:1.95}
+  .box .lb{font-weight:800;margin-right:6px}
+  .info{background:#eef6ff;border-left:5px solid #3b82f6;color:#274768}
+  .info .lb{color:#1d4ed8}
+  .tip{background:#fff9ec;border-left:5px solid #f59e0b;color:#6b4e13}
+  .tip .lb{color:#b45309}
+  .remember{background:var(--primary-lighter);border-left:5px solid var(--primary);color:#1d3a6b}
+  .remember .lb{color:var(--primary-dark)}
+  .warn{background:#fef2f2;border-left:5px solid #ef4444;color:#7f2b2b}
+  .warn .lb{color:#b91c1c}
+  .code-card{margin:20px 0;border-radius:14px;overflow:hidden;box-shadow:0 10px 28px rgba(20,40,28,.20)}
+  .code-head{display:flex;align-items:center;gap:9px;background:#1a2434;padding:9px 14px}
+  .code-head .dot{width:10px;height:10px;border-radius:50%}
+  .code-head .d1{background:#ff5f57}.code-head .d2{background:#febc2e}.code-head .d3{background:#28c840}
+  .code-head .file{color:#8fa6c0;font-size:11.5px;font-family:Consolas,monospace;margin-left:6px}
+  .code-head .lang{margin-left:auto;font-size:10.5px;font-weight:800;color:#0d141f;background:#4f8ff0;padding:2px 9px;border-radius:6px;letter-spacing:.4px}
+  .code-card pre{background:var(--code-bg);padding:18px 20px;overflow-x:auto;margin:0;font-family:"SFMono-Regular",Consolas,"Courier New",monospace;font-size:13.5px;line-height:1.85}
+  .code-card pre::-webkit-scrollbar{height:8px}
+  .code-card pre::-webkit-scrollbar-thumb{background:#31445c;border-radius:4px}
+  .code-card code{color:var(--code-tx);white-space:pre}
+  .kw{color:var(--code-kw);font-weight:600}
+  .st{color:var(--code-st)}
+  .nu{color:var(--code-nu)}
+  .cm{color:var(--code-cm);font-style:italic}
+  .fn{color:var(--code-fn)}
+  .out{background:#0f1621;color:#7fb3f5;font-family:Consolas,monospace;font-size:13px;padding:12px 20px;border-top:1px solid #22304a}
+  .out b{color:#c9d6cd;font-weight:600;font-size:11.5px;letter-spacing:1px}
+  .out.err{color:#fca5a5}
+  table.styled{width:100%;border-collapse:collapse;margin:20px 0;font-size:13.5px;border-radius:12px;overflow:hidden;box-shadow:0 4px 16px rgba(31,122,68,.07)}
+  table.styled thead{background:var(--brand)}
+  table.styled th{color:#fff;padding:11px 14px;text-align:left;font-weight:700;font-size:13px}
+  table.styled td{padding:10px 14px;border-bottom:1px solid var(--line);color:#445266;vertical-align:top}
+  table.styled tbody tr:nth-child(even){background:var(--bg-soft)}
+  table.styled tbody tr:last-child td{border-bottom:none}
+  .level-card{border:1px solid var(--line);border-radius:16px;overflow:hidden;margin:22px 0;box-shadow:0 6px 22px rgba(31,122,68,.07)}
+  .level-card .lc-head{background:linear-gradient(100deg,#17283a,#8a3a16);color:#fff;padding:15px 22px;display:flex;align-items:center;gap:12px;flex-wrap:wrap}
+  .level-card .lc-head .n{font-size:12px;font-weight:800;background:rgba(255,255,255,.2);padding:3px 10px;border-radius:20px}
+  .level-card .lc-head h4{margin:0;color:#fff;font-size:16px}
+  .level-card .lc-head .go{margin-left:auto;font-size:11.5px;color:#ffd2b3}
+  .level-card .lc-body{padding:20px 24px;background:#fff}
+  .level-card .story{background:#f9fbfd;border-left:4px solid #93c5fd;border-radius:0 10px 10px 0;padding:13px 18px;margin:0 0 16px;font-size:14px;line-height:1.95;color:#3f5163}
+  .level-card .story b{color:#1d4ed8}
+  .btn-go{display:inline-flex;align-items:center;gap:8px;background:linear-gradient(135deg,var(--brand),var(--brand-dark));color:#fff;text-decoration:none;font-weight:800;font-size:13.5px;padding:10px 22px;border-radius:11px;box-shadow:0 8px 20px rgba(255,107,53,.32);transition:.2s}
+  .btn-go:hover{transform:translateY(-2px);box-shadow:0 12px 26px rgba(255,107,53,.42)}
+  .pit{border:1px solid #f6dede;border-radius:14px;overflow:hidden;margin:16px 0;background:#fff}
+  .pit .pt{display:flex;gap:12px;padding:14px 18px;background:#fffafa;align-items:flex-start}
+  .pit .x{width:26px;height:26px;border-radius:9px;background:#fee;color:#dc2626;display:flex;align-items:center;justify-content:center;font-weight:800;flex-shrink:0;font-size:13px}
+  .pit .t{font-size:13.5px;line-height:1.9;color:#5c4a4a;flex:1}
+  .pit .t b{color:#b91c1c}
+  .pit .duck{display:flex;gap:12px;padding:13px 18px;background:#fff5f5;border-top:1px dashed #f3d0d0;align-items:flex-start}
+  .pit .duck img{width:48px;height:48px;object-fit:contain;flex-shrink:0;margin-top:2px}
+  .pit .duck .dt{font-size:13.5px;line-height:1.9;color:#7a3b3b}
+  .pit .duck .dt b{color:#b91c1c}
+  .pit .fix{padding:12px 18px;background:#f2f7fd;border-top:1px dashed #cfe0f5;font-size:13.5px;color:#1d3a6b}
+  .pit .fix b{color:var(--primary-dark)}
+  .exam{border:1px solid #dfe7f5;border-radius:15px;margin:16px 0;overflow:hidden;background:#fff;box-shadow:0 4px 16px rgba(38,62,120,.06)}
+  .exam .eh{display:flex;align-items:center;gap:10px;padding:11px 18px;background:linear-gradient(100deg,#eef4ff,#f7faff);border-bottom:1px solid #e3ebf8;flex-wrap:wrap}
+  .exam .eh .src{font-size:11px;font-weight:800;color:#fff;background:#2563eb;padding:2.5px 10px;border-radius:20px}
+  .exam .eh .src.ori{background:#8b5cf6}
+  .exam .eh .tp{font-size:11.5px;color:#5b7ba8;font-weight:700}
+  .exam .eb{padding:16px 20px}
+  .exam .q{font-weight:700;font-size:14px;color:#1e2a3e;line-height:1.9;margin-bottom:10px}
+  .exam .opt{font-size:13.5px;color:#48576b;line-height:2.05;padding-left:6px}
+  .exam .opt i{font-style:normal;font-weight:800;color:var(--primary-dark);margin-right:7px}
+  .exam pre{margin:12px 0;background:#1b2a21;border-radius:10px;padding:14px 16px;overflow-x:auto;font-family:Consolas,monospace;font-size:13px;line-height:1.8;color:var(--code-tx)}
+  .exam details{margin-top:10px;border-top:1px dashed var(--line);padding-top:10px}
+  .exam summary{cursor:pointer;font-size:12.5px;font-weight:800;color:#2563eb;outline:none;user-select:none}
+  .exam details .ans{font-size:13.5px;color:#3a4658;line-height:1.95;margin-top:9px;background:var(--bg-soft);padding:13px 16px;border-radius:10px}
+  .exam details .ans b{color:var(--primary-dark)}
+  .exam details .ans .tagline{display:inline-block;font-size:11px;background:#e0f2fe;color:#0e7490;padding:1.5px 8px;border-radius:6px;font-weight:700;margin-right:6px}
+  .summary{margin:40px 0 20px;border-radius:18px;padding:26px 30px;background:linear-gradient(130deg,#fff8f3,#ffffff);border:1px solid #ffe0cf}
+  .summary h3{margin-top:0}
+  .summary ul{list-style:none;margin-top:10px}
+  .summary li{font-size:14px;line-height:2;color:#3d4d66;padding-left:24px;position:relative}
+  .summary li::before{content:"◆";position:absolute;left:0;color:var(--brand);font-size:11px;top:6px}
+  .pager{display:flex;gap:14px;margin-top:30px;flex-wrap:wrap}
+  .pager a{flex:1;min-width:200px;text-decoration:none;border:1px solid var(--line);border-radius:14px;padding:16px 20px;background:#fff;transition:.2s;display:block}
+  .pager a:hover{border-color:var(--brand);box-shadow:0 10px 26px rgba(255,107,53,.14);transform:translateY(-2px)}
+  .pager a .k{font-size:11px;color:var(--dim2);font-weight:700;letter-spacing:1px}
+  .pager a .v{font-size:14px;font-weight:800;color:var(--night);margin-top:5px}
+  .pager a.back{background:var(--brand-soft);border-color:transparent;text-align:center}
+  .pager a.back .v{color:var(--brand-dark)}
+  .cta{margin-top:26px;border-radius:20px;padding:30px 34px;color:#fff;position:relative;overflow:hidden;background:linear-gradient(120deg,#16202f,#2b3a52 46%,#a8431c 132%)}
+  .cta::after{content:"";position:absolute;right:-70px;bottom:-90px;width:280px;height:280px;border-radius:50%;background:radial-gradient(circle,rgba(255,140,80,.45),transparent 68%)}
+  .cta h3{color:#fff;margin:0 0 10px;position:relative;z-index:2}
+  .cta h3::before{background:var(--brand)}
+  .cta p{color:#d8e0ef;font-size:13.5px;margin:0 0 18px;position:relative;z-index:2;max-width:640px}
+  .cta .btn-go{position:relative;z-index:2}
+  @media(max-width:900px){
+    .sidebar-nav{transform:translateX(-100%)}
+    .sidebar-nav.active{transform:translateX(0)}
+    .nav-toggle{display:block}
+    .page{margin-left:0}
+    .hero{padding:70px 22px 34px}
+    .hero-top{flex-direction:column-reverse;text-align:center}
+    .hero-card{width:auto}
+    .container{padding:26px 20px 60px}
+    .goal-grid{grid-template-columns:1fr}
+  }
+</style>
+</head>
+<body>
+
+<button class="nav-toggle" onclick="document.querySelector('.sidebar-nav').classList.toggle('active')">&#9776;</button>
+
+<nav class="sidebar-nav">
+  <div class="sb-brand">
+    <a class="sb-logo" href="https://codecombat.cn/" target="_blank" rel="noopener" title="访问 CodeCombat 扣哒世界官网">
+      <img src="../assets/logo.png" alt="CodeCombat 扣哒世界">
+    </a>
+    <div><b>岔路口的抉择</b><span>烛火岗哨 · C++ 一级 第 5 单元</span></div>
+  </div>
+  <div class="nav-title">本单元目录</div>
+
+  <a href="#s0" class="nav-section">0　单元导语与目标</a>
+  <a href="#s0-1" class="nav-sub">0.1 学习目标</a>
+  <a href="#s0-2" class="nav-sub">0.2 考纲对照</a>
+  <a href="#s1" class="nav-section">1　为什么要做选择</a>
+  <a href="#s1-1" class="nav-sub">1.1 一条直路走不通</a>
+  <a href="#s1-2" class="nav-sub">1.2 条件是什么</a>
+  <a href="#s2" class="nav-section">2　最简单的 if</a>
+  <a href="#s2-1" class="nav-sub">2.1 只有一个分支</a>
+  <a href="#s2-2" class="nav-sub">2.2 花括号的规矩</a>
+  <a href="#s3" class="nav-section">3　if-else：二选一</a>
+  <a href="#s3-1" class="nav-sub">3.1 成立走这边，否则走那边</a>
+  <a href="#s3-2" class="nav-sub">3.2 真题常考的 N 与 M</a>
+  <a href="#s4" class="nav-section">4　多分支：else if</a>
+  <a href="#s4-1" class="nav-sub">4.1 一个接一个地判断</a>
+  <a href="#s4-2" class="nav-sub">4.2 顺序很重要</a>
+  <a href="#s5" class="nav-section">5　嵌套判断</a>
+  <a href="#s5-1" class="nav-sub">5.1 判断里面再判断</a>
+  <a href="#s5-2" class="nav-sub">5.2 什么时候用嵌套</a>
+  <a href="#s6" class="nav-section">6　三目运算符与 switch</a>
+  <a href="#s6-1" class="nav-sub">6.1 一句话的选择</a>
+  <a href="#s6-2" class="nav-sub">6.2 switch 与 break</a>
+  <a href="#s7" class="nav-section">7　代码实战</a>
+  <a href="#s8" class="nav-section">8　常见陷阱</a>
+  <a href="#s9" class="nav-section">9　题目练习</a>
+  <a href="#s10" class="nav-section">10　本单元小结</a>
+
+  <a href="../index.html" target="_top" class="sb-back">返回考纲之路</a>
+</nav>
+
+<div class="page">
+
+<div class="hero">
+  <div class="hero-top">
+    <div class="hero-txt">
+      <div class="crumb">扣哒考级 · GESP C++ 一级 · 第 5 单元　|　烛火岗哨 CANDLEWATCH OUTPOST</div>
+      <h1>岔路口的抉择
+        <span class="sub">分支结构：做选择</span>
+      </h1>
+      <div class="en">Branching: Making Choices</div>
+      <div class="tags">        <span class="tag hot">考纲 · 分支结构</span>
+        <span class="tag">if / else</span>
+        <span class="tag">多分支</span>
+        <span class="tag">嵌套判断</span>
+        <span class="tag">三目与 switch</span></div>
+    </div>
+    <div class="hero-card">
+      <img class="ava" src="../assets/avatars/tharin.webp" alt="塔林" onerror="this.style.background='#24344a';this.src='../assets/heroes/tharin.webp'">
+      <div class="nm">塔林</div>
+      <div class="ti">铁壁骑士 · 你的向导</div>
+    </div>
+  </div>
+</div>
+
+<div class="container">
+
+
+
+
+
+<div class="lead">
+  岗哨外有一条石阶路，走到一半突然分成两条：<b>左边通向崖边，右边通向密林。</b><br>
+  风里传来野兽的低吼。塔林把火把递给你：别急着迈步。
+  <b>先看清楚条件——风声是从哪边来的？</b><br>
+  你听了一瞬，转向右边。<br>
+  对。他点头，<b>这就是程序里最重要的能力：判断。</b>
+</div>
+
+<div class="cast tharin">
+  <img class="ava" src="../assets/avatars/tharin.webp" alt="塔林" onerror="this.style.display='none'">
+  <div class="bubble">
+    <div class="who">塔林 · 铁壁骑士</div>
+    前四个单元，程序都是一条直线走到黑。<br>
+    可真实世界里，<b>大部分事情都要"看情况"</b>——下雨就带伞，天冷就加衣。<br>
+    这一单元，我们让程序也学会这一手：<strong>根据条件，走不同的路。</strong>
+  </div>
+</div>
+
+<figure class="pic">
+  <img src="../assets/illustrations/py-L1-05-01_crossroads.webp" alt="岔路口"
+       onerror="this.closest('.pic').classList.add('missing')">
+  <div class="ph">
+    <div class="fn">assets/illustrations/py-L1-05-01_crossroads.webp</div>
+    <div class="ds">【配图位】雾中的岗哨岔路口：两块木质路牌立在崖边，一名新兵提着灯在岔口犹豫——一条路被灯光照亮、一条路隐入阴影；冷蓝色雾气与暖橙色灯光形成对比。</div>
+  </div>
+  <figcaption>图 1：烛火岗哨·岔路口的抉择——今天要从这里开始</figcaption>
+</figure>
+
+<!-- ============ 0 ============ -->
+<div class="section-header" id="s0">
+  <h2>0　单元导语与目标</h2>
+  <div class="en-title">Unit Overview</div>
+</div>
+
+<h3 id="s0-1">0.1 学习目标</h3>
+<div class="goal-grid">
+  <div class="goal">
+    <h4><span class="ic">1</span>学完这个单元，你将能……</h4>
+    <ul>
+      <li>说清分支结构的作用与执行流程</li>
+      <li>正确写出 <code class="inline">if</code>、<code class="inline">if-else</code>、<code class="inline">else if</code></li>
+      <li>知道花括号什么时候可以省、什么时候不能省</li>
+      <li>用嵌套判断处理两层条件</li>
+      <li>看懂三目运算符 <code class="inline">? :</code> 的结果</li>
+      <li>预测一段分支程序的输出</li>
+    </ul>
+  </div>
+  <div class="goal syllabus">
+    <h4><span class="ic">2</span>对标 GESP 考纲（C++ 一级）</h4>
+    <ul>
+      <li>掌握 <code class="inline">if</code> 语句与条件表达式</li>
+      <li>掌握 <code class="inline">if-else</code> 与 <code class="inline">else if</code> 多分支结构</li>
+      <li>了解嵌套分支与三目运算符</li>
+      <li>了解 <code class="inline">switch</code> 的基本写法与 <code class="inline">break</code> 的作用</li>
+      <li>考核目标：能写出分支程序，并准确判断给定程序的输出</li>
+    </ul>
+  </div>
+</div>
+
+<h3 id="s0-2">0.2 考纲对照</h3>
+<table class="styled">
+  <thead><tr><th>本单元小节</th><th>对应考纲条目</th><th>真题常考形式</th></tr></thead>
+  <tbody>
+    <tr><td>2　最简单的 if</td><td><code class="inline">if</code> 语句</td><td>条件不成立时，括号里的语句会不会执行</td></tr>
+    <tr><td>3　if-else</td><td>二分支结构</td><td>给两个输入，问走哪个分支、输出什么</td></tr>
+    <tr><td>4　else if</td><td>多分支结构</td><td>给一个分数或等级，问落在哪一段</td></tr>
+    <tr><td>5　嵌套判断</td><td>分支的嵌套</td><td>两个条件同时判断时的输出</td></tr>
+    <tr><td>6　三目与 switch</td><td>其他分支写法</td><td><code class="inline">a &gt; b ? a : b</code> 的结果</td></tr>
+  </tbody>
+</table>
+
+<!-- ============ 1 ============ -->
+<div class="section-header" id="s1">
+  <h2>1　为什么要做选择</h2>
+  <div class="en-title">Why Branch</div>
+</div>
+
+<h3 id="s1-1">1.1 一条直路走不通</h3>
+
+<figure class="figure">
+  <svg class="diagram" viewBox="0 0 830 320" role="img" aria-label="分支结构流程">
+    <text x="24" y="32" font-size="14" font-weight="bold" fill="#1f2937">分支结构：在岔口上做一个判断，然后选一条路走</text>
+
+    <rect x="330" y="52" width="170" height="40" rx="10" fill="#eaf1fe" stroke="#2563eb" stroke-width="2"/>
+    <text x="415" y="78" text-anchor="middle" font-size="12.5" fill="#1d4ed8">执行到这里</text>
+
+    <polygon points="415,110 545,160 415,210 285,160" fill="#fff9ec" stroke="#f59e0b" stroke-width="2.2"/>
+    <text x="415" y="156" text-anchor="middle" font-size="12" fill="#b45309" font-weight="bold">条件成立吗？</text>
+    <text x="415" y="176" text-anchor="middle" font-size="11" fill="#a15c1c">（真 / 假）</text>
+
+    <rect x="90" y="238" width="230" height="52" rx="10" fill="#e9f8ef" stroke="#2e9e5b" stroke-width="2.2"/>
+    <text x="205" y="262" text-anchor="middle" font-size="12.5" fill="#1f7a44" font-weight="bold">成立 → 走这一条</text>
+    <text x="205" y="282" text-anchor="middle" font-size="11" font-family="Consolas,monospace" fill="#3b7c5b">if 里的语句</text>
+
+    <rect x="510" y="238" width="230" height="52" rx="10" fill="#fef2f2" stroke="#ef4444" stroke-width="2.2"/>
+    <text x="625" y="262" text-anchor="middle" font-size="12.5" fill="#b91c1c" font-weight="bold">不成立 → 走那一条</text>
+    <text x="625" y="282" text-anchor="middle" font-size="11" font-family="Consolas,monospace" fill="#a15c5c">else 里的语句</text>
+
+    <line x1="415" y1="94" x2="415" y2="106" stroke="#94a3b8" stroke-width="2"/>
+    <line x1="300" y1="180" x2="205" y2="234" stroke="#2e9e5b" stroke-width="2.2"/>
+    <polygon points="205,234 219,226 211,218" fill="#2e9e5b"/>
+    <line x1="530" y1="180" x2="625" y2="234" stroke="#ef4444" stroke-width="2.2"/>
+    <polygon points="625,234 619,218 611,226" fill="#ef4444"/>
+
+    <text x="240" y="212" font-size="11.5" fill="#1f7a44">真</text>
+    <text x="588" y="212" font-size="11.5" fill="#b91c1c">假</text>
+
+    <text x="24" y="312" font-size="12" fill="#8d9d94">关键：两条路只会走一条，绝不会两条都走</text>
+  </svg>
+  <div class="caption">图 2（SVG）：分支结构的执行流程</div>
+</figure>
+
+<div class="box tip">
+  <span class="lb">打个比方：</span>
+  分支结构就像走在路上遇到一个<b>岔路口</b>：<strong>先抬头看一眼路牌（判断条件），再决定往哪边迈步。</strong><br>
+  关键在于——<b>你永远只能走一条路，不可能两条都走。</b><br>
+  <b>程序也是这样：条件成立走 <code class="inline">if</code> 那边，不成立走 <code class="inline">else</code> 那边，绝不会两边都走一遍。</b>
+</div>
+
+<figure class="pic">
+  <img src="../assets/illustrations/cpp-L1-05-02_branch_paths.webp" alt="悬在路口的判断菱形"
+       onerror="this.closest('.pic').classList.add('missing')">
+  <div class="ph">
+    <div class="fn">assets/illustrations/cpp-L1-05-02_branch_paths.webp</div>
+    <div class="ds">【配图位】雾中的石砌岔路口：路口正上方悬着一个巨大的发光菱形判断框，菱形两条下边各引出一条光箭头，分别指向左右两条岔路；此刻只有右边那条路被照亮、左边那条仍隐在阴影里；一名新兵提着灯站在菱形下方抬头张望。扣哒世界卡通风格，冷蓝雾气与暖橙灯火对比。</div>
+  </div>
+  <figcaption>图 3：悬在路口的菱形判断框，只点亮一条路</figcaption>
+</figure>
+<h3 id="s1-2">1.2 条件是什么</h3>
+
+<p>条件就是上一单元学的<strong>关系表达式或逻辑表达式</strong>，它的结果只有两种：<strong>成立（真）</strong>与<strong>不成立（假）</strong>。</p>
+
+<table class="styled">
+  <thead><tr><th>条件写法</th><th>什么时候成立</th></tr></thead>
+  <tbody>
+    <tr><td><code class="inline">a &gt; b</code></td><td>a 比 b 大</td></tr>
+    <tr><td><code class="inline">a == 0</code></td><td>a 等于 0（注意两个等号）</td></tr>
+    <tr><td><code class="inline">a % 2 == 1</code></td><td>a 是奇数</td></tr>
+    <tr><td><code class="inline">a &gt;= 60 &amp;&amp; a &lt;= 100</code></td><td>a 在 60 到 100 之间</td></tr>
+  </tbody>
+</table>
+
+<div class="box remember">
+  <span class="lb">记住这句话：</span>
+  <strong>条件的值是"真"或"假"，条件成立就执行 if 后面的语句，不成立就跳过。</strong><br>
+  在 C++ 里，"真"就是非 0，"假"就是 0——<b>所以写 <code class="inline">if (1)</code> 永远成立，<code class="inline">if (0)</code> 永远不成立。</b>
+</div>
+
+<!-- ============ 2 ============ -->
+<div class="section-header" id="s2">
+  <h2>2　最简单的 if</h2>
+  <div class="en-title">The if Statement</div>
+</div>
+
+<h3 id="s2-1">2.1 只有一个分支</h3>
+
+<div class="code-card">
+  <div class="code-head">
+    <span class="dot d1"></span><span class="dot d2"></span><span class="dot d3"></span>
+    <span class="file">写法：条件成立才做，不成立就跳过</span>
+    <span class="lang">C++</span>
+  </div>
+  <pre><code>int hp = 30;
+
+if (hp &lt; 50) {                  // 条件成立吗？
+    cout &lt;&lt; "血量偏低" &lt;&lt; endl;   // 成立 → 执行这一句
+    cout &lt;&lt; "注意防守" &lt;&lt; endl;
+}
+
+cout &lt;&lt; "继续战斗";              // 这一句无论如何都会执行</code></pre>
+  <div class="out"><b>OUTPUT</b>　血量偏低<br>注意防守<br>继续战斗</div>
+</div>
+
+<div class="box tip">
+  <span class="lb">if 括号里的条件，必须是一个整体：</span><br>
+  <code class="inline">if (hp &lt; 50)</code> ✔　　<code class="inline">if hp &lt; 50</code> ✘（没有括号）<br>
+  <b>而且括号后面一定不要加分号</b>——写成 <code class="inline">if (hp &lt; 50);</code> 会变成"条件成立时什么都不做"，
+  后面的花括号就永远执行了，这是很隐蔽的错误。
+</div>
+
+<h3 id="s2-2">2.2 花括号的规矩</h3>
+
+<div class="code-card">
+  <div class="code-head">
+    <span class="dot d1"></span><span class="dot d2"></span><span class="dot d3"></span>
+    <span class="file">只写一句可以省花括号，但建议永远写上</span>
+    <span class="lang">C++</span>
+  </div>
+  <pre><code>int x = 5;
+
+// 写法一：只有一句，可以省花括号
+if (x &gt; 0)
+    cout &lt;&lt; "正数";
+
+// 写法二：多句，必须加花括号
+if (x &gt; 0) {
+    cout &lt;&lt; "正数" &lt;&lt; endl;
+    cout &lt;&lt; "且大于零";
+}
+
+// 写法三：省了花括号却写了两句 —— 第二句永远会执行！
+if (x &gt; 0)
+    cout &lt;&lt; "正数" &lt;&lt; endl;
+    cout &lt;&lt; "这一句不受 if 控制";   // ★ 危险</code></pre>
+  <div class="out"><b>口诀</b>　<code>if</code> 只管到"第一条语句"；想管多句，就<b>用花括号把它们包起来</b></div>
+</div>
+
+<div class="box tip">
+  <span class="lb">打个比方：</span>
+  花括号 <code class="inline">{ }</code> 就像一个<b>书包</b>。<br>
+  <code class="inline">if</code> 这个人每次只肯<b>拿一样东西</b>——你不在它后面放书包，<strong>它就只带走紧跟着的第一件，"第二件、第三件"全留在原地</strong>。<br>
+  <b>想让 if 把好几件事都管起来？把它们一起装进书包：<code class="inline">{ … }</code>。</b><br>
+  <b>养成"永远写花括号"的习惯，就不会犯这个错。</b>
+</div>
+
+<div class="box warn">
+  <span class="lb">强烈建议：</span>
+  <strong>不管 if 后面是一条语句还是多条，都加上花括号。</strong><br>
+  这样以后往里加语句时，不会出现"以为在 if 里、其实在外面"的错误。<br>
+  <b>考试里看到"没有花括号的多行 if"，要立刻警觉：只有第一句归 if 管。</b>
+</div>
+
+<!-- ============ 3 ============ -->
+<div class="section-header" id="s3">
+  <h2>3　if-else：二选一</h2>
+  <div class="en-title">if-else</div>
+</div>
+
+<h3 id="s3-1">3.1 成立走这边，否则走那边</h3>
+
+<div class="code-card">
+  <div class="code-head">
+    <span class="dot d1"></span><span class="dot d2"></span><span class="dot d3"></span>
+    <span class="file">两条路，必走一条</span>
+    <span class="lang">C++</span>
+  </div>
+  <pre><code>int n;
+cin &gt;&gt; n;
+
+if (n % 2 == 0) {
+    cout &lt;&lt; "偶数";
+} else {
+    cout &lt;&lt; "奇数";
+}</code></pre>
+  <div class="out"><b>输入 8</b>　→ 输出 偶数　　<b>输入 7</b>　→ 输出 奇数</div>
+</div>
+
+<div class="box tip">
+  <span class="lb">打个比方：</span>
+  <code class="inline">if-else</code> 就像校门口的<b>两个闸机口</b>：<strong>每个同学都必须走其中一个，而且只能走一个。</strong><br>
+  条件成立走 <code class="inline">if</code> 这边，<b>其余所有情况</b>统统走 <code class="inline">else</code> 那边。<br>
+  <b>所以 else 后面不用再写条件——它的意思就是"上面那些都没轮到，剩下的都归我"。</b>
+</div>
+
+<div class="box remember">
+  <span class="lb">if-else 的三条要点：</span><br>
+  <b>① else 后面不写条件</b>——它的意思是"上面所有条件都不成立"。<br>
+  <b>② 两个分支只会执行一个</b>，绝不会都执行、也不会都不执行。<br>
+  <b>③ else 必须紧跟 if</b>，中间不能插别的语句。
+</div>
+
+<h3 id="s3-2">3.2 真题常考的 N 与 M</h3>
+
+<div class="code-card">
+  <div class="code-head">
+    <span class="dot d1"></span><span class="dot d2"></span><span class="dot d3"></span>
+    <span class="file">经典题型：比较大小时输出什么</span>
+    <span class="lang">C++</span>
+  </div>
+  <pre><code>int N, M;
+cin &gt;&gt; N &gt;&gt; M;
+
+if (N &gt; M)
+    cout &lt;&lt; "A " &lt;&lt; (N - M);
+else
+    cout &lt;&lt; "B " &lt;&lt; (M - N);</code></pre>
+  <div class="out">
+    <b>输入 4 3</b>　→ N&gt;M 成立 → 输出 <b>A 1</b><br>
+    <b>输入 3 4</b>　→ 不成立 → 输出 <b>B 1</b><br>
+    <b>输入 3 3</b>　→ 不成立（注意！相等时走 else）→ 输出 <b>B 0</b><br>
+    <b>输入 4 4</b>　→ 不成立 → 输出 <b>B 0</b>
+  </div>
+</div>
+
+<div class="box tip">
+  <span class="lb">相等的时候走哪边？</span>
+  条件写的是 <code class="inline">N &gt; M</code>，<strong>相等时它不成立</strong>，所以会走 <code class="inline">else</code>。<br>
+  <b>这是真题专门设置的一个坑：很多人以为"相等"应该单独处理，其实它会掉进 else。</b><br>
+  想让相等时走 if 一边，就必须写成 <code class="inline">N &gt;= M</code>。
+</div>
+
+<!-- ============ 4 ============ -->
+<div class="section-header" id="s4">
+  <h2>4　多分支：else if</h2>
+  <div class="en-title">else if</div>
+</div>
+
+<h3 id="s4-1">4.1 一个接一个地判断</h3>
+
+<div class="code-card">
+  <div class="code-head">
+    <span class="dot d1"></span><span class="dot d2"></span><span class="dot d3"></span>
+    <span class="file">三个及以上的岔口</span>
+    <span class="lang">C++</span>
+  </div>
+  <pre><code>int score;
+cin &gt;&gt; score;
+
+if (score &gt;= 90) {
+    cout &lt;&lt; "A";
+} else if (score &gt;= 80) {
+    cout &lt;&lt; "B";
+} else if (score &gt;= 60) {
+    cout &lt;&lt; "C";
+} else {
+    cout &lt;&lt; "D";
+}</code></pre>
+  <div class="out">
+    <b>输入 95</b> → A　　<b>输入 85</b> → B　　<b>输入 70</b> → C　　<b>输入 50</b> → D
+  </div>
+</div>
+
+<figure class="figure">
+  <svg class="diagram" viewBox="0 0 830 260" role="img" aria-label="else if 多分支流程">
+    <text x="24" y="32" font-size="14" font-weight="bold" fill="#1f2937">从上往下逐个判断，一旦成立就跳出整条链</text>
+
+    <polygon points="120,66 240,96 120,126 0,96" fill="#fff9ec" stroke="#f59e0b" stroke-width="2" transform="translate(60,0)"/>
+    <text x="180" y="100" text-anchor="middle" font-size="11.5" fill="#b45309">score &gt;= 90 ?</text>
+    <rect x="330" y="56" width="90" height="34" rx="8" fill="#e9f8ef" stroke="#2e9e5b" stroke-width="1.8"/>
+    <text x="375" y="78" text-anchor="middle" font-size="12" font-family="Consolas,monospace" fill="#1f7a44">输出 A</text>
+    <line x1="246" y1="96" x2="324" y2="78" stroke="#2e9e5b" stroke-width="1.8"/>
+
+    <polygon points="120,126 240,156 120,186 0,156" fill="#fff9ec" stroke="#f59e0b" stroke-width="2" transform="translate(60,0)"/>
+    <text x="180" y="160" text-anchor="middle" font-size="11.5" fill="#b45309">score &gt;= 80 ?</text>
+    <rect x="330" y="116" width="90" height="34" rx="8" fill="#e9f8ef" stroke="#2e9e5b" stroke-width="1.8"/>
+    <text x="375" y="138" text-anchor="middle" font-size="12" font-family="Consolas,monospace" fill="#1f7a44">输出 B</text>
+    <line x1="246" y1="156" x2="324" y2="138" stroke="#2e9e5b" stroke-width="1.8"/>
+
+    <polygon points="120,186 240,216 120,246 0,216" fill="#fff9ec" stroke="#f59e0b" stroke-width="2" transform="translate(60,0)"/>
+    <text x="180" y="220" text-anchor="middle" font-size="11.5" fill="#b45309">score &gt;= 60 ?</text>
+    <rect x="330" y="176" width="90" height="34" rx="8" fill="#e9f8ef" stroke="#2e9e5b" stroke-width="1.8"/>
+    <text x="375" y="198" text-anchor="middle" font-size="12" font-family="Consolas,monospace" fill="#1f7a44">输出 C</text>
+    <line x1="246" y1="216" x2="324" y2="198" stroke="#2e9e5b" stroke-width="1.8"/>
+
+    <rect x="470" y="150" width="130" height="34" rx="8" fill="#fef2f2" stroke="#ef4444" stroke-width="1.8"/>
+    <text x="535" y="172" text-anchor="middle" font-size="12" font-family="Consolas,monospace" fill="#b91c1c">否则 输出 D</text>
+    <line x1="180" y1="220" x2="464" y2="168" stroke="#ef4444" stroke-width="1.8" stroke-dasharray="5 4"/>
+
+    <rect x="628" y="56" width="178" height="196" rx="12" fill="#f7f9fd" stroke="#cbd5e1" stroke-width="1.6"/>
+    <text x="650" y="84" font-size="12" fill="#334155" font-weight="bold">要点</text>
+    <text x="650" y="114" font-size="11.5" fill="#475569">① 从上往下依次判断</text>
+    <text x="650" y="142" font-size="11.5" fill="#475569">② 一旦成立，后面的不再看</text>
+    <text x="650" y="170" font-size="11.5" fill="#475569">③ 全不成立才走最后的 else</text>
+    <text x="650" y="204" font-size="11.5" fill="#b45309">所以顺序不能随便换！</text>
+    <text x="650" y="232" font-size="11" fill="#94a3b8">（详见 4.2 节）</text>
+  </svg>
+  <div class="caption">图 4（SVG）：else if 的执行顺序</div>
+</figure>
+
+<figure class="pic">
+  <img src="../assets/illustrations/cpp-L1-05-03_multibranch_lanterns.webp" alt="一排条件灯笼"
+       onerror="this.closest('.pic').classList.add('missing')">
+  <div class="ph">
+    <div class="fn">assets/illustrations/cpp-L1-05-03_multibranch_lanterns.webp</div>
+    <div class="ds">【配图位】岗哨长廊的一侧依次悬挂着一排石灯笼，每盏灯笼的底座刻着一个条件符文（从上到下分别是"≥90""≥80""≥60"，最后一盏刻着"其他"）；一名新兵从左往右走过，前面三盏都暗着，第四盏仍未走到；第二盏灯笼正微微发亮并有光晕扩散，暗示"遇到第一个成立的就停下"。扣哒世界卡通风格，长廊暖光与石壁冷色对比。</div>
+  </div>
+  <figcaption>图 5：从左往右挨个试，哪盏先亮就停在哪儿</figcaption>
+</figure>
+
+<div class="box tip">
+  <span class="lb">打个比方：</span>
+  <code class="inline">else if</code> 就像走廊里挂着一排<b>条件灯笼</b>，你只能从左往右挨个看：<br>
+  <b>哪一盏先亮，你就停在哪一盏，后面的连看都不看。</b><br>
+  所以顺序特别重要——<strong>把"条件很宽"的灯笼挂在前面，后面那些就永远轮不到亮了。</strong>
+</div>
+
+<h3 id="s4-2">4.2 顺序很重要</h3>
+
+<div class="code-card">
+  <div class="code-head">
+    <span class="dot d1"></span><span class="dot d2"></span><span class="dot d3"></span>
+    <span class="file">顺序写反了，结果就错了</span>
+    <span class="lang">C++</span>
+  </div>
+  <pre><code>int score = 95;
+
+// 正确写法：从大到小
+if (score &gt;= 90)        cout &lt;&lt; "A";      // 95 满足，输出 A ✔
+else if (score &gt;= 80)   cout &lt;&lt; "B";
+else                    cout &lt;&lt; "C";
+
+// 错误写法：从小到大
+if (score &gt;= 60)        cout &lt;&lt; "C";      // 95 也满足，直接输出 C ✘
+else if (score &gt;= 80)   cout &lt;&lt; "B";
+else                    cout &lt;&lt; "A";</code></pre>
+  <div class="out"><b>原因</b>　<code>95 &gt;= 60</code> 同样成立，<b>程序一成立就跳出去了，根本轮不到后面的判断</b></div>
+</div>
+
+<div class="box tip">
+  <span class="lb">再打个比方：</span>
+  这就像筛豆子，<b>先用孔最大的筛子</b>，那不管豆子大小全掉下去了，后面的筛子就白摆了。<br>
+  <b>所以要先用"孔最小的筛子"（最严的条件）。</b><br>
+  分数段的例子：先问"够不够 90"，再问"够不够 80"，最后才问"够不够 60"——<strong>从小到大反过来写就错了。</strong>
+</div>
+
+<div class="box remember">
+  <span class="lb">写多分支的两条经验：</span><br>
+  <b>① 条件要"互斥"</b>——别让两个条件同时成立，否则只有先写的那个起作用。<br>
+  <b>② 按"由严到宽"排</b>——分数段就从高到低写，年龄段就从小到大写。<br>
+  <strong>拿不准时，把每个条件都拿一个例子代进去试一遍。</strong>
+</div>
+
+<!-- ============ 5 ============ -->
+<div class="section-header" id="s5">
+  <h2>5　嵌套判断</h2>
+  <div class="en-title">Nested Conditions</div>
+</div>
+
+<h3 id="s5-1">5.1 判断里面再判断</h3>
+
+<div class="code-card">
+  <div class="code-head">
+    <span class="dot d1"></span><span class="dot d2"></span><span class="dot d3"></span>
+    <span class="file">先看一层，再看第二层</span>
+    <span class="lang">C++</span>
+  </div>
+  <pre><code>int n;
+cin &gt;&gt; n;
+
+if (n &gt; 0) {                 // 第一层：是正数吗？
+    if (n % 2 == 0) {
+        cout &lt;&lt; "正偶数";
+    } else {
+        cout &lt;&lt; "正奇数";
+    }
+} else {                     // 不是正数
+    if (n == 0) {
+        cout &lt;&lt; "零";
+    } else {
+        cout &lt;&lt; "负数";
+    }
+}</code></pre>
+  <div class="out">
+    <b>输入 8</b> → 正偶数　　<b>输入 7</b> → 正奇数　　<b>输入 0</b> → 零　　<b>输入 -3</b> → 负数
+  </div>
+</div>
+
+<h3 id="s5-2">5.2 什么时候用嵌套</h3>
+
+<table class="styled">
+  <thead><tr><th>写法</th><th>适合的场景</th><th>例子</th></tr></thead>
+  <tbody>
+    <tr><td><code class="inline">else if</code></td><td>多个条件<strong>互相排斥</strong>，选一个即可</td><td>分数段：A / B / C / D</td></tr>
+    <tr><td><strong>嵌套 if</strong></td><td>要<strong>先判断一层，再在某一层里细分</strong></td><td>先判断正负，再判断奇偶</td></tr>
+    <tr><td><code class="inline">&amp;&amp;</code> 组合</td><td>两个条件<strong>必须同时成立</strong></td><td><code class="inline">n &gt; 0 &amp;&amp; n % 2 == 0</code></td></tr>
+  </tbody>
+</table>
+
+<div class="box tip">
+  <span class="lb">嵌套和 &amp;&amp; 怎么选？</span>
+  上面那段"正偶数"的判断，完全可以写成一句：<br>
+  <code class="inline">if (n &gt; 0 &amp;&amp; n % 2 == 0) cout &lt;&lt; "正偶数";</code><br>
+  <b>当内层判断"两种结果都要处理"时，用嵌套更清楚；
+  当只需要处理"同时成立"这一种情况时，用 &amp;&amp; 更简洁。</b>
+</div>
+
+<!-- ============ 6 ============ -->
+<div class="section-header" id="s6">
+  <h2>6　三目运算符与 switch</h2>
+  <div class="en-title">Ternary &amp; switch</div>
+</div>
+
+<figure class="pic">
+  <img src="../assets/illustrations/cpp-L1-05-04_nested_doors.webp" alt="门中门"
+       onerror="this.closest('.pic').classList.add('missing')">
+  <div class="ph">
+    <div class="fn">assets/illustrations/cpp-L1-05-04_nested_doors.webp</div>
+    <div class="ds">【配图位】岗哨内的两层门洞：外层是一扇宽大的石门，门楣上刻着"是正数吗"；穿过外层石门后，内层又分出两扇小门，分别刻着"是偶数吗"与"是奇数吗"；一名新兵刚跨过外层石门，正站在两扇小门前面；另一侧另有一扇写着"不是正数"的门，后面接的是一扇刻着"等于 0 吗"的小门。扣哒世界卡通风格，石壁与暖色灯光。</div>
+  </div>
+  <figcaption>图 6：进了第一道门，里面还有一道门</figcaption>
+</figure>
+
+<div class="box tip">
+  <span class="lb">打个比方：</span>
+  <b>嵌套判断就像"门中门"</b>——先跨过第一道门，门后面还有一道门等着你。<br>
+  <b>只有先满足外面的条件，里面的条件才有机会被问到。</b><br>
+  <b>反过来说：如果外面的条件不成立，里面写得多细都没用——它根本轮不到。</b>
+</div>
+
+<h3 id="s6-1">6.1 一句话的选择</h3>
+
+<div class="code-card">
+  <div class="code-head">
+    <span class="dot d1"></span><span class="dot d2"></span><span class="dot d3"></span>
+    <span class="file">条件 ? 成立时的值 : 不成立时的值</span>
+    <span class="lang">C++</span>
+  </div>
+  <pre><code>int a = 7, b = 3;
+
+int big = (a &gt; b) ? a : b;      // a &gt; b 成立，取 a
+cout &lt;&lt; big &lt;&lt; endl;             // 7
+
+int small = (a &gt; b) ? b : a;    // 成立时取 b
+cout &lt;&lt; small &lt;&lt; endl;           // 3
+
+cout &lt;&lt; ((a % 2 == 0) ? "偶数" : "奇数");   // 奇数</code></pre>
+  <div class="out"><b>读法</b>　"<code>a &gt; b</code> 吗？是就取前面那个，不是就取冒号后面那个"</div>
+</div>
+
+<h3 id="s6-2">6.2 switch 与 break</h3>
+
+<div class="code-card">
+  <div class="code-head">
+    <span class="dot d1"></span><span class="dot d2"></span><span class="dot d3"></span>
+    <span class="file">多分支的另一种写法：switch</span>
+    <span class="lang">C++</span>
+  </div>
+  <pre><code>int level;
+cin &gt;&gt; level;
+
+switch (level) {
+    case 1:
+        cout &lt;&lt; "初级";
+        break;                  // ★ 一定要有 break
+    case 2:
+        cout &lt;&lt; "中级";
+        break;
+    default:
+        cout &lt;&lt; "未知等级";
+        break;
+}</code></pre>
+  <div class="out"><b>输入 1</b> → 初级　　<b>输入 2</b> → 中级　　<b>输入 5</b> → 未知等级</div>
+</div>
+
+<div class="box tip">
+  <span class="lb">打个比方：</span>
+  <code class="inline">switch</code> 像一栋楼的<b>门牌号</b>——你报出等级数字，它就直接带你走到对应的那扇门前，<strong>不用像 if 那样一间一间挨着敲门</strong>。<br>
+  而 <code class="inline">break</code> 是<b>"进了门就顺手关门"</b>：<strong>没有它，你就会顺着走廊一路走进后面所有房间，把里面的东西全都拿走。</strong><br>
+  <b>所以每个 case 后面都要写 break，一个都不能落。</b>
+</div>
+
+<div class="box warn">
+  <span class="lb">switch 里最容易出错的就是 break：</span>
+  <strong>没有 break，程序会"一路往下穿"，把后面所有 case 里的语句都执行一遍。</strong><br>
+  比如 <code class="inline">case 1</code> 没写 break，输入 1 时会输出"初级中级未知等级"三行。<br>
+  <b><code>default</code> 的作用相当于 <code>else</code>：所有 case 都不匹配时走它。</b>
+</div>
+
+<!-- ============ 7 ============ -->
+<div class="section-header" id="s7">
+  <h2>7　代码实战</h2>
+  <div class="en-title">Level Practice</div>
+</div>
+
+<div class="level-card">
+  <div class="lc-head"><span class="n">关卡</span><h4>逆时针回转</h4><span class="go">进入关卡 →</span></div>
+  <div class="lc-body">
+    <div class="story">
+      <b>故事：</b>走廊里的尖刺密布，直着走肯定撞上。塔林说：
+      <b>该拐弯的时候就要拐弯。</b><br>
+      你仔细观察——<b>每当前方有危险，就必须换一个方向。</b>
+      对，他点头，<b>程序也一样：先判断，再行动。</b>
+    </div>
+    <p><strong>思路：</strong>每一步都先<strong>判断前方有没有敌人或尖刺</strong>，
+    再决定是直走还是转向。这就是分支结构在实战里的样子。</p>
+    <div class="code-card">
+      <div class="code-head">
+        <span class="dot d1"></span><span class="dot d2"></span><span class="dot d3"></span>
+        <span class="file">重点示例：先判断，再决定怎么走</span>
+        <span class="lang">C++</span>
+      </div>
+      <pre><code>#include &lt;iostream&gt;
+using namespace std;
+
+int main() {
+    int enemy = hero.findNearestEnemy();
+
+    if (enemy) {                        // 有敌人吗？
+        hero.attack(enemy);             // 有 → 打它
+    } else {
+        hero.moveRight(2);              // 没有 → 继续赶路
+    }
+
+    return 0;
+}</code></pre>
+      <div class="out"><b>要点</b>　<code>if (enemy)</code> 的意思是"enemy 存在吗"；<b>成立走一边，不成立走另一边</b></div>
+    </div>
+    <div class="box info">
+      <span class="lb">和本单元的关联：</span>
+      这一关的核心就是 <code class="inline">if-else</code>：<br>
+      <b>条件成立时做一件事，不成立时做另一件事——两条路只会走一条。</b><br>
+      <strong>试着把条件改一改（比如换成 <code>if (enemy.health &gt; 50)</code>），
+      你会发现英雄的行为也跟着变了。</strong>
+    </div>
+    <a class="btn-go" href="https://codecombat.cn/" target="_blank" rel="noopener">去扣哒世界闯这一关 →</a>
+  </div>
+</div>
+
+<div class="level-card">
+  <div class="lc-head"><span class="n">关卡</span><h4>Else 之战</h4><span class="go">进入关卡 →</span></div>
+  <div class="lc-body">
+    <div class="story">
+      <b>故事：</b>战场上敌我混杂，<b>你不能见到谁就打谁。</b><br>
+      塔林说：先判断他的类型——<b>是敌人就打，是友军就绕开。</b><br>
+      这正是 <b>else</b> 存在的意义：<b>把"不满足条件"的那一半也安排好。</b>
+    </div><figure class="pic">
+  <img src="../assets/stages/py-L1-05-stage1_else_battle.webp" alt="Else 之战 关卡截图"
+       onerror="this.closest('.pic').classList.add('missing')">
+  <div class="ph">
+    <div class="fn">assets/stages/py-L1-05-stage1_else_battle.webp</div>
+    <div class="ds">【配图位】游戏实机截图：战场上敌我混杂，英雄刚攻击完最近的敌人、正转向下一批目标；画面中同时可见敌人与友军两种可辨认标识；屏幕下方代码区显示 if-else 判断语句，右上角显示"关卡完成"提示。</div>
+  </div>
+  <figcaption>关卡实况：Else 之战</figcaption>
+</figure>
+    <div class="code-card">
+      <div class="code-head">
+        <span class="dot d1"></span><span class="dot d2"></span><span class="dot d3"></span>
+        <span class="file">重点示例：两条路都要安排</span>
+        <span class="lang">C++</span>
+      </div>
+      <pre><code>while (true) {
+    int enemy = hero.findNearestEnemy();
+
+    if (enemy) {
+        hero.attack(enemy);        // 是敌人 → 攻击
+    } else {
+        hero.moveRight();          // 没有敌人 → 前进
+    }
+}</code></pre>
+      <div class="out"><b>提示</b>　这段代码里的 <code>while (true)</code> 表示"一直重复"，第 6 单元会正式学到</div>
+    </div>
+    <a class="btn-go" href="https://codecombat.cn/" target="_blank" rel="noopener">去扣哒世界闯这一关 →</a>
+  </div>
+</div>
+
+
+
+<!-- ============ 8 ============ -->
+<div class="section-header" id="s8">
+  <h2>8　常见陷阱</h2>
+  <div class="en-title">Common Pitfalls</div>
+</div>
+
+<div class="cast duck">
+  <img class="ava" src="../assets/ducks/duck_illia.webp" alt="扣哒鸭" onerror="this.style.display='none'">
+  <div class="bubble">
+    <div class="who">扣哒鸭 · 调试官</div>
+    分支这块的错，八成是"等号"和"分号"惹的祸。四条，背下来省不少分。
+  </div>
+</div>
+
+<div class="pit">
+  <div class="pt">
+    <div class="x">1</div>
+    <div class="t"><b>条件里把 <code class="inline">==</code> 写成了 <code class="inline">=</code>。</b></div>
+  </div>
+  <div class="duck">
+    <img src="../assets/ducks/duck_zana.webp" alt="扣哒鸭" onerror="this.style.display='none'">
+    <div class="dt"><b>扣哒鸭：</b><code>if (a = 5)</code> 不是"判断 a 是不是 5"，
+    而是"把 5 赋给 a，然后看 a 是不是非 0"——<strong>结果永远成立，后面的代码全乱套了。</strong><br>
+    判断相等一定要写两个等号 <code>==</code>。</div>
+  </div>
+  <div class="fix"><b>正确写法：</b><code class="inline">if (a == 5)</code></div>
+</div>
+
+<div class="pit">
+  <div class="pt">
+    <div class="x">2</div>
+    <div class="t"><b>在 <code class="inline">if (...)</code> 后面多加了一个分号。</b></div>
+  </div>
+  <div class="duck">
+    <img src="../assets/ducks/duck_naria.webp" alt="扣哒鸭" onerror="this.style.display='none'">
+    <div class="dt"><b>扣哒鸭：</b><code>if (x &gt; 0);</code> 那个分号表示"条件成立时执行一句空语句"。<br>
+    <strong>结果就是：不管条件成不成立，后面的花括号都会执行。</strong></div>
+  </div>
+  <div class="fix"><b>正确写法：</b><code class="inline">if (x &gt; 0) { ... }</code>，括号后不加分号</div>
+</div>
+
+<div class="pit">
+  <div class="pt">
+    <div class="x">3</div>
+    <div class="t"><b>忘了加花括号，以为两句都在 if 里。</b></div>
+  </div>
+  <div class="duck">
+    <img src="../assets/ducks/duck_hattori.webp" alt="扣哒鸭" onerror="this.style.display='none'">
+    <div class="dt"><b>扣哒鸭：</b><code>if</code> 默认只管紧跟着的<strong>第一条</strong>语句。<br>
+    <strong>第二句开始就不归它管了，无论如何都会执行。</strong>
+    多句一定要用花括号包起来。</div>
+  </div>
+  <div class="fix"><b>正确做法：</b>养成"永远写花括号"的习惯</div>
+</div>
+
+<div class="pit">
+  <div class="pt">
+    <div class="x">4</div>
+    <div class="t"><b>多分支的顺序写反了。</b></div>
+  </div>
+  <div class="duck">
+    <img src="../assets/ducks/duck_senick.webp" alt="扣哒鸭" onerror="this.style.display='none'">
+    <div class="dt"><b>扣哒鸭：</b><code>else if</code> 是<strong>从上往下判断，一成立就跳出</strong>。<br>
+    把宽条件写在前面，后面的就永远轮不到了。<br>
+    <strong>记住：条件由严到宽，判断由高到低。</strong></div>
+  </div>
+  <div class="fix"><b>正确做法：</b>分数段从高往低写；范围从小往大写</div>
+</div>
+
+<!-- ============ 9 ============ -->
+<div class="section-header" id="s9">
+  <h2>9　题目练习</h2>
+  <div class="en-title">Practice</div>
+</div>
+
+<p>前 2 题改编自 C++ 一级真题，其余为原创练习题。</p>
+
+<div class="exam">
+  <div class="eh"><span class="src">改编自 2026 年 6 月 · C++ 一级 · 第 7 题</span><span class="tp">单选题</span></div>
+  <div class="eb">
+    <div class="q">如下 C++ 代码执行时，其说法<strong>错误</strong>的是（　　）。</div>
+    <pre>int N, M;
+cin &gt;&gt; N &gt;&gt; M;
+if (N &gt; M)
+    cout &lt;&lt; "A " &lt;&lt; (N - M);
+else
+    cout &lt;&lt; "B " &lt;&lt; (M - N);</pre>
+    <div class="opt">
+      <i>A.</i>如果输入 <code class="inline">4 3</code>，将输出 <code class="inline">A 1</code><br>
+      <i>B.</i>如果输入 <code class="inline">3 4</code>，将输出 <code class="inline">B 1</code><br>
+      <i>C.</i>如果输入 <code class="inline">3 3</code>，将输出 <code class="inline">A 0</code><br>
+      <i>D.</i>如果输入 <code class="inline">4 4</code>，将输出 <code class="inline">B 0</code>
+    </div>
+    <details><summary>查看答案与详解</summary>
+      <div class="ans"><b>答案：C</b>。逐个验证：<br>
+      <b>A：</b>4 &gt; 3 成立 → <code class="inline">"A " &lt;&lt; (4-3)</code> → <b>A 1</b> ✔<br>
+      <b>B：</b>3 &gt; 4 不成立 → 走 else → <code class="inline">"B " &lt;&lt; (4-3)</code> → <b>B 1</b> ✔<br>
+      <b>C：</b>3 &gt; 3 <strong>不成立</strong>（相等时大于号不成立）→ 走 <b>else</b> → <code class="inline">"B " &lt;&lt; (3-3)</code> → 应该是 <b>B 0</b>，不是 A 0 ✘<br>
+      <b>D：</b>4 &gt; 4 不成立 → 走 else → <b>B 0</b> ✔<br>
+      <b>本题的关键：</b>条件是 <code class="inline">&gt;</code>，<strong>相等时会掉进 else</strong>——这是最容易想错的地方。<br>
+      <span class="tagline">对应小节</span>3.2 真题常考的 N 与 M。</div>
+    </details>
+  </div>
+</div>
+
+<div class="exam">
+  <div class="eh"><span class="src">改编自 2026 年 6 月 · C++ 一级 · 判断题 第 4 题</span><span class="tp">判断题</span></div>
+  <div class="eb">
+    <div class="q">下列 C++ 代码执行时，如果先后输入 <code class="inline">10</code> 和 <code class="inline">10</code>，
+    将输出 <code class="inline">10 小于 10</code>。（　　）</div>
+    <pre>int N, M;
+cin &gt;&gt; N &gt;&gt; M;
+if (N &gt; M)
+    printf("%d 大于 %d", N, M);
+else
+    printf("%d 小于 %d", N, M);</pre>
+    <details><summary>查看答案与详解</summary>
+      <div class="ans"><b>答案：正确（√）</b>。N 和 M 都是 10，条件 <code class="inline">10 &gt; 10</code> <strong>不成立</strong>，
+      所以走 <code class="inline">else</code> 分支，输出 <b>10 小于 10</b>。<br>
+      <b>注意：</b>虽然从数学上看"10 不小于 10"，但程序的逻辑就是这样——
+      <strong>条件不成立就走 else，else 里写的是什么就输出什么。</strong><br>
+      <span class="tagline">对应小节</span>3.1 成立走这边，否则走那边。</div>
+    </details>
+  </div>
+</div>
+
+<div class="exam">
+  <div class="eh"><span class="src ori">原创练习题</span><span class="tp">单选题</span></div>
+  <div class="eb">
+    <div class="q">下列 C++ 代码执行后，输出的结果是（　　）。</div>
+    <pre>int a = 5;
+if (a &gt; 10)
+    cout &lt;&lt; "大";
+    cout &lt;&lt; "小";</pre>
+    <div class="opt"><i>A.</i>大　　<i>B.</i>小　　<i>C.</i>大 小　　<i>D.</i>什么都不输出</div>
+    <details><summary>查看答案与详解</summary>
+      <div class="ans"><b>答案：B</b>。<strong>关键在没有花括号！</strong><br>
+      <code class="inline">if (a &gt; 10)</code> 只管紧跟着的<strong>第一条</strong>语句——
+      也就是 <code class="inline">cout &lt;&lt; "大";</code>。<br>
+      因为 <code class="inline">5 &gt; 10</code> 不成立，这一句被跳过；<br>
+      而第二句 <code class="inline">cout &lt;&lt; "小";</code> <strong>不受 if 控制，必然会执行</strong>，所以输出"小"。<br>
+      <span class="tagline">对应小节</span>2.2 花括号的规矩。</div>
+    </details>
+  </div>
+</div>
+
+<div class="exam">
+  <div class="eh"><span class="src ori">原创练习题</span><span class="tp">单选题</span></div>
+  <div class="eb">
+    <div class="q">下列 C++ 代码执行后，输出的结果是（　　）。</div>
+    <pre>int score = 85;
+if (score &gt;= 90)
+    cout &lt;&lt; "优秀";
+else if (score &gt;= 80)
+    cout &lt;&lt; "良好";
+else if (score &gt;= 60)
+    cout &lt;&lt; "及格";
+else
+    cout &lt;&lt; "不及格";</pre>
+    <div class="opt"><i>A.</i>优秀　　<i>B.</i>良好　　<i>C.</i>及格　　<i>D.</i>不及格</div>
+    <details><summary>查看答案与详解</summary>
+      <div class="ans"><b>答案：B</b>。从上往下判断：<br>
+      <code class="inline">85 &gt;= 90</code>？<strong>不成立</strong> → 看下一个；<br>
+      <code class="inline">85 &gt;= 80</code>？<strong>成立</strong> → 输出"良好"，<strong>并跳出整条分支链</strong>（后面的不再判断）。<br>
+      <b>要点：</b><code class="inline">else if</code> 一旦有一个成立，后面的全部跳过。<br>
+      <span class="tagline">对应小节</span>4.1 一个接一个地判断。</div>
+    </details>
+  </div>
+</div>
+
+<div class="exam">
+  <div class="eh"><span class="src ori">原创练习题</span><span class="tp">判断题</span></div>
+  <div class="eb">
+    <div class="q"><code class="inline">if</code> 语句的条件括号后面如果写了分号，
+    会变成"条件成立时执行一条空语句"，可能导致后面的语句不受控制。（　　）</div>
+    <details><summary>查看答案与详解</summary>
+      <div class="ans"><b>答案：正确（√）</b>。这是非常隐蔽的一类错误：<br>
+      <code class="inline">if (x &gt; 0);</code> 中的分号本身就是一条"空语句"，<strong>已经满足了 if</strong>。<br>
+      后面即使加了花括号，程序也会认为那是"独立的语句块"，<b>无论条件成不成立都会执行</b>。<br>
+      <b>所以：<code>if</code> 的括号后面绝对不要加分号。</b><br>
+      <span class="tagline">对应小节</span>8 常见陷阱。</div>
+    </details>
+  </div>
+</div>
+
+<div class="exam">
+  <div class="eh"><span class="src ori">原创练习题</span><span class="tp">单选题</span></div>
+  <div class="eb">
+    <div class="q">下列 C++ 代码执行后，输出的结果是（　　）。</div>
+    <pre>int a = 9, b = 4;
+int m = (a &gt; b) ? a - b : b - a;
+cout &lt;&lt; m;</pre>
+    <div class="opt"><i>A.</i>5　　<i>B.</i>-5　　<i>C.</i>9　　<i>D.</i>4</div>
+    <details><summary>查看答案与详解</summary>
+      <div class="ans"><b>答案：A</b>。<code class="inline">(a &gt; b) ? a - b : b - a</code> 的读法是：<br>
+      <code class="inline">a &gt; b</code> 成立吗？<strong>9 &gt; 4 成立</strong> → 取冒号<strong>前面</strong>的值，即 <code class="inline">a - b</code> = <b>5</b>。<br>
+      <b>易错点：</b>B 项是取错了分支（冒号后面那个）。<br>
+      <span class="tagline">对应小节</span>6.1 一句话的选择。</div>
+    </details>
+  </div>
+</div>
+
+<div class="exam">
+  <div class="eh"><span class="src ori">原创练习题</span><span class="tp">编程题</span></div>
+  <div class="eb">
+    <div class="q">题目要求：读入一个整数 <code class="inline">x</code>，按下面规则输出——
+    如果 x 大于 0 且是偶数，输出 <code class="inline">正偶数</code>；
+    如果 x 大于 0 且是奇数，输出 <code class="inline">正奇数</code>；
+    如果 x 等于 0，输出 <code class="inline">零</code>；否则输出 <code class="inline">负数</code>。</div>
+    <details><summary>查看参考答案与要点</summary>
+      <div class="ans">
+<pre style="margin:0;background:#131a26;color:#c8d3e0;border-radius:10px;padding:14px 16px">#include &lt;iostream&gt;
+using namespace std;
+
+int main() {
+    int x;
+    cin &gt;&gt; x;
+
+    if (x &gt; 0) {                    // 第一层：是不是正数
+        if (x % 2 == 0) {
+            cout &lt;&lt; "正偶数";
+        } else {
+            cout &lt;&lt; "正奇数";
+        }
+    } else if (x == 0) {            // 第二层：等于 0
+        cout &lt;&lt; "零";
+    } else {                        // 剩下的就是负数
+        cout &lt;&lt; "负数";
+    }
+
+    return 0;
+}</pre>
+      <p style="margin-top:12px"><b>输入 8 输出 <code>正偶数</code>；输入 7 输出 <code>正奇数</code>；
+      输入 0 输出 <code>零</code>；输入 -5 输出 <code>负数</code>。</b><br>
+      <b>要点：</b><br>
+      ① 外层先判断正负，内层再判断奇偶——这就是<b>嵌套判断</b>；<br>
+      ② <code class="inline">x == 0</code> 用的是<strong>两个等号</strong>；<br>
+      ③ 最后的 <code class="inline">else</code> 兜住"负数"这种情况，不用再写条件；<br>
+      ④ 花括号虽然只有一句也建议写上，<strong>防止以后加代码时出错</strong>。<br>
+      <span class="tagline">对应小节</span>5.1 判断里面再判断。</p>
+      </div>
+    </details>
+  </div>
+</div>
+
+<!-- ============ 10 ============ -->
+<div class="section-header" id="s10">
+  <h2>10　本单元小结</h2>
+  <div class="en-title">Unit Summary</div>
+</div>
+
+<div class="cast tharin">
+  <img class="ava" src="../assets/avatars/tharin.webp" alt="塔林" onerror="this.style.display='none'">
+  <div class="bubble">
+    <div class="who">塔林 · 铁壁骑士</div>
+    四句话记住分支结构：<br>
+    <strong>一、条件成立执行 if 里的语句，不成立跳过（有 else 就走 else）。</strong><br>
+    <strong>二、if 只管紧随其后的第一条语句；要多管几句就加花括号。</strong><br>
+    <strong>三、else if 从上往下判断，一成立就跳出整条链，所以顺序不能随便换。</strong><br>
+    <strong>四、条件里判断相等必须写 ==，if 括号后面绝不能加分号。</strong><br>
+    会做选择了。下一单元，我们让程序"一遍一遍地做"。
+  </div>
+</div>
+
+<div class="summary">
+  <h3>你在岔路口学到了什么</h3>
+  <ul>
+    <li><strong>分支结构</strong>——根据条件走不同的路；两条路只会走一条。</li>
+    <li><strong>条件</strong>——关系表达式或逻辑表达式，结果只有"真"和"假"。</li>
+    <li><strong>if</strong>——条件成立才执行；<strong>括号后不能加分号</strong>。</li>
+    <li><strong>花括号</strong>——<code class="inline">if</code> 只管第一条语句；多句必须用 <code class="inline">{ }</code> 包起来。</li>
+    <li><strong>if-else</strong>——二选一；<code class="inline">else</code> 后面不写条件。</li>
+    <li><strong>else if</strong>——多分支；从上往下判断，<strong>一成立就跳出</strong>，所以按"由严到宽"排。</li>
+    <li><strong>嵌套判断</strong>——先判断一层，再在某一层里细分。</li>
+    <li><strong>三目运算符</strong>——<code class="inline">条件 ? 值1 : 值2</code>，成立取值 1，否则取值 2。</li>
+    <li><strong>switch</strong>——多分支的另一种写法；<strong>每个 case 后面要写 <code class="inline">break</code></strong>；<code class="inline">default</code> 相当于 else。</li>
+  </ul>
+</div>
+
+<div class="pager">
+  <a href="cpp-1-04.html"><div class="k">← 上一单元</div><div class="v">潮汐升降梯 · 顺序结构与输入输出</div></a>
+  <a href="../index.html" target="_top" class="back"><div class="k">返回</div><div class="v">考纲之路 · 总目录</div></a>
+  <a href="cpp-1-06.html"><div class="k">下一单元 →</div><div class="v">永不熄的齿轮 · 循环结构：重复执行</div></a>
+</div>
+
+<div class="cta">
+  <h3>下一站：永不熄的齿轮</h3>
+  <p>岗哨塔顶有一组巨大的齿轮，<b>一圈一圈转个不停</b>——
+  正是它们带动着哨火的机关。<br>
+  下一单元我们学循环结构：<b>让一段代码重复执行很多遍。</b></p>
+  <a class="btn-go" href="https://codecombat.cn/" target="_blank" rel="noopener">加入扣哒世界，把这条考纲之路走一遍 →</a>
+</div>
+
+
+</div><!-- /container -->
+</div><!-- /page -->
+
+<script>
+const KEYWORDS = new Set([
+  "int", "long", "short", "unsigned", "signed", "float", "double", "char", "bool", "void",
+  "const", "if", "else", "for", "while", "do", "switch", "case", "default", "break",
+  "continue", "return", "goto", "struct", "class", "union", "enum", "using", "namespace",
+  "std", "main", "true", "false", "cin", "cout", "cerr", "endl", "string", "sizeof",
+  "include", "define", "new", "delete", "public", "private", "static", "inline", "nullptr"
+]);
+
+function esc(s){ return s.replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;'); }
+
+function highlight(src){
+  let out = '', i = 0;
+  const n = src.length;
+  while (i < n){
+    const c = src[i];
+    /* 预处理指令：#include / #define，整行只在行首生效 */
+    if (c === '#' && (i === 0 || src[i-1] === '\n')){
+      let j = i;
+      while (j < n && /[A-Za-z]/.test(src[j])) j++;
+      out += '<span class="kw">' + esc(src.slice(i, j)) + '</span>';
+      let k = src.indexOf('\n', j); if (k < 0) k = n;
+      if (j < k) out += '<span class="st">' + esc(src.slice(j, k)) + '</span>';
+      i = k; continue;
+    }
+    /* 行注释 // */
+    if (c === '/' && src[i+1] === '/'){
+      let j = src.indexOf('\n', i); if (j < 0) j = n;
+      out += '<span class="cm">' + esc(src.slice(i, j)) + '</span>';
+      i = j; continue;
+    }
+    /* 块注释 */
+    if (c === '/' && src[i+1] === '*'){
+      let j = src.indexOf('*/', i + 2); j = j < 0 ? n : j + 2;
+      out += '<span class="cm">' + esc(src.slice(i, j)) + '</span>';
+      i = j; continue;
+    }
+    /* 字符串与字符字面量 */
+    if (c === '"' || c === "'"){
+      let j = i + 1;
+      while (j < n && src[j] !== c){ if (src[j] === '\\') j++; j++; }
+      j = Math.min(j + 1, n);
+      out += '<span class="st">' + esc(src.slice(i, j)) + '</span>';
+      i = j; continue;
+    }
+    /* 数字 */
+    if (/[0-9]/.test(c)){
+      let j = i;
+      while (j < n && /[0-9.]/.test(src[j])) j++;
+      out += '<span class="nu">' + esc(src.slice(i, j)) + '</span>';
+      i = j; continue;
+    }
+    /* 标识符：关键字 / 函数名 / 普通名字 */
+    if (/[A-Za-z_]/.test(c)){
+      let j = i;
+      while (j < n && /[A-Za-z0-9_]/.test(src[j])) j++;
+      const w = src.slice(i, j);
+      if (KEYWORDS.has(w)) out += '<span class="kw">' + esc(w) + '</span>';
+      else if (src[j] === '(') out += '<span class="fn">' + esc(w) + '</span>';
+      else out += esc(w);
+      i = j; continue;
+    }
+    out += esc(c); i++;
+  }
+  return out;
+}
+
+document.querySelectorAll('.code-card pre code').forEach(block => {
+  block.innerHTML = highlight(block.textContent);
+});
+
+if (location.search.indexOf('expand') >= 0) {
+  document.querySelectorAll('details').forEach(d => d.open = true);
+}
+document.querySelectorAll('.sidebar-nav a').forEach(a => {
+  a.addEventListener('click', () => {
+    if (window.innerWidth <= 900) document.querySelector('.sidebar-nav').classList.remove('active');
+  });
+});
+</script>
+</body>
+</html>

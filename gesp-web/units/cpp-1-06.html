@@ -1,0 +1,1268 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="copyright" content="CodeCombat Inc. codecombat.cn">
+<title>永不熄的齿轮 · 循环结构：重复执行 | 扣哒考级 · GESP C++ 一级</title>
+<style>
+  :root{
+    --primary:#2563eb; --primary-light:#4f8ff0; --primary-lighter:#eaf1fe; --primary-dark:#1b47a8;
+    --brand:#ff6b35; --brand-dark:#e8541f; --brand-soft:#fff3ec;
+    --night:#131c2b; --night-2:#1e2a3a; --gold:#f5b301;
+    --text:#242e3d; --dim:#68788f; --dim2:#93a2b6;
+    --bg:#ffffff; --bg-soft:#f7f9fd; --line:#e2e9f4; --sidebar:274px;
+    --code-bg:#131a26; --code-tx:#c8d3e0;
+    --code-kw:#c678dd; --code-st:#98c379; --code-nu:#d19a66; --code-cm:#5f7488; --code-fn:#e5c07b;
+  }
+  *{margin:0;padding:0;box-sizing:border-box}
+  html{scroll-behavior:smooth}
+  body{font-family:"PingFang SC","Microsoft YaHei","Segoe UI",-apple-system,sans-serif;line-height:1.9;color:var(--text);background:var(--bg);font-size:15.5px}
+  .sidebar-nav{position:fixed;top:0;left:0;width:var(--sidebar);height:100vh;overflow-y:auto;background:linear-gradient(180deg,#0c1626,#14243c);padding:14px 0 40px;z-index:100;border-right:3px solid var(--brand);transition:transform .3s ease}
+  .sidebar-nav::-webkit-scrollbar{width:5px}
+  .sidebar-nav::-webkit-scrollbar-thumb{background:var(--brand);border-radius:4px}
+  .sb-brand{display:flex;align-items:center;gap:10px;padding:10px 13px 12px;border-bottom:1px solid #233752;margin-bottom:8px}
+  .sidebar-nav a.sb-logo{display:flex;align-items:center;justify-content:center;flex-shrink:0;padding:0;border-left:none;transition:.2s}
+  .sb-logo:hover{transform:scale(1.08)}
+  .sb-logo img{height:34px;width:34px;display:block;object-fit:contain;border-radius:8px}
+  .sb-brand b{color:#f2f6fa;font-size:14px;letter-spacing:.5px;display:block;line-height:1.4}
+  .sb-brand span{color:#7f95ab;font-size:11.5px;display:block;line-height:1.4}
+  .nav-title{color:#ffb894;font-size:12px;font-weight:800;padding:10px 18px 6px;letter-spacing:1.2px}
+  .sidebar-nav a{display:block;color:#c3d0dc;text-decoration:none;padding:6px 18px;font-size:12.5px;line-height:1.55;border-left:3px solid transparent;transition:.18s}
+  .sidebar-nav a:hover{color:#fff;background:rgba(255,107,53,.16);border-left-color:var(--brand)}
+  .sidebar-nav a.nav-section{color:#ffb894;font-weight:700;font-size:13px;margin-top:11px;padding-top:10px;border-top:1px solid #233752}
+  .sidebar-nav a.nav-section:first-of-type{border-top:none;margin-top:0;padding-top:6px}
+  .sidebar-nav a.nav-sub{padding-left:30px;color:#93a8bc;font-size:12px}
+  .sidebar-nav a.nav-sub:hover{color:#fff}
+  .sb-back{margin:16px 14px 0;display:block;text-align:center;padding:9px;border-radius:9px;background:#1e304a;color:#a9c0d6 !important;font-size:12px;font-weight:700;border-left:none !important}
+  .sb-back:hover{background:var(--brand) !important;color:#fff !important}
+  .nav-toggle{display:none;position:fixed;top:14px;left:14px;z-index:120;background:var(--brand);color:#fff;border:none;border-radius:9px;padding:9px 13px;font-size:15px;cursor:pointer;box-shadow:0 4px 14px rgba(0,0,0,.25)}
+  .page{margin-left:var(--sidebar)}
+  .hero{position:relative;overflow:hidden;padding:44px 52px;color:#fff;background:linear-gradient(125deg,#0a1220 0%,#16294a 46%,#8a3a16 132%)}
+  .hero::after{content:"";position:absolute;right:-90px;top:-110px;width:400px;height:400px;border-radius:50%;background:radial-gradient(circle,rgba(245,179,1,.30),transparent 68%)}
+  .hero-top{display:flex;gap:36px;align-items:center;position:relative;z-index:2}
+  .hero-txt{flex:1;min-width:0}
+  .hero .crumb{font-size:11.5px;color:#ffb894;letter-spacing:1.5px;font-weight:700;margin-bottom:14px}
+  .hero h1{font-size:31px;font-weight:800;line-height:1.3;letter-spacing:.6px;margin-bottom:8px}
+  .hero h1 .sub{display:block;font-size:18px;font-weight:700;color:#ffd2b3;margin-top:6px;letter-spacing:.3px}
+  .hero .en{font-size:13px;color:#9db4c8;font-style:italic;margin-bottom:18px}
+  .hero .tags{display:flex;flex-wrap:wrap;gap:8px}
+  .tag{font-size:11.5px;padding:4px 12px;border-radius:20px;background:rgba(255,255,255,.12);border:1px solid rgba(255,255,255,.22);color:#e8f0f6;font-weight:600}
+  .tag.hot{background:rgba(255,107,53,.92);border-color:transparent;color:#fff}
+  .hero-card{flex-shrink:0;width:200px;text-align:center}
+  .hero-card .ava{width:148px;height:148px;border-radius:50%;object-fit:cover;object-position:top center;border:4px solid rgba(255,180,140,.6);box-shadow:0 14px 34px rgba(0,0,0,.45);background:#24344a}
+  .hero-card .nm{font-size:15px;font-weight:800;color:#fff;margin-top:10px}
+  .hero-card .ti{font-size:11.5px;color:#ffb894;margin-top:2px}
+  .container{max-width:1080px;margin:0 auto;padding:38px 52px 70px}
+  .lead{font-size:15.5px;line-height:2.05;color:#333f52;background:linear-gradient(120deg,#fff8f3,#f7fbf8);border-left:5px solid var(--brand);border-radius:0 14px 14px 0;padding:22px 26px;margin-bottom:32px}
+  .lead b{color:var(--brand-dark)}
+  .cast{display:flex;gap:16px;align-items:flex-start;border-radius:16px;padding:18px 22px;margin:24px 0}
+  .cast .ava{width:72px;height:72px;border-radius:50%;object-fit:cover;object-position:top center;flex-shrink:0;background:#e8eef5}
+  .cast .bubble{position:relative;font-size:14px;line-height:1.95;padding-top:2px;flex:1}
+  .cast .who{font-size:12px;font-weight:800;margin-bottom:5px;letter-spacing:.5px}
+  .cast.anya{background:var(--brand-soft);border:1px solid #ffdcc9}
+  .cast.anya .who{color:var(--brand-dark)}
+  .cast.anya .bubble{color:#5c4636}
+  .cast.duck{background:#fff5f5;border:1px solid #fbd5d5}
+  .cast.duck .who{color:#b91c1c}
+  .cast.duck .bubble{color:#5c4141}
+  .cast.teacher{background:linear-gradient(120deg,#f4f7fb,#ffffff);border:1px solid #dbe4f0}
+  .cast.teacher .who{color:#1e293b}
+  .cast.teacher .bubble{color:#3c4a5a}
+  .cast.hero{background:#f2f7fd;border:1px solid #cfe0f5}
+  .cast.hero .who{color:#1b47a8}
+  .cast.hero .bubble{color:#3a4658}
+  .goal-grid{display:grid;grid-template-columns:1fr 1fr;gap:16px;margin-bottom:36px}
+  .goal{border:1px solid var(--line);border-radius:15px;padding:19px 21px;background:#fff;box-shadow:0 4px 16px rgba(31,122,68,.05)}
+  .goal h4{font-size:14px;font-weight:800;margin-bottom:11px;display:flex;align-items:center;gap:8px;color:var(--primary-dark)}
+  .goal h4 .ic{width:22px;height:22px;border-radius:7px;background:var(--primary-lighter);display:flex;align-items:center;justify-content:center;font-size:12px}
+  .goal ul{list-style:none}
+  .goal li{font-size:13.5px;color:#48576b;line-height:1.9;padding-left:18px;position:relative}
+  .goal li::before{content:"▸";position:absolute;left:0;color:var(--primary);font-weight:800}
+  .goal.syllabus li::before{content:"✓"}
+  .section-header{margin:52px 0 24px;padding-bottom:12px;border-bottom:3px solid var(--brand);display:flex;align-items:baseline;gap:14px;flex-wrap:wrap}
+  .section-header h2{font-size:22px;font-weight:800;color:var(--night);letter-spacing:.4px}
+  .section-header .en-title{font-size:12px;color:var(--dim2);font-style:italic}
+  h3{font-size:17.5px;font-weight:800;margin:34px 0 14px;color:var(--night);display:flex;align-items:center;gap:10px}
+  h3::before{content:"";width:5px;height:17px;border-radius:3px;background:var(--brand);flex-shrink:0}
+  h4{font-size:15px;font-weight:800;margin:24px 0 10px;color:#2b4260}
+  p{margin:12px 0;color:#3a4658;line-height:2}
+  strong{color:var(--primary-dark)}
+  code.inline{background:var(--primary-lighter);color:var(--primary-dark);padding:2px 7px;border-radius:6px;font-family:"SFMono-Regular",Consolas,Menlo,monospace;font-size:.9em;font-weight:600}
+  .figure{margin:24px 0;text-align:center}
+  .figure svg.diagram{max-width:100%;height:auto;background:#fff;border:1px solid var(--line);border-radius:14px;padding:10px}
+  .figure .caption{font-size:12.5px;color:var(--dim2);margin-top:9px}
+  .pic{margin:26px 0;text-align:center}
+  .pic img{max-width:100%;border-radius:16px;box-shadow:0 10px 28px rgba(30,60,45,.15);display:block;margin:0 auto}
+  .pic figcaption{font-size:12.5px;color:var(--dim2);margin-top:9px}
+  .pic .ph{display:none}
+  .pic.missing img{display:none}
+  .pic.missing .ph{display:flex;flex-direction:column;align-items:center;justify-content:center;gap:9px;border:2px dashed #c9d9e8;border-radius:16px;background:linear-gradient(135deg,#f8fbfe,#eef6ff);padding:40px 26px;color:#7a8fa8}
+  .pic.missing .ph .fn{font-family:Consolas,monospace;font-size:12.5px;color:#2563eb;font-weight:700;word-break:break-all}
+  .pic.missing .ph .ds{font-size:12.5px;line-height:1.8;max-width:560px}
+  .box{border-radius:13px;padding:16px 20px;margin:20px 0;font-size:14px;line-height:1.95}
+  .box .lb{font-weight:800;margin-right:6px}
+  .info{background:#eef6ff;border-left:5px solid #3b82f6;color:#274768}
+  .info .lb{color:#1d4ed8}
+  .tip{background:#fff9ec;border-left:5px solid #f59e0b;color:#6b4e13}
+  .tip .lb{color:#b45309}
+  .remember{background:var(--primary-lighter);border-left:5px solid var(--primary);color:#1d3a6b}
+  .remember .lb{color:var(--primary-dark)}
+  .warn{background:#fef2f2;border-left:5px solid #ef4444;color:#7f2b2b}
+  .warn .lb{color:#b91c1c}
+  .code-card{margin:20px 0;border-radius:14px;overflow:hidden;box-shadow:0 10px 28px rgba(20,40,28,.20)}
+  .code-head{display:flex;align-items:center;gap:9px;background:#1a2434;padding:9px 14px}
+  .code-head .dot{width:10px;height:10px;border-radius:50%}
+  .code-head .d1{background:#ff5f57}.code-head .d2{background:#febc2e}.code-head .d3{background:#28c840}
+  .code-head .file{color:#8fa6c0;font-size:11.5px;font-family:Consolas,monospace;margin-left:6px}
+  .code-head .lang{margin-left:auto;font-size:10.5px;font-weight:800;color:#0d141f;background:#4f8ff0;padding:2px 9px;border-radius:6px;letter-spacing:.4px}
+  .code-card pre{background:var(--code-bg);padding:18px 20px;overflow-x:auto;margin:0;font-family:"SFMono-Regular",Consolas,"Courier New",monospace;font-size:13.5px;line-height:1.85}
+  .code-card pre::-webkit-scrollbar{height:8px}
+  .code-card pre::-webkit-scrollbar-thumb{background:#31445c;border-radius:4px}
+  .code-card code{color:var(--code-tx);white-space:pre}
+  .kw{color:var(--code-kw);font-weight:600}
+  .st{color:var(--code-st)}
+  .nu{color:var(--code-nu)}
+  .cm{color:var(--code-cm);font-style:italic}
+  .fn{color:var(--code-fn)}
+  .out{background:#0f1621;color:#7fb3f5;font-family:Consolas,monospace;font-size:13px;padding:12px 20px;border-top:1px solid #22304a}
+  .out b{color:#c9d6cd;font-weight:600;font-size:11.5px;letter-spacing:1px}
+  .out.err{color:#fca5a5}
+  table.styled{width:100%;border-collapse:collapse;margin:20px 0;font-size:13.5px;border-radius:12px;overflow:hidden;box-shadow:0 4px 16px rgba(31,122,68,.07)}
+  table.styled thead{background:var(--brand)}
+  table.styled th{color:#fff;padding:11px 14px;text-align:left;font-weight:700;font-size:13px}
+  table.styled td{padding:10px 14px;border-bottom:1px solid var(--line);color:#445266;vertical-align:top}
+  table.styled tbody tr:nth-child(even){background:var(--bg-soft)}
+  table.styled tbody tr:last-child td{border-bottom:none}
+  .level-card{border:1px solid var(--line);border-radius:16px;overflow:hidden;margin:22px 0;box-shadow:0 6px 22px rgba(31,122,68,.07)}
+  .level-card .lc-head{background:linear-gradient(100deg,#17283a,#8a3a16);color:#fff;padding:15px 22px;display:flex;align-items:center;gap:12px;flex-wrap:wrap}
+  .level-card .lc-head .n{font-size:12px;font-weight:800;background:rgba(255,255,255,.2);padding:3px 10px;border-radius:20px}
+  .level-card .lc-head h4{margin:0;color:#fff;font-size:16px}
+  .level-card .lc-head .go{margin-left:auto;font-size:11.5px;color:#ffd2b3}
+  .level-card .lc-body{padding:20px 24px;background:#fff}
+  .level-card .story{background:#f9fbfd;border-left:4px solid #93c5fd;border-radius:0 10px 10px 0;padding:13px 18px;margin:0 0 16px;font-size:14px;line-height:1.95;color:#3f5163}
+  .level-card .story b{color:#1d4ed8}
+  .btn-go{display:inline-flex;align-items:center;gap:8px;background:linear-gradient(135deg,var(--brand),var(--brand-dark));color:#fff;text-decoration:none;font-weight:800;font-size:13.5px;padding:10px 22px;border-radius:11px;box-shadow:0 8px 20px rgba(255,107,53,.32);transition:.2s}
+  .btn-go:hover{transform:translateY(-2px);box-shadow:0 12px 26px rgba(255,107,53,.42)}
+  .pit{border:1px solid #f6dede;border-radius:14px;overflow:hidden;margin:16px 0;background:#fff}
+  .pit .pt{display:flex;gap:12px;padding:14px 18px;background:#fffafa;align-items:flex-start}
+  .pit .x{width:26px;height:26px;border-radius:9px;background:#fee;color:#dc2626;display:flex;align-items:center;justify-content:center;font-weight:800;flex-shrink:0;font-size:13px}
+  .pit .t{font-size:13.5px;line-height:1.9;color:#5c4a4a;flex:1}
+  .pit .t b{color:#b91c1c}
+  .pit .duck{display:flex;gap:12px;padding:13px 18px;background:#fff5f5;border-top:1px dashed #f3d0d0;align-items:flex-start}
+  .pit .duck img{width:48px;height:48px;object-fit:contain;flex-shrink:0;margin-top:2px}
+  .pit .duck .dt{font-size:13.5px;line-height:1.9;color:#7a3b3b}
+  .pit .duck .dt b{color:#b91c1c}
+  .pit .fix{padding:12px 18px;background:#f2f7fd;border-top:1px dashed #cfe0f5;font-size:13.5px;color:#1d3a6b}
+  .pit .fix b{color:var(--primary-dark)}
+  .exam{border:1px solid #dfe7f5;border-radius:15px;margin:16px 0;overflow:hidden;background:#fff;box-shadow:0 4px 16px rgba(38,62,120,.06)}
+  .exam .eh{display:flex;align-items:center;gap:10px;padding:11px 18px;background:linear-gradient(100deg,#eef4ff,#f7faff);border-bottom:1px solid #e3ebf8;flex-wrap:wrap}
+  .exam .eh .src{font-size:11px;font-weight:800;color:#fff;background:#2563eb;padding:2.5px 10px;border-radius:20px}
+  .exam .eh .src.ori{background:#8b5cf6}
+  .exam .eh .tp{font-size:11.5px;color:#5b7ba8;font-weight:700}
+  .exam .eb{padding:16px 20px}
+  .exam .q{font-weight:700;font-size:14px;color:#1e2a3e;line-height:1.9;margin-bottom:10px}
+  .exam .opt{font-size:13.5px;color:#48576b;line-height:2.05;padding-left:6px}
+  .exam .opt i{font-style:normal;font-weight:800;color:var(--primary-dark);margin-right:7px}
+  .exam pre{margin:12px 0;background:#1b2a21;border-radius:10px;padding:14px 16px;overflow-x:auto;font-family:Consolas,monospace;font-size:13px;line-height:1.8;color:var(--code-tx)}
+  .exam details{margin-top:10px;border-top:1px dashed var(--line);padding-top:10px}
+  .exam summary{cursor:pointer;font-size:12.5px;font-weight:800;color:#2563eb;outline:none;user-select:none}
+  .exam details .ans{font-size:13.5px;color:#3a4658;line-height:1.95;margin-top:9px;background:var(--bg-soft);padding:13px 16px;border-radius:10px}
+  .exam details .ans b{color:var(--primary-dark)}
+  .exam details .ans .tagline{display:inline-block;font-size:11px;background:#e0f2fe;color:#0e7490;padding:1.5px 8px;border-radius:6px;font-weight:700;margin-right:6px}
+  .summary{margin:40px 0 20px;border-radius:18px;padding:26px 30px;background:linear-gradient(130deg,#fff8f3,#ffffff);border:1px solid #ffe0cf}
+  .summary h3{margin-top:0}
+  .summary ul{list-style:none;margin-top:10px}
+  .summary li{font-size:14px;line-height:2;color:#3d4d66;padding-left:24px;position:relative}
+  .summary li::before{content:"◆";position:absolute;left:0;color:var(--brand);font-size:11px;top:6px}
+  .pager{display:flex;gap:14px;margin-top:30px;flex-wrap:wrap}
+  .pager a{flex:1;min-width:200px;text-decoration:none;border:1px solid var(--line);border-radius:14px;padding:16px 20px;background:#fff;transition:.2s;display:block}
+  .pager a:hover{border-color:var(--brand);box-shadow:0 10px 26px rgba(255,107,53,.14);transform:translateY(-2px)}
+  .pager a .k{font-size:11px;color:var(--dim2);font-weight:700;letter-spacing:1px}
+  .pager a .v{font-size:14px;font-weight:800;color:var(--night);margin-top:5px}
+  .pager a.back{background:var(--brand-soft);border-color:transparent;text-align:center}
+  .pager a.back .v{color:var(--brand-dark)}
+  .cta{margin-top:26px;border-radius:20px;padding:30px 34px;color:#fff;position:relative;overflow:hidden;background:linear-gradient(120deg,#16202f,#2b3a52 46%,#a8431c 132%)}
+  .cta::after{content:"";position:absolute;right:-70px;bottom:-90px;width:280px;height:280px;border-radius:50%;background:radial-gradient(circle,rgba(255,140,80,.45),transparent 68%)}
+  .cta h3{color:#fff;margin:0 0 10px;position:relative;z-index:2}
+  .cta h3::before{background:var(--brand)}
+  .cta p{color:#d8e0ef;font-size:13.5px;margin:0 0 18px;position:relative;z-index:2;max-width:640px}
+  .cta .btn-go{position:relative;z-index:2}
+  @media(max-width:900px){
+    .sidebar-nav{transform:translateX(-100%)}
+    .sidebar-nav.active{transform:translateX(0)}
+    .nav-toggle{display:block}
+    .page{margin-left:0}
+    .hero{padding:70px 22px 34px}
+    .hero-top{flex-direction:column-reverse;text-align:center}
+    .hero-card{width:auto}
+    .container{padding:26px 20px 60px}
+    .goal-grid{grid-template-columns:1fr}
+  }
+</style>
+</head>
+<body>
+
+<button class="nav-toggle" onclick="document.querySelector('.sidebar-nav').classList.toggle('active')">&#9776;</button>
+
+<nav class="sidebar-nav">
+  <div class="sb-brand">
+    <a class="sb-logo" href="https://codecombat.cn/" target="_blank" rel="noopener" title="访问 CodeCombat 扣哒世界官网">
+      <img src="../assets/logo.png" alt="CodeCombat 扣哒世界">
+    </a>
+    <div><b>永不熄的齿轮</b><span>烛火岗哨 · C++ 一级 第 6 单元</span></div>
+  </div>
+  <div class="nav-title">本单元目录</div>
+
+  <a href="#s0" class="nav-section">0　单元导语与目标</a>
+  <a href="#s0-1" class="nav-sub">0.1 学习目标</a>
+  <a href="#s0-2" class="nav-sub">0.2 考纲对照</a>
+  <a href="#s1" class="nav-section">1　为什么要循环</a>
+  <a href="#s2" class="nav-section">2　for 循环</a>
+  <a href="#s2-1" class="nav-sub">2.1 三段式</a>
+  <a href="#s2-2" class="nav-sub">2.2 循环结束后 i 是几</a>
+  <a href="#s2-3" class="nav-sub">2.3 步长与倒着数</a>
+  <a href="#s3" class="nav-section">3　while 循环</a>
+  <a href="#s3-1" class="nav-sub">3.1 只要条件成立就继续</a>
+  <a href="#s3-2" class="nav-sub">3.2 while 与 for 怎么选</a>
+  <a href="#s4" class="nav-section">4　do-while：至少做一次</a>
+  <a href="#s5" class="nav-section">5　break 与 continue</a>
+  <a href="#s5-1" class="nav-sub">5.1 break：立刻退出循环</a>
+  <a href="#s5-2" class="nav-sub">5.2 continue：跳过这一次</a>
+  <a href="#s6" class="nav-section">6　嵌套循环</a>
+  <a href="#s7" class="nav-section">7　代码实战</a>
+  <a href="#s8" class="nav-section">8　常见陷阱</a>
+  <a href="#s9" class="nav-section">9　题目练习</a>
+  <a href="#s10" class="nav-section">10　本单元小结</a>
+
+  <a href="../index.html" target="_top" class="sb-back">返回考纲之路</a>
+</nav>
+
+<div class="page">
+
+<div class="hero">
+  <div class="hero-top">
+    <div class="hero-txt">
+      <div class="crumb">扣哒考级 · GESP C++ 一级 · 第 6 单元　|　烛火岗哨 CANDLEWATCH OUTPOST</div>
+      <h1>永不熄的齿轮
+        <span class="sub">循环结构：重复执行</span>
+      </h1>
+      <div class="en">Loops: Repeating Actions</div>
+      <div class="tags">        <span class="tag hot">考纲 · 循环结构</span>
+        <span class="tag">for</span>
+        <span class="tag">while</span>
+        <span class="tag">do-while</span>
+        <span class="tag">break 与 continue</span></div>
+    </div>
+    <div class="hero-card">
+      <img class="ava" src="../assets/avatars/tharin.webp" alt="塔林" onerror="this.style.background='#24344a';this.src='../assets/heroes/tharin.webp'">
+      <div class="nm">塔林</div>
+      <div class="ti">铁壁骑士 · 你的向导</div>
+    </div>
+  </div>
+</div>
+
+<div class="container">
+
+
+
+
+
+<div class="lead">
+  塔顶的齿轮室轰隆作响。<b>一组巨大的青铜齿轮咬合在一起，一圈一圈转个不停。</b><br>
+  塔林指着它们说：哨火为什么永不熄灭？<b>因为它每隔一会儿就被"重复一次"。</b><br>
+  你的程序里也有这样的齿轮——<b>它叫循环</b>。写一次，跑很多遍。
+</div>
+
+<div class="cast tharin">
+  <img class="ava" src="../assets/avatars/tharin.webp" alt="塔林" onerror="this.style.display='none'">
+  <div class="bubble">
+    <div class="who">塔林 · 铁壁骑士</div>
+    前面五单元，程序要么走直线，要么在岔口选一条。但有些事，<b>需要重复做很多遍</b>——<br>
+    比如"把 1 到 100 加起来""把屏幕上的敌人一个个打掉"。<br>
+    要是写一百行 cout，那就太蠢了。<strong>这一单元我们学循环：让一段代码自动重复。</strong>
+  </div>
+</div>
+
+<figure class="pic">
+  <img src="../assets/illustrations/py-L1-06-01_outpost_arrival.webp" alt="抵达烛火岗哨"
+       onerror="this.closest('.pic').classList.add('missing')">
+  <div class="ph">
+    <div class="fn">assets/illustrations/py-L1-06-01_outpost_arrival.webp</div>
+    <div class="ds">【配图位】黄昏的烛火岗哨：砂岩哨塔塔尖燃着青蓝色永恒的火焰，塔身外挂着一整排咬合转动的青铜齿轮；安雅在门口向新兵招手，新兵怀里抱着一卷图纸。</div>
+  </div>
+  <figcaption>图 1：烛火岗哨·永不熄的齿轮——今天要从这里开始</figcaption>
+</figure>
+
+<!-- ============ 0 ============ -->
+<div class="section-header" id="s0">
+  <h2>0　单元导语与目标</h2>
+  <div class="en-title">Unit Overview</div>
+</div>
+
+<h3 id="s0-1">0.1 学习目标</h3>
+<div class="goal-grid">
+  <div class="goal">
+    <h4><span class="ic">1</span>学完这个单元，你将能……</h4>
+    <ul>
+      <li>说清循环的作用与"三要素"</li>
+      <li>熟练写出 <code class="inline">for</code>、<code class="inline">while</code>、<code class="inline">do-while</code></li>
+      <li>准确判断循环的执行次数</li>
+      <li>知道循环结束后循环变量是几</li>
+      <li>用 <code class="inline">break</code> 与 <code class="inline">continue</code> 控制流程</li>
+      <li>看懂嵌套循环，预测它的输出</li>
+    </ul>
+  </div>
+  <div class="goal syllabus">
+    <h4><span class="ic">2</span>对标 GESP 考纲（C++ 一级）</h4>
+    <ul>
+      <li>掌握 <code class="inline">for</code> 循环的写法与执行过程</li>
+      <li>掌握 <code class="inline">while</code> 与 <code class="inline">do-while</code> 循环</li>
+      <li>掌握 <code class="inline">break</code> 与 <code class="inline">continue</code> 的作用</li>
+      <li>了解循环的嵌套</li>
+      <li>考核目标：能判断循环的次数与输出结果，能写出简单的循环程序</li>
+    </ul>
+  </div>
+</div>
+
+<h3 id="s0-2">0.2 考纲对照</h3>
+<table class="styled">
+  <thead><tr><th>本单元小节</th><th>对应考纲条目</th><th>真题常考形式</th></tr></thead>
+  <tbody>
+    <tr><td>2　for 循环</td><td><code class="inline">for</code> 语句</td><td>给一段 for，问循环结束后的 i 和累加结果</td></tr>
+    <tr><td>3　while 循环</td><td><code class="inline">while</code> 语句</td><td>条件写错会不会死循环</td></tr>
+    <tr><td>4　do-while</td><td><code class="inline">do-while</code> 语句</td><td>它和 while 的唯一区别</td></tr>
+    <tr><td>5　break 与 continue</td><td>循环控制</td><td>有 continue / break 时输出哪些值</td></tr>
+    <tr><td>6　嵌套循环</td><td>循环的嵌套</td><td>两层循环一共跑了多少次</td></tr>
+  </tbody>
+</table>
+
+<!-- ============ 1 ============ -->
+<div class="section-header" id="s1">
+  <h2>1　为什么要循环</h2>
+  <div class="en-title">Why Loop</div>
+</div>
+
+<div class="code-card">
+  <div class="code-head">
+    <span class="dot d1"></span><span class="dot d2"></span><span class="dot d3"></span>
+    <span class="file">算 1 到 100 的和：写一百行，还是写三行？</span>
+    <span class="lang">C++</span>
+  </div>
+  <pre><code>// 笨办法：写 100 行
+int s = 0;
+s = s + 1;
+s = s + 2;
+// …… 中间省略 95 行 ……
+s = s + 100;
+
+// 聪明办法：用循环
+int sum = 0;
+for (int i = 1; i &lt;= 100; i++) {
+    sum = sum + i;
+}
+cout &lt;&lt; sum;        // 5050</code></pre>
+  <div class="out"><b>OUTPUT</b>　5050</div>
+</div>
+
+<figure class="figure">
+  <svg class="diagram" viewBox="0 0 830 280" role="img" aria-label="循环的三要素">
+    <text x="24" y="32" font-size="14" font-weight="bold" fill="#1f2937">循环的三个要素：起点、条件、推进</text>
+
+    <rect x="60" y="60" width="200" height="52" rx="10" fill="#eaf1fe" stroke="#2563eb" stroke-width="2.2"/>
+    <text x="160" y="84" text-anchor="middle" font-size="12.5" fill="#1d4ed8" font-weight="bold">① 起点</text>
+    <text x="160" y="104" text-anchor="middle" font-size="11.5" font-family="Consolas,monospace" fill="#2563eb">int i = 1;</text>
+
+    <rect x="300" y="60" width="220" height="52" rx="10" fill="#fff9ec" stroke="#f59e0b" stroke-width="2.2"/>
+    <text x="410" y="84" text-anchor="middle" font-size="12.5" fill="#b45309" font-weight="bold">② 条件（什么时候继续）</text>
+    <text x="410" y="104" text-anchor="middle" font-size="11.5" font-family="Consolas,monospace" fill="#b45309">i &lt;= 100</text>
+
+    <rect x="560" y="60" width="220" height="52" rx="10" fill="#e9f8ef" stroke="#2e9e5b" stroke-width="2.2"/>
+    <text x="670" y="84" text-anchor="middle" font-size="12.5" fill="#1f7a44" font-weight="bold">③ 推进（怎么变化）</text>
+    <text x="670" y="104" text-anchor="middle" font-size="11.5" font-family="Consolas,monospace" fill="#1f7a44">i++</text>
+
+    <rect x="60" y="150" width="720" height="110" rx="12" fill="#f7f9fd" stroke="#cbd5e1" stroke-width="1.6"/>
+    <text x="84" y="176" font-size="12" fill="#334155" font-weight="bold">循环的工作过程：</text>
+    <text x="84" y="202" font-size="11.5" fill="#475569">① 先做起点　　② 检查条件 → 成立就做一遍循环体 → ③ 推进 → 再回②检查</text>
+    <text x="84" y="228" font-size="11.5" fill="#475569">④ 条件一旦不成立，立刻跳出循环，继续往下执行</text>
+    <text x="84" y="250" font-size="11.5" fill="#b45309">★ 少了"推进"，条件永远成立 → 程序会一直转下去（死循环）</text>
+  </svg>
+  <div class="caption">图 2（SVG）：循环的三要素与工作过程</div>
+</figure>
+
+<figure class="pic">
+  <img src="../assets/illustrations/cpp-L1-06-03_loop_clockwork.webp" alt="循环是一台会自己转的钟表机械"
+       onerror="this.closest('.pic').classList.add('missing')">
+  <div class="ph">
+    <div class="fn">assets/illustrations/cpp-L1-06-03_loop_clockwork.webp</div>
+    <div class="ds">【配图位】齿轮室里一台立式钟表机械：顶部是一个"上发条"的旋钮（对应起点），表面上一根指针指着一圈刻度（对应条件：没转到 12 就一直转）；侧面是一个由齿轮带动的棘轮，每转一圈就"咔"地推进一格（对应推进）；一名新兵站在旁边看着指针一圈圈走。扣哒世界卡通风格，青铜与暖光质感。</div>
+  </div>
+  <figcaption>图 3：上发条、看指针、转一格——循环的三要素</figcaption>
+</figure>
+
+<div class="box tip">
+  <span class="lb">打个比方：</span>
+  循环就像一只<b>会自己转的钟</b>，它身上只有三个部件：<br>
+  ① <b>上发条的旋钮</b>——决定从哪里开始转（<strong>起点</strong>）；<br>
+  ② <b>表盘上的刻度</b>——决定什么时候停（<strong>条件</strong>）；<br>
+  ③ <b>一格一格推进的棘轮</b>——决定每圈往前挪多少（<strong>推进</strong>）。<br>
+  <b>三个部件缺一不可。少了第③个，指针就停在原地——那就是"死循环"。</b>
+</div>
+
+<div class="box tip">
+  <span class="lb">再用生活里的例子走一遍：</span>
+  <b>围着操场跑 5 圈</b>——<br>
+  起点：<code class="inline">int i = 1;</code>（从第 1 圈开始）<br>
+  条件：<code class="inline">i &lt;= 5</code>（跑到第 5 圈就停）<br>
+  推进：<code class="inline">i++</code>（每跑完一圈，在记分牌上加一格）<br>
+  <b>把"跑圈"换成任何一件重复的事，都是这三个问题。</b>
+</div>
+
+<div class="box remember">
+  <span class="lb">写循环前先问自己三个问题：</span><br>
+  <b>① 从哪里开始？</b>（<code class="inline">int i = 1;</code>）<br>
+  <b>② 什么时候继续？</b>（<code class="inline">i &lt;= 100</code>）<br>
+  <b>③ 每次怎么变？</b>（<code class="inline">i++</code>）<br>
+  <strong>这三个问题答清楚了，循环就不会写错。</strong>
+</div>
+
+<!-- ============ 2 ============ -->
+<div class="section-header" id="s2">
+  <h2>2　for 循环</h2>
+  <div class="en-title">The for Loop</div>
+</div>
+
+<h3 id="s2-1">2.1 三段式</h3>
+
+<div class="code-card">
+  <div class="code-head">
+    <span class="dot d1"></span><span class="dot d2"></span><span class="dot d3"></span>
+    <span class="file">for 把三个要素都写在一行里</span>
+    <span class="lang">C++</span>
+  </div>
+  <pre><code>for (int i = 1; i &lt;= 5; i++) {
+    cout &lt;&lt; i &lt;&lt; " ";
+}
+
+// 输出：1 2 3 4 5</code></pre>
+  <div class="out"><b>拆开看</b>　<code>int i = 1</code>（起点，只做一次）；<code>i &lt;= 5</code>（条件，每轮检查）；<code>i++</code>（推进，每轮末尾做）</div>
+</div>
+
+<table class="styled">
+  <thead><tr><th>想做的事</th><th>写法</th><th>循环次数</th></tr></thead>
+  <tbody>
+    <tr><td>从 1 数到 5</td><td><code class="inline">for (i = 1; i &lt;= 5; i++)</code></td><td>5 次</td></tr>
+    <tr><td>从 0 数到 4</td><td><code class="inline">for (i = 0; i &lt; 5; i++)</code></td><td>5 次</td></tr>
+    <tr><td>从 1 数到 100</td><td><code class="inline">for (i = 1; i &lt;= 100; i++)</code></td><td>100 次</td></tr>
+    <tr><td>只数偶数</td><td><code class="inline">for (i = 2; i &lt;= 10; i += 2)</code></td><td>5 次</td></tr>
+    <tr><td>从 10 倒数到 1</td><td><code class="inline">for (i = 10; i &gt;= 1; i--)</code></td><td>10 次</td></tr>
+  </tbody>
+</table>
+
+<div class="box tip">
+  <span class="lb">次数怎么数？</span>
+  <strong>别靠猜，用"末端值"验算：</strong><br>
+  <code class="inline">for (i = 1; i &lt;= 5; i++)</code> —— i 依次取 1、2、3、4、5，<b>共 5 次</b>；<br>
+  <code class="inline">for (i = 0; i &lt; 5; i++)</code> —— i 依次取 0、1、2、3、4，<b>也是 5 次</b>。<br>
+  <b><code>&lt;</code> 和 <code>&lt;=</code> 差一个，次数就可能差一次——这是最常见的失分点。</b>
+</div>
+
+<h3 id="s2-2">2.2 循环结束后 i 是几</h3>
+
+<div class="code-card">
+  <div class="code-head">
+    <span class="dot d1"></span><span class="dot d2"></span><span class="dot d3"></span>
+    <span class="file">真题级细节：循环跳出后，i 已经不是最后那个数了</span>
+    <span class="lang">C++</span>
+  </div>
+  <pre><code>int i, cnt = 0;
+
+for (i = 0; i &lt; 10; i++)
+    cnt += 1;
+
+cout &lt;&lt; i &lt;&lt; ' ' &lt;&lt; cnt;      // 10 10</code></pre>
+  <div class="out"><b>OUTPUT</b>　10 10</div>
+</div>
+
+<div class="box tip">
+  <span class="lb">打个比方：</span>
+  循环条件就像进门的<b>门票检查</b>：<strong>每进来一次都要验一遍票，验完票才让你干一次活。</strong><br>
+  <code class="inline">i &lt; 10</code> 意思是"小于 10 才能进"。<br>
+  当 i = 9 时验票通过，干完这一轮，<b>记分牌再加一格变成 10</b>；<br>
+  接着拿 10 去验票——<strong>10 &lt; 10 不成立，被拦在门外了，循环到此结束。</strong><br>
+  <b>所以循环一结束，i 就停在"第一个被拦下来"的 10 上，而不是最后进去的 9。</b>
+</div>
+
+<div class="box warn">
+  <span class="lb">为什么 i 是 10，不是 9？</span>
+  循环体在 i = 0 ~ 9 时各执行一次（共 10 次，所以 <code class="inline">cnt = 10</code>）。<br>
+  执行完 <code class="inline">i = 9</code> 那一轮后，<strong>会再执行一次 <code class="inline">i++</code>，把 i 变成 10</strong>，
+  然后才去检查条件 <code class="inline">10 &lt; 10</code>——不成立，跳出。<br>
+  <strong>所以循环结束时，i 是"第一个让条件不成立的值"，也就是 10。</strong>
+</div>
+
+<div class="code-card">
+  <div class="code-head">
+    <span class="dot d1"></span><span class="dot d2"></span><span class="dot d3"></span>
+    <span class="file">再看一个：起点是负数</span>
+    <span class="lang">C++</span>
+  </div>
+  <pre><code>int cnt = 0, i;
+
+for (i = -10; i &lt; 0; i++)
+    cnt += 1;
+
+cout &lt;&lt; (i * cnt);         // 0</code></pre>
+  <div class="out"><b>OUTPUT</b>　0　——i 从 -10 到 -1 共 10 次，<b>cnt = 10</b>；循环结束时 <b>i = 0</b>，所以 0 × 10 = 0</div>
+</div>
+
+<h3 id="s2-3">2.3 步长与倒着数</h3>
+
+<div class="code-card">
+  <div class="code-head">
+    <span class="dot d1"></span><span class="dot d2"></span><span class="dot d3"></span>
+    <span class="file">第三段可以不是 i++</span>
+    <span class="lang">C++</span>
+  </div>
+  <pre><code>// 每次加 3
+for (int i = 0; i &lt; 10; i += 3)  cout &lt;&lt; i &lt;&lt; " ";    // 0 3 6 9
+
+// 倒着数
+for (int i = 5; i &gt;= 1; i--)     cout &lt;&lt; i &lt;&lt; " ";    // 5 4 3 2 1
+
+// 每次乘 2
+for (int i = 1; i &lt;= 64; i *= 2) cout &lt;&lt; i &lt;&lt; " ";    // 1 2 4 8 16 32 64</code></pre>
+  <div class="out"><b>要点</b>　三段里的每一段都可以变；<b>只要条件最终会变成不成立，循环就能正常结束</b></div>
+</div>
+
+<!-- ============ 3 ============ -->
+<div class="section-header" id="s3">
+  <h2>3　while 循环</h2>
+  <div class="en-title">The while Loop</div>
+</div>
+
+<h3 id="s3-1">3.1 只要条件成立就继续</h3>
+
+<div class="code-card">
+  <div class="code-head">
+    <span class="dot d1"></span><span class="dot d2"></span><span class="dot d3"></span>
+    <span class="file">while：只写条件，起点和推进都自己安排</span>
+    <span class="lang">C++</span>
+  </div>
+  <pre><code>int n;
+cin &gt;&gt; n;
+
+int tot = 0;
+while (n &gt; 0) {
+    tot += 1;          // 推进：让 n 变小，循环才有机会结束
+    n -= 1;
+}
+
+cout &lt;&lt; tot;</code></pre>
+  <div class="out"><b>输入 5</b> → 输出 5　　<b>输入 0</b> → 输出 0（<b>条件一开始就不成立，循环体一次都不执行</b>）</div>
+</div>
+
+<h3 id="s3-2">3.2 while 与 for 怎么选</h3>
+
+<figure class="figure">
+  <svg class="diagram" viewBox="0 0 830 250" role="img" aria-label="三种循环对比">
+    <text x="24" y="32" font-size="14" font-weight="bold" fill="#1f2937">三种循环：能做的事一样，适合的场景不同</text>
+
+    <rect x="40" y="58" width="240" height="160" rx="12" fill="#eaf1fe" stroke="#2563eb" stroke-width="2.2"/>
+    <text x="160" y="86" text-anchor="middle" font-size="13.5" font-family="Consolas,monospace" fill="#1d4ed8" font-weight="bold">for</text>
+    <text x="66" y="118" font-size="11.5" font-family="Consolas,monospace" fill="#3b6ea8">for (i = 1; i &lt;= n; i++)</text>
+    <text x="66" y="152" font-size="11.5" fill="#3b6ea8">已知"要循环多少次"时首选</text>
+    <text x="66" y="178" font-size="11.5" fill="#7a93b5">三要素写在一行，最清楚</text>
+    <text x="66" y="204" font-size="11.5" fill="#b45309">适合：数数、遍历 1~n</text>
+
+    <rect x="296" y="58" width="240" height="160" rx="12" fill="#fff9ec" stroke="#f59e0b" stroke-width="2.2"/>
+    <text x="416" y="86" text-anchor="middle" font-size="13.5" font-family="Consolas,monospace" fill="#b45309" font-weight="bold">while</text>
+    <text x="322" y="118" font-size="11.5" font-family="Consolas,monospace" fill="#a15c1c">while (n &gt; 0) { … }</text>
+    <text x="322" y="152" font-size="11.5" fill="#a15c1c">不知道要做几次，只看条件</text>
+    <text x="322" y="178" font-size="11.5" fill="#b58b4a">先判断，再执行</text>
+    <text x="322" y="204" font-size="11.5" fill="#b45309">适合：反复尝试直到满足</text>
+
+    <rect x="552" y="58" width="240" height="160" rx="12" fill="#e9f8ef" stroke="#2e9e5b" stroke-width="2.2"/>
+    <text x="672" y="86" text-anchor="middle" font-size="13.5" font-family="Consolas,monospace" fill="#1f7a44" font-weight="bold">do-while</text>
+    <text x="578" y="118" font-size="11.5" font-family="Consolas,monospace" fill="#3b7c5b">do { … } while (条件);</text>
+    <text x="578" y="152" font-size="11.5" fill="#3b7c5b">先执行一次，再判断条件</text>
+    <text x="578" y="178" font-size="11.5" fill="#5f9b7d">循环体至少执行一次</text>
+    <text x="578" y="204" font-size="11.5" fill="#b45309">注意结尾的分号</text>
+
+    <text x="24" y="240" font-size="12" fill="#8d9d94">最常用的还是 for：把三要素写在一行，不容易漏掉"推进"这一步</text>
+  </svg>
+  <div class="caption">图 4（SVG）：三种循环的对比</div>
+</figure>
+
+<!-- ============ 4 ============ -->
+<div class="section-header" id="s4">
+  <h2>4　do-while：至少做一次</h2>
+  <div class="en-title">do-while</div>
+</div>
+
+<div class="code-card">
+  <div class="code-head">
+    <span class="dot d1"></span><span class="dot d2"></span><span class="dot d3"></span>
+    <span class="file">先做，再判断</span>
+    <span class="lang">C++</span>
+  </div>
+  <pre><code>int n = 0;
+
+// while：条件不成立，一次都不执行
+while (n &gt; 0) {
+    cout &lt;&lt; "while 执行了";
+}
+
+// do-while：无论如何先执行一次
+do {
+    cout &lt;&lt; "do-while 执行了";
+} while (n &gt; 0);            // ★ 这里有分号</code></pre>
+  <div class="out"><b>OUTPUT</b>　do-while 执行了</div>
+</div>
+
+<div class="box tip">
+  <span class="lb">打个比方：</span>
+  <b>while</b> 像在水果摊前<b>先看再买</b>——觉得不好看，扭头就走，<strong>一口都不尝</strong>。<br>
+  <b>do-while</b> 像摊主硬塞给你<b>"先尝一口再说"</b>——<strong>不管最后买不买，这一口是跑不掉的</strong>。<br>
+  <b>所以：while 可能一次都不做；do-while 最少也要做一次。</b>
+</div>
+
+<div class="box remember">
+  <span class="lb">while 与 do-while 的唯一区别：</span><br>
+  <b>while</b> 先判断条件，<strong>条件不成立时循环体一次也不执行</strong>；<br>
+  <b>do-while</b> 先执行一次，<strong>再去判断条件，所以循环体至少执行一次</strong>。<br>
+  <b>另外别忘了：<code>do-while</code> 的 <code>while (条件)</code> 后面有一个分号。</b>
+</div>
+
+<!-- ============ 5 ============ -->
+<div class="section-header" id="s5">
+  <h2>5　break 与 continue</h2>
+  <div class="en-title">break &amp; continue</div>
+</div>
+
+<figure class="figure">
+  <svg class="diagram" viewBox="0 0 830 300" role="img" aria-label="break 与 continue">
+    <text x="24" y="32" font-size="14" font-weight="bold" fill="#1f2937">break 是整个退出，continue 是跳过这一轮</text>
+
+    <rect x="50" y="56" width="340" height="220" rx="12" fill="#fef2f2" stroke="#ef4444" stroke-width="2"/>
+    <text x="220" y="84" text-anchor="middle" font-size="13" font-family="Consolas,monospace" fill="#b91c1c" font-weight="bold">break：立刻退出整个循环</text>
+    <text x="76" y="118" font-size="11.5" font-family="Consolas,monospace" fill="#8c3a3a">for (i = 1; i &lt;= 5; i++) {</text>
+    <text x="94" y="144" font-size="11.5" font-family="Consolas,monospace" fill="#8c3a3a">if (i == 3) break;</text>
+    <text x="94" y="170" font-size="11.5" font-family="Consolas,monospace" fill="#8c3a3a">cout &lt;&lt; i &lt;&lt; " ";</text>
+    <text x="76" y="196" font-size="11.5" font-family="Consolas,monospace" fill="#8c3a3a">}</text>
+    <text x="76" y="230" font-size="12" fill="#b91c1c">输出：1 2　（到 3 就"整个不干了"）</text>
+    <text x="76" y="256" font-size="11.5" fill="#c08080">循环彻底结束，4、5 都不会再执行</text>
+
+    <rect x="440" y="56" width="350" height="220" rx="12" fill="#e9f8ef" stroke="#2e9e5b" stroke-width="2"/>
+    <text x="615" y="84" text-anchor="middle" font-size="13" font-family="Consolas,monospace" fill="#1f7a44" font-weight="bold">continue：跳过这一轮，继续下一轮</text>
+    <text x="466" y="118" font-size="11.5" font-family="Consolas,monospace" fill="#2c5f45">for (i = 1; i &lt;= 5; i++) {</text>
+    <text x="484" y="144" font-size="11.5" font-family="Consolas,monospace" fill="#2c5f45">if (i == 3) continue;</text>
+    <text x="484" y="170" font-size="11.5" font-family="Consolas,monospace" fill="#2c5f45">cout &lt;&lt; i &lt;&lt; " ";</text>
+    <text x="466" y="196" font-size="11.5" font-family="Consolas,monospace" fill="#2c5f45">}</text>
+    <text x="466" y="230" font-size="12" fill="#1f7a44">输出：1 2 4 5　（只跳过了 3 这一轮）</text>
+    <text x="466" y="256" font-size="11.5" fill="#5f9b7d">循环还在继续，只是这一轮剩下的不做了</text>
+  </svg>
+  <div class="caption">图 5（SVG）：break 与 continue 的区别</div>
+</figure>
+
+<figure class="pic">
+  <img src="../assets/illustrations/cpp-L1-06-04_break_continue_bus.webp" alt="中途下车与跳过一站"
+       onerror="this.closest('.pic').classList.add('missing')">
+  <div class="ph">
+    <div class="fn">assets/illustrations/cpp-L1-06-04_break_continue_bus.webp</div>
+    <div class="ds">【配图位】一辆行驶在山道上的驿站班车，画面分左右两组：左侧车上挂着"break"的木牌，一名乘客在站牌前站起身、提着箱子直接下车走掉，车也停了；右侧车上挂着"continue"的木牌，一名乘客坐在座位上摆摆手，车照常开过这个小站继续往前走，站台上留下的行李仍在原处。扣哒世界卡通风格，山道与暖色车灯。</div>
+  </div>
+  <figcaption>图 6：break 是中途下车，continue 是跳过这一站</figcaption>
+</figure>
+
+<div class="box tip">
+  <span class="lb">打个比方：</span>
+  把循环想成<b>一辆沿站行驶的班车</b>，每一轮就是"开过一站"：<br>
+  <b><code class="inline">break</code> = 中途下车</b>——<strong>不坐了，整趟车到此为止</strong>；<br>
+  <b><code class="inline">continue</code> = 跳过这一站</b>——<strong>这一站不停了，车继续往前开，后面的站照停</strong>。<br>
+  <b>一句口诀：break 是下车，continue 是不停这一站。</b>
+</div>
+
+<h3 id="s5-1">5.1 break：立刻退出循环</h3>
+
+<div class="code-card">
+  <div class="code-head">
+    <span class="dot d1"></span><span class="dot d2"></span><span class="dot d3"></span>
+    <span class="file">找到想要的，就立刻停下</span>
+    <span class="lang">C++</span>
+  </div>
+  <pre><code>for (int i = 1; i &lt;= 5; i++) {
+    if (i % 3 == 0) {
+        printf("%d+", i);
+        continue;           // 跳过这一轮剩下的语句
+    } else {
+        printf("%d-", i);
+        break;              // 立刻退出整个循环
+    }
+}
+printf("%dEND*", i);</code></pre>
+  <div class="out"><b>OUTPUT</b>　1-1END*<br>
+  <b>过程：</b>i=1 时 <code>1 % 3</code> 不为 0 → 走 else → 打印 <code>1-</code> → <b>break 直接跳出</b>；
+  i 保持 1，最后打印 <code>1END*</code>。</div>
+</div>
+
+<div class="box warn">
+  <span class="lb">break 之后，i 停在原地：</span>
+  上例中 <code class="inline">break</code> 发生时 i 还是 1，<strong>它不会再执行 <code class="inline">i++</code></strong>，
+  所以循环外看到的 i 就是 1。<br>
+  <b>这一点和"循环正常结束"完全不同——正常结束后 i 会比最后一个有效值再大 1。</b>
+</div>
+
+<h3 id="s5-2">5.2 continue：跳过这一次</h3>
+
+<div class="code-card">
+  <div class="code-head">
+    <span class="dot d1"></span><span class="dot d2"></span><span class="dot d3"></span>
+    <span class="file">continue 后面的一句，永远轮不到</span>
+    <span class="lang">C++</span>
+  </div>
+  <pre><code>int k = 0;
+
+while (k &lt; 8) {
+    k += 2;
+    continue;               // ★ 每次都从这里跳回条件判断
+    if (k &gt; 5) break;       // 这两行是"死代码"，永远不会执行
+    cout &lt;&lt; k &lt;&lt; "#";
+}
+
+if (k &gt;= 8) cout &lt;&lt; "FINISH";</code></pre>
+  <div class="out"><b>OUTPUT</b>　FINISH<br>
+  <b>过程：</b>k 依次变成 2、4、6、8，每次都被 <code>continue</code> 跳回条件；
+  当 k = 8 时 <code>8 &lt; 8</code> 不成立，循环结束，最后输出 FINISH。<br>
+  <b>循环里的 cout 一次都没执行。</b></div>
+</div>
+
+<div class="box tip">
+  <span class="lb">continue 后面写代码 = 写了个寂寞。</span>
+  因为 <code class="inline">continue</code> 会<strong>立刻跳回条件判断</strong>，
+  它后面的语句在这一轮里根本执行不到。<br>
+  <b>所以看到 <code>continue</code> 出现在循环中间，就要意识到"它后面到循环结束的语句都是废的"。</b>
+</div>
+
+<!-- ============ 6 ============ -->
+<div class="section-header" id="s6">
+  <h2>6　嵌套循环</h2>
+  <div class="en-title">Nested Loops</div>
+</div>
+
+<div class="code-card">
+  <div class="code-head">
+    <span class="dot d1"></span><span class="dot d2"></span><span class="dot d3"></span>
+    <span class="file">循环里面再放一个循环</span>
+    <span class="lang">C++</span>
+  </div>
+  <pre><code>for (int i = 1; i &lt;= 3; i++) {          // 外层跑 3 次
+    for (int j = 1; j &lt;= 4; j++) {      // 内层每次跑 4 次
+        cout &lt;&lt; i &lt;&lt; "*" &lt;&lt; j &lt;&lt; "  ";
+    }
+    cout &lt;&lt; endl;
+}</code></pre>
+  <div class="out"><b>OUTPUT</b><br>1*1　1*2　1*3　1*4<br>2*1　2*2　2*3　2*4<br>3*1　3*2　3*3　3*4<br>
+  <b>总次数 = 3 × 4 = 12 次</b></div>
+</div>
+
+<div class="box tip">
+  <span class="lb">打个比方：</span>
+  嵌套循环就像<b>钟表上的时针和分针</b>——<br>
+  <b>分针走一整圈（内层），时针才走一格（外层）。</b><br>
+  时针走 12 格，分针就要走 12 整圈，所以<strong>总分针圈数 = 外层次数 × 内层次数</strong>。<br>
+  <b>这就是为什么外层动一次，内层要从头到尾跑完一整轮。</b>
+</div>
+
+<div class="box remember">
+  <span class="lb">嵌套循环的两条规律：</span><br>
+  <b>① 总执行次数 = 外层次数 × 内层次数</b>（上例就是 3 × 4 = 12）。<br>
+  <b>② 外层走一步，内层就要从头到尾走一整圈。</b><br>
+  <strong>这种结构特别适合"打印表格""遍历二维格子"。</strong>
+</div>
+
+<!-- ============ 7 ============ -->
+<div class="section-header" id="s7">
+  <h2>7　代码实战</h2>
+  <div class="en-title">Level Practice</div>
+</div>
+
+<div class="level-card">
+  <div class="lc-head"><span class="n">关卡</span><h4>再下一步</h4><span class="go">进入关卡 →</span></div>
+  <div class="lc-body">
+    <div class="story">
+      <b>故事：</b>长廊望不到头，宝石一路铺到远处。<br>
+      塔林说：你会走一步、会判断方向了。<br>
+      可这一段路有个特点——<b>每一步的动作完全一样</b>。<br>
+      <b>既然一样，为什么要写那么多遍？</b>
+    </div>
+    <p><strong>思路：</strong>把"移动一步 + 拿宝石"这两件事<strong>放进循环</strong>，
+    让它自动重复，直到走完长廊。</p>
+    <div class="code-card">
+      <div class="code-head">
+        <span class="dot d1"></span><span class="dot d2"></span><span class="dot d3"></span>
+        <span class="file">重点示例：重复的动作交给循环</span>
+        <span class="lang">C++</span>
+      </div>
+      <pre><code>#include &lt;iostream&gt;
+using namespace std;
+
+int main() {
+    // 用 for 走固定的步数
+    for (int i = 0; i &lt; 8; i++) {
+        hero.moveRight();
+        int item = hero.findNearestItem();
+        if (item) {
+            hero.moveXY(item.pos.x, item.pos.y);
+        }
+    }
+
+    return 0;
+}</code></pre>
+      <div class="out"><b>要点</b>　循环体里的两句话被自动执行了 8 遍；<code>i &lt; 8</code> 决定走多少步</div>
+    </div>
+    <div class="box info">
+      <span class="lb">和本单元的关联：</span>
+      <b>循环的三要素在这里一目了然：</b><br>
+      起点 <code class="inline">int i = 0</code> → 条件 <code class="inline">i &lt; 8</code> → 推进 <code class="inline">i++</code>。<br>
+      <strong>把 <code>8</code> 改成 <code>5</code>，英雄就只走 5 步——这就是参数化循环的威力。</strong>
+    </div>
+    <a class="btn-go" href="https://codecombat.cn/" target="_blank" rel="noopener">去扣哒世界闯这一关 →</a>
+  </div>
+</div>
+
+<div class="level-card">
+  <div class="lc-head"><span class="n">关卡</span><h4>循环仓库</h4><span class="go">进入关卡 →</span></div>
+  <div class="lc-body">
+    <div class="story">
+      <b>故事：</b>仓库里堆满了货箱，一排一排整整齐齐。<br>
+      注意到没有，塔林说，<b>这一仓库的箱子，是横着排的，也是竖着排的。</b><br>
+      你忽然明白：<b>这需要两层循环</b>——外面管行，里面管列。
+    </div><figure class="pic">
+  <img src="../assets/stages/py-L1-06-stage1_nextstep.webp" alt="循环仓库 关卡截图"
+       onerror="this.closest('.pic').classList.add('missing')">
+  <div class="ph">
+    <div class="fn">assets/stages/py-L1-06-stage1_nextstep.webp</div>
+    <div class="ds">【配图位】游戏实机截图：长廊尽头，英雄刚走完循环的最后一步、把沿途宝石全部取走；地面上留下等距的连续脚印，宝石位置已成空位；屏幕下方代码区显示 for 循环语句，右上角显示"关卡完成"提示。</div>
+  </div>
+  <figcaption>关卡实况：循环仓库</figcaption>
+</figure>
+    <div class="code-card">
+      <div class="code-head">
+        <span class="dot d1"></span><span class="dot d2"></span><span class="dot d3"></span>
+        <span class="file">重点示例：两层循环走遍整个仓库</span>
+        <span class="lang">C++</span>
+      </div>
+      <pre><code>for (int row = 0; row &lt; 4; row++) {          // 外层：第几排
+    for (int col = 0; col &lt; 5; col++) {      // 内层：这一排的第几个
+        int x = col * 10 + 10;
+        int y = row * 10 + 10;
+        hero.moveXY(x, y);
+    }
+}</code></pre>
+      <div class="out"><b>要点</b>　外层走 1 步，内层走完一整圈；<b>一共访问 4 × 5 = 20 个位置</b></div>
+    </div>
+    <div class="box info">
+      <span class="lb">"坐标"和"循环变量"的关系：</span>
+      <code class="inline">col</code> 和 <code class="inline">row</code> 是循环变量，
+      而 <code class="inline">x</code>、<code class="inline">y</code> 是<strong>用它们算出来的实际坐标</strong>。<br>
+      <b>这是把"循环变量"变成"位置"的通用套路，后面的二维数组、图形打印都会用到。</b>
+    </div>
+    <a class="btn-go" href="https://codecombat.cn/" target="_blank" rel="noopener">去扣哒世界闯这一关 →</a>
+  </div>
+</div>
+
+<figure class="pic">
+  <img src="../assets/illustrations/py-L1-06-02_eternal_gear.webp" alt="永不熄的齿轮"
+       onerror="this.closest('.pic').classList.add('missing')">
+  <div class="ph">
+    <div class="fn">assets/illustrations/py-L1-06-02_eternal_gear.webp</div>
+    <div class="ds">【配图位】岗哨塔顶的齿轮室：一组巨大的青铜齿轮彼此咬合，其中最大的一副正在缓缓转动，齿牙上刻着发光的数字；一名新兵站在齿轮旁仰头观看，火光在他脸上投下暖色光影。</div>
+  </div>
+  <figcaption>图 7：咬合的齿轮——一圈又一圈，就是循环</figcaption>
+</figure>
+
+
+<!-- ============ 8 ============ -->
+<div class="section-header" id="s8">
+  <div class="en-title">Common Pitfalls</div>
+  <h2>8　常见陷阱</h2>
+</div>
+
+<div class="cast duck">
+  <img class="ava" src="../assets/ducks/duck_usara.webp" alt="扣哒鸭" onerror="this.style.display='none'">
+  <div class="bubble">
+    <div class="who">扣哒鸭 · 调试官</div>
+    循环是真题分值最高的一块。四条，前两条每年都考。
+  </div>
+</div>
+
+<div class="pit">
+  <div class="pt">
+    <div class="x">1</div>
+    <div class="t"><b>忘了写"推进"那一步，造成死循环。</b></div>
+  </div>
+  <div class="duck">
+    <img src="../assets/ducks/duck_zana.webp" alt="扣哒鸭" onerror="this.style.display='none'">
+    <div class="dt"><b>扣哒鸭：</b><code>while (i &lt; 10)</code> 里如果没有 <code>i++</code>，<br>
+    条件永远成立，<strong>程序会一直转下去，永远不结束。</strong><br>
+    写 while 时，先在循环体里把"推进"那一句写好。</div>
+  </div>
+  <div class="fix"><b>正确做法：</b>循环体里必须有让条件趋于不成立的语句</div>
+</div>
+
+<div class="pit">
+  <div class="pt">
+    <div class="x">2</div>
+    <div class="t"><b><code class="inline">break</code> 和 <code class="inline">continue</code> 搞混。</b></div>
+  </div>
+  <div class="duck">
+    <img src="../assets/ducks/duck_naria.webp" alt="扣哒鸭" onerror="this.style.display='none'">
+    <div class="dt"><b>扣哒鸭：</b><code>break</code> 是"<strong>整个循环都不干了</strong>"；<br>
+    <code>continue</code> 是"<strong>这一轮剩下的不做了，下一轮继续</strong>"。<br>
+    一个是退出，一个是跳过——差远了。</div>
+  </div>
+  <div class="fix"><b>记忆：</b>break 断，continue 续</div>
+</div>
+
+<div class="pit">
+  <div class="pt">
+    <div class="x">3</div>
+    <div class="t"><b>以为循环结束后 i 等于"最后一个有效值"。</b></div>
+  </div>
+  <div class="duck">
+    <img src="../assets/ducks/duck_hattori.webp" alt="扣哒鸭" onerror="this.style.display='none'">
+    <div class="dt"><b>扣哒鸭：</b><code>for (i = 0; i &lt; 10; i++)</code> 跑完后，
+    <strong>i 是 10，不是 9</strong>。<br>
+    因为它在跳出前又自增了一次。<b>考"循环结束后输出什么"时，这一分很多人丢在这里。</b></div>
+  </div>
+  <div class="fix"><b>正确认识：</b>正常结束时 i = 第一个让条件不成立的值</div>
+</div>
+
+<div class="pit">
+  <div class="pt">
+    <div class="x">4</div>
+    <div class="t"><b>在 <code class="inline">do-while</code> 的 <code class="inline">while(...)</code> 后面漏了分号。</b></div>
+  </div>
+  <div class="duck">
+    <img src="../assets/ducks/duck_illia.webp" alt="扣哒鸭" onerror="this.style.display='none'">
+    <div class="dt"><b>扣哒鸭：</b><code>do { … } while (n &gt; 0)</code> 会编译报错。<br>
+    <strong><code>do-while</code> 的结尾必须是 <code>while (条件);</code>，那个分号不能少。</strong></div>
+  </div>
+  <div class="fix"><b>正确写法：</b><code class="inline">} while (条件);</code></div>
+</div>
+
+<!-- ============ 9 ============ -->
+<div class="section-header" id="s9">
+  <h2>9　题目练习</h2>
+  <div class="en-title">Practice</div>
+</div>
+
+<p>前 4 题改编自 C++ 一级真题，其余为原创练习题。</p>
+
+<div class="exam">
+  <div class="eh"><span class="src">改编自 2026 年 9 月 · C++ 一级 · 第 8 题</span><span class="tp">单选题</span></div>
+  <div class="eb">
+    <div class="q">执行如下 C++ 代码，变量都是整型，则其输出是（　　）。</div>
+    <pre>int i, cnt = 0;
+for (i = 0; i &lt; 10; i++)
+    cnt += 1;
+cout &lt;&lt; i &lt;&lt; ' ' &lt;&lt; cnt;</pre>
+    <div class="opt"><i>A.</i>10 10　　<i>B.</i>9 9　　<i>C.</i>10 9　　<i>D.</i>9 10</div>
+    <details><summary>查看答案与详解</summary>
+      <div class="ans"><b>答案：A</b>。分两件事看：<br>
+      <b>cnt：</b>i 取 0~9 共 10 个值，循环体执行 10 次，所以 <code class="inline">cnt = 10</code>。<br>
+      <b>i：</b>执行完 i = 9 那一轮后，还要再执行一次 <code class="inline">i++</code>，使 i 变成 <b>10</b>，
+      然后检查 <code class="inline">10 &lt; 10</code> 不成立才跳出。<br>
+      所以输出 <b>10 10</b>。<br>
+      <span class="tagline">对应小节</span>2.2 循环结束后 i 是几。</div>
+    </details>
+  </div>
+</div>
+
+<div class="exam">
+  <div class="eh"><span class="src">改编自 2026 年 9 月 · C++ 一级 · 第 9 题</span><span class="tp">单选题</span></div>
+  <div class="eb">
+    <div class="q">执行如下 C++ 代码，变量都是整型，则其输出是（　　）。</div>
+    <pre>int cnt, i;
+cnt = 0;
+for (i = -10; i &lt; 0; i++)
+    cnt += 1;
+cout &lt;&lt; (i * cnt);</pre>
+    <div class="opt"><i>A.</i>-10　　<i>B.</i>-9　　<i>C.</i>0　　<i>D.</i>9</div>
+    <details><summary>查看答案与详解</summary>
+      <div class="ans"><b>答案：C</b>。i 依次取 −10、−9、…、−1，共 <b>10</b> 次，所以 <code class="inline">cnt = 10</code>；<br>
+      循环结束时再自增一次，<b>i = 0</b>。<br>
+      于是 <code class="inline">i * cnt</code> = 0 × 10 = <b>0</b>。<br>
+      <b>关键仍是"循环结束后 i 变成几"</b>——很多同学会误算成 −1 或 1。<br>
+      <span class="tagline">对应小节</span>2.2 循环结束后 i 是几。</div>
+    </details>
+  </div>
+</div>
+
+<div class="exam">
+  <div class="eh"><span class="src">改编自 2026 年 9 月 · C++ 一级 · 第 13 题</span><span class="tp">单选题</span></div>
+  <div class="eb">
+    <div class="q">下面 C++ 代码执行后输出是（　　）。</div>
+    <pre>int k = 0;
+while (k &lt; 8) {
+    k += 2;
+    continue;
+    if (k &gt; 5)
+        break;
+    cout &lt;&lt; k &lt;&lt; "#";
+}
+if (k &gt;= 8)
+    cout &lt;&lt; "FINISH";</pre>
+    <div class="opt"><i>A.</i>FINISH　　<i>B.</i>2#4#6#FINISH　　<i>C.</i>2#4#FINISH　　<i>D.</i>2#4#6#8#FINISH</div>
+    <details><summary>查看答案与详解</summary>
+      <div class="ans"><b>答案：A</b>。<code class="inline">continue</code> 位于循环体的第二句，
+      <strong>它后面的所有语句（包括那个 if 和 cout）永远执行不到</strong>。<br>
+      所以循环体实际只做一件事：<code class="inline">k += 2</code>。<br>
+      k 依次变成 2、4、6、8；当 k = 8 时 <code class="inline">8 &lt; 8</code> 不成立，循环结束。<br>
+      最后判断 <code class="inline">k &gt;= 8</code> 成立，输出 <b>FINISH</b>。<br>
+      <b>本题的考点：continue 会把"它后面的语句"全部跳过，那些语句等于白写。</b><br>
+      <span class="tagline">对应小节</span>5.2 continue：跳过这一次。</div>
+    </details>
+  </div>
+</div>
+
+<div class="exam">
+  <div class="eh"><span class="src">改编自 2026 年 6 月 · C++ 一级 · 第 10 题</span><span class="tp">单选题</span></div>
+  <div class="eb">
+    <div class="q">如下 C++ 代码可以执行，其输出是（　　）。</div>
+    <pre>int i;
+for (i = 1; i &lt; 5; i++)
+    if (i % 2 == 0) {
+        continue;
+        cout &lt;&lt; i &lt;&lt; "#";
+    }
+cout &lt;&lt; i &lt;&lt; "END#";</pre>
+    <div class="opt"><i>A.</i>5END#　　<i>B.</i>5#END　　<i>C.</i>1#3#4#END　　<i>D.</i>1#3#4 END#</div>
+    <details><summary>查看答案与详解</summary>
+      <div class="ans"><b>答案：A</b>。注意那个 <code class="inline">if</code> 的花括号里：
+      <code class="inline">continue</code> 在前，<code class="inline">cout</code> 在后——<br>
+      <strong>所以 <code class="inline">cout &lt;&lt; i &lt;&lt; "#";</code> 是一句"死代码"，永远执行不到。</strong><br>
+      再看 <code class="inline">if</code> 只管到花括号为止，而循环体就是这一个 if 语句：<br>
+      i = 1、3 时条件不成立 → 什么都不做；i = 2、4 时条件成立 → 执行 continue（同样什么都不输出）。<br>
+      i = 5 时 <code class="inline">5 &lt; 5</code> 不成立，循环结束。<br>
+      最后输出 <b>5END#</b>。<br>
+      <b>本题的考点有两个：continue 后面的语句无效；以及循环结束时 i 是 5。</b><br>
+      <span class="tagline">对应小节</span>5.2 continue：跳过这一次；2.2 循环结束后 i 是几。</div>
+    </details>
+  </div>
+</div>
+
+<div class="exam">
+  <div class="eh"><span class="src ori">原创练习题</span><span class="tp">单选题</span></div>
+  <div class="eb">
+    <div class="q">下列 C++ 代码执行后，输出的结果是（　　）。</div>
+    <pre>int sum = 0;
+for (int i = 1; i &lt;= 5; i++) {
+    if (i == 3) continue;
+    sum += i;
+}
+cout &lt;&lt; sum;</pre>
+    <div class="opt"><i>A.</i>15　　<i>B.</i>12　　<i>C.</i>9　　<i>D.</i>3</div>
+    <details><summary>查看答案与详解</summary>
+      <div class="ans"><b>答案：B</b>。<code class="inline">continue</code> 让 i = 3 这一轮"跳过"，
+      所以 sum 累加的是 1 + 2 + 4 + 5 = <b>12</b>。<br>
+      <b>对比：</b>如果没有 continue，1+2+3+4+5 = 15（A 项）；<br>
+      如果把 continue 换成 break，就变成 1 + 2 = 3（D 项）。<br>
+      <b>三个选项分别对应"不跳过""跳过""中断"三种情况——这一题把它们串起来了。</b><br>
+      <span class="tagline">对应小节</span>5.2 continue：跳过这一次。</div>
+    </details>
+  </div>
+</div>
+
+<div class="exam">
+  <div class="eh"><span class="src ori">原创练习题</span><span class="tp">判断题</span></div>
+  <div class="eb">
+    <div class="q">下面两段代码的执行效果完全相同：<br>
+    <code class="inline">while (n &gt; 0) { … }</code>　与　<code class="inline">do { … } while (n &gt; 0);</code>（　　）</div>
+    <details><summary>查看答案与详解</summary>
+      <div class="ans"><b>答案：错误（×）</b>。当 <code class="inline">n</code> <strong>一开始就不大于 0</strong> 时，两者结果完全不同：<br>
+      <code class="inline">while</code> 先判断条件 → 不成立 → <strong>循环体一次也不执行</strong>；<br>
+      <code class="inline">do-while</code> 先执行一次 → 再判断 → <strong>循环体至少执行一次</strong>。<br>
+      <b>只有当"进入循环时条件必然成立"时，两者的执行次数才一样。</b><br>
+      <span class="tagline">对应小节</span>4 do-while：至少做一次。</div>
+    </details>
+  </div>
+</div>
+
+<div class="exam">
+  <div class="eh"><span class="src ori">原创练习题</span><span class="tp">编程题</span></div>
+  <div class="eb">
+    <div class="q">题目要求：读入一个正整数 n，输出 1 到 n 的<strong>和</strong>，
+    以及 1 到 n 中<strong>所有偶数的和</strong>。</div>
+    <details><summary>查看参考答案与要点</summary>
+      <div class="ans">
+<pre style="margin:0;background:#131a26;color:#c8d3e0;border-radius:10px;padding:14px 16px">#include &lt;iostream&gt;
+using namespace std;
+
+int main() {
+    int n;
+    cin &gt;&gt; n;
+
+    int sumAll = 0;
+    int sumEven = 0;
+
+    for (int i = 1; i &lt;= n; i++) {
+        sumAll += i;                        // 全部都加
+        if (i % 2 == 0) {                   // 只加偶数
+            sumEven += i;
+        }
+    }
+
+    cout &lt;&lt; sumAll &lt;&lt; endl;
+    cout &lt;&lt; sumEven;
+
+    return 0;
+}</pre>
+      <p style="margin-top:12px"><b>输入 10 时输出：</b>55 和 30<br>
+      <b>要点：</b><br>
+      ① 两个累加变量都必须<strong>初始化为 0</strong>——这是最容易忘的一步；<br>
+      ② 一个循环里同时完成两件事，比写两个循环更简洁；<br>
+      ③ 判断偶数用 <code class="inline">i % 2 == 0</code>；<br>
+      ④ 偶数和的另一种写法：<code class="inline">for (int i = 2; i &lt;= n; i += 2)</code>，<strong>步长设为 2 直接跳过奇数</strong>。<br>
+      <span class="tagline">对应小节</span>2.1 三段式；2.3 步长与倒着数。</p>
+      </div>
+    </details>
+  </div>
+</div>
+
+<!-- ============ 10 ============ -->
+<div class="section-header" id="s10">
+  <h2>10　本单元小结</h2>
+  <div class="en-title">Unit Summary</div>
+</div>
+
+<div class="cast tharin">
+  <img class="ava" src="../assets/avatars/tharin.webp" alt="塔林" onerror="this.style.display='none'">
+  <div class="bubble">
+    <div class="who">塔林 · 铁壁骑士</div>
+    四句话记住循环：<br>
+    <strong>一、循环有三要素：起点、条件、推进——三个都不能少。</strong><br>
+    <strong>二、for 写在一行最清楚；while 用于"不知道做几次"；do-while 至少做一次。</strong><br>
+    <strong>三、break 整个退出，continue 只跳过这一轮。</strong><br>
+    <strong>四、循环正常运行结束后，i 是"第一个让条件不成立的值"。</strong><br>
+    齿轮已经转起来了。最后一个单元，我们把这一路学的东西全部用上。
+  </div>
+</div>
+
+<div class="summary">
+  <h3>你在齿轮室学到了什么</h3>
+  <ul>
+    <li><strong>循环的三要素</strong>——起点、条件、推进；<strong>少了推进会死循环</strong>。</li>
+    <li><strong>for 循环</strong>——<code class="inline">for (起点; 条件; 推进)</code>，已知次数时首选。</li>
+    <li><strong>循环次数</strong>——<code class="inline">i = 1; i &lt;= 5</code> 是 5 次；<code class="inline">i = 0; i &lt; 5</code> 也是 5 次。</li>
+    <li><strong>循环结束后的 i</strong>——是"第一个让条件不成立的值"，如 <code class="inline">i &lt; 10</code> 结束时 i = 10。</li>
+    <li><strong>while</strong>——只写条件；条件不成立时循环体一次也不执行。</li>
+    <li><strong>do-while</strong>——先做一次再判断；<strong>结尾有分号</strong>。</li>
+    <li><strong>break</strong>——立刻退出整个循环；<strong>i 停在原地，不再自增</strong>。</li>
+    <li><strong>continue</strong>——跳过这一轮剩下的语句，回到条件判断；<strong>它后面的代码是死代码</strong>。</li>
+    <li><strong>嵌套循环</strong>——总次数 = 外层次数 × 内层次数。</li>
+    <li><strong>累加变量</strong>——一定要先初始化为 0。</li>
+  </ul>
+</div>
+
+<div class="pager">
+  <a href="cpp-1-05.html"><div class="k">← 上一单元</div><div class="v">岔路口的抉择 · 分支结构：做选择</div></a>
+  <a href="../index.html" target="_top" class="back"><div class="k">返回</div><div class="v">考纲之路 · 总目录</div></a>
+  <a href="cpp-1-07.html"><div class="k">下一单元 →</div><div class="v">迷雾中的脚印 · 注释、调试与综合项目</div></a>
+</div>
+
+<div class="cta">
+  <h3>下一站：迷雾中的脚印</h3>
+  <p>夜雾罩住了山道，<b>你写的代码突然报错了</b>。别慌——
+  这一单元我们学注释、学读懂错误信息、学一步步查出问题在哪，<br>
+  最后用<b>鸡兔同笼</b>这道经典题，把一级学的东西全部串一遍。</p>
+  <a class="btn-go" href="https://codecombat.cn/" target="_blank" rel="noopener">加入扣哒世界，把这条考纲之路走一遍 →</a>
+</div>
+
+
+</div><!-- /container -->
+</div><!-- /page -->
+
+<script>
+const KEYWORDS = new Set([
+  "int", "long", "short", "unsigned", "signed", "float", "double", "char", "bool", "void",
+  "const", "if", "else", "for", "while", "do", "switch", "case", "default", "break",
+  "continue", "return", "goto", "struct", "class", "union", "enum", "using", "namespace",
+  "std", "main", "true", "false", "cin", "cout", "cerr", "endl", "string", "sizeof",
+  "include", "define", "new", "delete", "public", "private", "static", "inline", "nullptr"
+]);
+
+function esc(s){ return s.replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;'); }
+
+function highlight(src){
+  let out = '', i = 0;
+  const n = src.length;
+  while (i < n){
+    const c = src[i];
+    /* 预处理指令：#include / #define，整行只在行首生效 */
+    if (c === '#' && (i === 0 || src[i-1] === '\n')){
+      let j = i;
+      while (j < n && /[A-Za-z]/.test(src[j])) j++;
+      out += '<span class="kw">' + esc(src.slice(i, j)) + '</span>';
+      let k = src.indexOf('\n', j); if (k < 0) k = n;
+      if (j < k) out += '<span class="st">' + esc(src.slice(j, k)) + '</span>';
+      i = k; continue;
+    }
+    /* 行注释 // */
+    if (c === '/' && src[i+1] === '/'){
+      let j = src.indexOf('\n', i); if (j < 0) j = n;
+      out += '<span class="cm">' + esc(src.slice(i, j)) + '</span>';
+      i = j; continue;
+    }
+    /* 块注释 */
+    if (c === '/' && src[i+1] === '*'){
+      let j = src.indexOf('*/', i + 2); j = j < 0 ? n : j + 2;
+      out += '<span class="cm">' + esc(src.slice(i, j)) + '</span>';
+      i = j; continue;
+    }
+    /* 字符串与字符字面量 */
+    if (c === '"' || c === "'"){
+      let j = i + 1;
+      while (j < n && src[j] !== c){ if (src[j] === '\\') j++; j++; }
+      j = Math.min(j + 1, n);
+      out += '<span class="st">' + esc(src.slice(i, j)) + '</span>';
+      i = j; continue;
+    }
+    /* 数字 */
+    if (/[0-9]/.test(c)){
+      let j = i;
+      while (j < n && /[0-9.]/.test(src[j])) j++;
+      out += '<span class="nu">' + esc(src.slice(i, j)) + '</span>';
+      i = j; continue;
+    }
+    /* 标识符：关键字 / 函数名 / 普通名字 */
+    if (/[A-Za-z_]/.test(c)){
+      let j = i;
+      while (j < n && /[A-Za-z0-9_]/.test(src[j])) j++;
+      const w = src.slice(i, j);
+      if (KEYWORDS.has(w)) out += '<span class="kw">' + esc(w) + '</span>';
+      else if (src[j] === '(') out += '<span class="fn">' + esc(w) + '</span>';
+      else out += esc(w);
+      i = j; continue;
+    }
+    out += esc(c); i++;
+  }
+  return out;
+}
+
+document.querySelectorAll('.code-card pre code').forEach(block => {
+  block.innerHTML = highlight(block.textContent);
+});
+
+if (location.search.indexOf('expand') >= 0) {
+  document.querySelectorAll('details').forEach(d => d.open = true);
+}
+document.querySelectorAll('.sidebar-nav a').forEach(a => {
+  a.addEventListener('click', () => {
+    if (window.innerWidth <= 900) document.querySelector('.sidebar-nav').classList.remove('active');
+  });
+});
+</script>
+</body>
+</html>

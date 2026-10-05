@@ -1,0 +1,1096 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="copyright" content="CodeCombat Inc. codecombat.cn">
+<title>密文石桥 · ASCII 编码与数据类型转换 | 扣哒考级 · GESP C++ 二级</title>
+<style>
+  :root{
+    --primary:#2563eb; --primary-light:#4f8ff0; --primary-lighter:#eaf1fe; --primary-dark:#1b47a8;
+    --brand:#ff6b35; --brand-dark:#e8541f; --brand-soft:#fff3ec;
+    --night:#131c2b; --night-2:#1e2a3a; --gold:#f5b301;
+    --text:#242e3d; --dim:#68788f; --dim2:#93a2b6;
+    --bg:#ffffff; --bg-soft:#f7f9fd; --line:#e2e9f4; --sidebar:274px;
+    --code-bg:#131a26; --code-tx:#c8d3e0;
+    --code-kw:#c678dd; --code-st:#98c379; --code-nu:#d19a66; --code-cm:#5f7488; --code-fn:#e5c07b;
+  }
+  *{margin:0;padding:0;box-sizing:border-box}
+  html{scroll-behavior:smooth}
+  body{font-family:"PingFang SC","Microsoft YaHei","Segoe UI",-apple-system,sans-serif;line-height:1.9;color:var(--text);background:var(--bg);font-size:15.5px}
+  .sidebar-nav{position:fixed;top:0;left:0;width:var(--sidebar);height:100vh;overflow-y:auto;background:linear-gradient(180deg,#0c1626,#14243c);padding:14px 0 40px;z-index:100;border-right:3px solid var(--brand);transition:transform .3s ease}
+  .sidebar-nav::-webkit-scrollbar{width:5px}
+  .sidebar-nav::-webkit-scrollbar-thumb{background:var(--brand);border-radius:4px}
+  .sb-brand{display:flex;align-items:center;gap:10px;padding:10px 13px 12px;border-bottom:1px solid #233752;margin-bottom:8px}
+  .sidebar-nav a.sb-logo{display:flex;align-items:center;justify-content:center;flex-shrink:0;padding:0;border-left:none;transition:.2s}
+  .sb-logo:hover{transform:scale(1.08)}
+  .sb-logo img{height:34px;width:34px;display:block;object-fit:contain;border-radius:8px}
+  .sb-brand b{color:#f2f6fa;font-size:14px;letter-spacing:.5px;display:block;line-height:1.4}
+  .sb-brand span{color:#7f95ab;font-size:11.5px;display:block;line-height:1.4}
+  .nav-title{color:#ffb894;font-size:12px;font-weight:800;padding:10px 18px 6px;letter-spacing:1.2px}
+  .sidebar-nav a{display:block;color:#c3d0dc;text-decoration:none;padding:6px 18px;font-size:12.5px;line-height:1.55;border-left:3px solid transparent;transition:.18s}
+  .sidebar-nav a:hover{color:#fff;background:rgba(255,107,53,.16);border-left-color:var(--brand)}
+  .sidebar-nav a.nav-section{color:#ffb894;font-weight:700;font-size:13px;margin-top:11px;padding-top:10px;border-top:1px solid #233752}
+  .sidebar-nav a.nav-section:first-of-type{border-top:none;margin-top:0;padding-top:6px}
+  .sidebar-nav a.nav-sub{padding-left:30px;color:#93a8bc;font-size:12px}
+  .sidebar-nav a.nav-sub:hover{color:#fff}
+  .sb-back{margin:16px 14px 0;display:block;text-align:center;padding:9px;border-radius:9px;background:#1e304a;color:#a9c0d6 !important;font-size:12px;font-weight:700;border-left:none !important}
+  .sb-back:hover{background:var(--brand) !important;color:#fff !important}
+  .nav-toggle{display:none;position:fixed;top:14px;left:14px;z-index:120;background:var(--brand);color:#fff;border:none;border-radius:9px;padding:9px 13px;font-size:15px;cursor:pointer;box-shadow:0 4px 14px rgba(0,0,0,.25)}
+  .page{margin-left:var(--sidebar)}
+  .hero{position:relative;overflow:hidden;padding:44px 52px;color:#fff;background:linear-gradient(125deg,#0a1220 0%,#16294a 46%,#8a3a16 132%)}
+  .hero::after{content:"";position:absolute;right:-90px;top:-110px;width:400px;height:400px;border-radius:50%;background:radial-gradient(circle,rgba(245,179,1,.30),transparent 68%)}
+  .hero-top{display:flex;gap:36px;align-items:center;position:relative;z-index:2}
+  .hero-txt{flex:1;min-width:0}
+  .hero .crumb{font-size:11.5px;color:#ffb894;letter-spacing:1.5px;font-weight:700;margin-bottom:14px}
+  .hero h1{font-size:31px;font-weight:800;line-height:1.3;letter-spacing:.6px;margin-bottom:8px}
+  .hero h1 .sub{display:block;font-size:18px;font-weight:700;color:#ffd2b3;margin-top:6px;letter-spacing:.3px}
+  .hero .en{font-size:13px;color:#9db4c8;font-style:italic;margin-bottom:18px}
+  .hero .tags{display:flex;flex-wrap:wrap;gap:8px}
+  .tag{font-size:11.5px;padding:4px 12px;border-radius:20px;background:rgba(255,255,255,.12);border:1px solid rgba(255,255,255,.22);color:#e8f0f6;font-weight:600}
+  .tag.hot{background:rgba(255,107,53,.92);border-color:transparent;color:#fff}
+  .hero-card{flex-shrink:0;width:200px;text-align:center}
+  .hero-card .ava{width:148px;height:148px;border-radius:50%;object-fit:cover;object-position:top center;border:4px solid rgba(255,180,140,.6);box-shadow:0 14px 34px rgba(0,0,0,.45);background:#24344a}
+  .hero-card .nm{font-size:15px;font-weight:800;color:#fff;margin-top:10px}
+  .hero-card .ti{font-size:11.5px;color:#ffb894;margin-top:2px}
+  .container{max-width:1080px;margin:0 auto;padding:38px 52px 70px}
+  .lead{font-size:15.5px;line-height:2.05;color:#333f52;background:linear-gradient(120deg,#fff8f3,#f7fbf8);border-left:5px solid var(--brand);border-radius:0 14px 14px 0;padding:22px 26px;margin-bottom:32px}
+  .lead b{color:var(--brand-dark)}
+  .cast{display:flex;gap:16px;align-items:flex-start;border-radius:16px;padding:18px 22px;margin:24px 0}
+  .cast .ava{width:72px;height:72px;border-radius:50%;object-fit:cover;object-position:top center;flex-shrink:0;background:#e8eef5}
+  .cast .bubble{position:relative;font-size:14px;line-height:1.95;padding-top:2px;flex:1}
+  .cast .who{font-size:12px;font-weight:800;margin-bottom:5px;letter-spacing:.5px}
+  .cast.anya{background:var(--brand-soft);border:1px solid #ffdcc9}
+  .cast.anya .who{color:var(--brand-dark)}
+  .cast.anya .bubble{color:#5c4636}
+  .cast.duck{background:#fff5f5;border:1px solid #fbd5d5}
+  .cast.duck .who{color:#b91c1c}
+  .cast.duck .bubble{color:#5c4141}
+  .cast.teacher{background:linear-gradient(120deg,#f4f7fb,#ffffff);border:1px solid #dbe4f0}
+  .cast.teacher .who{color:#1e293b}
+  .cast.teacher .bubble{color:#3c4a5a}
+  .cast.hero{background:#f2f7fd;border:1px solid #cfe0f5}
+  .cast.hero .who{color:#1b47a8}
+  .cast.hero .bubble{color:#3a4658}
+  .goal-grid{display:grid;grid-template-columns:1fr 1fr;gap:16px;margin-bottom:36px}
+  .goal{border:1px solid var(--line);border-radius:15px;padding:19px 21px;background:#fff;box-shadow:0 4px 16px rgba(31,122,68,.05)}
+  .goal h4{font-size:14px;font-weight:800;margin-bottom:11px;display:flex;align-items:center;gap:8px;color:var(--primary-dark)}
+  .goal h4 .ic{width:22px;height:22px;border-radius:7px;background:var(--primary-lighter);display:flex;align-items:center;justify-content:center;font-size:12px}
+  .goal ul{list-style:none}
+  .goal li{font-size:13.5px;color:#48576b;line-height:1.9;padding-left:18px;position:relative}
+  .goal li::before{content:"▸";position:absolute;left:0;color:var(--primary);font-weight:800}
+  .goal.syllabus li::before{content:"✓"}
+  .section-header{margin:52px 0 24px;padding-bottom:12px;border-bottom:3px solid var(--brand);display:flex;align-items:baseline;gap:14px;flex-wrap:wrap}
+  .section-header h2{font-size:22px;font-weight:800;color:var(--night);letter-spacing:.4px}
+  .section-header .en-title{font-size:12px;color:var(--dim2);font-style:italic}
+  h3{font-size:17.5px;font-weight:800;margin:34px 0 14px;color:var(--night);display:flex;align-items:center;gap:10px}
+  h3::before{content:"";width:5px;height:17px;border-radius:3px;background:var(--brand);flex-shrink:0}
+  h4{font-size:15px;font-weight:800;margin:24px 0 10px;color:#2b4260}
+  p{margin:12px 0;color:#3a4658;line-height:2}
+  strong{color:var(--primary-dark)}
+  code.inline{background:var(--primary-lighter);color:var(--primary-dark);padding:2px 7px;border-radius:6px;font-family:"SFMono-Regular",Consolas,Menlo,monospace;font-size:.9em;font-weight:600}
+  .figure{margin:24px 0;text-align:center}
+  .figure svg.diagram{max-width:100%;height:auto;background:#fff;border:1px solid var(--line);border-radius:14px;padding:10px}
+  .figure .caption{font-size:12.5px;color:var(--dim2);margin-top:9px}
+  .pic{margin:26px 0;text-align:center}
+  .pic img{max-width:100%;border-radius:16px;box-shadow:0 10px 28px rgba(30,60,45,.15);display:block;margin:0 auto}
+  .pic figcaption{font-size:12.5px;color:var(--dim2);margin-top:9px}
+  .pic .ph{display:none}
+  .pic.missing img{display:none}
+  .pic.missing .ph{display:flex;flex-direction:column;align-items:center;justify-content:center;gap:9px;border:2px dashed #c9d9e8;border-radius:16px;background:linear-gradient(135deg,#f8fbfe,#eef6ff);padding:40px 26px;color:#7a8fa8}
+  .pic.missing .ph .fn{font-family:Consolas,monospace;font-size:12.5px;color:#2563eb;font-weight:700;word-break:break-all}
+  .pic.missing .ph .ds{font-size:12.5px;line-height:1.8;max-width:560px}
+  .box{border-radius:13px;padding:16px 20px;margin:20px 0;font-size:14px;line-height:1.95}
+  .box .lb{font-weight:800;margin-right:6px}
+  .info{background:#eef6ff;border-left:5px solid #3b82f6;color:#274768}
+  .info .lb{color:#1d4ed8}
+  .tip{background:#fff9ec;border-left:5px solid #f59e0b;color:#6b4e13}
+  .tip .lb{color:#b45309}
+  .remember{background:var(--primary-lighter);border-left:5px solid var(--primary);color:#1d3a6b}
+  .remember .lb{color:var(--primary-dark)}
+  .warn{background:#fef2f2;border-left:5px solid #ef4444;color:#7f2b2b}
+  .warn .lb{color:#b91c1c}
+  .code-card{margin:20px 0;border-radius:14px;overflow:hidden;box-shadow:0 10px 28px rgba(20,40,28,.20)}
+  .code-head{display:flex;align-items:center;gap:9px;background:#1a2434;padding:9px 14px}
+  .code-head .dot{width:10px;height:10px;border-radius:50%}
+  .code-head .d1{background:#ff5f57}.code-head .d2{background:#febc2e}.code-head .d3{background:#28c840}
+  .code-head .file{color:#8fa6c0;font-size:11.5px;font-family:Consolas,monospace;margin-left:6px}
+  .code-head .lang{margin-left:auto;font-size:10.5px;font-weight:800;color:#0d141f;background:#4f8ff0;padding:2px 9px;border-radius:6px;letter-spacing:.4px}
+  .code-card pre{background:var(--code-bg);padding:18px 20px;overflow-x:auto;margin:0;font-family:"SFMono-Regular",Consolas,"Courier New",monospace;font-size:13.5px;line-height:1.85}
+  .code-card pre::-webkit-scrollbar{height:8px}
+  .code-card pre::-webkit-scrollbar-thumb{background:#31445c;border-radius:4px}
+  .code-card code{color:var(--code-tx);white-space:pre}
+  .kw{color:var(--code-kw);font-weight:600}
+  .st{color:var(--code-st)}
+  .nu{color:var(--code-nu)}
+  .cm{color:var(--code-cm);font-style:italic}
+  .fn{color:var(--code-fn)}
+  .out{background:#0f1621;color:#7fb3f5;font-family:Consolas,monospace;font-size:13px;padding:12px 20px;border-top:1px solid #22304a}
+  .out b{color:#c9d6cd;font-weight:600;font-size:11.5px;letter-spacing:1px}
+  .out.err{color:#fca5a5}
+  table.styled{width:100%;border-collapse:collapse;margin:20px 0;font-size:13.5px;border-radius:12px;overflow:hidden;box-shadow:0 4px 16px rgba(31,122,68,.07)}
+  table.styled thead{background:var(--brand)}
+  table.styled th{color:#fff;padding:11px 14px;text-align:left;font-weight:700;font-size:13px}
+  table.styled td{padding:10px 14px;border-bottom:1px solid var(--line);color:#445266;vertical-align:top}
+  table.styled tbody tr:nth-child(even){background:var(--bg-soft)}
+  table.styled tbody tr:last-child td{border-bottom:none}
+  .level-card{border:1px solid var(--line);border-radius:16px;overflow:hidden;margin:22px 0;box-shadow:0 6px 22px rgba(31,122,68,.07)}
+  .level-card .lc-head{background:linear-gradient(100deg,#17283a,#8a3a16);color:#fff;padding:15px 22px;display:flex;align-items:center;gap:12px;flex-wrap:wrap}
+  .level-card .lc-head .n{font-size:12px;font-weight:800;background:rgba(255,255,255,.2);padding:3px 10px;border-radius:20px}
+  .level-card .lc-head h4{margin:0;color:#fff;font-size:16px}
+  .level-card .lc-head .go{margin-left:auto;font-size:11.5px;color:#ffd2b3}
+  .level-card .lc-body{padding:20px 24px;background:#fff}
+  .level-card .story{background:#f9fbfd;border-left:4px solid #93c5fd;border-radius:0 10px 10px 0;padding:13px 18px;margin:0 0 16px;font-size:14px;line-height:1.95;color:#3f5163}
+  .level-card .story b{color:#1d4ed8}
+  .btn-go{display:inline-flex;align-items:center;gap:8px;background:linear-gradient(135deg,var(--brand),var(--brand-dark));color:#fff;text-decoration:none;font-weight:800;font-size:13.5px;padding:10px 22px;border-radius:11px;box-shadow:0 8px 20px rgba(255,107,53,.32);transition:.2s}
+  .btn-go:hover{transform:translateY(-2px);box-shadow:0 12px 26px rgba(255,107,53,.42)}
+  .pit{border:1px solid #f6dede;border-radius:14px;overflow:hidden;margin:16px 0;background:#fff}
+  .pit .pt{display:flex;gap:12px;padding:14px 18px;background:#fffafa;align-items:flex-start}
+  .pit .x{width:26px;height:26px;border-radius:9px;background:#fee;color:#dc2626;display:flex;align-items:center;justify-content:center;font-weight:800;flex-shrink:0;font-size:13px}
+  .pit .t{font-size:13.5px;line-height:1.9;color:#5c4a4a;flex:1}
+  .pit .t b{color:#b91c1c}
+  .pit .duck{display:flex;gap:12px;padding:13px 18px;background:#fff5f5;border-top:1px dashed #f3d0d0;align-items:flex-start}
+  .pit .duck img{width:48px;height:48px;object-fit:contain;flex-shrink:0;margin-top:2px}
+  .pit .duck .dt{font-size:13.5px;line-height:1.9;color:#7a3b3b}
+  .pit .duck .dt b{color:#b91c1c}
+  .pit .fix{padding:12px 18px;background:#f2f7fd;border-top:1px dashed #cfe0f5;font-size:13.5px;color:#1d3a6b}
+  .pit .fix b{color:var(--primary-dark)}
+  .exam{border:1px solid #dfe7f5;border-radius:15px;margin:16px 0;overflow:hidden;background:#fff;box-shadow:0 4px 16px rgba(38,62,120,.06)}
+  .exam .eh{display:flex;align-items:center;gap:10px;padding:11px 18px;background:linear-gradient(100deg,#eef4ff,#f7faff);border-bottom:1px solid #e3ebf8;flex-wrap:wrap}
+  .exam .eh .src{font-size:11px;font-weight:800;color:#fff;background:#2563eb;padding:2.5px 10px;border-radius:20px}
+  .exam .eh .src.ori{background:#8b5cf6}
+  .exam .eh .tp{font-size:11.5px;color:#5b7ba8;font-weight:700}
+  .exam .eb{padding:16px 20px}
+  .exam .q{font-weight:700;font-size:14px;color:#1e2a3e;line-height:1.9;margin-bottom:10px}
+  .exam .opt{font-size:13.5px;color:#48576b;line-height:2.05;padding-left:6px}
+  .exam .opt i{font-style:normal;font-weight:800;color:var(--primary-dark);margin-right:7px}
+  .exam pre{margin:12px 0;background:#1b2a21;border-radius:10px;padding:14px 16px;overflow-x:auto;font-family:Consolas,monospace;font-size:13px;line-height:1.8;color:var(--code-tx)}
+  .exam details{margin-top:10px;border-top:1px dashed var(--line);padding-top:10px}
+  .exam summary{cursor:pointer;font-size:12.5px;font-weight:800;color:#2563eb;outline:none;user-select:none}
+  .exam details .ans{font-size:13.5px;color:#3a4658;line-height:1.95;margin-top:9px;background:var(--bg-soft);padding:13px 16px;border-radius:10px}
+  .exam details .ans b{color:var(--primary-dark)}
+  .exam details .ans .tagline{display:inline-block;font-size:11px;background:#e0f2fe;color:#0e7490;padding:1.5px 8px;border-radius:6px;font-weight:700;margin-right:6px}
+  .summary{margin:40px 0 20px;border-radius:18px;padding:26px 30px;background:linear-gradient(130deg,#fff8f3,#ffffff);border:1px solid #ffe0cf}
+  .summary h3{margin-top:0}
+  .summary ul{list-style:none;margin-top:10px}
+  .summary li{font-size:14px;line-height:2;color:#3d4d66;padding-left:24px;position:relative}
+  .summary li::before{content:"◆";position:absolute;left:0;color:var(--brand);font-size:11px;top:6px}
+  .pager{display:flex;gap:14px;margin-top:30px;flex-wrap:wrap}
+  .pager a{flex:1;min-width:200px;text-decoration:none;border:1px solid var(--line);border-radius:14px;padding:16px 20px;background:#fff;transition:.2s;display:block}
+  .pager a:hover{border-color:var(--brand);box-shadow:0 10px 26px rgba(255,107,53,.14);transform:translateY(-2px)}
+  .pager a .k{font-size:11px;color:var(--dim2);font-weight:700;letter-spacing:1px}
+  .pager a .v{font-size:14px;font-weight:800;color:var(--night);margin-top:5px}
+  .pager a.back{background:var(--brand-soft);border-color:transparent;text-align:center}
+  .pager a.back .v{color:var(--brand-dark)}
+  .cta{margin-top:26px;border-radius:20px;padding:30px 34px;color:#fff;position:relative;overflow:hidden;background:linear-gradient(120deg,#16202f,#2b3a52 46%,#a8431c 132%)}
+  .cta::after{content:"";position:absolute;right:-70px;bottom:-90px;width:280px;height:280px;border-radius:50%;background:radial-gradient(circle,rgba(255,140,80,.45),transparent 68%)}
+  .cta h3{color:#fff;margin:0 0 10px;position:relative;z-index:2}
+  .cta h3::before{background:var(--brand)}
+  .cta p{color:#d8e0ef;font-size:13.5px;margin:0 0 18px;position:relative;z-index:2;max-width:640px}
+  .cta .btn-go{position:relative;z-index:2}
+  @media(max-width:900px){
+    .sidebar-nav{transform:translateX(-100%)}
+    .sidebar-nav.active{transform:translateX(0)}
+    .nav-toggle{display:block}
+    .page{margin-left:0}
+    .hero{padding:70px 22px 34px}
+    .hero-top{flex-direction:column-reverse;text-align:center}
+    .hero-card{width:auto}
+    .container{padding:26px 20px 60px}
+    .goal-grid{grid-template-columns:1fr}
+  }
+</style>
+</head>
+<body>
+
+<button class="nav-toggle" onclick="document.querySelector('.sidebar-nav').classList.toggle('active')">&#9776;</button>
+
+<nav class="sidebar-nav">
+  <div class="sb-brand">
+    <a class="sb-logo" href="https://codecombat.cn/" target="_blank" rel="noopener" title="访问 CodeCombat 扣哒世界官网">
+      <img src="../assets/logo.png" alt="CodeCombat 扣哒世界">
+    </a>
+    <div><b>密文石桥</b><span>回声溪谷 · C++ 二级 第 3 单元</span></div>
+  </div>
+  <div class="nav-title">本单元目录</div>
+
+  <a href="#s0" class="nav-section">0　单元导语与目标</a>
+  <a href="#s0-1" class="nav-sub">0.1 学习目标</a>
+  <a href="#s0-2" class="nav-sub">0.2 考纲对照</a>
+  <a href="#s1" class="nav-section">1　计算机只认 0 和 1</a>
+  <a href="#s1-1" class="nav-sub">1.1 两种状态就够用</a>
+  <a href="#s1-2" class="nav-sub">1.2 二进制数怎么读</a>
+  <a href="#s2" class="nav-section">2　ASCII 编码</a>
+  <a href="#s2-1" class="nav-sub">2.1 字符怎么变成数字</a>
+  <a href="#s2-2" class="nav-sub">2.2 常见字符的编码</a>
+  <a href="#s2-3" class="nav-sub">2.3 字符与数字互转</a>
+  <a href="#s3" class="nav-section">3　数据类型转换</a>
+  <a href="#s3-1" class="nav-sub">3.1 自动转换</a>
+  <a href="#s3-2" class="nav-sub">3.2 强制转换</a>
+  <a href="#s3-3" class="nav-sub">3.3 转换的两大陷阱</a>
+  <a href="#s4" class="nav-section">4　进制的写法</a>
+  <a href="#s4-1" class="nav-sub">4.1 四种进制的写法</a>
+  <a href="#s4-2" class="nav-sub">4.2 让输出变成十六进制</a>
+  <a href="#s5" class="nav-section">5　代码实战</a>
+  <a href="#s6" class="nav-section">6　常见陷阱</a>
+  <a href="#s7" class="nav-section">7　题目练习</a>
+  <a href="#s8" class="nav-section">8　本单元小结</a>
+
+  <a href="../index.html" target="_top" class="sb-back">返回考纲之路</a>
+</nav>
+
+<div class="page">
+
+<div class="hero">
+  <div class="hero-top">
+    <div class="hero-txt">
+      <div class="crumb">扣哒考级 · GESP C++ 二级 · 第 3 单元　|　回声溪谷 ECHOSTREAM VALLEY</div>
+      <h1>密文石桥
+        <span class="sub">ASCII 编码与数据类型转换</span>
+      </h1>
+      <div class="en">ASCII Encoding &amp; Type Conversion</div>
+      <div class="tags">        <span class="tag hot">考纲 · ASCII 与类型转换</span>
+        <span class="tag">二进制</span>
+        <span class="tag">ASCII 编码</span>
+        <span class="tag">字符与数字互转</span>
+        <span class="tag">强制转换</span></div>
+    </div>
+    <div class="hero-card">
+      <img class="ava" src="../assets/avatars/hushbaum.webp" alt="哈什鲍姆" onerror="this.style.background='#24344a';this.src='../assets/heroes/hushbaum.webp'">
+      <div class="nm">哈什鲍姆</div>
+      <div class="ti">符文学者 · 你的向导</div>
+    </div>
+  </div>
+</div>
+
+<div class="container">
+
+
+
+<div class="lead">
+  溪谷上游横着一座石桥。桥面的每一块石板上都刻着奇怪的东西——
+  <b>左边是一个字母或符号，右边是一串数字。</b><br>
+  安雅不认识这些符号，把你带到了桥头的石屋：<b>哈什鲍姆（Hushbaum）</b>正在那里翻一本厚书。<br>
+  这些是<b>密文</b>。老人头也不抬地说，不过在计算机的世界里，<b>它们其实一点都不神秘</b>——
+  你看到的每一个字母、每一个汉字，背后都站着一个数字。
+</div>
+
+<div class="cast hushbaum">
+  <img class="ava" src="../assets/avatars/hushbaum.webp" alt="哈什鲍姆" onerror="this.style.display='none'">
+  <div class="bubble">
+    <div class="who">哈什鲍姆 · 符文学者</div>
+    上一单元你学会了"把想法画成图"。这一单元我们往更深处走一步：<br>
+    <b>计算机到底是怎么"认识"一个字符的？</b><br>
+    答案会让你有点意外——<strong>它根本不认识字符，它只认识数字。它把字符偷偷换成了数字。</strong>
+  </div>
+</div>
+
+<figure class="pic">
+  <img src="../assets/illustrations/py-L2-03-01_ascii_tablet.webp" alt="ASCII 石板"
+       onerror="this.closest('.pic').classList.add('missing')">
+  <div class="ph">
+    <div class="fn">assets/illustrations/py-L2-03-01_ascii_tablet.webp</div>
+    <div class="ds">【配图位】石桥的一块长条石板上刻着两列网格：左列是一个个字母与符号的浮雕，右列是一个个数字；每一对之间都有一条细细的发光符文线把它们连起来；石板边缘长着青苔，桥下是流过的溪水；一名新兵蹲在石板前用手指沿着符文线比划。</div>
+  </div>
+  <figcaption>图 1：回声溪谷的密文石桥——今天要从这里开始</figcaption>
+</figure>
+
+<!-- ============ 0 ============ -->
+<div class="section-header" id="s0">
+  <h2>0　单元导语与目标</h2>
+  <div class="en-title">Unit Overview</div>
+</div>
+
+<h3 id="s0-1">0.1 学习目标</h3>
+<div class="goal-grid">
+  <div class="goal">
+    <h4><span class="ic">1</span>学完这个单元，你将能……</h4>
+    <ul>
+      <li>说清"计算机只认 0 和 1"到底是什么意思</li>
+      <li>读懂简单的二进制数，并和十进制互相换算</li>
+      <li>说出 ASCII 编码是什么，它是为了解决什么问题</li>
+      <li>记住常用字符的 ASCII 值（'A'、'a'、'0'）</li>
+      <li>在 C++ 里把字符和数字互相转换</li>
+      <li>分清自动转换和强制转换，并预判转换结果</li>
+    </ul>
+  </div>
+  <div class="goal syllabus">
+    <h4><span class="ic">2</span>对标 GESP 考纲（C++ 二级）</h4>
+    <ul>
+      <li>掌握 ASCII 编码的基本概念</li>
+      <li>掌握字符与整数之间的相互转换</li>
+      <li>掌握数据类型的自动转换与强制转换规则</li>
+      <li>了解常见进制的表示方法</li>
+      <li>考核目标：能预判表达式中的类型转换结果，能完成 ASCII 相关计算</li>
+    </ul>
+  </div>
+</div>
+
+<h3 id="s0-2">0.2 考纲对照</h3>
+<table class="styled">
+  <thead><tr><th>本单元小节</th><th>对应考纲条目</th><th>真题常考形式</th></tr></thead>
+  <tbody>
+    <tr><td>1　二进制</td><td>计算机的 0 和 1</td><td>把二进制数换算成十进制</td></tr>
+    <tr><td>2　ASCII 编码</td><td>字符与数字的对应关系</td><td>'A' 的 ASCII 值是多少、'a' 减 'A' 等于几</td></tr>
+    <tr><td>3　类型转换</td><td>数据类型的转换</td><td><code class="inline">3 == 3.0</code> 的结果、<code class="inline">(int)3.9</code> 的结果</td></tr>
+    <tr><td>4　进制写法</td><td>不同进制的表示</td><td>判断某写法是几进制、它等于十进制几</td></tr>
+  </tbody>
+</table>
+
+<!-- ============ 1 ============ -->
+<div class="section-header" id="s1">
+  <h2>1　计算机只认 0 和 1</h2>
+  <div class="en-title">Only 0 and 1</div>
+</div>
+
+<h3 id="s1-1">1.1 两种状态就够用</h3>
+
+<p>哈什鲍姆把书合上：你想想，电路里最可靠的是什么？<b>是"通"和"断"这两种状态。</b>灯亮着就是 1，灯灭了就是 0——中间没有"半亮"这种事。</p>
+
+<figure class="pic">
+  <img src="../assets/illustrations/cpp-L2-03-03_binary_lanterns.webp" alt="二进制灯笼"
+       onerror="this.closest('.pic').classList.add('missing')">
+  <div class="ph">
+    <div class="fn">assets/illustrations/cpp-L2-03-03_binary_lanterns.webp</div>
+    <div class="ds">【配图位】石屋墙上挂着一排八盏小灯笼，每盏只有"亮"和"灭"两种状态；灯笼下方各刻着一个数字牌，从左到右依次是 128、64、32、16、8、4、2、1；当前点亮的灯笼是 64 和 8 两盏，下方一块石板显示合计结果 72；一名新兵举着灯杵站在旁边比划，扣哒鸭用翅膀指着亮着的两盏。</div>
+  </div>
+  <figcaption>图 2：一排灯笼，只有亮和灭两种状态</figcaption>
+</figure>
+
+<div class="box tip">
+  <span class="lb">打个比方：</span>
+  <b>二进制就像一排开关。</b><br>
+  每个开关只有"开"和"关"两种状态，可<strong>把一排开关组合起来，就能表示很多种不同的情况</strong>：<br>
+  一排 1 个开关 → 2 种情况；一排 2 个开关 → 4 种；一排 3 个 → 8 种……<br>
+  <b>一排 n 个开关，就能表示 2 的 n 次方种情况。</b><br>
+  <b>计算机用的就是"一排 8 个开关"——也就是一个字节（8 位）。</b>
+</div>
+
+<h3 id="s1-2">1.2 二进制数怎么读</h3>
+
+<table class="styled">
+  <thead><tr><th>十进制</th><th>二进制</th><th>怎么算出来的</th></tr></thead>
+  <tbody>
+    <tr><td>1</td><td>1</td><td>1 × 1</td></tr>
+    <tr><td>2</td><td>10</td><td>1 × 2 + 0 × 1</td></tr>
+    <tr><td>3</td><td>11</td><td>1 × 2 + 1 × 1</td></tr>
+    <tr><td>4</td><td>100</td><td>1 × 4</td></tr>
+    <tr><td>5</td><td>101</td><td>1 × 4 + 0 × 2 + 1 × 1</td></tr>
+    <tr><td>10</td><td>1010</td><td>1 × 8 + 0 × 4 + 1 × 2 + 0 × 1</td></tr>
+  </tbody>
+</table>
+
+<figure class="figure">
+  <svg class="diagram" viewBox="0 0 830 280" role="img" aria-label="二进制的位权">
+    <text x="24" y="32" font-size="14" font-weight="bold" fill="#1f2937">从右往左，每一格的"份量"翻一倍</text>
+
+    <g font-family="Consolas,monospace">
+      <rect x="60" y="70" width="76" height="56" rx="8" fill="#eaf1fe" stroke="#2563eb" stroke-width="2"/>
+      <text x="98" y="108" text-anchor="middle" font-size="22" fill="#1d4ed8" font-weight="bold">1</text>
+      <text x="98" y="150" text-anchor="middle" font-size="12" fill="#3b6ea8">×128</text>
+
+      <rect x="146" y="70" width="76" height="56" rx="8" fill="#f1f5f9" stroke="#94a3b8" stroke-width="2"/>
+      <text x="184" y="108" text-anchor="middle" font-size="22" fill="#94a3b8" font-weight="bold">0</text>
+      <text x="184" y="150" text-anchor="middle" font-size="12" fill="#94a3b8">×64</text>
+
+      <rect x="232" y="70" width="76" height="56" rx="8" fill="#eaf1fe" stroke="#2563eb" stroke-width="2"/>
+      <text x="270" y="108" text-anchor="middle" font-size="22" fill="#1d4ed8" font-weight="bold">1</text>
+      <text x="270" y="150" text-anchor="middle" font-size="12" fill="#3b6ea8">×32</text>
+
+      <rect x="318" y="70" width="76" height="56" rx="8" fill="#f1f5f9" stroke="#94a3b8" stroke-width="2"/>
+      <text x="356" y="108" text-anchor="middle" font-size="22" fill="#94a3b8" font-weight="bold">0</text>
+      <text x="356" y="150" text-anchor="middle" font-size="12" fill="#94a3b8">×16</text>
+
+      <rect x="404" y="70" width="76" height="56" rx="8" fill="#f1f5f9" stroke="#94a3b8" stroke-width="2"/>
+      <text x="442" y="108" text-anchor="middle" font-size="22" fill="#94a3b8" font-weight="bold">0</text>
+      <text x="442" y="150" text-anchor="middle" font-size="12" fill="#94a3b8">×8</text>
+
+      <rect x="490" y="70" width="76" height="56" rx="8" fill="#eaf1fe" stroke="#2563eb" stroke-width="2"/>
+      <text x="528" y="108" text-anchor="middle" font-size="22" fill="#1d4ed8" font-weight="bold">1</text>
+      <text x="528" y="150" text-anchor="middle" font-size="12" fill="#3b6ea8">×4</text>
+
+      <rect x="576" y="70" width="76" height="56" rx="8" fill="#f1f5f9" stroke="#94a3b8" stroke-width="2"/>
+      <text x="614" y="108" text-anchor="middle" font-size="22" fill="#94a3b8" font-weight="bold">0</text>
+      <text x="614" y="150" text-anchor="middle" font-size="12" fill="#94a3b8">×2</text>
+
+      <rect x="662" y="70" width="76" height="56" rx="8" fill="#eaf1fe" stroke="#2563eb" stroke-width="2"/>
+      <text x="700" y="108" text-anchor="middle" font-size="22" fill="#1d4ed8" font-weight="bold">1</text>
+      <text x="700" y="150" text-anchor="middle" font-size="12" fill="#3b6ea8">×1</text>
+    </g>
+
+    <text x="98" y="60" text-anchor="middle" font-size="10.5" fill="#94a3b8">第 8 位</text>
+    <text x="700" y="60" text-anchor="middle" font-size="10.5" fill="#94a3b8">第 1 位</text>
+
+    <rect x="60" y="180" width="678" height="76" rx="10" fill="#f7f9fd" stroke="#cbd5e1" stroke-width="1.6"/>
+    <text x="86" y="206" font-size="12.5" fill="#334155" font-weight="bold">把写着 1 的那些位对应的份量加起来：</text>
+    <text x="86" y="232" font-size="13" font-family="Consolas,monospace" fill="#1d4ed8">10100101  →  128 + 32 + 4 + 1  =  165</text>
+    <text x="86" y="250" font-size="11.5" fill="#94a3b8">写着 0 的位不加——所以"1 是关键，0 只是占位"</text>
+  </svg>
+  <div class="caption">图 3（SVG）：二进制每一位的份量</div>
+</figure>
+
+<div class="box remember">
+  <span class="lb">二进制读法的口诀：</span>
+  <b>从右往左，每一位的"份量"依次是 1、2、4、8、16、32、64、128……（也就是 2 的 0 次方、1 次方、2 次方……）</b><br>
+  把<strong>写着 1 的那些位</strong>对应的份量加起来，就是它的十进制值。<br>
+  <b>例子：<code class="inline">1010</code> → 从右往左第 2 位和第 4 位是 1 → 2 + 8 = 10。</b>
+</div>
+
+<!-- ============ 2 ============ -->
+<div class="section-header" id="s2">
+  <h2>2　ASCII 编码</h2>
+  <div class="en-title">ASCII</div>
+</div>
+
+<h3 id="s2-1">2.1 字符怎么变成数字</h3>
+
+<p>哈什鲍姆在石板上画了一只鸡，又在旁边写了个 <b>7</b>：</p>
+
+<p>这是很久以前的规矩：<b>大家提前约定好，鸡就写作 7，蛋就写作 8。</b>
+以后不管谁看到 7，都知道那说的是鸡。</p>
+
+<p>计算机里也一样——<b>人们事先约定了一张表，把每个字符都对应上一个数字。</b>这就是 <b>ASCII 编码</b>。</p>
+
+<div class="box remember">
+  <span class="lb">ASCII 编码是什么：</span>
+  <strong>ASCII 是一张"字符 ↔ 数字"的对照表。</strong><br>
+  它给常用的英文字母、数字、标点符号各分配了一个 <b>0~127</b> 之间的编号。<br>
+  <b>计算机内部只存这些编号（二进制），显示的时候再照着表查回字符。</b><br>
+  <b>所以：计算机从来不知道什么是"A"，它只知道"A"的编号是 65。</b>
+</div>
+
+<h3 id="s2-2">2.2 常见字符的编码</h3>
+
+<table class="styled">
+  <thead><tr><th>字符</th><th>ASCII 值</th><th>记忆窍门</th></tr></thead>
+  <tbody>
+    <tr><td><code class="inline">'0'</code> ~ <code class="inline">'9'</code></td><td>48 ~ 57</td><td>数字字符 <code class="inline">'0'</code> 是 <strong>48</strong>，往后依次 +1</td></tr>
+    <tr><td><code class="inline">'A'</code> ~ <code class="inline">'Z'</code></td><td>65 ~ 90</td><td><strong>'A' 是 65</strong>，26 个大写字母连续排列</td></tr>
+    <tr><td><code class="inline">'a'</code> ~ <code class="inline">'z'</code></td><td>97 ~ 122</td><td><strong>'a' 是 97</strong>，比 'A' 大 32</td></tr>
+    <tr><td>空格</td><td>32</td><td>最小的"可见字符"</td></tr>
+    <tr><td>换行符 <code class="inline">'\n'</code></td><td>10</td><td>不可见的控制字符</td></tr>
+  </tbody>
+</table>
+
+<div class="box tip">
+  <span class="lb">三个必须背下来的数：</span>
+  <b><code class="inline">'A'</code> = 65、<code class="inline">'a'</code> = 97、<code class="inline">'0'</code> = 48。</b><br>
+  记住之后就能推出其它：<br>
+  <b>大写字母</b>：<code class="inline">'A' + 1 = 'B'</code>，<code class="inline">'A' + 25 = 'Z'</code>；<br>
+  <b>小写字母</b>：<code class="inline">'a' + 1 = 'b'</code>；<br>
+  <b>大小写之差</b>：<code class="inline">'a' - 'A' = 97 - 65 = 32</code>——<strong>这一个 32 变化成很多题目。</strong>
+</div>
+
+<h3 id="s2-3">2.3 字符与数字互转</h3>
+
+<figure class="pic">
+  <img src="../assets/illustrations/cpp-L2-03-04_char_number_bridge.webp" alt="字符与数字的石桥"
+       onerror="this.closest('.pic').classList.add('missing')">
+  <div class="ph">
+    <div class="fn">assets/illustrations/cpp-L2-03-04_char_number_bridge.webp</div>
+    <div class="ds">【配图位】石桥中央的一段特写：桥面石板被分成两半，左半边堆着一块块刻着字母的石牌（'A'、'B'），右半边堆着一块块刻着数字的石牌（65、66）；一条由符文组成的光帶在两侧之间来回移动，把石牌"翻译"成另一种形态；桥两侧各立一块小指示牌，分别写着 "int" 与 "char"；扣哒鸭站在桥中间当翻译。</div>
+  </div>
+  <figcaption>图 4：字符与数字之间，有一座可以来回走的桥</figcaption>
+</figure>
+
+<div class="code-card">
+  <div class="code-head">
+    <span class="dot d1"></span><span class="dot d2"></span><span class="dot d3"></span>
+    <span class="file">把字符当数字用，把数字当字符用</span>
+    <span class="lang">C++</span>
+  </div>
+  <pre><code>char ch = 'A';
+
+int code = (int)ch;              // 字符 → 数字
+cout &lt;&lt; code &lt;&lt; endl;            // 65
+
+char back = (char)66;            // 数字 → 字符
+cout &lt;&lt; back &lt;&lt; endl;            // B
+
+cout &lt;&lt; (char)(ch + 1) &lt;&lt; endl;   // B   向后挪一个字母
+cout &lt;&lt; (ch + 32) &lt;&lt; endl;        // 97  大写变小写（得到的是数字）</code></pre>
+  <div class="out"><b>OUTPUT</b>　65<br>B<br>B<br>97</div>
+</div>
+
+<div class="code-card">
+  <div class="code-head">
+    <span class="dot d1"></span><span class="dot d2"></span><span class="dot d3"></span>
+    <span class="file">两个超实用的换算套路</span>
+    <span class="lang">C++</span>
+  </div>
+  <pre><code>// 一、数字字符 → 真正的数字
+char c = '7';
+int  n = c - '0';                // 55 - 48 = 7
+cout &lt;&lt; n &lt;&lt; endl;                // 7
+
+// 二、大写字母 → 小写字母
+char up = 'C';
+char low = up + 32;              // 67 + 32 = 99，也就是 'c'
+cout &lt;&lt; low;                     // c</code></pre>
+  <div class="out"><b>口诀</b>　<code>数字字符 - '0'</code> 得到数字；<code>大写 + 32</code> 得到小写</div>
+</div>
+
+<div class="box tip">
+  <span class="lb">为什么是 <code>- '0'</code> 而不是直接减？</span>
+  因为字符 <code class="inline">'7'</code> 在计算机里存的是 <b>55</b>，不是 7。<br>
+  要拿到"真正的 7"，就得<strong>减掉 <code class="inline">'0'</code>（48）</strong>：<code class="inline">55 - 48 = 7</code>。<br>
+  <b>这是一个"把字符数字变成数学数字"的标准写法，二级题目里出现得非常频繁。</b>
+</div>
+
+<!-- ============ 3 ============ -->
+<div class="section-header" id="s3">
+  <h2>3　数据类型转换</h2>
+  <div class="en-title">Type Conversion</div>
+</div>
+
+<h3 id="s3-1">3.1 自动转换</h3>
+
+<figure class="pic">
+  <img src="../assets/illustrations/cpp-L2-03-02_type_conversion.webp" alt="两只能量转换炉"
+       onerror="this.closest('.pic').classList.add('missing')">
+  <div class="ph">
+    <div class="fn">assets/illustrations/cpp-L2-03-02_type_conversion.webp</div>
+    <div class="ds">【配图位】石屋作坊里并排放着两座金属转换炉：左边一座带有"自动"标牌，水流（小数）从大口进入后自动汇成更"精细"的水雾从另一口流出，什么都不少（自动转换）；右边一座带有一根需要手动拉动的粗拉杆，水流经窄口后被挤成一粒粒石子、还有细屑从侧面漏掉（强制转换，会丢小数）；一名新兵站在右边炉子前拉动拉杆。</div>
+  </div>
+  <figcaption>图 5：自动转换和强制转换，一个不丢东西，一个会丢</figcaption>
+</figure>
+
+<table class="styled">
+  <thead><tr><th>方向</th><th>例子</th><th>结果</th><th>会丢东西吗</th></tr></thead>
+  <tbody>
+    <tr><td>小 → 大（低精度 → 高精度）</td><td><code class="inline">int</code> → <code class="inline">double</code></td><td><code class="inline">3</code> 变成 <code class="inline">3.0</code></td><td><strong>不会丢</strong></td></tr>
+    <tr><td>字符 → 整数</td><td><code class="inline">char</code> → <code class="inline">int</code></td><td><code class="inline">'A'</code> 变成 <code class="inline">65</code></td><td>不会丢</td></tr>
+    <tr><td>大 → 小</td><td><code class="inline">double</code> → <code class="inline">int</code></td><td><code class="inline">3.9</code> 变成 <code class="inline">3</code></td><td><strong>会丢小数部分</strong></td></tr>
+    <tr><td>整数之间运算</td><td><code class="inline">7 / 2</code>（都是 int）</td><td><code class="inline">3</code></td><td><strong>会丢小数部分</strong></td></tr>
+  </tbody>
+</table>
+
+<figure class="figure">
+  <svg class="diagram" viewBox="0 0 830 250" role="img" aria-label="类型转换的两种方向">
+    <text x="24" y="32" font-size="14" font-weight="bold" fill="#1f2937">往哪边转，决定了会不会丢东西</text>
+
+    <rect x="40" y="58" width="350" height="162" rx="12" fill="#e9f8ef" stroke="#2e9e5b" stroke-width="2"/>
+    <text x="215" y="86" text-anchor="middle" font-size="12.5" fill="#1f7a44" font-weight="bold">安全的方向（不会丢）</text>
+    <text x="66" y="118" font-size="12.5" font-family="Consolas,monospace" fill="#2c5f45">char → int → double</text>
+    <text x="66" y="148" font-size="11.5" fill="#5f9b7d">· 'A' 变成 65，编号不变</text>
+    <text x="66" y="172" font-size="11.5" fill="#5f9b7d">· 3 变成 3.0，数值不变</text>
+    <text x="66" y="202" font-size="11.5" fill="#2c5f45" font-weight="bold">3 == 3.0 成立 → 结果是 1</text>
+
+    <rect x="440" y="58" width="350" height="162" rx="12" fill="#fef2f2" stroke="#ef4444" stroke-width="2"/>
+    <text x="615" y="86" text-anchor="middle" font-size="12.5" fill="#b91c1c" font-weight="bold">危险的方向（会丢东西）</text>
+    <text x="466" y="118" font-size="12.5" font-family="Consolas,monospace" fill="#8c3a3a">double → int</text>
+    <text x="466" y="148" font-size="11.5" fill="#c08080">· 3.9 变成 3（截断，不是四舍五入）</text>
+    <text x="466" y="172" font-size="11.5" fill="#c08080">· 整数除整数：7 / 2 得到 3</text>
+    <text x="466" y="202" font-size="11.5" fill="#8c3a3a" font-weight="bold">(double)7 / 2 才是 3.5</text>
+
+    <text x="24" y="240" font-size="12" fill="#8d9d94">口诀：往"精细"走不丢，往"粗糙"走要丢；想不丢，就先把某一边转成小数</text>
+  </svg>
+  <div class="caption">图 6（SVG）：类型转换的两个方向</div>
+</figure>
+
+<div class="box remember">
+  <span class="lb">自动转换的核心规律：</span>
+  <strong>两个不同类型的数一起运算时，范围小的那个会先被"提升"成范围大的。</strong><br>
+  <b>所以 <code class="inline">int</code> 和 <code class="inline">double</code> 相加，结果是 <code class="inline">double</code>。</b><br>
+  <b>但要注意：整数除整数仍然是整数——<code class="inline">7 / 2</code> 是 3，不是 3.5，因为两个操作数都是 int，没有触发提升。</b>
+</div>
+
+<h3 id="s3-2">3.2 强制转换</h3>
+
+<div class="code-card">
+  <div class="code-head">
+    <span class="dot d1"></span><span class="dot d2"></span><span class="dot d3"></span>
+    <span class="file">写清楚"我要换类型"</span>
+    <span class="lang">C++</span>
+  </div>
+  <pre><code>double x = 3.9;
+
+int a = (int)x;                  // 3    截断（不是四舍五入）
+int b = int(x);                  // 3    这种写法也可以
+int c = x;                       // 3    自动转换也能做到，但不如写清楚
+
+int m = 7, n = 2;
+cout &lt;&lt; m / n &lt;&lt; endl;            // 3
+cout &lt;&lt; (double)m / n &lt;&lt; endl;     // 3.5  先转成 double 再除
+
+bool t = (bool)5;                // true（非 0 都是真）
+bool f = (bool)0;                // false
+cout &lt;&lt; t &lt;&lt; " " &lt;&lt; f;            // 1 0</code></pre>
+  <div class="out"><b>关键</b>　<code>(类型)值</code> 就是强制转换；<strong>转换发生在运算之前，结果才会跟着变</strong></div>
+</div>
+
+<h3 id="s3-3">3.3 转换的两大陷阱</h3>
+
+<table class="styled">
+  <thead><tr><th>陷阱</th><th>例子</th><th>为什么会错</th></tr></thead>
+  <tbody>
+    <tr><td><b>截断 ≠ 四舍五入</b></td><td><code class="inline">(int)3.9</code> 得到 3</td><td>小数部分被<strong>直接砍掉</strong>，不看它有多接近下一位</td></tr>
+    <tr><td><b>整除先于提升</b></td><td><code class="inline">(double)(7 / 2)</code> 得到 3.0</td><td><strong>括号里先算完了整除</strong>，再转就晚了——要写成 <code class="inline">(double)7 / 2</code></td></tr>
+    <tr><td><b>布尔转换</b></td><td><code class="inline">bool(5)</code>、<code class="inline">bool(-5)</code> 都是 1</td><td><strong>非 0 即真</strong>——负数也是"真"</td></tr>
+    <tr><td><b>整数与小数比较</b></td><td><code class="inline">3 == 3.0</code> 得到 1</td><td>比较前 int 会<strong>自动提升为 double</strong>，两边相等</td></tr>
+  </tbody>
+</table>
+
+<div class="box warn">
+  <span class="lb">最容易丢分的一条：</span>
+  <code class="inline">(double)(7 / 2)</code> 和 <code class="inline">(double)7 / 2</code> <strong>结果完全不同</strong>！<br>
+  前者：先算 <code class="inline">7 / 2 = 3</code>（整除），再转成 3.0；<br>
+  后者：先把 7 转成 7.0，再算 <code class="inline">7.0 / 2 = 3.5</code>。<br>
+  <b>一句话：<code class="inline">(double)</code> 要写在除法之前，才有用。</b>
+</div>
+
+<!-- ============ 4 ============ -->
+<div class="section-header" id="s4">
+  <h2>4　进制的写法</h2>
+  <div class="en-title">Number Bases</div>
+</div>
+
+<h3 id="s4-1">4.1 四种进制的写法</h3>
+
+<table class="styled">
+  <thead><tr><th>进制</th><th>C++ 写法</th><th>用到的数字</th><th>例子</th><th>等于十进制</th></tr></thead>
+  <tbody>
+    <tr><td><strong>十进制</strong></td><td>直接写</td><td>0~9</td><td><code class="inline">255</code></td><td>255</td></tr>
+    <tr><td><strong>八进制</strong></td><td>以 <code class="inline">0</code> 开头</td><td>0~7</td><td><code class="inline">0377</code></td><td>255</td></tr>
+    <tr><td><strong>十六进制</strong></td><td>以 <code class="inline">0x</code> 开头</td><td>0~9、A~F</td><td><code class="inline">0xFF</code></td><td>255</td></tr>
+    <tr><td><strong>二进制</strong></td><td>以 <code class="inline">0b</code> 开头</td><td>0、1</td><td><code class="inline">0b11111111</code></td><td>255</td></tr>
+  </tbody>
+</table>
+
+<div class="box remember">
+  <span class="lb">一眼认进制：</span>
+  <b>看到 <code class="inline">0x</code> 就是十六进制，看到 <code class="inline">0b</code> 就是二进制，看到 <code class="inline">0</code> 开头（后面跟数字）就是八进制。</b><br>
+  十六进制里的 A~F 分别代表 <b>10、11、12、13、14、15</b>。<br>
+  <b>为什么要用十六进制？因为一位十六进制刚好对应四位二进制，写起来短、看起来清楚——<code class="inline">0xFF</code> 比 <code class="inline">0b11111111</code> 好写多了。</b>
+</div>
+
+<h3 id="s4-2">4.2 让输出变成十六进制</h3>
+
+<div class="code-card">
+  <div class="code-head">
+    <span class="dot d1"></span><span class="dot d2"></span><span class="dot d3"></span>
+    <span class="file">同一个数，用不同进制输出</span>
+    <span class="lang">C++</span>
+  </div>
+  <pre><code>int n = 255;
+
+cout &lt;&lt; n &lt;&lt; endl;                   // 255   十进制
+cout &lt;&lt; hex &lt;&lt; n &lt;&lt; endl;            // ff    十六进制
+cout &lt;&lt; oct &lt;&lt; n &lt;&lt; endl;            // 377   八进制
+cout &lt;&lt; dec &lt;&lt; n &lt;&lt; endl;            // 255   换回十进制</code></pre>
+  <div class="out"><b>注意</b>　<code>hex</code> / <code>oct</code> / <code>dec</code> 会<strong>一直生效</strong>，用完了记得切回 <code>dec</code></div>
+</div>
+
+<div class="box tip">
+  <span class="lb">打个比方：</span>
+  同一个数 255，用不同进制写，<strong>就像同一件事用不同的"计量单位"说</strong>：<br>
+  <b>255（十进制）＝ 255 个"1"</b>；<br>
+  <b>0377（八进制）＝ 3 个"64" + 7 个"8" + 7 个"1"</b>；<br>
+  <b>0xFF（十六进制）＝ 15 个"16" + 15 个"1"</b>。<br>
+  <b>它们说的是同一件事，只是"打包方式"不同。</b>
+</div>
+
+<!-- ============ 5 ============ -->
+<div class="section-header" id="s5">
+  <h2>5　代码实战</h2>
+  <div class="en-title">Level Practice</div>
+</div>
+
+<div class="level-card">
+  <div class="lc-head"><span class="n">关卡</span><h4>指点迷津</h4><span class="go">进入关卡 →</span></div>
+  <div class="lc-body">
+    <div class="story">
+      <b>故事：</b>溪谷的石门要一道口令才能打开。<br>
+      哈什鲍姆摊手：我也不知道口令是什么——<b>但门边刻着提示。</b><br>
+      你走近一看，石门上果然有一行小字。安雅在你身后说：
+      <strong>这就是"指点迷津"——线索一直都在，只是你得先去看。</strong>
+    </div>
+    <p><strong>思路：</strong>关卡的"提示"按钮里写着口令。把口令用 <code class="inline">hero.say()</code> 说出来，
+    门就会打开。这一关考的不是代码，而是<b>遇到问题时，会不会先去找线索</b>。</p><figure class="pic">
+  <img src="../assets/stages/py-L2-03-stage1_library_password.webp" alt="指点迷津 关卡截图"
+       onerror="this.closest('.pic').classList.add('missing')">
+  <div class="ph">
+    <div class="fn">assets/stages/py-L2-03-stage1_library_password.webp</div>
+    <div class="ds">【游戏截图位】关卡指点迷津通关画面：石制图书馆大门缓缓打开，门楣上刻着一行口令符文；英雄站在门前刚喊完口令，身旁有对话气泡；屏幕下方代码区显示 say 语句，右上角显示"关卡完成"提示。</div>
+  </div>
+  <figcaption>关卡实况：指点迷津</figcaption>
+</figure>
+    <div class="code-card">
+      <div class="code-head">
+        <span class="dot d1"></span><span class="dot d2"></span><span class="dot d3"></span>
+        <span class="file">重点示例：说出正确的口令</span>
+        <span class="lang">C++</span>
+      </div>
+      <pre><code>// 你需要图书馆大门的开门密码
+// 点击代码窗口上面的"提示"按钮，点击"下一页"
+
+#include &lt;iostream&gt;
+using namespace std;
+
+int main() {
+    hero.moveRight();
+    hero.say("Hush");        // 口令是一个字符串
+    hero.moveRight();
+
+    return 0;
+}</code></pre>
+      <div class="out"><b>要点</b>　<code>hero.say()</code> 里的内容是<strong>字符串</strong>，要用<strong>双引号</strong>包起来</div>
+    </div>
+    <div class="box info">
+      <span class="lb">和本单元的关联：</span>
+      <code class="inline">"Hush"</code> 这五个字符，在计算机里其实是一串数字——<br>
+      <b>H 是 72、u 是 117、s 是 115、h 是 104。</b><br>
+      <strong>你只是敲了几个字母，计算机存下来的却是一串编号——这正是这一单元要讲的事。</strong>
+    </div>
+    <a class="btn-go" href="https://codecombat.cn/" target="_blank" rel="noopener">去扣哒世界闯这一关 →</a>
+  </div>
+</div>
+
+
+
+<!-- ============ 6 ============ -->
+<div class="section-header" id="s6">
+  <h2>6　常见陷阱</h2>
+  <div class="en-title">Common Pitfalls</div>
+</div>
+
+<div class="cast duck">
+  <img class="ava" src="../assets/ducks/duck_hattori.webp" alt="扣哒鸭" onerror="this.style.display='none'">
+  <div class="bubble">
+    <div class="who">扣哒鸭 · 调试官</div>
+    编码和类型转换，是二级最容易"看错一眼就丢分"的地方。四条，全是真题爱考的点。
+  </div>
+</div>
+
+<div class="pit">
+  <div class="pt">
+    <div class="x">1</div>
+    <div class="t"><b>把字符 <code class="inline">'7'</code> 当成数字 7。</b></div>
+  </div>
+  <div class="duck">
+    <img src="../assets/ducks/duck_zana.webp" alt="扣哒鸭" onerror="this.style.display='none'">
+    <div class="dt"><b>扣哒鸭：</b>字符 <code>'7'</code> 在计算机里存的是 <strong>55</strong>，不是 7。<br>
+    想拿到真正的 7，必须写 <code>c - '0'</code>。<br>
+    <b>输出 <code>'7'</code> 得到的是字母 7（能看见），输出 <code>7</code> 得到的也是 7——但它们的"身份"完全不同。</b></div>
+  </div>
+  <div class="fix"><b>正确写法：</b><code class="inline">int n = c - '0';</code></div>
+</div>
+
+<div class="pit">
+  <div class="pt">
+    <div class="x">2</div>
+    <div class="t"><b>以为 <code class="inline">(int)3.9</code> 会四舍五入成 4。</b></div>
+  </div>
+  <div class="duck">
+    <img src="../assets/ducks/duck_naria.webp" alt="扣哒鸭" onerror="this.style.display='none'">
+    <div class="dt"><b>扣哒鸭：</b><strong>是"截断"，不是"四舍五入"。</strong><br>
+    <code>(int)3.9</code> 得到 3，<code>(int)-3.9</code> 得到 -3。<br>
+    <b>想让 3.9 变成 4，得用四舍五入的函数，不是强制转换。</b></div>
+  </div>
+  <div class="fix"><b>正确认识：</b>强制转换 = 砍掉小数部分</div>
+</div>
+
+<div class="pit">
+  <div class="pt">
+    <div class="x">3</div>
+    <div class="t"><b>把 <code class="inline">(double)</code> 写在了括号外面。</b></div>
+  </div>
+  <div class="duck">
+    <img src="../assets/ducks/duck_illia.webp" alt="扣哒鸭" onerror="this.style.display='none'">
+    <div class="dt"><b>扣哒鸭：</b><code>(double)(7 / 2)</code> 得到的是 <b>3.0</b>，不是 3.5！<br>
+    因为<strong>括号里的 7 / 2 先按整除算完了</strong>，再转类型已经来不及。<br>
+    <b>要写成 <code>(double)7 / 2</code>——转换必须发生在除法之前。</b></div>
+  </div>
+  <div class="fix"><b>正确写法：</b><code class="inline">(double)7 / 2</code></div>
+</div>
+
+<div class="pit">
+  <div class="pt">
+    <div class="x">4</div>
+    <div class="t"><b>以为负数转成 bool 是"假"。</b></div>
+  </div>
+  <div class="duck">
+    <img src="../assets/ducks/duck_senick.webp" alt="扣哒鸭" onerror="this.style.display='none'">
+    <div class="dt"><b>扣哒鸭：</b><strong>C++ 里"非 0 即真"。</strong><br>
+    <code>bool(5)</code> 是 1，<code>bool(-5)</code> <strong>也是 1</strong>，只有 <code>bool(0)</code> 才是 0。<br>
+    <b>所以 <code>bool(5) + bool(-5) + bool(5.0)</code> 等于 1 + 1 + 1 = 3。</b></div>
+  </div>
+  <div class="fix"><b>正确认识：</b>只有 0 是假，其余都是真</div>
+</div>
+
+<!-- ============ 7 ============ -->
+<div class="section-header" id="s7">
+  <h2>7　题目练习</h2>
+  <div class="en-title">Practice</div>
+</div>
+
+<p>前 2 题改编自 C++ 二级真题，其余为原创练习题。</p>
+
+<div class="exam">
+  <div class="eh"><span class="src">改编自 2026 年 9 月 · C++ 二级 · 第 3 题</span><span class="tp">单选题</span></div>
+  <div class="eb">
+    <div class="q">执行如下 C++ 代码，其输出是（　　）。</div>
+    <pre>cout &lt;&lt; (3 == 3.0);</pre>
+    <div class="opt"><i>A.</i>1　　<i>B.</i>1.0　　<i>C.</i>0　　<i>D.</i>-1</div>
+    <details><summary>查看答案与详解</summary>
+      <div class="ans"><b>答案：A</b>。比较时，<code class="inline">int</code> 类型的 3 会<strong>自动提升为 <code class="inline">double</code> 的 3.0</strong>，
+      两边数值相等，所以关系表达式成立，结果为 <b>1</b>。<br>
+      <b>B 项</b>错在关系运算的结果一定是整数 1 或 0，不会是 1.0；<br>
+      <b>C、D 项</b>误判了比较结果。<br>
+      <b>考点：类型提升 + 关系运算的结果是 1 或 0。</b><br>
+      <span class="tagline">对应小节</span>3.1 自动转换。</div>
+    </details>
+  </div>
+</div>
+
+<div class="exam">
+  <div class="eh"><span class="src">改编自 2026 年 9 月 · C++ 二级 · 第 4 题</span><span class="tp">单选题</span></div>
+  <div class="eb">
+    <div class="q">执行如下 C++ 代码，其输出是（　　）。</div>
+    <pre>cout &lt;&lt; (bool(5) + bool(-5) + bool(5.0));</pre>
+    <div class="opt"><i>A.</i>0　　<i>B.</i>1　　<i>C.</i>2　　<i>D.</i>3</div>
+    <details><summary>查看答案与详解</summary>
+      <div class="ans"><b>答案：D</b>。C++ 的规则是<strong>"非 0 即真"</strong>：<br>
+      <code class="inline">bool(5)</code> → 1（5 不是 0）<br>
+      <code class="inline">bool(-5)</code> → <b>1</b>（<strong>负数也不是 0</strong>）<br>
+      <code class="inline">bool(5.0)</code> → 1（非 0 的小数也是真）<br>
+      三数相加：1 + 1 + 1 = <b>3</b>。<br>
+      <b>本题最容易错的是把 -5 当成"假"——记住只有 0 才是假。</b><br>
+      <span class="tagline">对应小节</span>3.2 强制转换。</div>
+    </details>
+  </div>
+</div>
+
+<div class="exam">
+  <div class="eh"><span class="src ori">原创练习题</span><span class="tp">单选题</span></div>
+  <div class="eb">
+    <div class="q">已知 <code class="inline">'A'</code> 的 ASCII 值是 65，则 <code class="inline">'F'</code> 的 ASCII 值是（　　）。</div>
+    <div class="opt"><i>A.</i>66　　<i>B.</i>70　　<i>C.</i>71　　<i>D.</i>102</div>
+    <details><summary>查看答案与详解</summary>
+      <div class="ans"><b>答案：B</b>。大写字母在 ASCII 表里是<strong>连续排列</strong>的：<br>
+      A=65、B=66、C=67、D=68、E=69、<b>F=70</b>。<br>
+      也可以用算式：<code class="inline">'F' - 'A' = 5</code>，所以 <code class="inline">65 + 5 = 70</code>。<br>
+      <b>D 项 102</b> 是 'f'（小写）的值——<strong>大小写相差 32，别记反。</strong><br>
+      <span class="tagline">对应小节</span>2.2 常见字符的编码。</div>
+    </details>
+  </div>
+</div>
+
+<div class="exam">
+  <div class="eh"><span class="src ori">原创练习题</span><span class="tp">单选题</span></div>
+  <div class="eb">
+    <div class="q">下列 C++ 代码执行后，输出的结果是（　　）。</div>
+    <pre>char c = '5';
+cout &lt;&lt; c - '0';</pre>
+    <div class="opt"><i>A.</i>5　　<i>B.</i>53　　<i>C.</i>48　　<i>D.</i>出错</div>
+    <details><summary>查看答案与详解</summary>
+      <div class="ans"><b>答案：A</b>。字符 <code class="inline">'5'</code> 的 ASCII 值是 53，<code class="inline">'0'</code> 是 48，<br>
+      所以 <code class="inline">'5' - '0' = 53 - 48 = 5</code>。<br>
+      <b>B 项 53</b> 是直接输出 <code class="inline">c</code> 时得到的结果（字符被当成数字输出）。<br>
+      <b>这个 <code>- '0'</code> 的套路，是"把数字字符变成真数字"的标准写法。</b><br>
+      <span class="tagline">对应小节</span>2.3 字符与数字互转。</div>
+    </details>
+  </div>
+</div>
+
+<div class="exam">
+  <div class="eh"><span class="src ori">原创练习题</span><span class="tp">判断题</span></div>
+  <div class="eb">
+    <div class="q">在 C++ 中，<code class="inline">(double)(7 / 2)</code> 的结果是 3.5。（　　）</div>
+    <details><summary>查看答案与详解</summary>
+      <div class="ans"><b>答案：错误（×）</b>。<strong>括号里的 <code class="inline">7 / 2</code> 会先按整数除法算完</strong>，得到 3，
+      然后才被转换成 3.0，所以结果是 <b>3.0</b>，不是 3.5。<br>
+      想要 3.5，必须写成 <code class="inline">(double)7 / 2</code>——<strong>转换要发生在除法之前</strong>。<br>
+      <span class="tagline">对应小节</span>3.3 转换的两大陷阱。</div>
+    </details>
+  </div>
+</div>
+
+<div class="exam">
+  <div class="eh"><span class="src ori">原创练习题</span><span class="tp">单选题</span></div>
+  <div class="eb">
+    <div class="q">下列 C++ 常量中，表示的是十六进制数的是（　　）。</div>
+    <div class="opt">
+      <i>A.</i><code class="inline">0377</code>　　<i>B.</i><code class="inline">0xFF</code>
+      　　<i>C.</i><code class="inline">0b1010</code>　　<i>D.</i><code class="inline">255</code>
+    </div>
+    <details><summary>查看答案与详解</summary>
+      <div class="ans"><b>答案：B</b>。<code class="inline">0x</code> 开头才是十六进制。<br>
+      <b>A</b> 以 <code class="inline">0</code> 开头（后面跟数字），是<strong>八进制</strong>的 377，等于十进制 255；<br>
+      <b>C</b> 以 <code class="inline">0b</code> 开头，是<strong>二进制</strong>的 1010，等于十进制 10；<br>
+      <b>D</b> 是普通的<strong>十进制</strong> 255。<br>
+      <b>记忆：0x 十六、0b 二、0 开头是八。</b><br>
+      <span class="tagline">对应小节</span>4.1 四种进制的写法。</div>
+    </details>
+  </div>
+</div>
+
+<div class="exam">
+  <div class="eh"><span class="src ori">原创练习题</span><span class="tp">编程题</span></div>
+  <div class="eb">
+    <div class="q">题目要求：读入一个<strong>大写字母</strong>，输出它的小写字母，以及它在 ASCII 表中的编号。
+    <br><b>样例：</b>输入 <code class="inline">C</code>，输出 <code class="inline">c 67</code>。</div>
+    <details><summary>查看参考答案与要点</summary>
+      <div class="ans">
+<pre style="margin:0;background:#131a26;color:#c8d3e0;border-radius:10px;padding:14px 16px">#include &lt;iostream&gt;
+using namespace std;
+
+int main() {
+    char up;
+    cin &gt;&gt; up;
+
+    char low = up + 32;              // 大写 → 小写：加 32
+    int  code = (int)up;             // 字符 → 编号
+
+    cout &lt;&lt; low &lt;&lt; " " &lt;&lt; code;
+
+    return 0;
+}</pre>
+      <p style="margin-top:12px"><b>输入 C，输出 c 67。</b><br>
+      <b>要点：</b><br>
+      ① 大小写字母的 ASCII 值<strong>相差 32</strong>，"大写 + 32 = 小写"；<br>
+      ② 把 <code class="inline">char</code> 赋给 <code class="inline">int</code> 变量时<strong>会输出它的编号</strong>，
+      也可以显式写 <code class="inline">(int)up</code> 让意图更清楚；<br>
+      ③ 反之，若直接 <code class="inline">cout &lt;&lt; low</code>，输出的是字母本身——<strong>要分清"输出字符"和"输出编号"</strong>；<br>
+      ④ 这一题同时用到了本单元的两块内容：<strong>ASCII 编码</strong>与<strong>类型转换</strong>。<br>
+      <span class="tagline">对应小节</span>2.3 字符与数字互转。</p>
+      </div>
+    </details>
+  </div>
+</div>
+
+<!-- ============ 8 ============ -->
+<div class="section-header" id="s8">
+  <h2>8　本单元小结</h2>
+  <div class="en-title">Unit Summary</div>
+</div>
+
+<div class="cast hushbaum">
+  <img class="ava" src="../assets/avatars/hushbaum.webp" alt="哈什鲍姆" onerror="this.style.display='none'">
+  <div class="bubble">
+    <div class="who">哈什鲍姆 · 符文学者</div>
+    四句话记住这一单元：<br>
+    <strong>一、计算机只认 0 和 1；每一位的份量从右往左是 1、2、4、8……</strong><br>
+    <strong>二、ASCII 是"字符 ↔ 数字"的对照表：'A'=65、'a'=97、'0'=48，大小写相差 32。</strong><br>
+    <strong>三、数字字符减 '0' 得到数字；写 (double) 要写在除法之前。</strong><br>
+    <strong>四、0x 十六进制、0b 二进制、0 开头八进制。</strong><br>
+    桥上的密文你全都看懂了。下一单元，我们进迷宫。
+  </div>
+</div>
+
+<div class="summary">
+  <h3>你在石桥上学会了什么</h3>
+  <ul>
+    <li><strong>二进制</strong>——每一位的份量是 1、2、4、8、16……把写着 1 的位加起来就是十进制值。</li>
+    <li><strong>一个字节</strong>——8 个二进制位，能表示 2 的 8 次方 = 256 种情况。</li>
+    <li><strong>ASCII</strong>——字符与数字的对照表，范围 0~127。</li>
+    <li><strong>三个必背值</strong>——<code class="inline">'A'</code> = 65、<code class="inline">'a'</code> = 97、<code class="inline">'0'</code> = 48。</li>
+    <li><strong>大小写差 32</strong>——大写 + 32 = 小写。</li>
+    <li><strong>数字字符转数字</strong>——<code class="inline">n = c - '0'</code>。</li>
+    <li><strong>自动转换</strong>——小范围类型自动提升为大范围类型；<code class="inline">3 == 3.0</code> 成立。</li>
+    <li><strong>强制转换</strong>——<code class="inline">(类型)值</code>；<strong>小数转整型是截断，不是四舍五入</strong>。</li>
+    <li><strong>(double) 的位置</strong>——必须写在除法之前：<code class="inline">(double)7 / 2 = 3.5</code>。</li>
+    <li><strong>布尔转换</strong>——非 0 即真，<strong>负数也是真</strong>。</li>
+    <li><strong>四种进制</strong>——十进制直接写、八进制 <code class="inline">0</code> 开头、十六进制 <code class="inline">0x</code>、二进制 <code class="inline">0b</code>。</li>
+    <li><strong>输出进制</strong>——<code class="inline">cout &lt;&lt; hex / oct / dec</code>，用完记得切回 <code class="inline">dec</code>。</li>
+  </ul>
+</div>
+
+<div class="pager">
+  <a href="cpp-2-02.html"><div class="k">← 上一单元</div><div class="v">会画画的羊皮纸 · 程序设计语言与流程图</div></a>
+  <a href="../index.html" target="_top" class="back"><div class="k">返回</div><div class="v">考纲之路 · 总目录</div></a>
+  <a href="cpp-2-04.html"><div class="k">下一单元 →</div><div class="v">双岔迷宫 · 多层分支结构</div></a>
+</div>
+
+<div class="cta">
+  <h3>下一站：双岔迷宫</h3>
+  <p>过了石桥，溪谷的尽头是一座迷宫。<b>每一个岔口后面，还藏着另一个岔口。</b><br>
+  下一单元我们学<b>多层分支</b>——<strong>判断里面再判断，该怎么写才不乱？</strong></p>
+  <a class="btn-go" href="https://codecombat.cn/" target="_blank" rel="noopener">加入扣哒世界，把这条考纲之路走一遍 →</a>
+</div>
+
+</div><!-- /container -->
+</div><!-- /page -->
+
+<script>
+const KEYWORDS = new Set([
+  "int", "long", "short", "unsigned", "signed", "float", "double", "char", "bool", "void",
+  "const", "if", "else", "for", "while", "do", "switch", "case", "default", "break",
+  "continue", "return", "goto", "struct", "class", "union", "enum", "using", "namespace",
+  "std", "main", "true", "false", "cin", "cout", "cerr", "endl", "string", "sizeof",
+  "include", "define", "new", "delete", "public", "private", "static", "inline", "nullptr"
+]);
+
+function esc(s){ return s.replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;'); }
+
+function highlight(src){
+  let out = '', i = 0;
+  const n = src.length;
+  while (i < n){
+    const c = src[i];
+    /* 预处理指令：#include / #define，整行只在行首生效 */
+    if (c === '#' && (i === 0 || src[i-1] === '\n')){
+      let j = i;
+      while (j < n && /[A-Za-z]/.test(src[j])) j++;
+      out += '<span class="kw">' + esc(src.slice(i, j)) + '</span>';
+      let k = src.indexOf('\n', j); if (k < 0) k = n;
+      if (j < k) out += '<span class="st">' + esc(src.slice(j, k)) + '</span>';
+      i = k; continue;
+    }
+    /* 行注释 // */
+    if (c === '/' && src[i+1] === '/'){
+      let j = src.indexOf('\n', i); if (j < 0) j = n;
+      out += '<span class="cm">' + esc(src.slice(i, j)) + '</span>';
+      i = j; continue;
+    }
+    /* 块注释 */
+    if (c === '/' && src[i+1] === '*'){
+      let j = src.indexOf('*/', i + 2); j = j < 0 ? n : j + 2;
+      out += '<span class="cm">' + esc(src.slice(i, j)) + '</span>';
+      i = j; continue;
+    }
+    /* 字符串与字符字面量 */
+    if (c === '"' || c === "'"){
+      let j = i + 1;
+      while (j < n && src[j] !== c){ if (src[j] === '\\') j++; j++; }
+      j = Math.min(j + 1, n);
+      out += '<span class="st">' + esc(src.slice(i, j)) + '</span>';
+      i = j; continue;
+    }
+    /* 数字 */
+    if (/[0-9]/.test(c)){
+      let j = i;
+      while (j < n && /[0-9.]/.test(src[j])) j++;
+      out += '<span class="nu">' + esc(src.slice(i, j)) + '</span>';
+      i = j; continue;
+    }
+    /* 标识符：关键字 / 函数名 / 普通名字 */
+    if (/[A-Za-z_]/.test(c)){
+      let j = i;
+      while (j < n && /[A-Za-z0-9_]/.test(src[j])) j++;
+      const w = src.slice(i, j);
+      if (KEYWORDS.has(w)) out += '<span class="kw">' + esc(w) + '</span>';
+      else if (src[j] === '(') out += '<span class="fn">' + esc(w) + '</span>';
+      else out += esc(w);
+      i = j; continue;
+    }
+    out += esc(c); i++;
+  }
+  return out;
+}
+
+document.querySelectorAll('.code-card pre code').forEach(block => {
+  block.innerHTML = highlight(block.textContent);
+});
+
+if (location.search.indexOf('expand') >= 0) {
+  document.querySelectorAll('details').forEach(d => d.open = true);
+}
+document.querySelectorAll('.sidebar-nav a').forEach(a => {
+  a.addEventListener('click', () => {
+    if (window.innerWidth <= 900) document.querySelector('.sidebar-nav').classList.remove('active');
+  });
+});
+</script>
+</body>
+</html>

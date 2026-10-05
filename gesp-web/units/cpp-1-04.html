@@ -1,0 +1,1144 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="copyright" content="CodeCombat Inc. codecombat.cn">
+<title>潮汐升降梯 · 顺序结构与输入输出 | 扣哒考级 · GESP C++ 一级</title>
+<style>
+  :root{
+    --primary:#2563eb; --primary-light:#4f8ff0; --primary-lighter:#eaf1fe; --primary-dark:#1b47a8;
+    --brand:#ff6b35; --brand-dark:#e8541f; --brand-soft:#fff3ec;
+    --night:#131c2b; --night-2:#1e2a3a; --gold:#f5b301;
+    --text:#242e3d; --dim:#68788f; --dim2:#93a2b6;
+    --bg:#ffffff; --bg-soft:#f7f9fd; --line:#e2e9f4; --sidebar:274px;
+    --code-bg:#131a26; --code-tx:#c8d3e0;
+    --code-kw:#c678dd; --code-st:#98c379; --code-nu:#d19a66; --code-cm:#5f7488; --code-fn:#e5c07b;
+  }
+  *{margin:0;padding:0;box-sizing:border-box}
+  html{scroll-behavior:smooth}
+  body{font-family:"PingFang SC","Microsoft YaHei","Segoe UI",-apple-system,sans-serif;line-height:1.9;color:var(--text);background:var(--bg);font-size:15.5px}
+  .sidebar-nav{position:fixed;top:0;left:0;width:var(--sidebar);height:100vh;overflow-y:auto;background:linear-gradient(180deg,#0c1626,#14243c);padding:14px 0 40px;z-index:100;border-right:3px solid var(--brand);transition:transform .3s ease}
+  .sidebar-nav::-webkit-scrollbar{width:5px}
+  .sidebar-nav::-webkit-scrollbar-thumb{background:var(--brand);border-radius:4px}
+  .sb-brand{display:flex;align-items:center;gap:10px;padding:10px 13px 12px;border-bottom:1px solid #233752;margin-bottom:8px}
+  .sidebar-nav a.sb-logo{display:flex;align-items:center;justify-content:center;flex-shrink:0;padding:0;border-left:none;transition:.2s}
+  .sb-logo:hover{transform:scale(1.08)}
+  .sb-logo img{height:34px;width:34px;display:block;object-fit:contain;border-radius:8px}
+  .sb-brand b{color:#f2f6fa;font-size:14px;letter-spacing:.5px;display:block;line-height:1.4}
+  .sb-brand span{color:#7f95ab;font-size:11.5px;display:block;line-height:1.4}
+  .nav-title{color:#ffb894;font-size:12px;font-weight:800;padding:10px 18px 6px;letter-spacing:1.2px}
+  .sidebar-nav a{display:block;color:#c3d0dc;text-decoration:none;padding:6px 18px;font-size:12.5px;line-height:1.55;border-left:3px solid transparent;transition:.18s}
+  .sidebar-nav a:hover{color:#fff;background:rgba(255,107,53,.16);border-left-color:var(--brand)}
+  .sidebar-nav a.nav-section{color:#ffb894;font-weight:700;font-size:13px;margin-top:11px;padding-top:10px;border-top:1px solid #233752}
+  .sidebar-nav a.nav-section:first-of-type{border-top:none;margin-top:0;padding-top:6px}
+  .sidebar-nav a.nav-sub{padding-left:30px;color:#93a8bc;font-size:12px}
+  .sidebar-nav a.nav-sub:hover{color:#fff}
+  .sb-back{margin:16px 14px 0;display:block;text-align:center;padding:9px;border-radius:9px;background:#1e304a;color:#a9c0d6 !important;font-size:12px;font-weight:700;border-left:none !important}
+  .sb-back:hover{background:var(--brand) !important;color:#fff !important}
+  .nav-toggle{display:none;position:fixed;top:14px;left:14px;z-index:120;background:var(--brand);color:#fff;border:none;border-radius:9px;padding:9px 13px;font-size:15px;cursor:pointer;box-shadow:0 4px 14px rgba(0,0,0,.25)}
+  .page{margin-left:var(--sidebar)}
+  .hero{position:relative;overflow:hidden;padding:44px 52px;color:#fff;background:linear-gradient(125deg,#0a1220 0%,#16294a 46%,#8a3a16 132%)}
+  .hero::after{content:"";position:absolute;right:-90px;top:-110px;width:400px;height:400px;border-radius:50%;background:radial-gradient(circle,rgba(245,179,1,.30),transparent 68%)}
+  .hero-top{display:flex;gap:36px;align-items:center;position:relative;z-index:2}
+  .hero-txt{flex:1;min-width:0}
+  .hero .crumb{font-size:11.5px;color:#ffb894;letter-spacing:1.5px;font-weight:700;margin-bottom:14px}
+  .hero h1{font-size:31px;font-weight:800;line-height:1.3;letter-spacing:.6px;margin-bottom:8px}
+  .hero h1 .sub{display:block;font-size:18px;font-weight:700;color:#ffd2b3;margin-top:6px;letter-spacing:.3px}
+  .hero .en{font-size:13px;color:#9db4c8;font-style:italic;margin-bottom:18px}
+  .hero .tags{display:flex;flex-wrap:wrap;gap:8px}
+  .tag{font-size:11.5px;padding:4px 12px;border-radius:20px;background:rgba(255,255,255,.12);border:1px solid rgba(255,255,255,.22);color:#e8f0f6;font-weight:600}
+  .tag.hot{background:rgba(255,107,53,.92);border-color:transparent;color:#fff}
+  .hero-card{flex-shrink:0;width:200px;text-align:center}
+  .hero-card .ava{width:148px;height:148px;border-radius:50%;object-fit:cover;object-position:top center;border:4px solid rgba(255,180,140,.6);box-shadow:0 14px 34px rgba(0,0,0,.45);background:#24344a}
+  .hero-card .nm{font-size:15px;font-weight:800;color:#fff;margin-top:10px}
+  .hero-card .ti{font-size:11.5px;color:#ffb894;margin-top:2px}
+  .container{max-width:1080px;margin:0 auto;padding:38px 52px 70px}
+  .lead{font-size:15.5px;line-height:2.05;color:#333f52;background:linear-gradient(120deg,#fff8f3,#f7fbf8);border-left:5px solid var(--brand);border-radius:0 14px 14px 0;padding:22px 26px;margin-bottom:32px}
+  .lead b{color:var(--brand-dark)}
+  .cast{display:flex;gap:16px;align-items:flex-start;border-radius:16px;padding:18px 22px;margin:24px 0}
+  .cast .ava{width:72px;height:72px;border-radius:50%;object-fit:cover;object-position:top center;flex-shrink:0;background:#e8eef5}
+  .cast .bubble{position:relative;font-size:14px;line-height:1.95;padding-top:2px;flex:1}
+  .cast .who{font-size:12px;font-weight:800;margin-bottom:5px;letter-spacing:.5px}
+  .cast.anya{background:var(--brand-soft);border:1px solid #ffdcc9}
+  .cast.anya .who{color:var(--brand-dark)}
+  .cast.anya .bubble{color:#5c4636}
+  .cast.duck{background:#fff5f5;border:1px solid #fbd5d5}
+  .cast.duck .who{color:#b91c1c}
+  .cast.duck .bubble{color:#5c4141}
+  .cast.teacher{background:linear-gradient(120deg,#f4f7fb,#ffffff);border:1px solid #dbe4f0}
+  .cast.teacher .who{color:#1e293b}
+  .cast.teacher .bubble{color:#3c4a5a}
+  .cast.hero{background:#f2f7fd;border:1px solid #cfe0f5}
+  .cast.hero .who{color:#1b47a8}
+  .cast.hero .bubble{color:#3a4658}
+  .goal-grid{display:grid;grid-template-columns:1fr 1fr;gap:16px;margin-bottom:36px}
+  .goal{border:1px solid var(--line);border-radius:15px;padding:19px 21px;background:#fff;box-shadow:0 4px 16px rgba(31,122,68,.05)}
+  .goal h4{font-size:14px;font-weight:800;margin-bottom:11px;display:flex;align-items:center;gap:8px;color:var(--primary-dark)}
+  .goal h4 .ic{width:22px;height:22px;border-radius:7px;background:var(--primary-lighter);display:flex;align-items:center;justify-content:center;font-size:12px}
+  .goal ul{list-style:none}
+  .goal li{font-size:13.5px;color:#48576b;line-height:1.9;padding-left:18px;position:relative}
+  .goal li::before{content:"▸";position:absolute;left:0;color:var(--primary);font-weight:800}
+  .goal.syllabus li::before{content:"✓"}
+  .section-header{margin:52px 0 24px;padding-bottom:12px;border-bottom:3px solid var(--brand);display:flex;align-items:baseline;gap:14px;flex-wrap:wrap}
+  .section-header h2{font-size:22px;font-weight:800;color:var(--night);letter-spacing:.4px}
+  .section-header .en-title{font-size:12px;color:var(--dim2);font-style:italic}
+  h3{font-size:17.5px;font-weight:800;margin:34px 0 14px;color:var(--night);display:flex;align-items:center;gap:10px}
+  h3::before{content:"";width:5px;height:17px;border-radius:3px;background:var(--brand);flex-shrink:0}
+  h4{font-size:15px;font-weight:800;margin:24px 0 10px;color:#2b4260}
+  p{margin:12px 0;color:#3a4658;line-height:2}
+  strong{color:var(--primary-dark)}
+  code.inline{background:var(--primary-lighter);color:var(--primary-dark);padding:2px 7px;border-radius:6px;font-family:"SFMono-Regular",Consolas,Menlo,monospace;font-size:.9em;font-weight:600}
+  .figure{margin:24px 0;text-align:center}
+  .figure svg.diagram{max-width:100%;height:auto;background:#fff;border:1px solid var(--line);border-radius:14px;padding:10px}
+  .figure .caption{font-size:12.5px;color:var(--dim2);margin-top:9px}
+  .pic{margin:26px 0;text-align:center}
+  .pic img{max-width:100%;border-radius:16px;box-shadow:0 10px 28px rgba(30,60,45,.15);display:block;margin:0 auto}
+  .pic figcaption{font-size:12.5px;color:var(--dim2);margin-top:9px}
+  .pic .ph{display:none}
+  .pic.missing img{display:none}
+  .pic.missing .ph{display:flex;flex-direction:column;align-items:center;justify-content:center;gap:9px;border:2px dashed #c9d9e8;border-radius:16px;background:linear-gradient(135deg,#f8fbfe,#eef6ff);padding:40px 26px;color:#7a8fa8}
+  .pic.missing .ph .fn{font-family:Consolas,monospace;font-size:12.5px;color:#2563eb;font-weight:700;word-break:break-all}
+  .pic.missing .ph .ds{font-size:12.5px;line-height:1.8;max-width:560px}
+  .box{border-radius:13px;padding:16px 20px;margin:20px 0;font-size:14px;line-height:1.95}
+  .box .lb{font-weight:800;margin-right:6px}
+  .info{background:#eef6ff;border-left:5px solid #3b82f6;color:#274768}
+  .info .lb{color:#1d4ed8}
+  .tip{background:#fff9ec;border-left:5px solid #f59e0b;color:#6b4e13}
+  .tip .lb{color:#b45309}
+  .remember{background:var(--primary-lighter);border-left:5px solid var(--primary);color:#1d3a6b}
+  .remember .lb{color:var(--primary-dark)}
+  .warn{background:#fef2f2;border-left:5px solid #ef4444;color:#7f2b2b}
+  .warn .lb{color:#b91c1c}
+  .code-card{margin:20px 0;border-radius:14px;overflow:hidden;box-shadow:0 10px 28px rgba(20,40,28,.20)}
+  .code-head{display:flex;align-items:center;gap:9px;background:#1a2434;padding:9px 14px}
+  .code-head .dot{width:10px;height:10px;border-radius:50%}
+  .code-head .d1{background:#ff5f57}.code-head .d2{background:#febc2e}.code-head .d3{background:#28c840}
+  .code-head .file{color:#8fa6c0;font-size:11.5px;font-family:Consolas,monospace;margin-left:6px}
+  .code-head .lang{margin-left:auto;font-size:10.5px;font-weight:800;color:#0d141f;background:#4f8ff0;padding:2px 9px;border-radius:6px;letter-spacing:.4px}
+  .code-card pre{background:var(--code-bg);padding:18px 20px;overflow-x:auto;margin:0;font-family:"SFMono-Regular",Consolas,"Courier New",monospace;font-size:13.5px;line-height:1.85}
+  .code-card pre::-webkit-scrollbar{height:8px}
+  .code-card pre::-webkit-scrollbar-thumb{background:#31445c;border-radius:4px}
+  .code-card code{color:var(--code-tx);white-space:pre}
+  .kw{color:var(--code-kw);font-weight:600}
+  .st{color:var(--code-st)}
+  .nu{color:var(--code-nu)}
+  .cm{color:var(--code-cm);font-style:italic}
+  .fn{color:var(--code-fn)}
+  .out{background:#0f1621;color:#7fb3f5;font-family:Consolas,monospace;font-size:13px;padding:12px 20px;border-top:1px solid #22304a}
+  .out b{color:#c9d6cd;font-weight:600;font-size:11.5px;letter-spacing:1px}
+  .out.err{color:#fca5a5}
+  table.styled{width:100%;border-collapse:collapse;margin:20px 0;font-size:13.5px;border-radius:12px;overflow:hidden;box-shadow:0 4px 16px rgba(31,122,68,.07)}
+  table.styled thead{background:var(--brand)}
+  table.styled th{color:#fff;padding:11px 14px;text-align:left;font-weight:700;font-size:13px}
+  table.styled td{padding:10px 14px;border-bottom:1px solid var(--line);color:#445266;vertical-align:top}
+  table.styled tbody tr:nth-child(even){background:var(--bg-soft)}
+  table.styled tbody tr:last-child td{border-bottom:none}
+  .level-card{border:1px solid var(--line);border-radius:16px;overflow:hidden;margin:22px 0;box-shadow:0 6px 22px rgba(31,122,68,.07)}
+  .level-card .lc-head{background:linear-gradient(100deg,#17283a,#8a3a16);color:#fff;padding:15px 22px;display:flex;align-items:center;gap:12px;flex-wrap:wrap}
+  .level-card .lc-head .n{font-size:12px;font-weight:800;background:rgba(255,255,255,.2);padding:3px 10px;border-radius:20px}
+  .level-card .lc-head h4{margin:0;color:#fff;font-size:16px}
+  .level-card .lc-head .go{margin-left:auto;font-size:11.5px;color:#ffd2b3}
+  .level-card .lc-body{padding:20px 24px;background:#fff}
+  .level-card .story{background:#f9fbfd;border-left:4px solid #93c5fd;border-radius:0 10px 10px 0;padding:13px 18px;margin:0 0 16px;font-size:14px;line-height:1.95;color:#3f5163}
+  .level-card .story b{color:#1d4ed8}
+  .btn-go{display:inline-flex;align-items:center;gap:8px;background:linear-gradient(135deg,var(--brand),var(--brand-dark));color:#fff;text-decoration:none;font-weight:800;font-size:13.5px;padding:10px 22px;border-radius:11px;box-shadow:0 8px 20px rgba(255,107,53,.32);transition:.2s}
+  .btn-go:hover{transform:translateY(-2px);box-shadow:0 12px 26px rgba(255,107,53,.42)}
+  .pit{border:1px solid #f6dede;border-radius:14px;overflow:hidden;margin:16px 0;background:#fff}
+  .pit .pt{display:flex;gap:12px;padding:14px 18px;background:#fffafa;align-items:flex-start}
+  .pit .x{width:26px;height:26px;border-radius:9px;background:#fee;color:#dc2626;display:flex;align-items:center;justify-content:center;font-weight:800;flex-shrink:0;font-size:13px}
+  .pit .t{font-size:13.5px;line-height:1.9;color:#5c4a4a;flex:1}
+  .pit .t b{color:#b91c1c}
+  .pit .duck{display:flex;gap:12px;padding:13px 18px;background:#fff5f5;border-top:1px dashed #f3d0d0;align-items:flex-start}
+  .pit .duck img{width:48px;height:48px;object-fit:contain;flex-shrink:0;margin-top:2px}
+  .pit .duck .dt{font-size:13.5px;line-height:1.9;color:#7a3b3b}
+  .pit .duck .dt b{color:#b91c1c}
+  .pit .fix{padding:12px 18px;background:#f2f7fd;border-top:1px dashed #cfe0f5;font-size:13.5px;color:#1d3a6b}
+  .pit .fix b{color:var(--primary-dark)}
+  .exam{border:1px solid #dfe7f5;border-radius:15px;margin:16px 0;overflow:hidden;background:#fff;box-shadow:0 4px 16px rgba(38,62,120,.06)}
+  .exam .eh{display:flex;align-items:center;gap:10px;padding:11px 18px;background:linear-gradient(100deg,#eef4ff,#f7faff);border-bottom:1px solid #e3ebf8;flex-wrap:wrap}
+  .exam .eh .src{font-size:11px;font-weight:800;color:#fff;background:#2563eb;padding:2.5px 10px;border-radius:20px}
+  .exam .eh .src.ori{background:#8b5cf6}
+  .exam .eh .tp{font-size:11.5px;color:#5b7ba8;font-weight:700}
+  .exam .eb{padding:16px 20px}
+  .exam .q{font-weight:700;font-size:14px;color:#1e2a3e;line-height:1.9;margin-bottom:10px}
+  .exam .opt{font-size:13.5px;color:#48576b;line-height:2.05;padding-left:6px}
+  .exam .opt i{font-style:normal;font-weight:800;color:var(--primary-dark);margin-right:7px}
+  .exam pre{margin:12px 0;background:#1b2a21;border-radius:10px;padding:14px 16px;overflow-x:auto;font-family:Consolas,monospace;font-size:13px;line-height:1.8;color:var(--code-tx)}
+  .exam details{margin-top:10px;border-top:1px dashed var(--line);padding-top:10px}
+  .exam summary{cursor:pointer;font-size:12.5px;font-weight:800;color:#2563eb;outline:none;user-select:none}
+  .exam details .ans{font-size:13.5px;color:#3a4658;line-height:1.95;margin-top:9px;background:var(--bg-soft);padding:13px 16px;border-radius:10px}
+  .exam details .ans b{color:var(--primary-dark)}
+  .exam details .ans .tagline{display:inline-block;font-size:11px;background:#e0f2fe;color:#0e7490;padding:1.5px 8px;border-radius:6px;font-weight:700;margin-right:6px}
+  .summary{margin:40px 0 20px;border-radius:18px;padding:26px 30px;background:linear-gradient(130deg,#fff8f3,#ffffff);border:1px solid #ffe0cf}
+  .summary h3{margin-top:0}
+  .summary ul{list-style:none;margin-top:10px}
+  .summary li{font-size:14px;line-height:2;color:#3d4d66;padding-left:24px;position:relative}
+  .summary li::before{content:"◆";position:absolute;left:0;color:var(--brand);font-size:11px;top:6px}
+  .pager{display:flex;gap:14px;margin-top:30px;flex-wrap:wrap}
+  .pager a{flex:1;min-width:200px;text-decoration:none;border:1px solid var(--line);border-radius:14px;padding:16px 20px;background:#fff;transition:.2s;display:block}
+  .pager a:hover{border-color:var(--brand);box-shadow:0 10px 26px rgba(255,107,53,.14);transform:translateY(-2px)}
+  .pager a .k{font-size:11px;color:var(--dim2);font-weight:700;letter-spacing:1px}
+  .pager a .v{font-size:14px;font-weight:800;color:var(--night);margin-top:5px}
+  .pager a.back{background:var(--brand-soft);border-color:transparent;text-align:center}
+  .pager a.back .v{color:var(--brand-dark)}
+  .cta{margin-top:26px;border-radius:20px;padding:30px 34px;color:#fff;position:relative;overflow:hidden;background:linear-gradient(120deg,#16202f,#2b3a52 46%,#a8431c 132%)}
+  .cta::after{content:"";position:absolute;right:-70px;bottom:-90px;width:280px;height:280px;border-radius:50%;background:radial-gradient(circle,rgba(255,140,80,.45),transparent 68%)}
+  .cta h3{color:#fff;margin:0 0 10px;position:relative;z-index:2}
+  .cta h3::before{background:var(--brand)}
+  .cta p{color:#d8e0ef;font-size:13.5px;margin:0 0 18px;position:relative;z-index:2;max-width:640px}
+  .cta .btn-go{position:relative;z-index:2}
+  @media(max-width:900px){
+    .sidebar-nav{transform:translateX(-100%)}
+    .sidebar-nav.active{transform:translateX(0)}
+    .nav-toggle{display:block}
+    .page{margin-left:0}
+    .hero{padding:70px 22px 34px}
+    .hero-top{flex-direction:column-reverse;text-align:center}
+    .hero-card{width:auto}
+    .container{padding:26px 20px 60px}
+    .goal-grid{grid-template-columns:1fr}
+  }
+</style>
+</head>
+<body>
+
+<button class="nav-toggle" onclick="document.querySelector('.sidebar-nav').classList.toggle('active')">&#9776;</button>
+
+<nav class="sidebar-nav">
+  <div class="sb-brand">
+    <a class="sb-logo" href="https://codecombat.cn/" target="_blank" rel="noopener" title="访问 CodeCombat 扣哒世界官网">
+      <img src="../assets/logo.png" alt="CodeCombat 扣哒世界">
+    </a>
+    <div><b>潮汐升降梯</b><span>烛火岗哨 · C++ 一级 第 4 单元</span></div>
+  </div>
+  <div class="nav-title">本单元目录</div>
+
+  <a href="#s0" class="nav-section">0　单元导语与目标</a>
+  <a href="#s0-1" class="nav-sub">0.1 学习目标</a>
+  <a href="#s0-2" class="nav-sub">0.2 考纲对照</a>
+  <a href="#s1" class="nav-section">1　顺序结构：一步接一步</a>
+  <a href="#s1-1" class="nav-sub">1.1 什么是一句话</a>
+  <a href="#s1-2" class="nav-sub">1.2 C++ 程序的完整骨架</a>
+  <a href="#s2" class="nav-section">2　输出：让程序开口</a>
+  <a href="#s2-1" class="nav-sub">2.1 cout 与 &lt;&lt;</a>
+  <a href="#s2-2" class="nav-sub">2.2 printf 与格式符</a>
+  <a href="#s2-3" class="nav-sub">2.3 换行：反斜杠 n 与 endl</a>
+  <a href="#s2-4" class="nav-sub">2.4 输出小数与保留位数</a>
+  <a href="#s3" class="nav-section">3　输入：让程序听见</a>
+  <a href="#s3-1" class="nav-sub">3.1 cin 与 &gt;&gt;</a>
+  <a href="#s3-2" class="nav-sub">3.2 连续输入与顺序</a>
+  <a href="#s3-3" class="nav-sub">3.3 scanf 与 &amp; 符号</a>
+  <a href="#s4" class="nav-section">4　输入输出配合的完整程序</a>
+  <a href="#s5" class="nav-section">5　代码实战</a>
+  <a href="#s6" class="nav-section">6　常见陷阱</a>
+  <a href="#s7" class="nav-section">7　题目练习</a>
+  <a href="#s8" class="nav-section">8　本单元小结</a>
+
+  <a href="../index.html" target="_top" class="sb-back">返回考纲之路</a>
+</nav>
+
+<div class="page">
+
+<div class="hero">
+  <div class="hero-top">
+    <div class="hero-txt">
+      <div class="crumb">扣哒考级 · GESP C++ 一级 · 第 4 单元　|　烛火岗哨 CANDLEWATCH OUTPOST</div>
+      <h1>潮汐升降梯
+        <span class="sub">顺序结构与输入输出</span>
+      </h1>
+      <div class="en">Sequential Flow, Input &amp; Output</div>
+      <div class="tags">        <span class="tag hot">考纲 · 顺序结构</span>
+        <span class="tag">cin 与 cout</span>
+        <span class="tag">printf 格式符</span>
+        <span class="tag">换行</span>
+        <span class="tag">程序骨架</span></div>
+    </div>
+    <div class="hero-card">
+      <img class="ava" src="../assets/avatars/anya.webp" alt="安雅" onerror="this.style.background='#24344a';this.src='../assets/heroes/anya.webp'">
+      <div class="nm">安雅</div>
+      <div class="ti">红发队长 · 你的向导</div>
+    </div>
+  </div>
+</div>
+
+<div class="container">
+
+
+
+
+
+<div class="lead">
+  岗哨背面装着一部<b>潮汐升降梯</b>：上涨的海水把石制吊篮一层层顶上去。<br>
+  安雅说：“瞧，水只能<b>顺着石槽一级一级往上流</b>，它不会跳级，也不会回头。”<br>
+  “你的程序也一样——<b>从第一行往下执行，一行接一行</b>。
+  这就是最基本的结构：<b>顺序</b>。”
+</div>
+
+<div class="cast anya">
+  <img class="ava" src="../assets/avatars/anya.webp" alt="安雅" onerror="this.style.display='none'">
+  <div class="bubble">
+    <div class="who">安雅 · 红发队长</div>
+    这块内容看着简单，却是后面所有结构的地基。<br>
+    这一单元只讲两件事：<strong>程序怎么按顺序执行</strong>，
+    以及<strong>怎么把数据送进去（输入）、把结果显示出来（输出）</strong>。<br>
+    一级真题里，<b>几乎每年都有一道printf或cin的输出结果题</b>。
+  </div>
+</div>
+
+<figure class="pic">
+  <img src="../assets/illustrations/py-L1-04-01_tidal_lift.webp" alt="潮汐升降梯"
+       onerror="this.closest('.pic').classList.add('missing')">
+  <div class="ph">
+    <div class="fn">assets/illustrations/py-L1-04-01_tidal_lift.webp</div>
+    <div class="ds">【配图位】海边岗哨背面的潮汐升降梯：石制吊篮被上涨的海水逐层顶起，每一层石壁上刻着一条发光指令符文；一名新兵站在吊篮里向上张望，下方是翻涌的白色浪花。</div>
+  </div>
+  <figcaption>图 1：烛火岗哨的潮汐升降梯——今天要从这里开始</figcaption>
+</figure>
+
+<!-- ============ 0 ============ -->
+<div class="section-header" id="s0">
+  <h2>0　单元导语与目标</h2>
+  <div class="en-title">Unit Overview</div>
+</div>
+
+<h3 id="s0-1">0.1 学习目标</h3>
+<div class="goal-grid">
+  <div class="goal">
+    <h4><span class="ic">1</span>学完这个单元，你将能……</h4>
+    <ul>
+      <li>说清顺序结构：程序为什么从上往下执行</li>
+      <li>默写出 C++ 程序的完整骨架</li>
+      <li>用 <code class="inline">cout</code> 与 <code class="inline">printf</code> 输出各种内容</li>
+      <li>熟练使用常见的格式符与换行方式</li>
+      <li>用 <code class="inline">cin</code> 读入整数、小数、字符</li>
+      <li>预测一段输入输出程序的运行结果</li>
+    </ul>
+  </div>
+  <div class="goal syllabus">
+    <h4><span class="ic">2</span>对标 GESP 考纲（C++ 一级）</h4>
+    <ul>
+      <li>掌握顺序结构程序的基本写法</li>
+      <li>掌握 <code class="inline">cin</code> / <code class="inline">cout</code> 与 <code class="inline">scanf</code> / <code class="inline">printf</code> 的用法</li>
+      <li>掌握常用格式符：<code class="inline">%d</code>、<code class="inline">%c</code>、<code class="inline">%f</code>、<code class="inline">%lf</code></li>
+      <li>了解换行符与输出格式控制</li>
+      <li>考核目标：能写出完整的输入输出程序，并判断给定程序的输出</li>
+    </ul>
+  </div>
+</div>
+
+<h3 id="s0-2">0.2 考纲对照</h3>
+<table class="styled">
+  <thead><tr><th>本单元小节</th><th>对应考纲条目</th><th>真题常考形式</th></tr></thead>
+  <tbody>
+    <tr><td>1　顺序结构</td><td>顺序结构的程序执行</td><td>给一段代码，问执行顺序与最终输出</td></tr>
+    <tr><td>2　输出</td><td>数据输出</td><td><code class="inline">printf("%d#%d", a, b)</code> 输出什么</td></tr>
+    <tr><td>3　输入</td><td>数据输入</td><td>输入一串字符，问 <code class="inline">cin &gt;&gt; N</code> 读到几</td></tr>
+    <tr><td>4　完整程序</td><td>程序的完整结构</td><td>横线处应填哪一句</td></tr>
+  </tbody>
+</table>
+
+<!-- ============ 1 ============ -->
+<div class="section-header" id="s1">
+  <h2>1　顺序结构：一步接一步</h2>
+  <div class="en-title">Sequential Flow</div>
+</div>
+
+<h3 id="s1-1">1.1 什么是一句话</h3>
+
+<figure class="figure">
+  <svg class="diagram" viewBox="0 0 830 300" role="img" aria-label="顺序结构">
+    <text x="24" y="32" font-size="14" font-weight="bold" fill="#1f2937">顺序结构：从第一句开始，一句接一句往下走</text>
+
+    <rect x="60" y="54" width="250" height="42" rx="10" fill="#eaf1fe" stroke="#2563eb" stroke-width="2"/>
+    <text x="80" y="81" font-size="12.5" font-family="Consolas,monospace" fill="#1d4ed8">int a, b;</text>
+    <text x="296" y="81" text-anchor="end" font-size="11" fill="#7a93b5">① 声明</text>
+
+    <rect x="60" y="108" width="250" height="42" rx="10" fill="#eaf1fe" stroke="#2563eb" stroke-width="2"/>
+    <text x="80" y="135" font-size="12.5" font-family="Consolas,monospace" fill="#1d4ed8">cin &gt;&gt; a &gt;&gt; b;</text>
+    <text x="296" y="135" text-anchor="end" font-size="11" fill="#7a93b5">② 输入</text>
+
+    <rect x="60" y="162" width="250" height="42" rx="10" fill="#f5f3ff" stroke="#8b5cf6" stroke-width="2"/>
+    <text x="80" y="189" font-size="12.5" font-family="Consolas,monospace" fill="#6d28d9">int sum = a + b;</text>
+    <text x="296" y="189" text-anchor="end" font-size="11" fill="#9a86d4">③ 计算</text>
+
+    <rect x="60" y="216" width="250" height="42" rx="10" fill="#e9f8ef" stroke="#2e9e5b" stroke-width="2"/>
+    <text x="80" y="243" font-size="12.5" font-family="Consolas,monospace" fill="#1f7a44">cout &lt;&lt; sum;</text>
+    <text x="296" y="243" text-anchor="end" font-size="11" fill="#5f9b7d">④ 输出</text>
+
+    <path d="M185 98 L185 104" stroke="#94a3b8" stroke-width="2"/>
+    <path d="M185 152 L185 158" stroke="#94a3b8" stroke-width="2"/>
+    <path d="M185 206 L185 212" stroke="#94a3b8" stroke-width="2"/>
+
+    <rect x="360" y="54" width="446" height="204" rx="12" fill="#f7f9fd" stroke="#cbd5e1" stroke-width="1.6"/>
+    <text x="384" y="82" font-size="12.5" fill="#334155" font-weight="bold">顺序结构的三条规矩</text>
+    <text x="384" y="114" font-size="12" fill="#475569">① 从上往下，一行一行执行</text>
+    <text x="384" y="146" font-size="12" fill="#475569">② 每条语句末尾必须写分号 ;</text>
+    <text x="384" y="178" font-size="12" fill="#475569">③ 先算好值，才能拿去用</text>
+    <text x="384" y="216" font-size="11.5" fill="#94a3b8">换句话说：不能"先用后算"，也不能"跳着走"</text>
+    <text x="384" y="242" font-size="11.5" fill="#94a3b8">（后面学的分支与循环，就是在这条直线上开了岔）</text>
+
+    <text x="24" y="288" font-size="12" fill="#8d9d94">口诀：声明 → 输入 → 计算 → 输出，这是一级程序最常见的四步</text>
+  </svg>
+  <div class="caption">图 2（SVG）：顺序结构的执行过程</div>
+</figure>
+
+<div class="box tip">
+  <span class="lb">打个比方：</span>
+  顺序结构就像<b>排队打饭</b>——<strong>前面的同学没打完，后面的同学绝不能插上去</strong>。<br>
+  计算机也是一位"特别守规矩的排队者"：它永远<strong>从第一行开始，一行一行往下走，绝不跳行、绝不回头</strong>。<br>
+  <b>所以你不能"先使用、后计算"——顺序错了，结果就错了。</b>
+</div>
+
+<h3 id="s1-2">1.2 C++ 程序的完整骨架</h3>
+
+<div class="code-card">
+  <div class="code-head">
+    <span class="dot d1"></span><span class="dot d2"></span><span class="dot d3"></span>
+    <span class="file">背下这个骨架，所有一级题目都能往里填</span>
+    <span class="lang">C++</span>
+  </div>
+  <pre><code>#include &lt;iostream&gt;          // ① 引入输入输出功能
+using namespace std;         // ② 使用标准命名空间
+
+int main() {                 // ③ 主函数，程序从这里开始
+    int a, b;                // ④ 声明变量
+    cin &gt;&gt; a &gt;&gt; b;            // ⑤ 输入
+    cout &lt;&lt; a + b;            // ⑥ 计算并输出
+    return 0;                // ⑦ 正常结束
+}</code></pre>
+  <div class="out"><b>输入</b>　3 5　　<b>输出</b>　8</div>
+</div>
+
+<figure class="pic">
+  <img src="../assets/illustrations/cpp-L1-04-03_program_skeleton.webp" alt="程序骨架像一封信"
+       onerror="this.closest('.pic').classList.add('missing')">
+  <div class="ph">
+    <div class="fn">assets/illustrations/cpp-L1-04-03_program_skeleton.webp</div>
+    <div class="ds">【配图位】驿站书桌上一封摊开的信：信纸最上方是发光的"抬头"区域（对应 #include 与 using namespace），中间是写满指令的"正文"区域（对应 int main() 大括号里的语句），最下方是"落款"区域（对应 return 0;）；信纸旁立着一支羽毛笔和一只小印章，印章上刻着程序入口的标记。扣哒世界卡通风格。</div>
+  </div>
+  <figcaption>图 3：写程序就像写一封信，有抬头、正文和落款</figcaption>
+</figure>
+
+<div class="box tip">
+  <span class="lb">打个比方：</span>
+  写一个完整的 C++ 程序，就像<b>写一封信</b>，必须有三段：<br>
+  ① <b>抬头</b>——<code class="inline">#include &lt;iostream&gt;</code> 和 <code class="inline">using namespace std;</code>，
+  告诉驿站"我要用哪些工具"；<br>
+  ② <b>正文</b>——<code class="inline">int main() { … }</code> 里写的那些语句，才是你真正要说的话；<br>
+  ③ <b>落款</b>——<code class="inline">return 0;</code>，表示"我说完了"。<br>
+  <b>考试让"补全代码"时，先检查这三段缺了哪一段，通常一眼就能看出来。</b>
+</div>
+
+<div class="box remember">
+  <span class="lb">骨架分三段：</span><br>
+  <b>头部</b>——<code class="inline">#include</code> 与 <code class="inline">using namespace std;</code>（照抄，别改）；<br>
+  <b>主体</b>——<code class="inline">int main() { }</code> 里写你的语句；<br>
+  <b>收尾</b>——<code class="inline">return 0;</code>（表示程序正常结束）。<br>
+  <strong>考试让"补全代码"时，先看这三段缺哪一段。</strong>
+</div>
+
+<!-- ============ 2 ============ -->
+<div class="section-header" id="s2">
+  <h2>2　输出：让程序开口</h2>
+  <div class="en-title">Output</div>
+</div>
+
+<h3 id="s2-1">2.1 cout 与 &lt;&lt;</h3>
+
+<div class="code-card">
+  <div class="code-head">
+    <span class="dot d1"></span><span class="dot d2"></span><span class="dot d3"></span>
+    <span class="file">cout：把东西"送出去"</span>
+    <span class="lang">C++</span>
+  </div>
+  <pre><code>int a = 3, b = 4;
+
+cout &lt;&lt; a;                  // 输出 3
+cout &lt;&lt; a &lt;&lt; " " &lt;&lt; b;     // 输出 3 4（中间夹一个空格）
+cout &lt;&lt; a &lt;&lt; "#" &lt;&lt; b;     // 输出 3#4（中间夹一个井号）
+
+cout &lt;&lt; "答案是：" &lt;&lt; a + b;   // 字符串和表达式可以连在一起</code></pre>
+  <div class="out"><b>要点</b>　<code>&lt;&lt;</code> 可以连续写；<b>每一段输出的内容，都要单独用一个 <code>&lt;&lt;</code> 接上去</b></div>
+</div>
+
+<div class="box tip">
+  <span class="lb">箭头方向别写反：</span>
+  <code class="inline">cout &lt;&lt; a;</code> —— 意思是"把 a 送进 cout"。<br>
+  <b>箭头指向 cout，就是"流出"；箭头指向变量，就是"流入"（cin 用）。</b>
+</div>
+
+<h3 id="s2-2">2.2 printf 与格式符</h3>
+
+<p><code class="inline">printf</code> 是 C 语言传下来的输出函数，一级真题里出现得非常多。</p>
+
+<table class="styled">
+  <thead><tr><th>格式符</th><th>用来输出</th><th>例子</th><th>结果</th></tr></thead>
+  <tbody>
+    <tr><td><code class="inline">%d</code></td><td>整数（int）</td><td><code class="inline">printf("%d", 42)</code></td><td>42</td></tr>
+    <tr><td><code class="inline">%lld</code></td><td>长整数（long long）</td><td><code class="inline">printf("%lld", x)</code></td><td>按原样输出</td></tr>
+    <tr><td><code class="inline">%c</code></td><td>单个字符</td><td><code class="inline">printf("%c", 'A')</code></td><td>A</td></tr>
+    <tr><td><code class="inline">%f</code></td><td>小数（float / double）</td><td><code class="inline">printf("%f", 3.5)</code></td><td>3.500000</td></tr>
+    <tr><td><code class="inline">%.2f</code></td><td>小数，保留两位</td><td><code class="inline">printf("%.2f", 3.5)</code></td><td>3.50</td></tr>
+    <tr><td><code class="inline">%nd</code></td><td>整数，占 n 个字符宽</td><td><code class="inline">printf("%3d", 7)</code></td><td>&nbsp;&nbsp;7（右对齐补空格）</td></tr>
+  </tbody>
+</table>
+
+<div class="code-card">
+  <div class="code-head">
+    <span class="dot d1"></span><span class="dot d2"></span><span class="dot d3"></span>
+    <span class="file">格式符里可以夹别的字符</span>
+    <span class="lang">C++</span>
+  </div>
+  <pre><code>int a = 3, b = 4;
+printf("%d#%d\n", a, b);        // 3#4     两个数字中间夹一个 #
+printf("和是:%d\n", a + b);      // 和是:7
+
+float x = 2.0;
+printf("%.2f", x);              // 2.00</code></pre>
+  <div class="out"><b>关键</b>　<code>"%d#%d\n"</code> 里的 <code>#</code> 是<b>原样输出的普通字符</b>，
+  只有 <code>%d</code> 才会被后面的变量替换掉</div>
+</div>
+
+<div class="box tip">
+  <span class="lb">打个比方：</span>
+  <code class="inline">printf</code> 的格式串就像一张<b>填空题的答题卡</b>。<br>
+  答题卡上写着 <code class="inline">"%d#%d\n"</code>——<strong>凡是 <code class="inline">%</code> 开头的地方都是"空"，等着后面的变量来填；其他字（比如那个 <code class="inline">#</code>）都是印好的固定内容，照原样印出来。</strong><br>
+  <b>填错了空（格式符和变量类型对不上），印出来的就是乱码。</b>
+</div>
+
+<figure class="pic">
+  <img src="../assets/illustrations/cpp-L1-04-04_format_glyphs.webp" alt="格式符符文石板"
+       onerror="this.closest('.pic').classList.add('missing')">
+  <div class="ph">
+    <div class="fn">assets/illustrations/cpp-L1-04-04_format_glyphs.webp</div>
+    <div class="ds">【配图位】驿站墙上并排挂着五块发光石板，每块石板左侧刻着一个格式符、右侧刻着它能填进去的东西：第一块刻 %d 与一枚整数牌；第二块刻 %c 与一枚字母牌；第三块刻 %f 与一串水滴小数；第四块刻 %.2f 与一串被裁成两位的小数；第五块刻 %3d 与一枚被方框框住、左侧留空的整数牌。石板之间用光带相连，扣哒世界卡通风格。</div>
+  </div>
+  <figcaption>图 4：每个格式符，对应一种"往空格里填什么"</figcaption>
+</figure>
+
+<h3 id="s2-3">2.3 换行：\n 与 endl</h3>
+
+<table class="styled">
+  <thead><tr><th>写法</th><th>用在哪儿</th><th>说明</th></tr></thead>
+  <tbody>
+    <tr><td><code class="inline">cout &lt;&lt; endl;</code></td><td><code class="inline">cout</code></td><td>换行，并立刻把内容送出去</td></tr>
+    <tr><td><code class="inline">cout &lt;&lt; "\n";</code></td><td><code class="inline">cout</code></td><td>换行，效率略高</td></tr>
+    <tr><td><code class="inline">printf("\n");</code></td><td><code class="inline">printf</code></td><td>换行</td></tr>
+    <tr><td><code class="inline">printf("%c", '\n');</code></td><td><code class="inline">printf</code></td><td><strong>效果与上一行完全相同</strong></td></tr>
+  </tbody>
+</table>
+
+<div class="box remember">
+  <span class="lb">两种换行写法可以互相替代：</span>
+  <code class="inline">printf("\n")</code> 与 <code class="inline">printf("%c", '\n')</code> 输出效果一模一样。<br>
+  因为 <code class="inline">\n</code> 本质上就是一个字符——<strong>换行符</strong>。<br>
+  <b>口诀：<code>\n</code> 是反斜杠加小写 n，别写成 <code>/n</code>，也别写成大写的 <code>\N</code>。</b>
+</div>
+
+<h3 id="s2-4">2.4 输出小数与保留位数</h3>
+
+<div class="code-card">
+  <div class="code-head">
+    <span class="dot d1"></span><span class="dot d2"></span><span class="dot d3"></span>
+    <span class="file">两种保留小数的方式</span>
+    <span class="lang">C++</span>
+  </div>
+  <pre><code>double x = 3.14159;
+
+// 方式一：printf，用 %.2f
+printf("%.2f\n", x);        // 3.14
+
+// 方式二：cout 配 fixed 和 setprecision
+cout &lt;&lt; fixed &lt;&lt; setprecision(2) &lt;&lt; x;   // 3.14</code></pre>
+  <div class="out"><b>要点</b>　小数默认输出 6 位，想控制位数就得显式指定</div>
+</div>
+
+<!-- ============ 3 ============ -->
+<div class="section-header" id="s3">
+  <h2>3　输入：让程序听见</h2>
+  <div class="en-title">Input</div>
+</div>
+
+<h3 id="s3-1">3.1 cin 与 &gt;&gt;</h3>
+
+<figure class="figure">
+  <svg class="diagram" viewBox="0 0 830 240" role="img" aria-label="cin 与 cout 的数据流向">
+    <text x="24" y="32" font-size="14" font-weight="bold" fill="#1f2937">一个进来，一个出去</text>
+
+    <rect x="50" y="70" width="170" height="80" rx="12" fill="#f1f5f9" stroke="#94a3b8" stroke-width="2"/>
+    <text x="135" y="102" text-anchor="middle" font-size="12.5" fill="#475569" font-weight="bold">键盘</text>
+    <text x="135" y="128" text-anchor="middle" font-size="11.5" fill="#64748b">用户敲入的数据</text>
+
+    <rect x="330" y="62" width="180" height="96" rx="12" fill="#fff6ec" stroke="#ff6b35" stroke-width="2.4"/>
+    <text x="420" y="94" text-anchor="middle" font-size="13" font-family="Consolas,monospace" fill="#c1440e" font-weight="bold">cin</text>
+    <text x="420" y="120" text-anchor="middle" font-size="11.5" fill="#a85728">读进来</text>
+    <text x="420" y="144" text-anchor="middle" font-size="11.5" font-family="Consolas,monospace" fill="#c1440e">cin &gt;&gt; a;</text>
+
+    <rect x="610" y="70" width="170" height="80" rx="12" fill="#f1f5f9" stroke="#94a3b8" stroke-width="2"/>
+    <text x="695" y="102" text-anchor="middle" font-size="12.5" fill="#475569" font-weight="bold">屏幕</text>
+    <text x="695" y="128" text-anchor="middle" font-size="11.5" fill="#64748b">程序输出的内容</text>
+
+    <line x1="224" y1="110" x2="322" y2="110" stroke="#ff6b35" stroke-width="2.6"/>
+    <polygon points="322,110 308,102 308,118" fill="#ff6b35"/>
+    <line x1="516" y1="110" x2="602" y2="110" stroke="#2e9e5b" stroke-width="2.6"/>
+    <polygon points="602,110 588,102 588,118" fill="#2e9e5b"/>
+
+    <rect x="330" y="172" width="180" height="50" rx="12" fill="#e9f8ef" stroke="#2e9e5b" stroke-width="2.2"/>
+    <text x="420" y="194" text-anchor="middle" font-size="13" font-family="Consolas,monospace" fill="#1f7a44" font-weight="bold">cout</text>
+    <text x="420" y="214" text-anchor="middle" font-size="11.5" font-family="Consolas,monospace" fill="#1f7a44">cout &lt;&lt; a;</text>
+    <path d="M604 132 L512 178" stroke="#2e9e5b" stroke-width="2" stroke-dasharray="5 4"/>
+
+    <text x="24" y="234" font-size="12" fill="#8d9d94">记法：cin 的两个箭头朝里（&gt;&gt;），cout 的两个箭头朝外（&lt;&lt;）</text>
+  </svg>
+  <div class="caption">图 5（SVG）：cin 读入、cout 输出</div>
+</figure>
+
+<div class="box tip">
+  <span class="lb">打个比方：</span>
+  <code class="inline">cin</code> 就是驿站的<b>收货口</b>。你把它打开，外面的人往里递什么，它就收什么。<br>
+  但它有个怪脾气：<strong>你让它收整数，它就只收"能当整数看的字"，一见到减号、字母这类字，它立刻关门，剩下的留给下一次。</strong><br>
+  <b>这就是为什么输入 <code class="inline">2026-6-27</code> 时，<code class="inline">cin &gt;&gt; N</code> 只能拿到 2026。</b>
+</div>
+
+<div class="code-card">
+  <div class="code-head">
+    <span class="dot d1"></span><span class="dot d2"></span><span class="dot d3"></span>
+    <span class="file">cin：把东西"收进来"</span>
+    <span class="lang">C++</span>
+  </div>
+  <pre><code>int a;
+double b;
+char c;
+
+cin &gt;&gt; a;          // 等待用户输入一个整数
+cin &gt;&gt; b;          // 再输入一个小数
+cin &gt;&gt; c;          // 再输入一个字符</code></pre>
+  <div class="out"><b>要点</b>　<code>&gt;&gt;</code> 的方向与 <code>&lt;&lt;</code> 相反；<b>输入时按住回车，程序才会继续往下走</b></div>
+</div>
+
+<h3 id="s3-2">3.2 连续输入与顺序</h3>
+
+<div class="code-card">
+  <div class="code-head">
+    <span class="dot d1"></span><span class="dot d2"></span><span class="dot d3"></span>
+    <span class="file">一行里读多个数</span>
+    <span class="lang">C++</span>
+  </div>
+  <pre><code>int a, b;
+cin &gt;&gt; a &gt;&gt; b;             // 用空格、Tab 或回车隔开都行
+
+cout &lt;&lt; a &lt;&lt; " " &lt;&lt; b;</code></pre>
+  <div class="out"><b>输入</b>　3 5　　<b>输出</b>　3 5<br>
+  <b>输入</b>　3（回车）5（回车）　<b>输出</b>　3 5　—— <b>换行也算分隔符</b></div>
+</div>
+
+<div class="box tip">
+  <span class="lb">cin 读数的"规矩"：</span>
+  <b>① 自动跳过前面的空格和换行</b>；<br>
+  <b>② 一遇到"不属于这个类型"的字符就停下来</b>，剩下的留给下一次读。<br>
+  <b>这条规矩解释了一个常考题：</b>如果输入 <code class="inline">2026-6-27</code>，
+  而程序是 <code class="inline">cin &gt;&gt; N;</code>（N 是 int），
+  那么它只能读到 <code class="inline">2026</code>——<b>读到减号就停了</b>。
+</div>
+
+<h3 id="s3-3">3.3 scanf 与 &amp; 符号</h3>
+
+<div class="code-card">
+  <div class="code-head">
+    <span class="dot d1"></span><span class="dot d2"></span><span class="dot d3"></span>
+    <span class="file">scanf：printf 的"输入版"</span>
+    <span class="lang">C++</span>
+  </div>
+  <pre><code>int a;
+double x;
+
+scanf("%d", &amp;a);          // 注意：变量前面要加 &amp;
+scanf("%lf", &amp;x);         // double 用 %lf，不是 %f
+
+printf("%d %.2f", a, x);</code></pre>
+  <div class="out"><b>最容易忘的一点</b>　用 <code>scanf</code> 时，变量名前<strong>必须加 <code>&amp;</code></strong></div>
+</div>
+
+<div class="box tip">
+  <span class="lb">打个比方：</span>
+  <code class="inline">scanf</code> 是让驿站"去外面收东西"。收货总得有个<b>放东西的地方</b>——<br>
+  <code class="inline">scanf("%d", &amp;a);</code> 里那个 <code class="inline">&amp;</code>，说的就是<strong>"把收到的东西放到 a 这个箱子里"</strong>。<br>
+  而 <code class="inline">printf</code> 是"把箱子里的东西拿出来给人看"，<strong>只需要说拿什么，不用说放哪儿，所以不加 <code class="inline">&amp;</code>。</strong><br>
+  <b>记法：收东西要地址（加 &amp;），给人看不用（不加 &amp;）。</b>
+</div>
+
+<div class="box warn">
+  <span class="lb">记住这个配对：</span>
+  <b>输入用 <code>scanf</code>，变量前加 <code>&amp;</code>；输出用 <code>printf</code>，变量前不加。</b><br>
+  <code class="inline">scanf("%d", &amp;a);</code> ✔　　<code class="inline">printf("%d", a);</code> ✔<br>
+  <b>写反了要么报错，要么输出一堆乱七八糟的地址数字。</b>
+</div>
+
+<!-- ============ 4 ============ -->
+<div class="section-header" id="s4">
+  <h2>4　输入输出配合的完整程序</h2>
+  <div class="en-title">A Complete Program</div>
+</div>
+
+<div class="code-card">
+  <div class="code-head">
+    <span class="dot d1"></span><span class="dot d2"></span><span class="dot d3"></span>
+    <span class="file">例题：读两个数，输出它们的和、差、积</span>
+    <span class="lang">C++</span>
+  </div>
+  <pre><code>#include &lt;iostream&gt;
+using namespace std;
+
+int main() {
+    int a, b;
+    cin &gt;&gt; a &gt;&gt; b;
+
+    int sum  = a + b;
+    int diff = a - b;
+    int prod = a * b;
+
+    printf("%d %d %d\n", sum, diff, prod);
+
+    return 0;
+}</code></pre>
+  <div class="out"><b>输入</b>　7 3　　<b>输出</b>　10 4 21</div>
+</div>
+
+<div class="box remember">
+  <span class="lb">写这类题的检查清单：</span><br>
+  <b>① 变量声明了吗</b>？<code class="inline">int a, b;</code><br>
+  <b>② 输入的顺序对得上吗</b>？<code class="inline">cin &gt;&gt; a &gt;&gt; b;</code> 先读 a 再读 b。<br>
+  <b>③ 格式符和变量类型对得上吗</b>？整数用 <code class="inline">%d</code>，小数用 <code class="inline">%f</code> / <code class="inline">%lf</code>。<br>
+  <b>④ 输出的顺序和题目要求一致吗</b>？<b>差一个空格、少一个换行都可能不得分。</b>
+</div>
+
+<!-- ============ 5 ============ -->
+<div class="section-header" id="s5">
+  <h2>5　代码实战</h2>
+  <div class="en-title">Level Practice</div>
+</div>
+
+<div class="level-card">
+  <div class="lc-head"><span class="n">关卡</span><h4>凌波微步</h4><span class="go">进入关卡 →</span></div>
+  <div class="lc-body">
+    <div class="story">
+      <b>故事：</b>地牢越来越深，通道变得更长。宝石散落在各处，你得快速收集。<br>
+      塔林说：“你已经会写 <b>hero.moveUp();</b> 了。可要走两格，难道写两行吗？”<br>
+      他指了指括号：“<b>把数字放进括号里——一次指令，走多步。</b>
+      这就是"参数"，也是顺序结构里最实用的一招。”
+    </div>
+    <p><strong>思路：</strong>观察地图——<b>哪一段是连续直线？直线越长，越适合用带数字的移动。</b>
+    把重复的指令"合成一条"。</p><figure class="pic">
+  <img src="../assets/stages/py-L1-04-stage1_swift_steps.webp" alt="凌波微步 关卡截图"
+       onerror="this.closest('.pic').classList.add('missing')">
+  <div class="ph">
+    <div class="fn">assets/stages/py-L1-04-stage1_swift_steps.webp</div>
+    <div class="ds">【配图位】游戏实机截图：地牢长廊中，英雄一次走过多格、刚把沿途的宝石全部收齐；地面上留有连续的移动轨迹与宝石被取走后的空位；屏幕下方代码区显示带参数的移动语句（括号里有步数），右上角显示"关卡完成"提示。</div>
+  </div>
+  <figcaption>关卡实况：凌波微步</figcaption>
+</figure>
+    <div class="code-card">
+      <div class="code-head">
+        <span class="dot d1"></span><span class="dot d2"></span><span class="dot d3"></span>
+        <span class="file">重点示例：带参数的移动</span>
+        <span class="lang">C++</span>
+      </div>
+      <pre><code>#include &lt;iostream&gt;
+using namespace std;
+
+int main() {
+    // 一次向上走 2 格
+    hero.moveUp(2);
+
+    // 参数也可以先算出来再传进去
+    int steps = 3 + 1;          // 先算出 4
+    hero.moveRight(steps);      // 再一次走 4 格
+
+    return 0;
+}</code></pre>
+      <div class="out"><b>要点</b>　括号里的数字叫<strong>参数</strong>；<b>参数可以是表达式的结果</b></div>
+    </div>
+    <div class="box info">
+      <span class="lb">和本单元的关联：</span>
+      这段代码里的执行顺序，正好是顺序结构的样板：<br>
+      <b>先算出 <code>steps</code>（计算）→ 再把 <code>steps</code> 传给移动（使用）。</b><br>
+      <strong>如果反过来写，程序就不知道该走几格了。</strong>
+    </div>
+    <a class="btn-go" href="https://codecombat.cn/" target="_blank" rel="noopener">去扣哒世界闯这一关 →</a>
+  </div>
+</div>
+
+<figure class="pic">
+  <img src="../assets/illustrations/py-L1-04-02_input_output_gate.webp" alt="输入输出之门"
+       onerror="this.closest('.pic').classList.add('missing')">
+  <div class="ph">
+    <div class="fn">assets/illustrations/py-L1-04-02_input_output_gate.webp</div>
+    <div class="ds">【配图位】岗哨的城门：一侧是漏斗状的"收货口"（输入），外部的补给袋被吸入；另一侧是滑道状的"出货口"（输出），发光的成果牌被送出来；一只机械鸭守在操纵杆旁。</div>
+  </div>
+  <figcaption>图 6：一侧进、一侧出——这就是输入与输出</figcaption>
+</figure>
+
+
+<!-- ============ 6 ============ -->
+<div class="section-header" id="s6">
+  <h2>6　常见陷阱</h2>
+  <div class="en-title">Common Pitfalls</div>
+</div>
+
+<div class="cast duck">
+  <img class="ava" src="../assets/ducks/duck_naria.webp" alt="扣哒鸭" onerror="this.style.display='none'">
+  <div class="bubble">
+    <div class="who">扣哒鸭 · 调试官</div>
+    输入输出是"细节题"——错一个符号，答案就全变了。四条，条条都是丢分点。
+  </div>
+</div>
+
+<div class="pit">
+  <div class="pt">
+    <div class="x">1</div>
+    <div class="t"><b>scanf 忘了加 <code class="inline">&amp;</code>。</b></div>
+  </div>
+  <div class="duck">
+    <img src="../assets/ducks/duck_zana.webp" alt="扣哒鸭" onerror="this.style.display='none'">
+    <div class="dt"><b>扣哒鸭：</b>“写 <code>scanf("%d", a);</code> 是错的，
+    必须写 <code>scanf("%d", &amp;a);</code>。<br>
+    <strong>记法：scanf 要告诉程序"东西放到哪里"，所以要写上地址 <code>&amp;</code>。</strong>”</div>
+  </div>
+  <div class="fix"><b>正确写法：</b><code class="inline">scanf("%d", &amp;a);</code></div>
+</div>
+
+<div class="pit">
+  <div class="pt">
+    <div class="x">2</div>
+    <div class="t"><b>格式符与变量类型不匹配。</b></div>
+  </div>
+  <div class="duck">
+    <img src="../assets/ducks/duck_hattori.webp" alt="扣哒鸭" onerror="this.style.display='none'">
+    <div class="dt"><b>扣哒鸭：</b>“<code>%d</code> 配整数，<code>%c</code> 配字符，<code>%f</code> / <code>%lf</code> 配小数。<br>
+    <strong>把小数用 <code>%d</code> 输出，会得到一串莫名其妙的数字。</strong>
+    另外输入 double 要用 <code>%lf</code>，不是 <code>%f</code>。”</div>
+  </div>
+  <div class="fix"><b>配对表：</b>int→%d　char→%c　double→%lf（输入）/%f（输出）</div>
+</div>
+
+<div class="pit">
+  <div class="pt">
+    <div class="x">3</div>
+    <div class="t"><b>把 <code class="inline">\n</code> 写成了 <code class="inline">/n</code>。</b></div>
+  </div>
+  <div class="duck">
+    <img src="../assets/ducks/duck_illia.webp" alt="扣哒鸭" onerror="this.style.display='none'">
+    <div class="dt"><b>扣哒鸭：</b>“换行符是<strong>反斜杠 <code>\</code> 加小写 n</strong>，
+    不是斜杠 <code>/</code>。<br>
+    写成 <code>printf("/n")</code>，屏幕上会真的输出 <code>/n</code> 两个字。”</div>
+  </div>
+  <div class="fix"><b>正确写法：</b><code class="inline">printf("\n");</code></div>
+</div>
+
+<div class="pit">
+  <div class="pt">
+    <div class="x">4</div>
+    <div class="t"><b>以为 <code class="inline">cin &gt;&gt; N;</code> 能一次读进整串字符。</b></div>
+  </div>
+  <div class="duck">
+    <img src="../assets/ducks/duck_senick.webp" alt="扣哒鸭" onerror="this.style.display='none'">
+    <div class="dt"><b>扣哒鸭：</b>“如果 N 是 int，输入 <code>2026-6-27</code> 时，
+    它<strong>只会读到 2026</strong>——因为遇到减号就停了。<br>
+    <b>读什么类型，就按那个类型的规则去读，这是 cin 的铁律。</b>”</div>
+  </div>
+  <div class="fix"><b>正确认识：</b>cin 按类型读，遇到不合法字符就停</div>
+</div>
+
+<!-- ============ 7 ============ -->
+<div class="section-header" id="s7">
+  <h2>7　题目练习</h2>
+  <div class="en-title">Practice</div>
+</div>
+
+<p>前 4 题改编自 C++ 一级真题，其余为原创练习题。</p>
+
+<div class="exam">
+  <div class="eh"><span class="src">改编自 2026 年 9 月 · C++ 一级 · 第 5 题</span><span class="tp">单选题</span></div>
+  <div class="eb">
+    <div class="q">如下 C++ 代码执行后，其输出是（　　）。</div>
+    <pre>int a = 3;
+int b = 4;
+printf("%d#%d\n", a, b);</pre>
+    <div class="opt"><i>A.</i>3 4　　<i>B.</i>3#4　　<i>C.</i>3 # 4　　<i>D.</i>3#4 换行后再输出一个空行</div>
+    <details><summary>查看答案与详解</summary>
+      <div class="ans"><b>答案：B</b>。格式串 <code class="inline">"%d#%d\n"</code> 的读法是：<br>
+      第一个 <code class="inline">%d</code> 用 a 替换 → <b>3</b>；<br>
+      中间的 <code class="inline">#</code> 是<strong>普通字符，原样输出</strong>；<br>
+      第二个 <code class="inline">%d</code> 用 b 替换 → <b>4</b>；<br>
+      <code class="inline">\n</code> 换行。<br>
+      所以输出 <b>3#4</b>，然后换行。<br>
+      <b>关键：</b>格式串里只有 % 开头的才是"占位符"，其余字符一律照原样打印。<br>
+      <span class="tagline">对应小节</span>2.2 printf 与格式符。</div>
+    </details>
+  </div>
+</div>
+
+<div class="exam">
+  <div class="eh"><span class="src">改编自 2026 年 6 月 · C++ 一级 · 第 6 题</span><span class="tp">单选题</span></div>
+  <div class="eb">
+    <div class="q">如下 C++ 代码执行时输入 <code class="inline">2026-6-27</code>，下列说法正确的是（　　）。</div>
+    <pre>int N;
+cin &gt;&gt; N;
+cout &lt;&lt; N;</pre>
+    <div class="opt">
+      <i>A.</i>输入失败，不允许输入减号，没有输出<br>
+      <i>B.</i>允许输入，输出 <code class="inline">1993</code><br>
+      <i>C.</i>允许输入并原样输出 <code class="inline">2026-6-27</code><br>
+      <i>D.</i>允许输入并输出 <code class="inline">2026</code>
+    </div>
+    <details><summary>查看答案与详解</summary>
+      <div class="ans"><b>答案：D</b>。N 是 <code class="inline">int</code> 类型，<code class="inline">cin &gt;&gt; N</code> 会按整数规则读：<br>
+      从开头读到 <b>2026</b>，一遇到减号 <code class="inline">-</code>（不属于整数的一部分），<strong>立刻停止读取</strong>。<br>
+      所以 N 的值是 <b>2026</b>，输出也就是 2026，剩下的 <code class="inline">-6-27</code> 留在输入缓冲区里没被处理。<br>
+      <b>B 项</b>是把减号当成了减法去算——cin 不做运算，它只是"照着类型取字"。<br>
+      <span class="tagline">对应小节</span>3.2 连续输入与顺序。</div>
+    </details>
+  </div>
+</div>
+
+<div class="exam">
+  <div class="eh"><span class="src">改编自 2026 年 9 月 · C++ 一级 · 判断题 第 1 题</span><span class="tp">判断题</span></div>
+  <div class="eb">
+    <div class="q">C++ 程序执行 <code class="inline">cin</code> 或 <code class="inline">scanf</code> 语句时，
+    通常是通过键盘这类输入设备来为变量提供值。（　　）</div>
+    <details><summary>查看答案与详解</summary>
+      <div class="ans"><b>答案：正确（√）</b>。<code class="inline">cin</code> 和 <code class="inline">scanf</code> 都是从<strong>标准输入</strong>读数据，
+      默认就是键盘。<br>
+      <b>顺带记一下：</b><code class="inline">cout</code> 与 <code class="inline">printf</code> 输出到标准输出，默认是屏幕。<br>
+      <span class="tagline">对应小节</span>3.1 cin 与 &gt;&gt;。</div>
+    </details>
+  </div>
+</div>
+
+<div class="exam">
+  <div class="eh"><span class="src">改编自 2026 年 6 月 · C++ 一级 · 判断题 第 6 题</span><span class="tp">判断题</span></div>
+  <div class="eb">
+    <div class="q">把 C++ 代码中的 <code class="inline">printf("\n")</code> 换成
+    <code class="inline">printf("%c", '\n')</code>，输出效果相同。（　　）</div>
+    <details><summary>查看答案与详解</summary>
+      <div class="ans"><b>答案：正确（√）</b>。<code class="inline">\n</code> 本身就是一个<strong>字符</strong>（换行符），<br>
+      用 <code class="inline">%c</code> 输出一个字符，和直接写 <code class="inline">"\n"</code> 的效果完全一样——
+      都是"换到下一行"。<br>
+      <span class="tagline">对应小节</span>2.3 换行：\n 与 endl。</div>
+    </details>
+  </div>
+</div>
+
+<div class="exam">
+  <div class="eh"><span class="src ori">原创练习题</span><span class="tp">单选题</span></div>
+  <div class="eb">
+    <div class="q">下列 C++ 代码执行后，输出的结果是（　　）。</div>
+    <pre>int a = 7;
+int b = 2;
+cout &lt;&lt; a &lt;&lt; "+" &lt;&lt; b &lt;&lt; "=" &lt;&lt; a + b;</pre>
+    <div class="opt"><i>A.</i>7+2=9　　<i>B.</i>7 + 2 = 9　　<i>C.</i>72=9　　<i>D.</i>9</div>
+    <details><summary>查看答案与详解</summary>
+      <div class="ans"><b>答案：A</b>。这段代码依次输出：<code class="inline">a</code>（7）、<code class="inline">"+"</code>（加号）、
+      <code class="inline">b</code>（2）、<code class="inline">"="</code>（等号）、<code class="inline">a + b</code>（9）。<br>
+      连起来就是 <b>7+2=9</b>，中间没有任何多余空格。<br>
+      <b>易错点：</b>B 项多加了空格——想要空格必须自己写成 <code class="inline">" + "</code>。<br>
+      <span class="tagline">对应小节</span>2.1 cout 与 &lt;&lt;。</div>
+    </details>
+  </div>
+</div>
+
+<div class="exam">
+  <div class="eh"><span class="src ori">原创练习题</span><span class="tp">判断题</span></div>
+  <div class="eb">
+    <div class="q">使用 <code class="inline">scanf</code> 读入一个整数时，变量名前必须加 <code class="inline">&amp;</code>。（　　）</div>
+    <details><summary>查看答案与详解</summary>
+      <div class="ans"><b>答案：正确（√）</b>。<code class="inline">scanf</code> 需要知道"把读到的值放到哪里"，
+      所以要写成 <code class="inline">scanf("%d", &amp;a);</code>。<br>
+      <b>对比记忆：</b>输出用的 <code class="inline">printf</code> <strong>不加</strong> <code class="inline">&amp;</code>。<br>
+      <span class="tagline">对应小节</span>3.3 scanf 与 &amp; 符号。</div>
+    </details>
+  </div>
+</div>
+
+<div class="exam">
+  <div class="eh"><span class="src ori">原创练习题</span><span class="tp">单选题</span></div>
+  <div class="eb">
+    <div class="q">下列 C++ 代码执行后，输出的结果是（　　）。</div>
+    <pre>double x = 2.5;
+printf("%.1f", x);</pre>
+    <div class="opt"><i>A.</i>2.5　　<i>B.</i>2.50　　<i>C.</i>2.500000　　<i>D.</i>3</div>
+    <details><summary>查看答案与详解</summary>
+      <div class="ans"><b>答案：A</b>。<code class="inline">%.1f</code> 表示"按小数输出，<strong>保留 1 位</strong>"，<br>
+      所以 2.5 原样输出为 <b>2.5</b>。<br>
+      <b>对比：</b>如果写 <code class="inline">%f</code>（不指定位数），默认输出 6 位小数，得到 2.500000（C 项）。<br>
+      <span class="tagline">对应小节</span>2.2 printf 与格式符；2.4 输出小数与保留位数。</div>
+    </details>
+  </div>
+</div>
+
+<div class="exam">
+  <div class="eh"><span class="src ori">原创练习题</span><span class="tp">编程题</span></div>
+  <div class="eb">
+    <div class="q">题目要求：读入两个整数，按下面格式输出三行——
+    第一行是它们的和，第二行是它们的差（第一个减第二个），第三行是它们的积。</div>
+    <details><summary>查看参考答案与要点</summary>
+      <div class="ans">
+<pre style="margin:0;background:#131a26;color:#c8d3e0;border-radius:10px;padding:14px 16px">#include &lt;iostream&gt;
+using namespace std;
+
+int main() {
+    int a, b;
+    cin &gt;&gt; a &gt;&gt; b;                  // 一次读两个整数
+
+    cout &lt;&lt; a + b &lt;&lt; endl;          // 第一行：和
+    cout &lt;&lt; a - b &lt;&lt; endl;          // 第二行：差
+    cout &lt;&lt; a * b &lt;&lt; endl;          // 第三行：积
+
+    return 0;
+}</pre>
+      <p style="margin-top:12px"><b>输入 8 3 时输出：</b>11、5、24<br>
+      <b>要点：</b><br>
+      ① <code class="inline">cin &gt;&gt; a &gt;&gt; b;</code> 一行读两个数，用空格隔开即可；<br>
+      ② 每个结果后面用 <code class="inline">endl</code> 换行，保证三行各占一行；<br>
+      ③ 表达式可以直接写在 <code class="inline">cout</code> 里，不必先存进变量；<br>
+      ④ 输出格式要严格遵守题目要求——<strong>多一个空格、少一次换行都可能判错</strong>。<br>
+      <span class="tagline">对应小节</span>4 输入输出配合的完整程序。</p>
+      </div>
+    </details>
+  </div>
+</div>
+
+<!-- ============ 8 ============ -->
+<div class="section-header" id="s8">
+  <h2>8　本单元小结</h2>
+  <div class="en-title">Unit Summary</div>
+</div>
+
+<div class="cast anya">
+  <img class="ava" src="../assets/avatars/anya.webp" alt="安雅" onerror="this.style.display='none'">
+  <div class="bubble">
+    <div class="who">安雅 · 红发队长</div>
+    三句话记住这一单元：<br>
+    <strong>一、顺序结构——从上往下，一句接一句，每条语句以分号结尾。</strong><br>
+    <strong>二、输出用 cout &lt;&lt; 或 printf，输入用 cin &gt;&gt; 或 scanf（记得加 &amp;）。</strong><br>
+    <strong>三、格式符要配对：%d 配整数、%c 配字符、%f / %lf 配小数。</strong><br>
+    吊篮已经升到顶了。下一单元，我们第一次让程序"做选择"。
+  </div>
+</div>
+
+<div class="summary">
+  <h3>你在升降梯上学到了什么</h3>
+  <ul>
+    <li><strong>顺序结构</strong>——程序从上往下逐句执行；每条语句以分号结尾。</li>
+    <li><strong>程序骨架</strong>——<code class="inline">#include</code> → <code class="inline">using namespace std;</code> → <code class="inline">int main() { }</code> → <code class="inline">return 0;</code>。</li>
+    <li><strong>四步套路</strong>——声明 → 输入 → 计算 → 输出。</li>
+    <li><strong>输出</strong>——<code class="inline">cout &lt;&lt; a &lt;&lt; " " &lt;&lt; b;</code>，各段用 <code class="inline">&lt;&lt;</code> 连接。</li>
+    <li><strong>printf 格式符</strong>——<code class="inline">%d</code> 整数、<code class="inline">%c</code> 字符、<code class="inline">%f</code> 小数、<code class="inline">%.2f</code> 保留两位、<code class="inline">%3d</code> 占三格。</li>
+    <li><strong>格式串里的普通字符原样输出</strong>——如 <code class="inline">"%d#%d"</code> 会输出一个 <code class="inline">#</code>。</li>
+    <li><strong>换行</strong>——<code class="inline">endl</code>、<code class="inline">"\n"</code>、<code class="inline">printf("\n")</code> 三者等价；<code class="inline">\n</code> 是反斜杠加 n。</li>
+    <li><strong>输入</strong>——<code class="inline">cin &gt;&gt; a &gt;&gt; b;</code>；空格与回车都算分隔符。</li>
+    <li><strong>scanf</strong>——变量前必须加 <code class="inline">&amp;</code>；double 输入用 <code class="inline">%lf</code>。</li>
+    <li><strong>cin 的规矩</strong>——按类型读，遇到不属于该类型的字符就停下。</li>
+  </ul>
+</div>
+
+<div class="pager">
+  <a href="cpp-1-03.html"><div class="k">← 上一单元</div><div class="v">炼金配方台 · 运算符与表达式</div></a>
+  <a href="../index.html" target="_top" class="back"><div class="k">返回</div><div class="v">考纲之路 · 总目录</div></a>
+  <a href="cpp-1-05.html"><div class="k">下一单元 →</div><div class="v">岔路口的抉择 · 分支结构：做选择</div></a>
+</div>
+
+<div class="cta">
+  <h3>下一站：岔路口的抉择</h3>
+  <p>程序一直沿着一条线走，太死板了。该让它<b>在岔路口自己做判断</b>了——
+  条件成立走这边，不成立走那边。下一单元我们学分支结构。</p>
+  <a class="btn-go" href="https://codecombat.cn/" target="_blank" rel="noopener">加入扣哒世界，把这条考纲之路走一遍 →</a>
+</div>
+
+
+</div><!-- /container -->
+</div><!-- /page -->
+
+<script>
+const KEYWORDS = new Set([
+  "int", "long", "short", "unsigned", "signed", "float", "double", "char", "bool", "void",
+  "const", "if", "else", "for", "while", "do", "switch", "case", "default", "break",
+  "continue", "return", "goto", "struct", "class", "union", "enum", "using", "namespace",
+  "std", "main", "true", "false", "cin", "cout", "cerr", "endl", "string", "sizeof",
+  "include", "define", "new", "delete", "public", "private", "static", "inline", "nullptr"
+]);
+
+function esc(s){ return s.replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;'); }
+
+function highlight(src){
+  let out = '', i = 0;
+  const n = src.length;
+  while (i < n){
+    const c = src[i];
+    /* 预处理指令：#include / #define，整行只在行首生效 */
+    if (c === '#' && (i === 0 || src[i-1] === '\n')){
+      let j = i;
+      while (j < n && /[A-Za-z]/.test(src[j])) j++;
+      out += '<span class="kw">' + esc(src.slice(i, j)) + '</span>';
+      let k = src.indexOf('\n', j); if (k < 0) k = n;
+      if (j < k) out += '<span class="st">' + esc(src.slice(j, k)) + '</span>';
+      i = k; continue;
+    }
+    /* 行注释 // */
+    if (c === '/' && src[i+1] === '/'){
+      let j = src.indexOf('\n', i); if (j < 0) j = n;
+      out += '<span class="cm">' + esc(src.slice(i, j)) + '</span>';
+      i = j; continue;
+    }
+    /* 块注释 */
+    if (c === '/' && src[i+1] === '*'){
+      let j = src.indexOf('*/', i + 2); j = j < 0 ? n : j + 2;
+      out += '<span class="cm">' + esc(src.slice(i, j)) + '</span>';
+      i = j; continue;
+    }
+    /* 字符串与字符字面量 */
+    if (c === '"' || c === "'"){
+      let j = i + 1;
+      while (j < n && src[j] !== c){ if (src[j] === '\\') j++; j++; }
+      j = Math.min(j + 1, n);
+      out += '<span class="st">' + esc(src.slice(i, j)) + '</span>';
+      i = j; continue;
+    }
+    /* 数字 */
+    if (/[0-9]/.test(c)){
+      let j = i;
+      while (j < n && /[0-9.]/.test(src[j])) j++;
+      out += '<span class="nu">' + esc(src.slice(i, j)) + '</span>';
+      i = j; continue;
+    }
+    /* 标识符：关键字 / 函数名 / 普通名字 */
+    if (/[A-Za-z_]/.test(c)){
+      let j = i;
+      while (j < n && /[A-Za-z0-9_]/.test(src[j])) j++;
+      const w = src.slice(i, j);
+      if (KEYWORDS.has(w)) out += '<span class="kw">' + esc(w) + '</span>';
+      else if (src[j] === '(') out += '<span class="fn">' + esc(w) + '</span>';
+      else out += esc(w);
+      i = j; continue;
+    }
+    out += esc(c); i++;
+  }
+  return out;
+}
+
+document.querySelectorAll('.code-card pre code').forEach(block => {
+  block.innerHTML = highlight(block.textContent);
+});
+
+if (location.search.indexOf('expand') >= 0) {
+  document.querySelectorAll('details').forEach(d => d.open = true);
+}
+document.querySelectorAll('.sidebar-nav a').forEach(a => {
+  a.addEventListener('click', () => {
+    if (window.innerWidth <= 900) document.querySelector('.sidebar-nav').classList.remove('active');
+  });
+});
+</script>
+</body>
+</html>

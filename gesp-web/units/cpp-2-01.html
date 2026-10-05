@@ -1,0 +1,1004 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="copyright" content="CodeCombat Inc. codecombat.cn">
+<title>溪谷的耳语 · 计算机存储与网络 | 扣哒考级 · GESP C++ 二级</title>
+<style>
+  :root{
+    --primary:#2563eb; --primary-light:#4f8ff0; --primary-lighter:#eaf1fe; --primary-dark:#1b47a8;
+    --brand:#ff6b35; --brand-dark:#e8541f; --brand-soft:#fff3ec;
+    --night:#131c2b; --night-2:#1e2a3a; --gold:#f5b301;
+    --text:#242e3d; --dim:#68788f; --dim2:#93a2b6;
+    --bg:#ffffff; --bg-soft:#f7f9fd; --line:#e2e9f4; --sidebar:274px;
+    --code-bg:#131a26; --code-tx:#c8d3e0;
+    --code-kw:#c678dd; --code-st:#98c379; --code-nu:#d19a66; --code-cm:#5f7488; --code-fn:#e5c07b;
+  }
+  *{margin:0;padding:0;box-sizing:border-box}
+  html{scroll-behavior:smooth}
+  body{font-family:"PingFang SC","Microsoft YaHei","Segoe UI",-apple-system,sans-serif;line-height:1.9;color:var(--text);background:var(--bg);font-size:15.5px}
+  .sidebar-nav{position:fixed;top:0;left:0;width:var(--sidebar);height:100vh;overflow-y:auto;background:linear-gradient(180deg,#0c1626,#14243c);padding:14px 0 40px;z-index:100;border-right:3px solid var(--brand);transition:transform .3s ease}
+  .sidebar-nav::-webkit-scrollbar{width:5px}
+  .sidebar-nav::-webkit-scrollbar-thumb{background:var(--brand);border-radius:4px}
+  .sb-brand{display:flex;align-items:center;gap:10px;padding:10px 13px 12px;border-bottom:1px solid #233752;margin-bottom:8px}
+  .sidebar-nav a.sb-logo{display:flex;align-items:center;justify-content:center;flex-shrink:0;padding:0;border-left:none;transition:.2s}
+  .sb-logo:hover{transform:scale(1.08)}
+  .sb-logo img{height:34px;width:34px;display:block;object-fit:contain;border-radius:8px}
+  .sb-brand b{color:#f2f6fa;font-size:14px;letter-spacing:.5px;display:block;line-height:1.4}
+  .sb-brand span{color:#7f95ab;font-size:11.5px;display:block;line-height:1.4}
+  .nav-title{color:#ffb894;font-size:12px;font-weight:800;padding:10px 18px 6px;letter-spacing:1.2px}
+  .sidebar-nav a{display:block;color:#c3d0dc;text-decoration:none;padding:6px 18px;font-size:12.5px;line-height:1.55;border-left:3px solid transparent;transition:.18s}
+  .sidebar-nav a:hover{color:#fff;background:rgba(255,107,53,.16);border-left-color:var(--brand)}
+  .sidebar-nav a.nav-section{color:#ffb894;font-weight:700;font-size:13px;margin-top:11px;padding-top:10px;border-top:1px solid #233752}
+  .sidebar-nav a.nav-section:first-of-type{border-top:none;margin-top:0;padding-top:6px}
+  .sidebar-nav a.nav-sub{padding-left:30px;color:#93a8bc;font-size:12px}
+  .sidebar-nav a.nav-sub:hover{color:#fff}
+  .sb-back{margin:16px 14px 0;display:block;text-align:center;padding:9px;border-radius:9px;background:#1e304a;color:#a9c0d6 !important;font-size:12px;font-weight:700;border-left:none !important}
+  .sb-back:hover{background:var(--brand) !important;color:#fff !important}
+  .nav-toggle{display:none;position:fixed;top:14px;left:14px;z-index:120;background:var(--brand);color:#fff;border:none;border-radius:9px;padding:9px 13px;font-size:15px;cursor:pointer;box-shadow:0 4px 14px rgba(0,0,0,.25)}
+  .page{margin-left:var(--sidebar)}
+  .hero{position:relative;overflow:hidden;padding:44px 52px;color:#fff;background:linear-gradient(125deg,#0a1220 0%,#16294a 46%,#8a3a16 132%)}
+  .hero::after{content:"";position:absolute;right:-90px;top:-110px;width:400px;height:400px;border-radius:50%;background:radial-gradient(circle,rgba(245,179,1,.30),transparent 68%)}
+  .hero-top{display:flex;gap:36px;align-items:center;position:relative;z-index:2}
+  .hero-txt{flex:1;min-width:0}
+  .hero .crumb{font-size:11.5px;color:#ffb894;letter-spacing:1.5px;font-weight:700;margin-bottom:14px}
+  .hero h1{font-size:31px;font-weight:800;line-height:1.3;letter-spacing:.6px;margin-bottom:8px}
+  .hero h1 .sub{display:block;font-size:18px;font-weight:700;color:#ffd2b3;margin-top:6px;letter-spacing:.3px}
+  .hero .en{font-size:13px;color:#9db4c8;font-style:italic;margin-bottom:18px}
+  .hero .tags{display:flex;flex-wrap:wrap;gap:8px}
+  .tag{font-size:11.5px;padding:4px 12px;border-radius:20px;background:rgba(255,255,255,.12);border:1px solid rgba(255,255,255,.22);color:#e8f0f6;font-weight:600}
+  .tag.hot{background:rgba(255,107,53,.92);border-color:transparent;color:#fff}
+  .hero-card{flex-shrink:0;width:200px;text-align:center}
+  .hero-card .ava{width:148px;height:148px;border-radius:50%;object-fit:cover;object-position:top center;border:4px solid rgba(255,180,140,.6);box-shadow:0 14px 34px rgba(0,0,0,.45);background:#24344a}
+  .hero-card .nm{font-size:15px;font-weight:800;color:#fff;margin-top:10px}
+  .hero-card .ti{font-size:11.5px;color:#ffb894;margin-top:2px}
+  .container{max-width:1080px;margin:0 auto;padding:38px 52px 70px}
+  .lead{font-size:15.5px;line-height:2.05;color:#333f52;background:linear-gradient(120deg,#fff8f3,#f7fbf8);border-left:5px solid var(--brand);border-radius:0 14px 14px 0;padding:22px 26px;margin-bottom:32px}
+  .lead b{color:var(--brand-dark)}
+  .cast{display:flex;gap:16px;align-items:flex-start;border-radius:16px;padding:18px 22px;margin:24px 0}
+  .cast .ava{width:72px;height:72px;border-radius:50%;object-fit:cover;object-position:top center;flex-shrink:0;background:#e8eef5}
+  .cast .bubble{position:relative;font-size:14px;line-height:1.95;padding-top:2px;flex:1}
+  .cast .who{font-size:12px;font-weight:800;margin-bottom:5px;letter-spacing:.5px}
+  .cast.anya{background:var(--brand-soft);border:1px solid #ffdcc9}
+  .cast.anya .who{color:var(--brand-dark)}
+  .cast.anya .bubble{color:#5c4636}
+  .cast.duck{background:#fff5f5;border:1px solid #fbd5d5}
+  .cast.duck .who{color:#b91c1c}
+  .cast.duck .bubble{color:#5c4141}
+  .cast.teacher{background:linear-gradient(120deg,#f4f7fb,#ffffff);border:1px solid #dbe4f0}
+  .cast.teacher .who{color:#1e293b}
+  .cast.teacher .bubble{color:#3c4a5a}
+  .cast.hero{background:#f2f7fd;border:1px solid #cfe0f5}
+  .cast.hero .who{color:#1b47a8}
+  .cast.hero .bubble{color:#3a4658}
+  .goal-grid{display:grid;grid-template-columns:1fr 1fr;gap:16px;margin-bottom:36px}
+  .goal{border:1px solid var(--line);border-radius:15px;padding:19px 21px;background:#fff;box-shadow:0 4px 16px rgba(31,122,68,.05)}
+  .goal h4{font-size:14px;font-weight:800;margin-bottom:11px;display:flex;align-items:center;gap:8px;color:var(--primary-dark)}
+  .goal h4 .ic{width:22px;height:22px;border-radius:7px;background:var(--primary-lighter);display:flex;align-items:center;justify-content:center;font-size:12px}
+  .goal ul{list-style:none}
+  .goal li{font-size:13.5px;color:#48576b;line-height:1.9;padding-left:18px;position:relative}
+  .goal li::before{content:"▸";position:absolute;left:0;color:var(--primary);font-weight:800}
+  .goal.syllabus li::before{content:"✓"}
+  .section-header{margin:52px 0 24px;padding-bottom:12px;border-bottom:3px solid var(--brand);display:flex;align-items:baseline;gap:14px;flex-wrap:wrap}
+  .section-header h2{font-size:22px;font-weight:800;color:var(--night);letter-spacing:.4px}
+  .section-header .en-title{font-size:12px;color:var(--dim2);font-style:italic}
+  h3{font-size:17.5px;font-weight:800;margin:34px 0 14px;color:var(--night);display:flex;align-items:center;gap:10px}
+  h3::before{content:"";width:5px;height:17px;border-radius:3px;background:var(--brand);flex-shrink:0}
+  h4{font-size:15px;font-weight:800;margin:24px 0 10px;color:#2b4260}
+  p{margin:12px 0;color:#3a4658;line-height:2}
+  strong{color:var(--primary-dark)}
+  code.inline{background:var(--primary-lighter);color:var(--primary-dark);padding:2px 7px;border-radius:6px;font-family:"SFMono-Regular",Consolas,Menlo,monospace;font-size:.9em;font-weight:600}
+  .figure{margin:24px 0;text-align:center}
+  .figure svg.diagram{max-width:100%;height:auto;background:#fff;border:1px solid var(--line);border-radius:14px;padding:10px}
+  .figure .caption{font-size:12.5px;color:var(--dim2);margin-top:9px}
+  .pic{margin:26px 0;text-align:center}
+  .pic img{max-width:100%;border-radius:16px;box-shadow:0 10px 28px rgba(30,60,45,.15);display:block;margin:0 auto}
+  .pic figcaption{font-size:12.5px;color:var(--dim2);margin-top:9px}
+  .pic .ph{display:none}
+  .pic.missing img{display:none}
+  .pic.missing .ph{display:flex;flex-direction:column;align-items:center;justify-content:center;gap:9px;border:2px dashed #c9d9e8;border-radius:16px;background:linear-gradient(135deg,#f8fbfe,#eef6ff);padding:40px 26px;color:#7a8fa8}
+  .pic.missing .ph .fn{font-family:Consolas,monospace;font-size:12.5px;color:#2563eb;font-weight:700;word-break:break-all}
+  .pic.missing .ph .ds{font-size:12.5px;line-height:1.8;max-width:560px}
+  .box{border-radius:13px;padding:16px 20px;margin:20px 0;font-size:14px;line-height:1.95}
+  .box .lb{font-weight:800;margin-right:6px}
+  .info{background:#eef6ff;border-left:5px solid #3b82f6;color:#274768}
+  .info .lb{color:#1d4ed8}
+  .tip{background:#fff9ec;border-left:5px solid #f59e0b;color:#6b4e13}
+  .tip .lb{color:#b45309}
+  .remember{background:var(--primary-lighter);border-left:5px solid var(--primary);color:#1d3a6b}
+  .remember .lb{color:var(--primary-dark)}
+  .warn{background:#fef2f2;border-left:5px solid #ef4444;color:#7f2b2b}
+  .warn .lb{color:#b91c1c}
+  .code-card{margin:20px 0;border-radius:14px;overflow:hidden;box-shadow:0 10px 28px rgba(20,40,28,.20)}
+  .code-head{display:flex;align-items:center;gap:9px;background:#1a2434;padding:9px 14px}
+  .code-head .dot{width:10px;height:10px;border-radius:50%}
+  .code-head .d1{background:#ff5f57}.code-head .d2{background:#febc2e}.code-head .d3{background:#28c840}
+  .code-head .file{color:#8fa6c0;font-size:11.5px;font-family:Consolas,monospace;margin-left:6px}
+  .code-head .lang{margin-left:auto;font-size:10.5px;font-weight:800;color:#0d141f;background:#4f8ff0;padding:2px 9px;border-radius:6px;letter-spacing:.4px}
+  .code-card pre{background:var(--code-bg);padding:18px 20px;overflow-x:auto;margin:0;font-family:"SFMono-Regular",Consolas,"Courier New",monospace;font-size:13.5px;line-height:1.85}
+  .code-card pre::-webkit-scrollbar{height:8px}
+  .code-card pre::-webkit-scrollbar-thumb{background:#31445c;border-radius:4px}
+  .code-card code{color:var(--code-tx);white-space:pre}
+  .kw{color:var(--code-kw);font-weight:600}
+  .st{color:var(--code-st)}
+  .nu{color:var(--code-nu)}
+  .cm{color:var(--code-cm);font-style:italic}
+  .fn{color:var(--code-fn)}
+  .out{background:#0f1621;color:#7fb3f5;font-family:Consolas,monospace;font-size:13px;padding:12px 20px;border-top:1px solid #22304a}
+  .out b{color:#c9d6cd;font-weight:600;font-size:11.5px;letter-spacing:1px}
+  .out.err{color:#fca5a5}
+  table.styled{width:100%;border-collapse:collapse;margin:20px 0;font-size:13.5px;border-radius:12px;overflow:hidden;box-shadow:0 4px 16px rgba(31,122,68,.07)}
+  table.styled thead{background:var(--brand)}
+  table.styled th{color:#fff;padding:11px 14px;text-align:left;font-weight:700;font-size:13px}
+  table.styled td{padding:10px 14px;border-bottom:1px solid var(--line);color:#445266;vertical-align:top}
+  table.styled tbody tr:nth-child(even){background:var(--bg-soft)}
+  table.styled tbody tr:last-child td{border-bottom:none}
+  .level-card{border:1px solid var(--line);border-radius:16px;overflow:hidden;margin:22px 0;box-shadow:0 6px 22px rgba(31,122,68,.07)}
+  .level-card .lc-head{background:linear-gradient(100deg,#17283a,#8a3a16);color:#fff;padding:15px 22px;display:flex;align-items:center;gap:12px;flex-wrap:wrap}
+  .level-card .lc-head .n{font-size:12px;font-weight:800;background:rgba(255,255,255,.2);padding:3px 10px;border-radius:20px}
+  .level-card .lc-head h4{margin:0;color:#fff;font-size:16px}
+  .level-card .lc-head .go{margin-left:auto;font-size:11.5px;color:#ffd2b3}
+  .level-card .lc-body{padding:20px 24px;background:#fff}
+  .level-card .story{background:#f9fbfd;border-left:4px solid #93c5fd;border-radius:0 10px 10px 0;padding:13px 18px;margin:0 0 16px;font-size:14px;line-height:1.95;color:#3f5163}
+  .level-card .story b{color:#1d4ed8}
+  .btn-go{display:inline-flex;align-items:center;gap:8px;background:linear-gradient(135deg,var(--brand),var(--brand-dark));color:#fff;text-decoration:none;font-weight:800;font-size:13.5px;padding:10px 22px;border-radius:11px;box-shadow:0 8px 20px rgba(255,107,53,.32);transition:.2s}
+  .btn-go:hover{transform:translateY(-2px);box-shadow:0 12px 26px rgba(255,107,53,.42)}
+  .pit{border:1px solid #f6dede;border-radius:14px;overflow:hidden;margin:16px 0;background:#fff}
+  .pit .pt{display:flex;gap:12px;padding:14px 18px;background:#fffafa;align-items:flex-start}
+  .pit .x{width:26px;height:26px;border-radius:9px;background:#fee;color:#dc2626;display:flex;align-items:center;justify-content:center;font-weight:800;flex-shrink:0;font-size:13px}
+  .pit .t{font-size:13.5px;line-height:1.9;color:#5c4a4a;flex:1}
+  .pit .t b{color:#b91c1c}
+  .pit .duck{display:flex;gap:12px;padding:13px 18px;background:#fff5f5;border-top:1px dashed #f3d0d0;align-items:flex-start}
+  .pit .duck img{width:48px;height:48px;object-fit:contain;flex-shrink:0;margin-top:2px}
+  .pit .duck .dt{font-size:13.5px;line-height:1.9;color:#7a3b3b}
+  .pit .duck .dt b{color:#b91c1c}
+  .pit .fix{padding:12px 18px;background:#f2f7fd;border-top:1px dashed #cfe0f5;font-size:13.5px;color:#1d3a6b}
+  .pit .fix b{color:var(--primary-dark)}
+  .exam{border:1px solid #dfe7f5;border-radius:15px;margin:16px 0;overflow:hidden;background:#fff;box-shadow:0 4px 16px rgba(38,62,120,.06)}
+  .exam .eh{display:flex;align-items:center;gap:10px;padding:11px 18px;background:linear-gradient(100deg,#eef4ff,#f7faff);border-bottom:1px solid #e3ebf8;flex-wrap:wrap}
+  .exam .eh .src{font-size:11px;font-weight:800;color:#fff;background:#2563eb;padding:2.5px 10px;border-radius:20px}
+  .exam .eh .src.ori{background:#8b5cf6}
+  .exam .eh .tp{font-size:11.5px;color:#5b7ba8;font-weight:700}
+  .exam .eb{padding:16px 20px}
+  .exam .q{font-weight:700;font-size:14px;color:#1e2a3e;line-height:1.9;margin-bottom:10px}
+  .exam .opt{font-size:13.5px;color:#48576b;line-height:2.05;padding-left:6px}
+  .exam .opt i{font-style:normal;font-weight:800;color:var(--primary-dark);margin-right:7px}
+  .exam pre{margin:12px 0;background:#1b2a21;border-radius:10px;padding:14px 16px;overflow-x:auto;font-family:Consolas,monospace;font-size:13px;line-height:1.8;color:var(--code-tx)}
+  .exam details{margin-top:10px;border-top:1px dashed var(--line);padding-top:10px}
+  .exam summary{cursor:pointer;font-size:12.5px;font-weight:800;color:#2563eb;outline:none;user-select:none}
+  .exam details .ans{font-size:13.5px;color:#3a4658;line-height:1.95;margin-top:9px;background:var(--bg-soft);padding:13px 16px;border-radius:10px}
+  .exam details .ans b{color:var(--primary-dark)}
+  .exam details .ans .tagline{display:inline-block;font-size:11px;background:#e0f2fe;color:#0e7490;padding:1.5px 8px;border-radius:6px;font-weight:700;margin-right:6px}
+  .summary{margin:40px 0 20px;border-radius:18px;padding:26px 30px;background:linear-gradient(130deg,#fff8f3,#ffffff);border:1px solid #ffe0cf}
+  .summary h3{margin-top:0}
+  .summary ul{list-style:none;margin-top:10px}
+  .summary li{font-size:14px;line-height:2;color:#3d4d66;padding-left:24px;position:relative}
+  .summary li::before{content:"◆";position:absolute;left:0;color:var(--brand);font-size:11px;top:6px}
+  .pager{display:flex;gap:14px;margin-top:30px;flex-wrap:wrap}
+  .pager a{flex:1;min-width:200px;text-decoration:none;border:1px solid var(--line);border-radius:14px;padding:16px 20px;background:#fff;transition:.2s;display:block}
+  .pager a:hover{border-color:var(--brand);box-shadow:0 10px 26px rgba(255,107,53,.14);transform:translateY(-2px)}
+  .pager a .k{font-size:11px;color:var(--dim2);font-weight:700;letter-spacing:1px}
+  .pager a .v{font-size:14px;font-weight:800;color:var(--night);margin-top:5px}
+  .pager a.back{background:var(--brand-soft);border-color:transparent;text-align:center}
+  .pager a.back .v{color:var(--brand-dark)}
+  .cta{margin-top:26px;border-radius:20px;padding:30px 34px;color:#fff;position:relative;overflow:hidden;background:linear-gradient(120deg,#16202f,#2b3a52 46%,#a8431c 132%)}
+  .cta::after{content:"";position:absolute;right:-70px;bottom:-90px;width:280px;height:280px;border-radius:50%;background:radial-gradient(circle,rgba(255,140,80,.45),transparent 68%)}
+  .cta h3{color:#fff;margin:0 0 10px;position:relative;z-index:2}
+  .cta h3::before{background:var(--brand)}
+  .cta p{color:#d8e0ef;font-size:13.5px;margin:0 0 18px;position:relative;z-index:2;max-width:640px}
+  .cta .btn-go{position:relative;z-index:2}
+  @media(max-width:900px){
+    .sidebar-nav{transform:translateX(-100%)}
+    .sidebar-nav.active{transform:translateX(0)}
+    .nav-toggle{display:block}
+    .page{margin-left:0}
+    .hero{padding:70px 22px 34px}
+    .hero-top{flex-direction:column-reverse;text-align:center}
+    .hero-card{width:auto}
+    .container{padding:26px 20px 60px}
+    .goal-grid{grid-template-columns:1fr}
+  }
+</style>
+</head>
+<body>
+
+<button class="nav-toggle" onclick="document.querySelector('.sidebar-nav').classList.toggle('active')">&#9776;</button>
+
+<nav class="sidebar-nav">
+  <div class="sb-brand">
+    <a class="sb-logo" href="https://codecombat.cn/" target="_blank" rel="noopener" title="访问 CodeCombat 扣哒世界官网">
+      <img src="../assets/logo.png" alt="CodeCombat 扣哒世界">
+    </a>
+    <div><b>溪谷的耳语</b><span>回声溪谷 · C++ 二级 第 1 单元</span></div>
+  </div>
+  <div class="nav-title">本单元目录</div>
+
+  <a href="#s0" class="nav-section">0　单元导语与目标</a>
+  <a href="#s0-1" class="nav-sub">0.1 学习目标</a>
+  <a href="#s0-2" class="nav-sub">0.2 考纲对照</a>
+  <a href="#s1" class="nav-section">1　计算机怎么记住东西</a>
+  <a href="#s1-1" class="nav-sub">1.1 存储器是什么</a>
+  <a href="#s1-2" class="nav-sub">1.2 三种存储器</a>
+  <a href="#s1-3" class="nav-sub">1.3 位、字节与容量单位</a>
+  <a href="#s1-4" class="nav-sub">1.4 容量换算练习</a>
+  <a href="#s2" class="nav-section">2　网络是什么</a>
+  <a href="#s2-1" class="nav-sub">2.1 从喊话到网络</a>
+  <a href="#s2-2" class="nav-sub">2.2 协议：大家约好的规矩</a>
+  <a href="#s2-3" class="nav-sub">2.3 互联网与 IP 地址</a>
+  <a href="#s2-4" class="nav-sub">2.4 局域网与广域网</a>
+  <a href="#s3" class="nav-section">3　代码实战</a>
+  <a href="#s4" class="nav-section">4　常见陷阱</a>
+  <a href="#s5" class="nav-section">5　题目练习</a>
+  <a href="#s6" class="nav-section">6　本单元小结</a>
+
+  <a href="../index.html" target="_top" class="sb-back">返回考纲之路</a>
+</nav>
+
+<div class="page">
+
+<div class="hero">
+  <div class="hero-top">
+    <div class="hero-txt">
+      <div class="crumb">扣哒考级 · GESP C++ 二级 · 第 1 单元　|　回声溪谷 ECHOSTREAM VALLEY</div>
+      <h1>溪谷的耳语
+        <span class="sub">计算机存储与网络</span>
+      </h1>
+      <div class="en">Storage &amp; Networks</div>
+      <div class="tags">        <span class="tag hot">考纲 · 存储与网络</span>
+        <span class="tag">RAM / ROM / Cache</span>
+        <span class="tag">位与字节</span>
+        <span class="tag">协议</span>
+        <span class="tag">IP 地址</span></div>
+    </div>
+    <div class="hero-card">
+      <img class="ava" src="../assets/avatars/anya.webp" alt="安雅" onerror="this.style.background='#24344a';this.src='../assets/heroes/anya.webp'">
+      <div class="nm">安雅</div>
+      <div class="ti">红发队长 · 你的向导</div>
+    </div>
+  </div>
+</div>
+
+<div class="container">
+
+<div class="lead">
+  顺着烛火岗哨往北走三天，山势忽然裂开一道口子——一条溪谷横在眼前。<br>
+  谷底的水是青色的，安静得像一块镜子。<b>可只要你喊一声，两岸的岩壁就会把你的话一层层递回来。</b><br>
+  听见了吗？安雅停下脚步，这一整条谷，就是一座巨大的<b>回声机</b>。<br>
+  你忽然想到一件事：<b>你喊出去的是"一句话"，回来的时候还是"一句话"——可它中间明明隔着那么远。</b>
+</div>
+
+<div class="cast anya">
+  <img class="ava" src="../assets/avatars/anya.webp" alt="安雅" onerror="this.style.display='none'">
+  <div class="bubble">
+    <div class="who">安雅 · 红发队长</div>
+    上一级我们把程序"教会了"——会算、会挑、会重复。<br>
+    可你有没有想过：<b>这些数字、这些字，到底被放在哪里？</b>程序停了以后，它们还在不在？<br>
+    还有——<strong>两台隔着几百里的电脑，是怎么"听见"对方说话的？</strong><br>
+    这一单元就讲这两件事：<b>存储</b>和<b>网络</b>。
+  </div>
+</div>
+
+<figure class="pic">
+  <img src="../assets/illustrations/py-L2-01-01_echo_valley.webp" alt="回声溪谷"
+       onerror="this.closest('.pic').classList.add('missing')">
+  <div class="ph">
+    <div class="fn">assets/illustrations/py-L2-01-01_echo_valley.webp</div>
+    <div class="ds">【配图位】薄雾笼罩的回声溪谷：两岸各立着一座石砌哨站，谷底一汪青色的静水像镜子；一名新兵站在岸边朝对岸喊话，声音化作几条发光的丝带在水面上来回传递、逐层折返；清晨的柔光从谷口斜射进来。</div>
+  </div>
+  <figcaption>图 1：回声溪谷·溪谷的耳语——今天要从这里开始</figcaption>
+</figure>
+
+<!-- ============ 0 ============ -->
+<div class="section-header" id="s0">
+  <h2>0　单元导语与目标</h2>
+  <div class="en-title">Unit Overview</div>
+</div>
+
+<h3 id="s0-1">0.1 学习目标</h3>
+<div class="goal-grid">
+  <div class="goal">
+    <h4><span class="ic">1</span>学完这个单元，你将能……</h4>
+    <ul>
+      <li>说清存储器是干什么用的，它和 CPU 是什么关系</li>
+      <li>分清 RAM、ROM、Cache 三种存储器，说出它们各自的特点</li>
+      <li>算清位、字节、KB、MB、GB 之间的换算</li>
+      <li>说明"协议"是什么，为什么必须有它</li>
+      <li>说出 IP 地址的作用，分清局域网与广域网</li>
+      <li>看懂并判断与存储、网络有关的题目</li>
+    </ul>
+  </div>
+  <div class="goal syllabus">
+    <h4><span class="ic">2</span>对标 GESP 考纲（C++ 二级）</h4>
+    <ul>
+      <li>了解计算机存储的基本概念及分类</li>
+      <li>了解 RAM、ROM、Cache 的功能与区别</li>
+      <li>了解计算机网络的概念，了解网络协议与互联网的基本概念</li>
+      <li>了解局域网与广域网的区别，了解 IP 地址的作用</li>
+      <li>考核目标：能判断各类存储器的特点、能完成容量换算</li>
+    </ul>
+  </div>
+</div>
+
+<h3 id="s0-2">0.2 考纲对照</h3>
+<table class="styled">
+  <thead><tr><th>本单元小节</th><th>对应考纲条目</th><th>真题常考形式</th></tr></thead>
+  <tbody>
+    <tr><td>1　存储器</td><td>存储的基本概念与分类</td><td>某个说法"对不对"，比如 Cache 断电后数据还在不在</td></tr>
+    <tr><td>2　容量单位</td><td>位、字节与换算</td><td>给一个容量，问等于多少 MB / 多少个字节</td></tr>
+    <tr><td>3　网络与协议</td><td>网络协议、互联网概念</td><td>协议的作用、IP 地址的作用</td></tr>
+  </tbody>
+</table>
+
+<div class="box tip">
+  <span class="lb">这一单元的特点：</span>
+  它<strong>几乎没有代码</strong>，全是"讲道理"的内容。<br>
+  但别以为好拿分——<b>这一块的题全靠"分得清"</b>：内存和硬盘分得清吗？RAM 和 ROM 分得清吗？<br>
+  <b>下面每一个小节的表格，都值得你读两遍。</b>
+</div>
+
+<!-- ============ 1 ============ -->
+<div class="section-header" id="s1">
+  <h2>1　计算机怎么记住东西</h2>
+  <div class="en-title">Computer Storage</div>
+</div>
+
+<h3 id="s1-1">1.1 存储器是什么</h3>
+
+<p>安雅在岸边的石屋里找到一只柜子：你背包里的每样东西，总得有个地方放。<b>计算机也一样——它算出来的每一个数字，都要先找个地方存起来。</b></p>
+
+<p>这个地方就是<strong>存储器</strong>。它和 CPU 是一对搭档：</p>
+
+<figure class="figure">
+  <svg class="diagram" viewBox="0 0 830 240" role="img" aria-label="CPU 与存储器的关系">
+    <text x="24" y="32" font-size="14" font-weight="bold" fill="#1f2937">CPU 只负责"算"，存储器负责"记"</text>
+
+    <rect x="60" y="66" width="230" height="100" rx="12" fill="#fff6ec" stroke="#ff6b35" stroke-width="2.4"/>
+    <text x="175" y="100" text-anchor="middle" font-size="14" fill="#c1440e" font-weight="bold">CPU（账房先生）</text>
+    <text x="175" y="126" text-anchor="middle" font-size="11.5" fill="#a85728">算得飞快，但手里放不下几张纸</text>
+    <text x="175" y="148" text-anchor="middle" font-size="11.5" fill="#a85728">算完就得赶紧放到柜子里</text>
+
+    <rect x="540" y="66" width="230" height="100" rx="12" fill="#f5f3ff" stroke="#8b5cf6" stroke-width="2.4"/>
+    <text x="655" y="100" text-anchor="middle" font-size="14" fill="#6d28d9" font-weight="bold">存储器（储物柜）</text>
+    <text x="655" y="126" text-anchor="middle" font-size="11.5" fill="#7c5cd0">容量很大，随时能取能放</text>
+    <text x="655" y="148" text-anchor="middle" font-size="11.5" fill="#7c5cd0">用完的纸都先存在这里</text>
+
+    <line x1="294" y1="98" x2="476" y2="98" stroke="#2563eb" stroke-width="2.6"/>
+    <polygon points="476,98 462,90 462,106" fill="#2563eb"/>
+    <line x1="476" y1="136" x2="294" y2="136" stroke="#2e9e5b" stroke-width="2.6"/>
+    <polygon points="294,136 308,128 308,144" fill="#2e9e5b"/>
+
+    <text x="385" y="88" text-anchor="middle" font-size="11.5" fill="#2563eb">写下结果（存）</text>
+    <text x="385" y="158" text-anchor="middle" font-size="11.5" fill="#2e9e5b">取出数据（读）</text>
+
+    <text x="24" y="204" font-size="12" fill="#8d9d94">如果只有 CPU 没有存储器，程序一算完，结果就"随风飘散"了</text>
+    <text x="24" y="226" font-size="12" fill="#8d9d94">★ 存储器不是"抽屉"，而是"记性"——它决定了计算机能记住多少、能记住多久</text>
+  </svg>
+  <div class="caption">图 2（SVG）：CPU 与存储器是一对搭档</div>
+</figure>
+
+<div class="box tip">
+  <span class="lb">打个比方：</span>
+  把计算机想成一家<b>小吃店</b>：<br>
+  <b>CPU 是那位手速极快的厨师</b>——切菜炒菜都靠他，但<strong>他的操作台上只能同时放两三样东西</strong>；<br>
+  <b>存储器是后面的储藏间和冰箱</b>——<strong>备好的食材都放在那儿，厨师要什么就去拿。</strong><br>
+  <b>操作台越小，厨师就越是来回跑——这就是为什么"存储器越快，电脑越顺畅"。</b>
+</div>
+
+<h3 id="s1-2">1.2 三种存储器</h3>
+
+<figure class="pic">
+  <img src="../assets/illustrations/cpp-L2-01-02_storage_caverns.webp" alt="三座洞窟"
+       onerror="this.closest('.pic').classList.add('missing')">
+  <div class="ph">
+    <div class="fn">assets/illustrations/cpp-L2-01-02_storage_caverns.webp</div>
+    <div class="ds">【配图位】溪谷崖壁上并排凿着三座洞窟：最左边一座洞门封着石闸、只留一个小小的取物口（只读）；中间一座最宽敞，几名搬运工正不停地把箱子搬进搬出（可读可写）；最右边一座紧挨着灶台、只有小小一格货架，一位厨师伸手就能取到（高速缓存）。谷口的青光照进来，三座洞窟亮度依次递减。</div>
+  </div>
+  <figcaption>图 3：三座洞窟，三种存储器</figcaption>
+</figure>
+
+<table class="styled">
+  <thead><tr><th>存储器</th><th>全称</th><th>断电后会怎样</th><th>能读能写吗</th><th>速度</th><th>常见用途</th></tr></thead>
+  <tbody>
+    <tr><td><strong>RAM</strong></td><td>随机存储器（内存）</td><td><strong>数据全部丢失</strong></td><td>既能读也能写</td><td>较快</td><td>程序运行时的临时工作区</td></tr>
+    <tr><td><strong>ROM</strong></td><td>只读存储器</td><td><strong>数据不会丢失</strong></td><td>一般<strong>只能读</strong></td><td>较慢</td><td>存放开机启动程序、固件</td></tr>
+    <tr><td><strong>Cache</strong></td><td>高速缓冲存储器</td><td><strong>数据会丢失</strong></td><td>既能读也能写</td><td><strong>最快</strong></td><td>暂存 CPU 频繁使用的数据</td></tr>
+  </tbody>
+</table>
+
+<div class="box remember">
+  <span class="lb">三条一句话记牢：</span><br>
+  <b>RAM（内存）</b>——<strong>快、断电就没、可读可写</strong>，是程序的"工作台"。<br>
+  <b>ROM（只读存储器）</b>——<strong>断电不丢、通常只能读</strong>，是出厂就写好的"说明书"。<br>
+  <b>Cache（高速缓存）</b>——<strong>最快、容量最小、断电也丢</strong>，专门"暂存 CPU 频繁访问的数据"。<br>
+  <b>速度从快到慢：Cache &gt; RAM &gt; 硬盘；容量从小到大：Cache &lt; RAM &lt; 硬盘。</b>
+</div>
+
+<div class="box warn">
+  <span class="lb">最容易考错的一句话：</span>
+  Cache 中的数据断电后不会丢失，属于非易失性存储器——<strong>这是错的。</strong><br>
+  Cache 和 RAM 一样，<strong>都是"断电就清空"的易失性存储器</strong>；只有 ROM（以及硬盘、U 盘）才是断电不丢的。<br>
+  <b>另外：Cache 的容量比内存小得多，速度比 CPU 内部的寄存器慢——这两句也常被反过来考。</b>
+</div>
+
+<h3 id="s1-3">1.3 位、字节与容量单位</h3>
+
+<figure class="pic">
+  <img src="../assets/illustrations/cpp-L2-01-03_byte_ladder.webp" alt="容量的阶梯"
+       onerror="this.closest('.pic').classList.add('missing')">
+  <div class="ph">
+    <div class="fn">assets/illustrations/cpp-L2-01-03_byte_ladder.webp</div>
+    <div class="ds">【配图位】溪谷岸边立着一架由石阶组成的"容量阶梯"，从下往上每一级都比下一级宽一倍；最下面一级刻着一个小小的发光灯泡（位），第二级刻着一块八格石板（字节），再往上依次是 KB、MB、GB、TB 的石牌，牌面尺寸逐级放大；一名新兵正沿台阶往上走，怀里抱着一块写着 1024 的木牌。</div>
+  </div>
+  <figcaption>图 4：容量的阶梯，每上一级就是 1024 倍</figcaption>
+</figure>
+
+<div class="code-card">
+  <div class="code-head">
+    <span class="dot d1"></span><span class="dot d2"></span><span class="dot d3"></span>
+    <span class="file">最小单位是"位"，最常用的单位是"字节"</span>
+    <span class="lang">C++</span>
+  </div>
+  <pre><code>1 字节（Byte，B） = 8 位（bit）
+1 KB = 1024 B
+1 MB = 1024 KB
+1 GB = 1024 MB
+1 TB = 1024 GB</code></pre>
+  <div class="out"><b>关键</b>　<code>1 B = 8 bit</code>；<strong>相邻两级之间是 1024 倍，不是 1000 倍</strong></div>
+</div>
+
+<table class="styled">
+  <thead><tr><th>单位</th><th>怎么读</th><th>大约相当于</th><th>换算</th></tr></thead>
+  <tbody>
+    <tr><td><strong>bit</strong></td><td>位</td><td>一个 0 或一个 1</td><td>最小单位</td></tr>
+    <tr><td><strong>B</strong></td><td>字节</td><td>一个英文字母</td><td><strong>1 B = 8 bit</strong></td></tr>
+    <tr><td><strong>KB</strong></td><td>千字节</td><td>一小段文字</td><td>1 KB = 1024 B</td></tr>
+    <tr><td><strong>MB</strong></td><td>兆字节</td><td>一张照片</td><td>1 MB = 1024 KB</td></tr>
+    <tr><td><strong>GB</strong></td><td>吉字节</td><td>一部电影</td><td>1 GB = 1024 MB</td></tr>
+    <tr><td><strong>TB</strong></td><td>太字节</td><td>一整个硬盘</td><td>1 TB = 1024 GB</td></tr>
+  </tbody>
+</table>
+
+<div class="box tip">
+  <span class="lb">打个比方：</span>
+  <b>位</b>就像一盏小灯的<b>开和关</b>——要么亮（1），要么灭（0），计算机只认这两种状态。<br>
+  <b>字节</b>是<b>一排 8 盏灯</b>——把这 8 盏灯的不同亮法组合起来，就能表示 256 种不同的东西。<br>
+  <b>再往上，就是把一箱箱灯打包、装车、入库</b>——1024 个字节装一箱叫 KB，1024 箱装一车叫 MB……<br>
+  <b>记住"8 盏灯一排""每级 1024 倍"，这一块的换算题就稳了。</b>
+</div>
+
+<h3 id="s1-4">1.4 容量换算练习</h3>
+
+<table class="styled">
+  <thead><tr><th>题目</th><th>怎么算</th><th>答案</th></tr></thead>
+  <tbody>
+    <tr><td>2 GB 等于多少 MB？</td><td>2 × 1024</td><td>2048 MB</td></tr>
+    <tr><td>3 MB 等于多少个字节？</td><td>3 × 1024 × 1024</td><td>3145728 B</td></tr>
+    <tr><td>16 个字节等于多少位？</td><td>16 × 8</td><td>128 位</td></tr>
+    <tr><td>4096 KB 等于多少 MB？</td><td>4096 ÷ 1024</td><td>4 MB</td></tr>
+    <tr><td>1 GB 大约能存多少张 1 MB 的照片？</td><td>1024 ÷ 1</td><td>约 1024 张</td></tr>
+  </tbody>
+</table>
+
+<div class="box remember">
+  <span class="lb">换算的两条守则：</span><br>
+  <b>① 往下换（大单位 → 小单位）用乘法</b>：GB → MB → KB → B，每一步都 ×1024。<br>
+  <b>② 往上换（小单位 → 大单位）用除法</b>：B → KB → MB → GB，每一步都 ÷1024。<br>
+  <b>字节 ↔ 位 是特别的：<code class="inline">1 B = 8 bit</code>，这一步是 ×8 或 ÷8，不是 1024。</b>
+</div>
+
+<!-- ============ 2 ============ -->
+<div class="section-header" id="s2">
+  <h2>2　网络是什么</h2>
+  <div class="en-title">Computer Networks</div>
+</div>
+
+<h3 id="s2-1">2.1 从喊话到网络</h3>
+
+<p>安雅朝对岸喊了一声，几息之后，回声才慢慢飘回来。</p>
+
+<p>你看，她说，<b>信息从这边传到那边，需要时间，也需要一条路。</b>计算机之间说话，也是同一个道理。</p>
+
+<figure class="figure">
+  <svg class="diagram" viewBox="0 0 830 260" role="img" aria-label="从喊话到网络">
+    <text x="24" y="32" font-size="14" font-weight="bold" fill="#1f2937">把两台电脑连起来，就有了"网络"</text>
+
+    <rect x="60" y="66" width="180" height="76" rx="10" fill="#eaf1fe" stroke="#2563eb" stroke-width="2.2"/>
+    <text x="150" y="94" text-anchor="middle" font-size="12.5" fill="#1d4ed8" font-weight="bold">甲地的电脑</text>
+    <text x="150" y="118" text-anchor="middle" font-size="11.5" fill="#3b6ea8">有数据要送出去</text>
+
+    <rect x="590" y="66" width="180" height="76" rx="10" fill="#e9f8ef" stroke="#2e9e5b" stroke-width="2.2"/>
+    <text x="680" y="94" text-anchor="middle" font-size="12.5" fill="#1f7a44" font-weight="bold">乙地的电脑</text>
+    <text x="680" y="118" text-anchor="middle" font-size="11.5" fill="#3b7c5b">收到了数据</text>
+
+    <rect x="330" y="60" width="170" height="88" rx="10" fill="#fff9ec" stroke="#f59e0b" stroke-width="2.2"/>
+    <text x="415" y="88" text-anchor="middle" font-size="12.5" fill="#b45309" font-weight="bold">中间要有一条"路"</text>
+    <text x="415" y="112" text-anchor="middle" font-size="11.5" fill="#a15c1c">网线 / 无线信号</text>
+    <text x="415" y="134" text-anchor="middle" font-size="11.5" fill="#a15c1c">还有"共同的说话规矩"</text>
+
+    <line x1="244" y1="104" x2="326" y2="104" stroke="#2563eb" stroke-width="2.4"/>
+    <polygon points="326,104 314,98 314,110" fill="#2563eb"/>
+    <line x1="504" y1="104" x2="586" y2="104" stroke="#2e9e5b" stroke-width="2.4"/>
+    <polygon points="586,104 574,98 574,110" fill="#2e9e5b"/>
+
+    <rect x="230" y="176" width="370" height="60" rx="10" fill="#f7f9fd" stroke="#cbd5e1" stroke-width="1.6"/>
+    <text x="415" y="200" text-anchor="middle" font-size="12" fill="#334155" font-weight="bold">网络 = 计算机 + 连接线路 + 共同的规矩</text>
+    <text x="415" y="222" text-anchor="middle" font-size="11.5" fill="#64748b">缺了"共同的规矩"，两边就互相听不懂</text>
+  </svg>
+  <div class="caption">图 5（SVG）：把计算机连起来，就有了网络</div>
+</figure>
+
+<div class="box tip">
+  <span class="lb">打个比方：</span>
+  <b>网络就像一条邮路。</b><br>
+  你想把信送到对岸的朋友手里，光有一条路不够——<strong>还得约定好信封怎么写、地址写在哪儿、信封里的话用什么语言写。</strong><br>
+  <b>这条"路"是网线或无线信号；那套"约定的写法"，就是协议。</b>
+</div>
+
+<h3 id="s2-2">2.2 协议：大家约好的规矩</h3>
+
+<figure class="pic">
+  <img src="../assets/illustrations/cpp-L2-01-04_protocol_handshake.webp" alt="协议握手"
+       onerror="this.closest('.pic').classList.add('missing')">
+  <div class="ph">
+    <div class="fn">assets/illustrations/cpp-L2-01-04_protocol_handshake.webp</div>
+    <div class="ds">【配图位】溪谷两岸各站一人，中间水面上浮着一条由发光符号串成的"规矩卷轴"；两人各伸出一只手，隔着水面握在一起，掌心冒出相同的符文光（表示"按同一套规矩说话"）；水面上还飘着几个被划掉的不合规卷轴，代表"规矩不一样就听不懂"。</div>
+  </div>
+  <figcaption>图 6：协议——大家约好的说话规矩</figcaption>
+</figure>
+
+<div class="code-card">
+  <div class="code-head">
+    <span class="dot d1"></span><span class="dot d2"></span><span class="dot d3"></span>
+    <span class="file">协议要管的四件事（可以想成寄信的规矩）</span>
+    <span class="lang">C++</span>
+  </div>
+  <pre><code>① 怎么开头、怎么结束    —— 像信封上的"启"和"敬上"
+② 谁是收信人、谁是寄件人 —— 像信封上的收件人与寄件人地址
+③ 用什么方式写           —— 像信封里必须用双方都看得懂的文字
+④ 出错怎么办、要不要重发 —— 像"信丢了就再寄一封"</code></pre>
+  <div class="out"><b>一句话</b>　<strong>协议 = 通信双方共同遵守的规则和约定</strong></div>
+</div>
+
+<div class="box remember">
+  <span class="lb">为什么必须有协议？</span>
+  因为<strong>不同厂家、不同型号的计算机之间，本来"说不通"</strong>。<br>
+  有了统一的协议，任何两台设备只要<strong>都遵守同一套规矩，就能互相交换数据</strong>。<br>
+  <b>没有协议，网络就等于一群各说各话的人围在一起——谁也听不懂谁。</b>
+</div>
+
+<h3 id="s2-3">2.3 互联网与 IP 地址</h3>
+
+<table class="styled">
+  <thead><tr><th>名词</th><th>是什么</th><th>打个比方</th></tr></thead>
+  <tbody>
+    <tr><td><strong>网络</strong></td><td>把若干台计算机连起来，可以互相传数据</td><td>一条街上互相认识的几户人家</td></tr>
+    <tr><td><strong>互联网</strong></td><td><strong>把全世界许许多多网络连起来</strong>形成的大网络</td><td>把所有街道连成一座城、再把城市连成一片</td></tr>
+    <tr><td><strong>IP 地址</strong></td><td>给每台联网设备分配的唯一编号</td><td>每户人家的<strong>门牌号</strong></td></tr>
+    <tr><td><strong>域名</strong></td><td>给人看的名字，最后会翻译成 IP 地址</td><td>店铺的<strong>招牌名</strong>（比一串数字好记）</td></tr>
+  </tbody>
+</table>
+
+<div class="box tip">
+  <span class="lb">IP 地址为什么必须唯一？</span>
+  想想寄信：<strong>如果同一条街上有两户人家都叫"3 号"，邮递员就不知道该把信送到谁家。</strong><br>
+  所以联网的每台设备都要有一个<strong>在它所在网络里唯一的 IP 地址</strong>，数据才能准确送到。<br>
+  <b>IP 地址常见的形式是四段数字，中间用点隔开，例如 <code class="inline">192.168.1.1</code>。</b>
+</div>
+
+<h3 id="s2-4">2.4 局域网与广域网</h3>
+
+<table class="styled">
+  <thead><tr><th>类型</th><th>英文</th><th>覆盖范围</th><th>例子</th></tr></thead>
+  <tbody>
+    <tr><td><strong>局域网</strong></td><td>LAN</td><td>一间教室 / 一栋楼 / 一个校园</td><td>家里和学校的 Wi-Fi</td></tr>
+    <tr><td><strong>广域网</strong></td><td>WAN</td><td>一座城市、一个国家、整个世界</td><td>互联网本身就是最大的广域网</td></tr>
+  </tbody>
+</table>
+
+<div class="box warn">
+  <span class="lb">别搞混：</span>
+  <b>局域网（LAN）"小"</b>——范围通常局限在一个单位或一栋建筑内部；<br>
+  <b>广域网（WAN）"大"</b>——由许多局域网互相连接而成，覆盖范围很广。<br>
+  <strong>互联网（Internet）就是把全世界的网络连起来的那个"最大的广域网"。</strong>
+</div>
+
+<!-- ============ 3 ============ -->
+<div class="section-header" id="s3">
+  <h2>3　代码实战</h2>
+  <div class="en-title">Level Practice</div>
+</div>
+
+<div class="level-card">
+  <div class="lc-head"><span class="n">关卡</span><h4>平原森林保卫战</h4><span class="go">进入关卡 →</span></div>
+  <div class="lc-body">
+    <div class="story">
+      <b>故事：</b>溪谷东边是一片开阔的林地，村民刚把家当搬来，还来不及筑栅栏。<br>
+      安雅指着地图上两个闪烁的标记：你不需要追着敌人跑——<b>只要在这两个点上各修一段围栏，就能把所有的入口都封住。</b><br>
+      这就是<b>策略</b>：<strong>不用做很多事，只要做对的那几件。</strong>
+    </div>
+    <p><strong>思路：</strong>把鼠标移到地图上，就能看到该位置的 <b>X、Y 坐标</b>；
+    用 <code class="inline">hero.buildXY()</code> 在指定坐标上建造围栏。两次建造，任务完成。</p><figure class="pic">
+  <img src="../assets/stages/py-L2-01-stage1_fence_plain.webp" alt="平原森林保卫战 关卡截图"
+       onerror="this.closest('.pic').classList.add('missing')">
+  <div class="ph">
+    <div class="fn">assets/stages/py-L2-01-stage1_fence_plain.webp</div>
+    <div class="ds">【游戏截图位】关卡平原森林保卫战通关画面：开阔的林间空地上立起两段木栅栏，正好封住左右两个入口；村民的木屋在围栏内侧，一名村民在门口挥手；屏幕下方代码区显示两行 buildXY 建造语句，右上角显示"关卡完成"提示。</div>
+  </div>
+  <figcaption>关卡实况：平原森林保卫战</figcaption>
+</figure>
+    <div class="code-card">
+      <div class="code-head">
+        <span class="dot d1"></span><span class="dot d2"></span><span class="dot d3"></span>
+        <span class="file">重点示例：在指定坐标建造</span>
+        <span class="lang">C++</span>
+      </div>
+      <pre><code>#include &lt;iostream&gt;
+using namespace std;
+
+int main() {
+    // 在标记上建造两段围栏来保护村民
+    // 把鼠标悬停在地图上，以得到 X、Y 坐标
+    hero.buildXY("fence", 40, 53);
+    hero.buildXY("fence", 40, 21);
+
+    return 0;
+}</code></pre>
+      <div class="out"><b>要点</b>　坐标要<strong>按地图上看到的原样填</strong>；两个数字调换了位置，围栏就立错地方了</div>
+    </div>
+    <div class="box info">
+      <span class="lb">和本单元的关联：</span>
+      你写下的每一个坐标 <code class="inline">40, 53</code>，都要<strong>先被存进内存，才能被游戏用上</strong>。<br>
+      而游戏把你的操作结果传回服务器、再显示出来，<strong>用的正是这一单元讲的"存储"与"网络"。</strong>
+    </div>
+    <a class="btn-go" href="https://codecombat.cn/" target="_blank" rel="noopener">去扣哒世界闯这一关 →</a>
+  </div>
+</div>
+
+
+
+<!-- ============ 4 ============ -->
+<div class="section-header" id="s4">
+  <h2>4　常见陷阱</h2>
+  <div class="en-title">Common Pitfalls</div>
+</div>
+
+<div class="cast duck">
+  <img class="ava" src="../assets/ducks/duck_illia.webp" alt="扣哒鸭" onerror="this.style.display='none'">
+  <div class="bubble">
+    <div class="who">扣哒鸭 · 调试官</div>
+    这一单元的题，全在"分得清"三个字上。四条，条条都是真题爱考的方向。
+  </div>
+</div>
+
+<div class="pit">
+  <div class="pt">
+    <div class="x">1</div>
+    <div class="t"><b>以为 Cache 断电后数据还在。</b></div>
+  </div>
+  <div class="duck">
+    <img src="../assets/ducks/duck_zana.webp" alt="扣哒鸭" onerror="this.style.display='none'">
+    <div class="dt"><b>扣哒鸭：</b><strong>Cache 和 RAM 都是"断电就清空"的易失性存储器。</strong><br>
+    真正断电不丢的是 <b>ROM</b>，还有硬盘、U 盘这些外存。<br>
+    <b>看到"Cache + 断电不丢"，直接判错。</b></div>
+  </div>
+  <div class="fix"><b>正确认识：</b>易失 = RAM、Cache；非易失 = ROM、硬盘、U 盘</div>
+</div>
+
+<div class="pit">
+  <div class="pt">
+    <div class="x">2</div>
+    <div class="t"><b>把 1024 写成 1000。</b></div>
+  </div>
+  <div class="duck">
+    <img src="../assets/ducks/duck_naria.webp" alt="扣哒鸭" onerror="this.style.display='none'">
+    <div class="dt"><b>扣哒鸭：</b>KB、MB、GB 之间是 <strong>1024 倍</strong>，不是 1000 倍。<br>
+    唯一例外是<strong>字节和位之间是 8 倍</strong>。<br>
+    <b>题目里如果给了整数倍，先想想它用的是哪一个倍数。</b></div>
+  </div>
+  <div class="fix"><b>正确认识：</b>相邻容量单位 ×1024；1 B = 8 bit</div>
+</div>
+
+<div class="pit">
+  <div class="pt">
+    <div class="x">3</div>
+    <div class="t"><b>以为"有了网线就能通信"。</b></div>
+  </div>
+  <div class="duck">
+    <img src="../assets/ducks/duck_hattori.webp" alt="扣哒鸭" onerror="this.style.display='none'">
+    <div class="dt"><b>扣哒鸭：</b>线只是"路"，还得有<strong>共同的规矩</strong>。<br>
+    <b>协议才是让两台机器"听得懂"的关键。</b>没有协议，数据传过去也只是一堆看不懂的电信号。</div>
+  </div>
+  <div class="fix"><b>正确认识：</b>网络 = 硬件连接 + 协议</div>
+</div>
+
+<div class="pit">
+  <div class="pt">
+    <div class="x">4</div>
+    <div class="t"><b>把 IP 地址和域名搞混，或以为 IP 地址可以重复。</b></div>
+  </div>
+  <div class="duck">
+    <img src="../assets/ducks/duck_senick.webp" alt="扣哒鸭" onerror="this.style.display='none'">
+    <div class="dt"><b>扣哒鸭：</b><b>IP 地址是门牌号，域名是招牌名。</b><br>
+    门牌号必须是<strong>唯一</strong>的，否则数据会送错地方；<br>
+    招牌名给人看，最后还要翻译成门牌号才能真正送达。</div>
+  </div>
+  <div class="fix"><b>正确认识：</b>IP = 唯一编号；域名 = 好记的名字</div>
+</div>
+
+<!-- ============ 5 ============ -->
+<div class="section-header" id="s5">
+  <h2>5　题目练习</h2>
+  <div class="en-title">Practice</div>
+</div>
+
+<p>第 1 题改编自 C++ 二级真题，其余为原创练习题。</p>
+
+<div class="exam">
+  <div class="eh"><span class="src">改编自 2026 年 9 月 · C++ 二级 · 第 2 题</span><span class="tp">单选题</span></div>
+  <div class="eb">
+    <div class="q">计算机 CPU 中的高速缓冲存储器（Cache）主要为提升系统性能而设计。
+    下列关于 Cache 的说法中，<strong>正确</strong>的是（　　）。</div>
+    <div class="opt">
+      <i>A.</i>Cache 的容量比主存大，速度比主存快<br>
+      <i>B.</i>Cache 通常用于暂存 CPU 频繁访问的数据<br>
+      <i>C.</i>Cache 中的数据断电后不会丢失，属于非易失性存储器<br>
+      <i>D.</i>Cache 的访问速度比 CPU 寄存器还要快
+    </div>
+    <details><summary>查看答案与详解</summary>
+      <div class="ans"><b>答案：B</b>。<br>
+      <b>A 错</b>：Cache 的<strong>容量比主存小</strong>得多，只是速度快；<br>
+      <b>C 错</b>：Cache 是<strong>易失性</strong>的，断电数据就没了；<br>
+      <b>D 错</b>：速度最快的是 <strong>CPU 内部的寄存器</strong>，Cache 比它慢（但比主存快）。<br>
+      <b>正确表述：</b>Cache 位于 CPU 与主存之间，用来<strong>暂存 CPU 频繁访问的数据</strong>，以减少 CPU 等待主存的时间。<br>
+      <span class="tagline">对应小节</span>1.2 三种存储器。</div>
+    </details>
+  </div>
+</div>
+
+<div class="exam">
+  <div class="eh"><span class="src ori">原创练习题</span><span class="tp">单选题</span></div>
+  <div class="eb">
+    <div class="q">下列关于存储器的说法中，<strong>错误</strong>的是（　　）。</div>
+    <div class="opt">
+      <i>A.</i>RAM 断电后其中的数据会全部丢失<br>
+      <i>B.</i>ROM 中的内容一般只能读出，不能随意改写<br>
+      <i>C.</i>内存属于外存储器，硬盘属于内存储器<br>
+      <i>D.</i>存储器用来保存程序和数据
+    </div>
+    <details><summary>查看答案与详解</summary>
+      <div class="ans"><b>答案：C</b>。<strong>说反了：内存属于内存储器（主存），硬盘属于外存储器（辅存）。</strong><br>
+      <b>A</b> 正确，RAM 是易失性的；<br>
+      <b>B</b> 正确，ROM 是"只读存储器"；<br>
+      <b>D</b> 正确，这正是存储器的职责。<br>
+      <span class="tagline">对应小节</span>1.2 三种存储器。</div>
+    </details>
+  </div>
+</div>
+
+<div class="exam">
+  <div class="eh"><span class="src ori">原创练习题</span><span class="tp">单选题</span></div>
+  <div class="eb">
+    <div class="q">2 GB 等于多少 MB？（　　）</div>
+    <div class="opt"><i>A.</i>2000　　<i>B.</i>2048　　<i>C.</i>1024　　<i>D.</i>20480</div>
+    <details><summary>查看答案与详解</summary>
+      <div class="ans"><b>答案：B</b>。1 GB = 1024 MB，所以 2 GB = 2 × 1024 = <b>2048 MB</b>。<br>
+      <b>易错点：</b>A 项用的是 1000 倍，那是硬盘厂商标容量时的习惯说法，<strong>计算机内部换算要用 1024</strong>。<br>
+      <span class="tagline">对应小节</span>1.3 位、字节与容量单位。</div>
+    </details>
+  </div>
+</div>
+
+<div class="exam">
+  <div class="eh"><span class="src ori">原创练习题</span><span class="tp">判断题</span></div>
+  <div class="eb">
+    <div class="q">协议是网络通信中，通信双方必须共同遵守的规则和约定。（　　）</div>
+    <details><summary>查看答案与详解</summary>
+      <div class="ans"><b>答案：正确（√）</b>。这正是协议的定义与作用：<br>
+      它规定了<strong>数据的格式、传输的顺序、出错的处置方式</strong>等，
+      使不同厂家、不同型号的设备也能互相交换数据。<br>
+      <b>可以记成一句话：协议就是网络世界的"共同语言"。</b><br>
+      <span class="tagline">对应小节</span>2.2 协议：大家约好的规矩。</div>
+    </details>
+  </div>
+</div>
+
+<div class="exam">
+  <div class="eh"><span class="src ori">原创练习题</span><span class="tp">单选题</span></div>
+  <div class="eb">
+    <div class="q">关于 IP 地址，下列说法<strong>正确</strong>的是（　　）。</div>
+    <div class="opt">
+      <i>A.</i>同一网络中可以有多个设备使用完全相同的 IP 地址<br>
+      <i>B.</i>IP 地址用于标识联网的设备，便于数据准确地送达<br>
+      <i>C.</i>IP 地址就是域名，两者完全是一回事<br>
+      <i>D.</i>只有服务器才需要 IP 地址，普通电脑不需要
+    </div>
+    <details><summary>查看答案与详解</summary>
+      <div class="ans"><b>答案：B</b>。<br>
+      <b>A 错</b>：同一网络中 IP 地址必须<strong>唯一</strong>，否则数据会送错；<br>
+      <b>C 错</b>：域名是给人看的名字，需要<strong>翻译成 IP 地址</strong>才能真正通信；<br>
+      <b>D 错</b>：只要联网就需要 IP 地址，普通电脑也一样。<br>
+      <span class="tagline">对应小节</span>2.3 互联网与 IP 地址。</div>
+    </details>
+  </div>
+</div>
+
+<div class="exam">
+  <div class="eh"><span class="src ori">原创练习题</span><span class="tp">判断题</span></div>
+  <div class="eb">
+    <div class="q">局域网（LAN）的覆盖范围通常比广域网（WAN）小。（　　）</div>
+    <details><summary>查看答案与详解</summary>
+      <div class="ans"><b>答案：正确（√）</b>。局域网一般局限在<strong>一间教室、一栋楼或一个校园</strong>之内；<br>
+      广域网则由许多局域网互相连接而成，覆盖范围可以是一座城市、一个国家甚至整个世界。<br>
+      <b>互联网就是世界上最大的广域网。</b><br>
+      <span class="tagline">对应小节</span>2.4 局域网与广域网。</div>
+    </details>
+  </div>
+</div>
+
+<div class="exam">
+  <div class="eh"><span class="src ori">原创练习题</span><span class="tp">编程题</span></div>
+  <div class="eb">
+    <div class="q">题目要求：读入一个以 MB 为单位的容量整数，输出它等于多少个字节（B）。<br>
+    <b>样例：</b>输入 <code class="inline">2</code>，输出 <code class="inline">2097152</code>。</div>
+    <details><summary>查看参考答案与要点</summary>
+      <div class="ans">
+<pre style="margin:0;background:#131a26;color:#c8d3e0;border-radius:10px;padding:14px 16px">#include &lt;iostream&gt;
+using namespace std;
+
+int main() {
+    int mb;
+    cin &gt;&gt; mb;
+
+    // 1 MB = 1024 KB = 1024 * 1024 B
+    long long bytes = (long long)mb * 1024 * 1024;
+    cout &lt;&lt; bytes;
+
+    return 0;
+}</pre>
+      <p style="margin-top:12px"><b>输入 2，输出 2097152。</b><br>
+      <b>要点：</b><br>
+      ① 换算要<strong>乘两次 1024</strong>：MB → KB → B；<br>
+      ② <strong>结果要用 <code class="inline">long long</code></strong>——
+      2 MB 就是 209 万，容量一大很容易超出 <code class="inline">int</code> 的范围；<br>
+      ③ 乘法里先写 <code class="inline">(long long)mb</code> 做强制转换，
+      <strong>否则整型相乘可能先溢出、再赋给 long long 就晚了</strong>；<br>
+      ④ 这类"单位换算"题在二级里很常见，<strong>记住 1024 这个数就不会算错</strong>。<br>
+      <span class="tagline">对应小节</span>1.4 容量换算练习。</p>
+      </div>
+    </details>
+  </div>
+</div>
+
+<!-- ============ 6 ============ -->
+<div class="section-header" id="s6">
+  <h2>6　本单元小结</h2>
+  <div class="en-title">Unit Summary</div>
+</div>
+
+<div class="cast anya">
+  <img class="ava" src="../assets/avatars/anya.webp" alt="安雅" onerror="this.style.display='none'">
+  <div class="bubble">
+    <div class="who">安雅 · 红发队长</div>
+    三句话记住这一单元：<br>
+    <strong>一、存储分三种：RAM 快而断电就丢，ROM 断电不丢且只能读，Cache 最快最小也断电就丢。</strong><br>
+    <strong>二、容量换算每级 ×1024；只有"字节和位"之间是 ×8。</strong><br>
+    <strong>三、网络 = 硬件连接 + 协议；IP 地址是设备唯一的门牌号。</strong><br>
+    谷里的回声听懂了。下一单元，我们看看"程序"这件事本身是怎么被写下来的。
+  </div>
+</div>
+
+<div class="summary">
+  <h3>你在回声溪谷学到了什么</h3>
+  <ul>
+    <li><strong>存储器</strong>——负责"记住"程序与数据；CPU 负责"算"，两者是搭档。</li>
+    <li><strong>RAM（内存）</strong>——可读可写、速度快、<strong>断电全丢</strong>；属于内存储器。</li>
+    <li><strong>ROM（只读存储器）</strong>——<strong>断电不丢</strong>、一般只能读；用来放启动程序等固定内容。</li>
+    <li><strong>Cache（高速缓存）</strong>——<strong>速度最快、容量最小、断电也丢</strong>；暂存 CPU 频繁访问的数据。</li>
+    <li><strong>内外存之分</strong>——内存是内存储器（主存），硬盘、U 盘是外存储器（辅存）。</li>
+    <li><strong>位与字节</strong>——位是最小单位（0 或 1）；<strong>1 字节 = 8 位</strong>。</li>
+    <li><strong>容量单位</strong>——B → KB → MB → GB → TB，<strong>每相邻两级 ×1024</strong>。</li>
+    <li><strong>网络</strong>——把计算机连起来，实现数据交换。</li>
+    <li><strong>协议</strong>——通信双方共同遵守的规则，是"能听懂"的前提。</li>
+    <li><strong>互联网与 IP</strong>——互联网是最大的广域网；IP 地址是设备唯一的编号。</li>
+    <li><strong>局域网与广域网</strong>——LAN 范围小，WAN 范围大。</li>
+  </ul>
+</div>
+
+<div class="pager">
+  <a href="cpp-1-07.html"><div class="k">← 上一单元</div><div class="v">迷雾中的脚印 · 注释、调试与综合项目</div></a>
+  <a href="../index.html" target="_top" class="back"><div class="k">返回</div><div class="v">考纲之路 · 总目录</div></a>
+  <a href="cpp-2-02.html"><div class="k">下一单元 →</div><div class="v">会画画的羊皮纸 · 程序设计语言与流程图</div></a>
+</div>
+
+<div class="cta">
+  <h3>下一站：会画画的羊皮纸</h3>
+  <p>数据有了地方住，网络也通了。可<b>一件事情的步骤到底该怎么写下来</b>？<br>
+  下一单元我们学<b>算法、流程图和伪代码</b>——那是所有程序的"图纸"。</p>
+  <a class="btn-go" href="https://codecombat.cn/" target="_blank" rel="noopener">加入扣哒世界，把这条考纲之路走一遍 →</a>
+</div>
+</div><!-- /container -->
+</div><!-- /page -->
+
+<script>
+const KEYWORDS = new Set([
+  "int", "long", "short", "unsigned", "signed", "float", "double", "char", "bool", "void",
+  "const", "if", "else", "for", "while", "do", "switch", "case", "default", "break",
+  "continue", "return", "goto", "struct", "class", "union", "enum", "using", "namespace",
+  "std", "main", "true", "false", "cin", "cout", "cerr", "endl", "string", "sizeof",
+  "include", "define", "new", "delete", "public", "private", "static", "inline", "nullptr"
+]);
+
+function esc(s){ return s.replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;'); }
+
+function highlight(src){
+  let out = '', i = 0;
+  const n = src.length;
+  while (i < n){
+    const c = src[i];
+    /* 预处理指令：#include / #define，整行只在行首生效 */
+    if (c === '#' && (i === 0 || src[i-1] === '\n')){
+      let j = i;
+      while (j < n && /[A-Za-z]/.test(src[j])) j++;
+      out += '<span class="kw">' + esc(src.slice(i, j)) + '</span>';
+      let k = src.indexOf('\n', j); if (k < 0) k = n;
+      if (j < k) out += '<span class="st">' + esc(src.slice(j, k)) + '</span>';
+      i = k; continue;
+    }
+    /* 行注释 // */
+    if (c === '/' && src[i+1] === '/'){
+      let j = src.indexOf('\n', i); if (j < 0) j = n;
+      out += '<span class="cm">' + esc(src.slice(i, j)) + '</span>';
+      i = j; continue;
+    }
+    /* 块注释 */
+    if (c === '/' && src[i+1] === '*'){
+      let j = src.indexOf('*/', i + 2); j = j < 0 ? n : j + 2;
+      out += '<span class="cm">' + esc(src.slice(i, j)) + '</span>';
+      i = j; continue;
+    }
+    /* 字符串与字符字面量 */
+    if (c === '"' || c === "'"){
+      let j = i + 1;
+      while (j < n && src[j] !== c){ if (src[j] === '\\') j++; j++; }
+      j = Math.min(j + 1, n);
+      out += '<span class="st">' + esc(src.slice(i, j)) + '</span>';
+      i = j; continue;
+    }
+    /* 数字 */
+    if (/[0-9]/.test(c)){
+      let j = i;
+      while (j < n && /[0-9.]/.test(src[j])) j++;
+      out += '<span class="nu">' + esc(src.slice(i, j)) + '</span>';
+      i = j; continue;
+    }
+    /* 标识符：关键字 / 函数名 / 普通名字 */
+    if (/[A-Za-z_]/.test(c)){
+      let j = i;
+      while (j < n && /[A-Za-z0-9_]/.test(src[j])) j++;
+      const w = src.slice(i, j);
+      if (KEYWORDS.has(w)) out += '<span class="kw">' + esc(w) + '</span>';
+      else if (src[j] === '(') out += '<span class="fn">' + esc(w) + '</span>';
+      else out += esc(w);
+      i = j; continue;
+    }
+    out += esc(c); i++;
+  }
+  return out;
+}
+
+document.querySelectorAll('.code-card pre code').forEach(block => {
+  block.innerHTML = highlight(block.textContent);
+});
+
+if (location.search.indexOf('expand') >= 0) {
+  document.querySelectorAll('details').forEach(d => d.open = true);
+}
+document.querySelectorAll('.sidebar-nav a').forEach(a => {
+  a.addEventListener('click', () => {
+    if (window.innerWidth <= 900) document.querySelector('.sidebar-nav').classList.remove('active');
+  });
+});
+</script>
+</body>
+</html>
