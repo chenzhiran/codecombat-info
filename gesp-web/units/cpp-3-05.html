@@ -1,0 +1,1250 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="copyright" content="CodeCombat Inc. codecombat.cn">
+<title>矿车编队 · 数据结构：一维数组 | 扣哒考级 · GESP C++ 三级</title>
+<style>
+  :root{
+    --primary:#2563eb; --primary-light:#4f8ff0; --primary-lighter:#eaf1fe; --primary-dark:#1b47a8;
+    --brand:#ff6b35; --brand-dark:#e8541f; --brand-soft:#fff3ec;
+    --night:#131c2b; --night-2:#1e2a3a; --gold:#f5b301;
+    --text:#242e3d; --dim:#68788f; --dim2:#93a2b6;
+    --bg:#ffffff; --bg-soft:#f7f9fd; --line:#e2e9f4; --sidebar:274px;
+    --code-bg:#131a26; --code-tx:#c8d3e0;
+    --code-kw:#c678dd; --code-st:#98c379; --code-nu:#d19a66; --code-cm:#5f7488; --code-fn:#e5c07b;
+  }
+  *{margin:0;padding:0;box-sizing:border-box}
+  html{scroll-behavior:smooth}
+  body{font-family:"PingFang SC","Microsoft YaHei","Segoe UI",-apple-system,sans-serif;line-height:1.9;color:var(--text);background:var(--bg);font-size:15.5px}
+  .sidebar-nav{position:fixed;top:0;left:0;width:var(--sidebar);height:100vh;overflow-y:auto;background:linear-gradient(180deg,#0c1626,#14243c);padding:14px 0 40px;z-index:100;border-right:3px solid var(--brand);transition:transform .3s ease}
+  .sidebar-nav::-webkit-scrollbar{width:5px}
+  .sidebar-nav::-webkit-scrollbar-thumb{background:var(--brand);border-radius:4px}
+  .sb-brand{display:flex;align-items:center;gap:10px;padding:10px 13px 12px;border-bottom:1px solid #233752;margin-bottom:8px}
+  .sidebar-nav a.sb-logo{display:flex;align-items:center;justify-content:center;flex-shrink:0;padding:0;border-left:none;transition:.2s}
+  .sb-logo:hover{transform:scale(1.08)}
+  .sb-logo img{height:34px;width:34px;display:block;object-fit:contain;border-radius:8px}
+  .sb-brand b{color:#f2f6fa;font-size:14px;letter-spacing:.5px;display:block;line-height:1.4}
+  .sb-brand span{color:#7f95ab;font-size:11.5px;display:block;line-height:1.4}
+  .nav-title{color:#ffb894;font-size:12px;font-weight:800;padding:10px 18px 6px;letter-spacing:1.2px}
+  .sidebar-nav a{display:block;color:#c3d0dc;text-decoration:none;padding:6px 18px;font-size:12.5px;line-height:1.55;border-left:3px solid transparent;transition:.18s}
+  .sidebar-nav a:hover{color:#fff;background:rgba(255,107,53,.16);border-left-color:var(--brand)}
+  .sidebar-nav a.nav-section{color:#ffb894;font-weight:700;font-size:13px;margin-top:11px;padding-top:10px;border-top:1px solid #233752}
+  .sidebar-nav a.nav-section:first-of-type{border-top:none;margin-top:0;padding-top:6px}
+  .sidebar-nav a.nav-sub{padding-left:30px;color:#93a8bc;font-size:12px}
+  .sidebar-nav a.nav-sub:hover{color:#fff}
+  .sb-back{margin:16px 14px 0;display:block;text-align:center;padding:9px;border-radius:9px;background:#1e304a;color:#a9c0d6 !important;font-size:12px;font-weight:700;border-left:none !important}
+  .sb-back:hover{background:var(--brand) !important;color:#fff !important}
+  .nav-toggle{display:none;position:fixed;top:14px;left:14px;z-index:120;background:var(--brand);color:#fff;border:none;border-radius:9px;padding:9px 13px;font-size:15px;cursor:pointer;box-shadow:0 4px 14px rgba(0,0,0,.25)}
+  .page{margin-left:var(--sidebar)}
+  .hero{position:relative;overflow:hidden;padding:44px 52px;color:#fff;background:linear-gradient(125deg,#0a1220 0%,#16294a 46%,#8a3a16 132%)}
+  .hero::after{content:"";position:absolute;right:-90px;top:-110px;width:400px;height:400px;border-radius:50%;background:radial-gradient(circle,rgba(245,179,1,.30),transparent 68%)}
+  .hero-top{display:flex;gap:36px;align-items:center;position:relative;z-index:2}
+  .hero-txt{flex:1;min-width:0}
+  .hero .crumb{font-size:11.5px;color:#ffb894;letter-spacing:1.5px;font-weight:700;margin-bottom:14px}
+  .hero h1{font-size:31px;font-weight:800;line-height:1.3;letter-spacing:.6px;margin-bottom:8px}
+  .hero h1 .sub{display:block;font-size:18px;font-weight:700;color:#ffd2b3;margin-top:6px;letter-spacing:.3px}
+  .hero .en{font-size:13px;color:#9db4c8;font-style:italic;margin-bottom:18px}
+  .hero .tags{display:flex;flex-wrap:wrap;gap:8px}
+  .tag{font-size:11.5px;padding:4px 12px;border-radius:20px;background:rgba(255,255,255,.12);border:1px solid rgba(255,255,255,.22);color:#e8f0f6;font-weight:600}
+  .tag.hot{background:rgba(255,107,53,.92);border-color:transparent;color:#fff}
+  .hero-card{flex-shrink:0;width:200px;text-align:center}
+  .hero-card .ava{width:148px;height:148px;border-radius:50%;object-fit:cover;object-position:top center;border:4px solid rgba(255,180,140,.6);box-shadow:0 14px 34px rgba(0,0,0,.45);background:#24344a}
+  .hero-card .nm{font-size:15px;font-weight:800;color:#fff;margin-top:10px}
+  .hero-card .ti{font-size:11.5px;color:#ffb894;margin-top:2px}
+  .container{max-width:1080px;margin:0 auto;padding:38px 52px 70px}
+  .lead{font-size:15.5px;line-height:2.05;color:#333f52;background:linear-gradient(120deg,#fff8f3,#f7fbf8);border-left:5px solid var(--brand);border-radius:0 14px 14px 0;padding:22px 26px;margin-bottom:32px}
+  .lead b{color:var(--brand-dark)}
+  .cast{display:flex;gap:16px;align-items:flex-start;border-radius:16px;padding:18px 22px;margin:24px 0}
+  .cast .ava{width:72px;height:72px;border-radius:50%;object-fit:cover;object-position:top center;flex-shrink:0;background:#e8eef5}
+  .cast .bubble{position:relative;font-size:14px;line-height:1.95;padding-top:2px;flex:1}
+  .cast .who{font-size:12px;font-weight:800;margin-bottom:5px;letter-spacing:.5px}
+  .cast.anya{background:var(--brand-soft);border:1px solid #ffdcc9}
+  .cast.anya .who{color:var(--brand-dark)}
+  .cast.anya .bubble{color:#5c4636}
+  .cast.duck{background:#fff5f5;border:1px solid #fbd5d5}
+  .cast.duck .who{color:#b91c1c}
+  .cast.duck .bubble{color:#5c4141}
+  .cast.teacher{background:linear-gradient(120deg,#f4f7fb,#ffffff);border:1px solid #dbe4f0}
+  .cast.teacher .who{color:#1e293b}
+  .cast.teacher .bubble{color:#3c4a5a}
+  .cast.hero{background:#f2f7fd;border:1px solid #cfe0f5}
+  .cast.hero .who{color:#1b47a8}
+  .cast.hero .bubble{color:#3a4658}
+  .goal-grid{display:grid;grid-template-columns:1fr 1fr;gap:16px;margin-bottom:36px}
+  .goal{border:1px solid var(--line);border-radius:15px;padding:19px 21px;background:#fff;box-shadow:0 4px 16px rgba(31,122,68,.05)}
+  .goal h4{font-size:14px;font-weight:800;margin-bottom:11px;display:flex;align-items:center;gap:8px;color:var(--primary-dark)}
+  .goal h4 .ic{width:22px;height:22px;border-radius:7px;background:var(--primary-lighter);display:flex;align-items:center;justify-content:center;font-size:12px}
+  .goal ul{list-style:none}
+  .goal li{font-size:13.5px;color:#48576b;line-height:1.9;padding-left:18px;position:relative}
+  .goal li::before{content:"▸";position:absolute;left:0;color:var(--primary);font-weight:800}
+  .goal.syllabus li::before{content:"✓"}
+  .section-header{margin:52px 0 24px;padding-bottom:12px;border-bottom:3px solid var(--brand);display:flex;align-items:baseline;gap:14px;flex-wrap:wrap}
+  .section-header h2{font-size:22px;font-weight:800;color:var(--night);letter-spacing:.4px}
+  .section-header .en-title{font-size:12px;color:var(--dim2);font-style:italic}
+  h3{font-size:17.5px;font-weight:800;margin:34px 0 14px;color:var(--night);display:flex;align-items:center;gap:10px}
+  h3::before{content:"";width:5px;height:17px;border-radius:3px;background:var(--brand);flex-shrink:0}
+  h4{font-size:15px;font-weight:800;margin:24px 0 10px;color:#2b4260}
+  p{margin:12px 0;color:#3a4658;line-height:2}
+  strong{color:var(--primary-dark)}
+  code.inline{background:var(--primary-lighter);color:var(--primary-dark);padding:2px 7px;border-radius:6px;font-family:"SFMono-Regular",Consolas,Menlo,monospace;font-size:.9em;font-weight:600}
+  .figure{margin:24px 0;text-align:center}
+  .figure svg.diagram{max-width:100%;height:auto;background:#fff;border:1px solid var(--line);border-radius:14px;padding:10px}
+  .figure .caption{font-size:12.5px;color:var(--dim2);margin-top:9px}
+  .pic{margin:26px 0;text-align:center}
+  .pic img{max-width:100%;border-radius:16px;box-shadow:0 10px 28px rgba(30,60,45,.15);display:block;margin:0 auto}
+  .pic figcaption{font-size:12.5px;color:var(--dim2);margin-top:9px}
+  .pic .ph{display:none}
+  .pic.missing img{display:none}
+  .pic.missing .ph{display:flex;flex-direction:column;align-items:center;justify-content:center;gap:9px;border:2px dashed #c9d9e8;border-radius:16px;background:linear-gradient(135deg,#f8fbfe,#eef6ff);padding:40px 26px;color:#7a8fa8}
+  .pic.missing .ph .fn{font-family:Consolas,monospace;font-size:12.5px;color:#2563eb;font-weight:700;word-break:break-all}
+  .pic.missing .ph .ds{font-size:12.5px;line-height:1.8;max-width:560px}
+  .box{border-radius:13px;padding:16px 20px;margin:20px 0;font-size:14px;line-height:1.95}
+  .box .lb{font-weight:800;margin-right:6px}
+  .info{background:#eef6ff;border-left:5px solid #3b82f6;color:#274768}
+  .info .lb{color:#1d4ed8}
+  .tip{background:#fff9ec;border-left:5px solid #f59e0b;color:#6b4e13}
+  .tip .lb{color:#b45309}
+  .remember{background:var(--primary-lighter);border-left:5px solid var(--primary);color:#1d3a6b}
+  .remember .lb{color:var(--primary-dark)}
+  .warn{background:#fef2f2;border-left:5px solid #ef4444;color:#7f2b2b}
+  .warn .lb{color:#b91c1c}
+  .code-card{margin:20px 0;border-radius:14px;overflow:hidden;box-shadow:0 10px 28px rgba(20,40,28,.20)}
+  .code-head{display:flex;align-items:center;gap:9px;background:#1a2434;padding:9px 14px}
+  .code-head .dot{width:10px;height:10px;border-radius:50%}
+  .code-head .d1{background:#ff5f57}.code-head .d2{background:#febc2e}.code-head .d3{background:#28c840}
+  .code-head .file{color:#8fa6c0;font-size:11.5px;font-family:Consolas,monospace;margin-left:6px}
+  .code-head .lang{margin-left:auto;font-size:10.5px;font-weight:800;color:#0d141f;background:#4f8ff0;padding:2px 9px;border-radius:6px;letter-spacing:.4px}
+  .code-card pre{background:var(--code-bg);padding:18px 20px;overflow-x:auto;margin:0;font-family:"SFMono-Regular",Consolas,"Courier New",monospace;font-size:13.5px;line-height:1.85}
+  .code-card pre::-webkit-scrollbar{height:8px}
+  .code-card pre::-webkit-scrollbar-thumb{background:#31445c;border-radius:4px}
+  .code-card code{color:var(--code-tx);white-space:pre}
+  .kw{color:var(--code-kw);font-weight:600}
+  .st{color:var(--code-st)}
+  .nu{color:var(--code-nu)}
+  .cm{color:var(--code-cm);font-style:italic}
+  .fn{color:var(--code-fn)}
+  .out{background:#0f1621;color:#7fb3f5;font-family:Consolas,monospace;font-size:13px;padding:12px 20px;border-top:1px solid #22304a}
+  .out b{color:#c9d6cd;font-weight:600;font-size:11.5px;letter-spacing:1px}
+  .out.err{color:#fca5a5}
+  table.styled{width:100%;border-collapse:collapse;margin:20px 0;font-size:13.5px;border-radius:12px;overflow:hidden;box-shadow:0 4px 16px rgba(31,122,68,.07)}
+  table.styled thead{background:var(--brand)}
+  table.styled th{color:#fff;padding:11px 14px;text-align:left;font-weight:700;font-size:13px}
+  table.styled td{padding:10px 14px;border-bottom:1px solid var(--line);color:#445266;vertical-align:top}
+  table.styled tbody tr:nth-child(even){background:var(--bg-soft)}
+  table.styled tbody tr:last-child td{border-bottom:none}
+  .level-card{border:1px solid var(--line);border-radius:16px;overflow:hidden;margin:22px 0;box-shadow:0 6px 22px rgba(31,122,68,.07)}
+  .level-card .lc-head{background:linear-gradient(100deg,#17283a,#8a3a16);color:#fff;padding:15px 22px;display:flex;align-items:center;gap:12px;flex-wrap:wrap}
+  .level-card .lc-head .n{font-size:12px;font-weight:800;background:rgba(255,255,255,.2);padding:3px 10px;border-radius:20px}
+  .level-card .lc-head h4{margin:0;color:#fff;font-size:16px}
+  .level-card .lc-head .go{margin-left:auto;font-size:11.5px;color:#ffd2b3}
+  .level-card .lc-body{padding:20px 24px;background:#fff}
+  .level-card .story{background:#f9fbfd;border-left:4px solid #93c5fd;border-radius:0 10px 10px 0;padding:13px 18px;margin:0 0 16px;font-size:14px;line-height:1.95;color:#3f5163}
+  .level-card .story b{color:#1d4ed8}
+  .btn-go{display:inline-flex;align-items:center;gap:8px;background:linear-gradient(135deg,var(--brand),var(--brand-dark));color:#fff;text-decoration:none;font-weight:800;font-size:13.5px;padding:10px 22px;border-radius:11px;box-shadow:0 8px 20px rgba(255,107,53,.32);transition:.2s}
+  .btn-go:hover{transform:translateY(-2px);box-shadow:0 12px 26px rgba(255,107,53,.42)}
+  .pit{border:1px solid #f6dede;border-radius:14px;overflow:hidden;margin:16px 0;background:#fff}
+  .pit .pt{display:flex;gap:12px;padding:14px 18px;background:#fffafa;align-items:flex-start}
+  .pit .x{width:26px;height:26px;border-radius:9px;background:#fee;color:#dc2626;display:flex;align-items:center;justify-content:center;font-weight:800;flex-shrink:0;font-size:13px}
+  .pit .t{font-size:13.5px;line-height:1.9;color:#5c4a4a;flex:1}
+  .pit .t b{color:#b91c1c}
+  .pit .duck{display:flex;gap:12px;padding:13px 18px;background:#fff5f5;border-top:1px dashed #f3d0d0;align-items:flex-start}
+  .pit .duck img{width:48px;height:48px;object-fit:contain;flex-shrink:0;margin-top:2px}
+  .pit .duck .dt{font-size:13.5px;line-height:1.9;color:#7a3b3b}
+  .pit .duck .dt b{color:#b91c1c}
+  .pit .fix{padding:12px 18px;background:#f2f7fd;border-top:1px dashed #cfe0f5;font-size:13.5px;color:#1d3a6b}
+  .pit .fix b{color:var(--primary-dark)}
+  .exam{border:1px solid #dfe7f5;border-radius:15px;margin:16px 0;overflow:hidden;background:#fff;box-shadow:0 4px 16px rgba(38,62,120,.06)}
+  .exam .eh{display:flex;align-items:center;gap:10px;padding:11px 18px;background:linear-gradient(100deg,#eef4ff,#f7faff);border-bottom:1px solid #e3ebf8;flex-wrap:wrap}
+  .exam .eh .src{font-size:11px;font-weight:800;color:#fff;background:#2563eb;padding:2.5px 10px;border-radius:20px}
+  .exam .eh .src.ori{background:#8b5cf6}
+  .exam .eh .tp{font-size:11.5px;color:#5b7ba8;font-weight:700}
+  .exam .eb{padding:16px 20px}
+  .exam .q{font-weight:700;font-size:14px;color:#1e2a3e;line-height:1.9;margin-bottom:10px}
+  .exam .opt{font-size:13.5px;color:#48576b;line-height:2.05;padding-left:6px}
+  .exam .opt i{font-style:normal;font-weight:800;color:var(--primary-dark);margin-right:7px}
+  .exam pre{margin:12px 0;background:#1b2a21;border-radius:10px;padding:14px 16px;overflow-x:auto;font-family:Consolas,monospace;font-size:13px;line-height:1.8;color:var(--code-tx)}
+  .exam details{margin-top:10px;border-top:1px dashed var(--line);padding-top:10px}
+  .exam summary{cursor:pointer;font-size:12.5px;font-weight:800;color:#2563eb;outline:none;user-select:none}
+  .exam details .ans{font-size:13.5px;color:#3a4658;line-height:1.95;margin-top:9px;background:var(--bg-soft);padding:13px 16px;border-radius:10px}
+  .exam details .ans b{color:var(--primary-dark)}
+  .exam details .ans .tagline{display:inline-block;font-size:11px;background:#e0f2fe;color:#0e7490;padding:1.5px 8px;border-radius:6px;font-weight:700;margin-right:6px}
+  .summary{margin:40px 0 20px;border-radius:18px;padding:26px 30px;background:linear-gradient(130deg,#fff8f3,#ffffff);border:1px solid #ffe0cf}
+  .summary h3{margin-top:0}
+  .summary ul{list-style:none;margin-top:10px}
+  .summary li{font-size:14px;line-height:2;color:#3d4d66;padding-left:24px;position:relative}
+  .summary li::before{content:"◆";position:absolute;left:0;color:var(--brand);font-size:11px;top:6px}
+  .pager{display:flex;gap:14px;margin-top:30px;flex-wrap:wrap}
+  .pager a{flex:1;min-width:200px;text-decoration:none;border:1px solid var(--line);border-radius:14px;padding:16px 20px;background:#fff;transition:.2s;display:block}
+  .pager a:hover{border-color:var(--brand);box-shadow:0 10px 26px rgba(255,107,53,.14);transform:translateY(-2px)}
+  .pager a .k{font-size:11px;color:var(--dim2);font-weight:700;letter-spacing:1px}
+  .pager a .v{font-size:14px;font-weight:800;color:var(--night);margin-top:5px}
+  .pager a.back{background:var(--brand-soft);border-color:transparent;text-align:center}
+  .pager a.back .v{color:var(--brand-dark)}
+  .cta{margin-top:26px;border-radius:20px;padding:30px 34px;color:#fff;position:relative;overflow:hidden;background:linear-gradient(120deg,#16202f,#2b3a52 46%,#a8431c 132%)}
+  .cta::after{content:"";position:absolute;right:-70px;bottom:-90px;width:280px;height:280px;border-radius:50%;background:radial-gradient(circle,rgba(255,140,80,.45),transparent 68%)}
+  .cta h3{color:#fff;margin:0 0 10px;position:relative;z-index:2}
+  .cta h3::before{background:var(--brand)}
+  .cta p{color:#d8e0ef;font-size:13.5px;margin:0 0 18px;position:relative;z-index:2;max-width:640px}
+  .cta .btn-go{position:relative;z-index:2}
+  @media(max-width:900px){
+    .sidebar-nav{transform:translateX(-100%)}
+    .sidebar-nav.active{transform:translateX(0)}
+    .nav-toggle{display:block}
+    .page{margin-left:0}
+    .hero{padding:70px 22px 34px}
+    .hero-top{flex-direction:column-reverse;text-align:center}
+    .hero-card{width:auto}
+    .container{padding:26px 20px 60px}
+    .goal-grid{grid-template-columns:1fr}
+  }
+</style>
+</head>
+<body>
+
+<button class="nav-toggle" onclick="document.querySelector('.sidebar-nav').classList.toggle('active')">&#9776;</button>
+
+<nav class="sidebar-nav">
+  <div class="sb-brand">
+    <a class="sb-logo" href="https://codecombat.cn/" target="_blank" rel="noopener" title="访问 CodeCombat 扣哒世界官网">
+      <img src="../assets/logo.png" alt="CodeCombat 扣哒世界">
+    </a>
+    <div><b>矿车编队</b><span>符文矿坑 · C++ 三级 第 5 单元</span></div>
+  </div>
+  <div class="nav-title">本单元目录</div>
+
+  <a href="#s0" class="nav-section">0　单元导语与目标</a>
+  <a href="#s0-1" class="nav-sub">0.1 学习目标</a>
+  <a href="#s0-2" class="nav-sub">0.2 考纲对照</a>
+  <a href="#s1" class="nav-section">1　为什么要用数组</a>
+  <a href="#s1-1" class="nav-sub">1.1 不用数组有多麻烦</a>
+  <a href="#s1-2" class="nav-sub">1.2 数组是什么</a>
+  <a href="#s2" class="nav-section">2　定义与初始化</a>
+  <a href="#s2-1" class="nav-sub">2.1 三种初始化方式</a>
+  <a href="#s2-2" class="nav-sub">2.2 数组长度怎么求</a>
+  <a href="#s3" class="nav-section">3　下标访问</a>
+  <a href="#s3-1" class="nav-sub">3.1 下标从 0 开始</a>
+  <a href="#s3-2" class="nav-sub">3.2 越界是最危险的错误</a>
+  <a href="#s4" class="nav-section">4　遍历数组</a>
+  <a href="#s4-1" class="nav-sub">4.1 标准遍历写法</a>
+  <a href="#s4-2" class="nav-sub">4.2 范围 for 与它的坑</a>
+  <a href="#s5" class="nav-section">5　三个经典小算法</a>
+  <a href="#s5-1" class="nav-sub">5.1 求和与求平均</a>
+  <a href="#s5-2" class="nav-sub">5.2 找最大值与计数</a>
+  <a href="#s6" class="nav-section">6　代码实战</a>
+  <a href="#s7" class="nav-section">7　常见陷阱</a>
+  <a href="#s8" class="nav-section">8　题目练习</a>
+  <a href="#s9" class="nav-section">9　本单元小结</a>
+
+  <a href="../index.html" target="_top" class="sb-back">返回考纲之路</a>
+</nav>
+
+<div class="page">
+
+<div class="hero">
+  <div class="hero-top">
+    <div class="hero-txt">
+      <div class="crumb">扣哒考级 · GESP C++ 三级 · 第 5 单元　|　符文矿坑 RUNEMARK MINE</div>
+      <h1>矿车编队
+        <span class="sub">数据结构：一维数组</span>
+      </h1>
+      <div class="en">One-Dimensional Arrays</div>
+      <div class="tags">        <span class="tag hot">考纲 · 一维数组</span>
+        <span class="tag">定义与初始化</span>
+        <span class="tag">下标访问</span>
+        <span class="tag">遍历</span>
+        <span class="tag">越界</span></div>
+    </div>
+    <div class="hero-card">
+      <img class="ava" src="../assets/avatars/anya.webp" alt="安雅" onerror="this.style.background='#24344a';this.src='../assets/heroes/anya.webp'">
+      <div class="nm">安雅</div>
+      <div class="ti">红发队长 · 你的向导</div>
+    </div>
+  </div>
+</div>
+
+<div class="container">
+
+<div class="lead">
+  轨道上排着一列矿车，<b>一眼看不到头。</b><br>
+  更奇怪的是——<b>每一节车厢身上都刷着一个数字：0、1、2、3……</b><br>
+  安雅说：这些编号就是它们的名字。<strong>你要哪一节，报编号就行。</strong><br>
+  你数了数：要是有一百节呢？<b>我总不能给每节车厢都起一个名字吧。</b><br>
+  聪明。她点头，<strong>所以我们要给它们一个"同一族的名字"，然后用编号来区分——这就是数组。</strong>
+</div>
+
+<div class="cast anya">
+  <img class="ava" src="../assets/avatars/anya.webp" alt="安雅" onerror="this.style.display='none'">
+  <div class="bubble">
+    <div class="who">安雅 · 红发队长</div>
+    到这里，你已经会写条件、会写循环、会算位运算了。<br>
+    可你有没有发现一个问题：<strong>前面我们存的数，一个变量只能装一个。</strong><br>
+    要是有 100 个数要处理呢？<b>这一单元我们学数组——</b><strong>一口气管住一整排同类型的数。</strong>
+  </div>
+</div>
+
+<figure class="pic">
+  <img src="../assets/illustrations/cpp-L3-05-01_cart_formation.webp" alt="矿车编队"
+       onerror="this.closest('.pic').classList.add('missing')">
+  <div class="ph">
+    <div class="fn">assets/illustrations/cpp-L3-05-01_cart_formation.webp</div>
+    <div class="ds">【配图位】矿坑轨道上排着一长列一模一样的矿车，每节车厢侧面都刷着一个大大的序号（从 0 开始依次递增），车厢里堆着发光的矿石；一名红发队长沿着轨道从第一节走到最后一节，头顶岩灯把编号依次照亮。</div>
+  </div>
+  <figcaption>图 1：符文矿坑的矿车编队——今天要从这里开始</figcaption>
+</figure>
+
+<!-- ============ 0 ============ -->
+<div class="section-header" id="s0">
+  <h2>0　单元导语与目标</h2>
+  <div class="en-title">Unit Overview</div>
+</div>
+
+<h3 id="s0-1">0.1 学习目标</h3>
+<div class="goal-grid">
+  <div class="goal">
+    <h4><span class="ic">1</span>学完这个单元，你将能……</h4>
+    <ul>
+      <li>说清数组和普通变量的区别</li>
+      <li>正确定义和初始化一维数组</li>
+      <li>用下标精确访问其中某个元素</li>
+      <li>用循环遍历整个数组</li>
+      <li>知道数组越界会带来什么后果</li>
+      <li>用数组完成求和、求最大、计数等经典任务</li>
+    </ul>
+  </div>
+  <div class="goal syllabus">
+    <h4><span class="ic">2</span>对标 GESP 考纲（C++ 三级）</h4>
+    <ul>
+      <li>掌握一维数组的定义、初始化与元素访问</li>
+      <li>掌握数组的遍历与常见统计操作</li>
+      <li>理解下标从 0 开始的规定与越界的危害</li>
+      <li>了解数组在内存中连续存放的特点</li>
+      <li>考核目标：能写出正确的数组定义，能完成求和、求最值、计数等任务</li>
+    </ul>
+  </div>
+</div>
+
+<h3 id="s0-2">0.2 考纲对照</h3>
+<table class="styled">
+  <thead><tr><th>本单元小节</th><th>对应考纲条目</th><th>真题常考形式</th></tr></thead>
+  <tbody>
+    <tr><td>1　为什么要用数组</td><td>一维数组的概念</td><td>用数组比用多个变量好在哪里</td></tr>
+    <tr><td>2　定义与初始化</td><td>数组的定义与初始化</td><td>哪一句数组定义合法；部分初始化后其余元素是几</td></tr>
+    <tr><td>3　下标访问</td><td>数组元素的访问</td><td>给 <code class="inline">a[i]</code> 问取到哪个元素；越界的后果</td></tr>
+    <tr><td>4　遍历</td><td>数组的遍历</td><td><code class="inline">sizeof</code> 求长度的写法；范围 for 改不动原数组</td></tr>
+    <tr><td>5　经典小算法</td><td>用数组解决问题</td><td>求和、求最大、统计个数</td></tr>
+  </tbody>
+</table>
+
+<!-- ============ 1 ============ -->
+<div class="section-header" id="s1">
+  <h2>1　为什么要用数组</h2>
+  <div class="en-title">Why Arrays</div>
+</div>
+
+<h3 id="s1-1">1.1 不用数组有多麻烦</h3>
+
+<div class="code-card">
+  <div class="code-head">
+    <span class="dot d1"></span><span class="dot d2"></span><span class="dot d3"></span>
+    <span class="file">要存 5 个矿车的载重，不用数组得这样写</span>
+    <span class="lang">C++</span>
+  </div>
+  <pre><code>// 笨办法：一个变量装一个
+int cart0 = 12;
+int cart1 = 7;
+int cart2 = 25;
+int cart3 = 3;
+int cart4 = 18;
+
+// 想把它们都翻倍？只能一个个写
+cart0 *= 2;
+cart1 *= 2;
+cart2 *= 2;
+cart3 *= 2;
+cart4 *= 2;
+
+// 如果有一百节车厢呢？……</code></pre>
+  <div class="out"><b>问题</b>　<code>cart0</code> 到 <code>cart99</code> 要写一百行；<br>
+  而且<b>没法用循环</b>——因为循环变量拼不出变量名</div>
+</div>
+
+<p>换成数组，一切立刻变得清爽：</p>
+
+<div class="code-card">
+  <div class="code-head">
+    <span class="dot d1"></span><span class="dot d2"></span><span class="dot d3"></span>
+    <span class="file">用数组：一个名字管一整排</span>
+    <span class="lang">C++</span>
+  </div>
+  <pre><code>int cart[5] = {12, 7, 25, 3, 18};    // 一个名字，五个格子
+
+for (int i = 0; i &lt; 5; i++) {
+    cart[i] *= 2;                     // 循环一跑，全部翻倍
+}</code></pre>
+  <div class="out"><b>OUTPUT</b>　cart 变成 {24, 14, 50, 6, 36}<br>
+  <b>关键</b>　<b>循环变量 <code>i</code> 直接当下标用</b>——这是数组最大的价值</div>
+</div>
+
+<h3 id="s1-2">1.2 数组是什么</h3>
+
+<div class="box tip">
+  <span class="lb">打个比方：</span>
+  数组就像矿坑里的<b>一列编号矿车</b>——<strong>同一个名字（数组名），按顺序排成一串，
+  每节车厢用编号（下标）来区分。</strong><br>
+  想找第 3 节车厢？<b>报编号就行</b>；想"每一节都装两倍矿石"？<strong>用循环从头走到尾就行。</strong><br>
+  <b>比"给每节车厢都单独起一个名字"省事太多。</b>
+</div>
+
+<div class="box remember">
+  <span class="lb">数组的三个特点：</span>
+  <b>① 同一个名字</b>——所有元素共用一个数组名。<br>
+  <b>② 用下标区分</b>——第几个元素，用中括号里的数字表示。<br>
+  <b>③ 长度固定</b>——<strong>定义时就要说清有多少个格子，之后不能变。</strong><br>
+  <b>还有一条很重要的：所有元素的类型必须相同</b>——整型数组里只能放整数。
+</div>
+
+<div class="box warn">
+  <span class="lb">"长度固定"这一点，和后面要学的容器不一样。</span>
+  在 C++ 里，<code class="inline">int a[10];</code> 一旦定义，<strong>就是板上钉钉的 10 个格子。</strong><br>
+  想要"能自动变长"的，得用标准库里的 <code class="inline">vector</code>（那是更高级的内容）。<br>
+  <b>三级阶段请记住：数组的长度在定义时就定死了。</b>
+</div>
+
+<!-- ============ 2 ============ -->
+<div class="section-header" id="s2">
+  <h2>2　定义与初始化</h2>
+  <div class="en-title">Declaring &amp; Initializing</div>
+</div>
+
+<h3 id="s2-1">2.1 三种初始化方式</h3>
+
+<div class="code-card">
+  <div class="code-head">
+    <span class="dot d1"></span><span class="dot d2"></span><span class="dot d3"></span>
+    <span class="file">三种写法，各有用处</span>
+    <span class="lang">C++</span>
+  </div>
+  <pre><code>// ① 只定义，不初始化 —— 里面是"垃圾值"，千万别直接用
+int a[5];
+
+// ② 全部列出来 —— 最清楚
+int b[5] = {12, 7, 25, 3, 18};
+
+// ③ 只写一部分 —— 剩下的自动补 0
+int c[5] = {12, 7};         // 结果是 {12, 7, 0, 0, 0}
+
+// ④ 全部补 0 的常用写法
+int d[5] = {0};             // 结果是 {0, 0, 0, 0, 0}
+
+// ⑤ 让编译器自己数个数
+int e[] = {1, 2, 3, 4};     // 长度自动是 4</code></pre>
+  <div class="out"><b>重点</b>　<code class="inline">{0}</code> 是把<b>所有元素都补成 0</b> 的常用写法；<br>
+  <b>而 <code class="inline">int a[5];</code> 这样不初始化，里面的值是不确定的</b></div>
+</div>
+
+<div class="box tip">
+  <span class="lb">为什么 <code class="inline">{0}</code> 能全部补 0？</span>
+  因为 C++ 的规矩是：<strong>初始化列表里写了几项，就先填几项，剩下的自动补 0。</strong><br>
+  <code class="inline">{0}</code> 只写了第 0 项是 0，<strong>后面四项也自动补 0</strong>——结果全 0。<br>
+  <b>注意：<code class="inline">int d[5] = {1};</code> 得到的不是"全是 1"，而是 {1, 0, 0, 0, 0}。</b>
+</div>
+
+<figure class="figure">
+  <svg class="diagram" viewBox="0 0 830 230" role="img" aria-label="数组初始化">
+    <text x="24" y="30" font-size="14" font-weight="bold" fill="#1f2937">初始化列表：写几个填几个，剩下自动补 0</text>
+
+    <text x="46" y="72" font-size="12" font-family="Consolas,monospace" fill="#334155">int c[5] = {12, 7};</text>
+    <g>
+      <rect x="46" y="86" width="120" height="52" rx="8" fill="#eaf1fe" stroke="#2563eb" stroke-width="2"/>
+      <text x="106" y="119" text-anchor="middle" font-size="17" font-family="Consolas,monospace" fill="#1d4ed8">12</text>
+      <rect x="172" y="86" width="120" height="52" rx="8" fill="#eaf1fe" stroke="#2563eb" stroke-width="2"/>
+      <text x="232" y="119" text-anchor="middle" font-size="17" font-family="Consolas,monospace" fill="#1d4ed8">7</text>
+      <rect x="298" y="86" width="120" height="52" rx="8" fill="#f1f5f9" stroke="#94a3b8" stroke-width="2"/>
+      <text x="358" y="119" text-anchor="middle" font-size="17" font-family="Consolas,monospace" fill="#64748b">0</text>
+      <rect x="424" y="86" width="120" height="52" rx="8" fill="#f1f5f9" stroke="#94a3b8" stroke-width="2"/>
+      <text x="484" y="119" text-anchor="middle" font-size="17" font-family="Consolas,monospace" fill="#64748b">0</text>
+      <rect x="550" y="86" width="120" height="52" rx="8" fill="#f1f5f9" stroke="#94a3b8" stroke-width="2"/>
+      <text x="610" y="119" text-anchor="middle" font-size="17" font-family="Consolas,monospace" fill="#64748b">0</text>
+    </g>
+    <g font-size="11.5" fill="#68788f">
+      <text x="106" y="156" text-anchor="middle">下标 0</text>
+      <text x="232" y="156" text-anchor="middle">下标 1</text>
+      <text x="358" y="156" text-anchor="middle">下标 2</text>
+      <text x="484" y="156" text-anchor="middle">下标 3</text>
+      <text x="610" y="156" text-anchor="middle">下标 4</text>
+    </g>
+    <text x="46" y="196" font-size="12" fill="#b45309">★ 只写了 2 项，后面 3 项自动补 0 —— 这就是 {0} 能全部清零的原因</text>
+    <text x="46" y="220" font-size="12" fill="#8d9d94">★ 而 int a[5]; 不初始化，里面的值是"不确定"的，不能直接拿来算</text>
+  </svg>
+  <div class="caption">图 2（SVG）：初始化列表与自动补 0</div>
+</figure>
+
+<h3 id="s2-2">2.2 数组长度怎么求</h3>
+
+<div class="code-card">
+  <div class="code-head">
+    <span class="dot d1"></span><span class="dot d2"></span><span class="dot d3"></span>
+    <span class="file">用 sizeof 算出元素个数</span>
+    <span class="lang">C++</span>
+  </div>
+  <pre><code>int a[] = {12, 7, 25, 3, 18, 9, 40};
+
+int n = sizeof(a) / sizeof(a[0]);
+//      ↑整个数组占的字节数   ↑单个元素占的字节数
+
+cout &lt;&lt; n &lt;&lt; endl;      // 7</code></pre>
+  <div class="out"><b>原理</b>　整个数组的字节数 ÷ 一个元素的字节数 = <b>元素个数</b><br>
+  <code>sizeof(a)</code> = 7 × 4 = 28 字节；<code>sizeof(a[0])</code> = 4 字节；28 ÷ 4 = <b>7</b></div>
+</div>
+
+<div class="box remember">
+  <span class="lb">这个写法的好处：不用自己数。</span>
+  如果以后往数组里加了一个数，<strong>这行代码会自动给出新的长度，不用改。</strong><br>
+  <b>而如果硬写 <code class="inline">int n = 7;</code>，加一个数就忘了改，循环就会漏掉最后一个元素。</b><br>
+  <strong>注意：这个技巧只在"数组定义所在的作用域里"有效</strong>——
+  一旦把数组传给函数，<code class="inline">sizeof</code> 就失效了（那是四级的内容）。
+</div>
+
+<!-- ============ 3 ============ -->
+<div class="section-header" id="s3">
+  <h2>3　下标访问</h2>
+  <div class="en-title">Indexing</div>
+</div>
+
+<h3 id="s3-1">3.1 下标从 0 开始</h3>
+
+<div class="code-card">
+  <div class="code-head">
+    <span class="dot d1"></span><span class="dot d2"></span><span class="dot d3"></span>
+    <span class="file">第一个元素是 a[0]，不是 a[1]</span>
+    <span class="lang">C++</span>
+  </div>
+  <pre><code>int a[5] = {12, 7, 25, 3, 18};
+
+cout &lt;&lt; a[0] &lt;&lt; endl;     // 12   第一个
+cout &lt;&lt; a[2] &lt;&lt; endl;     // 25   第三个
+cout &lt;&lt; a[4] &lt;&lt; endl;     // 18   第五个（最后一个）
+
+a[1] = 100;               // 把第二个元素改成 100
+cout &lt;&lt; a[1] &lt;&lt; endl;     // 100</code></pre>
+  <div class="out"><b>规律</b>　长度为 n 的数组，合法下标是 <b>0 ~ n−1</b><br>
+  <b>最后一个元素是 <code>a[n-1]</code>，写成 <code>a[n]</code> 就越界了</b></div>
+</div>
+
+<figure class="figure">
+  <svg class="diagram" viewBox="0 0 830 210" role="img" aria-label="数组下标">
+    <text x="24" y="30" font-size="14" font-weight="bold" fill="#1f2937">下标从 0 开始：第几个元素，下标就是几减一</text>
+
+    <g>
+      <rect x="40" y="58" width="140" height="60" rx="8" fill="#eaf1fe" stroke="#2563eb" stroke-width="2"/>
+      <text x="110" y="88" text-anchor="middle" font-size="19" font-family="Consolas,monospace" fill="#1d4ed8">12</text>
+      <text x="110" y="112" text-anchor="middle" font-size="12" font-family="Consolas,monospace" fill="#2563eb">a[0]</text>
+
+      <rect x="186" y="58" width="140" height="60" rx="8" fill="#eaf1fe" stroke="#2563eb" stroke-width="2"/>
+      <text x="256" y="88" text-anchor="middle" font-size="19" font-family="Consolas,monospace" fill="#1d4ed8">7</text>
+      <text x="256" y="112" text-anchor="middle" font-size="12" font-family="Consolas,monospace" fill="#2563eb">a[1]</text>
+
+      <rect x="332" y="58" width="140" height="60" rx="8" fill="#fff9ec" stroke="#f59e0b" stroke-width="2.6"/>
+      <text x="402" y="88" text-anchor="middle" font-size="19" font-family="Consolas,monospace" fill="#b45309" font-weight="bold">25</text>
+      <text x="402" y="112" text-anchor="middle" font-size="12" font-family="Consolas,monospace" fill="#b45309" font-weight="bold">a[2]</text>
+
+      <rect x="478" y="58" width="140" height="60" rx="8" fill="#eaf1fe" stroke="#2563eb" stroke-width="2"/>
+      <text x="548" y="88" text-anchor="middle" font-size="19" font-family="Consolas,monospace" fill="#1d4ed8">3</text>
+      <text x="548" y="112" text-anchor="middle" font-size="12" font-family="Consolas,monospace" fill="#2563eb">a[3]</text>
+
+      <rect x="624" y="58" width="140" height="60" rx="8" fill="#eaf1fe" stroke="#2563eb" stroke-width="2"/>
+      <text x="694" y="88" text-anchor="middle" font-size="19" font-family="Consolas,monospace" fill="#1d4ed8">18</text>
+      <text x="694" y="112" text-anchor="middle" font-size="12" font-family="Consolas,monospace" fill="#2563eb">a[4]</text>
+    </g>
+
+    <g font-size="11.5" fill="#8d9d94">
+      <text x="110" y="146" text-anchor="middle">第 1 个</text>
+      <text x="256" y="146" text-anchor="middle">第 2 个</text>
+      <text x="402" y="146" text-anchor="middle">第 3 个</text>
+      <text x="548" y="146" text-anchor="middle">第 4 个</text>
+      <text x="694" y="146" text-anchor="middle">第 5 个</text>
+    </g>
+
+    <text x="40" y="180" font-size="12.5" fill="#b45309">★ 长度为 5，合法下标是 0 ~ 4；写 a[5] 就越界了</text>
+    <text x="40" y="202" font-size="12" fill="#8d9d94">★ 记法："第几个" 减去 1，就是下标</text>
+  </svg>
+  <div class="caption">图 3（SVG）：下标从 0 开始</div>
+</figure>
+
+<div class="box tip">
+  <span class="lb">为什么偏偏从 0 开始？</span>
+  因为下标表示的是<strong>"离数组开头偏移了几个格子"</strong>。<br>
+  第一个元素就在开头，<b>偏移量是 0</b>——所以是 <code class="inline">a[0]</code>。<br>
+  <b>偏移 3 格就是第 4 个元素，也就是 <code class="inline">a[3]</code>。</b><br>
+  <strong>理解成"偏移量"就不容易数错了。</strong>
+</div>
+
+<h3 id="s3-2">3.2 越界是最危险的错误</h3>
+
+<div class="box warn">
+  <span class="lb">数组越界（out of bounds）：</span>
+  访问了<b>合法范围之外</b>的下标，比如对长度 5 的数组写 <code class="inline">a[5]</code> 或 <code class="inline">a[−1]</code>。<br>
+  <strong>C++ 不会检查下标是否越界！</strong><br>
+  这意味着程序<b>可能不报错、继续跑</b>，但它读写的是<strong>数组旁边的内存</strong>——
+  那里可能放着别的变量。
+</div>
+
+<div class="code-card">
+  <div class="code-head">
+    <span class="dot d1"></span><span class="dot d2"></span><span class="dot d3"></span>
+    <span class="file">越界的后果：悄无声息地改掉别人的数据</span>
+    <span class="lang">C++</span>
+  </div>
+  <pre><code>int a[3] = {1, 2, 3};
+int b = 999;
+
+a[3] = 0;         // ★ 越界！这个位置其实已经不属于 a 了
+                  // 它可能正好就是 b 占的那块内存
+
+cout &lt;&lt; b &lt;&lt; endl; // 可能是 999，也可能莫名其妙变成别的值</code></pre>
+  <div class="out"><b>警告</b>　这段代码<b>编译不报错、运行也可能不报错</b>——<br>
+  <b>但结果已经不可靠了。这类错误极难排查。</b></div>
+</div>
+
+<div class="box remember">
+  <span class="lb">避免越界的两条铁律：</span>
+  <b>① 循环条件写 <code class="inline">i &lt; n</code>，不要写 <code class="inline">i &lt;= n</code></b>
+  （除非你确实要从 0 走到 n，那数组长度就得是 n+1）。<br>
+  <b>② 数组定义得"稍微大一点"</b>——比如题目说最多 1000 个数，就写 <code class="inline">int a[1005];</code>，
+  <strong>留几个格子的余量最保险。</strong>
+</div>
+
+<!-- ============ 4 ============ -->
+<div class="section-header" id="s4">
+  <h2>4　遍历数组</h2>
+  <div class="en-title">Traversing</div>
+</div>
+
+<h3 id="s4-1">4.1 标准遍历写法</h3>
+
+<div class="code-card">
+  <div class="code-head">
+    <span class="dot d1"></span><span class="dot d2"></span><span class="dot d3"></span>
+    <span class="file">"遍历"就是把每个元素都走一遍</span>
+    <span class="lang">C++</span>
+  </div>
+  <pre><code>int a[] = {12, 7, 25, 3, 18};
+int n = sizeof(a) / sizeof(a[0]);
+
+// 标准写法：让 i 从 0 走到 n-1
+for (int i = 0; i &lt; n; i++) {
+    cout &lt;&lt; a[i] &lt;&lt; " ";
+}
+cout &lt;&lt; endl;                 // 12 7 25 3 18
+
+// 倒着遍历
+for (int i = n - 1; i &gt;= 0; i--) {
+    cout &lt;&lt; a[i] &lt;&lt; " ";
+}
+cout &lt;&lt; endl;                 // 18 3 25 7 12</code></pre>
+  <div class="out"><b>记忆</b>　正着走：<code>i = 0; i &lt; n; i++</code>；倒着走：<code>i = n-1; i &gt;= 0; i--</code><br>
+  <b>两个边界一个是 0、一个是 n−1，千万别写错</b></div>
+</div>
+
+<figure class="pic">
+  <img src="../assets/illustrations/cpp-L3-05-03_traverse_cart.webp" alt="遍历矿车"
+       onerror="this.closest('.pic').classList.add('missing')">
+  <div class="ph">
+    <div class="fn">assets/illustrations/cpp-L3-05-03_traverse_cart.webp</div>
+    <div class="ds">【配图位】矿坑轨道旁，一名红发队长正沿着编号矿车从头走到尾，走过和即将走的车厢之间用一串发光脚印连接；每经过一节车厢，车厢里就亮起一小簇光（表示被访问过）；走廊尽头挂着一块写着"遍历"的木牌。</div>
+  </div>
+  <figcaption>图 4：遍历就是一节一节走过去，每节都看一眼</figcaption>
+</figure>
+
+<h3 id="s4-2">4.2 范围 for 与它的坑</h3>
+
+<div class="code-card">
+  <div class="code-head">
+    <span class="dot d1"></span><span class="dot d2"></span><span class="dot d3"></span>
+    <span class="file">C++11 的范围 for：更短的写法，但有陷阱</span>
+    <span class="lang">C++</span>
+  </div>
+  <pre><code>int a[5] = {2, -5, 7, 0, -1};
+
+// 写法一：值拷贝 —— 改不动原数组！
+for (int num : a) {
+    if (num &gt; 0) num = 0;        // ★ 改的只是副本
+}
+// 数组 a 完全没变，还是 {2, -5, 7, 0, -1}
+
+// 写法二：加 &amp; 变成引用 —— 才能真正改到原数组
+for (int &amp;num : a) {
+    if (num &gt; 0) num = 0;
+}
+// 现在 a 变成 {0, -5, 0, 0, -1}</code></pre>
+  <div class="out"><b>OUTPUT</b>　写法一：数组不变；写法二：正数全被清成 0<br>
+  <b>关键</b>　<b>不加 <code>&amp;</code> 就是"复制一份给你看"，加 <code>&amp;</code> 才是"把原件交给你"</b></div>
+</div>
+
+<div class="box warn">
+  <span class="lb">这是真题挖过的坑：</span>
+  <code class="inline">for (int num : a) { if (num &gt; 0) num = 0; }</code> 能够将数组中所有大于 0 的元素赋值为 0。<br>
+  <strong>这句话是错的。</strong>因为 <code class="inline">num</code> 是<strong>每个元素的副本</strong>，
+  改它<strong>不会影响原数组</strong>。<br>
+  <b>想改原数组，必须写成 <code class="inline">for (int &amp;num : a)</code>。</b>
+</div>
+
+<table class="styled">
+  <thead><tr><th>写法</th><th>能不能改原数组</th><th>什么时候用</th></tr></thead>
+  <tbody>
+    <tr><td><code class="inline">for (int i = 0; i &lt; n; i++)</code></td><td><strong>能</strong></td><td>需要下标、需要倒序、需要跳跃访问</td></tr>
+    <tr><td><code class="inline">for (int num : a)</code></td><td><strong>不能</strong></td><td>只是读一遍、打印、求和</td></tr>
+    <tr><td><code class="inline">for (int &amp;num : a)</code></td><td><strong>能</strong></td><td>要修改每一个元素</td></tr>
+  </tbody>
+</table>
+
+<!-- ============ 5 ============ -->
+<div class="section-header" id="s5">
+  <h2>5　三个经典小算法</h2>
+  <div class="en-title">Three Classic Patterns</div>
+</div>
+
+<h3 id="s5-1">5.1 求和与求平均</h3>
+
+<div class="code-card">
+  <div class="code-head">
+    <span class="dot d1"></span><span class="dot d2"></span><span class="dot d3"></span>
+    <span class="file">累加器：从 0 开始，一路加过去</span>
+    <span class="lang">C++</span>
+  </div>
+  <pre><code>int a[] = {12, 7, 25, 3, 18};
+int n = sizeof(a) / sizeof(a[0]);
+
+int sum = 0;                        // ★ 累加器必须初始化为 0
+for (int i = 0; i &lt; n; i++) {
+    sum += a[i];
+}
+
+cout &lt;&lt; sum &lt;&lt; endl;                // 65
+cout &lt;&lt; sum * 1.0 / n &lt;&lt; endl;      // 13   ← 乘 1.0 变成小数除法
+
+return 0;</code></pre>
+  <div class="out"><b>OUTPUT</b>　65 / 13<br>
+  <b>注意</b>　<code>sum / n</code> 是<b>整数除法</b>；想得到小数要写 <code>sum * 1.0 / n</code></div>
+</div>
+
+<div class="box tip">
+  <span class="lb">求平均值的经典坑：</span>
+  <code class="inline">65 / 5</code> 正好整除还好说。可如果是 <code class="inline">7 / 2</code>，
+  <strong>整数除法会给你 3，而不是 3.5。</strong><br>
+  <b>因为它丢掉了小数部分。所以要写 <code class="inline">sum * 1.0 / n</code>：
+  乘上 1.0 之后整个式子变成小数运算，结果才是 3.5。</b>
+</div>
+
+<h3 id="s5-2">5.2 找最大值与计数</h3>
+
+<div class="code-card">
+  <div class="code-head">
+    <span class="dot d1"></span><span class="dot d2"></span><span class="dot d3"></span>
+    <span class="file">两个最常用的套路</span>
+    <span class="lang">C++</span>
+  </div>
+  <pre><code>int a[] = {12, 7, 25, 3, 18, 40, 25};
+int n = sizeof(a) / sizeof(a[0]);
+
+// 【套路一】找最大值
+int mx = a[0];                      // ★ 初值取第一个元素，不是 0
+for (int i = 1; i &lt; n; i++) {
+    if (a[i] &gt; mx) mx = a[i];
+}
+cout &lt;&lt; mx &lt;&lt; endl;                 // 40
+
+// 【套路二】统计个数
+int cnt = 0;                        // ★ 计数器初始化为 0
+for (int i = 0; i &lt; n; i++) {
+    if (a[i] &gt;= 20) cnt++;
+}
+cout &lt;&lt; cnt &lt;&lt; endl;                // 3（25、40、25）</code></pre>
+  <div class="out"><b>OUTPUT</b>　40 / 3<br>
+  <b>三个初始值要记牢</b>　累加器 <code>= 0</code>、计数器 <code>= 0</code>、<b>最值取 <code>a[0]</code></b></div>
+</div>
+
+<table class="styled">
+  <thead><tr><th>任务</th><th>初始值</th><th>循环里做什么</th></tr></thead>
+  <tbody>
+    <tr><td>求和</td><td><code class="inline">sum = 0</code></td><td><code class="inline">sum += a[i]</code></td></tr>
+    <tr><td>计数</td><td><code class="inline">cnt = 0</code></td><td>满足条件就 <code class="inline">cnt++</code></td></tr>
+    <tr><td>求最大</td><td><strong><code class="inline">mx = a[0]</code></strong></td><td><code class="inline">a[i] &gt; mx</code> 就更新</td></tr>
+    <tr><td>求最小</td><td><strong><code class="inline">mn = a[0]</code></strong></td><td><code class="inline">a[i] &lt; mn</code> 就更新</td></tr>
+    <tr><td>求平均</td><td><code class="inline">sum = 0</code></td><td>先求和，最后 <code class="inline">sum * 1.0 / n</code></td></tr>
+  </tbody>
+</table>
+
+<figure class="pic">
+  <img src="../assets/illustrations/cpp-L3-05-02_index_access.webp" alt="按编号取货"
+       onerror="this.closest('.pic').classList.add('missing')">
+  <div class="ph">
+    <div class="fn">assets/illustrations/cpp-L3-05-02_index_access.webp</div>
+    <div class="ds">【配图位】矿坑轨道上排着一列编号矿车，车身上的编号从 0 开始依次递增；一名矿工正站在第 3 号车厢前（标签写着 a[3]），伸手把里面的矿石换成一块宝石，头顶有一束聚光打在这一节车厢上；旁边几节车厢纹丝不动。</div>
+  </div>
+  <figcaption>图 5：报出编号 a[3]，只有那一节会变</figcaption>
+</figure>
+
+<!-- ============ 6 ============ -->
+<div class="section-header" id="s6">
+  <h2>6　代码实战</h2>
+  <div class="en-title">Level Practice</div>
+</div>
+
+<div class="level-card">
+  <div class="lc-head"><span class="n">关卡</span><h4>资源谷</h4><span class="go">进入关卡 →</span></div>
+  <div class="lc-body">
+    <div class="story">
+      <b>故事：</b>资源谷里散落着一整片矿石，<b>每一堆的重量都记在旁边的木牌上。</b><br>
+      安雅说：这一关有个要求——<strong>你只能记住"目前最大的那一堆"在哪儿。</strong><br>
+      你有点疑惑：为什么不能全都记下来？<br>
+      因为你记不住。她笑了，<strong>但数组能。所以我们先把它们都存进去，再慢慢算。</strong>
+    </div>
+    <p><strong>思路：</strong>先把所有数据<strong>读进数组</strong>，再<strong>遍历一遍</strong>做统计。
+    这是数组题的标准两步。</p><figure class="pic">
+  <img src="../assets/stages/py-L3-05-stage1_resource_valley.webp" alt="资源谷 关卡截图"
+       onerror="this.closest('.pic').classList.add('missing')">
+  <div class="ph">
+    <div class="fn">assets/stages/py-L3-05-stage1_resource_valley.webp</div>
+    <div class="ds">【截图位】资源谷关卡：谷地中矿石成片分布，代码编辑区可见数组定义与遍历循环。</div>
+  </div>
+  <figcaption>关卡实况：资源谷</figcaption>
+</figure>
+    <div class="code-card">
+      <div class="code-head">
+        <span class="dot d1"></span><span class="dot d2"></span><span class="dot d3"></span>
+        <span class="file">先存进去，再算出来</span>
+        <span class="lang">C++</span>
+      </div>
+      <pre><code>#include &lt;iostream&gt;
+using namespace std;
+
+int main() {
+    int n;
+    cin &gt;&gt; n;                    // 一共有几堆
+
+    int a[1005];                  // ★ 开得比题目上限稍大一点
+    for (int i = 0; i &lt; n; i++) {
+        cin &gt;&gt; a[i];              // 第一遍：全部读进数组
+    }
+
+    int mx = a[0];                // 第二遍：遍历求最大值
+    int pos = 0;
+    for (int i = 1; i &lt; n; i++) {
+        if (a[i] &gt; mx) {
+            mx = a[i];
+            pos = i;
+        }
+    }
+
+    cout &lt;&lt; mx &lt;&lt; " " &lt;&lt; pos &lt;&lt; endl;
+    return 0;
+}</code></pre>
+      <div class="out"><b>输入</b>　6　/　12 7 25 3 18 9　　<b>输出</b>　<b>25 2</b><br>
+      <b>读法</b>　最大的是 25，它在 <code>a[2]</code>（第三个元素）</div>
+    </div>
+    <div class="box info">
+      <span class="lb">和本单元的关系：</span>
+      <strong>"先存数组、再遍历"是数组类题目最通用的套路。</strong><br>
+      因为很多统计要求你<strong>回过去看前面的数据</strong>——<b>比如"比平均值大的数有几个"，
+      你就必须先算完平均值，再回头扫一遍。</b><br>
+      <b>如果数据读完就丢了，第二步就没法做了。</b>
+    </div>
+    <a class="btn-go" href="https://codecombat.cn/" target="_blank" rel="noopener">去扣哒世界闯这一关 →</a>
+  </div>
+</div>
+
+
+
+<!-- ============ 7 ============ -->
+<div class="section-header" id="s7">
+  <h2>7　常见陷阱</h2>
+  <div class="en-title">Common Pitfalls</div>
+</div>
+
+<div class="cast duck">
+  <img class="ava" src="../assets/ducks/duck_hushbaum.webp" alt="扣哒鸭" onerror="this.style.display='none'">
+  <div class="bubble">
+    <div class="who">扣哒鸭 · 调试官</div>
+    数组的错，一半是下标，一半是初始值。四条，条条都考过。
+  </div>
+</div>
+
+<div class="pit">
+  <div class="pt">
+    <div class="x">1</div>
+    <div class="t"><b>循环写成 <code class="inline">i &lt;= n</code>，越界了。</b></div>
+  </div>
+  <div class="duck">
+    <img src="../assets/ducks/duck_zana.webp" alt="扣哒鸭" onerror="this.style.display='none'">
+    <div class="dt"><b>扣哒鸭：</b>长度 n 的数组，最后一个下标是 <code>n−1</code>。<br>
+    <code>i &lt;= n</code> 会让 i 取到 n，<strong>那是第 n+1 个格子，不在数组里。</strong><br>
+    <b>C++ 不检查越界，所以它不会报错，只会悄悄改坏别人的内存。</b></div>
+  </div>
+  <div class="fix"><b>正确写法：</b><code class="inline">for (int i = 0; i &lt; n; i++)</code></div>
+</div>
+
+<div class="pit">
+  <div class="pt">
+    <div class="x">2</div>
+    <div class="t"><b>以为 <code class="inline">int a[5];</code> 里的元素默认是 0。</b></div>
+  </div>
+  <div class="duck">
+    <img src="../assets/ducks/duck_naria.webp" alt="扣哒鸭" onerror="this.style.display='none'">
+    <div class="dt"><b>扣哒鸭：</b><strong>不初始化的话，里面是"不确定的值"，不是 0。</strong><br>
+    直接拿来做加法，答案就是乱七八糟的。<br>
+    <b>要清零就写 <code>int a[5] = {0};</code>。</b></div>
+  </div>
+  <div class="fix"><b>正确做法：</b>定义时就初始化，<code class="inline">{0}</code> 可全部清零</div>
+</div>
+
+<div class="pit">
+  <div class="pt">
+    <div class="x">3</div>
+    <div class="t"><b>用范围 for 想改数组，结果没改到。</b></div>
+  </div>
+  <div class="duck">
+    <img src="../assets/ducks/duck_hattori.webp" alt="扣哒鸭" onerror="this.style.display='none'">
+    <div class="dt"><b>扣哒鸭：</b><code>for (int num : a)</code> 里的 <code>num</code> 是<b>副本</b>。<br>
+    你在副本上改来改去，<strong>原数组一点都不受影响。</strong><br>
+    <b>想真改，就得写 <code>for (int &amp;num : a)</code>——那个 <code>&amp;</code> 是关键。</b></div>
+  </div>
+  <div class="fix"><b>正确写法：</b>要修改元素就加 <code class="inline">&amp;</code></div>
+</div>
+
+<div class="pit">
+  <div class="pt">
+    <div class="x">4</div>
+    <div class="t"><b>求最大值的初值写成了 0。</b></div>
+  </div>
+  <div class="duck">
+    <img src="../assets/ducks/duck_senick.webp" alt="扣哒鸭" onerror="this.style.display='none'">
+    <div class="dt"><b>扣哒鸭：</b>数组里全是负数的时候，<code>mx = 0</code> 会输出 0——<br>
+    <strong>可 0 根本不在数组里。</strong><br>
+    <b>正确答案是 <code>mx = a[0]</code>：它是真实存在的元素，肯定安全。</b></div>
+  </div>
+  <div class="fix"><b>记牢：</b>求最大最小，初值取 <code class="inline">a[0]</code></div>
+</div>
+
+<!-- ============ 8 ============ -->
+<div class="section-header" id="s8">
+  <h2>8　题目练习</h2>
+  <div class="en-title">Practice</div>
+</div>
+
+<p>前 3 题改编自 C++ 三级真题，其余为原创练习题。</p>
+
+<div class="exam">
+  <div class="eh"><span class="src">改编自 2026 年 9 月 · C++ 三级 · 第 14 题</span><span class="tp">单选题</span></div>
+  <div class="eb">
+    <div class="q">以下数组定义，符合 C++ 语法的是（　　）。</div>
+    <div class="opt">
+      <i>A.</i><code class="inline">int a[] = {1, 2, 3.0};</code><br>
+      <i>B.</i><code class="inline">int b['A'];</code><br>
+      <i>C.</i><code class="inline">int c[ ];</code><br>
+      <i>D.</i><code class="inline">float d[10.0];</code>
+    </div>
+    <details><summary>查看答案与详解</summary>
+      <div class="ans"><b>答案：B</b>。<strong>数组长度必须是一个整型常量表达式。</strong><br>
+      <b>B 项：</b><code class="inline">'A'</code> 是字符常量，它的值是整数 <b>65</b>，
+      所以这相当于 <code class="inline">int b[65];</code>——<strong>完全合法</strong>（虽然写得不直观）。<br>
+      <b>A 项：</b>初始化列表里混进了 <code class="inline">3.0</code> 这个浮点数。
+      用花括号初始化 <code class="inline">int</code> 数组时发生"窄化转换"，<strong>C++11 起会报错。</strong><br>
+      <b>C 项：</b><code class="inline">int c[ ];</code> 既没写长度，也没有初始化列表让编译器自己数，
+      <strong>编译器不知道要开多大，报错。</strong><br>
+      <b>D 项：</b>数组长度不能用 <code class="inline">10.0</code> 这样的浮点数，<strong>必须是整数。</strong><br>
+      <b>一句话记牢：数组长度 = 整型常量。</b><br>
+      <span class="tagline">对应小节</span>2.1 三种初始化方式；2.2 数组长度怎么求。</div>
+    </details>
+  </div>
+</div>
+
+<div class="exam">
+  <div class="eh"><span class="src">改编自 2026 年 6 月 · C++ 三级 · 判断题 第 6 题</span><span class="tp">判断题</span></div>
+  <div class="eb">
+    <div class="q"><code class="inline">char str[4] = "GESP";</code>
+    将在内存空间中给 <code class="inline">str</code> 分配 5 个字节。（　　）</div>
+    <details><summary>查看答案与详解</summary>
+      <div class="ans"><b>答案：错误（×）</b>。这句话有两处问题：<br>
+      <b>① </b>字符串字面量 <code class="inline">"GESP"</code> 末尾还有一个隐含的结束符
+      <code class="inline">'\0'</code>，<strong>一共需要 5 个字节</strong>
+      （G、E、S、P、<code>'\0'</code>）。<br>
+      <b>② 而 <code class="inline">str</code> 只声明了 4 个字节</b>——
+      <strong>装不下，这在 C++ 里是编译错误。</strong><br>
+      <b>正确写法：</b><code class="inline">char str[5] = "GESP";</code>
+      或者干脆省掉长度 <code class="inline">char str[] = "GESP";</code>（让编译器自己数）。<br>
+      <b>要记牢：字符串占的字节数 = 字符个数 + 1（那个结束符 '\0' 也算一个）。</b><br>
+      <span class="tagline">对应小节</span>2.1 三种初始化方式；3.2 越界是最危险的错误。</div>
+    </details>
+  </div>
+</div>
+
+<div class="exam">
+  <div class="eh"><span class="src">改编自 2026 年 9 月 · C++ 三级 · 第 5 题</span><span class="tp">编程题</span></div>
+  <div class="eb">
+    <div class="q"><b>公共二进制位：</b>给定 <code class="inline">n</code> 个非负整数，
+    求有多少个二进制位在<strong>所有整数中都是 1</strong>。<br>
+    <b>样例：</b>输入 <code class="inline">3</code> 与 <code class="inline">7 15 21</code>，输出 <code class="inline">2</code>。</div>
+    <details><summary>查看参考答案与要点</summary>
+      <div class="ans">
+<pre style="margin:0;background:#131a26;color:#c8d3e0;border-radius:10px;padding:14px 16px">#include &lt;iostream&gt;
+using namespace std;
+
+int a[20010];                   // ★ 数组开得比上限大一点
+
+int main() {
+    int n;
+    cin &gt;&gt; n;
+    for (int i = 0; i &lt; n; i++) cin &gt;&gt; a[i];
+
+    int S = a[0];
+    for (int i = 1; i &lt; n; i++) S &amp;= a[i];   // 全部按位与
+
+    int ans = 0;
+    while (S &gt; 0) {
+        if (S &amp; 1) ans++;       // 数一数 S 里有几个 1
+        S &gt;&gt;= 1;
+    }
+    cout &lt;&lt; ans;
+    return 0;
+}</pre>
+      <p style="margin-top:12px"><b>验算：</b>7 = <code>00111</code>、15 = <code>01111</code>、21 = <code>10101</code>。<br>
+      <code>00111 &amp; 01111 = 00111</code>，再 <code>&amp; 10101 = 00101</code>——
+      里面有 <b>2 个 1</b>，答案 <b>2</b> ✔<br>
+      <b>要点：</b><br>
+      ① <strong>"每一位在所有数里都是 1" ⟺ "所有数按位与之后那一位是 1"</strong>；<br>
+      ② 这题用数组是因为<strong>第一个数要留到最后一起"与"，所以得先存下来</strong>
+      （其实也可以边读边与，但用数组更直观）；<br>
+      ③ 数组上限定成 <code class="inline">20010</code>，<strong>比题目给的 20000 留了 10 个余量，防止越界</strong>；<br>
+      ④ 注意这题用的是<strong>全局数组</strong>——全局数组默认全是 0，<strong>不用担心未初始化的问题</strong>。<br>
+      <span class="tagline">对应小节</span>4.1 标准遍历写法；5.2 找最大值与计数。</p>
+      </div>
+    </details>
+  </div>
+</div>
+
+<div class="exam">
+  <div class="eh"><span class="src ori">原创练习题</span><span class="tp">单选题</span></div>
+  <div class="eb">
+    <div class="q">下面代码执行后，输出的结果是（　　）。</div>
+    <pre>int a[6] = {3, 8, 1, 9, 4};
+int n = sizeof(a) / sizeof(a[0]);
+cout &lt;&lt; n &lt;&lt; " " &lt;&lt; a[5] &lt;&lt; " " &lt;&lt; a[2] &lt;&lt; endl;</pre>
+    <div class="opt"><i>A.</i><code class="inline">5 0 1</code>　　<i>B.</i><code class="inline">6 0 1</code>　　<i>C.</i><code class="inline">6 9 1</code>　　<i>D.</i>程序运行出错</div>
+    <details><summary>查看答案与详解</summary>
+      <div class="ans"><b>答案：B</b>。<b>① 长度：</b>数组定义写的是 <code class="inline">a[6]</code>，
+      虽然只给了 5 个初值，但<strong>长度就是 6</strong>，所以 <code class="inline">sizeof(a)/sizeof(a[0]) = 6</code>。<br>
+      <b>② <code class="inline">a[5]</code>：</b>初始化列表只有 5 项，<strong>剩下的自动补 0</strong>，
+      所以 <code class="inline">a[5]</code> 是 <b>0</b>。<br>
+      <b>③ <code class="inline">a[2]</code>：</b>从 0 开始数——<code class="inline">a[0]=3</code>、
+      <code class="inline">a[1]=8</code>、<code class="inline">a[2]=1</code>，所以是 <b>1</b>。<br>
+      合起来输出 <b>6 0 1</b>。<br>
+      <b>A 项</b>是把长度误当成初值个数 5；<b>C 项</b>是把下标当成了"第几个"。<br>
+      <span class="tagline">对应小节</span>2.1 三种初始化方式；3.1 下标从 0 开始。</div>
+    </details>
+  </div>
+</div>
+
+<div class="exam">
+  <div class="eh"><span class="src ori">原创练习题</span><span class="tp">判断题</span></div>
+  <div class="eb">
+    <div class="q">在 C++ 中，<code class="inline">int a[5];</code> 这样定义一个局部数组后，
+    若不赋初值，则数组所有元素的值都是 0。（　　）</div>
+    <details><summary>查看答案与详解</summary>
+      <div class="ans"><b>答案：错误（×）</b>。<strong>局部数组不初始化时，元素的值是"不确定的"</strong>
+      （常说的"垃圾值"），不是 0。<br>
+      <b>要清零必须显式写：</b><code class="inline">int a[5] = {0};</code>。<br>
+      <b>一个例外要记住：</b><strong>全局数组（定义在所有函数外面的）会自动全部初始化为 0。</strong>
+      这也是比赛里很多人喜欢把大数组开在全局的原因之一。<br>
+      <span class="tagline">对应小节</span>2.1 三种初始化方式。</div>
+    </details>
+  </div>
+</div>
+
+<div class="exam">
+  <div class="eh"><span class="src ori">原创练习题</span><span class="tp">编程题</span></div>
+  <div class="eb">
+    <div class="q">题目要求：读入 <code class="inline">n</code> 和 <code class="inline">n</code> 个整数，
+    输出它们的<strong>总和</strong>、<strong>平均值</strong>（保留两位小数）以及<strong>大于平均值的数的个数</strong>。<br>
+    <b>样例：</b>输入 <code class="inline">5</code> 与 <code class="inline">10 20 30 40 50</code>，
+    输出 <code class="inline">150 30.00 2</code>。</div>
+    <details><summary>查看参考答案与要点</summary>
+      <div class="ans">
+<pre style="margin:0;background:#131a26;color:#c8d3e0;border-radius:10px;padding:14px 16px">#include &lt;iostream&gt;
+#include &lt;cstdio&gt;
+using namespace std;
+
+int a[1005];
+
+int main() {
+    int n;
+    cin &gt;&gt; n;
+    for (int i = 0; i &lt; n; i++) cin &gt;&gt; a[i];
+
+    // 第一遍：求和
+    int sum = 0;
+    for (int i = 0; i &lt; n; i++) sum += a[i];
+
+    // 第二遍：统计比平均值大的个数
+    double avg = sum * 1.0 / n;      // ★ 乘 1.0 变小数除法
+    int cnt = 0;
+    for (int i = 0; i &lt; n; i++) {
+        if (a[i] &gt; avg) cnt++;
+    }
+
+    printf("%d %.2f %d\n", sum, avg, cnt);
+    return 0;
+}</pre>
+      <p style="margin-top:12px"><b>要点：</b><br>
+      ① <strong>必须扫两遍：</strong>第一遍求总和，第二遍才能拿平均值去比较
+      ——<strong>这就是为什么非要用数组（数据得留着）</strong>；<br>
+      ② <code class="inline">sum * 1.0 / n</code> 是得到小数平均值的写法；
+      <strong>直接写 <code class="inline">sum / n</code> 会丢掉小数</strong>；<br>
+      ③ 比较时用 <code class="inline">a[i] &gt; avg</code> 而不是 <code class="inline">&gt;=</code>，
+      <strong>题目说的是"大于"</strong>；<br>
+      ④ <code class="inline">%.2f</code> 控制保留两位小数；<br>
+      ⑤ 数组开成全局的，<strong>自动全 0、还能开得比较大</strong>。<br>
+      <span class="tagline">对应小节</span>5.1 求和与求平均；5.2 找最大值与计数。</p>
+      </div>
+    </details>
+  </div>
+</div>
+
+<!-- ============ 9 ============ -->
+<div class="section-header" id="s9">
+  <h2>9　本单元小结</h2>
+  <div class="en-title">Unit Summary</div>
+</div>
+
+<div class="cast anya">
+  <img class="ava" src="../assets/avatars/anya.webp" alt="安雅" onerror="this.style.display='none'">
+  <div class="bubble">
+    <div class="who">安雅 · 红发队长</div>
+    四句话记住数组：<br>
+    <strong>一、数组是"同一个名字 + 一个编号"，能一口气管住一整排同类型的数。</strong><br>
+    <strong>二、下标从 0 开始；长度为 n 时合法下标是 0 到 n−1，越界不会报错但会改坏别的数据。</strong><br>
+    <strong>三、<code>int a[5] = {0};</code> 可以全部清零；不初始化的局部数组里是垃圾值。</strong><br>
+    <strong>四、三个初始值要记牢：求和从 0 起、计数从 0 起、最值取 <code>a[0]</code>。</strong><br>
+    编队管住了。下一站是石碑上的密语——<b>那里管的不再是数字，而是一长串字符。</b>
+  </div>
+</div>
+
+<div class="summary">
+  <h3>你在矿车编队前收获了什么</h3>
+  <ul>
+    <li><strong>数组</strong>——同一类型、同一名字、用下标区分的一排格子；<strong>长度定义时就定死</strong>。</li>
+    <li><strong>定义</strong>——<code class="inline">int a[10];</code>；长度必须是<strong>整型常量</strong>。</li>
+    <li><strong>初始化</strong>——<code class="inline">int a[5] = {1,2,3};</code> 剩下自动补 0；
+      <strong><code class="inline">{0}</code> 可全部清零</strong>；不初始化则值是垃圾。</li>
+    <li><strong>求长度</strong>——<code class="inline">sizeof(a) / sizeof(a[0])</code>。</li>
+    <li><strong>下标</strong>——从 <b>0</b> 开始；长度为 n 时合法范围是 <b>0 ~ n−1</b>。</li>
+    <li><strong>越界</strong>——C++ <strong>不检查</strong>，可能不报错却改坏了别的变量，
+      <strong>是最危险的错误之一</strong>。</li>
+    <li><strong>遍历</strong>——<code class="inline">for (int i = 0; i &lt; n; i++)</code>；倒着是 <code class="inline">i = n−1; i &gt;= 0; i--</code>。</li>
+    <li><strong>范围 for</strong>——<code class="inline">for (int num : a)</code> 拿到的是<b>副本，改不动原数组</b>；
+      要改必须写 <code class="inline">for (int &amp;num : a)</code>。</li>
+    <li><strong>三个套路</strong>——求和／计数初始化为 0；<strong>最值初值取 <code class="inline">a[0]</code></strong>。</li>
+    <li><strong>求平均</strong>——用 <code class="inline">sum * 1.0 / n</code>，否则会丢掉小数。</li>
+  </ul>
+</div>
+
+<div class="pager">
+  <a href="cpp-3-04.html"><div class="k">← 上一单元</div><div class="v">矿道图纸 · 算法与描述</div></a>
+  <a href="../index.html" target="_top" class="back"><div class="k">返回</div><div class="v">考纲之路 · 总目录</div></a>
+  <a href="cpp-3-06.html"><div class="k">下一单元 →</div><div class="v">石碑上的密语 · 字符串及其函数</div></a>
+</div>
+
+<div class="cta">
+  <h3>下一站：石碑上的密语</h3>
+  <p>矿坑出口处立着一块石碑，<b>上面刻着一长串字符。</b><br>
+  下一单元我们学 <b>C++ 的字符数组与字符串</b>：<b>怎么把一整串文字存下来，
+  又怎么在里边查找、替换、切分。</b></p>
+  <a class="btn-go" href="https://codecombat.cn/" target="_blank" rel="noopener">加入扣哒世界，把这条考纲之路走一遍 →</a>
+</div>
+</div><!-- /container -->
+</div><!-- /page -->
+
+<script>
+const KEYWORDS = new Set([
+  "int", "long", "short", "unsigned", "signed", "float", "double", "char", "bool", "void",
+  "const", "if", "else", "for", "while", "do", "switch", "case", "default", "break",
+  "continue", "return", "goto", "struct", "class", "union", "enum", "using", "namespace",
+  "std", "main", "true", "false", "cin", "cout", "cerr", "endl", "string", "sizeof",
+  "include", "define", "new", "delete", "public", "private", "static", "inline", "nullptr"
+]);
+
+function esc(s){ return s.replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;'); }
+
+function highlight(src){
+  let out = '', i = 0;
+  const n = src.length;
+  while (i < n){
+    const c = src[i];
+    /* 预处理指令：#include / #define，整行只在行首生效 */
+    if (c === '#' && (i === 0 || src[i-1] === '\n')){
+      let j = i;
+      while (j < n && /[A-Za-z]/.test(src[j])) j++;
+      out += '<span class="kw">' + esc(src.slice(i, j)) + '</span>';
+      let k = src.indexOf('\n', j); if (k < 0) k = n;
+      if (j < k) out += '<span class="st">' + esc(src.slice(j, k)) + '</span>';
+      i = k; continue;
+    }
+    /* 行注释 // */
+    if (c === '/' && src[i+1] === '/'){
+      let j = src.indexOf('\n', i); if (j < 0) j = n;
+      out += '<span class="cm">' + esc(src.slice(i, j)) + '</span>';
+      i = j; continue;
+    }
+    /* 块注释 */
+    if (c === '/' && src[i+1] === '*'){
+      let j = src.indexOf('*/', i + 2); j = j < 0 ? n : j + 2;
+      out += '<span class="cm">' + esc(src.slice(i, j)) + '</span>';
+      i = j; continue;
+    }
+    /* 字符串与字符字面量 */
+    if (c === '"' || c === "'"){
+      let j = i + 1;
+      while (j < n && src[j] !== c){ if (src[j] === '\\') j++; j++; }
+      j = Math.min(j + 1, n);
+      out += '<span class="st">' + esc(src.slice(i, j)) + '</span>';
+      i = j; continue;
+    }
+    /* 数字 */
+    if (/[0-9]/.test(c)){
+      let j = i;
+      while (j < n && /[0-9.]/.test(src[j])) j++;
+      out += '<span class="nu">' + esc(src.slice(i, j)) + '</span>';
+      i = j; continue;
+    }
+    /* 标识符：关键字 / 函数名 / 普通名字 */
+    if (/[A-Za-z_]/.test(c)){
+      let j = i;
+      while (j < n && /[A-Za-z0-9_]/.test(src[j])) j++;
+      const w = src.slice(i, j);
+      if (KEYWORDS.has(w)) out += '<span class="kw">' + esc(w) + '</span>';
+      else if (src[j] === '(') out += '<span class="fn">' + esc(w) + '</span>';
+      else out += esc(w);
+      i = j; continue;
+    }
+    out += esc(c); i++;
+  }
+  return out;
+}
+
+document.querySelectorAll('.code-card pre code').forEach(block => {
+  block.innerHTML = highlight(block.textContent);
+});
+
+if (location.search.indexOf('expand') >= 0) {
+  document.querySelectorAll('details').forEach(d => d.open = true);
+}
+document.querySelectorAll('.sidebar-nav a').forEach(a => {
+  a.addEventListener('click', () => {
+    if (window.innerWidth <= 900) document.querySelector('.sidebar-nav').classList.remove('active');
+  });
+});
+</script>
+</body>
+</html>

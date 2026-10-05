@@ -1,0 +1,1163 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="copyright" content="CodeCombat Inc. codecombat.cn">
+<title>模块化车间 · 函数与模块化编程 | 扣哒考级 · GESP C++ 四级</title>
+<style>
+  :root{
+    --primary:#2563eb; --primary-light:#4f8ff0; --primary-lighter:#eaf1fe; --primary-dark:#1b47a8;
+    --brand:#ff6b35; --brand-dark:#e8541f; --brand-soft:#fff3ec;
+    --night:#131c2b; --night-2:#1e2a3a; --gold:#f5b301;
+    --text:#242e3d; --dim:#68788f; --dim2:#93a2b6;
+    --bg:#ffffff; --bg-soft:#f7f9fd; --line:#e2e9f4; --sidebar:274px;
+    --code-bg:#131a26; --code-tx:#c8d3e0;
+    --code-kw:#c678dd; --code-st:#98c379; --code-nu:#d19a66; --code-cm:#5f7488; --code-fn:#e5c07b;
+  }
+  *{margin:0;padding:0;box-sizing:border-box}
+  html{scroll-behavior:smooth}
+  body{font-family:"PingFang SC","Microsoft YaHei","Segoe UI",-apple-system,sans-serif;line-height:1.9;color:var(--text);background:var(--bg);font-size:15.5px}
+  .sidebar-nav{position:fixed;top:0;left:0;width:var(--sidebar);height:100vh;overflow-y:auto;background:linear-gradient(180deg,#0c1626,#14243c);padding:14px 0 40px;z-index:100;border-right:3px solid var(--brand);transition:transform .3s ease}
+  .sidebar-nav::-webkit-scrollbar{width:5px}
+  .sidebar-nav::-webkit-scrollbar-thumb{background:var(--brand);border-radius:4px}
+  .sb-brand{display:flex;align-items:center;gap:10px;padding:10px 13px 12px;border-bottom:1px solid #233752;margin-bottom:8px}
+  .sidebar-nav a.sb-logo{display:flex;align-items:center;justify-content:center;flex-shrink:0;padding:0;border-left:none;transition:.2s}
+  .sb-logo:hover{transform:scale(1.08)}
+  .sb-logo img{height:34px;width:34px;display:block;object-fit:contain;border-radius:8px}
+  .sb-brand b{color:#f2f6fa;font-size:14px;letter-spacing:.5px;display:block;line-height:1.4}
+  .sb-brand span{color:#7f95ab;font-size:11.5px;display:block;line-height:1.4}
+  .nav-title{color:#ffb894;font-size:12px;font-weight:800;padding:10px 18px 6px;letter-spacing:1.2px}
+  .sidebar-nav a{display:block;color:#c3d0dc;text-decoration:none;padding:6px 18px;font-size:12.5px;line-height:1.55;border-left:3px solid transparent;transition:.18s}
+  .sidebar-nav a:hover{color:#fff;background:rgba(255,107,53,.16);border-left-color:var(--brand)}
+  .sidebar-nav a.nav-section{color:#ffb894;font-weight:700;font-size:13px;margin-top:11px;padding-top:10px;border-top:1px solid #233752}
+  .sidebar-nav a.nav-section:first-of-type{border-top:none;margin-top:0;padding-top:6px}
+  .sidebar-nav a.nav-sub{padding-left:30px;color:#93a8bc;font-size:12px}
+  .sidebar-nav a.nav-sub:hover{color:#fff}
+  .sb-back{margin:16px 14px 0;display:block;text-align:center;padding:9px;border-radius:9px;background:#1e304a;color:#a9c0d6 !important;font-size:12px;font-weight:700;border-left:none !important}
+  .sb-back:hover{background:var(--brand) !important;color:#fff !important}
+  .nav-toggle{display:none;position:fixed;top:14px;left:14px;z-index:120;background:var(--brand);color:#fff;border:none;border-radius:9px;padding:9px 13px;font-size:15px;cursor:pointer;box-shadow:0 4px 14px rgba(0,0,0,.25)}
+  .page{margin-left:var(--sidebar)}
+  .hero{position:relative;overflow:hidden;padding:44px 52px;color:#fff;background:linear-gradient(125deg,#0a1220 0%,#16294a 46%,#8a3a16 132%)}
+  .hero::after{content:"";position:absolute;right:-90px;top:-110px;width:400px;height:400px;border-radius:50%;background:radial-gradient(circle,rgba(245,179,1,.30),transparent 68%)}
+  .hero-top{display:flex;gap:36px;align-items:center;position:relative;z-index:2}
+  .hero-txt{flex:1;min-width:0}
+  .hero .crumb{font-size:11.5px;color:#ffb894;letter-spacing:1.5px;font-weight:700;margin-bottom:14px}
+  .hero h1{font-size:31px;font-weight:800;line-height:1.3;letter-spacing:.6px;margin-bottom:8px}
+  .hero h1 .sub{display:block;font-size:18px;font-weight:700;color:#ffd2b3;margin-top:6px;letter-spacing:.3px}
+  .hero .en{font-size:13px;color:#9db4c8;font-style:italic;margin-bottom:18px}
+  .hero .tags{display:flex;flex-wrap:wrap;gap:8px}
+  .tag{font-size:11.5px;padding:4px 12px;border-radius:20px;background:rgba(255,255,255,.12);border:1px solid rgba(255,255,255,.22);color:#e8f0f6;font-weight:600}
+  .tag.hot{background:rgba(255,107,53,.92);border-color:transparent;color:#fff}
+  .hero-card{flex-shrink:0;width:200px;text-align:center}
+  .hero-card .ava{width:148px;height:148px;border-radius:50%;object-fit:cover;object-position:top center;border:4px solid rgba(255,180,140,.6);box-shadow:0 14px 34px rgba(0,0,0,.45);background:#24344a}
+  .hero-card .nm{font-size:15px;font-weight:800;color:#fff;margin-top:10px}
+  .hero-card .ti{font-size:11.5px;color:#ffb894;margin-top:2px}
+  .container{max-width:1080px;margin:0 auto;padding:38px 52px 70px}
+  .lead{font-size:15.5px;line-height:2.05;color:#333f52;background:linear-gradient(120deg,#fff8f3,#f7fbf8);border-left:5px solid var(--brand);border-radius:0 14px 14px 0;padding:22px 26px;margin-bottom:32px}
+  .lead b{color:var(--brand-dark)}
+  .cast{display:flex;gap:16px;align-items:flex-start;border-radius:16px;padding:18px 22px;margin:24px 0}
+  .cast .ava{width:72px;height:72px;border-radius:50%;object-fit:cover;object-position:top center;flex-shrink:0;background:#e8eef5}
+  .cast .bubble{position:relative;font-size:14px;line-height:1.95;padding-top:2px;flex:1}
+  .cast .who{font-size:12px;font-weight:800;margin-bottom:5px;letter-spacing:.5px}
+  .cast.anya{background:var(--brand-soft);border:1px solid #ffdcc9}
+  .cast.anya .who{color:var(--brand-dark)}
+  .cast.anya .bubble{color:#5c4636}
+  .cast.duck{background:#fff5f5;border:1px solid #fbd5d5}
+  .cast.duck .who{color:#b91c1c}
+  .cast.duck .bubble{color:#5c4141}
+  .cast.teacher{background:linear-gradient(120deg,#f4f7fb,#ffffff);border:1px solid #dbe4f0}
+  .cast.teacher .who{color:#1e293b}
+  .cast.teacher .bubble{color:#3c4a5a}
+  .cast.hero{background:#f2f7fd;border:1px solid #cfe0f5}
+  .cast.hero .who{color:#1b47a8}
+  .cast.hero .bubble{color:#3a4658}
+  .goal-grid{display:grid;grid-template-columns:1fr 1fr;gap:16px;margin-bottom:36px}
+  .goal{border:1px solid var(--line);border-radius:15px;padding:19px 21px;background:#fff;box-shadow:0 4px 16px rgba(31,122,68,.05)}
+  .goal h4{font-size:14px;font-weight:800;margin-bottom:11px;display:flex;align-items:center;gap:8px;color:var(--primary-dark)}
+  .goal h4 .ic{width:22px;height:22px;border-radius:7px;background:var(--primary-lighter);display:flex;align-items:center;justify-content:center;font-size:12px}
+  .goal ul{list-style:none}
+  .goal li{font-size:13.5px;color:#48576b;line-height:1.9;padding-left:18px;position:relative}
+  .goal li::before{content:"▸";position:absolute;left:0;color:var(--primary);font-weight:800}
+  .goal.syllabus li::before{content:"✓"}
+  .section-header{margin:52px 0 24px;padding-bottom:12px;border-bottom:3px solid var(--brand);display:flex;align-items:baseline;gap:14px;flex-wrap:wrap}
+  .section-header h2{font-size:22px;font-weight:800;color:var(--night);letter-spacing:.4px}
+  .section-header .en-title{font-size:12px;color:var(--dim2);font-style:italic}
+  h3{font-size:17.5px;font-weight:800;margin:34px 0 14px;color:var(--night);display:flex;align-items:center;gap:10px}
+  h3::before{content:"";width:5px;height:17px;border-radius:3px;background:var(--brand);flex-shrink:0}
+  h4{font-size:15px;font-weight:800;margin:24px 0 10px;color:#2b4260}
+  p{margin:12px 0;color:#3a4658;line-height:2}
+  strong{color:var(--primary-dark)}
+  code.inline{background:var(--primary-lighter);color:var(--primary-dark);padding:2px 7px;border-radius:6px;font-family:"SFMono-Regular",Consolas,Menlo,monospace;font-size:.9em;font-weight:600}
+  .figure{margin:24px 0;text-align:center}
+  .figure svg.diagram{max-width:100%;height:auto;background:#fff;border:1px solid var(--line);border-radius:14px;padding:10px}
+  .figure .caption{font-size:12.5px;color:var(--dim2);margin-top:9px}
+  .pic{margin:26px 0;text-align:center}
+  .pic img{max-width:100%;border-radius:16px;box-shadow:0 10px 28px rgba(30,60,45,.15);display:block;margin:0 auto}
+  .pic figcaption{font-size:12.5px;color:var(--dim2);margin-top:9px}
+  .pic .ph{display:none}
+  .pic.missing img{display:none}
+  .pic.missing .ph{display:flex;flex-direction:column;align-items:center;justify-content:center;gap:9px;border:2px dashed #c9d9e8;border-radius:16px;background:linear-gradient(135deg,#f8fbfe,#eef6ff);padding:40px 26px;color:#7a8fa8}
+  .pic.missing .ph .fn{font-family:Consolas,monospace;font-size:12.5px;color:#2563eb;font-weight:700;word-break:break-all}
+  .pic.missing .ph .ds{font-size:12.5px;line-height:1.8;max-width:560px}
+  .box{border-radius:13px;padding:16px 20px;margin:20px 0;font-size:14px;line-height:1.95}
+  .box .lb{font-weight:800;margin-right:6px}
+  .info{background:#eef6ff;border-left:5px solid #3b82f6;color:#274768}
+  .info .lb{color:#1d4ed8}
+  .tip{background:#fff9ec;border-left:5px solid #f59e0b;color:#6b4e13}
+  .tip .lb{color:#b45309}
+  .remember{background:var(--primary-lighter);border-left:5px solid var(--primary);color:#1d3a6b}
+  .remember .lb{color:var(--primary-dark)}
+  .warn{background:#fef2f2;border-left:5px solid #ef4444;color:#7f2b2b}
+  .warn .lb{color:#b91c1c}
+  .code-card{margin:20px 0;border-radius:14px;overflow:hidden;box-shadow:0 10px 28px rgba(20,40,28,.20)}
+  .code-head{display:flex;align-items:center;gap:9px;background:#1a2434;padding:9px 14px}
+  .code-head .dot{width:10px;height:10px;border-radius:50%}
+  .code-head .d1{background:#ff5f57}.code-head .d2{background:#febc2e}.code-head .d3{background:#28c840}
+  .code-head .file{color:#8fa6c0;font-size:11.5px;font-family:Consolas,monospace;margin-left:6px}
+  .code-head .lang{margin-left:auto;font-size:10.5px;font-weight:800;color:#0d141f;background:#4f8ff0;padding:2px 9px;border-radius:6px;letter-spacing:.4px}
+  .code-card pre{background:var(--code-bg);padding:18px 20px;overflow-x:auto;margin:0;font-family:"SFMono-Regular",Consolas,"Courier New",monospace;font-size:13.5px;line-height:1.85}
+  .code-card pre::-webkit-scrollbar{height:8px}
+  .code-card pre::-webkit-scrollbar-thumb{background:#31445c;border-radius:4px}
+  .code-card code{color:var(--code-tx);white-space:pre}
+  .kw{color:var(--code-kw);font-weight:600}
+  .st{color:var(--code-st)}
+  .nu{color:var(--code-nu)}
+  .cm{color:var(--code-cm);font-style:italic}
+  .fn{color:var(--code-fn)}
+  .out{background:#0f1621;color:#7fb3f5;font-family:Consolas,monospace;font-size:13px;padding:12px 20px;border-top:1px solid #22304a}
+  .out b{color:#c9d6cd;font-weight:600;font-size:11.5px;letter-spacing:1px}
+  .out.err{color:#fca5a5}
+  table.styled{width:100%;border-collapse:collapse;margin:20px 0;font-size:13.5px;border-radius:12px;overflow:hidden;box-shadow:0 4px 16px rgba(31,122,68,.07)}
+  table.styled thead{background:var(--brand)}
+  table.styled th{color:#fff;padding:11px 14px;text-align:left;font-weight:700;font-size:13px}
+  table.styled td{padding:10px 14px;border-bottom:1px solid var(--line);color:#445266;vertical-align:top}
+  table.styled tbody tr:nth-child(even){background:var(--bg-soft)}
+  table.styled tbody tr:last-child td{border-bottom:none}
+  .level-card{border:1px solid var(--line);border-radius:16px;overflow:hidden;margin:22px 0;box-shadow:0 6px 22px rgba(31,122,68,.07)}
+  .level-card .lc-head{background:linear-gradient(100deg,#17283a,#8a3a16);color:#fff;padding:15px 22px;display:flex;align-items:center;gap:12px;flex-wrap:wrap}
+  .level-card .lc-head .n{font-size:12px;font-weight:800;background:rgba(255,255,255,.2);padding:3px 10px;border-radius:20px}
+  .level-card .lc-head h4{margin:0;color:#fff;font-size:16px}
+  .level-card .lc-head .go{margin-left:auto;font-size:11.5px;color:#ffd2b3}
+  .level-card .lc-body{padding:20px 24px;background:#fff}
+  .level-card .story{background:#f9fbfd;border-left:4px solid #93c5fd;border-radius:0 10px 10px 0;padding:13px 18px;margin:0 0 16px;font-size:14px;line-height:1.95;color:#3f5163}
+  .level-card .story b{color:#1d4ed8}
+  .btn-go{display:inline-flex;align-items:center;gap:8px;background:linear-gradient(135deg,var(--brand),var(--brand-dark));color:#fff;text-decoration:none;font-weight:800;font-size:13.5px;padding:10px 22px;border-radius:11px;box-shadow:0 8px 20px rgba(255,107,53,.32);transition:.2s}
+  .btn-go:hover{transform:translateY(-2px);box-shadow:0 12px 26px rgba(255,107,53,.42)}
+  .pit{border:1px solid #f6dede;border-radius:14px;overflow:hidden;margin:16px 0;background:#fff}
+  .pit .pt{display:flex;gap:12px;padding:14px 18px;background:#fffafa;align-items:flex-start}
+  .pit .x{width:26px;height:26px;border-radius:9px;background:#fee;color:#dc2626;display:flex;align-items:center;justify-content:center;font-weight:800;flex-shrink:0;font-size:13px}
+  .pit .t{font-size:13.5px;line-height:1.9;color:#5c4a4a;flex:1}
+  .pit .t b{color:#b91c1c}
+  .pit .duck{display:flex;gap:12px;padding:13px 18px;background:#fff5f5;border-top:1px dashed #f3d0d0;align-items:flex-start}
+  .pit .duck img{width:48px;height:48px;object-fit:contain;flex-shrink:0;margin-top:2px}
+  .pit .duck .dt{font-size:13.5px;line-height:1.9;color:#7a3b3b}
+  .pit .duck .dt b{color:#b91c1c}
+  .pit .fix{padding:12px 18px;background:#f2f7fd;border-top:1px dashed #cfe0f5;font-size:13.5px;color:#1d3a6b}
+  .pit .fix b{color:var(--primary-dark)}
+  .exam{border:1px solid #dfe7f5;border-radius:15px;margin:16px 0;overflow:hidden;background:#fff;box-shadow:0 4px 16px rgba(38,62,120,.06)}
+  .exam .eh{display:flex;align-items:center;gap:10px;padding:11px 18px;background:linear-gradient(100deg,#eef4ff,#f7faff);border-bottom:1px solid #e3ebf8;flex-wrap:wrap}
+  .exam .eh .src{font-size:11px;font-weight:800;color:#fff;background:#2563eb;padding:2.5px 10px;border-radius:20px}
+  .exam .eh .src.ori{background:#8b5cf6}
+  .exam .eh .tp{font-size:11.5px;color:#5b7ba8;font-weight:700}
+  .exam .eb{padding:16px 20px}
+  .exam .q{font-weight:700;font-size:14px;color:#1e2a3e;line-height:1.9;margin-bottom:10px}
+  .exam .opt{font-size:13.5px;color:#48576b;line-height:2.05;padding-left:6px}
+  .exam .opt i{font-style:normal;font-weight:800;color:var(--primary-dark);margin-right:7px}
+  .exam pre{margin:12px 0;background:#1b2a21;border-radius:10px;padding:14px 16px;overflow-x:auto;font-family:Consolas,monospace;font-size:13px;line-height:1.8;color:var(--code-tx)}
+  .exam details{margin-top:10px;border-top:1px dashed var(--line);padding-top:10px}
+  .exam summary{cursor:pointer;font-size:12.5px;font-weight:800;color:#2563eb;outline:none;user-select:none}
+  .exam details .ans{font-size:13.5px;color:#3a4658;line-height:1.95;margin-top:9px;background:var(--bg-soft);padding:13px 16px;border-radius:10px}
+  .exam details .ans b{color:var(--primary-dark)}
+  .exam details .ans .tagline{display:inline-block;font-size:11px;background:#e0f2fe;color:#0e7490;padding:1.5px 8px;border-radius:6px;font-weight:700;margin-right:6px}
+  .summary{margin:40px 0 20px;border-radius:18px;padding:26px 30px;background:linear-gradient(130deg,#fff8f3,#ffffff);border:1px solid #ffe0cf}
+  .summary h3{margin-top:0}
+  .summary ul{list-style:none;margin-top:10px}
+  .summary li{font-size:14px;line-height:2;color:#3d4d66;padding-left:24px;position:relative}
+  .summary li::before{content:"◆";position:absolute;left:0;color:var(--brand);font-size:11px;top:6px}
+  .pager{display:flex;gap:14px;margin-top:30px;flex-wrap:wrap}
+  .pager a{flex:1;min-width:200px;text-decoration:none;border:1px solid var(--line);border-radius:14px;padding:16px 20px;background:#fff;transition:.2s;display:block}
+  .pager a:hover{border-color:var(--brand);box-shadow:0 10px 26px rgba(255,107,53,.14);transform:translateY(-2px)}
+  .pager a .k{font-size:11px;color:var(--dim2);font-weight:700;letter-spacing:1px}
+  .pager a .v{font-size:14px;font-weight:800;color:var(--night);margin-top:5px}
+  .pager a.back{background:var(--brand-soft);border-color:transparent;text-align:center}
+  .pager a.back .v{color:var(--brand-dark)}
+  .cta{margin-top:26px;border-radius:20px;padding:30px 34px;color:#fff;position:relative;overflow:hidden;background:linear-gradient(120deg,#16202f,#2b3a52 46%,#a8431c 132%)}
+  .cta::after{content:"";position:absolute;right:-70px;bottom:-90px;width:280px;height:280px;border-radius:50%;background:radial-gradient(circle,rgba(255,140,80,.45),transparent 68%)}
+  .cta h3{color:#fff;margin:0 0 10px;position:relative;z-index:2}
+  .cta h3::before{background:var(--brand)}
+  .cta p{color:#d8e0ef;font-size:13.5px;margin:0 0 18px;position:relative;z-index:2;max-width:640px}
+  .cta .btn-go{position:relative;z-index:2}
+  @media(max-width:900px){
+    .sidebar-nav{transform:translateX(-100%)}
+    .sidebar-nav.active{transform:translateX(0)}
+    .nav-toggle{display:block}
+    .page{margin-left:0}
+    .hero{padding:70px 22px 34px}
+    .hero-top{flex-direction:column-reverse;text-align:center}
+    .hero-card{width:auto}
+    .container{padding:26px 20px 60px}
+    .goal-grid{grid-template-columns:1fr}
+  }
+</style>
+</head>
+<body>
+
+<button class="nav-toggle" onclick="document.querySelector('.sidebar-nav').classList.toggle('active')">&#9776;</button>
+
+<nav class="sidebar-nav">
+  <div class="sb-brand">
+    <a class="sb-logo" href="https://codecombat.cn/" target="_blank" rel="noopener" title="访问 CodeCombat 扣哒世界官网">
+      <img src="../assets/logo.png" alt="CodeCombat 扣哒世界">
+    </a>
+    <div><b>模块化车间</b><span>齿轮高台 · C++ 四级 第 4 单元</span></div>
+  </div>
+  <div class="nav-title">本单元目录</div>
+
+  <a href="#s0" class="nav-section">0　单元导语与目标</a>
+  <a href="#s0-1" class="nav-sub">0.1 学习目标</a>
+  <a href="#s0-2" class="nav-sub">0.2 考纲对照</a>
+  <a href="#s1" class="nav-section">1　重复的活儿该怎么办</a>
+  <a href="#s1-1" class="nav-sub">1.1 没有函数会怎样</a>
+  <a href="#s1-2" class="nav-sub">1.2 函数带来的三个好处</a>
+  <a href="#s2" class="nav-section">2　定义与调用</a>
+  <a href="#s2-1" class="nav-sub">2.1 定义一台机器</a>
+  <a href="#s2-2" class="nav-sub">2.2 返回类型与 return</a>
+  <a href="#s3" class="nav-section">3　参数：给函数带东西进去</a>
+  <a href="#s3-1" class="nav-sub">3.1 形参与实参</a>
+  <a href="#s3-2" class="nav-sub">3.2 多个参数与默认值</a>
+  <a href="#s4" class="nav-section">4　返回值：把结果带出来</a>
+  <a href="#s4-1" class="nav-sub">4.1 有返回值的函数</a>
+  <a href="#s4-2" class="nav-sub">4.2 return 与 void</a>
+  <a href="#s5" class="nav-section">5　函数声明</a>
+  <a href="#s5-1" class="nav-sub">5.1 为什么要先声明</a>
+  <a href="#s5-2" class="nav-sub">5.2 声明与定义分离</a>
+  <a href="#s6" class="nav-section">6　代码实战</a>
+  <a href="#s7" class="nav-section">7　常见陷阱</a>
+  <a href="#s8" class="nav-section">8　题目练习</a>
+  <a href="#s9" class="nav-section">9　本单元小结</a>
+
+  <a href="../index.html" target="_top" class="sb-back">返回考纲之路</a>
+</nav>
+
+<div class="page">
+
+<div class="hero">
+  <div class="hero-top">
+    <div class="hero-txt">
+      <div class="crumb">扣哒考级 · GESP C++ 四级 · 第 4 单元　|　齿轮高台 GEARWATCH TERRACE</div>
+      <h1>模块化车间
+        <span class="sub">函数与模块化编程</span>
+      </h1>
+      <div class="en">Functions &amp; Modular Programming</div>
+      <div class="tags">        <span class="tag hot">考纲 · 函数</span>
+        <span class="tag">定义与调用</span>
+        <span class="tag">参数与返回值</span>
+        <span class="tag">函数声明</span>
+        <span class="tag">return</span></div>
+    </div>
+    <div class="hero-card">
+      <img class="ava" src="../assets/avatars/okar.webp" alt="奥卡" onerror="this.style.background='#24344a';this.src='../assets/heroes/okar.webp'">
+      <div class="nm">奥卡</div>
+      <div class="ti">石臂守卫 · 你的向导</div>
+    </div>
+  </div>
+</div>
+
+<div class="container">
+
+<div class="lead">
+  车间里的活儿越来越多，奥卡却一点也不着急。<br>
+  他指着墙边一排机器：你看，<b>每一台都只干一件事。</b><br>
+  你凑近看：一台负责"切"，一台负责"磨"，一台负责"焊"——
+  <strong>机身上都刻着名字，侧面还各有一个进料口和一个出料口。</strong><br>
+  你忽然懂了：<b>需要做什么，就喊哪台机器；料送进去，成品出来。</b><br>
+  石臂守卫缓缓点头：<strong>这就是函数。</strong>
+</div>
+
+<div class="cast okar">
+  <img class="ava" src="../assets/avatars/okar.webp" alt="奥卡" onerror="this.style.display='none'">
+  <div class="bubble">
+    <div class="who">奥卡 · 石臂守卫</div>
+    到这一课，你的程序已经能算、能判断、能循环、能装数据了。<br>
+    但你有没有发现——<strong>有些代码在反复地抄。</strong><br>
+    <b>这一课我们学函数：把一段代码打包成一台"机器"，起个名字，之后用一次喊一次。</b>
+  </div>
+</div>
+
+<figure class="pic">
+  <img src="../assets/illustrations/py-L4-04-01_module_workshop.webp" alt="模块化车间"
+       onerror="this.closest('.pic').classList.add('missing')">
+  <div class="ph">
+    <div class="fn">assets/illustrations/py-L4-04-01_module_workshop.webp</div>
+    <div class="ds">【配图位】车间里整齐排着几台外形相同的机器，每台机身都刻着一个名字，侧面各有一个进料口（漏斗）和一个出料口（滑道）；一名石臂守卫正把零件投入第一台机器的进料口，成品从出料口滑进托盘；背景中还有几台同样的机器在运转。</div>
+  </div>
+  <figcaption>图 1：齿轮高台的模块化车间——今天要从这里开始</figcaption>
+</figure>
+
+<!-- ============ 0 ============ -->
+<div class="section-header" id="s0">
+  <h2>0　单元导语与目标</h2>
+  <div class="en-title">Unit Overview</div>
+</div>
+
+<h3 id="s0-1">0.1 学习目标</h3>
+<div class="goal-grid">
+  <div class="goal">
+    <h4><span class="ic">1</span>学完这个单元，你将能……</h4>
+    <ul>
+      <li>说清函数解决了什么问题</li>
+      <li>正确定义并调用一个函数</li>
+      <li>分清形参和实参</li>
+      <li>用 <code class="inline">return</code> 把结果带出来</li>
+      <li>说清 <code class="inline">return</code> 和 <code class="inline">cout</code> 的区别</li>
+      <li>用函数声明把程序组织得更清楚</li>
+    </ul>
+  </div>
+  <div class="goal syllabus">
+    <h4><span class="ic">2</span>对标 GESP 考纲（C++ 四级）</h4>
+    <ul>
+      <li>理解函数与模块化编程的思想</li>
+      <li>掌握函数的定义、声明与调用</li>
+      <li>掌握参数传递与返回值</li>
+      <li>理解 <code class="inline">return</code> 的作用与 <code class="inline">void</code> 的含义</li>
+      <li>考核目标：能写出正确的函数，能判断调用结果</li>
+    </ul>
+  </div>
+</div>
+
+<h3 id="s0-2">0.2 考纲对照</h3>
+<table class="styled">
+  <thead><tr><th>本单元小节</th><th>对应考纲条目</th><th>真题常考形式</th></tr></thead>
+  <tbody>
+    <tr><td>1　为什么要用函数</td><td>函数与模块化</td><td>用函数比复制代码好在哪里</td></tr>
+    <tr><td>2　定义与调用</td><td>函数的定义与调用</td><td>不调用会不会执行；返回值类型写什么</td></tr>
+    <tr><td>3　参数</td><td>参数的传递</td><td>形参与实参；参数个数要不要对上</td></tr>
+    <tr><td>4　返回值</td><td><code class="inline">return</code> 语句</td><td><code class="inline">return</code> 与 <code class="inline">cout</code> 的区别（必考）</td></tr>
+    <tr><td>5　函数声明</td><td>函数的声明</td><td>是不是必须"既声明又定义"</td></tr>
+  </tbody>
+</table>
+
+<!-- ============ 1 ============ -->
+<div class="section-header" id="s1">
+  <h2>1　重复的活儿该怎么办</h2>
+  <div class="en-title">Why Functions</div>
+</div>
+
+<h3 id="s1-1">1.1 没有函数会怎样</h3>
+
+<div class="code-card">
+  <div class="code-head">
+    <span class="dot d1"></span><span class="dot d2"></span><span class="dot d3"></span>
+    <span class="file">要三次给英雄加血，只好抄三遍</span>
+    <span class="lang">C++</span>
+  </div>
+  <pre><code>// 没有函数：同样的代码抄了三遍
+cout &lt;&lt; "正在治疗..." &lt;&lt; endl;
+hero.hp += 10;
+if (hero.hp &gt; 100) hero.hp = 100;
+cout &lt;&lt; "治疗完成" &lt;&lt; endl;
+
+cout &lt;&lt; "正在治疗..." &lt;&lt; endl;
+hero.hp += 10;
+if (hero.hp &gt; 100) hero.hp = 100;
+cout &lt;&lt; "治疗完成" &lt;&lt; endl;
+
+cout &lt;&lt; "正在治疗..." &lt;&lt; endl;
+hero.hp += 10;
+if (hero.hp &gt; 100) hero.hp = 100;
+cout &lt;&lt; "治疗完成" &lt;&lt; endl;</code></pre>
+  <div class="out"><b>三个麻烦</b>　
+  <b>① 代码又长又啰嗦；② 改一处要改三处；③ 抄第三遍时手一抖就可能写错</b></div>
+</div>
+
+<div class="code-card">
+  <div class="code-head">
+    <span class="dot d1"></span><span class="dot d2"></span><span class="dot d3"></span>
+    <span class="file">用函数：写一次，用三次</span>
+    <span class="lang">C++</span>
+  </div>
+  <pre><code>void heal() {
+    cout &lt;&lt; "正在治疗..." &lt;&lt; endl;
+    hero.hp += 10;
+    if (hero.hp &gt; 100) hero.hp = 100;
+    cout &lt;&lt; "治疗完成" &lt;&lt; endl;
+}
+
+// 主程序里只要喊三次名字
+heal();
+heal();
+heal();</code></pre>
+  <div class="out"><b>好处立竿见影</b>　<b>要改治疗量？只改函数里的那一处就行</b></div>
+</div>
+
+<h3 id="s1-2">1.2 函数带来的三个好处</h3>
+
+<div class="box remember">
+  <span class="lb">函数带来的三个好处：</span>
+  <b>① 少写</b>——同样的活儿，<strong>写一次，用很多次</strong>。<br>
+  <b>② 好改</b>——要调整逻辑，<strong>只改定义的那一处</strong>，所有调用处一起生效。<br>
+  <b>③ 好懂</b>——主程序变成一句句"喊名字"，<strong>一眼能看出流程，不用被细节淹没</strong>。<br>
+  <strong>这就是"模块化"：把一个复杂的大问题，拆成几个各自独立的小功能。</strong>
+</div>
+
+<div class="box tip">
+  <span class="lb">打个比方：</span>
+  函数就像车间里<b>一台做好的机器</b>——<strong>只要把料从这头送进去，成品就从那头出来。</strong><br>
+  你不需要每次都<b>重新造一台机器</b>，也不需要知道机器里怎么转的；<br>
+  <b>想用的时候，喊它的名字、把料给它就行。</b>
+</div>
+
+<!-- ============ 2 ============ -->
+<div class="section-header" id="s2">
+  <h2>2　定义与调用</h2>
+  <div class="en-title">Defining &amp; Calling</div>
+</div>
+
+<h3 id="s2-1">2.1 定义一台机器</h3>
+
+<div class="code-card">
+  <div class="code-head">
+    <span class="dot d1"></span><span class="dot d2"></span><span class="dot d3"></span>
+    <span class="file">函数定义的四个部分</span>
+    <span class="lang">C++</span>
+  </div>
+  <pre><code>int add(int a, int b) {      // ①返回类型 ②函数名 ③参数列表
+    int s = a + b;           // ④函数体
+    return s;                // 把结果交出去
+}
+
+int main() {
+    int x = add(3, 5);       // ★ 调用：喊名字 + 传参数
+    cout &lt;&lt; x &lt;&lt; endl;        // 8
+    cout &lt;&lt; add(10, 20) &lt;&lt; endl;  // 30  直接用返回值
+    return 0;
+}</code></pre>
+  <div class="out"><b>OUTPUT</b>　8 / 30<br>
+  <b>四要素</b>　<b>返回类型、函数名、参数列表、（大括号里的）函数体</b></div>
+</div>
+
+<div class="box warn">
+  <span class="lb">最容易忘的两件事：</span>
+  <b>① 函数写完<strong>不会自动执行</strong></b>——<strong>必须有人调用它。</strong>
+  只定义不调用，函数体里的代码一行都不会跑。<br>
+  <b>② 大括号后面<strong>不要写分号</strong></b>——
+  <code class="inline">int add(int a, int b) { ... };</code> 多这个分号虽然多数情况下能过，
+  但<strong>在有些编译器上会带来麻烦，养成不写的习惯。</strong><br>
+  <strong>（对比记忆：结构体定义要分号，函数定义不要分号。）</strong>
+</div>
+
+<h3 id="s2-2">2.2 返回类型与 return</h3>
+
+<table class="styled">
+  <thead><tr><th>返回类型</th><th>含义</th><th>例子</th></tr></thead>
+  <tbody>
+    <tr><td><code class="inline">int</code>、<code class="inline">double</code>、<code class="inline">char</code> 等</td><td>函数会<b>交回一个该类型的值</b></td><td><code class="inline">int add(int a, int b)</code></td></tr>
+    <tr><td><code class="inline">bool</code></td><td>交回"真 / 假"</td><td><code class="inline">bool isPrime(int n)</code></td></tr>
+    <tr><td><code class="inline">void</code></td><td><strong>什么都不交回</strong>，只是"干件事"</td><td><code class="inline">void heal()</code></td></tr>
+  </tbody>
+</table>
+
+<div class="box remember">
+  <span class="lb">return 的两个作用：</span>
+  <b>① 交回一个值</b>——<code class="inline">return s;</code> 把 s 交给调用者。<br>
+  <b>② 立刻结束函数</b>——<strong><code class="inline">return</code> 之后的代码一律不再执行。</strong><br>
+  <b>而且 <code class="inline">return</code> 只能交回一个值</b>——
+  <strong>想要"带出多个结果"，得靠后面要学的引用参数或指针。</strong>
+</div>
+
+<figure class="figure">
+  <svg class="diagram" viewBox="0 0 830 250" role="img" aria-label="函数的定义与调用">
+    <text x="24" y="30" font-size="14" font-weight="bold" fill="#1f2937">定义是"造机器"，调用是"用机器"</text>
+
+    <rect x="46" y="54" width="290" height="170" rx="12" fill="#eaf1fe" stroke="#2563eb" stroke-width="2"/>
+    <text x="191" y="80" text-anchor="middle" font-size="13" fill="#1d4ed8" font-weight="bold">定义：把机器造出来</text>
+    <text x="70" y="112" font-size="12" font-family="Consolas,monospace" fill="#1d4ed8">int add(int a, int b) {</text>
+    <text x="88" y="138" font-size="12" font-family="Consolas,monospace" fill="#3b6ea8">int s = a + b;</text>
+    <text x="88" y="164" font-size="12" font-family="Consolas,monospace" fill="#1f7a44">return s;</text>
+    <text x="70" y="190" font-size="12" font-family="Consolas,monospace" fill="#1d4ed8">}</text>
+    <text x="70" y="214" font-size="11.5" fill="#b45309">★ 只是"造好放那儿"，还没开机</text>
+
+    <rect x="380" y="54" width="404" height="170" rx="12" fill="#e9f8ef" stroke="#2e9e5b" stroke-width="2"/>
+    <text x="582" y="80" text-anchor="middle" font-size="13" fill="#1f7a44" font-weight="bold">调用：把料送进去，取成品出来</text>
+    <text x="404" y="112" font-size="12" font-family="Consolas,monospace" fill="#1f7a44">int x = add(3, 5);</text>
+    <text x="404" y="140" font-size="11.5" fill="#3b7c5b">　　　实参 3 → 形参 a　实参 5 → 形参 b</text>
+    <text x="404" y="168" font-size="12" fill="#3b7c5b">　　　函数内部算出 s = 8</text>
+    <text x="404" y="196" font-size="12" fill="#1f7a44">　　　return 8 → x 拿到 8</text>
+    <text x="404" y="218" font-size="11.5" fill="#b45309">★ 每喊一次，机器就完整地跑一遍</text>
+  </svg>
+  <div class="caption">图 2（SVG）：函数的定义与调用</div>
+</figure>
+
+<!-- ============ 3 ============ -->
+<div class="section-header" id="s3">
+  <h2>3　参数：给函数带东西进去</h2>
+  <div class="en-title">Parameters</div>
+</div>
+
+<h3 id="s3-1">3.1 形参与实参</h3>
+
+<p>上面的 <code class="inline">heal()</code> 每次都加 10。如果想加不同的量呢？<strong>用参数。</strong></p>
+
+<div class="code-card">
+  <div class="code-head">
+    <span class="dot d1"></span><span class="dot d2"></span><span class="dot d3"></span>
+    <span class="file">加上参数，机器就灵活了</span>
+    <span class="lang">C++</span>
+  </div>
+  <pre><code>void heal(int amount) {          // amount 是"形参"
+    hero.hp += amount;
+    if (hero.hp &gt; 100) hero.hp = 100;
+}
+
+heal(10);                        // 10 是"实参"
+heal(30);                        // 加 30
+heal(5);                         // 加 5</code></pre>
+  <div class="out"><b>区别</b>　
+  <b>形参</b>——函数<strong>定义</strong>时写在括号里的"占位符"；<br>
+  <b>实参</b>——函数<strong>调用</strong>时真正传进去的值</div>
+</div>
+
+<div class="box remember">
+  <span class="lb">两个名字要分清：</span>
+  <b>形参（parameter）</b>——<strong>定义时</strong>写的，是"接货的筐"，本身没有值。<br>
+  <b>实参（argument）</b>——<strong>调用时</strong>给的，是"真正送进去的货"。<br>
+  <b>程序运行时，实参的值被复制给形参</b>——<strong>这就是"值传递"。</strong><br>
+  <strong>所以函数里改形参，外面那个实参不会跟着变（这一点上一单元用指针解决过）。</strong>
+</div>
+
+<h3 id="s3-2">3.2 多个参数与默认值</h3>
+
+<div class="code-card">
+  <div class="code-head">
+    <span class="dot d1"></span><span class="dot d2"></span><span class="dot d3"></span>
+    <span class="file">参数可以有多个，也可以有默认值</span>
+    <span class="lang">C++</span>
+  </div>
+  <pre><code>// 多个参数：用逗号隔开，每个都要写类型
+int maxOf(int a, int b) {
+    return a &gt; b ? a : b;
+}
+cout &lt;&lt; maxOf(3, 7) &lt;&lt; endl;         // 7
+
+// 默认参数：调用时可以不写
+void greet(string name, string hi = "你好") {
+    cout &lt;&lt; hi &lt;&lt; "，" &lt;&lt; name &lt;&lt; endl;
+}
+greet("小明");                        // 你好，小明
+greet("小红", "早上好");               // 早上好，小红</code></pre>
+  <div class="out"><b>两个要点</b>　
+  <b>① 每个参数都要单独写类型</b>：<code>int a, int b</code>，不能写 <code>int a, b</code>；<br>
+  <b>② 默认参数必须放在参数列表的最右边</b></div>
+</div>
+
+<div class="box warn">
+  <span class="lb">参数个数必须对上。</span>
+  定义了 <code class="inline">int add(int a, int b)</code>，调用时写成 <code class="inline">add(3)</code>
+  <strong>编译就过不去</strong>——少给了一个参数。<br>
+  <b>写成 <code class="inline">add(3, 5, 7)</code> 也不行</b>——多给了。<br>
+  <strong>只有"有默认值"的参数才可以省略。</strong>
+</div>
+
+<!-- ============ 4 ============ -->
+<div class="section-header" id="s4">
+  <h2>4　返回值：把结果带出来</h2>
+  <div class="en-title">Return Values</div>
+</div>
+
+<h3 id="s4-1">4.1 有返回值的函数</h3>
+
+<p>很多函数不是"干件事"，而是"<strong>算个结果给你</strong>"。这时候就要用 <code class="inline">return</code>。</p>
+
+<div class="code-card">
+  <div class="code-head">
+    <span class="dot d1"></span><span class="dot d2"></span><span class="dot d3"></span>
+    <span class="file">返回值可以被"接着用"</span>
+    <span class="lang">C++</span>
+  </div>
+  <pre><code>int square(int n) {
+    return n * n;
+}
+
+// 返回值能直接参与运算
+int total = square(3) + square(4);
+cout &lt;&lt; total &lt;&lt; endl;         // 9 + 16 = 25
+
+// 也能作为别的函数的参数
+cout &lt;&lt; square(square(2)) &lt;&lt; endl;   // square(4) = 16
+
+// 也能直接输出
+cout &lt;&lt; square(5) &lt;&lt; endl;     // 25</code></pre>
+  <div class="out"><b>OUTPUT</b>　25 / 16 / 25<br>
+  <b>关键</b>　<b>有返回值的函数调用，本身就是一个"值"，可以像变量一样用</b></div>
+</div>
+
+<h3 id="s4-2">4.2 return 与 void</h3>
+
+<table class="styled">
+  <thead><tr><th>写法</th><th>含义</th><th>怎么用</th></tr></thead>
+  <tbody>
+    <tr><td><code class="inline">int f() { return 5; }</code></td><td>交回一个值</td><td><code class="inline">int x = f();</code></td></tr>
+    <tr><td><code class="inline">void f() { cout &lt;&lt; "hi"; }</code></td><td>什么都不交回</td><td><code class="inline">f();</code> <strong>不能写 <code class="inline">int x = f();</code></strong></td></tr>
+    <tr><td><code class="inline">return;</code>（在 void 函数里）</td><td>只是<strong>提前结束</strong>函数</td><td>常用于"不满足条件就退出"</td></tr>
+  </tbody>
+</table>
+
+<div class="box warn">
+  <span class="lb">必考：return 和 cout 的区别。</span>
+  <b><code class="inline">cout</code> 是"说给人听"</b>——把内容显示在屏幕上，
+  <strong>程序里拿不到它的结果。</strong><br>
+  <b><code class="inline">return</code> 是"把东西交给程序"</b>——调用者可以接着用它做运算、比较、传参。<br>
+  <b>举个例子：</b><br>
+  <code class="inline">void f() { cout &lt;&lt; 5; }</code> —— 屏上显示出 5，但你<b>没法写 <code class="inline">f() + 1</code></b>；<br>
+  <code class="inline">int g() { return 5; }</code> —— <strong><code class="inline">g() + 1</code> 就是 6，可以随便参与运算。</strong><br>
+  <strong>一句话：cout 是"喊出来"，return 是"递过去"。</strong>
+</div>
+
+<figure class="figure">
+  <svg class="diagram" viewBox="0 0 830 220" role="img" aria-label="return 与 cout 的区别">
+    <text x="24" y="30" font-size="14" font-weight="bold" fill="#1f2937">cout 是喊出来，return 是递过去</text>
+
+    <rect x="46" y="54" width="350" height="140" rx="12" fill="#fff9ec" stroke="#f59e0b" stroke-width="2"/>
+    <text x="221" y="80" text-anchor="middle" font-size="12.5" fill="#b45309" font-weight="bold">cout：只在屏幕上显示</text>
+    <text x="70" y="110" font-size="12" font-family="Consolas,monospace" fill="#a15c1c">void f() { cout &lt;&lt; 5; }</text>
+    <text x="70" y="140" font-size="12" fill="#a15c1c">屏幕上出现：5</text>
+    <text x="70" y="170" font-size="12" fill="#b91c1c">✘ 不能写 f() + 1</text>
+
+    <rect x="434" y="54" width="350" height="140" rx="12" fill="#e9f8ef" stroke="#2e9e5b" stroke-width="2"/>
+    <text x="609" y="80" text-anchor="middle" font-size="12.5" fill="#1f7a44" font-weight="bold">return：把值交给程序</text>
+    <text x="458" y="110" font-size="12" font-family="Consolas,monospace" fill="#3b7c5b">int g() { return 5; }</text>
+    <text x="458" y="140" font-size="12" fill="#3b7c5b">调用处拿到一个值</text>
+    <text x="458" y="170" font-size="12" fill="#1f7a44">✔ g() + 1 = 6，随便用</text>
+  </svg>
+  <div class="caption">图 3（SVG）：return 与 cout 的本质区别</div>
+</figure>
+
+<!-- ============ 5 ============ -->
+<div class="section-header" id="s5">
+  <h2>5　函数声明</h2>
+  <div class="en-title">Declaration</div>
+</div>
+
+<h3 id="s5-1">5.1 为什么要先声明</h3>
+
+<div class="code-card">
+  <div class="code-head">
+    <span class="dot d1"></span><span class="dot d2"></span><span class="dot d3"></span>
+    <span class="file">把定义写在后面会怎样？</span>
+    <span class="lang">C++</span>
+  </div>
+  <pre><code>// ✘ 这样写在 C++ 里会报错
+int main() {
+    cout &lt;&lt; add(3, 5);      // 编译器这时还不知道 add 是什么
+    return 0;
+}
+
+int add(int a, int b) {     // 定义在后面
+    return a + b;
+}</code></pre>
+  <div class="out"><b>原因</b>　<b>C++ 是"从上往下读"的</b>——读到调用那一行时，
+  编译器还没见过 <code>add</code>，<strong>不知道它有几个参数、返回什么类型</strong></div>
+</div>
+
+<div class="code-card">
+  <div class="code-head">
+    <span class="dot d1"></span><span class="dot d2"></span><span class="dot d3"></span>
+    <span class="file">加上一行声明就好了</span>
+    <span class="lang">C++</span>
+  </div>
+  <pre><code>int add(int a, int b);      // ★ 函数声明（也叫"函数原型"）
+                            //    只有分号，没有函数体
+
+int main() {
+    cout &lt;&lt; add(3, 5) &lt;&lt; endl;   // 8
+    return 0;
+}
+
+int add(int a, int b) {     // 定义写在后面
+    return a + b;
+}</code></pre>
+  <div class="out"><b>声明和定义的区别</b>　
+  <b>声明</b>——"有这么个函数，长这样"，<strong>末尾是分号</strong>；<br>
+  <b>定义</b>——"它具体做什么"，<strong>末尾是大括号</strong></div>
+</div>
+
+<h3 id="s5-2">5.2 声明与定义分离</h3>
+
+<div class="box remember">
+  <span class="lb">一句话回答那道判断题：</span>
+  一个函数必须在调用之前<strong>既声明又定义</strong>——<b>这句话是错的。</b><br>
+  <b>准确的说法是：函数必须在调用之前"被声明"。</b><br>
+  而"定义"可以写在后面，<strong>甚至可以写在另一个文件里（那是更大的工程才需要的）。</strong><br>
+  <b>当然，"声明 + 定义"合在一起写（也就是把完整定义放前面）也满足"先声明"，
+  所以那样写当然也对——但不能说"必须两者都有"。</b>
+</div>
+
+<div class="box tip">
+  <span class="lb">为什么工程里喜欢"声明放前面、定义放后面"？</span>
+  因为这样<strong>函数之间可以互相调用，而不用操心谁先谁后</strong>。<br>
+  <b>把所有函数声明集中写在文件开头，就等于给编译器一张"目录"：
+  之后不管谁调用谁，编译器都已经认识它们了。</b><br>
+  <strong>这也是大型项目里 .h 头文件存在的原因。</strong>
+</div>
+
+<!-- ============ 6 ============ -->
+<div class="section-header" id="s6">
+  <h2>6　代码实战</h2>
+  <div class="en-title">Level Practice</div>
+</div>
+
+<div class="level-card">
+  <div class="lc-head"><span class="n">关卡</span><h4>Killdeer 操作</h4><span class="go">进入关卡 →</span></div>
+  <div class="lc-body">
+    <div class="story">
+      <b>故事：</b>这一关的动作要重复很多遍，<b>每一步都一模一样。</b><br>
+      奥卡把石臂往墙上一指：<strong>与其抄十遍，不如造一台机器。</strong><br>
+      你写下一个函数，起名叫 <code class="inline">gotoAndGet</code>——
+      <b>参数是坐标，动作是走过去并把东西捡起来。</b><br>
+      之后你只要喊名字就行了。他说，<strong>这就是函数最大的用处：让主程序变得清爽。</strong>
+    </div>
+    <p><strong>思路：</strong>把"去某个坐标、把附近的东西捡起来"<strong>封进一个函数</strong>，
+    主程序里就只剩下<strong>一句句"喊名字"</strong>。</p><figure class="pic">
+  <img src="../assets/stages/py-L4-04-stage1_killdeer.webp" alt="Killdeer 操作 关卡截图"
+       onerror="this.closest('.pic').classList.add('missing')">
+  <div class="ph">
+    <div class="fn">assets/stages/py-L4-04-stage1_killdeer.webp</div>
+    <div class="ds">【截图位】Killdeer 操作关卡：坐标点位与行动轨迹清晰，代码编辑区可见自定义函数与调用语句。</div>
+  </div>
+  <figcaption>关卡实况：Killdeer 操作</figcaption>
+</figure>
+    <div class="code-card">
+      <div class="code-head">
+        <span class="dot d1"></span><span class="dot d2"></span><span class="dot d3"></span>
+        <span class="file">把重复动作封成函数</span>
+        <span class="lang">C++</span>
+      </div>
+      <pre><code>#include &lt;iostream&gt;
+using namespace std;
+
+// 去 (x, y) 这个位置，并把附近的东西捡起来
+void gotoAndGet(int x, int y) {
+    hero.moveXY(x, y);
+
+    int item = hero.findNearestItem();
+    if (item) {
+        hero.moveXY(item.pos.x, item.pos.y);
+    }
+}
+
+int main() {
+    // 主程序只剩下"喊名字"，一目了然
+    gotoAndGet(20, 35);
+    gotoAndGet(60, 35);
+    gotoAndGet(60, 10);
+    gotoAndGet(20, 10);
+
+    return 0;
+}</code></pre>
+      <div class="out"><b>对比一下</b>　
+  如果不用函数，主程序里就要<strong>把"移动 + 找东西 + 再移动"抄四遍</strong>——<br>
+  <b>现在只剩四行，一眼就能看出"去了哪四个点"</b></div>
+    </div>
+    <div class="box info">
+      <span class="lb">和本单元的关系：</span>
+      <strong>函数最重要的价值不是"少打字"，而是"让主程序能被人一眼读懂"。</strong><br>
+      <b>看这一行 <code>gotoAndGet(20, 35);</code>，你立刻知道它在干什么；
+      而如果换成五行的具体动作，你就得逐行去读。</b><br>
+      <strong>这就是"模块化"：把细节收进机器里，把意图留在外面。</strong>
+    </div>
+    <a class="btn-go" href="https://codecombat.cn/" target="_blank" rel="noopener">去扣哒世界闯这一关 →</a>
+  </div>
+</div>
+
+<figure class="pic">
+  <img src="../assets/illustrations/py-L4-04-02_define_call_return.webp" alt="定义、调用、返回"
+       onerror="this.closest('.pic').classList.add('missing')">
+  <div class="ph">
+    <div class="fn">assets/illustrations/py-L4-04-02_define_call_return.webp</div>
+    <div class="ds">【配图位】车间里同一台机器的三个阶段被画在同一画面中：最左边一面墙上挂着机器蓝图（定义）；中间一名石臂守卫拉下机器的摇柄、料正被送进进料口（调用）；最右边一只托盘里落下刚做好的成品（返回）；三个阶段之间用弧形箭头连成一条路径。</div>
+  </div>
+  <figcaption>图 4：定义、调用、返回——造机器、用机器、取成品</figcaption>
+</figure>
+
+<figure class="pic">
+  <img src="../assets/illustrations/py-L4-04-03_param_pipe.webp" alt="参数就像输送管"
+       onerror="this.closest('.pic').classList.add('missing')">
+  <div class="ph">
+    <div class="fn">assets/illustrations/py-L4-04-03_param_pipe.webp</div>
+    <div class="ds">【配图位】车间里一台封闭的机器，机器外壳上画着两个接口：左侧一根玻璃管道把外面的发光材料送进机器内部（参数传入）；右侧一根管道把加工好的成品送出来落进托盘（返回值）；机器内部结构被半透明处理，能看到齿轮在转；一名石臂守卫站在管道外面观察。</div>
+  </div>
+  <figcaption>图 5：一根进料管、一根出料管——参数与返回值</figcaption>
+</figure>
+
+
+
+<!-- ============ 7 ============ -->
+<div class="section-header" id="s7">
+  <h2>7　常见陷阱</h2>
+  <div class="en-title">Common Pitfalls</div>
+</div>
+
+<div class="cast duck">
+  <img class="ava" src="../assets/ducks/duck_zana.webp" alt="扣哒鸭" onerror="this.style.display='none'">
+  <div class="bubble">
+    <div class="who">扣哒鸭 · 调试官</div>
+    函数的错，一半是"忘了调用"，一半是"return 和 cout 分不清"。四条。
+  </div>
+</div>
+
+<div class="pit">
+  <div class="pt">
+    <div class="x">1</div>
+    <div class="t"><b>只写了函数定义，忘了调用。</b></div>
+  </div>
+  <div class="duck">
+    <img src="../assets/ducks/duck_naria.webp" alt="扣哒鸭" onerror="this.style.display='none'">
+    <div class="dt"><b>扣哒鸭：</b>函数<strong>定义完只是"把机器造好放在那儿"</strong>，
+    它不会自己启动。<br>
+    <code>int main()</code> 里必须<strong>喊一声它的名字</strong>，函数体才会执行。</div>
+  </div>
+  <div class="fix"><b>正确做法：</b>定义完别忘了在需要的地方调用</div>
+</div>
+
+<div class="pit">
+  <div class="pt">
+    <div class="x">2</div>
+    <div class="t"><b>把 <code class="inline">cout</code> 当成了返回值。</b></div>
+  </div>
+  <div class="duck">
+    <img src="../assets/ducks/duck_hattori.webp" alt="扣哒鸭" onerror="this.style.display='none'">
+    <div class="dt"><b>扣哒鸭：</b><code>cout</code> 只是<strong>把内容显示在屏幕上</strong>，
+    它<strong>没有把任何东西交给调用者</strong>。<br>
+    想让调用处拿到值，必须写 <code>return</code>。</div>
+  </div>
+  <div class="fix"><b>分清：</b>要显示用 <code class="inline">cout</code>，要交回值用 <code class="inline">return</code></div>
+</div>
+
+<div class="pit">
+  <div class="pt">
+    <div class="x">3</div>
+    <div class="t"><b>有返回值的函数忘了 <code class="inline">return</code>。</b></div>
+  </div>
+  <div class="duck">
+    <img src="../assets/ducks/duck_senick.webp" alt="扣哒鸭" onerror="this.style.display='none'">
+    <div class="dt"><b>扣哒鸭：</b>返回类型写的是 <code>int</code>，
+    函数体里却一个 <code>return</code> 都没有——<br>
+    <strong>调用处会拿到一个"不确定的值"，结果完全不可预测。</strong><br>
+    <b>更麻烦的是，很多编译器不报错。</b></div>
+  </div>
+  <div class="fix"><b>检查：</b>返回类型不是 <code class="inline">void</code>，就必须有 <code class="inline">return</code></div>
+</div>
+
+<div class="pit">
+  <div class="pt">
+    <div class="x">4</div>
+    <div class="t"><b>在 <code class="inline">void</code> 函数里用返回值。</b></div>
+  </div>
+  <div class="duck">
+    <img src="../assets/ducks/duck_illia.webp" alt="扣哒鸭" onerror="this.style.display='none'">
+    <div class="dt"><b>扣哒鸭：</b><code>void</code> 的意思是"什么都不交回"。<br>
+    所以要写成 <code>f();</code>，<strong>不能写 <code>int x = f();</code></strong>——编译器会直接报错。<br>
+    <b>另外，参数个数也必须对上，多一个少一个都不行。</b></div>
+  </div>
+  <div class="fix"><b>记牢：</b><code class="inline">void</code> 函数不能取值；参数个数要匹配</div>
+</div>
+
+<!-- ============ 8 ============ -->
+<div class="section-header" id="s8">
+  <h2>8　题目练习</h2>
+  <div class="en-title">Practice</div>
+</div>
+
+<p>前 2 题改编自 C++ 四级真题，其余为原创练习题。</p>
+
+<div class="exam">
+  <div class="eh"><span class="src">改编自 2026 年 6 月 · C++ 四级 · 判断题 第 2 题</span><span class="tp">判断题</span></div>
+  <div class="eb">
+    <div class="q">一个函数必须在被调用之前<strong>既声明又定义</strong>。（　　）</div>
+    <details><summary>查看答案与详解</summary>
+      <div class="ans"><b>答案：错误（×）</b>。C++ 的要求是：<strong>函数在调用之前必须"被声明"</strong>，
+      但"定义"可以放在后面。<br>
+      <b>声明</b>只要一行，末尾是分号：<code class="inline">int add(int a, int b);</code><br>
+      <b>定义</b>才带函数体，末尾是大括号。<br>
+      <b>正确写法：</b>把声明放在文件开头，定义放在后面（或者放别的文件里）。<br>
+      <b>为什么这句话容易被判错？</b>因为很多人习惯"把完整定义写在 main 前面"，
+      那确实同时满足了声明和定义——<strong>但那是"也行"，不是"必须"。</strong>
+      题目里"必须既……又……"这种绝对说法，往往是错的。<br>
+      <span class="tagline">对应小节</span>5.1 为什么要先声明。</div>
+    </details>
+  </div>
+</div>
+
+<div class="exam">
+  <div class="eh"><span class="src">改编自 2026 年 9 月 · C++ 四级 · 判断题 第 4 题</span><span class="tp">判断题</span></div>
+  <div class="eb">
+    <div class="q">执行下面程序后，输出为 <code class="inline">20</code>。（　　）</div>
+    <pre>void change(int x) { x = 20; }
+int main() {
+    int x = 10;
+    change(x);
+    cout &lt;&lt; x;
+    return 0;
+}</pre>
+    <details><summary>查看答案与详解</summary>
+      <div class="ans"><b>答案：错误（×）</b>。输出是 <b>10</b>。<br>
+      <b>原因：C++ 默认的参数传递是"值传递"</b>——调用 <code class="inline">change(x)</code> 时，
+      把外面 x 的值<strong>复制一份</strong>给了形参。<br>
+      <strong>函数里的 x 是"另一个变量"，改它不影响外面那个。</strong><br>
+      <b>函数一返回，那个副本就销毁了，外面的 x 从头到尾都是 10。</b><br>
+      <b>想让函数真的改到外面的变量</b>，得传<b>指针</b>：
+      <code class="inline">void change(int *p) { *p = 20; }</code>，
+      调用时写 <code class="inline">change(&amp;x);</code>。<br>
+      <span class="tagline">对应小节</span>3.1 形参与实参。</div>
+    </details>
+  </div>
+</div>
+
+<div class="exam">
+  <div class="eh"><span class="src ori">原创练习题</span><span class="tp">单选题</span></div>
+  <div class="eb">
+    <div class="q">关于返回值和输出，下面说法<strong>正确</strong>的是（　　）。</div>
+    <div class="opt">
+      <i>A.</i>函数里只要用了 <code class="inline">cout</code>，调用处就能拿到那个值<br>
+      <i>B.</i><code class="inline">void</code> 类型的函数不能有返回值，调用时也不能把它当成一个值来用<br>
+      <i>C.</i>一个函数可以有多个 <code class="inline">return</code>，每次返回多个值<br>
+      <i>D.</i>函数里写不写 <code class="inline">return</code> 都一样，编译器会自动返回最后一个变量
+    </div>
+    <details><summary>查看答案与详解</summary>
+      <div class="ans"><b>答案：B</b>。<code class="inline">void</code> 的含义就是"不交回任何值"，
+      所以调用它只能写成 <code class="inline">f();</code>，
+      <strong>不能写 <code class="inline">int x = f();</code></strong>。<br>
+      <b>A 错：</b><code class="inline">cout</code> 只负责"显示"，<strong>不会把值交给调用者</strong>。
+      要交回值必须用 <code class="inline">return</code>。<br>
+      <b>C 错：</b>一个函数里确实可以出现多个 <code class="inline">return</code>（在不同分支里），
+      但<strong>每次执行只会走其中一个，而且一次只能交回一个值</strong>。<br>
+      <b>D 错：</b>返回类型不是 <code class="inline">void</code> 时<strong>必须有 <code class="inline">return</code></strong>，
+      否则调用处会拿到一个不确定的值。<br>
+      <span class="tagline">对应小节</span>4.2 return 与 void。</div>
+    </details>
+  </div>
+</div>
+
+<div class="exam">
+  <div class="eh"><span class="src ori">原创练习题</span><span class="tp">单选题</span></div>
+  <div class="eb">
+    <div class="q">执行下面的代码，输出是（　　）。</div>
+    <pre>int f(int n) {
+    if (n &lt;= 0) return 0;
+    return n + f(n - 1);
+}
+cout &lt;&lt; f(3) &lt;&lt; endl;</pre>
+    <div class="opt"><i>A.</i><code class="inline">3</code>　　<i>B.</i><code class="inline">6</code>　　<i>C.</i><code class="inline">9</code>　　<i>D.</i>死循环</div>
+    <details><summary>查看答案与详解</summary>
+      <div class="ans"><b>答案：B</b>。这个函数"自己调用自己"，把问题一步步缩小：<br>
+      <code class="inline">f(3) = 3 + f(2)</code><br>
+      <code class="inline">f(2) = 2 + f(1)</code><br>
+      <code class="inline">f(1) = 1 + f(0)</code><br>
+      <code class="inline">f(0) = 0</code>　← <strong>这里触发了"出口"，不再往下递归</strong><br>
+      倒着加回来：0 → 1 → 3 → <b>6</b>。<br>
+      <b>关键在这个"出口"：</b><code class="inline">if (n &lt;= 0) return 0;</code>——
+      <strong>没有它，函数就会无限地自己调自己（D 项）。</strong><br>
+      <b>顺便注意：</b>函数里出现了两个 <code class="inline">return</code>，
+      但<strong>每次执行只会走其中一个</strong>——这正好印证了上一题的 C 项。<br>
+      <span class="tagline">对应小节</span>4.1 有返回值的函数（这也是下一单元"递推与递归"的起点）。</div>
+    </details>
+  </div>
+</div>
+
+<div class="exam">
+  <div class="eh"><span class="src ori">原创练习题</span><span class="tp">判断题</span></div>
+  <div class="eb">
+    <div class="q">在 C++ 中，函数定义时参数列表里每个参数都必须<strong>单独写明类型</strong>，
+    写成 <code class="inline">int add(int a, b)</code> 是不允许的。（　　）</div>
+    <details><summary>查看答案与详解</summary>
+      <div class="ans"><b>答案：正确（√）</b>。函数定义（和声明）的参数列表里，
+      <strong>每个参数都要自己带类型</strong>。<br>
+      <b>正确写法：</b><code class="inline">int add(int a, int b)</code><br>
+      <b>错误写法：</b><code class="inline">int add(int a, b)</code> ——
+      <strong>编译器不认识 b 是什么类型，直接报错。</strong><br>
+      <b>对比一下变量的定义：</b><code class="inline">int a, b;</code> <strong>是合法的</strong>，
+      因为类型只写一次就够。<br>
+      <strong>但函数参数列表里不行——这是这两处语法的一个显著差别，很容易踩。</strong><br>
+      <span class="tagline">对应小节</span>3.2 多个参数与默认值。</div>
+    </details>
+  </div>
+</div>
+
+<div class="exam">
+  <div class="eh"><span class="src ori">原创练习题</span><span class="tp">编程题</span></div>
+  <div class="eb">
+    <div class="q">题目要求：写一个函数 <code class="inline">bool isPrime(int n)</code>
+    判断 n 是否为质数；在 <code class="inline">main</code> 里读入一个整数并输出判断结果
+    （是质数输出 <code class="inline">yes</code>，否则输出 <code class="inline">no</code>）。</div>
+    <details><summary>查看参考答案与要点</summary>
+      <div class="ans">
+<pre style="margin:0;background:#131a26;color:#c8d3e0;border-radius:10px;padding:14px 16px">#include &lt;iostream&gt;
+using namespace std;
+
+bool isPrime(int n) {
+    if (n &lt; 2) return false;            // 小于 2 的都不是质数
+    for (int i = 2; i * i &lt;= n; i++) {  // 只试到 √n
+        if (n % i == 0) return false;   // 找到一个因数，立刻结束
+    }
+    return true;                        // 全试完都没找到 → 是质数
+}
+
+int main() {
+    int n;
+    cin &gt;&gt; n;
+    cout &lt;&lt; (isPrime(n) ? "yes" : "no") &lt;&lt; endl;
+    return 0;
+}</pre>
+      <p style="margin-top:12px"><b>输入 17 输出：</b>yes；<b>输入 1 输出：</b>no；<b>输入 25 输出：</b>no<br>
+      <b>要点：</b><br>
+      ① <strong>返回类型用 <code class="inline">bool</code></strong>，因为答案只有"是 / 不是"两种；
+      调用处就能直接写 <code class="inline">if (isPrime(n))</code>；<br>
+      ② <strong>"提前 return"是很好的写法</strong>——一旦确定不是质数就直接返回，
+      <strong>不用再白跑后面的循环</strong>；<br>
+      ③ 循环条件写 <code class="inline">i * i &lt;= n</code> 而不是 <code class="inline">i &lt;= n</code>——
+      <strong>因为大于 √n 的因数一定有个小于 √n 的同伴，试到 √n 就够了</strong>；<br>
+      ④ <code class="inline">n &lt; 2</code> 的边界必须单独处理——
+      <strong>0 和 1 都不是质数</strong>；<br>
+      ⑤ 主程序里用三目运算符一行搞定输出。<br>
+      <span class="tagline">对应小节</span>4.1 有返回值的函数。</p>
+      </div>
+    </details>
+  </div>
+</div>
+
+<!-- ============ 9 ============ -->
+<div class="section-header" id="s9">
+  <h2>9　本单元小结</h2>
+  <div class="en-title">Unit Summary</div>
+</div>
+
+<div class="cast okar">
+  <img class="ava" src="../assets/avatars/okar.webp" alt="奥卡" onerror="this.style.display='none'">
+  <div class="bubble">
+    <div class="who">奥卡 · 石臂守卫</div>
+    四句话记住函数：<br>
+    <strong>一、函数把一段代码打包成"机器"——写一次、用多次、改一处。</strong><br>
+    <strong>二、定义写"返回类型 名字(参数列表) { 函数体 }"；<strong>只定义不调用，它不会执行。</strong></strong><br>
+    <strong>三、形参是接货的筐，实参是真正送进去的货；值传递时改形参不影响实参。</strong><br>
+    <strong>四、<code>return</code> 把值交给程序，<code>cout</code> 只是显示给人看——这两者绝不能混。</strong><br>
+    机器造好了。下一站我们钻进输送管里，<b>看看参数到底是"怎么被送进去"的。</b>
+  </div>
+</div>
+
+<div class="summary">
+  <h3>你在模块化车间收获了什么</h3>
+  <ul>
+    <li><strong>函数</strong>——把一段代码打包成可重复使用的"机器"，<strong>写一次、用多次、改一处</strong>。</li>
+    <li><strong>三个好处</strong>——少写、好改、<strong>让主程序一眼读懂</strong>。</li>
+    <li><strong>定义的四个部分</strong>——返回类型、函数名、参数列表、函数体。</li>
+    <li><strong>不调用不执行</strong>——只定义函数，函数体里的代码一行都不会跑。</li>
+    <li><strong>形参 vs 实参</strong>——定义时写的是形参，调用时给的是实参；<strong>值传递是复制</strong>。</li>
+    <li><strong>参数规则</strong>——每个参数都要单独写类型；<strong>个数必须匹配</strong>；默认参数放最右边。</li>
+    <li><strong><code class="inline">return</code> 的两个作用</strong>——交回一个值；<strong>立刻结束函数</strong>。</li>
+    <li><strong><code class="inline">return</code> vs <code class="inline">cout</code></strong>——<strong>return 是"递过去"（程序能接着用），cout 是"喊出来"（只显示）</strong>。</li>
+    <li><strong><code class="inline">void</code></strong>——什么都不交回；<strong>不能当作值来使用</strong>。</li>
+    <li><strong>函数声明</strong>——<strong>调用之前只需"声明"</strong>，不必"既声明又定义"。</li>
+    <li><strong>声明与定义的区别</strong>——声明的末尾是<strong>分号</strong>，定义的末尾是<strong>大括号</strong>。</li>
+    <li><strong>递归的雏形</strong>——函数可以调用自己，但<strong>必须有出口</strong>。</li>
+  </ul>
+</div>
+
+<div class="pager">
+  <a href="cpp-4-03.html"><div class="k">← 上一单元</div><div class="v">零件装配台 · 结构体</div></a>
+  <a href="../index.html" target="_top" class="back"><div class="k">返回</div><div class="v">考纲之路 · 总目录</div></a>
+  <a href="cpp-4-05.html"><div class="k">下一单元 →</div><div class="v">参数输送管 · 参数传递与变量作用域</div></a>
+</div>
+
+<div class="cta">
+  <h3>下一站：参数输送管</h3>
+  <p>车间之间连着密密的<b>玻璃输送管</b>——材料从外面送进封闭的内室，
+  <b>可外面的东西和内室里的东西，并不是谁都能看见谁。</b><br>
+  下一单元我们学<b>参数传递与变量作用域</b>：<b>一个变量，到底在哪些地方"看得见"。</b></p>
+  <a class="btn-go" href="https://codecombat.cn/" target="_blank" rel="noopener">加入扣哒世界，把这条考纲之路走一遍 →</a>
+</div>
+</div><!-- /container -->
+</div><!-- /page -->
+
+<script>
+const KEYWORDS = new Set([
+  "int", "long", "short", "unsigned", "signed", "float", "double", "char", "bool", "void",
+  "const", "if", "else", "for", "while", "do", "switch", "case", "default", "break",
+  "continue", "return", "goto", "struct", "class", "union", "enum", "using", "namespace",
+  "std", "main", "true", "false", "cin", "cout", "cerr", "endl", "string", "sizeof",
+  "include", "define", "new", "delete", "public", "private", "static", "inline", "nullptr"
+]);
+
+function esc(s){ return s.replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;'); }
+
+function highlight(src){
+  let out = '', i = 0;
+  const n = src.length;
+  while (i < n){
+    const c = src[i];
+    /* 预处理指令：#include / #define，整行只在行首生效 */
+    if (c === '#' && (i === 0 || src[i-1] === '\n')){
+      let j = i;
+      while (j < n && /[A-Za-z]/.test(src[j])) j++;
+      out += '<span class="kw">' + esc(src.slice(i, j)) + '</span>';
+      let k = src.indexOf('\n', j); if (k < 0) k = n;
+      if (j < k) out += '<span class="st">' + esc(src.slice(j, k)) + '</span>';
+      i = k; continue;
+    }
+    /* 行注释 // */
+    if (c === '/' && src[i+1] === '/'){
+      let j = src.indexOf('\n', i); if (j < 0) j = n;
+      out += '<span class="cm">' + esc(src.slice(i, j)) + '</span>';
+      i = j; continue;
+    }
+    /* 块注释 */
+    if (c === '/' && src[i+1] === '*'){
+      let j = src.indexOf('*/', i + 2); j = j < 0 ? n : j + 2;
+      out += '<span class="cm">' + esc(src.slice(i, j)) + '</span>';
+      i = j; continue;
+    }
+    /* 字符串与字符字面量 */
+    if (c === '"' || c === "'"){
+      let j = i + 1;
+      while (j < n && src[j] !== c){ if (src[j] === '\\') j++; j++; }
+      j = Math.min(j + 1, n);
+      out += '<span class="st">' + esc(src.slice(i, j)) + '</span>';
+      i = j; continue;
+    }
+    /* 数字 */
+    if (/[0-9]/.test(c)){
+      let j = i;
+      while (j < n && /[0-9.]/.test(src[j])) j++;
+      out += '<span class="nu">' + esc(src.slice(i, j)) + '</span>';
+      i = j; continue;
+    }
+    /* 标识符：关键字 / 函数名 / 普通名字 */
+    if (/[A-Za-z_]/.test(c)){
+      let j = i;
+      while (j < n && /[A-Za-z0-9_]/.test(src[j])) j++;
+      const w = src.slice(i, j);
+      if (KEYWORDS.has(w)) out += '<span class="kw">' + esc(w) + '</span>';
+      else if (src[j] === '(') out += '<span class="fn">' + esc(w) + '</span>';
+      else out += esc(w);
+      i = j; continue;
+    }
+    out += esc(c); i++;
+  }
+  return out;
+}
+
+document.querySelectorAll('.code-card pre code').forEach(block => {
+  block.innerHTML = highlight(block.textContent);
+});
+
+if (location.search.indexOf('expand') >= 0) {
+  document.querySelectorAll('details').forEach(d => d.open = true);
+}
+document.querySelectorAll('.sidebar-nav a').forEach(a => {
+  a.addEventListener('click', () => {
+    if (window.innerWidth <= 900) document.querySelector('.sidebar-nav').classList.remove('active');
+  });
+});
+</script>
+</body>
+</html>

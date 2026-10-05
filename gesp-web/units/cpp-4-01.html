@@ -1,0 +1,1086 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="copyright" content="CodeCombat Inc. codecombat.cn">
+<title>传送带枢纽 · 指针与复合数据类型 | 扣哒考级 · GESP C++ 四级</title>
+<style>
+  :root{
+    --primary:#2563eb; --primary-light:#4f8ff0; --primary-lighter:#eaf1fe; --primary-dark:#1b47a8;
+    --brand:#ff6b35; --brand-dark:#e8541f; --brand-soft:#fff3ec;
+    --night:#131c2b; --night-2:#1e2a3a; --gold:#f5b301;
+    --text:#242e3d; --dim:#68788f; --dim2:#93a2b6;
+    --bg:#ffffff; --bg-soft:#f7f9fd; --line:#e2e9f4; --sidebar:274px;
+    --code-bg:#131a26; --code-tx:#c8d3e0;
+    --code-kw:#c678dd; --code-st:#98c379; --code-nu:#d19a66; --code-cm:#5f7488; --code-fn:#e5c07b;
+  }
+  *{margin:0;padding:0;box-sizing:border-box}
+  html{scroll-behavior:smooth}
+  body{font-family:"PingFang SC","Microsoft YaHei","Segoe UI",-apple-system,sans-serif;line-height:1.9;color:var(--text);background:var(--bg);font-size:15.5px}
+  .sidebar-nav{position:fixed;top:0;left:0;width:var(--sidebar);height:100vh;overflow-y:auto;background:linear-gradient(180deg,#0c1626,#14243c);padding:14px 0 40px;z-index:100;border-right:3px solid var(--brand);transition:transform .3s ease}
+  .sidebar-nav::-webkit-scrollbar{width:5px}
+  .sidebar-nav::-webkit-scrollbar-thumb{background:var(--brand);border-radius:4px}
+  .sb-brand{display:flex;align-items:center;gap:10px;padding:10px 13px 12px;border-bottom:1px solid #233752;margin-bottom:8px}
+  .sidebar-nav a.sb-logo{display:flex;align-items:center;justify-content:center;flex-shrink:0;padding:0;border-left:none;transition:.2s}
+  .sb-logo:hover{transform:scale(1.08)}
+  .sb-logo img{height:34px;width:34px;display:block;object-fit:contain;border-radius:8px}
+  .sb-brand b{color:#f2f6fa;font-size:14px;letter-spacing:.5px;display:block;line-height:1.4}
+  .sb-brand span{color:#7f95ab;font-size:11.5px;display:block;line-height:1.4}
+  .nav-title{color:#ffb894;font-size:12px;font-weight:800;padding:10px 18px 6px;letter-spacing:1.2px}
+  .sidebar-nav a{display:block;color:#c3d0dc;text-decoration:none;padding:6px 18px;font-size:12.5px;line-height:1.55;border-left:3px solid transparent;transition:.18s}
+  .sidebar-nav a:hover{color:#fff;background:rgba(255,107,53,.16);border-left-color:var(--brand)}
+  .sidebar-nav a.nav-section{color:#ffb894;font-weight:700;font-size:13px;margin-top:11px;padding-top:10px;border-top:1px solid #233752}
+  .sidebar-nav a.nav-section:first-of-type{border-top:none;margin-top:0;padding-top:6px}
+  .sidebar-nav a.nav-sub{padding-left:30px;color:#93a8bc;font-size:12px}
+  .sidebar-nav a.nav-sub:hover{color:#fff}
+  .sb-back{margin:16px 14px 0;display:block;text-align:center;padding:9px;border-radius:9px;background:#1e304a;color:#a9c0d6 !important;font-size:12px;font-weight:700;border-left:none !important}
+  .sb-back:hover{background:var(--brand) !important;color:#fff !important}
+  .nav-toggle{display:none;position:fixed;top:14px;left:14px;z-index:120;background:var(--brand);color:#fff;border:none;border-radius:9px;padding:9px 13px;font-size:15px;cursor:pointer;box-shadow:0 4px 14px rgba(0,0,0,.25)}
+  .page{margin-left:var(--sidebar)}
+  .hero{position:relative;overflow:hidden;padding:44px 52px;color:#fff;background:linear-gradient(125deg,#0a1220 0%,#16294a 46%,#8a3a16 132%)}
+  .hero::after{content:"";position:absolute;right:-90px;top:-110px;width:400px;height:400px;border-radius:50%;background:radial-gradient(circle,rgba(245,179,1,.30),transparent 68%)}
+  .hero-top{display:flex;gap:36px;align-items:center;position:relative;z-index:2}
+  .hero-txt{flex:1;min-width:0}
+  .hero .crumb{font-size:11.5px;color:#ffb894;letter-spacing:1.5px;font-weight:700;margin-bottom:14px}
+  .hero h1{font-size:31px;font-weight:800;line-height:1.3;letter-spacing:.6px;margin-bottom:8px}
+  .hero h1 .sub{display:block;font-size:18px;font-weight:700;color:#ffd2b3;margin-top:6px;letter-spacing:.3px}
+  .hero .en{font-size:13px;color:#9db4c8;font-style:italic;margin-bottom:18px}
+  .hero .tags{display:flex;flex-wrap:wrap;gap:8px}
+  .tag{font-size:11.5px;padding:4px 12px;border-radius:20px;background:rgba(255,255,255,.12);border:1px solid rgba(255,255,255,.22);color:#e8f0f6;font-weight:600}
+  .tag.hot{background:rgba(255,107,53,.92);border-color:transparent;color:#fff}
+  .hero-card{flex-shrink:0;width:200px;text-align:center}
+  .hero-card .ava{width:148px;height:148px;border-radius:50%;object-fit:cover;object-position:top center;border:4px solid rgba(255,180,140,.6);box-shadow:0 14px 34px rgba(0,0,0,.45);background:#24344a}
+  .hero-card .nm{font-size:15px;font-weight:800;color:#fff;margin-top:10px}
+  .hero-card .ti{font-size:11.5px;color:#ffb894;margin-top:2px}
+  .container{max-width:1080px;margin:0 auto;padding:38px 52px 70px}
+  .lead{font-size:15.5px;line-height:2.05;color:#333f52;background:linear-gradient(120deg,#fff8f3,#f7fbf8);border-left:5px solid var(--brand);border-radius:0 14px 14px 0;padding:22px 26px;margin-bottom:32px}
+  .lead b{color:var(--brand-dark)}
+  .cast{display:flex;gap:16px;align-items:flex-start;border-radius:16px;padding:18px 22px;margin:24px 0}
+  .cast .ava{width:72px;height:72px;border-radius:50%;object-fit:cover;object-position:top center;flex-shrink:0;background:#e8eef5}
+  .cast .bubble{position:relative;font-size:14px;line-height:1.95;padding-top:2px;flex:1}
+  .cast .who{font-size:12px;font-weight:800;margin-bottom:5px;letter-spacing:.5px}
+  .cast.anya{background:var(--brand-soft);border:1px solid #ffdcc9}
+  .cast.anya .who{color:var(--brand-dark)}
+  .cast.anya .bubble{color:#5c4636}
+  .cast.duck{background:#fff5f5;border:1px solid #fbd5d5}
+  .cast.duck .who{color:#b91c1c}
+  .cast.duck .bubble{color:#5c4141}
+  .cast.teacher{background:linear-gradient(120deg,#f4f7fb,#ffffff);border:1px solid #dbe4f0}
+  .cast.teacher .who{color:#1e293b}
+  .cast.teacher .bubble{color:#3c4a5a}
+  .cast.hero{background:#f2f7fd;border:1px solid #cfe0f5}
+  .cast.hero .who{color:#1b47a8}
+  .cast.hero .bubble{color:#3a4658}
+  .goal-grid{display:grid;grid-template-columns:1fr 1fr;gap:16px;margin-bottom:36px}
+  .goal{border:1px solid var(--line);border-radius:15px;padding:19px 21px;background:#fff;box-shadow:0 4px 16px rgba(31,122,68,.05)}
+  .goal h4{font-size:14px;font-weight:800;margin-bottom:11px;display:flex;align-items:center;gap:8px;color:var(--primary-dark)}
+  .goal h4 .ic{width:22px;height:22px;border-radius:7px;background:var(--primary-lighter);display:flex;align-items:center;justify-content:center;font-size:12px}
+  .goal ul{list-style:none}
+  .goal li{font-size:13.5px;color:#48576b;line-height:1.9;padding-left:18px;position:relative}
+  .goal li::before{content:"▸";position:absolute;left:0;color:var(--primary);font-weight:800}
+  .goal.syllabus li::before{content:"✓"}
+  .section-header{margin:52px 0 24px;padding-bottom:12px;border-bottom:3px solid var(--brand);display:flex;align-items:baseline;gap:14px;flex-wrap:wrap}
+  .section-header h2{font-size:22px;font-weight:800;color:var(--night);letter-spacing:.4px}
+  .section-header .en-title{font-size:12px;color:var(--dim2);font-style:italic}
+  h3{font-size:17.5px;font-weight:800;margin:34px 0 14px;color:var(--night);display:flex;align-items:center;gap:10px}
+  h3::before{content:"";width:5px;height:17px;border-radius:3px;background:var(--brand);flex-shrink:0}
+  h4{font-size:15px;font-weight:800;margin:24px 0 10px;color:#2b4260}
+  p{margin:12px 0;color:#3a4658;line-height:2}
+  strong{color:var(--primary-dark)}
+  code.inline{background:var(--primary-lighter);color:var(--primary-dark);padding:2px 7px;border-radius:6px;font-family:"SFMono-Regular",Consolas,Menlo,monospace;font-size:.9em;font-weight:600}
+  .figure{margin:24px 0;text-align:center}
+  .figure svg.diagram{max-width:100%;height:auto;background:#fff;border:1px solid var(--line);border-radius:14px;padding:10px}
+  .figure .caption{font-size:12.5px;color:var(--dim2);margin-top:9px}
+  .pic{margin:26px 0;text-align:center}
+  .pic img{max-width:100%;border-radius:16px;box-shadow:0 10px 28px rgba(30,60,45,.15);display:block;margin:0 auto}
+  .pic figcaption{font-size:12.5px;color:var(--dim2);margin-top:9px}
+  .pic .ph{display:none}
+  .pic.missing img{display:none}
+  .pic.missing .ph{display:flex;flex-direction:column;align-items:center;justify-content:center;gap:9px;border:2px dashed #c9d9e8;border-radius:16px;background:linear-gradient(135deg,#f8fbfe,#eef6ff);padding:40px 26px;color:#7a8fa8}
+  .pic.missing .ph .fn{font-family:Consolas,monospace;font-size:12.5px;color:#2563eb;font-weight:700;word-break:break-all}
+  .pic.missing .ph .ds{font-size:12.5px;line-height:1.8;max-width:560px}
+  .box{border-radius:13px;padding:16px 20px;margin:20px 0;font-size:14px;line-height:1.95}
+  .box .lb{font-weight:800;margin-right:6px}
+  .info{background:#eef6ff;border-left:5px solid #3b82f6;color:#274768}
+  .info .lb{color:#1d4ed8}
+  .tip{background:#fff9ec;border-left:5px solid #f59e0b;color:#6b4e13}
+  .tip .lb{color:#b45309}
+  .remember{background:var(--primary-lighter);border-left:5px solid var(--primary);color:#1d3a6b}
+  .remember .lb{color:var(--primary-dark)}
+  .warn{background:#fef2f2;border-left:5px solid #ef4444;color:#7f2b2b}
+  .warn .lb{color:#b91c1c}
+  .code-card{margin:20px 0;border-radius:14px;overflow:hidden;box-shadow:0 10px 28px rgba(20,40,28,.20)}
+  .code-head{display:flex;align-items:center;gap:9px;background:#1a2434;padding:9px 14px}
+  .code-head .dot{width:10px;height:10px;border-radius:50%}
+  .code-head .d1{background:#ff5f57}.code-head .d2{background:#febc2e}.code-head .d3{background:#28c840}
+  .code-head .file{color:#8fa6c0;font-size:11.5px;font-family:Consolas,monospace;margin-left:6px}
+  .code-head .lang{margin-left:auto;font-size:10.5px;font-weight:800;color:#0d141f;background:#4f8ff0;padding:2px 9px;border-radius:6px;letter-spacing:.4px}
+  .code-card pre{background:var(--code-bg);padding:18px 20px;overflow-x:auto;margin:0;font-family:"SFMono-Regular",Consolas,"Courier New",monospace;font-size:13.5px;line-height:1.85}
+  .code-card pre::-webkit-scrollbar{height:8px}
+  .code-card pre::-webkit-scrollbar-thumb{background:#31445c;border-radius:4px}
+  .code-card code{color:var(--code-tx);white-space:pre}
+  .kw{color:var(--code-kw);font-weight:600}
+  .st{color:var(--code-st)}
+  .nu{color:var(--code-nu)}
+  .cm{color:var(--code-cm);font-style:italic}
+  .fn{color:var(--code-fn)}
+  .out{background:#0f1621;color:#7fb3f5;font-family:Consolas,monospace;font-size:13px;padding:12px 20px;border-top:1px solid #22304a}
+  .out b{color:#c9d6cd;font-weight:600;font-size:11.5px;letter-spacing:1px}
+  .out.err{color:#fca5a5}
+  table.styled{width:100%;border-collapse:collapse;margin:20px 0;font-size:13.5px;border-radius:12px;overflow:hidden;box-shadow:0 4px 16px rgba(31,122,68,.07)}
+  table.styled thead{background:var(--brand)}
+  table.styled th{color:#fff;padding:11px 14px;text-align:left;font-weight:700;font-size:13px}
+  table.styled td{padding:10px 14px;border-bottom:1px solid var(--line);color:#445266;vertical-align:top}
+  table.styled tbody tr:nth-child(even){background:var(--bg-soft)}
+  table.styled tbody tr:last-child td{border-bottom:none}
+  .level-card{border:1px solid var(--line);border-radius:16px;overflow:hidden;margin:22px 0;box-shadow:0 6px 22px rgba(31,122,68,.07)}
+  .level-card .lc-head{background:linear-gradient(100deg,#17283a,#8a3a16);color:#fff;padding:15px 22px;display:flex;align-items:center;gap:12px;flex-wrap:wrap}
+  .level-card .lc-head .n{font-size:12px;font-weight:800;background:rgba(255,255,255,.2);padding:3px 10px;border-radius:20px}
+  .level-card .lc-head h4{margin:0;color:#fff;font-size:16px}
+  .level-card .lc-head .go{margin-left:auto;font-size:11.5px;color:#ffd2b3}
+  .level-card .lc-body{padding:20px 24px;background:#fff}
+  .level-card .story{background:#f9fbfd;border-left:4px solid #93c5fd;border-radius:0 10px 10px 0;padding:13px 18px;margin:0 0 16px;font-size:14px;line-height:1.95;color:#3f5163}
+  .level-card .story b{color:#1d4ed8}
+  .btn-go{display:inline-flex;align-items:center;gap:8px;background:linear-gradient(135deg,var(--brand),var(--brand-dark));color:#fff;text-decoration:none;font-weight:800;font-size:13.5px;padding:10px 22px;border-radius:11px;box-shadow:0 8px 20px rgba(255,107,53,.32);transition:.2s}
+  .btn-go:hover{transform:translateY(-2px);box-shadow:0 12px 26px rgba(255,107,53,.42)}
+  .pit{border:1px solid #f6dede;border-radius:14px;overflow:hidden;margin:16px 0;background:#fff}
+  .pit .pt{display:flex;gap:12px;padding:14px 18px;background:#fffafa;align-items:flex-start}
+  .pit .x{width:26px;height:26px;border-radius:9px;background:#fee;color:#dc2626;display:flex;align-items:center;justify-content:center;font-weight:800;flex-shrink:0;font-size:13px}
+  .pit .t{font-size:13.5px;line-height:1.9;color:#5c4a4a;flex:1}
+  .pit .t b{color:#b91c1c}
+  .pit .duck{display:flex;gap:12px;padding:13px 18px;background:#fff5f5;border-top:1px dashed #f3d0d0;align-items:flex-start}
+  .pit .duck img{width:48px;height:48px;object-fit:contain;flex-shrink:0;margin-top:2px}
+  .pit .duck .dt{font-size:13.5px;line-height:1.9;color:#7a3b3b}
+  .pit .duck .dt b{color:#b91c1c}
+  .pit .fix{padding:12px 18px;background:#f2f7fd;border-top:1px dashed #cfe0f5;font-size:13.5px;color:#1d3a6b}
+  .pit .fix b{color:var(--primary-dark)}
+  .exam{border:1px solid #dfe7f5;border-radius:15px;margin:16px 0;overflow:hidden;background:#fff;box-shadow:0 4px 16px rgba(38,62,120,.06)}
+  .exam .eh{display:flex;align-items:center;gap:10px;padding:11px 18px;background:linear-gradient(100deg,#eef4ff,#f7faff);border-bottom:1px solid #e3ebf8;flex-wrap:wrap}
+  .exam .eh .src{font-size:11px;font-weight:800;color:#fff;background:#2563eb;padding:2.5px 10px;border-radius:20px}
+  .exam .eh .src.ori{background:#8b5cf6}
+  .exam .eh .tp{font-size:11.5px;color:#5b7ba8;font-weight:700}
+  .exam .eb{padding:16px 20px}
+  .exam .q{font-weight:700;font-size:14px;color:#1e2a3e;line-height:1.9;margin-bottom:10px}
+  .exam .opt{font-size:13.5px;color:#48576b;line-height:2.05;padding-left:6px}
+  .exam .opt i{font-style:normal;font-weight:800;color:var(--primary-dark);margin-right:7px}
+  .exam pre{margin:12px 0;background:#1b2a21;border-radius:10px;padding:14px 16px;overflow-x:auto;font-family:Consolas,monospace;font-size:13px;line-height:1.8;color:var(--code-tx)}
+  .exam details{margin-top:10px;border-top:1px dashed var(--line);padding-top:10px}
+  .exam summary{cursor:pointer;font-size:12.5px;font-weight:800;color:#2563eb;outline:none;user-select:none}
+  .exam details .ans{font-size:13.5px;color:#3a4658;line-height:1.95;margin-top:9px;background:var(--bg-soft);padding:13px 16px;border-radius:10px}
+  .exam details .ans b{color:var(--primary-dark)}
+  .exam details .ans .tagline{display:inline-block;font-size:11px;background:#e0f2fe;color:#0e7490;padding:1.5px 8px;border-radius:6px;font-weight:700;margin-right:6px}
+  .summary{margin:40px 0 20px;border-radius:18px;padding:26px 30px;background:linear-gradient(130deg,#fff8f3,#ffffff);border:1px solid #ffe0cf}
+  .summary h3{margin-top:0}
+  .summary ul{list-style:none;margin-top:10px}
+  .summary li{font-size:14px;line-height:2;color:#3d4d66;padding-left:24px;position:relative}
+  .summary li::before{content:"◆";position:absolute;left:0;color:var(--brand);font-size:11px;top:6px}
+  .pager{display:flex;gap:14px;margin-top:30px;flex-wrap:wrap}
+  .pager a{flex:1;min-width:200px;text-decoration:none;border:1px solid var(--line);border-radius:14px;padding:16px 20px;background:#fff;transition:.2s;display:block}
+  .pager a:hover{border-color:var(--brand);box-shadow:0 10px 26px rgba(255,107,53,.14);transform:translateY(-2px)}
+  .pager a .k{font-size:11px;color:var(--dim2);font-weight:700;letter-spacing:1px}
+  .pager a .v{font-size:14px;font-weight:800;color:var(--night);margin-top:5px}
+  .pager a.back{background:var(--brand-soft);border-color:transparent;text-align:center}
+  .pager a.back .v{color:var(--brand-dark)}
+  .cta{margin-top:26px;border-radius:20px;padding:30px 34px;color:#fff;position:relative;overflow:hidden;background:linear-gradient(120deg,#16202f,#2b3a52 46%,#a8431c 132%)}
+  .cta::after{content:"";position:absolute;right:-70px;bottom:-90px;width:280px;height:280px;border-radius:50%;background:radial-gradient(circle,rgba(255,140,80,.45),transparent 68%)}
+  .cta h3{color:#fff;margin:0 0 10px;position:relative;z-index:2}
+  .cta h3::before{background:var(--brand)}
+  .cta p{color:#d8e0ef;font-size:13.5px;margin:0 0 18px;position:relative;z-index:2;max-width:640px}
+  .cta .btn-go{position:relative;z-index:2}
+  @media(max-width:900px){
+    .sidebar-nav{transform:translateX(-100%)}
+    .sidebar-nav.active{transform:translateX(0)}
+    .nav-toggle{display:block}
+    .page{margin-left:0}
+    .hero{padding:70px 22px 34px}
+    .hero-top{flex-direction:column-reverse;text-align:center}
+    .hero-card{width:auto}
+    .container{padding:26px 20px 60px}
+    .goal-grid{grid-template-columns:1fr}
+  }
+</style>
+</head>
+<body>
+
+<button class="nav-toggle" onclick="document.querySelector('.sidebar-nav').classList.toggle('active')">&#9776;</button>
+
+<nav class="sidebar-nav">
+  <div class="sb-brand">
+    <a class="sb-logo" href="https://codecombat.cn/" target="_blank" rel="noopener" title="访问 CodeCombat 扣哒世界官网">
+      <img src="../assets/logo.png" alt="CodeCombat 扣哒世界">
+    </a>
+    <div><b>传送带枢纽</b><span>齿轮高台 · C++ 四级 第 1 单元</span></div>
+  </div>
+  <div class="nav-title">本单元目录</div>
+
+  <a href="#s0" class="nav-section">0　单元导语与目标</a>
+  <a href="#s0-1" class="nav-sub">0.1 学习目标</a>
+  <a href="#s0-2" class="nav-sub">0.2 考纲对照</a>
+  <a href="#s1" class="nav-section">1　每个变量都有地址</a>
+  <a href="#s1-1" class="nav-sub">1.1 变量住在内存的哪一格</a>
+  <a href="#s1-2" class="nav-sub">1.2 用 &amp; 取出地址</a>
+  <a href="#s2" class="nav-section">2　指针是什么</a>
+  <a href="#s2-1" class="nav-sub">2.1 定义指针变量</a>
+  <a href="#s2-2" class="nav-sub">2.2 * 与 &amp; 两个符号</a>
+  <a href="#s3" class="nav-section">3　指针能干什么</a>
+  <a href="#s3-1" class="nav-sub">3.1 通过指针改变量</a>
+  <a href="#s3-2" class="nav-sub">3.2 指针与数组</a>
+  <a href="#s4" class="nav-section">4　复合数据类型</a>
+  <a href="#s4-1" class="nav-sub">4.1 简单类型与复合类型</a>
+  <a href="#s4-2" class="nav-sub">4.2 指针本身也是一种类型</a>
+  <a href="#s5" class="nav-section">5　代码实战</a>
+  <a href="#s6" class="nav-section">6　常见陷阱</a>
+  <a href="#s7" class="nav-section">7　题目练习</a>
+  <a href="#s8" class="nav-section">8　本单元小结</a>
+
+  <a href="../index.html" target="_top" class="sb-back">返回考纲之路</a>
+</nav>
+
+<div class="page">
+
+<div class="hero">
+  <div class="hero-top">
+    <div class="hero-txt">
+      <div class="crumb">扣哒考级 · GESP C++ 四级 · 第 1 单元　|　齿轮高台 GEARWATCH TERRACE</div>
+      <h1>传送带枢纽
+        <span class="sub">指针与复合数据类型</span>
+      </h1>
+      <div class="en">Pointers &amp; Composite Types</div>
+      <div class="tags">        <span class="tag hot">考纲 · 指针</span>
+        <span class="tag">地址与取地址符</span>
+        <span class="tag">解引用</span>
+        <span class="tag">指针与数组</span>
+        <span class="tag">复合数据类型</span></div>
+    </div>
+    <div class="hero-card">
+      <img class="ava" src="../assets/avatars/anya.webp" alt="安雅" onerror="this.style.background='#24344a';this.src='../assets/heroes/anya.webp'">
+      <div class="nm">安雅</div>
+      <div class="ti">红发队长 · 你的向导</div>
+    </div>
+  </div>
+</div>
+
+<div class="container">
+
+<div class="lead">
+  矿洞外是一座架在齿轮上的高台——<b>传送带在半空交错，一箱箱货物从头顶滑过。</b><br>
+  安雅指着一只木箱：你看，箱子上挂着一块小牌子。<br>
+  你凑近看，上面刻着一串数字：<code class="inline">0x7ffd2a40</code>。<br>
+  这不是箱子里装的东西，她说，<strong>这是那只箱子"放在哪儿"的门牌号。</strong><br>
+  你忽然明白过来——<b>原来除了"装什么"，还有一种东西叫"在哪儿"。</b>
+</div>
+
+<div class="cast anya">
+  <img class="ava" src="../assets/avatars/anya.webp" alt="安雅" onerror="this.style.display='none'">
+  <div class="bubble">
+    <div class="who">安雅 · 红发队长</div>
+    三级我们学的是"怎么把数算出来"。<br>
+    四级换一个层次：<strong>开始关心"这些东西放在内存的哪个位置"。</strong><br>
+    这一课的概念有点抽象，但只要你记住一句话：<strong>指针就是"门牌号"，不是"房子里的东西"。</strong>
+  </div>
+</div>
+
+<figure class="pic">
+  <img src="../assets/illustrations/cpp-L4-01-01_conveyor_hub.webp" alt="传送带枢纽"
+       onerror="this.closest('.pic').classList.add('missing')">
+  <div class="ph">
+    <div class="fn">assets/illustrations/cpp-L4-01-01_conveyor_hub.webp</div>
+    <div class="ds">【配图位】玻璃顶的齿轮车站，多层传送带在不同高度互相传送箱笼；每只箱子上都挂着一块发光的小铭牌，铭牌上刻着一串地址编号；一名红发队长站在控制台上指挥货流，头顶的齿轮缓慢转动，暖色灯光从玻顶洒下。</div>
+  </div>
+  <figcaption>图 1：齿轮高台的传送带枢纽——今天要从这里开始</figcaption>
+</figure>
+
+<!-- ============ 0 ============ -->
+<div class="section-header" id="s0">
+  <h2>0　单元导语与目标</h2>
+  <div class="en-title">Unit Overview</div>
+</div>
+
+<h3 id="s0-1">0.1 学习目标</h3>
+<div class="goal-grid">
+  <div class="goal">
+    <h4><span class="ic">1</span>学完这个单元，你将能……</h4>
+    <ul>
+      <li>说清"地址"是什么、为什么每个变量都有地址</li>
+      <li>用 <code class="inline">&amp;</code> 取出变量的地址</li>
+      <li>正确定义和使用指针变量</li>
+      <li>分清 <code class="inline">*</code> 在定义和取值时的不同含义</li>
+      <li>通过指针修改变量的值</li>
+      <li>说出指针和数组的关系</li>
+    </ul>
+  </div>
+  <div class="goal syllabus">
+    <h4><span class="ic">2</span>对标 GESP 考纲（C++ 四级）</h4>
+    <ul>
+      <li>理解内存地址与变量存储的关系</li>
+      <li>掌握指针的定义、初始化与解引用</li>
+      <li>掌握 <code class="inline">&amp;</code>（取地址）与 <code class="inline">*</code>（解引用）两个运算符</li>
+      <li>理解指针与数组的对应关系</li>
+      <li>考核目标：能读懂指针相关的代码并判断结果</li>
+    </ul>
+  </div>
+</div>
+
+<h3 id="s0-2">0.2 考纲对照</h3>
+<table class="styled">
+  <thead><tr><th>本单元小节</th><th>对应考纲条目</th><th>真题常考形式</th></tr></thead>
+  <tbody>
+    <tr><td>1　每个变量都有地址</td><td>内存与地址的概念</td><td>怎么取出一个变量的地址</td></tr>
+    <tr><td>2　指针是什么</td><td>指针的定义与使用</td><td><code class="inline">*</code> 和 <code class="inline">&amp;</code> 各是什么意思</td></tr>
+    <tr><td>3　指针能干什么</td><td>指针的作用</td><td>改指针指向的内容，原变量会怎样</td></tr>
+    <tr><td>4　复合数据类型</td><td>数据类型的分类</td><td>哪些属于复合类型</td></tr>
+  </tbody>
+</table>
+
+<!-- ============ 1 ============ -->
+<div class="section-header" id="s1">
+  <h2>1　每个变量都有地址</h2>
+  <div class="en-title">Addresses</div>
+</div>
+
+<h3 id="s1-1">1.1 变量住在内存的哪一格</h3>
+
+<p>内存就像一栋<b>巨大的楼</b>，里面是<strong>一间挨着一间的格子房</strong>，
+每个房间都有一个编号——这个编号就是<strong>地址</strong>（address）。</p>
+
+<div class="code-card">
+  <div class="code-head">
+    <span class="dot d1"></span><span class="dot d2"></span><span class="dot d3"></span>
+    <span class="file">一个变量 = 一间房 + 里面的东西</span>
+    <span class="lang">TEXT</span>
+  </div>
+  <pre><code>int a = 10;
+
+内存里大概是这样：
+
+  房间号（地址）      房间里装的东西
+  ─────────────      ──────────────
+  0x7ffd2a40    →        10
+
+"a" 这个名字，是给程序员看的；
+机器只认那个房间号。</code></pre>
+  <div class="out"><b>要点</b>　<b>变量名 = 房间的"外号"；地址 = 房间的"正式编号"</b></div>
+</div>
+
+<div class="box tip">
+  <span class="lb">打个比方：</span>
+  你家住在"幸福路 12 号"。<br>
+  <strong>"幸福路 12 号"是地址，"你"是住在里面的人。</strong><br>
+  别人要找你，可以<strong>直接报地址</strong>；也可以<strong>拿着写有地址的纸条</strong>去找——<b>那张纸条就是指针。</b>
+</div>
+
+<h3 id="s1-2">1.2 用 &amp; 取出地址</h3>
+
+<div class="code-card">
+  <div class="code-head">
+    <span class="dot d1"></span><span class="dot d2"></span><span class="dot d3"></span>
+    <span class="file">&amp; 读作"取地址"</span>
+    <span class="lang">C++</span>
+  </div>
+  <pre><code>#include &lt;iostream&gt;
+using namespace std;
+
+int main() {
+    int a = 10;
+
+    cout &lt;&lt; a &lt;&lt; endl;        // 10        ← 房间里装的东西
+    cout &lt;&lt; &amp;a &lt;&lt; endl;       // 0x...     ← 房间的地址
+
+    return 0;
+}</code></pre>
+  <div class="out"><b>读法</b>　<code>&amp;a</code> 读作 <b>"a 的地址"</b><br>
+  <b>注意</b>　地址每次运行可能都不一样——<b>那是系统临时分配的，别去记具体数值</b></div>
+</div>
+
+<figure class="figure">
+  <svg class="diagram" viewBox="0 0 830 230" role="img" aria-label="变量与地址">
+    <text x="24" y="30" font-size="14" font-weight="bold" fill="#1f2937">变量名是外号，地址才是房间号</text>
+
+    <rect x="70" y="60" width="150" height="80" rx="10" fill="#eaf1fe" stroke="#2563eb" stroke-width="2.4"/>
+    <text x="145" y="92" text-anchor="middle" font-size="13" fill="#1d4ed8" font-weight="bold">变量 a</text>
+    <text x="145" y="122" text-anchor="middle" font-size="20" font-family="Consolas,monospace" fill="#1d4ed8">10</text>
+
+    <rect x="70" y="148" width="150" height="40" rx="8" fill="#fff9ec" stroke="#f59e0b" stroke-width="2"/>
+    <text x="145" y="174" text-anchor="middle" font-size="12" font-family="Consolas,monospace" fill="#b45309">0x7ffd2a40</text>
+
+    <text x="240" y="112" font-size="12.5" fill="#334155">← 房间里装的东西</text>
+    <text x="240" y="174" font-size="12.5" fill="#b45309">← 房间的门牌号（地址）</text>
+
+    <line x1="300" y1="168" x2="440" y2="168" stroke="#8b5cf6" stroke-width="2.4"/>
+    <polygon points="440,168 428,161 428,175" fill="#8b5cf6"/>
+    <text x="370" y="156" text-anchor="middle" font-size="12" font-family="Consolas,monospace" fill="#6d28d9">&amp;a</text>
+
+    <rect x="470" y="132" width="240" height="72" rx="10" fill="#f5f3ff" stroke="#8b5cf6" stroke-width="2.2"/>
+    <text x="590" y="160" text-anchor="middle" font-size="12.5" fill="#6d28d9" font-weight="bold">指针 p</text>
+    <text x="590" y="186" text-anchor="middle" font-size="13" font-family="Consolas,monospace" fill="#6d28d9">p = &amp;a</text>
+
+    <text x="70" y="216" font-size="11.5" fill="#8d9d94">★ p 里存的不是 10，而是"10 住在哪个房间"——这就是指针和普通变量最根本的区别</text>
+  </svg>
+  <div class="caption">图 2（SVG）：变量、地址与指针的关系</div>
+</figure>
+
+<!-- ============ 2 ============ -->
+<div class="section-header" id="s2">
+  <h2>2　指针是什么</h2>
+  <div class="en-title">Pointers</div>
+</div>
+
+<h3 id="s2-1">2.1 定义指针变量</h3>
+
+<p>指针（pointer）就是<strong>一个专门用来存"地址"的变量</strong>。</p>
+
+<div class="code-card">
+  <div class="code-head">
+    <span class="dot d1"></span><span class="dot d2"></span><span class="dot d3"></span>
+    <span class="file">定义指针要写"指向的类型 + *"</span>
+    <span class="lang">C++</span>
+  </div>
+  <pre><code>int a = 10;
+int *p = &amp;a;         // ★ p 是一个"指向 int 的指针"
+
+// 拆开读：
+//   int     → 它指向的东西是 int 类型
+//   *       → 它是个指针
+//   p       → 变量名
+//   = &amp;a    → 让它指向 a
+
+cout &lt;&lt; a &lt;&lt; endl;    // 10        a 的值
+cout &lt;&lt; p &lt;&lt; endl;    // 0x...     p 的值（就是 a 的地址）
+cout &lt;&lt; *p &lt;&lt; endl;   // 10        p 指向的那个东西的值</code></pre>
+  <div class="out"><b>三行输出</b>　<code>10</code> / 一串地址 / <code>10</code><br>
+  <b>关键区别</b>　<b><code>p</code> 是"地址"，<code>*p</code> 是"那个地址里装的东西"</b></div>
+</div>
+
+<h3 id="s2-2">2.2 * 与 &amp; 两个符号</h3>
+
+<table class="styled">
+  <thead><tr><th>符号</th><th>名字</th><th>作用</th><th>例子</th></tr></thead>
+  <tbody>
+    <tr><td><code class="inline">&amp;</code></td><td>取地址符</td><td>问"这个变量住在哪儿"</td><td><code class="inline">&amp;a</code> → a 的地址</td></tr>
+    <tr><td><code class="inline">*</code></td><td>解引用符（取值符）</td><td>问"这个地址里装着什么"</td><td><code class="inline">*p</code> → p 指向的值</td></tr>
+  </tbody>
+</table>
+
+<div class="box warn">
+  <span class="lb">最容易混淆的一点：<code>*</code> 有两种含义。</span>
+  <b>在定义的时候</b>：<code class="inline">int *p;</code> —— 这个 <code class="inline">*</code> 表示
+  <strong>"p 是个指针"</strong>，是<b>类型的一部分</b>。<br>
+  <b>在使用的时候</b>：<code class="inline">*p</code> —— 这个 <code class="inline">*</code> 表示
+  <strong>"把 p 指向的那个东西取出来"</strong>，是一个<b>运算</b>。<br>
+  <strong>同一个符号，一个是"说明身份"，一个是"动手取货"——看它出现在哪儿。</strong>
+</div>
+
+<div class="box tip">
+  <span class="lb">一句话记忆：</span>
+  <b><code class="inline">&amp;</code> 是"问地址"，<code class="inline">*</code> 是"按地址取货"。</b><br>
+  它们俩<strong>正好是一对反操作</strong>：<code class="inline">*&amp;a</code> 就等于 <code class="inline">a</code>。<br>
+  <b>取地址再解引用，就回到原点了。</b>
+</div>
+
+<!-- ============ 3 ============ -->
+<div class="section-header" id="s3">
+  <h2>3　指针能干什么</h2>
+  <div class="en-title">Using Pointers</div>
+</div>
+
+<h3 id="s3-1">3.1 通过指针改变量</h3>
+
+<div class="code-card">
+  <div class="code-head">
+    <span class="dot d1"></span><span class="dot d2"></span><span class="dot d3"></span>
+    <span class="file">改 *p 就等于改 a</span>
+    <span class="lang">C++</span>
+  </div>
+  <pre><code>#include &lt;iostream&gt;
+using namespace std;
+
+int main() {
+    int a = 10;
+    int *p = &amp;a;
+
+    *p += 5;                 // ★ 通过指针改 a
+
+    cout &lt;&lt; a &lt;&lt; endl;        // 15
+    cout &lt;&lt; *p &lt;&lt; endl;       // 15
+    return 0;
+}</code></pre>
+  <div class="out"><b>OUTPUT</b>　15 / 15<br>
+  <b>看明白了吗</b>　<code>*p += 5</code> 改的是 <b>p 指向的那个变量</b>，
+  <b>所以 a 也变成 15 了</b>——因为 <code>p</code> 指的就是 <code>a</code></div>
+</div>
+
+<div class="box remember">
+  <span class="lb">这就是指针最核心的能力：</span>
+  <strong>"隔着一段距离"去操作另一个变量。</strong><br>
+  直接写 <code class="inline">a = 15</code> 当然也行，那<b>为什么要绕这一圈？</b><br>
+  <b>因为很多时候你拿不到 a 本身——只能拿到它的地址。</b>
+  <strong>比如函数传参、动态数组、链表，都离不开指针。</strong>
+</div>
+
+<figure class="pic">
+  <img src="../assets/illustrations/cpp-L4-01-02_address_tag.webp" alt="挂地址铭牌的箱子"
+       onerror="this.closest('.pic').classList.add('missing')">
+  <div class="ph">
+    <div class="fn">assets/illustrations/cpp-L4-01-02_address_tag.webp</div>
+    <div class="ds">【配图位】传送带上的一只木箱，箱体挂着两块牌子：一块写着箱内装的东西（数字 10），另一块写着它的存放位置（一串地址编号）；一只发光的机械臂停在箱子前，臂端的夹具形状像一个小箭头（指针的符号），正对着那块地址铭牌。</div>
+  </div>
+  <figcaption>图 3：指针是一张"写着地址的纸条"</figcaption>
+</figure>
+
+<h3 id="s3-2">3.2 指针与数组</h3>
+
+<div class="code-card">
+  <div class="code-head">
+    <span class="dot d1"></span><span class="dot d2"></span><span class="dot d3"></span>
+    <span class="file">数组名本身就是"第一个元素的地址"</span>
+    <span class="lang">C++</span>
+  </div>
+  <pre><code>int a[4] = {10, 20, 30, 40};
+int *p = a;              // ★ 数组名可以直接赋给指针
+
+cout &lt;&lt; *p &lt;&lt; endl;       // 10    第一个元素
+cout &lt;&lt; *(p + 1) &lt;&lt; endl; // 20    往后挪一格
+cout &lt;&lt; *(p + 2) &lt;&lt; endl; // 30
+cout &lt;&lt; p[1] &lt;&lt; endl;     // 20    ★ p[1] 和 *(p+1) 是一回事
+
+// 换个角度看：a[i] 其实就是 *(a + i)
+cout &lt;&lt; a[1] &lt;&lt; endl;      // 20
+cout &lt;&lt; *(a + 1) &lt;&lt; endl;  // 20    完全等价</code></pre>
+  <div class="out"><b>两条重要等价关系</b>　<b><code>a[i]</code> ≡ <code>*(a + i)</code></b>；
+  <b><code>&amp;a[0]</code> ≡ <code>a</code></b></div>
+</div>
+
+<div class="box tip">
+  <span class="lb">为什么数组和指针这么"亲"？</span>
+  因为数组里的元素<strong>是一个挨一个连续摆放的</strong>。<br>
+  <b>只要知道第一个元素的地址，加上偏移量就能找到任何一个。</b><br>
+  所以 <code class="inline">a + 1</code> 不是"数值加 1"，而是
+  <strong>"往后挪一个元素的位置"</strong>——
+  <b>如果 a 是 int 数组，<code>a + 1</code> 实际跳过的字节数是 4（一个 int 的大小）。</b>
+</div>
+
+<div class="box remember">
+  <span class="lb">记住这三条就够了：</span>
+  <b>① 数组名就相当于"第一个元素的地址"</b>，可以直接赋给同类型的指针。<br>
+  <b>② <code class="inline">a[i]</code> 和 <code class="inline">*(a + i)</code> 完全等价</b>，
+  这也是为什么下标从 0 开始——<strong>因为 <code class="inline">a[0]</code> 就是 <code class="inline">*(a + 0)</code>，
+  偏移量是 0。</strong><br>
+  <b>③ <code class="inline">a + 1</code> 是"挪一个元素"，不是"挪一个字节"</b>。
+</div>
+
+<!-- ============ 4 ============ -->
+<div class="section-header" id="s4">
+  <h2>4　复合数据类型</h2>
+  <div class="en-title">Composite Types</div>
+</div>
+
+<h3 id="s4-1">4.1 简单类型与复合类型</h3>
+
+<table class="styled">
+  <thead><tr><th>类别</th><th>包含什么</th><th>特点</th></tr></thead>
+  <tbody>
+    <tr><td><strong>基本类型</strong></td><td><code class="inline">int</code>、<code class="inline">long long</code>、<code class="inline">double</code>、<code class="inline">char</code>、<code class="inline">bool</code></td><td>单一的、不可再分的最小单位</td></tr>
+    <tr><td><strong>复合类型</strong></td><td><strong>数组、指针、结构体、引用</strong>、<code class="inline">string</code></td><td><strong>由别的类型"组装"而成</strong></td></tr>
+  </tbody>
+</table>
+
+<div class="box remember">
+  <span class="lb">判断"是不是复合类型"的方法：</span>
+  问一句——<strong>"能不能把它的定义拆成'某种类型 + 修饰'？"</strong><br>
+  <b><code class="inline">int *p</code></b>：是"指向 int 的指针" → <strong>复合</strong>。<br>
+  <b><code class="inline">int a[10]</code></b>：是"10 个 int 排成的数组" → <strong>复合</strong>。<br>
+  <b><code class="inline">string s</code></b>：是"一串 char" → <strong>复合</strong>。<br>
+  <b><code class="inline">double d</code></b>：就是"一个双精度小数"，没别的了 → <strong>基本类型</strong>。
+</div>
+
+<h3 id="s4-2">4.2 指针本身也是一种类型</h3>
+
+<div class="code-card">
+  <div class="code-head">
+    <span class="dot d1"></span><span class="dot d2"></span><span class="dot d3"></span>
+    <span class="file">指针的类型由"它指向什么"决定</span>
+    <span class="lang">C++</span>
+  </div>
+  <pre><code>int    *p1;      // 指向 int 的指针
+double *p2;      // 指向 double 的指针
+char   *p3;      // 指向 char 的指针
+
+// ★ 不同类型之间不能随便互相赋值
+int a = 10;
+double *q = &amp;a;   // 编译错误！类型不匹配
+
+// 数组：几个 int 排在一起
+int arr[5];      // 它是一种"数组类型"
+double brr[5];   // 这是另一种"数组类型"</code></pre>
+  <div class="out"><b>关键</b>　<b>指针必须"门当户对"</b>——<code>int*</code> 只能指 <code>int</code>，
+  <code>double*</code> 只能指 <code>double</code></div>
+</div>
+
+<div class="box warn">
+  <span class="lb">为什么指针要区分类型？</span>
+  因为"挪一格"要挪多少字节，取决于它指向什么类型：<br>
+  <b><code class="inline">int*</code> 加 1 → 往后挪 4 字节；<code class="inline">double*</code> 加 1 → 往后挪 8 字节。</b><br>
+  <strong>如果不管类型，编译器就不知道"加 1"该跳多远，整个下标寻址就乱套了。</strong>
+</div>
+
+<!-- ============ 5 ============ -->
+<div class="section-header" id="s5">
+  <h2>5　代码实战</h2>
+  <div class="en-title">Level Practice</div>
+</div>
+
+<div class="level-card">
+  <div class="lc-head"><span class="n">关卡</span><h4>图书馆谋士</h4><span class="go">进入关卡 →</span></div>
+  <div class="lc-body">
+    <div class="story">
+      <b>故事：</b>高台顶层是一间<b>巨大的图书馆</b>，书架一眼望不到头。<br>
+      安雅递给你一张纸条：这不是书名，<strong>是书的位置——第几排、第几格。</strong><br>
+      你拿着纸条走过去，<b>准确抽出了那本书。</b><br>
+      看到了吗？她说，<strong>你手上那张纸条，就是指针。</strong>
+    </div>
+    <p><strong>思路：</strong>把"书的编号"存成数组，
+    <strong>用指针在书架之间移动</strong>，按位置取书。</p><figure class="pic">
+  <img src="../assets/stages/py-L4-01-stage1_library_strategist.webp" alt="图书馆策略家 关卡截图"
+       onerror="this.closest('.pic').classList.add('missing')">
+  <div class="ph">
+    <div class="fn">assets/stages/py-L4-01-stage1_library_strategist.webp</div>
+    <div class="ds">【截图位】图书馆策略家关卡：书架矩阵与选取点位清晰，代码编辑区可见指针与数组访问语句。</div>
+  </div>
+  <figcaption>关卡实况：图书馆策略家</figcaption>
+</figure>
+    <div class="code-card">
+      <div class="code-head">
+        <span class="dot d1"></span><span class="dot d2"></span><span class="dot d3"></span>
+        <span class="file">用指针遍历一整排书架</span>
+        <span class="lang">C++</span>
+      </div>
+      <pre><code>#include &lt;iostream&gt;
+using namespace std;
+
+int main() {
+    int shelf[5] = {12, 7, 25, 3, 18};
+
+    int *p = shelf;              // 指向第一格
+
+    for (int i = 0; i &lt; 5; i++) {
+        cout &lt;&lt; *p &lt;&lt; " ";       // 取出当前格里的书号
+        p++;                     // ★ 指针往后挪一格
+    }
+    cout &lt;&lt; endl;
+
+    // 指针挪过头了？用减法拉回来
+    p = shelf;                   // 重新指回开头
+    cout &lt;&lt; *(p + 3) &lt;&lt; endl;     // 3   直接跳着取
+
+    return 0;
+}</code></pre>
+      <div class="out"><b>OUTPUT</b>　12 7 25 3 18 / 3<br>
+      <b>三种写法都能取到同一格</b>　<code>*(p + i)</code>、<code>p[i]</code>、<code>shelf[i]</code></div>
+    </div>
+    <div class="box info">
+      <span class="lb">和本单元的关系：</span>
+      <strong><code>p++</code> 让指针往后挪一格</strong>，这是"用指针访问数组"的标准动作。<br>
+      <b>挪的"一格"到底是几字节？</b>取决于类型——
+      <code class="inline">int*</code> 挪 4 字节、<code class="inline">double*</code> 挪 8 字节。<br>
+      <strong>这正是"指针必须区分类型"的原因。</strong>
+    </div>
+    <a class="btn-go" href="https://codecombat.cn/" target="_blank" rel="noopener">去扣哒世界闯这一关 →</a>
+  </div>
+</div>
+
+<figure class="pic">
+  <img src="../assets/illustrations/cpp-L4-01-03_deref_arm.webp" alt="指针机械臂按铭牌取货"
+       onerror="this.closest('.pic').classList.add('missing')">
+  <div class="ph">
+    <div class="fn">assets/illustrations/cpp-L4-01-03_deref_arm.webp</div>
+    <div class="ds">【配图位】传送带旁一只机械臂，臂端是一个箭头形状的夹具（象征指针）；机械臂正按一块发光铭牌上的地址编号，从一排编号一致的箱子中精准取出第三只；被取出的箱子里装着一块亮着数字的矿石，其余箱子保持原位。</div>
+  </div>
+  <figcaption>图 4：按铭牌取货——解引用就是"照着地址把东西取出来"</figcaption>
+</figure>
+
+
+
+<!-- ============ 6 ============ -->
+<div class="section-header" id="s6">
+  <h2>6　常见陷阱</h2>
+  <div class="en-title">Common Pitfalls</div>
+</div>
+
+<div class="cast duck">
+  <img class="ava" src="../assets/ducks/duck_hattori.webp" alt="扣哒鸭" onerror="this.style.display='none'">
+  <div class="bubble">
+    <div class="who">扣哒鸭 · 调试官</div>
+    指针这块，考的都是"你有没有分清 p 和 *p"。四条，前两条几乎必考。
+  </div>
+</div>
+
+<div class="pit">
+  <div class="pt">
+    <div class="x">1</div>
+    <div class="t"><b>分不清 <code class="inline">p</code> 和 <code class="inline">*p</code>。</b></div>
+  </div>
+  <div class="duck">
+    <img src="../assets/ducks/duck_zana.webp" alt="扣哒鸭" onerror="this.style.display='none'">
+    <div class="dt"><b>扣哒鸭：</b><code>p</code> 是<b>地址</b>，<code>*p</code> 是<b>那个地址里的值</b>。<br>
+    <code>int a = 10; int *p = &amp;a;</code> 之后——<br>
+    <strong>输出 p 得到一串地址，输出 *p 得到 10。</strong></div>
+  </div>
+  <div class="fix"><b>记牢：</b><code class="inline">p</code> 是门牌号，<code class="inline">*p</code> 是房子里的东西</div>
+</div>
+
+<div class="pit">
+  <div class="pt">
+    <div class="x">2</div>
+    <div class="t"><b>指针没初始化就直接用。</b></div>
+  </div>
+  <div class="duck">
+    <img src="../assets/ducks/duck_naria.webp" alt="扣哒鸭" onerror="this.style.display='none'">
+    <div class="dt"><b>扣哒鸭：</b><code>int *p;</code> 之后，<strong>p 里存的是一个随机地址</strong>。<br>
+    直接写 <code>*p = 5;</code> 就等于<strong>往一个不知道是谁的房间里塞东西</strong>——程序很可能当场崩溃。<br>
+    <b>定义指针时就要让它有明确的指向：<code>int *p = &amp;a;</code>。</b></div>
+  </div>
+  <div class="fix"><b>正确做法：</b>定义指针时立刻初始化</div>
+</div>
+
+<div class="pit">
+  <div class="pt">
+    <div class="x">3</div>
+    <div class="t"><b>以为 <code class="inline">*p += 5</code> 只改了指针。</b></div>
+  </div>
+  <div class="duck">
+    <img src="../assets/ducks/duck_senick.webp" alt="扣哒鸭" onerror="this.style.display='none'">
+    <div class="dt"><b>扣哒鸭：</b>改的是<strong>p 指向的那个变量</strong>！<br>
+    <code>int a = 10; int *p = &amp;a; *p += 5;</code> 之后，
+    <strong>a 变成 15，*p 也是 15——它们本来就是同一个东西。</strong></div>
+  </div>
+  <div class="fix"><b>理解：</b>改 <code class="inline">*p</code> 就是改 <code class="inline">a</code> 本人</div>
+</div>
+
+<div class="pit">
+  <div class="pt">
+    <div class="x">4</div>
+    <div class="t"><b>以为 <code class="inline">p++</code> 就是"地址加 1"。</b></div>
+  </div>
+  <div class="duck">
+    <img src="../assets/ducks/duck_illia.webp" alt="扣哒鸭" onerror="this.style.display='none'">
+    <div class="dt"><b>扣哒鸭：</b><code>p++</code> 是<strong>"往后挪一个元素"</strong>，不是挪一个字节。<br>
+    <code>int*</code> 挪 4 字节、<code>double*</code> 挪 8 字节——<br>
+    <strong>具体挪多少，看它指向什么类型。</strong></div>
+  </div>
+  <div class="fix"><b>记牢：</b><code class="inline">p + n</code> 是"往后 n 个元素"，等价于 <code class="inline">&amp;p[n]</code></div>
+</div>
+
+<!-- ============ 7 ============ -->
+<div class="section-header" id="s7">
+  <h2>7　题目练习</h2>
+  <div class="en-title">Practice</div>
+</div>
+
+<p>前 3 题改编自 C++ 四级真题，其余为原创练习题。</p>
+
+<div class="exam">
+  <div class="eh"><span class="src">改编自 2026 年 9 月 · C++ 四级 · 判断题 第 1 题</span><span class="tp">判断题</span></div>
+  <div class="eb">
+    <div class="q">执行下面程序后，变量 <code class="inline">a</code> 的值为 <code class="inline">15</code>。（　　）</div>
+    <pre>int a = 10;
+int *p = &amp;a;
+*p += 5;</pre>
+    <details><summary>查看答案与详解</summary>
+      <div class="ans"><b>答案：正确（√）</b>。逐句分析：<br>
+      <b>① </b><code class="inline">int a = 10;</code> —— a 里装 10。<br>
+      <b>② </b><code class="inline">int *p = &amp;a;</code> —— p 指向 a，
+      <strong>此后 <code class="inline">*p</code> 和 <code class="inline">a</code> 说的就是同一个东西</strong>。<br>
+      <b>③ </b><code class="inline">*p += 5;</code> —— 等价于 <code class="inline">*p = *p + 5</code>，
+      也就是 <code class="inline">a = a + 5</code>，<b>结果是 15</b>。<br>
+      <b>本题最容易错的地方：</b>以为 <code class="inline">*p += 5</code> 是在"移动指针"。
+      <strong>其实改的是指针指向的那个变量的值。</strong><br>
+      <span class="tagline">对应小节</span>3.1 通过指针改变量。</div>
+    </details>
+  </div>
+</div>
+
+<div class="exam">
+  <div class="eh"><span class="src">改编自 2026 年 6 月 · C++ 四级 · 判断题 第 4 题</span><span class="tp">判断题</span></div>
+  <div class="eb">
+    <div class="q">执行下面程序后，输出为 <code class="inline">20</code>。（　　）</div>
+    <pre>void change(int x) { x = 20; }
+int main() {
+    int x = 10;
+    change(x);
+    cout &lt;&lt; x;
+    return 0;
+}</pre>
+    <details><summary>查看答案与详解</summary>
+      <div class="ans"><b>答案：错误（×）</b>。输出是 <b>10</b>，不是 20。<br>
+      <b>为什么？</b>因为 C++ 默认的参数传递是<strong>值传递</strong>（pass by value）——<br>
+      <code class="inline">change(x)</code> 时，函数内部的 <code class="inline">x</code> 是
+      <strong>外面那个 x 的"副本"</strong>，是另一个变量。<br>
+      <b>函数里改的只是副本</b>，函数一返回副本就销毁了，<strong>外面的 x 从头到尾没动过，还是 10。</strong><br>
+      <b>想让函数真的改到外面的变量怎么办？</b>传<b>指针</b>：
+      <code class="inline">void change(int *p) { *p = 20; }</code>，调用时写 <code class="inline">change(&amp;x);</code>。<br>
+      <span class="tagline">对应小节</span>3.1 通过指针改变量（这也是指针最实用的用途之一）。</div>
+    </details>
+  </div>
+</div>
+
+<div class="exam">
+  <div class="eh"><span class="src">改编自 2026 年 9 月 · C++ 四级 · 判断题 第 3 题</span><span class="tp">判断题</span></div>
+  <div class="eb">
+    <div class="q">下面的二维数组在内存中按行优先连续存储，
+    因此 <code class="inline">*(*(a + 1) + 0)</code> 的值为 <code class="inline">5</code>。（　　）</div>
+    <pre>int a[2][4] = {{1, 2, 3, 4}, {5, 6, 7, 8}};</pre>
+    <details><summary>查看答案与详解</summary>
+      <div class="ans"><b>答案：正确（√）</b>。分两层拆开看：<br>
+      <b>① </b><code class="inline">a + 1</code> —— 指向<strong>第 1 行</strong>（下标从 0 开始，所以是第二行）。
+      <strong><code class="inline">a[i]</code> 本身就是"第 i 行的首地址"。</strong><br>
+      <b>② </b><code class="inline">*(a + 1)</code> —— 取出第 1 行，它退化为<strong>指向该行第一个元素的指针</strong>；
+      等价于 <code class="inline">a[1]</code>。<br>
+      <b>③ </b><code class="inline">*(a + 1) + 0</code> —— 在第 1 行里偏移 0 格，指向 <code class="inline">a[1][0]</code>。<br>
+      <b>④ </b><code class="inline">*(*(a + 1) + 0)</code> —— 解引用，取出 <code class="inline">a[1][0]</code> 的值，
+      也就是 <b>5</b> ✔<br>
+      <b>一句话：<code class="inline">*(*(a + i) + j)</code> 完全等价于 <code class="inline">a[i][j]</code>。</b><br>
+      <span class="tagline">对应小节</span>3.2 指针与数组。</div>
+    </details>
+  </div>
+</div>
+
+<div class="exam">
+  <div class="eh"><span class="src ori">原创练习题</span><span class="tp">单选题</span></div>
+  <div class="eb">
+    <div class="q">执行下面的代码，输出是（　　）。</div>
+    <pre>int a[4] = {10, 20, 30, 40};
+int *p = a;
+cout &lt;&lt; *p &lt;&lt; " " &lt;&lt; *(p + 2) &lt;&lt; " " &lt;&lt; p[3] &lt;&lt; endl;</pre>
+    <div class="opt"><i>A.</i><code class="inline">10 20 30</code>　　<i>B.</i><code class="inline">10 30 40</code>　　<i>C.</i><code class="inline">10 12 13</code>　　<i>D.</i><code class="inline">0 2 3</code></div>
+    <details><summary>查看答案与详解</summary>
+      <div class="ans"><b>答案：B</b>。三部分分别看：<br>
+      <b>① <code class="inline">*p</code>：</b>p 指向数组开头，解引用就是第一个元素 <b>10</b>。<br>
+      <b>② <code class="inline">*(p + 2)</code>：</b>往后挪 <strong>2 个元素</strong>（不是 2 字节！），
+      指向 <code class="inline">a[2]</code>，取值 <b>30</b>。<br>
+      <b>③ <code class="inline">p[3]</code>：</b><code class="inline">p[i]</code> 等价于 <code class="inline">*(p + i)</code>，
+      所以是 <code class="inline">a[3]</code>，值 <b>40</b>。<br>
+      <b>C 项</b>是把指针偏移当成了字节偏移（10 + 2 = 12）——<strong>这是最典型的错法。</strong><br>
+      <span class="tagline">对应小节</span>3.2 指针与数组。</div>
+    </details>
+  </div>
+</div>
+
+<div class="exam">
+  <div class="eh"><span class="src ori">原创练习题</span><span class="tp">单选题</span></div>
+  <div class="eb">
+    <div class="q">下面关于指针的说法，<strong>正确</strong>的是（　　）。</div>
+    <div class="opt">
+      <i>A.</i><code class="inline">int *p;</code> 定义之后 p 自动指向 0 号地址<br>
+      <i>B.</i>指针变量里存的是另一个变量的地址<br>
+      <i>C.</i>任意两个不同类型的指针之间可以随意赋值<br>
+      <i>D.</i><code class="inline">*p</code> 表示 p 的地址
+    </div>
+    <details><summary>查看答案与详解</summary>
+      <div class="ans"><b>答案：B</b>。<strong>指针的本质就是"存地址的变量"。</strong><br>
+      <b>A 错：</b><code class="inline">int *p;</code> 之后 p 里是<strong>不确定的值</strong>（野指针），
+      不是自动指向 0 号地址。<strong>定义指针时必须初始化。</strong><br>
+      <b>C 错：</b>指针类型必须匹配。<code class="inline">int*</code> 不能直接赋给 <code class="inline">double*</code>，
+      <strong>编译器会报错</strong>——因为不同类型"挪一格"的距离不同。<br>
+      <b>D 错：</b><code class="inline">p</code> 才是地址，<code class="inline">*p</code> 是
+      <strong>"顺着地址把里面的东西取出来"</strong>。<br>
+      <span class="tagline">对应小节</span>2.1 定义指针变量；4.2 指针本身也是一种类型。</div>
+    </details>
+  </div>
+</div>
+
+<div class="exam">
+  <div class="eh"><span class="src ori">原创练习题</span><span class="tp">判断题</span></div>
+  <div class="eb">
+    <div class="q"><code class="inline">*&amp;a</code> 的结果与 <code class="inline">a</code> 相同。（　　）</div>
+    <details><summary>查看答案与详解</summary>
+      <div class="ans"><b>答案：正确（√）</b>。<code class="inline">&amp;</code> 和 <code class="inline">*</code>
+      是一对<strong>互逆的运算</strong>：<br>
+      <code class="inline">&amp;a</code> 是"取 a 的地址"，
+      <code class="inline">*&amp;a</code> 是"顺着这个地址把东西取出来"——<strong>正好绕回原点，得到 a 本身。</strong><br>
+      <b>同理，<code class="inline">&amp;*p</code> 就等于 <code class="inline">p</code>。</b><br>
+      <b>生活化的理解：</b>"你家的地址"是 <code class="inline">&amp;a</code>；
+      "照着地址找到你家、把住在里面的人请出来"是 <code class="inline">*&amp;a</code>——
+      <strong>请出来的当然还是你本人。</strong><br>
+      <span class="tagline">对应小节</span>2.2 * 与 &amp; 两个符号。</div>
+    </details>
+  </div>
+</div>
+
+<div class="exam">
+  <div class="eh"><span class="src ori">原创练习题</span><span class="tp">编程题</span></div>
+  <div class="eb">
+    <div class="q">题目要求：写一个函数 <code class="inline">void swap2(int *a, int *b)</code>，
+    用它交换两个变量的值。在 <code class="inline">main</code> 里读入两个整数，
+    调用该函数后输出交换的结果。<br>
+    <b>样例：</b>输入 <code class="inline">3 8</code>，输出 <code class="inline">8 3</code>。</div>
+    <details><summary>查看参考答案与要点</summary>
+      <div class="ans">
+<pre style="margin:0;background:#131a26;color:#c8d3e0;border-radius:10px;padding:14px 16px">#include &lt;iostream&gt;
+using namespace std;
+
+void swap2(int *a, int *b) {
+    int t = *a;      // 保存 a 指向的值
+    *a = *b;         // 把 b 指向的值写到 a 指向的地方
+    *b = t;          // 把原来保存的值写到 b 指向的地方
+}
+
+int main() {
+    int x, y;
+    cin &gt;&gt; x &gt;&gt; y;
+
+    swap2(&amp;x, &amp;y);     // ★ 传的是地址，不是值
+
+    cout &lt;&lt; x &lt;&lt; " " &lt;&lt; y &lt;&lt; endl;
+    return 0;
+}</pre>
+      <p style="margin-top:12px"><b>要点：</b><br>
+      ① <strong>为什么不用指针就不行？</strong>因为值传递只传副本，
+      <strong>函数里换得再热闹，外面的 x、y 也纹丝不动</strong>；<br>
+      ② <strong>传指针就是传地址</strong>——函数里通过 <code class="inline">*a</code> 就能"隔空"改到外部的变量；<br>
+      ③ 调用时要写 <code class="inline">&amp;x</code>、<code class="inline">&amp;y</code>，
+      <strong>因为形参要的是地址</strong>；<br>
+      ④ 交换必须借一个临时变量 <code class="inline">t</code>，
+      <strong>否则第一步就会把原值覆盖掉</strong>；<br>
+      ⑤ 这是指针最经典、最实用的用途，<strong>四级考试里几乎必考</strong>。<br>
+      <span class="tagline">对应小节</span>3.1 通过指针改变量。</p>
+      </div>
+    </details>
+  </div>
+</div>
+
+<!-- ============ 8 ============ -->
+<div class="section-header" id="s8">
+  <h2>8　本单元小结</h2>
+  <div class="en-title">Unit Summary</div>
+</div>
+
+<div class="cast anya">
+  <img class="ava" src="../assets/avatars/anya.webp" alt="安雅" onerror="this.style.display='none'">
+  <div class="bubble">
+    <div class="who">安雅 · 红发队长</div>
+    四句话记住指针：<br>
+    <strong>一、每个变量都有地址；<code>&amp;</code> 用来取地址，<code>*</code> 用来按地址取值。</strong><br>
+    <strong>二、指针就是"存地址的变量"；<code>p</code> 是地址，<code>*p</code> 是那个地址里的东西。</strong><br>
+    <strong>三、改 <code>*p</code> 就是改它指向的变量；这一点让指针能干成"隔着函数改外面变量"这种事。</strong><br>
+    <strong>四、数组名相当于首元素地址，<code>a[i]</code> 与 <code>*(a + i)</code> 完全等价。</strong><br>
+    枢纽看明白了。下一站是立体货架——<b>那里有整整一面墙的格子，等着我们用行和列去编号。</b>
+  </div>
+</div>
+
+<div class="summary">
+  <h3>你在传送带枢纽收获了什么</h3>
+  <ul>
+    <li><strong>地址</strong>——变量在内存里的"房间号"；<strong>变量名只是外号</strong>。</li>
+    <li><strong><code class="inline">&amp;</code> 取地址符</strong>——<code class="inline">&amp;a</code> 得到 a 的地址。</li>
+    <li><strong>指针</strong>——专门存地址的变量；<code class="inline">int *p = &amp;a;</code>。</li>
+    <li><strong><code class="inline">*</code> 的两种身份</strong>——定义时表示"这是指针"，使用时表示"解引用取值"。</li>
+    <li><strong>核心区别</strong>——<code class="inline">p</code> 是<b>地址</b>，<code class="inline">*p</code> 是<b>那个地址里的值</b>。</li>
+    <li><strong>互逆运算</strong>——<code class="inline">*&amp;a</code> 就是 <code class="inline">a</code>；<code class="inline">&amp;*p</code> 就是 <code class="inline">p</code>。</li>
+    <li><strong>改指针指向的内容</strong>——<code class="inline">*p += 5</code> 会让原变量一起变。</li>
+    <li><strong>值传递的局限</strong>——函数默认只拿到副本，<strong>想改外部变量就得传指针</strong>。</li>
+    <li><strong>指针与数组</strong>——数组名相当于首元素地址；<strong><code class="inline">a[i]</code> ≡ <code class="inline">*(a + i)</code></strong>。</li>
+    <li><strong>指针算术</strong>——<code class="inline">p + n</code> 是"往后 n 个元素"，<strong>挪多少字节取决于类型</strong>。</li>
+    <li><strong>复合数据类型</strong>——数组、指针、结构体、引用、<code class="inline">string</code> 都属于复合类型。</li>
+    <li><strong>野指针</strong>——<strong>定义指针时一定要初始化</strong>，否则指向的地址是随机的。</li>
+  </ul>
+</div>
+
+<div class="pager">
+  <a href="cpp-3-07.html"><div class="k">← 上一单元</div><div class="v">穷举矿灯 · 算法：枚举法与模拟法</div></a>
+  <a href="../index.html" target="_top" class="back"><div class="k">返回</div><div class="v">考纲之路 · 总目录</div></a>
+  <a href="cpp-4-02.html"><div class="k">下一单元 →</div><div class="v">立体货架 · 二维及多维数组</div></a>
+</div>
+
+<div class="cta">
+  <h3>下一站：立体货架</h3>
+  <p>高台上有一整面墙的<b>立体货架</b>——横着有行、竖着有列，
+  <b>每一格都放着一个零件。</b><br>
+  下一单元我们学<b>二维数组</b>：<b>怎么用两个下标，精准地找到货架上的任何一格。</b></p>
+  <a class="btn-go" href="https://codecombat.cn/" target="_blank" rel="noopener">加入扣哒世界，把这条考纲之路走一遍 →</a>
+</div>
+</div><!-- /container -->
+</div><!-- /page -->
+
+<script>
+const KEYWORDS = new Set([
+  "int", "long", "short", "unsigned", "signed", "float", "double", "char", "bool", "void",
+  "const", "if", "else", "for", "while", "do", "switch", "case", "default", "break",
+  "continue", "return", "goto", "struct", "class", "union", "enum", "using", "namespace",
+  "std", "main", "true", "false", "cin", "cout", "cerr", "endl", "string", "sizeof",
+  "include", "define", "new", "delete", "public", "private", "static", "inline", "nullptr"
+]);
+
+function esc(s){ return s.replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;'); }
+
+function highlight(src){
+  let out = '', i = 0;
+  const n = src.length;
+  while (i < n){
+    const c = src[i];
+    /* 预处理指令：#include / #define，整行只在行首生效 */
+    if (c === '#' && (i === 0 || src[i-1] === '\n')){
+      let j = i;
+      while (j < n && /[A-Za-z]/.test(src[j])) j++;
+      out += '<span class="kw">' + esc(src.slice(i, j)) + '</span>';
+      let k = src.indexOf('\n', j); if (k < 0) k = n;
+      if (j < k) out += '<span class="st">' + esc(src.slice(j, k)) + '</span>';
+      i = k; continue;
+    }
+    /* 行注释 // */
+    if (c === '/' && src[i+1] === '/'){
+      let j = src.indexOf('\n', i); if (j < 0) j = n;
+      out += '<span class="cm">' + esc(src.slice(i, j)) + '</span>';
+      i = j; continue;
+    }
+    /* 块注释 */
+    if (c === '/' && src[i+1] === '*'){
+      let j = src.indexOf('*/', i + 2); j = j < 0 ? n : j + 2;
+      out += '<span class="cm">' + esc(src.slice(i, j)) + '</span>';
+      i = j; continue;
+    }
+    /* 字符串与字符字面量 */
+    if (c === '"' || c === "'"){
+      let j = i + 1;
+      while (j < n && src[j] !== c){ if (src[j] === '\\') j++; j++; }
+      j = Math.min(j + 1, n);
+      out += '<span class="st">' + esc(src.slice(i, j)) + '</span>';
+      i = j; continue;
+    }
+    /* 数字 */
+    if (/[0-9]/.test(c)){
+      let j = i;
+      while (j < n && /[0-9.]/.test(src[j])) j++;
+      out += '<span class="nu">' + esc(src.slice(i, j)) + '</span>';
+      i = j; continue;
+    }
+    /* 标识符：关键字 / 函数名 / 普通名字 */
+    if (/[A-Za-z_]/.test(c)){
+      let j = i;
+      while (j < n && /[A-Za-z0-9_]/.test(src[j])) j++;
+      const w = src.slice(i, j);
+      if (KEYWORDS.has(w)) out += '<span class="kw">' + esc(w) + '</span>';
+      else if (src[j] === '(') out += '<span class="fn">' + esc(w) + '</span>';
+      else out += esc(w);
+      i = j; continue;
+    }
+    out += esc(c); i++;
+  }
+  return out;
+}
+
+document.querySelectorAll('.code-card pre code').forEach(block => {
+  block.innerHTML = highlight(block.textContent);
+});
+
+if (location.search.indexOf('expand') >= 0) {
+  document.querySelectorAll('details').forEach(d => d.open = true);
+}
+document.querySelectorAll('.sidebar-nav a').forEach(a => {
+  a.addEventListener('click', () => {
+    if (window.innerWidth <= 900) document.querySelector('.sidebar-nav').classList.remove('active');
+  });
+});
+</script>
+</body>
+</html>

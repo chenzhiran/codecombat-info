@@ -1,0 +1,1295 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="copyright" content="CodeCombat Inc. codecombat.cn">
+<title>泉眼筛网 · 欧几里得算法与素数筛法 | 扣哒考级 · GESP C++ 五级</title>
+<style>
+  :root{
+    --primary:#2563eb; --primary-light:#4f8ff0; --primary-lighter:#eaf1fe; --primary-dark:#1b47a8;
+    --brand:#ff6b35; --brand-dark:#e8541f; --brand-soft:#fff3ec;
+    --night:#131c2b; --night-2:#1e2a3a; --gold:#f5b301;
+    --text:#242e3d; --dim:#68788f; --dim2:#93a2b6;
+    --bg:#ffffff; --bg-soft:#f7f9fd; --line:#e2e9f4; --sidebar:274px;
+    --code-bg:#131a26; --code-tx:#c8d3e0;
+    --code-kw:#c678dd; --code-st:#98c379; --code-nu:#d19a66; --code-cm:#5f7488; --code-fn:#e5c07b;
+  }
+  *{margin:0;padding:0;box-sizing:border-box}
+  html{scroll-behavior:smooth}
+  body{font-family:"PingFang SC","Microsoft YaHei","Segoe UI",-apple-system,sans-serif;line-height:1.9;color:var(--text);background:var(--bg);font-size:15.5px}
+  .sidebar-nav{position:fixed;top:0;left:0;width:var(--sidebar);height:100vh;overflow-y:auto;background:linear-gradient(180deg,#0c1626,#14243c);padding:14px 0 40px;z-index:100;border-right:3px solid var(--brand);transition:transform .3s ease}
+  .sidebar-nav::-webkit-scrollbar{width:5px}
+  .sidebar-nav::-webkit-scrollbar-thumb{background:var(--brand);border-radius:4px}
+  .sb-brand{display:flex;align-items:center;gap:10px;padding:10px 13px 12px;border-bottom:1px solid #233752;margin-bottom:8px}
+  .sidebar-nav a.sb-logo{display:flex;align-items:center;justify-content:center;flex-shrink:0;padding:0;border-left:none;transition:.2s}
+  .sb-logo:hover{transform:scale(1.08)}
+  .sb-logo img{height:34px;width:34px;display:block;object-fit:contain;border-radius:8px}
+  .sb-brand b{color:#f2f6fa;font-size:14px;letter-spacing:.5px;display:block;line-height:1.4}
+  .sb-brand span{color:#7f95ab;font-size:11.5px;display:block;line-height:1.4}
+  .nav-title{color:#ffb894;font-size:12px;font-weight:800;padding:10px 18px 6px;letter-spacing:1.2px}
+  .sidebar-nav a{display:block;color:#c3d0dc;text-decoration:none;padding:6px 18px;font-size:12.5px;line-height:1.55;border-left:3px solid transparent;transition:.18s}
+  .sidebar-nav a:hover{color:#fff;background:rgba(255,107,53,.16);border-left-color:var(--brand)}
+  .sidebar-nav a.nav-section{color:#ffb894;font-weight:700;font-size:13px;margin-top:11px;padding-top:10px;border-top:1px solid #233752}
+  .sidebar-nav a.nav-section:first-of-type{border-top:none;margin-top:0;padding-top:6px}
+  .sidebar-nav a.nav-sub{padding-left:30px;color:#93a8bc;font-size:12px}
+  .sidebar-nav a.nav-sub:hover{color:#fff}
+  .sb-back{margin:16px 14px 0;display:block;text-align:center;padding:9px;border-radius:9px;background:#1e304a;color:#a9c0d6 !important;font-size:12px;font-weight:700;border-left:none !important}
+  .sb-back:hover{background:var(--brand) !important;color:#fff !important}
+  .nav-toggle{display:none;position:fixed;top:14px;left:14px;z-index:120;background:var(--brand);color:#fff;border:none;border-radius:9px;padding:9px 13px;font-size:15px;cursor:pointer;box-shadow:0 4px 14px rgba(0,0,0,.25)}
+  .page{margin-left:var(--sidebar)}
+  .hero{position:relative;overflow:hidden;padding:44px 52px;color:#fff;background:linear-gradient(125deg,#0a1220 0%,#16294a 46%,#8a3a16 132%)}
+  .hero::after{content:"";position:absolute;right:-90px;top:-110px;width:400px;height:400px;border-radius:50%;background:radial-gradient(circle,rgba(245,179,1,.30),transparent 68%)}
+  .hero-top{display:flex;gap:36px;align-items:center;position:relative;z-index:2}
+  .hero-txt{flex:1;min-width:0}
+  .hero .crumb{font-size:11.5px;color:#ffb894;letter-spacing:1.5px;font-weight:700;margin-bottom:14px}
+  .hero h1{font-size:31px;font-weight:800;line-height:1.3;letter-spacing:.6px;margin-bottom:8px}
+  .hero h1 .sub{display:block;font-size:18px;font-weight:700;color:#ffd2b3;margin-top:6px;letter-spacing:.3px}
+  .hero .en{font-size:13px;color:#9db4c8;font-style:italic;margin-bottom:18px}
+  .hero .tags{display:flex;flex-wrap:wrap;gap:8px}
+  .tag{font-size:11.5px;padding:4px 12px;border-radius:20px;background:rgba(255,255,255,.12);border:1px solid rgba(255,255,255,.22);color:#e8f0f6;font-weight:600}
+  .tag.hot{background:rgba(255,107,53,.92);border-color:transparent;color:#fff}
+  .hero-card{flex-shrink:0;width:200px;text-align:center}
+  .hero-card .ava{width:148px;height:148px;border-radius:50%;object-fit:cover;object-position:top center;border:4px solid rgba(255,180,140,.6);box-shadow:0 14px 34px rgba(0,0,0,.45);background:#24344a}
+  .hero-card .nm{font-size:15px;font-weight:800;color:#fff;margin-top:10px}
+  .hero-card .ti{font-size:11.5px;color:#ffb894;margin-top:2px}
+  .container{max-width:1080px;margin:0 auto;padding:38px 52px 70px}
+  .lead{font-size:15.5px;line-height:2.05;color:#333f52;background:linear-gradient(120deg,#fff8f3,#f7fbf8);border-left:5px solid var(--brand);border-radius:0 14px 14px 0;padding:22px 26px;margin-bottom:32px}
+  .lead b{color:var(--brand-dark)}
+  .cast{display:flex;gap:16px;align-items:flex-start;border-radius:16px;padding:18px 22px;margin:24px 0}
+  .cast .ava{width:72px;height:72px;border-radius:50%;object-fit:cover;object-position:top center;flex-shrink:0;background:#e8eef5}
+  .cast .bubble{position:relative;font-size:14px;line-height:1.95;padding-top:2px;flex:1}
+  .cast .who{font-size:12px;font-weight:800;margin-bottom:5px;letter-spacing:.5px}
+  .cast.anya{background:var(--brand-soft);border:1px solid #ffdcc9}
+  .cast.anya .who{color:var(--brand-dark)}
+  .cast.anya .bubble{color:#5c4636}
+  .cast.duck{background:#fff5f5;border:1px solid #fbd5d5}
+  .cast.duck .who{color:#b91c1c}
+  .cast.duck .bubble{color:#5c4141}
+  .cast.teacher{background:linear-gradient(120deg,#f4f7fb,#ffffff);border:1px solid #dbe4f0}
+  .cast.teacher .who{color:#1e293b}
+  .cast.teacher .bubble{color:#3c4a5a}
+  .cast.hero{background:#f2f7fd;border:1px solid #cfe0f5}
+  .cast.hero .who{color:#1b47a8}
+  .cast.hero .bubble{color:#3a4658}
+  .goal-grid{display:grid;grid-template-columns:1fr 1fr;gap:16px;margin-bottom:36px}
+  .goal{border:1px solid var(--line);border-radius:15px;padding:19px 21px;background:#fff;box-shadow:0 4px 16px rgba(31,122,68,.05)}
+  .goal h4{font-size:14px;font-weight:800;margin-bottom:11px;display:flex;align-items:center;gap:8px;color:var(--primary-dark)}
+  .goal h4 .ic{width:22px;height:22px;border-radius:7px;background:var(--primary-lighter);display:flex;align-items:center;justify-content:center;font-size:12px}
+  .goal ul{list-style:none}
+  .goal li{font-size:13.5px;color:#48576b;line-height:1.9;padding-left:18px;position:relative}
+  .goal li::before{content:"▸";position:absolute;left:0;color:var(--primary);font-weight:800}
+  .goal.syllabus li::before{content:"✓"}
+  .section-header{margin:52px 0 24px;padding-bottom:12px;border-bottom:3px solid var(--brand);display:flex;align-items:baseline;gap:14px;flex-wrap:wrap}
+  .section-header h2{font-size:22px;font-weight:800;color:var(--night);letter-spacing:.4px}
+  .section-header .en-title{font-size:12px;color:var(--dim2);font-style:italic}
+  h3{font-size:17.5px;font-weight:800;margin:34px 0 14px;color:var(--night);display:flex;align-items:center;gap:10px}
+  h3::before{content:"";width:5px;height:17px;border-radius:3px;background:var(--brand);flex-shrink:0}
+  h4{font-size:15px;font-weight:800;margin:24px 0 10px;color:#2b4260}
+  p{margin:12px 0;color:#3a4658;line-height:2}
+  strong{color:var(--primary-dark)}
+  code.inline{background:var(--primary-lighter);color:var(--primary-dark);padding:2px 7px;border-radius:6px;font-family:"SFMono-Regular",Consolas,Menlo,monospace;font-size:.9em;font-weight:600}
+  .figure{margin:24px 0;text-align:center}
+  .figure svg.diagram{max-width:100%;height:auto;background:#fff;border:1px solid var(--line);border-radius:14px;padding:10px}
+  .figure .caption{font-size:12.5px;color:var(--dim2);margin-top:9px}
+  .pic{margin:26px 0;text-align:center}
+  .pic img{max-width:100%;border-radius:16px;box-shadow:0 10px 28px rgba(30,60,45,.15);display:block;margin:0 auto}
+  .pic figcaption{font-size:12.5px;color:var(--dim2);margin-top:9px}
+  .pic .ph{display:none}
+  .pic.missing img{display:none}
+  .pic.missing .ph{display:flex;flex-direction:column;align-items:center;justify-content:center;gap:9px;border:2px dashed #c9d9e8;border-radius:16px;background:linear-gradient(135deg,#f8fbfe,#eef6ff);padding:40px 26px;color:#7a8fa8}
+  .pic.missing .ph .fn{font-family:Consolas,monospace;font-size:12.5px;color:#2563eb;font-weight:700;word-break:break-all}
+  .pic.missing .ph .ds{font-size:12.5px;line-height:1.8;max-width:560px}
+  .box{border-radius:13px;padding:16px 20px;margin:20px 0;font-size:14px;line-height:1.95}
+  .box .lb{font-weight:800;margin-right:6px}
+  .info{background:#eef6ff;border-left:5px solid #3b82f6;color:#274768}
+  .info .lb{color:#1d4ed8}
+  .tip{background:#fff9ec;border-left:5px solid #f59e0b;color:#6b4e13}
+  .tip .lb{color:#b45309}
+  .remember{background:var(--primary-lighter);border-left:5px solid var(--primary);color:#1d3a6b}
+  .remember .lb{color:var(--primary-dark)}
+  .warn{background:#fef2f2;border-left:5px solid #ef4444;color:#7f2b2b}
+  .warn .lb{color:#b91c1c}
+  .code-card{margin:20px 0;border-radius:14px;overflow:hidden;box-shadow:0 10px 28px rgba(20,40,28,.20)}
+  .code-head{display:flex;align-items:center;gap:9px;background:#1a2434;padding:9px 14px}
+  .code-head .dot{width:10px;height:10px;border-radius:50%}
+  .code-head .d1{background:#ff5f57}.code-head .d2{background:#febc2e}.code-head .d3{background:#28c840}
+  .code-head .file{color:#8fa6c0;font-size:11.5px;font-family:Consolas,monospace;margin-left:6px}
+  .code-head .lang{margin-left:auto;font-size:10.5px;font-weight:800;color:#0d141f;background:#4f8ff0;padding:2px 9px;border-radius:6px;letter-spacing:.4px}
+  .code-card pre{background:var(--code-bg);padding:18px 20px;overflow-x:auto;margin:0;font-family:"SFMono-Regular",Consolas,"Courier New",monospace;font-size:13.5px;line-height:1.85}
+  .code-card pre::-webkit-scrollbar{height:8px}
+  .code-card pre::-webkit-scrollbar-thumb{background:#31445c;border-radius:4px}
+  .code-card code{color:var(--code-tx);white-space:pre}
+  .kw{color:var(--code-kw);font-weight:600}
+  .st{color:var(--code-st)}
+  .nu{color:var(--code-nu)}
+  .cm{color:var(--code-cm);font-style:italic}
+  .fn{color:var(--code-fn)}
+  .out{background:#0f1621;color:#7fb3f5;font-family:Consolas,monospace;font-size:13px;padding:12px 20px;border-top:1px solid #22304a}
+  .out b{color:#c9d6cd;font-weight:600;font-size:11.5px;letter-spacing:1px}
+  .out.err{color:#fca5a5}
+  table.styled{width:100%;border-collapse:collapse;margin:20px 0;font-size:13.5px;border-radius:12px;overflow:hidden;box-shadow:0 4px 16px rgba(31,122,68,.07)}
+  table.styled thead{background:var(--brand)}
+  table.styled th{color:#fff;padding:11px 14px;text-align:left;font-weight:700;font-size:13px}
+  table.styled td{padding:10px 14px;border-bottom:1px solid var(--line);color:#445266;vertical-align:top}
+  table.styled tbody tr:nth-child(even){background:var(--bg-soft)}
+  table.styled tbody tr:last-child td{border-bottom:none}
+  .level-card{border:1px solid var(--line);border-radius:16px;overflow:hidden;margin:22px 0;box-shadow:0 6px 22px rgba(31,122,68,.07)}
+  .level-card .lc-head{background:linear-gradient(100deg,#17283a,#8a3a16);color:#fff;padding:15px 22px;display:flex;align-items:center;gap:12px;flex-wrap:wrap}
+  .level-card .lc-head .n{font-size:12px;font-weight:800;background:rgba(255,255,255,.2);padding:3px 10px;border-radius:20px}
+  .level-card .lc-head h4{margin:0;color:#fff;font-size:16px}
+  .level-card .lc-head .go{margin-left:auto;font-size:11.5px;color:#ffd2b3}
+  .level-card .lc-body{padding:20px 24px;background:#fff}
+  .level-card .story{background:#f9fbfd;border-left:4px solid #93c5fd;border-radius:0 10px 10px 0;padding:13px 18px;margin:0 0 16px;font-size:14px;line-height:1.95;color:#3f5163}
+  .level-card .story b{color:#1d4ed8}
+  .btn-go{display:inline-flex;align-items:center;gap:8px;background:linear-gradient(135deg,var(--brand),var(--brand-dark));color:#fff;text-decoration:none;font-weight:800;font-size:13.5px;padding:10px 22px;border-radius:11px;box-shadow:0 8px 20px rgba(255,107,53,.32);transition:.2s}
+  .btn-go:hover{transform:translateY(-2px);box-shadow:0 12px 26px rgba(255,107,53,.42)}
+  .pit{border:1px solid #f6dede;border-radius:14px;overflow:hidden;margin:16px 0;background:#fff}
+  .pit .pt{display:flex;gap:12px;padding:14px 18px;background:#fffafa;align-items:flex-start}
+  .pit .x{width:26px;height:26px;border-radius:9px;background:#fee;color:#dc2626;display:flex;align-items:center;justify-content:center;font-weight:800;flex-shrink:0;font-size:13px}
+  .pit .t{font-size:13.5px;line-height:1.9;color:#5c4a4a;flex:1}
+  .pit .t b{color:#b91c1c}
+  .pit .duck{display:flex;gap:12px;padding:13px 18px;background:#fff5f5;border-top:1px dashed #f3d0d0;align-items:flex-start}
+  .pit .duck img{width:48px;height:48px;object-fit:contain;flex-shrink:0;margin-top:2px}
+  .pit .duck .dt{font-size:13.5px;line-height:1.9;color:#7a3b3b}
+  .pit .duck .dt b{color:#b91c1c}
+  .pit .fix{padding:12px 18px;background:#f2f7fd;border-top:1px dashed #cfe0f5;font-size:13.5px;color:#1d3a6b}
+  .pit .fix b{color:var(--primary-dark)}
+  .exam{border:1px solid #dfe7f5;border-radius:15px;margin:16px 0;overflow:hidden;background:#fff;box-shadow:0 4px 16px rgba(38,62,120,.06)}
+  .exam .eh{display:flex;align-items:center;gap:10px;padding:11px 18px;background:linear-gradient(100deg,#eef4ff,#f7faff);border-bottom:1px solid #e3ebf8;flex-wrap:wrap}
+  .exam .eh .src{font-size:11px;font-weight:800;color:#fff;background:#2563eb;padding:2.5px 10px;border-radius:20px}
+  .exam .eh .src.ori{background:#8b5cf6}
+  .exam .eh .tp{font-size:11.5px;color:#5b7ba8;font-weight:700}
+  .exam .eb{padding:16px 20px}
+  .exam .q{font-weight:700;font-size:14px;color:#1e2a3e;line-height:1.9;margin-bottom:10px}
+  .exam .opt{font-size:13.5px;color:#48576b;line-height:2.05;padding-left:6px}
+  .exam .opt i{font-style:normal;font-weight:800;color:var(--primary-dark);margin-right:7px}
+  .exam pre{margin:12px 0;background:#1b2a21;border-radius:10px;padding:14px 16px;overflow-x:auto;font-family:Consolas,monospace;font-size:13px;line-height:1.8;color:var(--code-tx)}
+  .exam details{margin-top:10px;border-top:1px dashed var(--line);padding-top:10px}
+  .exam summary{cursor:pointer;font-size:12.5px;font-weight:800;color:#2563eb;outline:none;user-select:none}
+  .exam details .ans{font-size:13.5px;color:#3a4658;line-height:1.95;margin-top:9px;background:var(--bg-soft);padding:13px 16px;border-radius:10px}
+  .exam details .ans b{color:var(--primary-dark)}
+  .exam details .ans .tagline{display:inline-block;font-size:11px;background:#e0f2fe;color:#0e7490;padding:1.5px 8px;border-radius:6px;font-weight:700;margin-right:6px}
+  .summary{margin:40px 0 20px;border-radius:18px;padding:26px 30px;background:linear-gradient(130deg,#fff8f3,#ffffff);border:1px solid #ffe0cf}
+  .summary h3{margin-top:0}
+  .summary ul{list-style:none;margin-top:10px}
+  .summary li{font-size:14px;line-height:2;color:#3d4d66;padding-left:24px;position:relative}
+  .summary li::before{content:"◆";position:absolute;left:0;color:var(--brand);font-size:11px;top:6px}
+  .pager{display:flex;gap:14px;margin-top:30px;flex-wrap:wrap}
+  .pager a{flex:1;min-width:200px;text-decoration:none;border:1px solid var(--line);border-radius:14px;padding:16px 20px;background:#fff;transition:.2s;display:block}
+  .pager a:hover{border-color:var(--brand);box-shadow:0 10px 26px rgba(255,107,53,.14);transform:translateY(-2px)}
+  .pager a .k{font-size:11px;color:var(--dim2);font-weight:700;letter-spacing:1px}
+  .pager a .v{font-size:14px;font-weight:800;color:var(--night);margin-top:5px}
+  .pager a.back{background:var(--brand-soft);border-color:transparent;text-align:center}
+  .pager a.back .v{color:var(--brand-dark)}
+  .cta{margin-top:26px;border-radius:20px;padding:30px 34px;color:#fff;position:relative;overflow:hidden;background:linear-gradient(120deg,#16202f,#2b3a52 46%,#a8431c 132%)}
+  .cta::after{content:"";position:absolute;right:-70px;bottom:-90px;width:280px;height:280px;border-radius:50%;background:radial-gradient(circle,rgba(255,140,80,.45),transparent 68%)}
+  .cta h3{color:#fff;margin:0 0 10px;position:relative;z-index:2}
+  .cta h3::before{background:var(--brand)}
+  .cta p{color:#d8e0ef;font-size:13.5px;margin:0 0 18px;position:relative;z-index:2;max-width:640px}
+  .cta .btn-go{position:relative;z-index:2}
+  @media(max-width:900px){
+    .sidebar-nav{transform:translateX(-100%)}
+    .sidebar-nav.active{transform:translateX(0)}
+    .nav-toggle{display:block}
+    .page{margin-left:0}
+    .hero{padding:70px 22px 34px}
+    .hero-top{flex-direction:column-reverse;text-align:center}
+    .hero-card{width:auto}
+    .container{padding:26px 20px 60px}
+    .goal-grid{grid-template-columns:1fr}
+  }
+</style>
+</head>
+<body>
+
+<button class="nav-toggle" onclick="document.querySelector('.sidebar-nav').classList.toggle('active')">&#9776;</button>
+
+<nav class="sidebar-nav">
+  <div class="sb-brand">
+    <a class="sb-logo" href="https://codecombat.cn/" target="_blank" rel="noopener" title="访问 CodeCombat 扣哒世界官网">
+      <img src="../assets/logo.png" alt="CodeCombat 扣哒世界">
+    </a>
+    <div><b>泉眼筛网</b><span>星砂绿洲 · C++ 五级 第 2 单元</span></div>
+  </div>
+  <div class="nav-title">本单元目录</div>
+
+  <a href="#s0" class="nav-section">0　单元导语与目标</a>
+  <a href="#s0-1" class="nav-sub">0.1 学习目标</a>
+  <a href="#s0-2" class="nav-sub">0.2 考纲对照</a>
+  <a href="#s1" class="nav-section">1　从试除法到筛法</a>
+  <a href="#s1-1" class="nav-sub">1.1 一个个试太慢了</a>
+  <a href="#s1-2" class="nav-sub">1.2 筛法的想法：反过来想</a>
+  <a href="#s2" class="nav-section">2　埃氏筛</a>
+  <a href="#s2-1" class="nav-sub">2.1 把合数一个个划掉</a>
+  <a href="#s2-2" class="nav-sub">2.2 为什么从 i×i 开始</a>
+  <a href="#s3" class="nav-section">3　埃氏筛的实现</a>
+  <a href="#s3-1" class="nav-sub">3.1 完整代码</a>
+  <a href="#s3-2" class="nav-sub">3.2 它比试除法快多少</a>
+  <a href="#s4" class="nav-section">4　欧几里得算法</a>
+  <a href="#s4-1" class="nav-sub">4.1 辗转相除：一除一替换</a>
+  <a href="#s4-2" class="nav-sub">4.2 为什么这样能得到答案</a>
+  <a href="#s5" class="nav-section">5　线性筛</a>
+  <a href="#s5-1" class="nav-sub">5.1 让每个合数只被筛掉一次</a>
+  <a href="#s5-2" class="nav-sub">5.2 关键的那一行</a>
+  <a href="#s6" class="nav-section">6　代码实战</a>
+  <a href="#s7" class="nav-section">7　常见陷阱</a>
+  <a href="#s8" class="nav-section">8　题目练习</a>
+  <a href="#s9" class="nav-section">9　本单元小结</a>
+
+  <a href="../index.html" target="_top" class="sb-back">返回考纲之路</a>
+</nav>
+
+<div class="page">
+
+<div class="hero">
+  <div class="hero-top">
+    <div class="hero-txt">
+      <div class="crumb">扣哒考级 · GESP C++ 五级 · 第 2 单元　|　星砂绿洲 STARDUST OASIS</div>
+      <h1>泉眼筛网
+        <span class="sub">欧几里得算法与素数筛法</span>
+      </h1>
+      <div class="en">Euclid &amp; Sieve</div>
+      <div class="tags">        <span class="tag hot">考纲 · 数论算法</span>
+        <span class="tag">欧几里得算法</span>
+        <span class="tag">埃氏筛</span>
+        <span class="tag">线性筛</span>
+        <span class="tag">辗转相除</span></div>
+    </div>
+    <div class="hero-card">
+      <img class="ava" src="../assets/avatars/senick.webp" alt="塞尼克" onerror="this.style.background='#24344a';this.src='../assets/heroes/senick.webp'">
+      <div class="nm">塞尼克</div>
+      <div class="ti">沙海向导 · 你的向导</div>
+    </div>
+  </div>
+</div>
+
+<div class="container">
+
+<div class="lead">
+  绿洲的泉眼上架着一面<b>铜丝细网</b>。<br>
+  塞尼克用木勺舀起一瓢混着沙的水，倒在网上——<b>沙粒留在网面，清水汇入池中。</b><br>
+  你盯着那面网：所以……<strong>它是把"不要的"留在上面，让"要的"漏下去？</strong><br>
+  也可以反过来看。他笑了笑，<strong>你也可以说，它是把不要的一个个"划掉"。
+  求素数用的筛法，就是这么想的。</strong>
+</div>
+
+<div class="cast senick">
+  <img class="ava" src="../assets/avatars/senick.webp" alt="塞尼克" onerror="this.style.display='none'">
+  <div class="bubble">
+    <div class="who">塞尼克 · 沙海向导</div>
+    上一课我们学会了"判断一个数是不是质数"。<br>
+    可如果要<strong>找出 1 到 100 万之间的所有质数</strong>呢？<b>一个个判？那就太慢了。</b><br>
+    <b>这一课教你两个老祖宗级别的算法：欧几里得算法和埃氏筛。它们又快又短，两千年了还在用。</b>
+  </div>
+</div>
+
+<figure class="pic">
+  <img src="../assets/illustrations/py-L5-02-01_spring_sieve.webp" alt="泉眼筛网"
+       onerror="this.closest('.pic').classList.add('missing')">
+  <div class="ph">
+    <div class="fn">assets/illustrations/py-L5-02-01_spring_sieve.webp</div>
+    <div class="ds">【配图位】绿洲泉眼上架着一面铜丝细网，混着沙粒的水从上方倒下：沙粒留在网面、聚成一个个被圈起的标记，清水从网下汇入石池；网边的石台上刻着一到三十的数字格，其中若干格被划上了斜线；一名披沙色斗篷的向导手持木勺站在网旁，水花在阳光下闪闪发亮。</div>
+  </div>
+  <figcaption>图 1：星砂绿洲的泉眼筛网——今天要从这里开始</figcaption>
+</figure>
+
+<!-- ============ 0 ============ -->
+<div class="section-header" id="s0">
+  <h2>0　单元导语与目标</h2>
+  <div class="en-title">Unit Overview</div>
+</div>
+
+<h3 id="s0-1">0.1 学习目标</h3>
+<div class="goal-grid">
+  <div class="goal">
+    <h4><span class="ic">1</span>学完这个单元，你将能……</h4>
+    <ul>
+      <li>说清"筛法"和"试除法"的区别</li>
+      <li>独立写出埃氏筛</li>
+      <li>解释为什么从 <code class="inline">i×i</code> 开始标记</li>
+      <li>用欧几里得算法求最大公约数</li>
+      <li>说出欧几里得算法为什么成立</li>
+      <li>了解线性筛"每个合数只筛一次"的思想</li>
+    </ul>
+  </div>
+  <div class="goal syllabus">
+    <h4><span class="ic">2</span>对标 GESP 考纲（C++ 五级）</h4>
+    <ul>
+      <li>掌握欧几里得算法（辗转相除法）求最大公约数</li>
+      <li>掌握埃拉托斯特尼筛法的原理与实现</li>
+      <li>理解筛法的时间复杂度优势</li>
+      <li>了解线性筛的基本思想</li>
+      <li>考核目标：能读懂筛法代码、能判断填空处的正确写法</li>
+    </ul>
+  </div>
+</div>
+
+<h3 id="s0-2">0.2 考纲对照</h3>
+<table class="styled">
+  <thead><tr><th>本单元小节</th><th>对应考纲条目</th><th>真题常考形式</th></tr></thead>
+  <tbody>
+    <tr><td>1　从试除法到筛法</td><td>两种求素数的思路</td><td>筛法比试除法快在哪里</td></tr>
+    <tr><td>2　埃氏筛</td><td>埃氏筛原理</td><td>为什么从 <code class="inline">i×i</code> 开始标记</td></tr>
+    <tr><td>3　埃氏筛的实现</td><td>筛法的代码与复杂度</td><td>循环边界、复杂度量级</td></tr>
+    <tr><td>4　欧几里得算法</td><td>辗转相除法</td><td><code class="inline">gcd(105, 45)</code> 是多少；调用序列</td></tr>
+    <tr><td>5　线性筛</td><td>线性筛的思想</td><td>保证每个合数只被筛一次的关键条件</td></tr>
+  </tbody>
+</table>
+
+<!-- ============ 1 ============ -->
+<div class="section-header" id="s1">
+  <h2>1　从试除法到筛法</h2>
+  <div class="en-title">From Trial Division to Sieve</div>
+</div>
+
+<h3 id="s1-1">1.1 一个个试太慢了</h3>
+
+<div class="code-card">
+  <div class="code-head">
+    <span class="dot d1"></span><span class="dot d2"></span><span class="dot d3"></span>
+    <span class="file">用上一课的办法求 1~N 的所有质数</span>
+    <span class="lang">C++</span>
+  </div>
+  <pre><code>// 上一课的写法：对每个数单独判断
+for (int i = 2; i &lt;= N; i++) {
+    if (isPrime(i)) {          // 里面还要循环到 √i
+        cout &lt;&lt; i &lt;&lt; " ";
+    }
+}
+
+// 假设 N = 1000000：
+//   外层跑 100 万次
+//   每次内层平均还要跑几百次
+//   → 一共大约几亿次运算，很可能超时</code></pre>
+  <div class="out"><b>问题所在</b>　
+  <b>每个数都从零开始"独立判断"，前面算过的信息完全没被利用</b></div>
+</div>
+
+<h3 id="s1-2">1.2 筛法的想法：反过来想</h3>
+
+<div class="box remember">
+  <span class="lb">换个思路：不要"判"质数，去"划掉"合数。</span>
+  与其<strong>一个个去问"你是不是质数"</strong>，不如<strong>反过来</strong>：<br>
+  <b>从一个质数出发，把它的所有倍数（也就是合数）统统划掉。</b><br>
+  <strong>从 2 开始一路划过去——最后剩下没被划掉的，就都是质数。</strong><br>
+  <b>这个思路就叫"筛法"——像用筛子把沙子筛掉，只留想要的。</b>
+</div>
+
+<div class="code-card">
+  <div class="code-head">
+    <span class="dot d1"></span><span class="dot d2"></span><span class="dot d3"></span>
+    <span class="file">手工演算一遍（1~30）</span>
+    <span class="lang">TEXT</span>
+  </div>
+  <pre><code>先假设 2~30 全都是质数：
+
+2 3 4 5 6 7 8 9 10 11 12 13 14 15 16 17 18 19 20 21 22 23 24 25 26 27 28 29 30
+
+① 从 2 开始：2 是质数 → 划掉 2 的所有倍数（4、6、8、10、……、30）
+② 下一个没被划掉的是 3 → 划掉 3 的倍数（6、9、12、15、……、30）
+③ 下一个是 5 → 划掉 5 的倍数（10、15、20、25、30）
+④ 下一个是 7 → 划掉 7 的倍数（14、21、28）
+⑤ 下一个是 11 → 11×11 = 121 > 30，可以停了
+
+剩下的：2 3 5 7 11 13 17 19 23 29   ← 全是质数</code></pre>
+  <div class="out"><b>核心观察</b>　
+  <b>每个合数都会被某个更小的质数"顺手划掉"</b>——
+  <strong>比如 12，被 2 划掉一次就够了</strong></div>
+</div>
+
+<div class="box tip">
+  <span class="lb">打个比方：</span>
+  筛法就像<b>从名册上划人</b>——<strong>先把所有名字都写上，然后一波波划：</strong><br>
+  <b>先划掉"所有 2 的倍数"，再划掉"所有 3 的倍数"，再划掉 5 的倍数……</b><br>
+  <strong>划到最后，名册上剩下的名字，就是质数。</strong><br>
+  <b>关键在于：一个人的名字只需要被划掉一次——不用每次都重新查他。</b>
+</div>
+
+<!-- ============ 2 ============ -->
+<div class="section-header" id="s2">
+  <h2>2　埃氏筛</h2>
+  <div class="en-title">Sieve of Eratosthenes</div>
+</div>
+
+<h3 id="s2-1">2.1 把合数一个个划掉</h3>
+
+<div class="code-card">
+  <div class="code-head">
+    <span class="dot d1"></span><span class="dot d2"></span><span class="dot d3"></span>
+    <span class="file">埃氏筛的骨架</span>
+    <span class="lang">C++</span>
+  </div>
+  <pre><code>bool isPrime[N + 1];              // isPrime[i] 表示 i 是不是质数
+for (int i = 2; i &lt;= N; i++) isPrime[i] = true;   // 先假设全是质数
+
+for (int i = 2; i &lt;= N; i++) {
+    if (isPrime[i]) {                       // i 是质数
+        for (int j = i * 2; j &lt;= N; j += i) {
+            isPrime[j] = false;             // ★ 划掉 i 的倍数
+        }
+    }
+}</code></pre>
+  <div class="out"><b>三步走</b>　
+  ① 开一个布尔数组；② 先假设全是质数；③ 从每个质数出发，<b>把它的倍数划成合数</b></div>
+</div>
+
+<div class="box warn">
+  <span class="lb">倍数从哪儿开始划？这里是第一个优化点。</span>
+  上面的写法是从 <code class="inline">i * 2</code> 开始划的。
+  其实<strong>从 <code class="inline">i * i</code> 开始划就够了</strong>——
+  <b>因为 <code class="inline">i * 2</code>、<code class="inline">i * 3</code>、…、<code class="inline">i * (i−1)</code> 这些数，
+  都含有一个比 i 更小的质因数，早就被更小的质数划掉了。</b><br>
+  <strong>（这一点真题里专门考过判断题，下面详细讲。）</strong>
+</div>
+
+<h3 id="s2-2">2.2 为什么从 i×i 开始</h3>
+
+<div class="box remember">
+  <span class="lb">一句话说清：</span>
+  当质数 <code class="inline">i</code> 要划自己的倍数时，
+  <strong><code class="inline">i×i</code> 之前的那些倍数（<code class="inline">i×2</code>、<code class="inline">i×3</code>……）
+  已经被更小的质因数划掉了</strong>——<strong>再划一遍是白费功夫。</strong><br>
+  <b>所以从 <code class="inline">i * i</code> 开始划，结果完全一样，但快得多。</b>
+</div>
+
+<figure class="figure">
+  <svg class="diagram" viewBox="0 0 830 250" role="img" aria-label="为什么从 i×i 开始">
+    <text x="24" y="30" font-size="14" font-weight="bold" fill="#1f2937">以质数 7 为例：7×2 到 7×6 早就被别人划掉了</text>
+
+    <g font-family="Consolas,monospace" font-size="13">
+      <rect x="60" y="56" width="104" height="46" rx="8" fill="#fef2f2" stroke="#ef4444" stroke-width="1.8"/>
+      <text x="112" y="76" text-anchor="middle" fill="#b91c1c">7 × 2 = 14</text>
+      <text x="112" y="94" text-anchor="middle" font-size="10.5" fill="#b91c1c">被 2 划过</text>
+
+      <rect x="174" y="56" width="104" height="46" rx="8" fill="#fef2f2" stroke="#ef4444" stroke-width="1.8"/>
+      <text x="226" y="76" text-anchor="middle" fill="#b91c1c">7 × 3 = 21</text>
+      <text x="226" y="94" text-anchor="middle" font-size="10.5" fill="#b91c1c">被 3 划过</text>
+
+      <rect x="288" y="56" width="104" height="46" rx="8" fill="#fef2f2" stroke="#ef4444" stroke-width="1.8"/>
+      <text x="340" y="76" text-anchor="middle" fill="#b91c1c">7 × 4 = 28</text>
+      <text x="340" y="94" text-anchor="middle" font-size="10.5" fill="#b91c1c">被 2 划过</text>
+
+      <rect x="402" y="56" width="104" height="46" rx="8" fill="#fef2f2" stroke="#ef4444" stroke-width="1.8"/>
+      <text x="454" y="76" text-anchor="middle" fill="#b91c1c">7 × 5 = 35</text>
+      <text x="454" y="94" text-anchor="middle" font-size="10.5" fill="#b91c1c">被 5 划过</text>
+
+      <rect x="516" y="56" width="104" height="46" rx="8" fill="#fef2f2" stroke="#ef4444" stroke-width="1.8"/>
+      <text x="568" y="76" text-anchor="middle" fill="#b91c1c">7 × 6 = 42</text>
+      <text x="568" y="94" text-anchor="middle" font-size="10.5" fill="#b91c1c">被 2 划过</text>
+
+      <rect x="646" y="56" width="130" height="46" rx="8" fill="#e9f8ef" stroke="#2e9e5b" stroke-width="2.6"/>
+      <text x="711" y="76" text-anchor="middle" fill="#1f7a44" font-weight="bold">7 × 7 = 49</text>
+      <text x="711" y="94" text-anchor="middle" font-size="10.5" fill="#3b7c5b">★ 这里才该划</text>
+    </g>
+
+    <rect x="60" y="126" width="716" height="106" rx="12" fill="#f7f9fd" stroke="#cbd5e1" stroke-width="1.6"/>
+    <text x="84" y="152" font-size="12.5" fill="#334155" font-weight="bold">道理很简单：7 × k（k &lt; 7）一定含有一个比 7 小的质因数</text>
+    <text x="84" y="180" font-size="12" fill="#475569">14 = 2 × 7　→ 2 才是它的最小质因数，早在处理质数 2 时就被划掉了</text>
+    <text x="84" y="204" font-size="12" fill="#475569">21 = 3 × 7　→ 最小质因数是 3</text>
+    <text x="84" y="224" font-size="11.5" fill="#b45309">★ 所以从 i × i 开始划，既不会漏，又能省掉一大半重复劳动</text>
+  </svg>
+  <div class="caption">图 2（SVG）：为什么倍数可以从 i×i 开始划</div>
+</figure>
+
+<!-- ============ 3 ============ -->
+<div class="section-header" id="s3">
+  <h2>3　埃氏筛的实现</h2>
+  <div class="en-title">Implementing the Sieve</div>
+</div>
+
+<h3 id="s3-1">3.1 完整代码</h3>
+
+<div class="code-card">
+  <div class="code-head">
+    <span class="dot d1"></span><span class="dot d2"></span><span class="dot d3"></span>
+    <span class="file">埃氏筛标准写法</span>
+    <span class="lang">C++</span>
+  </div>
+  <pre><code>#include &lt;iostream&gt;
+using namespace std;
+
+const int N = 1000000;
+bool isPrime[N + 1];
+
+int main() {
+    for (int i = 2; i &lt;= N; i++) isPrime[i] = true;
+
+    for (int i = 2; i * i &lt;= N; i++) {        // ★ 外层只到 √N
+        if (isPrime[i]) {
+            for (int j = i * i; j &lt;= N; j += i) {   // ★ 从 i*i 起划
+                isPrime[j] = false;
+            }
+        }
+    }
+
+    int cnt = 0;
+    for (int i = 2; i &lt;= N; i++) {
+        if (isPrime[i]) cnt++;
+    }
+    cout &lt;&lt; cnt &lt;&lt; endl;      // 1000000 以内有 78498 个质数
+    return 0;
+}</code></pre>
+  <div class="out"><b>两处优化都要用上</b>　
+  ① 外层循环 <code>i * i &lt;= N</code>——<b>i 超过 √N 就不用再划了</b>；<br>
+  ② 内层 <code>j</code> 从 <code>i * i</code> 开始</div>
+</div>
+
+<div class="box tip">
+  <span class="lb">为什么外层也只到 √N 就够？</span>
+  因为一旦 <code class="inline">i &gt; √N</code>，那么 <code class="inline">i * i &gt; N</code>——
+  <strong>i 在范围里已经没有任何倍数需要划了。</strong><br>
+  <b>更直白的说法：</b>一个合数 <code class="inline">n ≤ N</code> 一定有一个
+  <strong>不超过 √N 的质因数</strong>，
+  <b>所以 √N 以内的质数已经足够把 N 以内的合数全部划掉。</b><br>
+  <strong>外层从 N 次降到 √N 次——又是一次大提速。</strong>
+</div>
+
+<h3 id="s3-2">3.2 它比试除法快多少</h3>
+
+<table class="styled">
+  <thead><tr><th>做法</th><th>大约要做多少次运算</th><th>N = 10⁶ 时的量级</th></tr></thead>
+  <tbody>
+    <tr><td>逐个试除</td><td><code class="inline">N × √N</code></td><td>约 <strong>10⁹</strong>（十亿）</td></tr>
+    <tr><td><strong>埃氏筛</strong></td><td><code class="inline">N log log N</code></td><td>约 <strong>3 × 10⁶</strong>（三百万）</td></tr>
+  </tbody>
+</table>
+
+<div class="box remember">
+  <span class="lb">结论：</span>
+  埃氏筛的复杂度约为 <strong><code class="inline">O(N log log N)</code></strong>，
+  <strong>非常接近线性</strong>。<br>
+  <b>对比一下：N = 10⁶ 时，试除法要十亿次量级，而埃氏筛只要三百万次——差了三百多倍。</b><br>
+  <strong>这就是"换个思路"带来的威力：算法一改，从"肯定超时"变成"瞬间跑完"。</strong>
+</div>
+
+<!-- ============ 4 ============ -->
+<div class="section-header" id="s4">
+  <h2>4　欧几里得算法</h2>
+  <div class="en-title">Euclidean Algorithm</div>
+</div>
+
+<h3 id="s4-1">4.1 辗转相除：一除一替换</h3>
+
+<div class="code-card">
+  <div class="code-head">
+    <span class="dot d1"></span><span class="dot d2"></span><span class="dot d3"></span>
+    <span class="file">求最大公约数：两行就够</span>
+    <span class="lang">C++</span>
+  </div>
+  <pre><code>int gcd(int a, int b) {
+    while (b != 0) {
+        int r = a % b;      // 求余数
+        a = b;              // 原来的除数变成新的被除数
+        b = r;              // 余数变成新的除数
+    }
+    return a;               // 除数为 0 时，被除数就是答案
+}</code></pre>
+  <div class="out"><b>核心公式</b>　<b><code>gcd(a, b) = gcd(b, a % b)</code></b><br>
+  <b>终止条件</b>　<b>当 <code>b == 0</code> 时，<code>gcd(a, 0) = a</code></b></div>
+</div>
+
+<div class="code-card">
+  <div class="code-head">
+    <span class="dot d1"></span><span class="dot d2"></span><span class="dot d3"></span>
+    <span class="file">算 gcd(105, 45) 的全过程</span>
+    <span class="lang">TEXT</span>
+  </div>
+  <pre><code>gcd(105, 45)
+  105 % 45 = 15    → 换成 gcd(45, 15)
+   45 % 15 = 0     → 换成 gcd(15, 0)
+                     b == 0，返回 15
+
+所以 gcd(105, 45) = 15
+
+验证：105 ÷ 15 = 7，45 ÷ 15 = 3，都除得尽 ✔
+      而且 15 是最大的（再大一点就除不尽 45 了）</code></pre>
+  <div class="out"><b>只用了 2 步</b>　
+  <b>如果从 45 往下一个个试，最坏要试几十次</b>——<strong>这就是算法的价值</strong></div>
+</div>
+
+<h3 id="s4-2">4.2 为什么这样能得到答案</h3>
+
+<div class="box tip">
+  <span class="lb">关键的观察：a 和 b 的公约数，就是 b 和 (a % b) 的公约数。</span>
+  设 <code class="inline">a = q × b + r</code>（也就是 <code class="inline">r = a % b</code>）。<br>
+  <b>如果某个数 d 能同时整除 a 和 b</b>，
+  那么它一定能整除 <code class="inline">r = a − q × b</code>——<strong>因为右边两项它都能整除。</strong><br>
+  <b>反过来说，如果 d 能整除 b 和 r</b>，
+  那它也能整除 <code class="inline">a = q × b + r</code>。<br>
+  <strong>所以"a 和 b 的公共约数"与"b 和 r 的公共约数"是同一批数——最大值自然也相同。</strong><br>
+  <b>于是 gcd(a, b) = gcd(b, a % b)，一路替换下去就行。</b>
+</div>
+
+<div class="code-card">
+  <div class="code-head">
+    <span class="dot d1"></span><span class="dot d2"></span><span class="dot d3"></span>
+    <span class="file">还能写成递归，更短</span>
+    <span class="lang">C++</span>
+  </div>
+  <pre><code>int gcd(int a, int b) {
+    return b == 0 ? a : gcd(b, a % b);
+}
+// 一行搞定，其中三元运算符表示"如果 b 是 0 就返回 a，否则继续递归"</code></pre>
+  <div class="out"><b>两种写法结果完全相同</b>　
+  <b>迭代版好理解，递归版更短</b>——<strong>考试里两种都可能出现</strong></div>
+</div>
+
+<div class="box remember">
+  <span class="lb">a 和 b 谁大谁小有关系吗？</span>
+  <b>没有关系。</b>如果 <code class="inline">a &lt; b</code>，
+  那么 <code class="inline">a % b = a</code>，
+  <b>第一步就会自动把它俩"换个位置"</b>：<code class="inline">gcd(a, b) → gcd(b, a)</code>。<br>
+  <strong>所以欧几里得算法对 a &gt; b 和 a &lt; b 都适用，不需要提前排序。</strong><br>
+  <b>这也是真题里考过的判断题。</b>
+</div>
+
+<figure class="pic">
+  <img src="../assets/illustrations/py-L5-02-02_euclid_basins.webp" alt="两只石池互相倒水"
+       onerror="this.closest('.pic').classList.add('missing')">
+  <div class="ph">
+    <div class="fn">assets/illustrations/py-L5-02-02_euclid_basins.webp</div>
+    <div class="ds">【配图位】绿洲工程区两只大小不同的石池并排而立，中间用一条水槽相连：大水量的池反复往小池里倒，水面上刻着逐渐递减的刻度（105→45→15→0）；池壁上镶着齿轮与水口，最后两只池的水位停在同一个刻度上并同时亮起；一名披沙色斗篷的向导站在旁边举着刻度尺。</div>
+  </div>
+  <figcaption>图 3：辗转相除——两只池子倒来倒去，最后停在同一个刻度</figcaption>
+</figure>
+
+<!-- ============ 5 ============ -->
+<div class="section-header" id="s5">
+  <h2>5　线性筛</h2>
+  <div class="en-title">Linear Sieve</div>
+</div>
+
+<h3 id="s5-1">5.1 让每个合数只被筛掉一次</h3>
+
+<div class="box remember">
+  <span class="lb">埃氏筛浪费在哪里？</span>
+  <b>一个合数可能被划掉好几次。</b><br>
+  <b>比如 30：处理质数 2 时划一次、处理 3 时又划一次、处理 5 时再划一次——一共做了三遍无用的功。</b><br>
+  <strong>线性筛（也叫欧拉筛）的想法就是：让每个合数只被"它的最小质因数"筛掉，一共只划一次。</strong><br>
+  <b>这样复杂度就从 <code class="inline">O(N log log N)</code> 降到真正的
+  <code class="inline">O(N)</code>——每个数只被访问常数次。</b>
+</div>
+
+<div class="code-card">
+  <div class="code-head">
+    <span class="dot d1"></span><span class="dot d2"></span><span class="dot d3"></span>
+    <span class="file">线性筛的完整代码</span>
+    <span class="lang">C++</span>
+  </div>
+  <pre><code>vector&lt;bool&gt; composite(N + 1, false);   // composite[i] 表示 i 是合数
+vector&lt;int&gt; primes;                     // 收集找到的质数
+
+for (int i = 2; i &lt;= N; i++) {
+    if (!composite[i]) primes.push_back(i);    // i 没被标记过 → 它是质数
+
+    for (int p : primes) {                     // 用已知的质数去筛
+        if ((long long)i * p &gt; N) break;       // 超出范围就停
+        composite[i * p] = true;               // 把 i * p 标记成合数
+        if (i % p == 0) break;                 // ★ 关键的一行
+    }
+}</code></pre>
+  <div class="out"><b>最关键的一行就是最后那句</b>　
+  <b><code>if (i % p == 0) break;</code></b><br>
+  <b>它的作用是：保证每个合数只被它的"最小质因数"筛掉一次</b></div>
+</div>
+
+<h3 id="s5-2">5.2 关键的那一行</h3>
+
+<div class="box tip">
+  <span class="lb">为什么 <code>i % p == 0</code> 时就必须 break？</span>
+  <b>p 是从小到大遍历质数的。</b>当 <code class="inline">i % p == 0</code> 时，
+  说明 <strong>p 就是 i 的最小质因数</strong>。<br>
+  <b>这时 <code class="inline">i × p</code> 的最小质因数也就是 p</b>——
+  已经被筛过了，<strong>任务完成。</strong><br>
+  <b>如果再继续拿更大的质数 p′ 去筛 <code class="inline">i × p′</code>，</b>
+  那这个合数的最小质因数其实是 p（比 p′ 小），
+  <strong>它应该在"i′ = i × p′ / p"那一轮被 p 筛掉——现在筛就是抢了别人的活，会造成重复。</strong><br>
+  <strong>所以一旦 p 能整除 i，就立刻停下来。</strong>
+</div>
+
+<div class="code-card">
+  <div class="code-head">
+    <span class="dot d1"></span><span class="dot d2"></span><span class="dot d3"></span>
+    <span class="file">看看 12 是怎么被筛掉的</span>
+    <span class="lang">TEXT</span>
+  </div>
+  <pre><code>i = 4 时（4 已被 2 筛过，是合数，不进 primes）：
+   primes = [2, 3]
+   ① p = 2 → 筛掉 4×2 = 8；4 % 2 == 0 → break ✔
+
+   注意：如果没有 break，下一步会筛 4×3 = 12
+   但 12 的最小质因数是 2，应该由 6×2 来筛
+   ——所以这里必须停手
+
+i = 6 时（合数）：
+   ① p = 2 → 筛掉 6×2 = 12；6 % 2 == 0 → break ✔
+
+于是 12 只被筛了一次，而且是被它的最小质因数 2 筛掉的。</code></pre>
+  <div class="out"><b>12 只被筛了一次</b>　
+  <b>而埃氏筛里，12 会被 2 和 3 各筛一次</b></div>
+</div>
+
+<figure class="figure">
+  <svg class="diagram" viewBox="0 0 830 230" role="img" aria-label="埃氏筛与线性筛的对比">
+    <text x="24" y="30" font-size="14" font-weight="bold" fill="#1f2937">同一个合数 30，两种筛法各筛了几次？</text>
+
+    <rect x="46" y="56" width="360" height="150" rx="12" fill="#fef2f2" stroke="#ef4444" stroke-width="2"/>
+    <text x="226" y="82" text-anchor="middle" font-size="12.5" fill="#b91c1c" font-weight="bold">埃氏筛：被划 3 次</text>
+    <text x="70" y="112" font-size="12" fill="#b91c1c">处理质数 2 → 划掉 30</text>
+    <text x="70" y="140" font-size="12" fill="#b91c1c">处理质数 3 → 又划一次 30</text>
+    <text x="70" y="168" font-size="12" fill="#b91c1c">处理质数 5 → 再划一次 30</text>
+    <text x="70" y="194" font-size="11.5" fill="#b45309">★ 后两次是白费功夫</text>
+
+    <rect x="424" y="56" width="360" height="150" rx="12" fill="#e9f8ef" stroke="#2e9e5b" stroke-width="2"/>
+    <text x="604" y="82" text-anchor="middle" font-size="12.5" fill="#1f7a44" font-weight="bold">线性筛：只筛 1 次</text>
+    <text x="448" y="112" font-size="12" fill="#1f7a44">30 的最小质因数是 2</text>
+    <text x="448" y="140" font-size="12" fill="#1f7a44">i = 15 时，p = 2 → 筛掉 15×2 = 30</text>
+    <text x="448" y="168" font-size="12" fill="#3b7c5b">15 % 2 ≠ 0，继续…下一个 p 是 3</text>
+    <text x="448" y="194" font-size="11.5" fill="#b45309">★ 每个合数只被最小质因数筛一次</text>
+  </svg>
+  <div class="caption">图 4（SVG）：埃氏筛 vs 线性筛——重复劳动差在哪里</div>
+</figure>
+
+<div class="box warn">
+  <span class="lb">写线性筛最容易忽略的两点：</span>
+  <b>① 越界判断必须放在最前面。</b>
+  写成 <code class="inline">if ((long long)i * p &gt; N) break;</code>——
+  <strong><code class="inline">i * p</code> 可能超过 <code class="inline">int</code> 的范围，要先转成 <code class="inline">long long</code> 再比。</strong><br>
+  <b>② <code class="inline">composite</code> 数组的意思是"是合数"</b>，不是"是质数"。
+  <strong>所以判断质数要写 <code class="inline">if (!composite[i])</code>——那个感叹号千万别丢。</strong>
+</div>
+
+<!-- ============ 6 ============ -->
+<div class="section-header" id="s6">
+  <h2>6　代码实战</h2>
+  <div class="en-title">Level Practice</div>
+</div>
+
+<div class="level-card">
+  <div class="lc-head"><span class="n">关卡</span><h4>盐碱地</h4><span class="go">进入关卡 →</span></div>
+  <div class="lc-body">
+    <div class="story">
+      <b>故事：</b>盐碱地上铺满了编号的石块，<b>塞尼克要用一张网把它们筛一遍。</b><br>
+      规则很简单，他举着网：<strong>从最小的质数开始，
+      每遇到一个质数，就把它的倍数统统圈出去。</strong><br>
+      你一边圈一边数：<b>这样圈完，剩下的就都是质数了。</b><br>
+      对。而且别忘了——<strong>从它自己乘自己那里开始圈就行，前面早有人圈过了。</strong>
+    </div>
+    <p><strong>思路：</strong>用<strong>埃氏筛</strong>把 1~N 之间的合数全部标记出来，
+    剩下的就是质数。</p><figure class="pic">
+  <img src="../assets/stages/py-L5-02-stage1_salt_flat.webp" alt="盐碱地 关卡截图"
+       onerror="this.closest('.pic').classList.add('missing')">
+  <div class="ph">
+    <div class="fn">assets/stages/py-L5-02-stage1_salt_flat.webp</div>
+    <div class="ds">【截图位】盐碱地关卡：盐地石块阵列与筛选标记同框，代码编辑区可见质数筛的循环。</div>
+  </div>
+  <figcaption>关卡实况：盐碱地</figcaption>
+</figure>
+    <div class="code-card">
+      <div class="code-head">
+        <span class="dot d1"></span><span class="dot d2"></span><span class="dot d3"></span>
+        <span class="file">筛出全部质数，并输出个数和最大的几个</span>
+        <span class="lang">C++</span>
+      </div>
+      <pre><code>#include &lt;iostream&gt;
+using namespace std;
+
+const int N = 100000;
+bool isPrime[N + 1];
+
+int main() {
+    for (int i = 2; i &lt;= N; i++) isPrime[i] = true;
+
+    for (int i = 2; i * i &lt;= N; i++) {
+        if (isPrime[i]) {
+            for (int j = i * i; j &lt;= N; j += i) {
+                isPrime[j] = false;
+            }
+        }
+    }
+
+    int cnt = 0, last = 0;
+    for (int i = 2; i &lt;= N; i++) {
+        if (isPrime[i]) {
+            cnt++;
+            last = i;              // 记下最后一个（也就是最大的）
+        }
+    }
+
+    cout &lt;&lt; cnt &lt;&lt; " " &lt;&lt; last &lt;&lt; endl;
+    return 0;
+}</code></pre>
+      <div class="out"><b>OUTPUT</b>　9592 99991<br>
+      <b>验算</b>　100000 以内一共有 <b>9592</b> 个质数，其中最大的是 <b>99991</b></div>
+    </div>
+    <div class="box info">
+      <span class="lb">和本单元的关系：</span>
+      <strong>"先筛出质数表，再拿它去做别的事"是数论题的标准套路。</strong><br>
+      <b>比如要判某个数是不是质数——只要 <code>O(1)</code> 查一下表就行</b>，
+      比每次重新试除快得多。<br>
+      <strong>本单元的筛法，后面几课还会反复用到：
+      求质因数、判断哥德巴赫猜想、做质数相关的统计……都靠它打底。</strong>
+    </div>
+    <a class="btn-go" href="https://codecombat.cn/" target="_blank" rel="noopener">去扣哒世界闯这一关 →</a>
+  </div>
+</div>
+
+<figure class="pic">
+  <img src="../assets/illustrations/py-L5-02-03_linear_sieve.webp" alt="每个合数只筛一次"
+       onerror="this.closest('.pic').classList.add('missing')">
+  <div class="ph">
+    <div class="fn">assets/illustrations/py-L5-02-03_linear_sieve.webp</div>
+    <div class="ds">【配图位】盐碱地上一排编号石块，一块刻着"30"的石块只被一道光划过一次、印记干净清晰；旁边对比性地画出几道淡淡的、已熄灭的重复划痕（表示埃氏筛里被划了多次）；一名披沙色斗篷的向导手持一根细长的光杖，杖端刚点过那块石头，其余石块排成一条向远处延伸的线。</div>
+  </div>
+  <figcaption>图 5：线性筛——每个合数只被划一次，划完就收手</figcaption>
+</figure>
+
+
+
+<!-- ============ 7 ============ -->
+<div class="section-header" id="s7">
+  <h2>7　常见陷阱</h2>
+  <div class="en-title">Common Pitfalls</div>
+</div>
+
+<div class="cast duck">
+  <img class="ava" src="../assets/ducks/duck_hattori.webp" alt="扣哒鸭" onerror="this.style.display='none'">
+  <div class="bubble">
+    <div class="who">扣哒鸭 · 调试官</div>
+    筛法和 gcd 的代码都很短，但边界特别容易写错。四条。
+  </div>
+</div>
+
+<div class="pit">
+  <div class="pt">
+    <div class="x">1</div>
+    <div class="t"><b>数组开小了，或者下标从 0 开始。</b></div>
+  </div>
+  <div class="duck">
+    <img src="../assets/ducks/duck_zana.webp" alt="扣哒鸭" onerror="this.style.display='none'">
+    <div class="dt"><b>扣哒鸭：</b>要筛到 N，数组就得开 <code>N + 1</code> ——
+    <strong>因为下标最大会用到 N 本身。</strong><br>
+    开成 <code>bool isPrime[N]</code> 就<b>差了一个格子，访问 N 时越界</b>。</div>
+  </div>
+  <div class="fix"><b>正确写法：</b><code class="inline">bool isPrime[N + 1];</code></div>
+</div>
+
+<div class="pit">
+  <div class="pt">
+    <div class="x">2</div>
+    <div class="t"><b>初始化时忘了把 0 和 1 排除。</b></div>
+  </div>
+  <div class="duck">
+    <img src="../assets/ducks/duck_naria.webp" alt="扣哒鸭" onerror="this.style.display='none'">
+    <div class="dt"><b>扣哒鸭：</b>如果从 <code>i = 0</code> 开始全部设成 <code>true</code>，
+    <strong>那 0 和 1 就会一直被当成质数。</strong><br>
+    <b>正确的做法是从 0 开始清空（或全局数组自动为 false），
+    然后只把 <code>i = 2</code> 到 N 设成 <code>true</code>。</b></div>
+  </div>
+  <div class="fix"><b>正确写法：</b><code class="inline">for (int i = 2; i &lt;= N; i++) isPrime[i] = true;</code></div>
+</div>
+
+<div class="pit">
+  <div class="pt">
+    <div class="x">3</div>
+    <div class="t"><b>内层循环从 <code class="inline">i * 2</code> 开始，或者写错步长。</b></div>
+  </div>
+  <div class="duck">
+    <img src="../assets/ducks/duck_senick.webp" alt="扣哒鸭" onerror="this.style.display='none'">
+    <div class="dt"><b>扣哒鸭：</b>从 <code>i * 2</code> 开始不会算错，但会<b>重复劳动</b>——
+    <strong>从 <code>i * i</code> 开始才对。</strong><br>
+    还有步长必须是 <code>j += i</code>：<b>写成 <code>j++</code> 就变成"从 i² 起全划掉"，那是错的。</b></div>
+  </div>
+  <div class="fix"><b>正确写法：</b><code class="inline">for (int j = i * i; j &lt;= N; j += i)</code></div>
+</div>
+
+<div class="pit">
+  <div class="pt">
+    <div class="x">4</div>
+    <div class="t"><b>gcd 函数忘了处理 b == 0 的情况。</b></div>
+  </div>
+  <div class="duck">
+    <img src="../assets/ducks/duck_illia.webp" alt="扣哒鸭" onerror="this.style.display='none'">
+    <div class="dt"><b>扣哒鸭：</b>循环的条件是 <code>b != 0</code>，
+    <strong>循环结束时答案在 <code>a</code> 里，不在 <code>b</code> 里。</strong><br>
+    写成 <code>return b;</code> 就全错了——<b>那时候 b 一定是 0。</b><br>
+    <b>而且如果一开始 <code>b</code> 就是 0，循环一次都不跑，返回的应该是 a。</b></div>
+  </div>
+  <div class="fix"><b>记牢：</b>返回 <code class="inline">a</code>；且 <code class="inline">gcd(a, 0) = a</code></div>
+</div>
+
+<!-- ============ 8 ============ -->
+<div class="section-header" id="s8">
+  <h2>8　题目练习</h2>
+  <div class="en-title">Practice</div>
+</div>
+
+<p>前 4 题改编自 C++ 五级真题，其余为原创练习题。</p>
+
+<div class="exam">
+  <div class="eh"><span class="src">改编自 2026 年 9 月 · C++ 五级 · 第 4 题</span><span class="tp">单选题</span></div>
+  <div class="eb">
+    <div class="q">函数 <code class="inline">gcd</code> 定义如下，则 <code class="inline">gcd(105, 45)</code>
+    的结果是（　　）。</div>
+    <pre>int gcd(int a, int b) {
+    return b == 0 ? a : gcd(b, a % b);
+}</pre>
+    <div class="opt"><i>A.</i><code class="inline">3</code>　　<i>B.</i><code class="inline">5</code>　　<i>C.</i><code class="inline">15</code>　　<i>D.</i><code class="inline">45</code></div>
+    <details><summary>查看答案与详解</summary>
+      <div class="ans"><b>答案：C</b>。跟着递归走一遍：<br>
+      <code class="inline">gcd(105, 45)</code>：b ≠ 0 → 算 <code class="inline">105 % 45 = 15</code>
+      → 变成 <code class="inline">gcd(45, 15)</code><br>
+      <code class="inline">gcd(45, 15)</code>：b ≠ 0 → 算 <code class="inline">45 % 15 = 0</code>
+      → 变成 <code class="inline">gcd(15, 0)</code><br>
+      <code class="inline">gcd(15, 0)</code>：b == 0 → <strong>返回 a = 15</strong> ✔<br>
+      <b>验证一下：</b>105 ÷ 15 = 7，45 ÷ 15 = 3，<strong>都能除尽</strong>；
+      而且 15 已经很大了——<b>再大一点（比如 30）就除不尽 45 了。</b><br>
+      <b>A、B 项</b>（3 和 5）都是 15 的约数，但<strong>不是最大的</strong>；
+      <b>D 项</b>（45）连 105 都除不尽。<br>
+      <span class="tagline">对应小节</span>4.1 辗转相除：一除一替换。</div>
+    </details>
+  </div>
+</div>
+
+<div class="exam">
+  <div class="eh"><span class="src">改编自 2026 年 9 月 · C++ 五级 · 第 5 题</span><span class="tp">单选题</span></div>
+  <div class="eb">
+    <div class="q">下面函数用于判断正整数 <code class="inline">n</code> 是否为质数，
+    横线处的最佳写法是（　　）。</div>
+    <pre>bool isPrime(int n) {
+    if (n &lt; 2) return false;
+    for (int i = 2; __________________; i++) {
+        if (n % i == 0) return false;
+    }
+    return true;
+}</pre>
+    <div class="opt">
+      <i>A.</i><code class="inline">i &lt; n</code>　　<i>B.</i><code class="inline">i &lt;= n / 2</code>　　<i>C.</i><code class="inline">i * i &lt; n</code>　　<i>D.</i><code class="inline">(long long) i * i &lt;= n</code>
+    </div>
+    <details><summary>查看答案与详解</summary>
+      <div class="ans"><b>答案：D</b>。<strong>要选"又对又不容易溢出"的那一个。</strong><br>
+      <b>A 项 <code class="inline">i &lt; n</code>：</b>结果正确，但要循环 n 次——
+      <strong>n 很大时慢得离谱</strong>，不是"最佳"。<br>
+      <b>B 项 <code class="inline">i &lt;= n / 2</code>：</b>比 A 快一倍，
+      但仍然<strong>远远不如试到 √n</strong>。<br>
+      <b>C 项 <code class="inline">i * i &lt; n</code>：</b>用了 √n 的思路，
+      但<b>有两个毛病</b>——<strong>① 少了等号</strong>（漏掉 i×i 恰好等于 n 的情况，
+      比如 n = 49 会把 7 漏掉、误判成质数）；<strong>② <code class="inline">i * i</code> 可能溢出</strong>。<br>
+      <b>D 项 <code class="inline">(long long) i * i &lt;= n</code>：</b>
+      <strong>既是 √n 的高效写法，又带了等号（不会漏解），
+      还先把 i 转成 long long（不会溢出）</strong>——<b>这才是最佳写法</b> ✔<br>
+      <b>本题的启示：</b><strong>数论题里的循环边界，
+      "正确"只是底线，"不溢出"和"足够快"才是加分项。</strong><br>
+      <span class="tagline">对应小节</span>2.2 为什么从 i×i 开始。</div>
+    </details>
+  </div>
+</div>
+
+<div class="exam">
+  <div class="eh"><span class="src">改编自 2026 年 9 月 · C++ 五级 · 第 6 题</span><span class="tp">单选题</span></div>
+  <div class="eb">
+    <div class="q">下面代码实现线性筛法。为了保证每个合数只被其最小质因子筛去一次，
+    横线处应填写（　　）。</div>
+    <pre>for (int p : primes) {
+    if ((long long)i * p &gt; n) break;
+    composite[i * p] = true;
+    if (__________________) break;
+}</pre>
+    <div class="opt">
+      <i>A.</i><code class="inline">p % i == 0</code>　　<i>B.</i><code class="inline">i % p == 0</code>　　<i>C.</i><code class="inline">i == p</code>　　<i>D.</i><code class="inline">i * p == n</code>
+    </div>
+    <details><summary>查看答案与详解</summary>
+      <div class="ans"><b>答案：B</b>。<code class="inline">primes</code> 里的质数是<strong>从小到大</strong>遍历的。<br>
+      <b>一旦 <code class="inline">i % p == 0</code>，说明 p 就是 i 的最小质因数。</b><br>
+      这时 <code class="inline">i × p</code> 的最小质因数也就是 p，
+      <strong>它已经被筛过了，任务完成，必须立刻 break。</strong><br>
+      <b>如果不停手会怎样？</b>拿 <code class="inline">i = 4</code> 举例：
+      p = 2 时筛掉了 8，此时 4 % 2 == 0。若继续，p = 3 会筛掉 12——
+      <b>可 12 的最小质因数是 2，应该由 <code class="inline">6 × 2</code> 那一轮来筛。</b>
+      <strong>现在筛就成了重复劳动，"线性"也就无从谈起。</strong><br>
+      <b>A 项写反了：</b><code class="inline">p % i == 0</code> 的含义完全不同
+      （p 是质数，只有 p == i 时才成立，条件太苛刻）。<br>
+      <b>C、D 项</b>都不能保证"只被最小质因数筛一次"这个关键性质。<br>
+      <span class="tagline">对应小节</span>5.2 关键的那一行。</div>
+    </details>
+  </div>
+</div>
+
+<div class="exam">
+  <div class="eh"><span class="src">改编自 2026 年 9 月 · C++ 五级 · 判断题 第 4 题</span><span class="tp">判断题</span></div>
+  <div class="eb">
+    <div class="q">下面埃氏筛从 <code class="inline">i * i</code> 开始标记，
+    是因为 <code class="inline">i * i</code> 之前 i 的合数倍数已经被更小的质因子标记过。（　　）</div>
+    <pre>for (int j = i * i; j &lt;= n; j += i) {
+    isPrime[j] = false;
+}</pre>
+    <details><summary>查看答案与详解</summary>
+      <div class="ans"><b>答案：正确（√）</b>。以质数 7 为例，看它那些"小于 7×7 的倍数"：<br>
+      <code class="inline">7 × 2 = 14</code>——<strong>14 含质因数 2</strong>，早在处理质数 2 时就被划掉了；<br>
+      <code class="inline">7 × 3 = 21</code>——<strong>含质因数 3</strong>，处理 3 时已划掉；<br>
+      <code class="inline">7 × 4 = 28</code>——含质因数 2，早划掉了；<br>
+      <code class="inline">7 × 5 = 35</code>——含质因数 5，早划掉了；<br>
+      <code class="inline">7 × 6 = 42</code>——含质因数 2，早划掉了。<br>
+      <b>规律很清晰：</b><code class="inline">i × k</code>（当 k &lt; i 时）<strong>一定含有一个比 i 小的质因数</strong>，
+      所以它<strong>必然已经被那个更小的质数处理过了</strong>。<br>
+      <b>结论：</b>从 <code class="inline">i × i</code> 开始标记，
+      <strong>一个都不会漏，却省掉了一大半重复劳动。</strong><br>
+      <span class="tagline">对应小节</span>2.2 为什么从 i×i 开始。</div>
+    </details>
+  </div>
+</div>
+
+<div class="exam">
+  <div class="eh"><span class="src">改编自 2026 年 6 月 · C++ 五级 · 判断题 第 3 题</span><span class="tp">判断题</span></div>
+  <div class="eb">
+    <div class="q">对任意正整数 <code class="inline">a</code>、<code class="inline">b</code>，
+    下面两种写法的 <code class="inline">gcd</code> 函数返回值完全相同。（　　）</div>
+    <pre>// 写法一（迭代）
+int gcd1(int a, int b) {
+    while (b != 0) { int r = a % b; a = b; b = r; }
+    return a;
+}
+// 写法二（递归）
+int gcd2(int a, int b) {
+    return b == 0 ? a : gcd2(b, a % b);
+}</pre>
+    <details><summary>查看答案与详解</summary>
+      <div class="ans"><b>答案：正确（√）</b>。这两种写法<strong>做的是同一件事</strong>，只是形式不同。<br>
+      <b>迭代版</b>：用循环反复执行"<code class="inline">a = b; b = a % b;</code>"，
+      直到 <code class="inline">b</code> 变成 0；<br>
+      <b>递归版</b>：用函数调用自己，参数从 <code class="inline">(a, b)</code> 换成
+      <code class="inline">(b, a % b)</code>，同样直到 <code class="inline">b == 0</code>。<br>
+      <strong>两者的替换规则完全一样，终止条件也完全一样——结果自然相同。</strong><br>
+      <b>唯一区别在<b>形式</b>：</b>递归版更短，但<strong>层数太深时可能"栈溢出"</strong>；
+      迭代版啰嗦一点，<strong>但没有这个风险。</strong><br>
+      <b>顺带再确认一下：a、b 谁大谁小都不影响。</b>如果 <code class="inline">a &lt; b</code>，
+      第一步 <code class="inline">a % b = a</code> 就会自动把它们换个位置——
+      <strong>所以不需要提前排序。</strong><br>
+      <span class="tagline">对应小节</span>4.2 为什么这样能得到答案。</div>
+    </details>
+  </div>
+</div>
+
+<div class="exam">
+  <div class="eh"><span class="src ori">原创练习题</span><span class="tp">单选题</span></div>
+  <div class="eb">
+    <div class="q">用埃氏筛求 1 到 100 之间所有的质数。当外层循环走到
+    <code class="inline">i = 11</code> 时，循环就结束了。原因是（　　）。</div>
+    <div class="opt">
+      <i>A.</i>11 不是质数，不能用来筛<br>
+      <i>B.</i>11 × 11 = 121 已经超过 100，11 在范围内没有需要筛的倍数了<br>
+      <i>C.</i>11 的倍数在 100 以内不存在<br>
+      <i>D.</i>因为 11 小于 100 的一半
+    </div>
+    <details><summary>查看答案与详解</summary>
+      <div class="ans"><b>答案：B</b>。这是埃氏筛的<b>第二个优化点</b>：外层循环只需要跑到 √N。<br>
+      <b>道理：</b>外层循环里要用 <code class="inline">j = i * i</code> 开始标记，
+      <strong>一旦 <code class="inline">i * i &gt; N</code>，内层一次都不会执行。</strong><br>
+      本题 N = 100，而 <code class="inline">10² = 100 ≤ 100</code>、
+      <code class="inline">11² = 121 &gt; 100</code>——
+      <strong>所以 i 从 11 开始就没事可做了。</strong><br>
+      <b>换个角度理解：</b>100 以内的任何合数，
+      <strong>一定有一个不超过 √100 = 10 的质因数</strong>；
+      <b>10 以内的质数是 2、3、5、7——它们已经足够把所有合数划掉了。</b><br>
+      <b>A 项错：</b>11 确实是质数，只是"用不上了"；
+      <b>C 项错：</b>11 的倍数在 100 以内多得是（22、33、44……都是），
+      <strong>只是它们的最小质因数都小于 11，早被处理过了。</strong><br>
+      <span class="tagline">对应小节</span>3.1 完整代码。</div>
+    </details>
+  </div>
+</div>
+
+<div class="exam">
+  <div class="eh"><span class="src ori">原创练习题</span><span class="tp">编程题</span></div>
+  <div class="eb">
+    <div class="q">题目要求：读入两个正整数 <code class="inline">a</code> 和 <code class="inline">b</code>
+    （均不超过 10⁹），输出它们的<strong>最大公约数</strong>和<strong>最小公倍数</strong>（用空格隔开）。<br>
+    <b>样例：</b>输入 <code class="inline">12 18</code>，输出 <code class="inline">6 36</code>。</div>
+    <details><summary>查看参考答案与要点</summary>
+      <div class="ans">
+<pre style="margin:0;background:#131a26;color:#c8d3e0;border-radius:10px;padding:14px 16px">#include &lt;iostream&gt;
+using namespace std;
+
+long long gcd(long long a, long long b) {
+    while (b != 0) {
+        long long r = a % b;
+        a = b;
+        b = r;
+    }
+    return a;
+}
+
+int main() {
+    long long a, b;
+    cin &gt;&gt; a &gt;&gt; b;
+
+    long long g = gcd(a, b);
+    long long l = a / g * b;          // ★ 先除后乘，防止溢出
+
+    cout &lt;&lt; g &lt;&lt; " " &lt;&lt; l &lt;&lt; endl;
+    return 0;
+}</pre>
+      <p style="margin-top:12px"><b>输入 <code>12 18</code> 输出：</b><code>6 36</code><br>
+      <b>要点：</b><br>
+      ① <strong>gcd 用辗转相除</strong>，两行就够——
+      如果从 10⁹ 往下一个个试，<b>最坏要试十亿次，肯定超时</b>；<br>
+      ② <strong>lcm 用公式 <code class="inline">a / g * b</code></strong>，
+      注意<strong>必须先除后乘</strong>：<br>
+      　 如果写 <code class="inline">a * b / g</code>，
+      <strong>a = b = 10⁹ 时 <code class="inline">a * b = 10¹⁸</code>，
+      已经超过 <code class="inline">long long</code> 的表示范围了吗？</strong>
+      实际上 <code class="inline">long long</code> 上限约 9.2 × 10¹⁸——<strong>勉强够，但非常危险。</strong>
+      先除就完全没这个问题；<br>
+      ③ <strong>类型用 <code class="inline">long long</code></strong>，
+      因为答案可能接近 10¹⁸，<code class="inline">int</code> 装不下；<br>
+      ④ 别忘了一开始就把函数和变量都定成 <code class="inline">long long</code>，
+      <b>只改一半是没有用的。</b><br>
+      <span class="tagline">对应小节</span>4.1 辗转相除：一除一替换。</p>
+      </div>
+    </details>
+  </div>
+</div>
+
+<!-- ============ 9 ============ -->
+<div class="section-header" id="s9">
+  <h2>9　本单元小结</h2>
+  <div class="en-title">Unit Summary</div>
+</div>
+
+<div class="cast senick">
+  <img class="ava" src="../assets/avatars/senick.webp" alt="塞尼克" onerror="this.style.display='none'">
+  <div class="bubble">
+    <div class="who">塞尼克 · 沙海向导</div>
+    四句话记住这一课：<br>
+    <strong>一、求一堆质数别一个个判——用筛法，把合数划掉，剩下的就是质数。</strong><br>
+    <strong>二、埃氏筛两个优化：外层只到 √N，内层从 i×i 开始划。</strong><br>
+    <strong>三、<code>gcd(a, b) = gcd(b, a % b)</code>，b 为 0 时返回 a；a、b 谁大谁小都不影响。</strong><br>
+    <strong>四、线性筛靠 <code>if (i % p == 0) break;</code> 保证每个合数只被最小质因数筛一次。</strong><br>
+    网织好了。下一站是巨钟计数师——<b>那里的数字大得连 <code>long long</code> 都装不下。</b>
+  </div>
+</div>
+
+<div class="summary">
+  <h3>你在泉眼筛网前收获了什么</h3>
+  <ul>
+    <li><strong>筛法的思路</strong>——<strong>不要"判"质数，去"划掉"合数</strong>；剩下的就是质数。</li>
+    <li><strong>埃氏筛三步</strong>——开布尔数组、先假设全是质数、从每个质数出发划掉它的倍数。</li>
+    <li><strong>优化一</strong>——内层从 <code class="inline">i * i</code> 开始划，
+      <strong>因为更小的倍数早被更小的质因数划掉了</strong>。</li>
+    <li><strong>优化二</strong>——外层只跑到 <code class="inline">√N</code>，
+      <strong>√N 以内的质数足以划掉 N 以内的所有合数</strong>。</li>
+    <li><strong>数组要开 N+1</strong>，并且初始化时<strong>把 0、1 排除在外</strong>。</li>
+    <li><strong>埃氏筛复杂度</strong>——<code class="inline">O(N log log N)</code>，
+      <strong>比逐个试除的 <code class="inline">O(N√N)</code> 快几百倍</strong>。</li>
+    <li><strong>欧几里得算法</strong>——<code class="inline">gcd(a, b) = gcd(b, a % b)</code>，
+      <strong>b 为 0 时答案是 a</strong>。</li>
+    <li><strong>为什么成立</strong>——"a 和 b 的公共约数"与"b 和 a%b 的公共约数"<strong>是同一批数</strong>。</li>
+    <li><strong>两种写法等价</strong>——迭代版和递归版结果完全相同。</li>
+    <li><strong>a、b 大小无关</strong>——<code class="inline">a &lt; b</code> 时第一步会自动交换。</li>
+    <li><strong>线性筛</strong>——让每个合数只被<strong>它的最小质因数</strong>筛掉一次，
+      复杂度降到 <code class="inline">O(N)</code>。</li>
+    <li><strong>关键条件</strong>——<code class="inline">if (i % p == 0) break;</code>；
+      还有越界判断要<strong>先转 <code class="inline">long long</code> 再比较</strong>。</li>
+  </ul>
+</div>
+
+<div class="pager">
+  <a href="cpp-5-01.html"><div class="k">← 上一单元</div><div class="v">绿洲密码 · 初等数论基础</div></a>
+  <a href="../index.html" target="_top" class="back"><div class="k">返回</div><div class="v">考纲之路 · 总目录</div></a>
+  <a href="cpp-5-03.html"><div class="k">下一单元 →</div><div class="v">巨钟计数师 · 高精度运算：数组模拟</div></a>
+</div>
+
+<div class="cta">
+  <h3>下一站：巨钟计数师</h3>
+  <p>绿洲中央悬着一口<b>青铜巨钟</b>——<b>钟身上刻着层层叠叠的数字，
+  大得连 <code>long long</code> 都装不下。</b><br>
+  下一单元我们学<b>高精度运算</b>：<b>C++ 里没有天生的大整数，
+  那就用数组一位一位地把它存起来，像竖式一样算。</b></p>
+  <a class="btn-go" href="https://codecombat.cn/" target="_blank" rel="noopener">加入扣哒世界，把这条考纲之路走一遍 →</a>
+</div>
+</div><!-- /container -->
+</div><!-- /page -->
+
+<script>
+const KEYWORDS = new Set([
+  "int", "long", "short", "unsigned", "signed", "float", "double", "char", "bool", "void",
+  "const", "if", "else", "for", "while", "do", "switch", "case", "default", "break",
+  "continue", "return", "goto", "struct", "class", "union", "enum", "using", "namespace",
+  "std", "main", "true", "false", "cin", "cout", "cerr", "endl", "string", "sizeof",
+  "include", "define", "new", "delete", "public", "private", "static", "inline", "nullptr"
+]);
+
+function esc(s){ return s.replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;'); }
+
+function highlight(src){
+  let out = '', i = 0;
+  const n = src.length;
+  while (i < n){
+    const c = src[i];
+    /* 预处理指令：#include / #define，整行只在行首生效 */
+    if (c === '#' && (i === 0 || src[i-1] === '\n')){
+      let j = i;
+      while (j < n && /[A-Za-z]/.test(src[j])) j++;
+      out += '<span class="kw">' + esc(src.slice(i, j)) + '</span>';
+      let k = src.indexOf('\n', j); if (k < 0) k = n;
+      if (j < k) out += '<span class="st">' + esc(src.slice(j, k)) + '</span>';
+      i = k; continue;
+    }
+    /* 行注释 // */
+    if (c === '/' && src[i+1] === '/'){
+      let j = src.indexOf('\n', i); if (j < 0) j = n;
+      out += '<span class="cm">' + esc(src.slice(i, j)) + '</span>';
+      i = j; continue;
+    }
+    /* 块注释 */
+    if (c === '/' && src[i+1] === '*'){
+      let j = src.indexOf('*/', i + 2); j = j < 0 ? n : j + 2;
+      out += '<span class="cm">' + esc(src.slice(i, j)) + '</span>';
+      i = j; continue;
+    }
+    /* 字符串与字符字面量 */
+    if (c === '"' || c === "'"){
+      let j = i + 1;
+      while (j < n && src[j] !== c){ if (src[j] === '\\') j++; j++; }
+      j = Math.min(j + 1, n);
+      out += '<span class="st">' + esc(src.slice(i, j)) + '</span>';
+      i = j; continue;
+    }
+    /* 数字 */
+    if (/[0-9]/.test(c)){
+      let j = i;
+      while (j < n && /[0-9.]/.test(src[j])) j++;
+      out += '<span class="nu">' + esc(src.slice(i, j)) + '</span>';
+      i = j; continue;
+    }
+    /* 标识符：关键字 / 函数名 / 普通名字 */
+    if (/[A-Za-z_]/.test(c)){
+      let j = i;
+      while (j < n && /[A-Za-z0-9_]/.test(src[j])) j++;
+      const w = src.slice(i, j);
+      if (KEYWORDS.has(w)) out += '<span class="kw">' + esc(w) + '</span>';
+      else if (src[j] === '(') out += '<span class="fn">' + esc(w) + '</span>';
+      else out += esc(w);
+      i = j; continue;
+    }
+    out += esc(c); i++;
+  }
+  return out;
+}
+
+document.querySelectorAll('.code-card pre code').forEach(block => {
+  block.innerHTML = highlight(block.textContent);
+});
+
+if (location.search.indexOf('expand') >= 0) {
+  document.querySelectorAll('details').forEach(d => d.open = true);
+}
+document.querySelectorAll('.sidebar-nav a').forEach(a => {
+  a.addEventListener('click', () => {
+    if (window.innerWidth <= 900) document.querySelector('.sidebar-nav').classList.remove('active');
+  });
+});
+</script>
+</body>
+</html>

@@ -1,0 +1,1119 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="copyright" content="CodeCombat Inc. codecombat.cn">
+<title>参数输送管 · 参数传递与变量作用域 | 扣哒考级 · GESP C++ 四级</title>
+<style>
+  :root{
+    --primary:#2563eb; --primary-light:#4f8ff0; --primary-lighter:#eaf1fe; --primary-dark:#1b47a8;
+    --brand:#ff6b35; --brand-dark:#e8541f; --brand-soft:#fff3ec;
+    --night:#131c2b; --night-2:#1e2a3a; --gold:#f5b301;
+    --text:#242e3d; --dim:#68788f; --dim2:#93a2b6;
+    --bg:#ffffff; --bg-soft:#f7f9fd; --line:#e2e9f4; --sidebar:274px;
+    --code-bg:#131a26; --code-tx:#c8d3e0;
+    --code-kw:#c678dd; --code-st:#98c379; --code-nu:#d19a66; --code-cm:#5f7488; --code-fn:#e5c07b;
+  }
+  *{margin:0;padding:0;box-sizing:border-box}
+  html{scroll-behavior:smooth}
+  body{font-family:"PingFang SC","Microsoft YaHei","Segoe UI",-apple-system,sans-serif;line-height:1.9;color:var(--text);background:var(--bg);font-size:15.5px}
+  .sidebar-nav{position:fixed;top:0;left:0;width:var(--sidebar);height:100vh;overflow-y:auto;background:linear-gradient(180deg,#0c1626,#14243c);padding:14px 0 40px;z-index:100;border-right:3px solid var(--brand);transition:transform .3s ease}
+  .sidebar-nav::-webkit-scrollbar{width:5px}
+  .sidebar-nav::-webkit-scrollbar-thumb{background:var(--brand);border-radius:4px}
+  .sb-brand{display:flex;align-items:center;gap:10px;padding:10px 13px 12px;border-bottom:1px solid #233752;margin-bottom:8px}
+  .sidebar-nav a.sb-logo{display:flex;align-items:center;justify-content:center;flex-shrink:0;padding:0;border-left:none;transition:.2s}
+  .sb-logo:hover{transform:scale(1.08)}
+  .sb-logo img{height:34px;width:34px;display:block;object-fit:contain;border-radius:8px}
+  .sb-brand b{color:#f2f6fa;font-size:14px;letter-spacing:.5px;display:block;line-height:1.4}
+  .sb-brand span{color:#7f95ab;font-size:11.5px;display:block;line-height:1.4}
+  .nav-title{color:#ffb894;font-size:12px;font-weight:800;padding:10px 18px 6px;letter-spacing:1.2px}
+  .sidebar-nav a{display:block;color:#c3d0dc;text-decoration:none;padding:6px 18px;font-size:12.5px;line-height:1.55;border-left:3px solid transparent;transition:.18s}
+  .sidebar-nav a:hover{color:#fff;background:rgba(255,107,53,.16);border-left-color:var(--brand)}
+  .sidebar-nav a.nav-section{color:#ffb894;font-weight:700;font-size:13px;margin-top:11px;padding-top:10px;border-top:1px solid #233752}
+  .sidebar-nav a.nav-section:first-of-type{border-top:none;margin-top:0;padding-top:6px}
+  .sidebar-nav a.nav-sub{padding-left:30px;color:#93a8bc;font-size:12px}
+  .sidebar-nav a.nav-sub:hover{color:#fff}
+  .sb-back{margin:16px 14px 0;display:block;text-align:center;padding:9px;border-radius:9px;background:#1e304a;color:#a9c0d6 !important;font-size:12px;font-weight:700;border-left:none !important}
+  .sb-back:hover{background:var(--brand) !important;color:#fff !important}
+  .nav-toggle{display:none;position:fixed;top:14px;left:14px;z-index:120;background:var(--brand);color:#fff;border:none;border-radius:9px;padding:9px 13px;font-size:15px;cursor:pointer;box-shadow:0 4px 14px rgba(0,0,0,.25)}
+  .page{margin-left:var(--sidebar)}
+  .hero{position:relative;overflow:hidden;padding:44px 52px;color:#fff;background:linear-gradient(125deg,#0a1220 0%,#16294a 46%,#8a3a16 132%)}
+  .hero::after{content:"";position:absolute;right:-90px;top:-110px;width:400px;height:400px;border-radius:50%;background:radial-gradient(circle,rgba(245,179,1,.30),transparent 68%)}
+  .hero-top{display:flex;gap:36px;align-items:center;position:relative;z-index:2}
+  .hero-txt{flex:1;min-width:0}
+  .hero .crumb{font-size:11.5px;color:#ffb894;letter-spacing:1.5px;font-weight:700;margin-bottom:14px}
+  .hero h1{font-size:31px;font-weight:800;line-height:1.3;letter-spacing:.6px;margin-bottom:8px}
+  .hero h1 .sub{display:block;font-size:18px;font-weight:700;color:#ffd2b3;margin-top:6px;letter-spacing:.3px}
+  .hero .en{font-size:13px;color:#9db4c8;font-style:italic;margin-bottom:18px}
+  .hero .tags{display:flex;flex-wrap:wrap;gap:8px}
+  .tag{font-size:11.5px;padding:4px 12px;border-radius:20px;background:rgba(255,255,255,.12);border:1px solid rgba(255,255,255,.22);color:#e8f0f6;font-weight:600}
+  .tag.hot{background:rgba(255,107,53,.92);border-color:transparent;color:#fff}
+  .hero-card{flex-shrink:0;width:200px;text-align:center}
+  .hero-card .ava{width:148px;height:148px;border-radius:50%;object-fit:cover;object-position:top center;border:4px solid rgba(255,180,140,.6);box-shadow:0 14px 34px rgba(0,0,0,.45);background:#24344a}
+  .hero-card .nm{font-size:15px;font-weight:800;color:#fff;margin-top:10px}
+  .hero-card .ti{font-size:11.5px;color:#ffb894;margin-top:2px}
+  .container{max-width:1080px;margin:0 auto;padding:38px 52px 70px}
+  .lead{font-size:15.5px;line-height:2.05;color:#333f52;background:linear-gradient(120deg,#fff8f3,#f7fbf8);border-left:5px solid var(--brand);border-radius:0 14px 14px 0;padding:22px 26px;margin-bottom:32px}
+  .lead b{color:var(--brand-dark)}
+  .cast{display:flex;gap:16px;align-items:flex-start;border-radius:16px;padding:18px 22px;margin:24px 0}
+  .cast .ava{width:72px;height:72px;border-radius:50%;object-fit:cover;object-position:top center;flex-shrink:0;background:#e8eef5}
+  .cast .bubble{position:relative;font-size:14px;line-height:1.95;padding-top:2px;flex:1}
+  .cast .who{font-size:12px;font-weight:800;margin-bottom:5px;letter-spacing:.5px}
+  .cast.anya{background:var(--brand-soft);border:1px solid #ffdcc9}
+  .cast.anya .who{color:var(--brand-dark)}
+  .cast.anya .bubble{color:#5c4636}
+  .cast.duck{background:#fff5f5;border:1px solid #fbd5d5}
+  .cast.duck .who{color:#b91c1c}
+  .cast.duck .bubble{color:#5c4141}
+  .cast.teacher{background:linear-gradient(120deg,#f4f7fb,#ffffff);border:1px solid #dbe4f0}
+  .cast.teacher .who{color:#1e293b}
+  .cast.teacher .bubble{color:#3c4a5a}
+  .cast.hero{background:#f2f7fd;border:1px solid #cfe0f5}
+  .cast.hero .who{color:#1b47a8}
+  .cast.hero .bubble{color:#3a4658}
+  .goal-grid{display:grid;grid-template-columns:1fr 1fr;gap:16px;margin-bottom:36px}
+  .goal{border:1px solid var(--line);border-radius:15px;padding:19px 21px;background:#fff;box-shadow:0 4px 16px rgba(31,122,68,.05)}
+  .goal h4{font-size:14px;font-weight:800;margin-bottom:11px;display:flex;align-items:center;gap:8px;color:var(--primary-dark)}
+  .goal h4 .ic{width:22px;height:22px;border-radius:7px;background:var(--primary-lighter);display:flex;align-items:center;justify-content:center;font-size:12px}
+  .goal ul{list-style:none}
+  .goal li{font-size:13.5px;color:#48576b;line-height:1.9;padding-left:18px;position:relative}
+  .goal li::before{content:"▸";position:absolute;left:0;color:var(--primary);font-weight:800}
+  .goal.syllabus li::before{content:"✓"}
+  .section-header{margin:52px 0 24px;padding-bottom:12px;border-bottom:3px solid var(--brand);display:flex;align-items:baseline;gap:14px;flex-wrap:wrap}
+  .section-header h2{font-size:22px;font-weight:800;color:var(--night);letter-spacing:.4px}
+  .section-header .en-title{font-size:12px;color:var(--dim2);font-style:italic}
+  h3{font-size:17.5px;font-weight:800;margin:34px 0 14px;color:var(--night);display:flex;align-items:center;gap:10px}
+  h3::before{content:"";width:5px;height:17px;border-radius:3px;background:var(--brand);flex-shrink:0}
+  h4{font-size:15px;font-weight:800;margin:24px 0 10px;color:#2b4260}
+  p{margin:12px 0;color:#3a4658;line-height:2}
+  strong{color:var(--primary-dark)}
+  code.inline{background:var(--primary-lighter);color:var(--primary-dark);padding:2px 7px;border-radius:6px;font-family:"SFMono-Regular",Consolas,Menlo,monospace;font-size:.9em;font-weight:600}
+  .figure{margin:24px 0;text-align:center}
+  .figure svg.diagram{max-width:100%;height:auto;background:#fff;border:1px solid var(--line);border-radius:14px;padding:10px}
+  .figure .caption{font-size:12.5px;color:var(--dim2);margin-top:9px}
+  .pic{margin:26px 0;text-align:center}
+  .pic img{max-width:100%;border-radius:16px;box-shadow:0 10px 28px rgba(30,60,45,.15);display:block;margin:0 auto}
+  .pic figcaption{font-size:12.5px;color:var(--dim2);margin-top:9px}
+  .pic .ph{display:none}
+  .pic.missing img{display:none}
+  .pic.missing .ph{display:flex;flex-direction:column;align-items:center;justify-content:center;gap:9px;border:2px dashed #c9d9e8;border-radius:16px;background:linear-gradient(135deg,#f8fbfe,#eef6ff);padding:40px 26px;color:#7a8fa8}
+  .pic.missing .ph .fn{font-family:Consolas,monospace;font-size:12.5px;color:#2563eb;font-weight:700;word-break:break-all}
+  .pic.missing .ph .ds{font-size:12.5px;line-height:1.8;max-width:560px}
+  .box{border-radius:13px;padding:16px 20px;margin:20px 0;font-size:14px;line-height:1.95}
+  .box .lb{font-weight:800;margin-right:6px}
+  .info{background:#eef6ff;border-left:5px solid #3b82f6;color:#274768}
+  .info .lb{color:#1d4ed8}
+  .tip{background:#fff9ec;border-left:5px solid #f59e0b;color:#6b4e13}
+  .tip .lb{color:#b45309}
+  .remember{background:var(--primary-lighter);border-left:5px solid var(--primary);color:#1d3a6b}
+  .remember .lb{color:var(--primary-dark)}
+  .warn{background:#fef2f2;border-left:5px solid #ef4444;color:#7f2b2b}
+  .warn .lb{color:#b91c1c}
+  .code-card{margin:20px 0;border-radius:14px;overflow:hidden;box-shadow:0 10px 28px rgba(20,40,28,.20)}
+  .code-head{display:flex;align-items:center;gap:9px;background:#1a2434;padding:9px 14px}
+  .code-head .dot{width:10px;height:10px;border-radius:50%}
+  .code-head .d1{background:#ff5f57}.code-head .d2{background:#febc2e}.code-head .d3{background:#28c840}
+  .code-head .file{color:#8fa6c0;font-size:11.5px;font-family:Consolas,monospace;margin-left:6px}
+  .code-head .lang{margin-left:auto;font-size:10.5px;font-weight:800;color:#0d141f;background:#4f8ff0;padding:2px 9px;border-radius:6px;letter-spacing:.4px}
+  .code-card pre{background:var(--code-bg);padding:18px 20px;overflow-x:auto;margin:0;font-family:"SFMono-Regular",Consolas,"Courier New",monospace;font-size:13.5px;line-height:1.85}
+  .code-card pre::-webkit-scrollbar{height:8px}
+  .code-card pre::-webkit-scrollbar-thumb{background:#31445c;border-radius:4px}
+  .code-card code{color:var(--code-tx);white-space:pre}
+  .kw{color:var(--code-kw);font-weight:600}
+  .st{color:var(--code-st)}
+  .nu{color:var(--code-nu)}
+  .cm{color:var(--code-cm);font-style:italic}
+  .fn{color:var(--code-fn)}
+  .out{background:#0f1621;color:#7fb3f5;font-family:Consolas,monospace;font-size:13px;padding:12px 20px;border-top:1px solid #22304a}
+  .out b{color:#c9d6cd;font-weight:600;font-size:11.5px;letter-spacing:1px}
+  .out.err{color:#fca5a5}
+  table.styled{width:100%;border-collapse:collapse;margin:20px 0;font-size:13.5px;border-radius:12px;overflow:hidden;box-shadow:0 4px 16px rgba(31,122,68,.07)}
+  table.styled thead{background:var(--brand)}
+  table.styled th{color:#fff;padding:11px 14px;text-align:left;font-weight:700;font-size:13px}
+  table.styled td{padding:10px 14px;border-bottom:1px solid var(--line);color:#445266;vertical-align:top}
+  table.styled tbody tr:nth-child(even){background:var(--bg-soft)}
+  table.styled tbody tr:last-child td{border-bottom:none}
+  .level-card{border:1px solid var(--line);border-radius:16px;overflow:hidden;margin:22px 0;box-shadow:0 6px 22px rgba(31,122,68,.07)}
+  .level-card .lc-head{background:linear-gradient(100deg,#17283a,#8a3a16);color:#fff;padding:15px 22px;display:flex;align-items:center;gap:12px;flex-wrap:wrap}
+  .level-card .lc-head .n{font-size:12px;font-weight:800;background:rgba(255,255,255,.2);padding:3px 10px;border-radius:20px}
+  .level-card .lc-head h4{margin:0;color:#fff;font-size:16px}
+  .level-card .lc-head .go{margin-left:auto;font-size:11.5px;color:#ffd2b3}
+  .level-card .lc-body{padding:20px 24px;background:#fff}
+  .level-card .story{background:#f9fbfd;border-left:4px solid #93c5fd;border-radius:0 10px 10px 0;padding:13px 18px;margin:0 0 16px;font-size:14px;line-height:1.95;color:#3f5163}
+  .level-card .story b{color:#1d4ed8}
+  .btn-go{display:inline-flex;align-items:center;gap:8px;background:linear-gradient(135deg,var(--brand),var(--brand-dark));color:#fff;text-decoration:none;font-weight:800;font-size:13.5px;padding:10px 22px;border-radius:11px;box-shadow:0 8px 20px rgba(255,107,53,.32);transition:.2s}
+  .btn-go:hover{transform:translateY(-2px);box-shadow:0 12px 26px rgba(255,107,53,.42)}
+  .pit{border:1px solid #f6dede;border-radius:14px;overflow:hidden;margin:16px 0;background:#fff}
+  .pit .pt{display:flex;gap:12px;padding:14px 18px;background:#fffafa;align-items:flex-start}
+  .pit .x{width:26px;height:26px;border-radius:9px;background:#fee;color:#dc2626;display:flex;align-items:center;justify-content:center;font-weight:800;flex-shrink:0;font-size:13px}
+  .pit .t{font-size:13.5px;line-height:1.9;color:#5c4a4a;flex:1}
+  .pit .t b{color:#b91c1c}
+  .pit .duck{display:flex;gap:12px;padding:13px 18px;background:#fff5f5;border-top:1px dashed #f3d0d0;align-items:flex-start}
+  .pit .duck img{width:48px;height:48px;object-fit:contain;flex-shrink:0;margin-top:2px}
+  .pit .duck .dt{font-size:13.5px;line-height:1.9;color:#7a3b3b}
+  .pit .duck .dt b{color:#b91c1c}
+  .pit .fix{padding:12px 18px;background:#f2f7fd;border-top:1px dashed #cfe0f5;font-size:13.5px;color:#1d3a6b}
+  .pit .fix b{color:var(--primary-dark)}
+  .exam{border:1px solid #dfe7f5;border-radius:15px;margin:16px 0;overflow:hidden;background:#fff;box-shadow:0 4px 16px rgba(38,62,120,.06)}
+  .exam .eh{display:flex;align-items:center;gap:10px;padding:11px 18px;background:linear-gradient(100deg,#eef4ff,#f7faff);border-bottom:1px solid #e3ebf8;flex-wrap:wrap}
+  .exam .eh .src{font-size:11px;font-weight:800;color:#fff;background:#2563eb;padding:2.5px 10px;border-radius:20px}
+  .exam .eh .src.ori{background:#8b5cf6}
+  .exam .eh .tp{font-size:11.5px;color:#5b7ba8;font-weight:700}
+  .exam .eb{padding:16px 20px}
+  .exam .q{font-weight:700;font-size:14px;color:#1e2a3e;line-height:1.9;margin-bottom:10px}
+  .exam .opt{font-size:13.5px;color:#48576b;line-height:2.05;padding-left:6px}
+  .exam .opt i{font-style:normal;font-weight:800;color:var(--primary-dark);margin-right:7px}
+  .exam pre{margin:12px 0;background:#1b2a21;border-radius:10px;padding:14px 16px;overflow-x:auto;font-family:Consolas,monospace;font-size:13px;line-height:1.8;color:var(--code-tx)}
+  .exam details{margin-top:10px;border-top:1px dashed var(--line);padding-top:10px}
+  .exam summary{cursor:pointer;font-size:12.5px;font-weight:800;color:#2563eb;outline:none;user-select:none}
+  .exam details .ans{font-size:13.5px;color:#3a4658;line-height:1.95;margin-top:9px;background:var(--bg-soft);padding:13px 16px;border-radius:10px}
+  .exam details .ans b{color:var(--primary-dark)}
+  .exam details .ans .tagline{display:inline-block;font-size:11px;background:#e0f2fe;color:#0e7490;padding:1.5px 8px;border-radius:6px;font-weight:700;margin-right:6px}
+  .summary{margin:40px 0 20px;border-radius:18px;padding:26px 30px;background:linear-gradient(130deg,#fff8f3,#ffffff);border:1px solid #ffe0cf}
+  .summary h3{margin-top:0}
+  .summary ul{list-style:none;margin-top:10px}
+  .summary li{font-size:14px;line-height:2;color:#3d4d66;padding-left:24px;position:relative}
+  .summary li::before{content:"◆";position:absolute;left:0;color:var(--brand);font-size:11px;top:6px}
+  .pager{display:flex;gap:14px;margin-top:30px;flex-wrap:wrap}
+  .pager a{flex:1;min-width:200px;text-decoration:none;border:1px solid var(--line);border-radius:14px;padding:16px 20px;background:#fff;transition:.2s;display:block}
+  .pager a:hover{border-color:var(--brand);box-shadow:0 10px 26px rgba(255,107,53,.14);transform:translateY(-2px)}
+  .pager a .k{font-size:11px;color:var(--dim2);font-weight:700;letter-spacing:1px}
+  .pager a .v{font-size:14px;font-weight:800;color:var(--night);margin-top:5px}
+  .pager a.back{background:var(--brand-soft);border-color:transparent;text-align:center}
+  .pager a.back .v{color:var(--brand-dark)}
+  .cta{margin-top:26px;border-radius:20px;padding:30px 34px;color:#fff;position:relative;overflow:hidden;background:linear-gradient(120deg,#16202f,#2b3a52 46%,#a8431c 132%)}
+  .cta::after{content:"";position:absolute;right:-70px;bottom:-90px;width:280px;height:280px;border-radius:50%;background:radial-gradient(circle,rgba(255,140,80,.45),transparent 68%)}
+  .cta h3{color:#fff;margin:0 0 10px;position:relative;z-index:2}
+  .cta h3::before{background:var(--brand)}
+  .cta p{color:#d8e0ef;font-size:13.5px;margin:0 0 18px;position:relative;z-index:2;max-width:640px}
+  .cta .btn-go{position:relative;z-index:2}
+  @media(max-width:900px){
+    .sidebar-nav{transform:translateX(-100%)}
+    .sidebar-nav.active{transform:translateX(0)}
+    .nav-toggle{display:block}
+    .page{margin-left:0}
+    .hero{padding:70px 22px 34px}
+    .hero-top{flex-direction:column-reverse;text-align:center}
+    .hero-card{width:auto}
+    .container{padding:26px 20px 60px}
+    .goal-grid{grid-template-columns:1fr}
+  }
+</style>
+</head>
+<body>
+
+<button class="nav-toggle" onclick="document.querySelector('.sidebar-nav').classList.toggle('active')">&#9776;</button>
+
+<nav class="sidebar-nav">
+  <div class="sb-brand">
+    <a class="sb-logo" href="https://codecombat.cn/" target="_blank" rel="noopener" title="访问 CodeCombat 扣哒世界官网">
+      <img src="../assets/logo.png" alt="CodeCombat 扣哒世界">
+    </a>
+    <div><b>参数输送管</b><span>齿轮高台 · C++ 四级 第 5 单元</span></div>
+  </div>
+  <div class="nav-title">本单元目录</div>
+
+  <a href="#s0" class="nav-section">0　单元导语与目标</a>
+  <a href="#s0-1" class="nav-sub">0.1 学习目标</a>
+  <a href="#s0-2" class="nav-sub">0.2 考纲对照</a>
+  <a href="#s1" class="nav-section">1　参数是怎么传进去的</a>
+  <a href="#s1-1" class="nav-sub">1.1 值传递：递的是复印件</a>
+  <a href="#s1-2" class="nav-sub">1.2 一条实用结论</a>
+  <a href="#s2" class="nav-section">2　传递数组与改内容</a>
+  <a href="#s2-1" class="nav-sub">2.1 数组作为参数</a>
+  <a href="#s2-2" class="nav-sub">2.2 改内容还是重新赋值</a>
+  <a href="#s3" class="nav-section">3　变量作用域</a>
+  <a href="#s3-1" class="nav-sub">3.1 局部变量与全局变量</a>
+  <a href="#s3-2" class="nav-sub">3.2 三条铁律</a>
+  <a href="#s4" class="nav-section">4　引用参数</a>
+  <a href="#s4-1" class="nav-sub">4.1 引用 &amp; 是什么</a>
+  <a href="#s4-2" class="nav-sub">4.2 什么时候该用引用</a>
+  <a href="#s5" class="nav-section">5　代码实战</a>
+  <a href="#s6" class="nav-section">6　常见陷阱</a>
+  <a href="#s7" class="nav-section">7　题目练习</a>
+  <a href="#s8" class="nav-section">8　本单元小结</a>
+
+  <a href="../index.html" target="_top" class="sb-back">返回考纲之路</a>
+</nav>
+
+<div class="page">
+
+<div class="hero">
+  <div class="hero-top">
+    <div class="hero-txt">
+      <div class="crumb">扣哒考级 · GESP C++ 四级 · 第 5 单元　|　齿轮高台 GEARWATCH TERRACE</div>
+      <h1>参数输送管
+        <span class="sub">参数传递与变量作用域</span>
+      </h1>
+      <div class="en">Parameter Passing &amp; Scope</div>
+      <div class="tags">        <span class="tag hot">考纲 · 参数传递</span>
+        <span class="tag">值传递</span>
+        <span class="tag">引用传递</span>
+        <span class="tag">变量作用域</span>
+        <span class="tag">全局与局部</span></div>
+    </div>
+    <div class="hero-card">
+      <img class="ava" src="../assets/avatars/anya.webp" alt="安雅" onerror="this.style.background='#24344a';this.src='../assets/heroes/anya.webp'">
+      <div class="nm">安雅</div>
+      <div class="ti">红发队长 · 你的向导</div>
+    </div>
+  </div>
+</div>
+
+<div class="container">
+
+<div class="lead">
+  车间与车间之间，连着密密的<b>玻璃输送管</b>。<br>
+  安雅把手贴在管壁上，看着发光材料从外面一路流进封闭的内室：
+  注意看——<strong>外面那一份还在原地，进去的是另一份。</strong><br>
+  你愣了一下：所以内室里改来改去，<b>外面根本不受影响？</b><br>
+  对。她点头，<strong>这就是'值传递'。也是很多人第一次被函数"坑"的地方。</strong>
+</div>
+
+<div class="cast anya">
+  <img class="ava" src="../assets/avatars/anya.webp" alt="安雅" onerror="this.style.display='none'">
+  <div class="bubble">
+    <div class="who">安雅 · 红发队长</div>
+    上一课你学会了写函数。但有个问题一直没细说：<br>
+    <strong>参数到底是"怎么进去"的？进去之后改它，外面会不会变？</strong><br>
+    <b>这一课把这件事彻底讲清——它是四级最容易丢分的地方之一。</b>
+  </div>
+</div>
+
+<figure class="pic">
+  <img src="../assets/illustrations/py-L4-05-01_pipe_system.webp" alt="参数输送管"
+       onerror="this.closest('.pic').classList.add('missing')">
+  <div class="ph">
+    <div class="fn">assets/illustrations/py-L4-05-01_pipe_system.webp</div>
+    <div class="ds">【配图位】车间外墙上延伸出一整套玻璃输送管，把发光材料从外面的平台送进封闭的内室；管道接口处画着一道淡淡的分隔光膜，示意"送进去的是一份复制品"；一名红发队长站在外面的平台旁，透过玻璃看着材料流入内室，手里拿着两块一模一样的发光石块（象征"原件与副本"）。</div>
+  </div>
+  <figcaption>图 1：齿轮高台的参数输送管——今天要从这里开始</figcaption>
+</figure>
+
+<!-- ============ 0 ============ -->
+<div class="section-header" id="s0">
+  <h2>0　单元导语与目标</h2>
+  <div class="en-title">Unit Overview</div>
+</div>
+
+<h3 id="s0-1">0.1 学习目标</h3>
+<div class="goal-grid">
+  <div class="goal">
+    <h4><span class="ic">1</span>学完这个单元，你将能……</h4>
+    <ul>
+      <li>说清"值传递"到底传的是什么</li>
+      <li>判断"函数里改了形参，外面会不会变"</li>
+      <li>知道数组作为参数时会发生什么</li>
+      <li>分清局部变量和全局变量</li>
+      <li>用引用参数让函数真的改到外面</li>
+      <li>说出变量"在哪些地方看得见"</li>
+    </ul>
+  </div>
+  <div class="goal syllabus">
+    <h4><span class="ic">2</span>对标 GESP 考纲（C++ 四级）</h4>
+    <ul>
+      <li>理解值传递的过程与结果</li>
+      <li>掌握引用参数的写法与作用</li>
+      <li>理解变量作用域的概念</li>
+      <li>掌握局部变量与全局变量的区别</li>
+      <li>考核目标：能判断函数调用后各变量的值</li>
+    </ul>
+  </div>
+</div>
+
+<h3 id="s0-2">0.2 考纲对照</h3>
+<table class="styled">
+  <thead><tr><th>本单元小节</th><th>对应考纲条目</th><th>真题常考形式</th></tr></thead>
+  <tbody>
+    <tr><td>1　参数怎么传</td><td>参数的传递方式</td><td>函数里改了形参，外面的变量会不会变</td></tr>
+    <tr><td>2　传递数组</td><td>数组参数</td><td>数组传进去被改，外面看得见吗</td></tr>
+    <tr><td>3　作用域</td><td>变量作用域</td><td>局部变量与全局变量同名时会怎样</td></tr>
+    <tr><td>4　引用参数</td><td>引用</td><td><code class="inline">&amp;</code> 的作用；什么时候该用</td></tr>
+  </tbody>
+</table>
+
+<!-- ============ 1 ============ -->
+<div class="section-header" id="s1">
+  <h2>1　参数是怎么传进去的</h2>
+  <div class="en-title">Pass by Value</div>
+</div>
+
+<h3 id="s1-1">1.1 值传递：递的是复印件</h3>
+
+<p>先把最常见的疑问说清楚：<strong>函数里改了形参，外面的实参会不会跟着变？</strong></p>
+
+<div class="code-card">
+  <div class="code-head">
+    <span class="dot d1"></span><span class="dot d2"></span><span class="dot d3"></span>
+    <span class="file">答案是：不会</span>
+    <span class="lang">C++</span>
+  </div>
+  <pre><code>#include &lt;iostream&gt;
+using namespace std;
+
+void change(int x) {        // x 是形参
+    x = 20;                 // 改的只是函数里面的 x
+    cout &lt;&lt; "函数里：" &lt;&lt; x &lt;&lt; endl;
+}
+
+int main() {
+    int x = 10;
+    change(x);              // 把 x 的"值"复制一份传进去
+
+    cout &lt;&lt; "函数外：" &lt;&lt; x &lt;&lt; endl;
+    return 0;
+}</code></pre>
+  <div class="out"><b>OUTPUT</b>　函数里：20　/　函数外：10<br>
+  <b>看明白了吗</b>　<b>函数里的 x 是"另一个变量"，改它完全不影响外面</b></div>
+</div>
+
+<figure class="figure">
+  <svg class="diagram" viewBox="0 0 830 240" role="img" aria-label="值传递的过程">
+    <text x="24" y="30" font-size="14" font-weight="bold" fill="#1f2937">值传递：把值复制一份递进去，原件留在外面</text>
+
+    <rect x="50" y="58" width="180" height="90" rx="10" fill="#eaf1fe" stroke="#2563eb" stroke-width="2.2"/>
+    <text x="140" y="86" text-anchor="middle" font-size="12.5" fill="#1d4ed8" font-weight="bold">main 里的 x</text>
+    <text x="140" y="120" text-anchor="middle" font-size="22" font-family="Consolas,monospace" fill="#1d4ed8">10</text>
+
+    <line x1="238" y1="103" x2="330" y2="103" stroke="#8b5cf6" stroke-width="2.4"/>
+    <polygon points="330,103 318,96 318,110" fill="#8b5cf6"/>
+    <text x="284" y="90" text-anchor="middle" font-size="11.5" fill="#6d28d9">复制一份</text>
+
+    <rect x="338" y="58" width="180" height="90" rx="10" fill="#f5f3ff" stroke="#8b5cf6" stroke-width="2.2"/>
+    <text x="428" y="86" text-anchor="middle" font-size="12.5" fill="#6d28d9" font-weight="bold">函数里的 x</text>
+    <text x="428" y="120" text-anchor="middle" font-size="22" font-family="Consolas,monospace" fill="#6d28d9">10 → 20</text>
+    <text x="428" y="170" text-anchor="middle" font-size="11.5" fill="#7c5cd0">它是"另一个变量"</text>
+
+    <rect x="550" y="58" width="240" height="130" rx="10" fill="#f7f9fd" stroke="#cbd5e1" stroke-width="1.6"/>
+    <text x="574" y="86" font-size="12.5" fill="#334155" font-weight="bold">函数返回之后</text>
+    <text x="574" y="116" font-size="12" fill="#475569">函数里的 x 被销毁</text>
+    <text x="574" y="144" font-size="12" fill="#1f7a44">main 里的 x 还是 10</text>
+    <text x="574" y="172" font-size="11.5" fill="#b45309">★ 两边从头到尾就是两个变量</text>
+  </svg>
+  <div class="caption">图 2（SVG）：值传递——复制一份，改副本不影响原件</div>
+</figure>
+
+<h3 id="s1-2">1.2 一条实用结论</h3>
+
+<div class="box tip">
+  <span class="lb">打个比方：</span>
+  传参数就像<b>把东西交给别人</b>，交的东西不同，结果完全不同：<br>
+  <b>数字、字符这些"不可变对象"</b>——相当于<strong>你抄了一串号码给他，他改自己那张纸，你手里那张还是原样</strong>；<br>
+  <b>数组这些"可变对象"</b>——相当于<strong>你把屋子钥匙给了他，他在屋里挪动了家具，你回去一看也变了</strong>。<br>
+  <b>一句话：不可变对象"改了外面不变"，数组"改了外面会变"。</b>
+</div>
+
+<div class="box remember">
+  <span class="lb">一条实用结论：</span>
+  <b>C++ 的普通参数（<code class="inline">int</code>、<code class="inline">double</code>、<code class="inline">char</code> 等）都是"值传递"——
+  函数里怎么改，外面都不变。</b><br>
+  <b>想让函数真的改到外面的变量，只有两条路：</b>
+  <strong>① 传指针（上一单元学过）；② 传引用（本单元第 4 节要学）。</strong>
+</div>
+
+<!-- ============ 2 ============ -->
+<div class="section-header" id="s2">
+  <h2>2　传递数组与改内容</h2>
+  <div class="en-title">Passing Arrays</div>
+</div>
+
+<h3 id="s2-1">2.1 数组作为参数</h3>
+
+<p>数组是个<strong>例外</strong>——它被传进函数时，<strong>函数里改了，外面真的会变。</strong></p>
+
+<div class="code-card">
+  <div class="code-head">
+    <span class="dot d1"></span><span class="dot d2"></span><span class="dot d3"></span>
+    <span class="file">数组传进去，改的是"原件"</span>
+    <span class="lang">C++</span>
+  </div>
+  <pre><code>void doubleAll(int a[], int n) {     // 数组参数
+    for (int i = 0; i &lt; n; i++) {
+        a[i] *= 2;                   // 改的是原数组
+    }
+}
+
+int main() {
+    int a[5] = {1, 2, 3, 4, 5};
+    doubleAll(a, 5);                 // 传数组名 + 长度
+
+    for (int i = 0; i &lt; 5; i++) cout &lt;&lt; a[i] &lt;&lt; " ";
+    cout &lt;&lt; endl;
+    return 0;
+}</code></pre>
+  <div class="out"><b>OUTPUT</b>　2 4 6 8 10<br>
+  <b>为什么这次会变？</b>　因为<strong>数组名本身就是"首元素的地址"</strong>——
+  传进去的是<strong>地址</strong>，函数通过地址找到的就是原数组</div>
+</div>
+
+<div class="box remember">
+  <span class="lb">为什么数组是例外？</span>
+  回想上一单元学过的一句话：<strong>数组名相当于"第一个元素的地址"。</strong><br>
+  <b>所以"把数组传给函数"，实际上传的是"数组在哪儿"，
+  而不是"把整个数组复制一份"。</b><br>
+  <b>函数顺着这个地址去改，改的自然就是原数组。</b><br>
+  <strong>这也顺便说明了一件事：数组参数其实是一种隐式的"指针传递"。</strong>
+</div>
+
+<div class="box warn">
+  <span class="lb">数组参数的一个"坑"：长度会丢失。</span>
+  在函数里写 <code class="inline">sizeof(a) / sizeof(a[0])</code> 是<strong>算不出元素个数的</strong>！<br>
+  <b>因为在函数内部，<code class="inline">a</code> 已经"退化"成了一个指针，
+  <code class="inline">sizeof(a)</code> 得到的是一个指针的大小（通常是 8 字节），不是整个数组的大小。</b><br>
+  <strong>所以传数组时，必须额外把长度一起传进去</strong>——
+  就像上例里的 <code class="inline">doubleAll(a, 5)</code>。
+</div>
+
+<h3 id="s2-2">2.2 改内容还是重新赋值</h3>
+
+<div class="code-card">
+  <div class="code-head">
+    <span class="dot d1"></span><span class="dot d2"></span><span class="dot d3"></span>
+    <span class="file">一个容易搞混的区别</span>
+    <span class="lang">C++</span>
+  </div>
+  <pre><code>void f1(int a[]) {          // 改"内容" → 外面会变
+    a[0] = 100;
+}
+
+void f2(int a[]) {          // 把 a 指向别处 → 外面不变
+    int b[3] = {9, 9, 9};
+    a = b;                  // 只是让本地这个 a 换了个目标
+}
+
+int main() {
+    int a[3] = {1, 2, 3};
+    f1(a);                  // a[0] 变成 100
+    cout &lt;&lt; a[0] &lt;&lt; endl;     // 100
+
+    f2(a);                  // a 完全没动
+    cout &lt;&lt; a[0] &lt;&lt; endl;     // 100
+    return 0;
+}</code></pre>
+  <div class="out"><b>OUTPUT</b>　100 / 100<br>
+  <b>关键区分</b>　
+  <b>改"地址指向的内容"</b>（<code>a[0] = 100</code>）→ <b>外面会变</b>；<br>
+  <b>改"地址本身"</b>（<code>a = b</code>）→ <strong>只是本地这个变量的目标换了，外面不受影响</strong></div>
+</div>
+
+<!-- ============ 3 ============ -->
+<div class="section-header" id="s3">
+  <h2>3　变量作用域</h2>
+  <div class="en-title">Scope</div>
+</div>
+
+<h3 id="s3-1">3.1 局部变量与全局变量</h3>
+
+<p>接下来是另一个核心问题：<strong>一个变量在哪些地方"看得见"？</strong></p>
+
+<div class="code-card">
+  <div class="code-head">
+    <span class="dot d1"></span><span class="dot d2"></span><span class="dot d3"></span>
+    <span class="file">两种变量，两种可见范围</span>
+    <span class="lang">C++</span>
+  </div>
+  <pre><code>int g = 100;                // ★ 全局变量：定义在所有函数外面
+
+void show() {
+    cout &lt;&lt; g &lt;&lt; endl;       // 100  函数里也能看见全局变量
+}
+
+int main() {
+    int a = 10;             // ★ 局部变量：定义在函数里面
+    cout &lt;&lt; a &lt;&lt; endl;       // 10
+    cout &lt;&lt; g &lt;&lt; endl;       // 100
+
+    show();
+    // cout &lt;&lt; a;           // 别的函数里看不见 main 的 a
+    return 0;
+}</code></pre>
+  <div class="out"><b>OUTPUT</b>　10 / 100 / 100<br>
+  <b>可见性</b>　<b>全局变量"哪里都看得见"；局部变量"只有自己那个函数（及里面）看得见"</b></div>
+</div>
+
+<figure class="figure">
+  <svg class="diagram" viewBox="0 0 830 250" role="img" aria-label="作用域">
+    <text x="24" y="30" font-size="14" font-weight="bold" fill="#1f2937">看得见与看不见：全局变量在外，局部变量在内</text>
+
+    <rect x="60" y="56" width="710" height="176" rx="14" fill="#eaf1fe" stroke="#2563eb" stroke-width="2"/>
+    <text x="86" y="84" font-size="12.5" fill="#1d4ed8" font-weight="bold">外圈：全局范围</text>
+    <rect x="104" y="96" width="150" height="42" rx="8" fill="#fff" stroke="#2563eb" stroke-width="1.8"/>
+    <text x="179" y="123" text-anchor="middle" font-size="13" font-family="Consolas,monospace" fill="#1d4ed8">int g = 100;</text>
+
+    <rect x="290" y="96" width="210" height="112" rx="10" fill="#f5f3ff" stroke="#8b5cf6" stroke-width="2"/>
+    <text x="395" y="120" text-anchor="middle" font-size="12" fill="#6d28d9" font-weight="bold">函数 show() 内部</text>
+    <text x="312" y="150" font-size="11.5" fill="#7c5cd0">看得见 g ✔</text>
+    <text x="312" y="176" font-size="11.5" fill="#7c5cd0">看不见 main 的 a ✘</text>
+    <text x="312" y="198" font-size="11" fill="#9a86d4">（局部变量的范围由大括号决定）</text>
+
+    <rect x="536" y="96" width="210" height="112" rx="10" fill="#e9f8ef" stroke="#2e9e5b" stroke-width="2"/>
+    <text x="641" y="120" text-anchor="middle" font-size="12" fill="#1f7a44" font-weight="bold">函数 main() 内部</text>
+    <text x="558" y="150" font-size="11.5" fill="#3b7c5b">看得见 g ✔</text>
+    <text x="558" y="176" font-size="11.5" fill="#3b7c5b">看得见自己的 a ✔</text>
+    <text x="558" y="198" font-size="11" fill="#5f9b7d">（a 只属于 main）</text>
+
+    <text x="60" y="222" font-size="11.5" fill="#b45309">★ 全局变量：外面一层，谁都能看见；局部变量：只在它所在的那对 {} 里有效</text>
+  </svg>
+  <div class="caption">图 3（SVG）：全局变量在外圈，局部变量在内圈</div>
+</figure>
+
+<h3 id="s3-2">3.2 三条铁律</h3>
+
+<div class="box remember">
+  <span class="lb">三条铁律：</span>
+  <b>① 局部变量只在它所在的那对大括号里有效</b>——出了 <code class="inline">{}</code> 就"消失"了。<br>
+  <b>② 全局变量在整个程序里都看得见</b>——但<strong>函数里如果定义了同名局部变量，会"盖住"全局的</strong>（这叫遮蔽）。<br>
+  <b>③ 局部变量的生命周期：函数执行时诞生，函数返回时销毁。</b><br>
+  <strong>这就解释了上一条的现象：函数里的 x 在函数返回后就没了，所以外面那个 x 当然没变。</strong>
+</div>
+
+<div class="code-card">
+  <div class="code-head">
+    <span class="dot d1"></span><span class="dot d2"></span><span class="dot d3"></span>
+    <span class="file">同名时会怎样？</span>
+    <span class="lang">C++</span>
+  </div>
+  <pre><code>int x = 100;                // 全局
+
+void f() {
+    int x = 5;              // 局部（遮蔽了全局那个）
+    cout &lt;&lt; "函数里：" &lt;&lt; x &lt;&lt; endl;
+}
+
+int main() {
+    f();                    // 函数里：5
+    cout &lt;&lt; "main 里：" &lt;&lt; x &lt;&lt; endl;
+    return 0;
+}
+// 输出：函数里：5   /   main 里：100</code></pre>
+  <div class="out"><b>OUTPUT</b>　函数里：5 / main 里：100<br>
+  <b>注意</b>　<b>函数里的 x 是"自己的局部变量"，和全局的 x 是两个不同的变量</b></div>
+</div>
+
+<!-- ============ 4 ============ -->
+<div class="section-header" id="s4">
+  <h2>4　引用参数</h2>
+  <div class="en-title">Reference Parameters</div>
+</div>
+
+<h3 id="s4-1">4.1 引用 &amp; 是什么</h3>
+
+<p>如果确实想让函数改到外面的变量，除了传指针，<strong>C++ 还提供了更清爽的写法：引用。</strong></p>
+
+<div class="code-card">
+  <div class="code-head">
+    <span class="dot d1"></span><span class="dot d2"></span><span class="dot d3"></span>
+    <span class="file">参数前面加一个 &amp;，就变成了"别名"</span>
+    <span class="lang">C++</span>
+  </div>
+  <pre><code>void change(int &amp;x) {       // ★ 注意这个 &amp;
+    x = 20;                 // 改的是"外面那个 x 本人"
+}
+
+int main() {
+    int x = 10;
+    change(x);              // 调用时照常写，不用加 &amp;
+    cout &lt;&lt; x &lt;&lt; endl;        // 20   ← 这次真的变了！
+    return 0;
+}</code></pre>
+  <div class="out"><b>OUTPUT</b>　20<br>
+  <b>对比记忆</b>　
+  形参写 <code>int x</code> → 值传递，改不到外面；<br>
+  形参写 <code>int &amp;x</code> → <b>引用传递，改的就是外面那个变量</b></div>
+</div>
+
+<div class="box tip">
+  <span class="lb">引用是什么？</span>
+  引用就是给一个已有变量<strong>再起一个名字</strong>（别名）。<br>
+  <b>就像一个人既有大名又有小名——喊哪个都是在喊他本人。</b><br>
+  <code class="inline">int &amp;r = x;</code> 之后，<strong><code class="inline">r</code> 和 <code class="inline">x</code> 就是同一个变量</strong>，
+  改 r 就是改 x。<br>
+  <b>所以"引用参数"传进去的不是副本，而是"本人"。</b>
+</div>
+
+<h3 id="s4-2">4.2 什么时候该用引用</h3>
+
+<table class="styled">
+  <thead><tr><th>参数写法</th><th>含义</th><th>什么时候用</th></tr></thead>
+  <tbody>
+    <tr><td><code class="inline">void f(int x)</code></td><td>值传递（副本）</td><td>只是"读一读"这个值</td></tr>
+    <tr><td><code class="inline">void f(int &amp;x)</code></td><td>引用传递（本人）</td><td><strong>需要修改调用者的变量</strong></td></tr>
+    <tr><td><code class="inline">void f(const int &amp;x)</code></td><td>常引用</td><td>不修改但想省一次复制（大对象效率更高）</td></tr>
+    <tr><td><code class="inline">void f(int *x)</code></td><td>指针传递</td><td>需要在函数里"换目标"或处理数组</td></tr>
+  </tbody>
+</table>
+
+<div class="box warn">
+  <span class="lb">建议：优先用引用，别用全局变量。</span>
+  很多人遇到"函数改不到外面"的问题时，<strong>第一反应是把变量改成全局的。</strong><br>
+  <b>这样虽然能跑通，但很糟糕</b>——因为全局变量<strong>任何函数都能随手改它</strong>，
+  出了问题极难排查。<br>
+  <strong>正确做法：需要修改就用引用参数 <code class="inline">&amp;</code>，
+  把"谁改了它"这件事写在函数的参数表上，一眼就能看出来。</strong>
+</div>
+
+<!-- ============ 5 ============ -->
+<div class="section-header" id="s5">
+  <h2>5　代码实战</h2>
+  <div class="en-title">Level Practice</div>
+</div>
+
+<div class="level-card">
+  <div class="lc-head"><span class="n">关卡</span><h4>联合作战</h4><span class="go">进入关卡 →</span></div>
+  <div class="lc-body">
+    <div class="story">
+      <b>故事：</b>这一关要几支部队配合，<b>每支部队都有自己的任务。</b><br>
+      安雅把统计表拍在桌上：注意——<strong>计数这件事，必须由同一个记分员来记。
+      如果每支部队各记一份，最后就凑不齐总数了。</strong><br>
+      你明白了：<b>要把"记分牌"交给函数本人，而不是给它一张复印件。</b><br>
+      对，她说，<strong>这就是引用参数存在的意义。</strong>
+    </div>
+    <p><strong>思路：</strong>把"统计"写成一个函数，
+    <strong>用引用把结果带回主程序</strong>。</p><figure class="pic">
+  <img src="../assets/stages/py-L4-05-stage1_joint_forces.webp" alt="联合作战 关卡截图"
+       onerror="this.closest('.pic').classList.add('missing')">
+  <div class="ph">
+    <div class="fn">assets/stages/py-L4-05-stage1_joint_forces.webp</div>
+    <div class="ds">【截图位】联合作战关卡：多支部队与目标点位同框，代码编辑区可见带引用参数的函数与调用。</div>
+  </div>
+  <figcaption>关卡实况：联合作战</figcaption>
+</figure>
+    <div class="code-card">
+      <div class="code-head">
+        <span class="dot d1"></span><span class="dot d2"></span><span class="dot d3"></span>
+        <span class="file">引用参数：让函数把结果带回来</span>
+        <span class="lang">C++</span>
+      </div>
+      <pre><code>#include &lt;iostream&gt;
+using namespace std;
+
+// 统计数组里的最大值、最小值和总和
+void stat(int a[], int n, int &amp;mx, int &amp;mn, int &amp;sum) {
+    mx = a[0];
+    mn = a[0];
+    sum = 0;
+    for (int i = 0; i &lt; n; i++) {
+        if (a[i] &gt; mx) mx = a[i];
+        if (a[i] &lt; mn) mn = a[i];
+        sum += a[i];
+    }
+}
+
+int main() {
+    int a[5] = {12, 7, 25, 3, 18};
+    int mx, mn, sum;
+
+    stat(a, 5, mx, mn, sum);        // 三个结果一次性带回来
+
+    cout &lt;&lt; mx &lt;&lt; " " &lt;&lt; mn &lt;&lt; " " &lt;&lt; sum &lt;&lt; endl;
+    return 0;
+}</code></pre>
+      <div class="out"><b>OUTPUT</b>　25 3 65<br>
+      <b>为什么必须用引用？</b>　因为 <code>return</code> <b>一次只能交回一个值</b>，
+      而这里要带回三个——<strong>引用参数正好解决了这个问题</strong></div>
+    </div>
+    <div class="box info">
+      <span class="lb">和本单元的关系：</span>
+      <strong>"一个函数要带出多个结果"是引用参数最典型的用途。</strong><br>
+      <b>回想上一课说过：<code>return</code> 只能交回一个值。</b>
+      那要带回三个怎么办？<strong>用引用参数把"输出的位置"传进去。</strong><br>
+      <b>这也是竞赛里很常见的写法</b>——<strong>参数列表里带 <code>&amp;</code> 的那些，往往就是"用来装结果的"。</strong>
+    </div>
+    <a class="btn-go" href="https://codecombat.cn/" target="_blank" rel="noopener">去扣哒世界闯这一关 →</a>
+  </div>
+</div>
+
+<figure class="pic">
+  <img src="../assets/illustrations/py-L4-05-03_param_flow.webp" alt="两条不同的输送管"
+       onerror="this.closest('.pic').classList.add('missing')">
+  <div class="ph">
+    <div class="fn">assets/illustrations/py-L4-05-03_param_flow.webp</div>
+    <div class="ds">【配图位】车间里两根并排的玻璃输送管：左边那根管子里送的是"抄好的号码纸"（值传递），外面的守卫手里还留着一张一模一样的纸；右边那根管子里送的是"一串钥匙"（引用传递），管子尽头直通一间能看到内部陈设的小屋；一名红发队长站在两根管子的入口处，分别往里投不同的东西。</div>
+  </div>
+  <figcaption>图 4：一条送抄本，一条送钥匙——值传递与引用传递</figcaption>
+</figure>
+
+<figure class="pic">
+  <img src="../assets/illustrations/py-L4-05-02_scope_walls.webp" alt="看得见与看不见"
+       onerror="this.closest('.pic').classList.add('missing')">
+  <div class="ph">
+    <div class="fn">assets/illustrations/py-L4-05-02_scope_walls.webp</div>
+    <div class="ds">【配图位】一座被剖开的工坊：外面是一片宽敞的外院，院内放着一只标着"全局"的工具箱；院内另有两间封闭的小室，各自放着一只标着"局部"的小工具箱；几条发光箭头从外院指向小室（表示外面能往里看），另有一些箭头在小室边界被一道光墙挡住（表示从外面看不进去）；两名守卫分别站在外院和小室里。</div>
+  </div>
+  <figcaption>图 5：全局在外面，局部在里面——谁能看见谁</figcaption>
+</figure>
+
+
+
+<!-- ============ 6 ============ -->
+<div class="section-header" id="s6">
+  <h2>6　常见陷阱</h2>
+  <div class="en-title">Common Pitfalls</div>
+</div>
+
+<div class="cast duck">
+  <img class="ava" src="../assets/ducks/duck_naria.webp" alt="扣哒鸭" onerror="this.style.display='none'">
+  <div class="bubble">
+    <div class="who">扣哒鸭 · 调试官</div>
+    这一课只有一个核心概念，但极容易错。四条。
+  </div>
+</div>
+
+<div class="pit">
+  <div class="pt">
+    <div class="x">1</div>
+    <div class="t"><b>以为"函数里改了形参，外面就会变"。</b></div>
+  </div>
+  <div class="duck">
+    <img src="../assets/ducks/duck_zana.webp" alt="扣哒鸭" onerror="this.style.display='none'">
+    <div class="dt"><b>扣哒鸭：</b><code>void change(int x) { x = 20; }</code> 调用之后，
+    <strong>外面的变量一点没动。</strong><br>
+    因为 C++ 的普通参数是<b>值传递</b>——<strong>改的是副本。</strong></div>
+  </div>
+  <div class="fix"><b>要改外面：</b>形参加 <code class="inline">&amp;</code>（引用）或传指针</div>
+</div>
+
+<div class="pit">
+  <div class="pt">
+    <div class="x">2</div>
+    <div class="t"><b>在函数里用 <code class="inline">sizeof</code> 求数组长度。</b></div>
+  </div>
+  <div class="duck">
+    <img src="../assets/ducks/duck_hattori.webp" alt="扣哒鸭" onerror="this.style.display='none'">
+    <div class="dt"><b>扣哒鸭：</b>数组一传进函数，就<b>退化成一个指针</b>了。<br>
+    <strong><code>sizeof(a)</code> 得到的是指针大小（8 字节），不是整个数组的大小。</strong><br>
+    <b>所以长度必须当成参数一起传进去。</b></div>
+  </div>
+  <div class="fix"><b>正确做法：</b><code class="inline">void f(int a[], int n)</code></div>
+</div>
+
+<div class="pit">
+  <div class="pt">
+    <div class="x">3</div>
+    <div class="t"><b>以为 <code class="inline">a = b</code> 能把外面的数组换掉。</b></div>
+  </div>
+  <div class="duck">
+    <img src="../assets/ducks/duck_senick.webp" alt="扣哒鸭" onerror="this.style.display='none'">
+    <div class="dt"><b>扣哒鸭：</b><code>a[0] = 100</code> 改的是<b>内容</b>，外面会变；<br>
+    <code>a = b</code> 改的是<b>地址</b>，只是让本地这个 a 换了目标——<strong>外面完全不受影响。</strong></div>
+  </div>
+  <div class="fix"><b>区分：</b>改内容会生效，改地址不会</div>
+</div>
+
+<div class="pit">
+  <div class="pt">
+    <div class="x">4</div>
+    <div class="t"><b>函数里定义了和全局变量同名的局部变量，还以为改的是全局的。</b></div>
+  </div>
+  <div class="duck">
+    <img src="../assets/ducks/duck_illia.webp" alt="扣哒鸭" onerror="this.style.display='none'">
+    <div class="dt"><b>扣哒鸭：</b>函数里写 <code>int x = 5;</code>，
+    <strong>这是新造了一个局部变量，把全局的 x "遮住"了。</strong><br>
+    你在函数里改来改去，<b>动的都是自己那个 x，全局的纹丝不动。</b></div>
+  </div>
+  <div class="fix"><b>避免：</b>别给局部变量起和全局一样的名字</div>
+</div>
+
+<!-- ============ 7 ============ -->
+<div class="section-header" id="s7">
+  <h2>7　题目练习</h2>
+  <div class="en-title">Practice</div>
+</div>
+
+<p>前 2 题改编自 C++ 四级真题，其余为原创练习题。</p>
+
+<div class="exam">
+  <div class="eh"><span class="src">改编自 2026 年 9 月 · C++ 四级 · 判断题 第 4 题</span><span class="tp">判断题</span></div>
+  <div class="eb">
+    <div class="q">执行下面程序后会输出 <code class="inline">20</code>。（　　）</div>
+    <pre>void change(int x) { x = 20; }
+int main() {
+    int x = 10;
+    change(x);
+    cout &lt;&lt; x;
+    return 0;
+}</pre>
+    <details><summary>查看答案与详解</summary>
+      <div class="ans"><b>答案：错误（×）</b>。输出是 <b>10</b>。<br>
+      <b>执行过程：</b><br>
+      ① <code class="inline">int x = 10;</code> —— 外面的 x 是 10；<br>
+      ② <code class="inline">change(x)</code> —— 把 x 的值 <strong>复制一份</strong>给形参，
+      <strong>函数里的 x 是另一个变量</strong>；<br>
+      ③ 函数里 <code class="inline">x = 20</code> —— <strong>改的是副本</strong>；
+      函数返回后，副本被销毁；<br>
+      ④ 外面的 x 从头到尾都是 <b>10</b>。<br>
+      <b>要让输出变成 20，只需把形参改成引用：</b>
+      <code class="inline">void change(int &amp;x) { x = 20; }</code>——
+      <strong>加一个 <code class="inline">&amp;</code>，结果就从 10 变成 20。</strong><br>
+      <span class="tagline">对应小节</span>1.1 值传递：递的是复印件；4.1 引用 &amp; 是什么。</div>
+    </details>
+  </div>
+</div>
+
+<div class="exam">
+  <div class="eh"><span class="src">改编自 2026 年 6 月 · C++ 四级 · 判断题 第 6 题</span><span class="tp">判断题</span></div>
+  <div class="eb">
+    <div class="q">对于按升序实现的稳定插入排序，移动元素的条件通常应为
+    <code class="inline">a[j] &gt;= key</code>，这样能够保证相等元素的相对顺序不变。（　　）</div>
+    <details><summary>查看答案与详解</summary>
+      <div class="ans"><b>答案：错误（×）</b>。这里的关键判据是：<strong>遇到"和 key 相等"的元素，到底该不该把它往后挪？</strong><br>
+      <b>如果条件写 <code class="inline">a[j] &gt;= key</code>：</b>遇到相等的元素<strong>也会把它往后挪一位</strong>，
+      于是 <code class="inline">key</code> 最终被插到了相等元素的<strong>前面</strong>——
+      <strong>原来的先后顺序被颠倒了，这叫"不稳定"。</strong><br>
+      <b>要保证稳定，条件应该写 <code class="inline">a[j] &gt; key</code>（不带等号）</b>——
+      遇到相等的就停下来，<code class="inline">key</code> 插在它们<strong>后面</strong>，顺序就保住了。<br>
+      <b>一句话记牢：想让排序稳定，比较时就不要带等号。</b><br>
+      <span class="tagline">对应小节</span>本页之外的排序思想（第 7 单元会详细讲）。</div>
+    </details>
+  </div>
+</div>
+
+<div class="exam">
+  <div class="eh"><span class="src ori">原创练习题</span><span class="tp">单选题</span></div>
+  <div class="eb">
+    <div class="q">执行下面的代码，输出是（　　）。</div>
+    <pre>int g = 100;
+void f() {
+    int g = 5;
+    cout &lt;&lt; g &lt;&lt; " ";
+}
+int main() {
+    f();
+    cout &lt;&lt; g &lt;&lt; endl;
+    return 0;
+}</pre>
+    <div class="opt"><i>A.</i><code class="inline">100 100</code>　　<i>B.</i><code class="inline">5 100</code>　　<i>C.</i><code class="inline">5 5</code>　　<i>D.</i>编译错误</div>
+    <details><summary>查看答案与详解</summary>
+      <div class="ans"><b>答案：B</b>。这是典型的"<strong>局部变量遮蔽全局变量</strong>"：<br>
+      <b>① 函数 f 里：</b>写了一句 <code class="inline">int g = 5;</code>，
+      <strong>这就是新造了一个局部变量 g</strong>，它<strong>把全局的 g "遮住"了</strong>。
+      所以在 f 里输出的是 <b>5</b>。<br>
+      <b>② main 里：</b>没有定义局部 g，所以用的是<strong>全局那个 g</strong>，输出 <b>100</b>。<br>
+      <b>关键理解：这是两个完全不同的变量</b>，只是碰巧同名。
+      <strong>函数里的那个，函数一返回就销毁了。</strong><br>
+      <b>C 项</b>是误以为函数里改的是全局变量。<br>
+      <b>实际开发建议：</b>别给局部变量起和全局变量一样的名字，<strong>很容易看错。</strong><br>
+      <span class="tagline">对应小节</span>3.2 三条铁律。</div>
+    </details>
+  </div>
+</div>
+
+<div class="exam">
+  <div class="eh"><span class="src ori">原创练习题</span><span class="tp">判断题</span></div>
+  <div class="eb">
+    <div class="q">把数组作为参数传给函数，函数里修改了数组元素，调用处的原数组也会跟着改变。（　　）</div>
+    <details><summary>查看答案与详解</summary>
+      <div class="ans"><b>答案：正确（√）</b>。这是<strong>值传递的一个例外</strong>。<br>
+      <b>原因：</b>数组名本身相当于<strong>"第一个元素的地址"</strong>。
+      所以"把数组传给函数"，实际传的是<strong>地址</strong>，而不是把整个数组复制一份。<br>
+      <b>函数顺着这个地址去操作，改的自然就是原数组。</b><br>
+      <b>但不能混淆的是：</b><br>
+      ✅ 改<strong>内容</strong>（<code class="inline">a[0] = 100</code>）→ 外面会变；<br>
+      ❌ 改<strong>地址</strong>（<code class="inline">a = b</code>）→ 只是本地这个 a 换了目标，外面不受影响。<br>
+      <b>另外要提醒：数组参数会"丢掉长度"</b>，
+      函数里 <code class="inline">sizeof</code> 算不出元素个数，<strong>必须额外传一个长度参数。</strong><br>
+      <span class="tagline">对应小节</span>2.1 数组作为参数；2.2 改内容还是重新赋值。</div>
+    </details>
+  </div>
+</div>
+
+<div class="exam">
+  <div class="eh"><span class="src ori">原创练习题</span><span class="tp">单选题</span></div>
+  <div class="eb">
+    <div class="q">要让函数真正修改调用处的变量，下面哪种形参写法可行（　　）。</div>
+    <div class="opt">
+      <i>A.</i><code class="inline">void f(int x)</code><br>
+      <i>B.</i><code class="inline">void f(int &amp;x)</code><br>
+      <i>C.</i><code class="inline">void f(const int x)</code><br>
+      <i>D.</i>以上都可以
+    </div>
+    <details><summary>查看答案与详解</summary>
+      <div class="ans"><b>答案：B</b>。<code class="inline">int &amp;x</code> 是<strong>引用参数</strong>——
+      形参成了实参的<strong>别名</strong>，<strong>函数里改它，就是改外面那个变量本人。</strong><br>
+      <b>A 错：</b><code class="inline">int x</code> 是值传递，<strong>改的是副本</strong>。<br>
+      <b>C 错：</b><code class="inline">const int x</code> 只是说"这个副本在本函数里不能改"，
+      <strong>它本身还是副本</strong>，完全改不到外面。<br>
+      <b>补充：</b>传指针 <code class="inline">void f(int *x)</code> 配合 <code class="inline">*x = 20</code> 也能做到，
+      那是上一单元学过的另一条路。<br>
+      <span class="tagline">对应小节</span>4.2 什么时候该用引用。</div>
+    </details>
+  </div>
+</div>
+
+<div class="exam">
+  <div class="eh"><span class="src ori">原创练习题</span><span class="tp">编程题</span></div>
+  <div class="eb">
+    <div class="q">题目要求：写一个函数 <code class="inline">void divide(int a, int b, int &amp;q, int &amp;r)</code>，
+    计算 <code class="inline">a ÷ b</code> 的<strong>商</strong>和<strong>余数</strong>，并通过引用参数带回去。
+    在 <code class="inline">main</code> 里读入 a、b 并输出结果。</div>
+    <details><summary>查看参考答案与要点</summary>
+      <div class="ans">
+<pre style="margin:0;background:#131a26;color:#c8d3e0;border-radius:10px;padding:14px 16px">#include &lt;iostream&gt;
+using namespace std;
+
+void divide(int a, int b, int &amp;q, int &amp;r) {
+    q = a / b;          // 商：直接写进引用的位置
+    r = a % b;          // 余数
+}
+
+int main() {
+    int a, b;
+    cin &gt;&gt; a &gt;&gt; b;
+
+    int q, r;
+    divide(a, b, q, r);         // q、r 被"填上"结果
+
+    cout &lt;&lt; q &lt;&lt; " " &lt;&lt; r &lt;&lt; endl;
+    return 0;
+}</pre>
+      <p style="margin-top:12px"><b>输入 <code>17 5</code> 输出：</b><code>3 2</code><br>
+      <b>要点：</b><br>
+      ① <strong><code class="inline">return</code> 只能带出一个值，而这里要带回两个</strong>——
+      引用参数是最省事的办法；<br>
+      ② <code class="inline">q</code>、<code class="inline">r</code> 是<strong>引用参数</strong>（带 <code class="inline">&amp;</code>），
+      函数里给它们赋值，<strong>就等于给 main 里的 q、r 赋值</strong>；<br>
+      ③ <code class="inline">a</code>、<code class="inline">b</code> 是普通参数（值传递），
+      因为<strong>它们只需要被读，不需要被改</strong>——<strong>该不该加 <code class="inline">&amp;</code> 要看"是否要改"。</strong>；<br>
+      ④ 调用时<strong>不用写 <code class="inline">&amp;</code></strong>，
+      写成 <code class="inline">divide(a, b, q, r)</code> 就行——<strong>引用在语法上就当普通变量用</strong>。<br>
+      <span class="tagline">对应小节</span>4.1 引用 &amp; 是什么。</p>
+      </div>
+    </details>
+  </div>
+</div>
+
+<!-- ============ 8 ============ -->
+<div class="section-header" id="s8">
+  <h2>8　本单元小结</h2>
+  <div class="en-title">Unit Summary</div>
+</div>
+
+<div class="cast anya">
+  <img class="ava" src="../assets/avatars/anya.webp" alt="安雅" onerror="this.style.display='none'">
+  <div class="bubble">
+    <div class="who">安雅 · 红发队长</div>
+    四句话记住这一课：<br>
+    <strong>一、C++ 的普通参数是"值传递"——传进去的是副本，函数里怎么改都不影响外面。</strong><br>
+    <strong>二、数组是例外——传的是地址，所以函数里改内容，外面会变；但改地址不会。</strong><br>
+    <strong>三、局部变量只在它那对 {} 里有效，全局变量哪里都看得见；同名时局部会遮住全局。</strong><br>
+    <strong>四、想让函数真的改到外面，就加一个 <code>&amp;</code> 变成引用；别图省事去用全局变量。</strong><br>
+    管子看透了。下一站是齿轮传动链——<b>那里每一环都从上一环推出来，一环扣一环。</b>
+  </div>
+</div>
+
+<div class="summary">
+  <h3>你在参数输送管旁收获了什么</h3>
+  <ul>
+    <li><strong>值传递</strong>——普通参数传的是<strong>副本</strong>；<strong>函数里改形参，外面不变</strong>。</li>
+    <li><strong>数组是例外</strong>——数组名相当于地址，<strong>函数里改内容，外面会变</strong>。</li>
+    <li><strong>数组参数会丢长度</strong>——函数里 <code class="inline">sizeof</code> 算不出元素个数，<strong>要额外传长度</strong>。</li>
+    <li><strong>改内容 vs 改地址</strong>——改 <code class="inline">a[0]</code> 会生效；改 <code class="inline">a = b</code> 不会。</li>
+    <li><strong>局部变量</strong>——定义在函数（或 <code class="inline">{}</code>）里，<strong>出了大括号就消失</strong>。</li>
+    <li><strong>全局变量</strong>——定义在所有函数外面，<strong>哪里都看得见</strong>；函数返回后依然存在。</li>
+    <li><strong>遮蔽</strong>——局部变量和全局同名时，<strong>函数里用的是局部的那个</strong>。</li>
+    <li><strong>引用</strong>——<code class="inline">int &amp;r = x;</code> 让 r 成为 x 的<strong>别名</strong>，改 r 就是改 x。</li>
+    <li><strong>引用参数</strong>——形参写 <code class="inline">int &amp;x</code>，<strong>函数里改的就是外面那个变量</strong>；调用时不用加 <code class="inline">&amp;</code>。</li>
+    <li><strong>引用的典型用途</strong>——<strong>一个函数要带出多个结果</strong>时（因为 <code class="inline">return</code> 只能带一个）。</li>
+    <li><strong>工程建议</strong>——<strong>需要修改就用引用参数，别用全局变量。</strong></li>
+  </ul>
+</div>
+
+<div class="pager">
+  <a href="cpp-4-04.html"><div class="k">← 上一单元</div><div class="v">模块化车间 · 函数与模块化编程</div></a>
+  <a href="../index.html" target="_top" class="back"><div class="k">返回</div><div class="v">考纲之路 · 总目录</div></a>
+  <a href="cpp-4-06.html"><div class="k">下一单元 →</div><div class="v">齿轮传动链 · 递推算法</div></a>
+</div>
+
+<div class="cta">
+  <h3>下一站：齿轮传动链</h3>
+  <p>高台侧面立着一长串齿轮，<b>每个齿轮上都刻着一个数字，
+  每一环都由上一环按固定规律推出来。</b><br>
+  下一单元我们学<b>递推</b>：<b>怎么从"已知的前几项"，一路推出"想要的那一项"。</b></p>
+  <a class="btn-go" href="https://codecombat.cn/" target="_blank" rel="noopener">加入扣哒世界，把这条考纲之路走一遍 →</a>
+</div>
+</div><!-- /container -->
+</div><!-- /page -->
+
+<script>
+const KEYWORDS = new Set([
+  "int", "long", "short", "unsigned", "signed", "float", "double", "char", "bool", "void",
+  "const", "if", "else", "for", "while", "do", "switch", "case", "default", "break",
+  "continue", "return", "goto", "struct", "class", "union", "enum", "using", "namespace",
+  "std", "main", "true", "false", "cin", "cout", "cerr", "endl", "string", "sizeof",
+  "include", "define", "new", "delete", "public", "private", "static", "inline", "nullptr"
+]);
+
+function esc(s){ return s.replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;'); }
+
+function highlight(src){
+  let out = '', i = 0;
+  const n = src.length;
+  while (i < n){
+    const c = src[i];
+    /* 预处理指令：#include / #define，整行只在行首生效 */
+    if (c === '#' && (i === 0 || src[i-1] === '\n')){
+      let j = i;
+      while (j < n && /[A-Za-z]/.test(src[j])) j++;
+      out += '<span class="kw">' + esc(src.slice(i, j)) + '</span>';
+      let k = src.indexOf('\n', j); if (k < 0) k = n;
+      if (j < k) out += '<span class="st">' + esc(src.slice(j, k)) + '</span>';
+      i = k; continue;
+    }
+    /* 行注释 // */
+    if (c === '/' && src[i+1] === '/'){
+      let j = src.indexOf('\n', i); if (j < 0) j = n;
+      out += '<span class="cm">' + esc(src.slice(i, j)) + '</span>';
+      i = j; continue;
+    }
+    /* 块注释 */
+    if (c === '/' && src[i+1] === '*'){
+      let j = src.indexOf('*/', i + 2); j = j < 0 ? n : j + 2;
+      out += '<span class="cm">' + esc(src.slice(i, j)) + '</span>';
+      i = j; continue;
+    }
+    /* 字符串与字符字面量 */
+    if (c === '"' || c === "'"){
+      let j = i + 1;
+      while (j < n && src[j] !== c){ if (src[j] === '\\') j++; j++; }
+      j = Math.min(j + 1, n);
+      out += '<span class="st">' + esc(src.slice(i, j)) + '</span>';
+      i = j; continue;
+    }
+    /* 数字 */
+    if (/[0-9]/.test(c)){
+      let j = i;
+      while (j < n && /[0-9.]/.test(src[j])) j++;
+      out += '<span class="nu">' + esc(src.slice(i, j)) + '</span>';
+      i = j; continue;
+    }
+    /* 标识符：关键字 / 函数名 / 普通名字 */
+    if (/[A-Za-z_]/.test(c)){
+      let j = i;
+      while (j < n && /[A-Za-z0-9_]/.test(src[j])) j++;
+      const w = src.slice(i, j);
+      if (KEYWORDS.has(w)) out += '<span class="kw">' + esc(w) + '</span>';
+      else if (src[j] === '(') out += '<span class="fn">' + esc(w) + '</span>';
+      else out += esc(w);
+      i = j; continue;
+    }
+    out += esc(c); i++;
+  }
+  return out;
+}
+
+document.querySelectorAll('.code-card pre code').forEach(block => {
+  block.innerHTML = highlight(block.textContent);
+});
+
+if (location.search.indexOf('expand') >= 0) {
+  document.querySelectorAll('details').forEach(d => d.open = true);
+}
+document.querySelectorAll('.sidebar-nav a').forEach(a => {
+  a.addEventListener('click', () => {
+    if (window.innerWidth <= 900) document.querySelector('.sidebar-nav').classList.remove('active');
+  });
+});
+</script>
+</body>
+</html>

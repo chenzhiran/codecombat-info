@@ -1,0 +1,1180 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="copyright" content="CodeCombat Inc. codecombat.cn">
+<title>立体货架 · 二维及多维数组 | 扣哒考级 · GESP C++ 四级</title>
+<style>
+  :root{
+    --primary:#2563eb; --primary-light:#4f8ff0; --primary-lighter:#eaf1fe; --primary-dark:#1b47a8;
+    --brand:#ff6b35; --brand-dark:#e8541f; --brand-soft:#fff3ec;
+    --night:#131c2b; --night-2:#1e2a3a; --gold:#f5b301;
+    --text:#242e3d; --dim:#68788f; --dim2:#93a2b6;
+    --bg:#ffffff; --bg-soft:#f7f9fd; --line:#e2e9f4; --sidebar:274px;
+    --code-bg:#131a26; --code-tx:#c8d3e0;
+    --code-kw:#c678dd; --code-st:#98c379; --code-nu:#d19a66; --code-cm:#5f7488; --code-fn:#e5c07b;
+  }
+  *{margin:0;padding:0;box-sizing:border-box}
+  html{scroll-behavior:smooth}
+  body{font-family:"PingFang SC","Microsoft YaHei","Segoe UI",-apple-system,sans-serif;line-height:1.9;color:var(--text);background:var(--bg);font-size:15.5px}
+  .sidebar-nav{position:fixed;top:0;left:0;width:var(--sidebar);height:100vh;overflow-y:auto;background:linear-gradient(180deg,#0c1626,#14243c);padding:14px 0 40px;z-index:100;border-right:3px solid var(--brand);transition:transform .3s ease}
+  .sidebar-nav::-webkit-scrollbar{width:5px}
+  .sidebar-nav::-webkit-scrollbar-thumb{background:var(--brand);border-radius:4px}
+  .sb-brand{display:flex;align-items:center;gap:10px;padding:10px 13px 12px;border-bottom:1px solid #233752;margin-bottom:8px}
+  .sidebar-nav a.sb-logo{display:flex;align-items:center;justify-content:center;flex-shrink:0;padding:0;border-left:none;transition:.2s}
+  .sb-logo:hover{transform:scale(1.08)}
+  .sb-logo img{height:34px;width:34px;display:block;object-fit:contain;border-radius:8px}
+  .sb-brand b{color:#f2f6fa;font-size:14px;letter-spacing:.5px;display:block;line-height:1.4}
+  .sb-brand span{color:#7f95ab;font-size:11.5px;display:block;line-height:1.4}
+  .nav-title{color:#ffb894;font-size:12px;font-weight:800;padding:10px 18px 6px;letter-spacing:1.2px}
+  .sidebar-nav a{display:block;color:#c3d0dc;text-decoration:none;padding:6px 18px;font-size:12.5px;line-height:1.55;border-left:3px solid transparent;transition:.18s}
+  .sidebar-nav a:hover{color:#fff;background:rgba(255,107,53,.16);border-left-color:var(--brand)}
+  .sidebar-nav a.nav-section{color:#ffb894;font-weight:700;font-size:13px;margin-top:11px;padding-top:10px;border-top:1px solid #233752}
+  .sidebar-nav a.nav-section:first-of-type{border-top:none;margin-top:0;padding-top:6px}
+  .sidebar-nav a.nav-sub{padding-left:30px;color:#93a8bc;font-size:12px}
+  .sidebar-nav a.nav-sub:hover{color:#fff}
+  .sb-back{margin:16px 14px 0;display:block;text-align:center;padding:9px;border-radius:9px;background:#1e304a;color:#a9c0d6 !important;font-size:12px;font-weight:700;border-left:none !important}
+  .sb-back:hover{background:var(--brand) !important;color:#fff !important}
+  .nav-toggle{display:none;position:fixed;top:14px;left:14px;z-index:120;background:var(--brand);color:#fff;border:none;border-radius:9px;padding:9px 13px;font-size:15px;cursor:pointer;box-shadow:0 4px 14px rgba(0,0,0,.25)}
+  .page{margin-left:var(--sidebar)}
+  .hero{position:relative;overflow:hidden;padding:44px 52px;color:#fff;background:linear-gradient(125deg,#0a1220 0%,#16294a 46%,#8a3a16 132%)}
+  .hero::after{content:"";position:absolute;right:-90px;top:-110px;width:400px;height:400px;border-radius:50%;background:radial-gradient(circle,rgba(245,179,1,.30),transparent 68%)}
+  .hero-top{display:flex;gap:36px;align-items:center;position:relative;z-index:2}
+  .hero-txt{flex:1;min-width:0}
+  .hero .crumb{font-size:11.5px;color:#ffb894;letter-spacing:1.5px;font-weight:700;margin-bottom:14px}
+  .hero h1{font-size:31px;font-weight:800;line-height:1.3;letter-spacing:.6px;margin-bottom:8px}
+  .hero h1 .sub{display:block;font-size:18px;font-weight:700;color:#ffd2b3;margin-top:6px;letter-spacing:.3px}
+  .hero .en{font-size:13px;color:#9db4c8;font-style:italic;margin-bottom:18px}
+  .hero .tags{display:flex;flex-wrap:wrap;gap:8px}
+  .tag{font-size:11.5px;padding:4px 12px;border-radius:20px;background:rgba(255,255,255,.12);border:1px solid rgba(255,255,255,.22);color:#e8f0f6;font-weight:600}
+  .tag.hot{background:rgba(255,107,53,.92);border-color:transparent;color:#fff}
+  .hero-card{flex-shrink:0;width:200px;text-align:center}
+  .hero-card .ava{width:148px;height:148px;border-radius:50%;object-fit:cover;object-position:top center;border:4px solid rgba(255,180,140,.6);box-shadow:0 14px 34px rgba(0,0,0,.45);background:#24344a}
+  .hero-card .nm{font-size:15px;font-weight:800;color:#fff;margin-top:10px}
+  .hero-card .ti{font-size:11.5px;color:#ffb894;margin-top:2px}
+  .container{max-width:1080px;margin:0 auto;padding:38px 52px 70px}
+  .lead{font-size:15.5px;line-height:2.05;color:#333f52;background:linear-gradient(120deg,#fff8f3,#f7fbf8);border-left:5px solid var(--brand);border-radius:0 14px 14px 0;padding:22px 26px;margin-bottom:32px}
+  .lead b{color:var(--brand-dark)}
+  .cast{display:flex;gap:16px;align-items:flex-start;border-radius:16px;padding:18px 22px;margin:24px 0}
+  .cast .ava{width:72px;height:72px;border-radius:50%;object-fit:cover;object-position:top center;flex-shrink:0;background:#e8eef5}
+  .cast .bubble{position:relative;font-size:14px;line-height:1.95;padding-top:2px;flex:1}
+  .cast .who{font-size:12px;font-weight:800;margin-bottom:5px;letter-spacing:.5px}
+  .cast.anya{background:var(--brand-soft);border:1px solid #ffdcc9}
+  .cast.anya .who{color:var(--brand-dark)}
+  .cast.anya .bubble{color:#5c4636}
+  .cast.duck{background:#fff5f5;border:1px solid #fbd5d5}
+  .cast.duck .who{color:#b91c1c}
+  .cast.duck .bubble{color:#5c4141}
+  .cast.teacher{background:linear-gradient(120deg,#f4f7fb,#ffffff);border:1px solid #dbe4f0}
+  .cast.teacher .who{color:#1e293b}
+  .cast.teacher .bubble{color:#3c4a5a}
+  .cast.hero{background:#f2f7fd;border:1px solid #cfe0f5}
+  .cast.hero .who{color:#1b47a8}
+  .cast.hero .bubble{color:#3a4658}
+  .goal-grid{display:grid;grid-template-columns:1fr 1fr;gap:16px;margin-bottom:36px}
+  .goal{border:1px solid var(--line);border-radius:15px;padding:19px 21px;background:#fff;box-shadow:0 4px 16px rgba(31,122,68,.05)}
+  .goal h4{font-size:14px;font-weight:800;margin-bottom:11px;display:flex;align-items:center;gap:8px;color:var(--primary-dark)}
+  .goal h4 .ic{width:22px;height:22px;border-radius:7px;background:var(--primary-lighter);display:flex;align-items:center;justify-content:center;font-size:12px}
+  .goal ul{list-style:none}
+  .goal li{font-size:13.5px;color:#48576b;line-height:1.9;padding-left:18px;position:relative}
+  .goal li::before{content:"▸";position:absolute;left:0;color:var(--primary);font-weight:800}
+  .goal.syllabus li::before{content:"✓"}
+  .section-header{margin:52px 0 24px;padding-bottom:12px;border-bottom:3px solid var(--brand);display:flex;align-items:baseline;gap:14px;flex-wrap:wrap}
+  .section-header h2{font-size:22px;font-weight:800;color:var(--night);letter-spacing:.4px}
+  .section-header .en-title{font-size:12px;color:var(--dim2);font-style:italic}
+  h3{font-size:17.5px;font-weight:800;margin:34px 0 14px;color:var(--night);display:flex;align-items:center;gap:10px}
+  h3::before{content:"";width:5px;height:17px;border-radius:3px;background:var(--brand);flex-shrink:0}
+  h4{font-size:15px;font-weight:800;margin:24px 0 10px;color:#2b4260}
+  p{margin:12px 0;color:#3a4658;line-height:2}
+  strong{color:var(--primary-dark)}
+  code.inline{background:var(--primary-lighter);color:var(--primary-dark);padding:2px 7px;border-radius:6px;font-family:"SFMono-Regular",Consolas,Menlo,monospace;font-size:.9em;font-weight:600}
+  .figure{margin:24px 0;text-align:center}
+  .figure svg.diagram{max-width:100%;height:auto;background:#fff;border:1px solid var(--line);border-radius:14px;padding:10px}
+  .figure .caption{font-size:12.5px;color:var(--dim2);margin-top:9px}
+  .pic{margin:26px 0;text-align:center}
+  .pic img{max-width:100%;border-radius:16px;box-shadow:0 10px 28px rgba(30,60,45,.15);display:block;margin:0 auto}
+  .pic figcaption{font-size:12.5px;color:var(--dim2);margin-top:9px}
+  .pic .ph{display:none}
+  .pic.missing img{display:none}
+  .pic.missing .ph{display:flex;flex-direction:column;align-items:center;justify-content:center;gap:9px;border:2px dashed #c9d9e8;border-radius:16px;background:linear-gradient(135deg,#f8fbfe,#eef6ff);padding:40px 26px;color:#7a8fa8}
+  .pic.missing .ph .fn{font-family:Consolas,monospace;font-size:12.5px;color:#2563eb;font-weight:700;word-break:break-all}
+  .pic.missing .ph .ds{font-size:12.5px;line-height:1.8;max-width:560px}
+  .box{border-radius:13px;padding:16px 20px;margin:20px 0;font-size:14px;line-height:1.95}
+  .box .lb{font-weight:800;margin-right:6px}
+  .info{background:#eef6ff;border-left:5px solid #3b82f6;color:#274768}
+  .info .lb{color:#1d4ed8}
+  .tip{background:#fff9ec;border-left:5px solid #f59e0b;color:#6b4e13}
+  .tip .lb{color:#b45309}
+  .remember{background:var(--primary-lighter);border-left:5px solid var(--primary);color:#1d3a6b}
+  .remember .lb{color:var(--primary-dark)}
+  .warn{background:#fef2f2;border-left:5px solid #ef4444;color:#7f2b2b}
+  .warn .lb{color:#b91c1c}
+  .code-card{margin:20px 0;border-radius:14px;overflow:hidden;box-shadow:0 10px 28px rgba(20,40,28,.20)}
+  .code-head{display:flex;align-items:center;gap:9px;background:#1a2434;padding:9px 14px}
+  .code-head .dot{width:10px;height:10px;border-radius:50%}
+  .code-head .d1{background:#ff5f57}.code-head .d2{background:#febc2e}.code-head .d3{background:#28c840}
+  .code-head .file{color:#8fa6c0;font-size:11.5px;font-family:Consolas,monospace;margin-left:6px}
+  .code-head .lang{margin-left:auto;font-size:10.5px;font-weight:800;color:#0d141f;background:#4f8ff0;padding:2px 9px;border-radius:6px;letter-spacing:.4px}
+  .code-card pre{background:var(--code-bg);padding:18px 20px;overflow-x:auto;margin:0;font-family:"SFMono-Regular",Consolas,"Courier New",monospace;font-size:13.5px;line-height:1.85}
+  .code-card pre::-webkit-scrollbar{height:8px}
+  .code-card pre::-webkit-scrollbar-thumb{background:#31445c;border-radius:4px}
+  .code-card code{color:var(--code-tx);white-space:pre}
+  .kw{color:var(--code-kw);font-weight:600}
+  .st{color:var(--code-st)}
+  .nu{color:var(--code-nu)}
+  .cm{color:var(--code-cm);font-style:italic}
+  .fn{color:var(--code-fn)}
+  .out{background:#0f1621;color:#7fb3f5;font-family:Consolas,monospace;font-size:13px;padding:12px 20px;border-top:1px solid #22304a}
+  .out b{color:#c9d6cd;font-weight:600;font-size:11.5px;letter-spacing:1px}
+  .out.err{color:#fca5a5}
+  table.styled{width:100%;border-collapse:collapse;margin:20px 0;font-size:13.5px;border-radius:12px;overflow:hidden;box-shadow:0 4px 16px rgba(31,122,68,.07)}
+  table.styled thead{background:var(--brand)}
+  table.styled th{color:#fff;padding:11px 14px;text-align:left;font-weight:700;font-size:13px}
+  table.styled td{padding:10px 14px;border-bottom:1px solid var(--line);color:#445266;vertical-align:top}
+  table.styled tbody tr:nth-child(even){background:var(--bg-soft)}
+  table.styled tbody tr:last-child td{border-bottom:none}
+  .level-card{border:1px solid var(--line);border-radius:16px;overflow:hidden;margin:22px 0;box-shadow:0 6px 22px rgba(31,122,68,.07)}
+  .level-card .lc-head{background:linear-gradient(100deg,#17283a,#8a3a16);color:#fff;padding:15px 22px;display:flex;align-items:center;gap:12px;flex-wrap:wrap}
+  .level-card .lc-head .n{font-size:12px;font-weight:800;background:rgba(255,255,255,.2);padding:3px 10px;border-radius:20px}
+  .level-card .lc-head h4{margin:0;color:#fff;font-size:16px}
+  .level-card .lc-head .go{margin-left:auto;font-size:11.5px;color:#ffd2b3}
+  .level-card .lc-body{padding:20px 24px;background:#fff}
+  .level-card .story{background:#f9fbfd;border-left:4px solid #93c5fd;border-radius:0 10px 10px 0;padding:13px 18px;margin:0 0 16px;font-size:14px;line-height:1.95;color:#3f5163}
+  .level-card .story b{color:#1d4ed8}
+  .btn-go{display:inline-flex;align-items:center;gap:8px;background:linear-gradient(135deg,var(--brand),var(--brand-dark));color:#fff;text-decoration:none;font-weight:800;font-size:13.5px;padding:10px 22px;border-radius:11px;box-shadow:0 8px 20px rgba(255,107,53,.32);transition:.2s}
+  .btn-go:hover{transform:translateY(-2px);box-shadow:0 12px 26px rgba(255,107,53,.42)}
+  .pit{border:1px solid #f6dede;border-radius:14px;overflow:hidden;margin:16px 0;background:#fff}
+  .pit .pt{display:flex;gap:12px;padding:14px 18px;background:#fffafa;align-items:flex-start}
+  .pit .x{width:26px;height:26px;border-radius:9px;background:#fee;color:#dc2626;display:flex;align-items:center;justify-content:center;font-weight:800;flex-shrink:0;font-size:13px}
+  .pit .t{font-size:13.5px;line-height:1.9;color:#5c4a4a;flex:1}
+  .pit .t b{color:#b91c1c}
+  .pit .duck{display:flex;gap:12px;padding:13px 18px;background:#fff5f5;border-top:1px dashed #f3d0d0;align-items:flex-start}
+  .pit .duck img{width:48px;height:48px;object-fit:contain;flex-shrink:0;margin-top:2px}
+  .pit .duck .dt{font-size:13.5px;line-height:1.9;color:#7a3b3b}
+  .pit .duck .dt b{color:#b91c1c}
+  .pit .fix{padding:12px 18px;background:#f2f7fd;border-top:1px dashed #cfe0f5;font-size:13.5px;color:#1d3a6b}
+  .pit .fix b{color:var(--primary-dark)}
+  .exam{border:1px solid #dfe7f5;border-radius:15px;margin:16px 0;overflow:hidden;background:#fff;box-shadow:0 4px 16px rgba(38,62,120,.06)}
+  .exam .eh{display:flex;align-items:center;gap:10px;padding:11px 18px;background:linear-gradient(100deg,#eef4ff,#f7faff);border-bottom:1px solid #e3ebf8;flex-wrap:wrap}
+  .exam .eh .src{font-size:11px;font-weight:800;color:#fff;background:#2563eb;padding:2.5px 10px;border-radius:20px}
+  .exam .eh .src.ori{background:#8b5cf6}
+  .exam .eh .tp{font-size:11.5px;color:#5b7ba8;font-weight:700}
+  .exam .eb{padding:16px 20px}
+  .exam .q{font-weight:700;font-size:14px;color:#1e2a3e;line-height:1.9;margin-bottom:10px}
+  .exam .opt{font-size:13.5px;color:#48576b;line-height:2.05;padding-left:6px}
+  .exam .opt i{font-style:normal;font-weight:800;color:var(--primary-dark);margin-right:7px}
+  .exam pre{margin:12px 0;background:#1b2a21;border-radius:10px;padding:14px 16px;overflow-x:auto;font-family:Consolas,monospace;font-size:13px;line-height:1.8;color:var(--code-tx)}
+  .exam details{margin-top:10px;border-top:1px dashed var(--line);padding-top:10px}
+  .exam summary{cursor:pointer;font-size:12.5px;font-weight:800;color:#2563eb;outline:none;user-select:none}
+  .exam details .ans{font-size:13.5px;color:#3a4658;line-height:1.95;margin-top:9px;background:var(--bg-soft);padding:13px 16px;border-radius:10px}
+  .exam details .ans b{color:var(--primary-dark)}
+  .exam details .ans .tagline{display:inline-block;font-size:11px;background:#e0f2fe;color:#0e7490;padding:1.5px 8px;border-radius:6px;font-weight:700;margin-right:6px}
+  .summary{margin:40px 0 20px;border-radius:18px;padding:26px 30px;background:linear-gradient(130deg,#fff8f3,#ffffff);border:1px solid #ffe0cf}
+  .summary h3{margin-top:0}
+  .summary ul{list-style:none;margin-top:10px}
+  .summary li{font-size:14px;line-height:2;color:#3d4d66;padding-left:24px;position:relative}
+  .summary li::before{content:"◆";position:absolute;left:0;color:var(--brand);font-size:11px;top:6px}
+  .pager{display:flex;gap:14px;margin-top:30px;flex-wrap:wrap}
+  .pager a{flex:1;min-width:200px;text-decoration:none;border:1px solid var(--line);border-radius:14px;padding:16px 20px;background:#fff;transition:.2s;display:block}
+  .pager a:hover{border-color:var(--brand);box-shadow:0 10px 26px rgba(255,107,53,.14);transform:translateY(-2px)}
+  .pager a .k{font-size:11px;color:var(--dim2);font-weight:700;letter-spacing:1px}
+  .pager a .v{font-size:14px;font-weight:800;color:var(--night);margin-top:5px}
+  .pager a.back{background:var(--brand-soft);border-color:transparent;text-align:center}
+  .pager a.back .v{color:var(--brand-dark)}
+  .cta{margin-top:26px;border-radius:20px;padding:30px 34px;color:#fff;position:relative;overflow:hidden;background:linear-gradient(120deg,#16202f,#2b3a52 46%,#a8431c 132%)}
+  .cta::after{content:"";position:absolute;right:-70px;bottom:-90px;width:280px;height:280px;border-radius:50%;background:radial-gradient(circle,rgba(255,140,80,.45),transparent 68%)}
+  .cta h3{color:#fff;margin:0 0 10px;position:relative;z-index:2}
+  .cta h3::before{background:var(--brand)}
+  .cta p{color:#d8e0ef;font-size:13.5px;margin:0 0 18px;position:relative;z-index:2;max-width:640px}
+  .cta .btn-go{position:relative;z-index:2}
+  @media(max-width:900px){
+    .sidebar-nav{transform:translateX(-100%)}
+    .sidebar-nav.active{transform:translateX(0)}
+    .nav-toggle{display:block}
+    .page{margin-left:0}
+    .hero{padding:70px 22px 34px}
+    .hero-top{flex-direction:column-reverse;text-align:center}
+    .hero-card{width:auto}
+    .container{padding:26px 20px 60px}
+    .goal-grid{grid-template-columns:1fr}
+  }
+</style>
+</head>
+<body>
+
+<button class="nav-toggle" onclick="document.querySelector('.sidebar-nav').classList.toggle('active')">&#9776;</button>
+
+<nav class="sidebar-nav">
+  <div class="sb-brand">
+    <a class="sb-logo" href="https://codecombat.cn/" target="_blank" rel="noopener" title="访问 CodeCombat 扣哒世界官网">
+      <img src="../assets/logo.png" alt="CodeCombat 扣哒世界">
+    </a>
+    <div><b>立体货架</b><span>齿轮高台 · C++ 四级 第 2 单元</span></div>
+  </div>
+  <div class="nav-title">本单元目录</div>
+
+  <a href="#s0" class="nav-section">0　单元导语与目标</a>
+  <a href="#s0-1" class="nav-sub">0.1 学习目标</a>
+  <a href="#s0-2" class="nav-sub">0.2 考纲对照</a>
+  <a href="#s1" class="nav-section">1　从一排到一片</a>
+  <a href="#s1-1" class="nav-sub">1.1 一维与二维</a>
+  <a href="#s1-2" class="nav-sub">1.2 核心约定</a>
+  <a href="#s2" class="nav-section">2　定义与初始化</a>
+  <a href="#s2-1" class="nav-sub">2.1 怎么创建二维数组</a>
+  <a href="#s2-2" class="nav-sub">2.2 最容易踩的坑</a>
+  <a href="#s3" class="nav-section">3　行列索引</a>
+  <a href="#s3-1" class="nav-sub">3.1 a[i][j] 到底指哪一格</a>
+  <a href="#s3-2" class="nav-sub">3.2 读代码的顺序</a>
+  <a href="#s4" class="nav-section">4　遍历：双重循环</a>
+  <a href="#s4-1" class="nav-sub">4.1 外层管行、内层管列</a>
+  <a href="#s4-2" class="nav-sub">4.2 每层循环管什么</a>
+  <a href="#s5" class="nav-section">5　三个常见操作</a>
+  <a href="#s5-1" class="nav-sub">5.1 求和与最值</a>
+  <a href="#s5-2" class="nav-sub">5.2 按行统计与对角线</a>
+  <a href="#s6" class="nav-section">6　代码实战</a>
+  <a href="#s7" class="nav-section">7　常见陷阱</a>
+  <a href="#s8" class="nav-section">8　题目练习</a>
+  <a href="#s9" class="nav-section">9　本单元小结</a>
+
+  <a href="../index.html" target="_top" class="sb-back">返回考纲之路</a>
+</nav>
+
+<div class="page">
+
+<div class="hero">
+  <div class="hero-top">
+    <div class="hero-txt">
+      <div class="crumb">扣哒考级 · GESP C++ 四级 · 第 2 单元　|　齿轮高台 GEARWATCH TERRACE</div>
+      <h1>立体货架
+        <span class="sub">二维及多维数组</span>
+      </h1>
+      <div class="en">Two-Dimensional Arrays</div>
+      <div class="tags">        <span class="tag hot">考纲 · 二维数组</span>
+        <span class="tag">行列下标</span>
+        <span class="tag">双重循环遍历</span>
+        <span class="tag">矩阵</span>
+        <span class="tag">行优先存储</span></div>
+    </div>
+    <div class="hero-card">
+      <img class="ava" src="../assets/avatars/skyler.png" alt="斯凯勒" onerror="this.style.display='none'">
+      <div class="nm">斯凯勒</div>
+      <div class="ti">金发矿工 · 你的向导</div>
+    </div>
+  </div>
+</div>
+
+<div class="container">
+
+<div class="lead">
+  传送带把箱子送上了货架。<b>这排货架可不简单——它有两层编号：第几行、第几列。</b><br>
+  斯凯勒随手一指：第 3 行第 5 列，是哪个箱子？<br>
+  你顺着数过去，<b>准确指到了那一格。</b><br>
+  对。她点头，<strong>一维数组只要一个编号就够了，
+  可这面墙你得报两个数——这就是二维数组。</strong>
+</div>
+
+<div class="cast skyler">
+  <img class="ava" src="../assets/avatars/skyler.png" alt="斯凯勒" onerror="this.style.display='none'">
+  <div class="bubble">
+    <div class="who">斯凯勒 · 金发矿工</div>
+    上一单元我们学了指针——那是"知道东西在哪儿"。<br>
+    这一单元学的是"怎么组织一大片东西"：<strong>二维数组。</strong><br>
+    <b>矩阵、棋盘、地图、成绩表……只要是"有行有列"的东西，都用它。</b>
+  </div>
+</div>
+
+<figure class="pic">
+  <img src="../assets/illustrations/py-L4-02-01_steel_racks.webp" alt="立体货架"
+       onerror="this.closest('.pic').classList.add('missing')">
+  <div class="ph">
+    <div class="fn">assets/illustrations/py-L4-02-01_steel_racks.webp</div>
+    <div class="ds">【配图位】高耸的立体货架占据了整面墙，行与列的钢梁分明，每一格都放着一块发光的零件；货架顶部悬着一块编号牌，横轴标着"列"、竖轴标着"行"；一名金发矿工站在货架前，对照手里的一张货架图查找某一格。</div>
+  </div>
+  <figcaption>图 1：齿轮高台的立体货架——今天要从这里开始</figcaption>
+</figure>
+
+<!-- ============ 0 ============ -->
+<div class="section-header" id="s0">
+  <h2>0　单元导语与目标</h2>
+  <div class="en-title">Unit Overview</div>
+</div>
+
+<h3 id="s0-1">0.1 学习目标</h3>
+<div class="goal-grid">
+  <div class="goal">
+    <h4><span class="ic">1</span>学完这个单元，你将能……</h4>
+    <ul>
+      <li>说清一维数组和二维数组的区别</li>
+      <li>正确定义和初始化二维数组</li>
+      <li>用 <code class="inline">a[i][j]</code> 精准访问某一格</li>
+      <li>用双重循环遍历整个二维数组</li>
+      <li>完成求和、求最值、按行统计等操作</li>
+      <li>知道二维数组在内存里是"按行"摆放的</li>
+    </ul>
+  </div>
+  <div class="goal syllabus">
+    <h4><span class="ic">2</span>对标 GESP 考纲（C++ 四级）</h4>
+    <ul>
+      <li>掌握二维数组的定义、初始化与元素访问</li>
+      <li>掌握二维数组的遍历与常见统计</li>
+      <li>理解二维数组在内存中按行优先连续存储</li>
+      <li>了解多维数组的概念</li>
+      <li>考核目标：能正确定义、访问、遍历二维数组并判断结果</li>
+    </ul>
+  </div>
+</div>
+
+<h3 id="s0-2">0.2 考纲对照</h3>
+<table class="styled">
+  <thead><tr><th>本单元小节</th><th>对应考纲条目</th><th>真题常考形式</th></tr></thead>
+  <tbody>
+    <tr><td>1　从一排到一片</td><td>二维数组的概念</td><td>一维与二维的区别；行列的含义</td></tr>
+    <tr><td>2　定义与初始化</td><td>二维数组的创建</td><td>哪一句定义合法；部分初始化后是几</td></tr>
+    <tr><td>3　行列索引</td><td>二维数组的访问</td><td><code class="inline">a[i][j]</code> 取到哪个元素</td></tr>
+    <tr><td>4　双重循环遍历</td><td>二维数组的遍历</td><td>两层循环各管什么、一共跑几次</td></tr>
+    <tr><td>5　常见操作</td><td>二维数组的应用</td><td>求和、求最值、按行统计</td></tr>
+  </tbody>
+</table>
+
+<!-- ============ 1 ============ -->
+<div class="section-header" id="s1">
+  <h2>1　从一排到一片</h2>
+  <div class="en-title">From a Row to a Sheet</div>
+</div>
+
+<h3 id="s1-1">1.1 一维与二维</h3>
+
+<p>一维列表像<strong>一排格子</strong>，二维数组像<strong>一整面货架</strong>——有行、有列。</p>
+
+<div class="code-card">
+  <div class="code-head">
+    <span class="dot d1"></span><span class="dot d2"></span><span class="dot d3"></span>
+    <span class="file">从一排到一片</span>
+    <span class="lang">C++</span>
+  </div>
+  <pre><code>// 一维：一排 5 个格子
+int a[5] = {12, 7, 25, 3, 18};
+//  下标：  0   1   2   3   4
+
+// 二维：3 行 5 列，一共 15 个格子
+int b[3][5] = {
+    {12,  7, 25,  3, 18},     // 第 0 行
+    { 1, 30,  4, 16,  9},     // 第 1 行
+    {21,  8, 14, 27,  6}      // 第 2 行
+};</code></pre>
+  <div class="out"><b>读法</b>　<code>int b[3][5];</code> 读作 <b>"3 行 5 列"</b>——
+  <b>第一个数字是行数，第二个是列数</b></div>
+</div>
+
+<div class="box tip">
+  <span class="lb">打个比方：</span>
+  一维数组像<b>一排格子</b>，报一个数就能找到；<br>
+  二维数组像<b>一整面货架</b>——<strong>横着有行、竖着有列，报一个数不够了，得说清"第几行、第几列"。</strong><br>
+  <b>就像电影院的座位号：先找第几排，再找第几号。</b>
+</div>
+
+<h3 id="s1-2">1.2 核心约定</h3>
+
+<div class="box remember">
+  <span class="lb">三条必须记牢的约定：</span>
+  <b>① 定义写 <code class="inline">a[行数][列数]</code></b>——<strong>先写行、后写列</strong>。<br>
+  <b>② 访问写 <code class="inline">a[行下标][列下标]</code></b>——<strong>也是先行后列</strong>，两个方括号，不能合成一个。<br>
+  <b>③ 下标都从 0 开始</b>——行下标范围 <code class="inline">0 ~ 行数−1</code>，列下标范围 <code class="inline">0 ~ 列数−1</code>。<br>
+  <strong>一句话：先看行、再看列，<code class="inline">a[行][列]</code>。</strong>
+</div>
+
+<figure class="figure">
+  <svg class="diagram" viewBox="0 0 830 260" role="img" aria-label="二维数组的行列">
+    <text x="24" y="30" font-size="14" font-weight="bold" fill="#1f2937">a[行][列]：两个下标，一格定位</text>
+
+    <text x="118" y="62" font-size="11.5" fill="#68788f">列 0</text>
+    <text x="196" y="62" font-size="11.5" fill="#68788f">列 1</text>
+    <text x="274" y="62" font-size="11.5" fill="#68788f">列 2</text>
+    <text x="352" y="62" font-size="11.5" fill="#68788f">列 3</text>
+
+    <text x="52" y="98" font-size="11.5" fill="#68788f">行 0</text>
+    <g>
+      <rect x="110" y="72" width="66" height="42" rx="6" fill="#eaf1fe" stroke="#2563eb" stroke-width="1.8"/>
+      <text x="143" y="99" text-anchor="middle" font-size="15" font-family="Consolas,monospace" fill="#1d4ed8">12</text>
+      <rect x="188" y="72" width="66" height="42" rx="6" fill="#eaf1fe" stroke="#2563eb" stroke-width="1.8"/>
+      <text x="221" y="99" text-anchor="middle" font-size="15" font-family="Consolas,monospace" fill="#1d4ed8">7</text>
+      <rect x="266" y="72" width="66" height="42" rx="6" fill="#eaf1fe" stroke="#2563eb" stroke-width="1.8"/>
+      <text x="299" y="99" text-anchor="middle" font-size="15" font-family="Consolas,monospace" fill="#1d4ed8">25</text>
+      <rect x="344" y="72" width="66" height="42" rx="6" fill="#eaf1fe" stroke="#2563eb" stroke-width="1.8"/>
+      <text x="377" y="99" text-anchor="middle" font-size="15" font-family="Consolas,monospace" fill="#1d4ed8">3</text>
+    </g>
+
+    <text x="52" y="164" font-size="11.5" fill="#68788f">行 1</text>
+    <g>
+      <rect x="110" y="138" width="66" height="42" rx="6" fill="#eaf1fe" stroke="#2563eb" stroke-width="1.8"/>
+      <text x="143" y="165" text-anchor="middle" font-size="15" font-family="Consolas,monospace" fill="#1d4ed8">1</text>
+      <rect x="188" y="138" width="66" height="42" rx="6" fill="#fff9ec" stroke="#f59e0b" stroke-width="2.6"/>
+      <text x="221" y="165" text-anchor="middle" font-size="15" font-family="Consolas,monospace" fill="#b45309" font-weight="bold">30</text>
+      <rect x="266" y="138" width="66" height="42" rx="6" fill="#eaf1fe" stroke="#2563eb" stroke-width="1.8"/>
+      <text x="299" y="165" text-anchor="middle" font-size="15" font-family="Consolas,monospace" fill="#1d4ed8">4</text>
+      <rect x="344" y="138" width="66" height="42" rx="6" fill="#eaf1fe" stroke="#2563eb" stroke-width="1.8"/>
+      <text x="377" y="165" text-anchor="middle" font-size="15" font-family="Consolas,monospace" fill="#1d4ed8">16</text>
+    </g>
+
+    <text x="52" y="230" font-size="11.5" fill="#68788f">行 2</text>
+    <g>
+      <rect x="110" y="204" width="66" height="42" rx="6" fill="#eaf1fe" stroke="#2563eb" stroke-width="1.8"/>
+      <text x="143" y="231" text-anchor="middle" font-size="15" font-family="Consolas,monospace" fill="#1d4ed8">21</text>
+      <rect x="188" y="204" width="66" height="42" rx="6" fill="#eaf1fe" stroke="#2563eb" stroke-width="1.8"/>
+      <text x="221" y="231" text-anchor="middle" font-size="15" font-family="Consolas,monospace" fill="#1d4ed8">8</text>
+      <rect x="266" y="204" width="66" height="42" rx="6" fill="#eaf1fe" stroke="#2563eb" stroke-width="1.8"/>
+      <text x="299" y="231" text-anchor="middle" font-size="15" font-family="Consolas,monospace" fill="#1d4ed8">14</text>
+      <rect x="344" y="204" width="66" height="42" rx="6" fill="#eaf1fe" stroke="#2563eb" stroke-width="1.8"/>
+      <text x="377" y="231" text-anchor="middle" font-size="15" font-family="Consolas,monospace" fill="#1d4ed8">27</text>
+    </g>
+
+    <rect x="450" y="72" width="350" height="174" rx="12" fill="#f7f9fd" stroke="#cbd5e1" stroke-width="1.6"/>
+    <text x="474" y="100" font-size="12.5" fill="#334155" font-weight="bold">怎么读出被点亮的那一格？</text>
+    <text x="474" y="130" font-size="12.5" font-family="Consolas,monospace" fill="#b45309" font-weight="bold">a[1][1] = 30</text>
+    <text x="474" y="158" font-size="12" fill="#475569">第一步：找 <tspan font-weight="bold">行下标 1</tspan> → 第 2 行</text>
+    <text x="474" y="184" font-size="12" fill="#475569">第二步：在这一行里找 <tspan font-weight="bold">列下标 1</tspan> → 第 2 个</text>
+    <text x="474" y="212" font-size="12" fill="#b45309">★ 先看行、再看列——顺序千万别颠倒</text>
+    <text x="474" y="236" font-size="12" fill="#8d9d94">★ 定义 <tspan font-family="Consolas,monospace">a[3][4]</tspan> 时，行下标 0~2、列下标 0~3</text>
+  </svg>
+  <div class="caption">图 2（SVG）：a[行][列] 的定位方式</div>
+</figure>
+
+<!-- ============ 2 ============ -->
+<div class="section-header" id="s2">
+  <h2>2　定义与初始化</h2>
+  <div class="en-title">Declaring</div>
+</div>
+
+<h3 id="s2-1">2.1 怎么创建二维数组</h3>
+
+<div class="code-card">
+  <div class="code-head">
+    <span class="dot d1"></span><span class="dot d2"></span><span class="dot d3"></span>
+    <span class="file">四种常用写法</span>
+    <span class="lang">C++</span>
+  </div>
+  <pre><code>// ① 只定义，不初始化（值为不确定，别直接用）
+int a[3][4];
+
+// ② 分组初始化 —— 最清楚，一组就是一行
+int b[3][4] = {
+    {1, 2, 3, 4},
+    {5, 6, 7, 8},
+    {9, 10, 11, 12}
+};
+
+// ③ 全部写在一行也可以（可读性差，但合法）
+int c[2][3] = {1, 2, 3, 4, 5, 6};
+
+// ④ 全部清零
+int d[3][4] = {0};
+
+// ⑤ 省略行数，让编译器自己数
+int e[][3] = {{1,2,3}, {4,5,6}};    // 自动是 2 行 3 列</code></pre>
+  <div class="out"><b>关键</b>　<code>int a[3][4] = {0};</code> 可以把<b>全部 12 个元素都清零</b>；<br>
+  <b>行数可以省略，列数不能省</b>——<code>int e[][3]</code> 合法，<code>int e[3][]</code> 不合法</div>
+</div>
+
+<div class="box tip">
+  <span class="lb">为什么列数不能省？</span>
+  因为二维数组在内存里是<strong>一行接一行横着摆的</strong>（叫"行优先"）。<br>
+  <b>编译器必须知道"一行有几个"，才能算出下一行从哪里开始。</b><br>
+  <strong>比如 <code class="inline">int e[][3]</code>，编译器看到 6 个数就猜出"每 3 个一行，共 2 行"；
+  可要是没写列数，它就不知道该怎么分组了。</strong>
+</div>
+
+<h3 id="s2-2">2.2 最容易踩的坑</h3>
+
+<div class="code-card">
+  <div class="code-head">
+    <span class="dot d1"></span><span class="dot d2"></span><span class="dot d3"></span>
+    <span class="file">部分初始化：写几项填几项，剩下补 0</span>
+    <span class="lang">C++</span>
+  </div>
+  <pre><code>int a[2][3] = {{1, 2}, {4}};
+
+// 结果长这样：
+//   列0  列1  列2
+//   1    2    0     ← 第 0 行：只写了 2 项，第 3 项补 0
+//   4    0    0     ← 第 1 行：只写了 1 项，后面补 0
+
+cout &lt;&lt; a[0][2] &lt;&lt; endl;    // 0
+cout &lt;&lt; a[1][1] &lt;&lt; endl;    // 0
+cout &lt;&lt; a[1][0] &lt;&lt; endl;    // 4</code></pre>
+  <div class="out"><b>规律</b>　<b>和一位数组一样：写几项填几项，没写的自动补 0</b></div>
+</div>
+
+<div class="box warn">
+  <span class="lb">最容易踩的坑：把两个下标"合并"成一个。</span>
+  <b>错误的写法：<code class="inline">a[1, 2]</code></b>——
+  这<b>不是"第 1 行第 2 列"</b>，而是用了"逗号表达式"，
+  <strong>它的值等于最后一个表达式，也就是 <code class="inline">a[2]</code>——完全跑偏了。</strong><br>
+  <b>正确的写法：<code class="inline">a[1][2]</code></b>——<strong>两个方括号，一个都不能少。</strong>
+</div>
+
+<!-- ============ 3 ============ -->
+<div class="section-header" id="s3">
+  <h2>3　行列索引</h2>
+  <div class="en-title">Indexing</div>
+</div>
+
+<h3 id="s3-1">3.1 a[i][j] 到底指哪一格</h3>
+
+<div class="code-card">
+  <div class="code-head">
+    <span class="dot d1"></span><span class="dot d2"></span><span class="dot d3"></span>
+    <span class="file">逐个读一遍</span>
+    <span class="lang">C++</span>
+  </div>
+  <pre><code>int a[3][4] = {
+    { 1,  2,  3,  4},
+    { 5,  6,  7,  8},
+    { 9, 10, 11, 12}
+};
+
+cout &lt;&lt; a[0][0] &lt;&lt; endl;    // 1    第 0 行第 0 列
+cout &lt;&lt; a[1][2] &lt;&lt; endl;    // 7    第 1 行第 2 列
+cout &lt;&lt; a[2][3] &lt;&lt; endl;    // 12   最后一行最后一列
+cout &lt;&lt; a[2][0] &lt;&lt; endl;    // 9    第 2 行的第一个
+
+a[1][1] = 100;              // 修改第 1 行第 1 列
+cout &lt;&lt; a[1][1] &lt;&lt; endl;    // 100</code></pre>
+  <div class="out"><b>读法口诀</b>　<b>"先看行下标，锁定是哪一整行；再看列下标，在这一行里数第几个"</b></div>
+</div>
+
+<h3 id="s3-2">3.2 读代码的顺序</h3>
+
+<div class="box remember">
+  <span class="lb">遇到 a[i][j] 就这么读：</span>
+  <b>第一步：看第一个方括号</b>——决定"是哪一行"。<br>
+  <b>第二步：看第二个方括号</b>——决定"这一行里的第几个"。<br>
+  <strong>就像报座位号：先报第几排，再报第几号。</strong>
+</div>
+
+<div class="box warn">
+  <span class="lb">还记不记得上一单元的指针写法？</span>
+  <code class="inline">a[i][j]</code> 和 <code class="inline">*(*(a + i) + j)</code> <strong>完全等价</strong>。<br>
+  <b>拆开看就是两次"偏移 + 解引用"：</b><br>
+  <code class="inline">a + i</code> → 第 i 行；<code class="inline">*(a + i)</code> → 这一行的首地址；
+  <code class="inline">+ j</code> → 偏移 j 格；再解引用 → <b>取到 a[i][j]</b>。<br>
+  <strong>真题里问"<code class="inline">*(*(a + 1) + 0)</code> 是多少"，答案就是 <code class="inline">a[1][0]</code>。</strong>
+</div>
+
+<!-- ============ 4 ============ -->
+<div class="section-header" id="s4">
+  <h2>4　遍历：双重循环</h2>
+  <div class="en-title">Nested Loops</div>
+</div>
+
+<h3 id="s4-1">4.1 外层管行、内层管列</h3>
+
+<div class="code-card">
+  <div class="code-head">
+    <span class="dot d1"></span><span class="dot d2"></span><span class="dot d3"></span>
+    <span class="file">标准的双重循环</span>
+    <span class="lang">C++</span>
+  </div>
+  <pre><code>int a[3][4] = {
+    { 1,  2,  3,  4},
+    { 5,  6,  7,  8},
+    { 9, 10, 11, 12}
+};
+
+for (int i = 0; i &lt; 3; i++) {           // 外层：走遍每一行
+    for (int j = 0; j &lt; 4; j++) {       // 内层：走遍这一行的每一列
+        cout &lt;&lt; a[i][j] &lt;&lt; "\t";
+    }
+    cout &lt;&lt; endl;                        // 一行打完换行
+}</code></pre>
+  <div class="out"><b>OUTPUT</b><br>
+  1　2　3　4<br>
+  5　6　7　8<br>
+  9　10　11　12<br>
+  <b>要点</b>　<b>外层变量 i 当行下标，内层变量 j 当列下标</b></div>
+</div>
+
+<figure class="figure">
+  <svg class="diagram" viewBox="0 0 830 220" role="img" aria-label="双重循环遍历">
+    <text x="24" y="30" font-size="14" font-weight="bold" fill="#1f2937">外层走一行，内层就把这一行走完</text>
+
+    <rect x="60" y="56" width="330" height="140" rx="10" fill="#eaf1fe" stroke="#2563eb" stroke-width="2"/>
+    <text x="74" y="84" font-size="12" fill="#1d4ed8">第 0 行：内层 j 从 0 走到 3，把整行打完</text>
+    <text x="74" y="112" font-size="12" fill="#1d4ed8">第 1 行：内层 j 再从头走一遍</text>
+    <text x="74" y="140" font-size="12" fill="#1d4ed8">第 2 行：内层 j 又从头走一遍</text>
+    <text x="74" y="174" font-size="12" fill="#b45309" font-weight="bold">总次数 = 3 × 4 = 12 次</text>
+
+    <rect x="420" y="56" width="380" height="140" rx="10" fill="#f7f9fd" stroke="#cbd5e1" stroke-width="1.6"/>
+    <text x="444" y="84" font-size="12.5" fill="#334155" font-weight="bold">两层循环各管什么</text>
+    <text x="444" y="112" font-size="12" fill="#475569">外层 → 决定"现在处理第几行"，循环 <tspan font-weight="bold">行数</tspan> 次</text>
+    <text x="444" y="140" font-size="12" fill="#475569">内层 → 决定"这一行处理到第几列"，循环 <tspan font-weight="bold">列数</tspan> 次</text>
+    <text x="444" y="174" font-size="12" fill="#b45309">★ 外层每走一步，内层就完整地走一整圈</text>
+  </svg>
+  <div class="caption">图 3（SVG）：双重循环遍历二维数组</div>
+</figure>
+
+<h3 id="s4-2">4.2 每层循环管什么</h3>
+
+<table class="styled">
+  <thead><tr><th>写法</th><th>效果</th><th>总次数</th></tr></thead>
+  <tbody>
+    <tr><td><code class="inline">for (i=0; i&lt;行数; i++) for (j=0; j&lt;列数; j++)</code></td><td><strong>按行遍历</strong>（一行行来）</td><td>行×列</td></tr>
+    <tr><td><code class="inline">for (j=0; j&lt;列数; j++) for (i=0; i&lt;行数; i++)</code></td><td><strong>按列遍历</strong>（一列列来）</td><td>仍是行×列</td></tr>
+    <tr><td><code class="inline">for (i=0; i&lt;行数; i++)</code> 单循环</td><td>只处理某一行的全部元素</td><td>列数</td></tr>
+  </tbody>
+</table>
+
+<div class="box remember">
+  <span class="lb">关键认识：</span>
+  <b>两层循环的"总次数"和外层内层谁先谁后<b>无关</b>，永远是 行数 × 列数。</b><br>
+  <b>但"访问顺序"不一样：</b><strong>外层行、内层列 → 按行扫；外层列、内层行 → 按列扫。</strong><br>
+  <b>需要按某种顺序输出时，这个区别就很重要。</b>
+</div>
+
+<!-- ============ 5 ============ -->
+<div class="section-header" id="s5">
+  <h2>5　三个常见操作</h2>
+  <div class="en-title">Common Operations</div>
+</div>
+
+<h3 id="s5-1">5.1 求和与最值</h3>
+
+<div class="code-card">
+  <div class="code-head">
+    <span class="dot d1"></span><span class="dot d2"></span><span class="dot d3"></span>
+    <span class="file">套路和一位数组一样，只是多一层循环</span>
+    <span class="lang">C++</span>
+  </div>
+  <pre><code>int a[3][4] = {
+    { 1,  2,  3,  4},
+    { 5,  6,  7,  8},
+    { 9, 10, 11, 12}
+};
+
+// 全部求和
+int sum = 0;
+for (int i = 0; i &lt; 3; i++)
+    for (int j = 0; j &lt; 4; j++)
+        sum += a[i][j];
+cout &lt;&lt; sum &lt;&lt; endl;            // 78
+
+// 求最大值
+int mx = a[0][0];               // ★ 取第一个元素，不是 0
+for (int i = 0; i &lt; 3; i++)
+    for (int j = 0; j &lt; 4; j++)
+        if (a[i][j] &gt; mx) mx = a[i][j];
+cout &lt;&lt; mx &lt;&lt; endl;             // 12</code></pre>
+  <div class="out"><b>OUTPUT</b>　78 / 12<br>
+  <b>注意</b>　求最大值时初值取 <b><code>a[0][0]</code></b>——和一位数组一个道理</div>
+</div>
+
+<h3 id="s5-2">5.2 按行统计与对角线</h3>
+
+<div class="code-card">
+  <div class="code-head">
+    <span class="dot d1"></span><span class="dot d2"></span><span class="dot d3"></span>
+    <span class="file">两个高频套路</span>
+    <span class="lang">C++</span>
+  </div>
+  <pre><code>// 【套路一】求每一行的和
+for (int i = 0; i &lt; 3; i++) {
+    int rowSum = 0;                     // ★ 每一行都要重新清零
+    for (int j = 0; j &lt; 4; j++) {
+        rowSum += a[i][j];
+    }
+    cout &lt;&lt; "第 " &lt;&lt; i &lt;&lt; " 行：" &lt;&lt; rowSum &lt;&lt; endl;
+}
+// 第 0 行：10   第 1 行：26   第 2 行：42
+
+// 【套路二】方阵主对角线（行下标 == 列下标）
+int n = 3, diag = 0;
+for (int i = 0; i &lt; n; i++) {
+    diag += a[i][i];                    // ★ 两个下标相同
+}
+cout &lt;&lt; diag &lt;&lt; endl;                 // 1 + 6 + 11 = 18</code></pre>
+  <div class="out"><b>两个关键</b>　
+  <b>① 按行统计时，"行累加变量"要放在外层循环里清零</b>；<br>
+  <b>② 主对角线的特征就是"行下标 == 列下标"，所以写 <code>a[i][i]</code></b></div>
+</div>
+
+<div class="box tip">
+  <span class="lb">为什么 rowSum 要放在外层循环里？</span>
+  因为它是"<strong>这一行的</strong>和"。<br>
+  <b>如果放到外面去，它就会把三行的和一路累加下去，变成总和。</b><br>
+  <strong>判断方法：问一句"这个变量该不该跨行保留？"——
+  不该保留的，就写在外层循环里。</strong>
+</div>
+
+<!-- ============ 6 ============ -->
+<div class="section-header" id="s6">
+  <h2>6　代码实战</h2>
+  <div class="en-title">Level Practice</div>
+</div>
+
+<div class="level-card">
+  <div class="lc-head"><span class="n">关卡</span><h4>黄金选择</h4><span class="go">进入关卡 →</span></div>
+  <div class="lc-body">
+    <div class="story">
+      <b>故事：</b>货架上整整齐齐摆着一片金块，<b>每一格都有编号：第几排、第几格。</b><br>
+      斯凯勒把货架图铺在地上：这一关没有捷径——<strong>你得把每一格都看一遍，
+      才知道哪一块最大。</strong><br>
+      你点头：<b>一行一行看过去就行。</b><br>
+      对，她说，<strong>两层循环，外层管排、内层管格——这就是二维数组的走法。</strong>
+    </div>
+    <p><strong>思路：</strong>把整片货架读进二维数组，
+    用<strong>双重循环</strong>扫一遍，同时记录最大值和它的位置。</p><figure class="pic">
+  <img src="../assets/stages/py-L4-02-stage1_gold_choice.webp" alt="黄金选择 关卡截图"
+       onerror="this.closest('.pic').classList.add('missing')">
+  <div class="ph">
+    <div class="fn">assets/stages/py-L4-02-stage1_gold_choice.webp</div>
+    <div class="ds">【截图位】黄金选择关卡：货架式金币阵列与通道，代码编辑区可见双重循环。</div>
+  </div>
+  <figcaption>关卡实况：黄金选择</figcaption>
+</figure>
+    <div class="code-card">
+      <div class="code-head">
+        <span class="dot d1"></span><span class="dot d2"></span><span class="dot d3"></span>
+        <span class="file">读入 + 遍历 + 定位</span>
+        <span class="lang">C++</span>
+      </div>
+      <pre><code>#include &lt;iostream&gt;
+using namespace std;
+
+int a[105][105];
+
+int main() {
+    int R, C;
+    cin &gt;&gt; R &gt;&gt; C;                    // 行数、列数
+
+    for (int i = 0; i &lt; R; i++)          // 读入整片货架
+        for (int j = 0; j &lt; C; j++)
+            cin &gt;&gt; a[i][j];
+
+    int mx = a[0][0], mi = 0, mj = 0;    // ★ 初值取第一格
+    for (int i = 0; i &lt; R; i++) {
+        for (int j = 0; j &lt; C; j++) {
+            if (a[i][j] &gt; mx) {
+                mx = a[i][j];
+                mi = i;                  // 记住在哪一行
+                mj = j;                  // 记住在哪一列
+            }
+        }
+    }
+
+    cout &lt;&lt; mx &lt;&lt; " " &lt;&lt; mi &lt;&lt; " " &lt;&lt; mj &lt;&lt; endl;
+    return 0;
+}</code></pre>
+      <div class="out"><b>输入</b>　2 3　/　5 9 3　/　7 4 8　　<b>输出</b>　<b>9 0 1</b><br>
+      <b>读法</b>　最大的是 9，它在第 0 行、第 1 列</div>
+    </div>
+    <div class="box info">
+      <span class="lb">和本单元的关系：</span>
+      <strong>"数组开在全局、用双重循环读入、再双重循环统计"</strong>——这是二维数组题的标准三段式。<br>
+      <b>把数组定义放在所有函数外面（全局），有两个好处：</b>
+      <strong>自动全部初始化为 0，而且能开得比较大。</strong><br>
+      <b>注意多维数组的 <code>a[105][105]</code> 一共是 11025 个元素</b>——
+      这种规模放在局部（函数内部）很容易"爆栈"，<strong>放全局就稳当。</strong>
+    </div>
+    <a class="btn-go" href="https://codecombat.cn/" target="_blank" rel="noopener">去扣哒世界闯这一关 →</a>
+  </div>
+</div>
+
+<figure class="pic">
+  <img src="../assets/illustrations/py-L4-02-02_row_column.webp" alt="一行一列交叉的那一格"
+       onerror="this.closest('.pic').classList.add('missing')">
+  <div class="ph">
+    <div class="fn">assets/illustrations/py-L4-02-02_row_column.webp</div>
+    <div class="ds">【配图位】高耸的立体货架前，某一整行与某一整列同时被淡淡的光带标示出来，光带的交点处那一格被一束聚光灯照亮、格外明亮；一名金发矿工站在货架前抬头看着被照亮的那一格，手指点在货架图上对应的位置；其余格子都隐没在阴影里。</div>
+  </div>
+  <figcaption>图 4：行和列各自发亮，交点就是 a[行][列]</figcaption>
+</figure>
+
+<figure class="pic">
+  <img src="../assets/illustrations/py-L4-02-03_grid_scan.webp" alt="一行一行扫过去"
+       onerror="this.closest('.pic').classList.add('missing')">
+  <div class="ph">
+    <div class="fn">assets/illustrations/py-L4-02-03_grid_scan.webp</div>
+    <div class="ds">【配图位】货架前，一名矿工从最上面一行开始逐格查看；已经扫过的格子亮起淡绿色微光，正在查看的那一格亮起强光，还没扫到的格子仍是暗的；一行扫完再换下一行，地面上有一条从左上到右下的发光轨迹；旁边一块小面板标着"外层管行，内层管列"。</div>
+  </div>
+  <figcaption>图 5：双重循环就是一行一行扫完整面货架</figcaption>
+</figure>
+
+
+
+<!-- ============ 7 ============ -->
+<div class="section-header" id="s7">
+  <h2>7　常见陷阱</h2>
+  <div class="en-title">Common Pitfalls</div>
+</div>
+
+<div class="cast duck">
+  <img class="ava" src="../assets/ducks/duck_usara.webp" alt="扣哒鸭" onerror="this.style.display='none'">
+  <div class="bubble">
+    <div class="who">扣哒鸭 · 调试官</div>
+    二维数组的错，一半在下标、一半在循环变量的位置。四条。
+  </div>
+</div>
+
+<div class="pit">
+  <div class="pt">
+    <div class="x">1</div>
+    <div class="t"><b>把两个方括号写成一个。</b></div>
+  </div>
+  <div class="duck">
+    <img src="../assets/ducks/duck_zana.webp" alt="扣哒鸭" onerror="this.style.display='none'">
+    <div class="dt"><b>扣哒鸭：</b><code>a[1][2]</code> 是"第 1 行第 2 列"。<br>
+    写成 <code>a[1, 2]</code> 就变成了<b>逗号表达式</b>——值等于最后一个表达式，
+    <strong>结果是 <code>a[2]</code>，跟你想找的位置差远了。</strong></div>
+  </div>
+  <div class="fix"><b>正确写法：</b><code class="inline">a[i][j]</code>，两个方括号缺一不可</div>
+</div>
+
+<div class="pit">
+  <div class="pt">
+    <div class="x">2</div>
+    <div class="t"><b>把行数和列数搞反了。</b></div>
+  </div>
+  <div class="duck">
+    <img src="../assets/ducks/duck_naria.webp" alt="扣哒鸭" onerror="this.style.display='none'">
+    <div class="dt"><b>扣哒鸭：</b><code>int a[3][4]</code> 是<b>3 行 4 列</b>，
+    不是 4 行 3 列。<br>
+    <strong>循环里外层跑行数（3 次）、内层跑列数（4 次）——写反了就会越界。</strong></div>
+  </div>
+  <div class="fix"><b>记牢：</b>定义 <code class="inline">a[行][列]</code>；外层循环用行数、内层用列数</div>
+</div>
+
+<div class="pit">
+  <div class="pt">
+    <div class="x">3</div>
+    <div class="t"><b>按行统计时，累加变量放错了位置。</b></div>
+  </div>
+  <div class="duck">
+    <img src="../assets/ducks/duck_hattori.webp" alt="扣哒鸭" onerror="this.style.display='none'">
+    <div class="dt"><b>扣哒鸭：</b>想要"<strong>每一行</strong>的和"，
+    那个 <code>rowSum</code> 就得<strong>写在外层循环里面</strong>，每换一行重新清零。<br>
+    <b>放到外面去，它就会一路累加，最后只剩一个总和。</b></div>
+  </div>
+  <div class="fix"><b>正确做法：</b>只属于"一行"的变量，定义在外层循环内部</div>
+</div>
+
+<div class="pit">
+  <div class="pt">
+    <div class="x">4</div>
+    <div class="t"><b>以为 <code class="inline">a[i][j]</code> 里 i 是列、j 是行。</b></div>
+  </div>
+  <div class="duck">
+    <img src="../assets/ducks/duck_illia.webp" alt="扣哒鸭" onerror="this.style.display='none'">
+    <div class="dt"><b>扣哒鸭：</b><strong>第一个下标是行，第二个是列</strong>，这是 C++ 定死的。<br>
+    <code>a[1][2]</code> 是"第 1 行第 2 列"。
+    <b>记不住就想座位号：先说第几排（行），再说第几号（列）。</b></div>
+  </div>
+  <div class="fix"><b>口诀：</b>先看行、再看列，<code class="inline">a[行][列]</code></div>
+</div>
+
+<!-- ============ 8 ============ -->
+<div class="section-header" id="s8">
+  <h2>8　题目练习</h2>
+  <div class="en-title">Practice</div>
+</div>
+
+<p>前 2 题改编自 C++ 四级真题，其余为原创练习题。</p>
+
+<div class="exam">
+  <div class="eh"><span class="src">改编自 2026 年 9 月 · C++ 四级 · 判断题 第 3 题</span><span class="tp">判断题</span></div>
+  <div class="eb">
+    <div class="q">下面的二维数组在内存中<strong>按行优先连续存储</strong>，
+    因此 <code class="inline">*(*(a + 1) + 0)</code> 的值为 <code class="inline">5</code>。（　　）</div>
+    <pre>int a[2][4] = {{1, 2, 3, 4}, {5, 6, 7, 8}};</pre>
+    <details><summary>查看答案与详解</summary>
+      <div class="ans"><b>答案：正确（√）</b>。逐层拆解：<br>
+      <b>① </b><code class="inline">a + 1</code> → 指向<b>第 1 行</b>（下标从 0 开始，也就是第二行）；<br>
+      <b>② </b><code class="inline">*(a + 1)</code> → 取出第 1 行，等价于 <code class="inline">a[1]</code>，
+      它本身就是该行首元素的地址；<br>
+      <b>③ </b><code class="inline">*(a + 1) + 0</code> → 在第 1 行里偏移 0 格，指向 <code class="inline">a[1][0]</code>；<br>
+      <b>④ </b>最外层再解引用 → 取出 <code class="inline">a[1][0]</code> 的值 = <b>5</b> ✔<br>
+      <b>一句话记牢：<code class="inline">*(*(a + i) + j)</code> 完全等价于 <code class="inline">a[i][j]</code>。</b><br>
+      <b>"行优先存储"</b>的意思就是：内存里先放完第 0 行，再放第 1 行——
+      <strong>而不是一列一列地放。</strong><br>
+      <span class="tagline">对应小节</span>3.2 读代码的顺序。</div>
+    </details>
+  </div>
+</div>
+
+<div class="exam">
+  <div class="eh"><span class="src">改编自 2026 年 9 月 · C++ 四级 · 编程题 2</span><span class="tp">编程题</span></div>
+  <div class="eb">
+    <div class="q"><b>二维网格排序：</b>给定一个 n 行 m 列的网格，每个格子里有一个数字。
+    先对<strong>每一行从左到右升序排序</strong>，再对<strong>每一列从上到下升序排序</strong>，
+    输出最终结果。</div>
+    <details><summary>查看参考答案与要点</summary>
+      <div class="ans">
+<pre style="margin:0;background:#131a26;color:#c8d3e0;border-radius:10px;padding:14px 16px">#include &lt;iostream&gt;
+#include &lt;algorithm&gt;
+using namespace std;
+
+int a[1005][1005];
+
+int main() {
+    int n, m;
+    cin &gt;&gt; n &gt;&gt; m;
+    for (int i = 0; i &lt; n; i++)
+        for (int j = 0; j &lt; m; j++)
+            cin &gt;&gt; a[i][j];
+
+    // 第一步：每一行内部排序
+    for (int i = 0; i &lt; n; i++)
+        sort(a[i], a[i] + m);           // a[i] 是第 i 行的首地址
+
+    // 第二步：每一列内部排序（先把一列腾到临时数组再排）
+    for (int j = 0; j &lt; m; j++) {
+        int col[1005];
+        for (int i = 0; i &lt; n; i++) col[i] = a[i][j];   // 取出一列
+        sort(col, col + n);                              // 排序
+        for (int i = 0; i &lt; n; i++) a[i][j] = col[i];    // 放回去
+    }
+
+    for (int i = 0; i &lt; n; i++) {
+        for (int j = 0; j &lt; m; j++) cout &lt;&lt; a[i][j] &lt;&lt; " ";
+        cout &lt;&lt; endl;
+    }
+    return 0;
+}</pre>
+      <p style="margin-top:12px"><b>要点：</b><br>
+      ① <strong>排一行特别方便</strong>——因为同一行的元素在内存里是<strong>连续的</strong>，
+      所以可以写 <code class="inline">sort(a[i], a[i] + m)</code>，<strong>直接排第 i 行</strong>；<br>
+      ② <strong>排一列就没那么方便了</strong>——同一列的元素<strong>在内存里并不挨着</strong>，
+      得先<strong>腾到一个临时数组</strong>里，排好再放回去；<br>
+      ③ 这个差别正是"<strong>行优先存储</strong>"带来的直接影响：
+      <strong>行是连续的、列是不连续的</strong>；<br>
+      ④ 数组开成全局，<strong>能开得比较大，也不会自动清零出意外</strong>。<br>
+      <span class="tagline">对应小节</span>4.1 外层管行、内层管列。</p>
+      </div>
+    </details>
+  </div>
+</div>
+
+<div class="exam">
+  <div class="eh"><span class="src ori">原创练习题</span><span class="tp">单选题</span></div>
+  <div class="eb">
+    <div class="q">执行下面的代码，输出的结果是（　　）。</div>
+    <pre>int a[2][3] = {{1, 2}, {4}};
+cout &lt;&lt; a[0][2] &lt;&lt; " " &lt;&lt; a[1][1] &lt;&lt; " " &lt;&lt; a[1][0] &lt;&lt; endl;</pre>
+    <div class="opt"><i>A.</i><code class="inline">0 0 4</code>　　<i>B.</i><code class="inline">2 1 4</code>　　<i>C.</i><code class="inline">0 4 0</code>　　<i>D.</i>程序编译错误</div>
+    <details><summary>查看答案与详解</summary>
+      <div class="ans"><b>答案：A</b>。这个数组是 <strong>2 行 3 列</strong>，
+      初始化只写了 <code class="inline">{{1, 2}, {4}}</code>，<strong>没写的位置自动补 0</strong>：<br>
+      内存里长这样：<br>
+      <code>第 0 行：1  2  0</code><br>
+      <code>第 1 行：4  0  0</code><br>
+      所以：<br>
+      <b><code class="inline">a[0][2]</code></b> = 第 0 行第 2 列 = <b>0</b>（没写，补的）<br>
+      <b><code class="inline">a[1][1]</code></b> = 第 1 行第 1 列 = <b>0</b>（没写，补的）<br>
+      <b><code class="inline">a[1][0]</code></b> = 第 1 行第 0 列 = <b>4</b><br>
+      <b>易错点：</b>把 <code class="inline">{4}</code> 误当成"第 1 行的全部"，以为后面还有值；
+      <strong>实际上只写了 1 项，后面 2 格就都是 0。</strong><br>
+      <span class="tagline">对应小节</span>2.2 最容易踩的坑。</div>
+    </details>
+  </div>
+</div>
+
+<div class="exam">
+  <div class="eh"><span class="src ori">原创练习题</span><span class="tp">判断题</span></div>
+  <div class="eb">
+    <div class="q">对于 <code class="inline">int a[3][4];</code>，表达式 <code class="inline">a[3][0]</code>
+    和 <code class="inline">a[0][4]</code> 都是合法的访问。（　　）</div>
+    <details><summary>查看答案与详解</summary>
+      <div class="ans"><b>答案：错误（×）</b>。<code class="inline">int a[3][4]</code> 表示
+      <strong>3 行 4 列</strong>：<br>
+      <b>行下标合法范围：0 ~ 2</b>（一共 3 行）——所以 <code class="inline">a[3][0]</code> <strong>越界</strong>；<br>
+      <b>列下标合法范围：0 ~ 3</b>（每行 4 列）——所以 <code class="inline">a[0][4]</code> <strong>越界</strong>。<br>
+      <b>和一位数组一样，C++ 不检查二维数组的越界</b>，
+      所以这两个访问<strong>可能不报错、却能读写到别的内存</strong>，非常危险。<br>
+      <b>记法：</b>定义里写的是几，最大下标就是几减一。<br>
+      <span class="tagline">对应小节</span>3.1 a[i][j] 到底指哪一格。</div>
+    </details>
+  </div>
+</div>
+
+<div class="exam">
+  <div class="eh"><span class="src ori">原创练习题</span><span class="tp">编程题</span></div>
+  <div class="eb">
+    <div class="q">题目要求：读入一个 n × n 的方阵，输出<strong>主对角线之和</strong>
+    与<strong>副对角线之和</strong>。<br>
+    <b>样例：</b>输入 3 行 <code class="inline">1 2 3 / 4 5 6 / 7 8 9</code>，
+    输出 <code class="inline">15 15</code>。</div>
+    <details><summary>查看参考答案与要点</summary>
+      <div class="ans">
+<pre style="margin:0;background:#131a26;color:#c8d3e0;border-radius:10px;padding:14px 16px">#include &lt;iostream&gt;
+using namespace std;
+
+int a[105][105];
+
+int main() {
+    int n;
+    cin &gt;&gt; n;
+    for (int i = 0; i &lt; n; i++)
+        for (int j = 0; j &lt; n; j++)
+            cin &gt;&gt; a[i][j];
+
+    int d1 = 0, d2 = 0;
+    for (int i = 0; i &lt; n; i++) {
+        d1 += a[i][i];              // 主对角线：行下标 == 列下标
+        d2 += a[i][n - 1 - i];      // 副对角线：行下标 + 列下标 == n-1
+    }
+
+    cout &lt;&lt; d1 &lt;&lt; " " &lt;&lt; d2 &lt;&lt; endl;
+    return 0;
+}</pre>
+      <p style="margin-top:12px"><b>验算（n = 3）：</b><br>
+      <b>主对角线：</b><code class="inline">a[0][0] + a[1][1] + a[2][2]</code> = 1 + 5 + 9 = <b>15</b>；<br>
+      <b>副对角线：</b><code class="inline">a[0][2] + a[1][1] + a[2][0]</code> = 3 + 5 + 7 = <b>15</b><br>
+      <b>要点：</b><br>
+      ① <strong>主对角线的特征：行下标 == 列下标</strong>，所以写 <code class="inline">a[i][i]</code>；<br>
+      ② <strong>副对角线的特征：行下标 + 列下标 == n−1</strong>，
+      所以列下标写成 <code class="inline">n − 1 − i</code>；<br>
+      ③ 两条对角线<strong>都只需要一层循环</strong>——因为 i 一确定，j 就跟着定了；<br>
+      ④ 注意 <code class="inline">5</code> 被两条线<strong>都算了一次</strong>——
+      这是对的，题目问的是"两条线各自的和"，不是"所有不重复元素的和"。<br>
+      <span class="tagline">对应小节</span>5.2 按行统计与对角线。</p>
+      </div>
+    </details>
+  </div>
+</div>
+
+<!-- ============ 9 ============ -->
+<div class="section-header" id="s9">
+  <h2>9　本单元小结</h2>
+  <div class="en-title">Unit Summary</div>
+</div>
+
+<div class="cast skyler">
+  <img class="ava" src="../assets/avatars/skyler.png" alt="斯凯勒" onerror="this.style.display='none'">
+  <div class="bubble">
+    <div class="who">斯凯勒 · 金发矿工</div>
+    四句话记住二维数组：<br>
+    <strong>一、定义写 <code>a[行][列]</code>，访问也写 <code>a[行][列]</code>——先看行、再看列。</strong><br>
+    <strong>二、两个方括号不能省，<code>a[1,2]</code> 是逗号表达式，不是"第 1 行第 2 列"。</strong><br>
+    <strong>三、遍历用双重循环：外层管行、内层管列；总次数 = 行数 × 列数。</strong><br>
+    <strong>四、行数可以省略、列数不能省——因为内存是"按行"摆放的。</strong><br>
+    货架管住了。下一站是零件装配台——<b>那里要把不同形状的零件，装订进同一个外壳。</b>
+  </div>
+</div>
+
+<div class="summary">
+  <h3>你在立体货架前收获了什么</h3>
+  <ul>
+    <li><strong>二维数组</strong>——有行有列的一整片格子；<code class="inline">int a[3][4]</code> 是 3 行 4 列。</li>
+    <li><strong>定义与访问都"先行后列"</strong>——<code class="inline">a[i][j]</code> 是第 i 行第 j 列。</li>
+    <li><strong>两个方括号缺一不可</strong>——<code class="inline">a[1, 2]</code> 不是二维下标，是逗号表达式。</li>
+    <li><strong>初始化</strong>——可以分组写 <code class="inline">{{1,2},{3,4}}</code>；
+      <strong>写几项填几项，剩下自动补 0</strong>；<code class="inline">= {0}</code> 可全部清零。</li>
+    <li><strong>行可省、列不可省</strong>——<code class="inline">int e[][3]</code> 合法，<code class="inline">int e[3][]</code> 不合法。</li>
+    <li><strong>遍历</strong>——双重循环；外层行、内层列；<strong>总次数 = 行 × 列</strong>。</li>
+    <li><strong>行优先存储</strong>——内存里先放完第 0 行再放第 1 行；<strong>行内元素连续，列内不连续</strong>。</li>
+    <li><strong>指针写法</strong>——<code class="inline">a[i][j]</code> ≡ <code class="inline">*(*(a + i) + j)</code>。</li>
+    <li><strong>常见操作</strong>——求和、求最值（初值取 <code class="inline">a[0][0]</code>）、按行统计。</li>
+    <li><strong>按行统计</strong>——"行累加变量"要<strong>定义在外层循环内部</strong>，每行重新清零。</li>
+    <li><strong>对角线</strong>——主对角线 <code class="inline">a[i][i]</code>；副对角线 <code class="inline">a[i][n−1−i]</code>。</li>
+    <li><strong>大数组开全局</strong>——自动清零、不易爆栈。</li>
+  </ul>
+</div>
+
+<div class="pager">
+  <a href="cpp-4-01.html"><div class="k">← 上一单元</div><div class="v">传送带枢纽 · 指针与复合数据类型</div></a>
+  <a href="../index.html" target="_top" class="back"><div class="k">返回</div><div class="v">考纲之路 · 总目录</div></a>
+  <a href="cpp-4-03.html"><div class="k">下一单元 →</div><div class="v">零件装配台 · 结构体</div></a>
+</div>
+
+<div class="cta">
+  <h3>下一站：零件装配台</h3>
+  <p>货架上的零件被送去了装配台。<b>齿轮、弹簧、护板、水晶——
+  形状完全不同的东西，要被装订进同一个外壳里。</b><br>
+  下一单元我们学 <b>结构体</b>：<b>怎么把几个"本来不搭界"的数据，
+  打包成一个整体来管理。</b></p>
+  <a class="btn-go" href="https://codecombat.cn/" target="_blank" rel="noopener">加入扣哒世界，把这条考纲之路走一遍 →</a>
+</div>
+</div><!-- /container -->
+</div><!-- /page -->
+
+<script>
+const KEYWORDS = new Set([
+  "int", "long", "short", "unsigned", "signed", "float", "double", "char", "bool", "void",
+  "const", "if", "else", "for", "while", "do", "switch", "case", "default", "break",
+  "continue", "return", "goto", "struct", "class", "union", "enum", "using", "namespace",
+  "std", "main", "true", "false", "cin", "cout", "cerr", "endl", "string", "sizeof",
+  "include", "define", "new", "delete", "public", "private", "static", "inline", "nullptr"
+]);
+
+function esc(s){ return s.replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;'); }
+
+function highlight(src){
+  let out = '', i = 0;
+  const n = src.length;
+  while (i < n){
+    const c = src[i];
+    /* 预处理指令：#include / #define，整行只在行首生效 */
+    if (c === '#' && (i === 0 || src[i-1] === '\n')){
+      let j = i;
+      while (j < n && /[A-Za-z]/.test(src[j])) j++;
+      out += '<span class="kw">' + esc(src.slice(i, j)) + '</span>';
+      let k = src.indexOf('\n', j); if (k < 0) k = n;
+      if (j < k) out += '<span class="st">' + esc(src.slice(j, k)) + '</span>';
+      i = k; continue;
+    }
+    /* 行注释 // */
+    if (c === '/' && src[i+1] === '/'){
+      let j = src.indexOf('\n', i); if (j < 0) j = n;
+      out += '<span class="cm">' + esc(src.slice(i, j)) + '</span>';
+      i = j; continue;
+    }
+    /* 块注释 */
+    if (c === '/' && src[i+1] === '*'){
+      let j = src.indexOf('*/', i + 2); j = j < 0 ? n : j + 2;
+      out += '<span class="cm">' + esc(src.slice(i, j)) + '</span>';
+      i = j; continue;
+    }
+    /* 字符串与字符字面量 */
+    if (c === '"' || c === "'"){
+      let j = i + 1;
+      while (j < n && src[j] !== c){ if (src[j] === '\\') j++; j++; }
+      j = Math.min(j + 1, n);
+      out += '<span class="st">' + esc(src.slice(i, j)) + '</span>';
+      i = j; continue;
+    }
+    /* 数字 */
+    if (/[0-9]/.test(c)){
+      let j = i;
+      while (j < n && /[0-9.]/.test(src[j])) j++;
+      out += '<span class="nu">' + esc(src.slice(i, j)) + '</span>';
+      i = j; continue;
+    }
+    /* 标识符：关键字 / 函数名 / 普通名字 */
+    if (/[A-Za-z_]/.test(c)){
+      let j = i;
+      while (j < n && /[A-Za-z0-9_]/.test(src[j])) j++;
+      const w = src.slice(i, j);
+      if (KEYWORDS.has(w)) out += '<span class="kw">' + esc(w) + '</span>';
+      else if (src[j] === '(') out += '<span class="fn">' + esc(w) + '</span>';
+      else out += esc(w);
+      i = j; continue;
+    }
+    out += esc(c); i++;
+  }
+  return out;
+}
+
+document.querySelectorAll('.code-card pre code').forEach(block => {
+  block.innerHTML = highlight(block.textContent);
+});
+
+if (location.search.indexOf('expand') >= 0) {
+  document.querySelectorAll('details').forEach(d => d.open = true);
+}
+document.querySelectorAll('.sidebar-nav a').forEach(a => {
+  a.addEventListener('click', () => {
+    if (window.innerWidth <= 900) document.querySelector('.sidebar-nav').classList.remove('active');
+  });
+});
+</script>
+</body>
+</html>
