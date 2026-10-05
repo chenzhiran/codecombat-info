@@ -1,0 +1,951 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="copyright" content="CodeCombat Inc. codecombat.cn">
+<title>齿轮传动链 · 递推算法 | 扣哒考级 · GESP Python 四级</title>
+<style>
+  :root{
+    --primary:#0e8f86; --primary-light:#14b8a6; --primary-lighter:#e6f7f5; --primary-dark:#0a6b64;
+    --brand:#ff6b35; --brand-dark:#e8541f; --brand-soft:#fff3ec;
+    --night:#0f1b22; --night-2:#16323a; --gold:#f5b301;
+    --text:#22333a; --dim:#5f7276; --dim2:#8da0a3;
+    --bg:#ffffff; --bg-soft:#f6fbfa; --line:#dceceb; --sidebar:274px;
+    --code-bg:#14231f; --code-tx:#c3d6d1;
+    --code-kw:#c678dd; --code-st:#98c379; --code-nu:#d19a66; --code-cm:#68807a; --code-fn:#61afef;
+  }
+  *{margin:0;padding:0;box-sizing:border-box}
+  html{scroll-behavior:smooth}
+  body{font-family:"PingFang SC","Microsoft YaHei","Segoe UI",-apple-system,sans-serif;line-height:1.9;color:var(--text);background:var(--bg);font-size:15.5px}
+  .sidebar-nav{position:fixed;top:0;left:0;width:var(--sidebar);height:100vh;overflow-y:auto;background:linear-gradient(180deg,#0c1a1e,#123037);padding:14px 0 40px;z-index:100;border-right:3px solid var(--brand);transition:transform .3s ease}
+  .sidebar-nav::-webkit-scrollbar{width:5px}
+  .sidebar-nav::-webkit-scrollbar-thumb{background:var(--brand);border-radius:4px}
+  .sb-brand{display:flex;align-items:center;gap:10px;padding:10px 13px 12px;border-bottom:1px solid #1d3d44;margin-bottom:8px}
+  .sidebar-nav a.sb-logo{display:flex;align-items:center;justify-content:center;flex-shrink:0;padding:0;border-left:none;transition:.2s}
+  .sb-logo:hover{transform:scale(1.08)}
+  .sb-logo img{height:34px;width:34px;display:block;object-fit:contain;border-radius:8px}
+  .sb-brand b{color:#eef7f6;font-size:14px;letter-spacing:.5px;display:block;line-height:1.4}
+  .sb-brand span{color:#7ba3a6;font-size:11.5px;display:block;line-height:1.4}
+  .nav-title{color:#ffb894;font-size:12px;font-weight:800;padding:10px 18px 6px;letter-spacing:1.2px}
+  .sidebar-nav a{display:block;color:#bcd3d4;text-decoration:none;padding:6px 18px;font-size:12.5px;line-height:1.55;border-left:3px solid transparent;transition:.18s}
+  .sidebar-nav a:hover{color:#fff;background:rgba(255,107,53,.16);border-left-color:var(--brand)}
+  .sidebar-nav a.nav-section{color:#ffb894;font-weight:700;font-size:13px;margin-top:11px;padding-top:10px;border-top:1px solid #1d3d44}
+  .sidebar-nav a.nav-section:first-of-type{border-top:none;margin-top:0;padding-top:6px}
+  .sidebar-nav a.nav-sub{padding-left:30px;color:#8fabad;font-size:12px}
+  .sidebar-nav a.nav-sub:hover{color:#fff}
+  .sb-back{margin:16px 14px 0;display:block;text-align:center;padding:9px;border-radius:9px;background:#1c3940;color:#a6c0c2 !important;font-size:12px;font-weight:700;border-left:none !important}
+  .sb-back:hover{background:var(--brand) !important;color:#fff !important}
+  .nav-toggle{display:none;position:fixed;top:14px;left:14px;z-index:120;background:var(--brand);color:#fff;border:none;border-radius:9px;padding:9px 13px;font-size:15px;cursor:pointer;box-shadow:0 4px 14px rgba(0,0,0,.25)}
+  .page{margin-left:var(--sidebar)}
+  .hero{position:relative;overflow:hidden;padding:44px 52px;color:#fff;background:linear-gradient(125deg,#0b171b 0%,#143038 46%,#8a3a16 132%)}
+  .hero::after{content:"";position:absolute;right:-90px;top:-110px;width:400px;height:400px;border-radius:50%;background:radial-gradient(circle,rgba(245,179,1,.30),transparent 68%)}
+  .hero-top{display:flex;gap:36px;align-items:center;position:relative;z-index:2}
+  .hero-txt{flex:1;min-width:0}
+  .hero .crumb{font-size:11.5px;color:#ffb894;letter-spacing:1.5px;font-weight:700;margin-bottom:14px}
+  .hero h1{font-size:31px;font-weight:800;line-height:1.3;letter-spacing:.6px;margin-bottom:8px}
+  .hero h1 .sub{display:block;font-size:18px;font-weight:700;color:#ffd2b3;margin-top:6px;letter-spacing:.3px}
+  .hero .en{font-size:13px;color:#98b6b8;font-style:italic;margin-bottom:18px}
+  .hero .tags{display:flex;flex-wrap:wrap;gap:8px}
+  .tag{font-size:11.5px;padding:4px 12px;border-radius:20px;background:rgba(255,255,255,.12);border:1px solid rgba(255,255,255,.22);color:#e8f0f6;font-weight:600}
+  .tag.hot{background:rgba(255,107,53,.92);border-color:transparent;color:#fff}
+  .hero-card{flex-shrink:0;width:200px;text-align:center}
+  .hero-card .ava{width:148px;height:148px;border-radius:50%;object-fit:cover;object-position:top center;border:4px solid rgba(255,180,140,.6);box-shadow:0 14px 34px rgba(0,0,0,.45);background:#24344a}
+  .hero-card .nm{font-size:15px;font-weight:800;color:#fff;margin-top:10px}
+  .hero-card .ti{font-size:11.5px;color:#ffb894;margin-top:2px}
+  .container{max-width:1080px;margin:0 auto;padding:38px 52px 70px}
+  .lead{font-size:15.5px;line-height:2.05;color:#35474a;background:linear-gradient(120deg,#fff8f3,#f6fbfa);border-left:5px solid var(--brand);border-radius:0 14px 14px 0;padding:22px 26px;margin-bottom:32px}
+  .lead b{color:var(--brand-dark)}
+  .cast{display:flex;gap:16px;align-items:flex-start;border-radius:16px;padding:18px 22px;margin:24px 0}
+  .cast .ava{width:72px;height:72px;border-radius:50%;object-fit:cover;object-position:top center;flex-shrink:0;background:#e8eef5}
+  .cast .bubble{position:relative;font-size:14px;line-height:1.95;padding-top:2px;flex:1}
+  .cast .who{font-size:12px;font-weight:800;margin-bottom:5px;letter-spacing:.5px}
+  .cast.anya{background:var(--brand-soft);border:1px solid #ffdcc9}
+  .cast.anya .who{color:var(--brand-dark)}
+  .cast.anya .bubble{color:#5c4636}
+  .cast.duck{background:#fff5f5;border:1px solid #fbd5d5}
+  .cast.duck .who{color:#b91c1c}
+  .cast.duck .bubble{color:#5c4141}
+  .cast.teacher{background:linear-gradient(120deg,#f1f8f8,#ffffff);border:1px solid #d6e8e8}
+  .cast.teacher .who{color:#134e4a}
+  .cast.teacher .bubble{color:#3c5254}
+  .cast.hero{background:#f2fbf9;border:1px solid #cfe9e6}
+  .cast.hero .who{color:#0f766e}
+  .cast.hero .bubble{color:#3d5250}
+  .goal-grid{display:grid;grid-template-columns:1fr 1fr;gap:16px;margin-bottom:36px}
+  .goal{border:1px solid var(--line);border-radius:15px;padding:19px 21px;background:#fff;box-shadow:0 4px 16px rgba(14,143,134,.06)}
+  .goal h4{font-size:14px;font-weight:800;margin-bottom:11px;display:flex;align-items:center;gap:8px;color:var(--primary-dark)}
+  .goal h4 .ic{width:22px;height:22px;border-radius:7px;background:var(--primary-lighter);display:flex;align-items:center;justify-content:center;font-size:12px}
+  .goal ul{list-style:none}
+  .goal li{font-size:13.5px;color:#46585a;line-height:1.9;padding-left:18px;position:relative}
+  .goal li::before{content:"▸";position:absolute;left:0;color:var(--primary);font-weight:800}
+  .goal.syllabus li::before{content:"✓"}
+  .section-header{margin:52px 0 24px;padding-bottom:12px;border-bottom:3px solid var(--brand);display:flex;align-items:baseline;gap:14px;flex-wrap:wrap}
+  .section-header h2{font-size:22px;font-weight:800;color:var(--night);letter-spacing:.4px}
+  .section-header .en-title{font-size:12px;color:var(--dim2);font-style:italic}
+  h3{font-size:17.5px;font-weight:800;margin:34px 0 14px;color:var(--night);display:flex;align-items:center;gap:10px}
+  h3::before{content:"";width:5px;height:17px;border-radius:3px;background:var(--brand);flex-shrink:0}
+  h4{font-size:15px;font-weight:800;margin:24px 0 10px;color:#2c4a48}
+  p{margin:12px 0;color:#3d5250;line-height:2}
+  strong{color:var(--primary-dark)}
+  code.inline{background:var(--primary-lighter);color:var(--primary-dark);padding:2px 7px;border-radius:6px;font-family:"SFMono-Regular",Consolas,Menlo,monospace;font-size:.9em;font-weight:600}
+  .figure{margin:24px 0;text-align:center}
+  .figure svg.diagram{max-width:100%;height:auto;background:#fff;border:1px solid var(--line);border-radius:14px;padding:10px}
+  .figure .caption{font-size:12.5px;color:var(--dim2);margin-top:9px}
+  .pic{margin:26px 0;text-align:center}
+  .pic img{max-width:100%;border-radius:16px;box-shadow:0 10px 28px rgba(20,60,60,.15);display:block;margin:0 auto}
+  .pic figcaption{font-size:12.5px;color:var(--dim2);margin-top:9px}
+  .pic .ph{display:none}
+  .pic.missing img{display:none}
+  .pic.missing .ph{display:flex;flex-direction:column;align-items:center;justify-content:center;gap:9px;border:2px dashed #bfdcd9;border-radius:16px;background:linear-gradient(135deg,#f8fdfc,#eef8f7);padding:40px 26px;color:#6f8f90}
+  .pic.missing .ph .fn{font-family:Consolas,monospace;font-size:12.5px;color:#0e8f86;font-weight:700;word-break:break-all}
+  .pic.missing .ph .ds{font-size:12.5px;line-height:1.8;max-width:560px}
+  .box{border-radius:13px;padding:16px 20px;margin:20px 0;font-size:14px;line-height:1.95}
+  .box .lb{font-weight:800;margin-right:6px}
+  .info{background:#eef6ff;border-left:5px solid #3b82f6;color:#274768}
+  .info .lb{color:#1d4ed8}
+  .tip{background:#fff9ec;border-left:5px solid #f59e0b;color:#6b4e13}
+  .tip .lb{color:#b45309}
+  .remember{background:var(--primary-lighter);border-left:5px solid var(--primary);color:#134e4a}
+  .remember .lb{color:var(--primary-dark)}
+  .warn{background:#fef2f2;border-left:5px solid #ef4444;color:#7f2b2b}
+  .warn .lb{color:#b91c1c}
+  .code-card{margin:20px 0;border-radius:14px;overflow:hidden;box-shadow:0 10px 28px rgba(15,40,40,.20)}
+  .code-head{display:flex;align-items:center;gap:9px;background:#1b322d;padding:9px 14px}
+  .code-head .dot{width:10px;height:10px;border-radius:50%}
+  .code-head .d1{background:#ff5f57}.code-head .d2{background:#febc2e}.code-head .d3{background:#28c840}
+  .code-head .file{color:#8fb0aa;font-size:11.5px;font-family:Consolas,monospace;margin-left:6px}
+  .code-head .lang{margin-left:auto;font-size:10.5px;font-weight:800;color:#0b1f1a;background:#2dd4bf;padding:2px 9px;border-radius:6px;letter-spacing:.4px}
+  .code-card pre{background:var(--code-bg);padding:18px 20px;overflow-x:auto;margin:0;font-family:"SFMono-Regular",Consolas,"Courier New",monospace;font-size:13.5px;line-height:1.85}
+  .code-card pre::-webkit-scrollbar{height:8px}
+  .code-card pre::-webkit-scrollbar-thumb{background:#2f4a45;border-radius:4px}
+  .code-card code{color:var(--code-tx);white-space:pre}
+  .kw{color:var(--code-kw);font-weight:600}
+  .st{color:var(--code-st)}
+  .nu{color:var(--code-nu)}
+  .cm{color:var(--code-cm);font-style:italic}
+  .fn{color:var(--code-fn)}
+  .out{background:#0e1d1a;color:#7fd6b8;font-family:Consolas,monospace;font-size:13px;padding:12px 20px;border-top:1px solid #223a35}
+  .out b{color:#c3d6d1;font-weight:600;font-size:11.5px;letter-spacing:1px}
+  table.styled{width:100%;border-collapse:collapse;margin:20px 0;font-size:13.5px;border-radius:12px;overflow:hidden;box-shadow:0 4px 16px rgba(14,143,134,.08)}
+  table.styled thead{background:var(--brand)}
+  table.styled th{color:#fff;padding:11px 14px;text-align:left;font-weight:700;font-size:13px}
+  table.styled td{padding:10px 14px;border-bottom:1px solid var(--line);color:#44585a;vertical-align:top}
+  table.styled tbody tr:nth-child(even){background:var(--bg-soft)}
+  table.styled tbody tr:last-child td{border-bottom:none}
+  .level-card{border:1px solid var(--line);border-radius:16px;overflow:hidden;margin:22px 0;box-shadow:0 6px 22px rgba(14,143,134,.08)}
+  .level-card .lc-head{background:linear-gradient(100deg,#12262c,#8a3a16);color:#fff;padding:15px 22px;display:flex;align-items:center;gap:12px;flex-wrap:wrap}
+  .level-card .lc-head .n{font-size:12px;font-weight:800;background:rgba(255,255,255,.2);padding:3px 10px;border-radius:20px}
+  .level-card .lc-head h4{margin:0;color:#fff;font-size:16px}
+  .level-card .lc-head .go{margin-left:auto;font-size:11.5px;color:#ffd2b3}
+  .level-card .lc-body{padding:20px 24px;background:#fff}
+  .level-card .story{background:#f8fcfc;border-left:4px solid #7dd3fc;border-radius:0 10px 10px 0;padding:13px 18px;margin:0 0 16px;font-size:14px;line-height:1.95;color:#3c5254}
+  .level-card .story b{color:#0369a1}
+  .btn-go{display:inline-flex;align-items:center;gap:8px;background:linear-gradient(135deg,var(--brand),var(--brand-dark));color:#fff;text-decoration:none;font-weight:800;font-size:13.5px;padding:10px 22px;border-radius:11px;box-shadow:0 8px 20px rgba(255,107,53,.32);transition:.2s}
+  .btn-go:hover{transform:translateY(-2px);box-shadow:0 12px 26px rgba(255,107,53,.42)}
+  .pit{border:1px solid #f6dede;border-radius:14px;overflow:hidden;margin:16px 0;background:#fff}
+  .pit .pt{display:flex;gap:12px;padding:14px 18px;background:#fffafa;align-items:flex-start}
+  .pit .x{width:26px;height:26px;border-radius:9px;background:#fee;color:#dc2626;display:flex;align-items:center;justify-content:center;font-weight:800;flex-shrink:0;font-size:13px}
+  .pit .t{font-size:13.5px;line-height:1.9;color:#5c4a4a;flex:1}
+  .pit .t b{color:#b91c1c}
+  .pit .duck{display:flex;gap:12px;padding:13px 18px;background:#fff5f5;border-top:1px dashed #f3d0d0;align-items:flex-start}
+  .pit .duck img{width:48px;height:48px;object-fit:contain;flex-shrink:0;margin-top:2px}
+  .pit .duck .dt{font-size:13.5px;line-height:1.9;color:#7a3b3b}
+  .pit .duck .dt b{color:#b91c1c}
+  .pit .fix{padding:12px 18px;background:#f2fbf9;border-top:1px dashed #cfe9e6;font-size:13.5px;color:#134e4a}
+  .pit .fix b{color:var(--primary-dark)}
+  .exam{border:1px solid #d8ebea;border-radius:15px;margin:16px 0;overflow:hidden;background:#fff;box-shadow:0 4px 16px rgba(30,80,80,.06)}
+  .exam .eh{display:flex;align-items:center;gap:10px;padding:11px 18px;background:linear-gradient(100deg,#eef8f7,#f8fdfc);border-bottom:1px solid #dbeceb;flex-wrap:wrap}
+  .exam .eh .src{font-size:11px;font-weight:800;color:#fff;background:#0e8f86;padding:2.5px 10px;border-radius:20px}
+  .exam .eh .src.ori{background:#0e9488}
+  .exam .eh .tp{font-size:11.5px;color:#4f7d7a;font-weight:700}
+  .exam .eb{padding:16px 20px}
+  .exam .q{font-weight:700;font-size:14px;color:#2b4042;line-height:1.9;margin-bottom:10px}
+  .exam .opt{font-size:13.5px;color:#46585a;line-height:2.05;padding-left:6px}
+  .exam .opt i{font-style:normal;font-weight:800;color:var(--primary-dark);margin-right:7px}
+  .exam pre{margin:12px 0;background:#14231f;border-radius:10px;padding:14px 16px;overflow-x:auto;font-family:Consolas,monospace;font-size:13px;line-height:1.8;color:var(--code-tx)}
+  .exam details{margin-top:10px;border-top:1px dashed var(--line);padding-top:10px}
+  .exam summary{cursor:pointer;font-size:12.5px;font-weight:800;color:#0e8f86;outline:none;user-select:none}
+  .exam details .ans{font-size:13.5px;color:#3d5250;line-height:1.95;margin-top:9px;background:var(--bg-soft);padding:13px 16px;border-radius:10px}
+  .exam details .ans b{color:var(--primary-dark)}
+  .exam details .ans .tagline{display:inline-block;font-size:11px;background:#e0f2fe;color:#0e7490;padding:1.5px 8px;border-radius:6px;font-weight:700;margin-right:6px}
+  .summary{margin:40px 0 20px;border-radius:18px;padding:26px 30px;background:linear-gradient(130deg,#fff8f3,#ffffff);border:1px solid #ffe0cf}
+  .summary h3{margin-top:0}
+  .summary ul{list-style:none;margin-top:10px}
+  .summary li{font-size:14px;line-height:2;color:#3d5250;padding-left:24px;position:relative}
+  .summary li::before{content:"◆";position:absolute;left:0;color:var(--brand);font-size:11px;top:6px}
+  .pager{display:flex;gap:14px;margin-top:30px;flex-wrap:wrap}
+  .pager a{flex:1;min-width:200px;text-decoration:none;border:1px solid var(--line);border-radius:14px;padding:16px 20px;background:#fff;transition:.2s;display:block}
+  .pager a:hover{border-color:var(--brand);box-shadow:0 10px 26px rgba(255,107,53,.14);transform:translateY(-2px)}
+  .pager a .k{font-size:11px;color:var(--dim2);font-weight:700;letter-spacing:1px}
+  .pager a .v{font-size:14px;font-weight:800;color:var(--night);margin-top:5px}
+  .pager a.back{background:var(--brand-soft);border-color:transparent;text-align:center}
+  .pager a.back .v{color:var(--brand-dark)}
+  .cta{margin-top:26px;border-radius:20px;padding:30px 34px;color:#fff;position:relative;overflow:hidden;background:linear-gradient(120deg,#12242a,#1e4a52 46%,#a8431c 132%)}
+  .cta::after{content:"";position:absolute;right:-70px;bottom:-90px;width:280px;height:280px;border-radius:50%;background:radial-gradient(circle,rgba(255,140,80,.45),transparent 68%)}
+  .cta h3{color:#fff;margin:0 0 10px;position:relative;z-index:2}
+  .cta h3::before{background:var(--brand)}
+  .cta p{color:#cfe4e2;font-size:13.5px;margin:0 0 18px;position:relative;z-index:2;max-width:640px}
+  .cta .btn-go{position:relative;z-index:2}
+  @media(max-width:900px){
+    .sidebar-nav{transform:translateX(-100%)}
+    .sidebar-nav.active{transform:translateX(0)}
+    .nav-toggle{display:block}
+    .page{margin-left:0}
+    .hero{padding:70px 22px 34px}
+    .hero-top{flex-direction:column-reverse;text-align:center}
+    .hero-card{width:auto}
+    .container{padding:26px 20px 60px}
+    .goal-grid{grid-template-columns:1fr}
+  }
+</style>
+</head>
+<body>
+
+<button class="nav-toggle" onclick="document.querySelector('.sidebar-nav').classList.toggle('active')">&#9776;</button>
+
+<nav class="sidebar-nav">
+  <div class="sb-brand">
+    <a class="sb-logo" href="https://codecombat.cn/" target="_blank" rel="noopener" title="访问 CodeCombat 扣哒世界官网">
+      <img src="../assets/logo.png" alt="CodeCombat 扣哒世界">
+    </a>
+    <div><b>齿轮传动链</b><span>齿轮高台 · Python 四级 第 6 单元</span></div>
+  </div>
+  <div class="nav-title">本单元目录</div>
+  <a href="#s0" class="nav-section">0　单元导语与目标</a>
+  <a href="#s0-1" class="nav-sub">0.1 学习目标</a>
+  <a href="#s0-2" class="nav-sub">0.2 考纲对照</a>
+  <a href="#s1" class="nav-section">1　什么是递推</a>
+  <a href="#s1-1" class="nav-sub">1.1 递推的思路</a>
+  <a href="#s2" class="nav-section">2　递推的三要素</a>
+  <a href="#s2-1" class="nav-sub">2.1 递推的三要素</a>
+  <a href="#s2-2" class="nav-sub">2.2 万能模板</a>
+  <a href="#s3" class="nav-section">3　三个经典递推</a>
+  <a href="#s3-1" class="nav-sub">3.1 斐波那契数列</a>
+  <a href="#s3-2" class="nav-sub">3.2 阶乘与爬楼梯</a>
+  <a href="#s4" class="nav-section">4　递推与递归的关系</a>
+  <a href="#s4-1" class="nav-sub">4.1 递推与递归的区别</a>
+  <a href="#s4-2" class="nav-sub">4.2 一句话记住</a>
+  <a href="#s5" class="nav-section">5　代码实战</a>
+  <a href="#s6" class="nav-section">6　常见陷阱</a>
+  <a href="#s7" class="nav-section">7　题目练习</a>
+  <a href="#s8" class="nav-section">8　本单元小结</a>
+  <a href="../index.html" target="_top" class="sb-back">返回考纲之路</a>
+</nav>
+
+<div class="page">
+
+<div class="hero">
+  <div class="hero-top">
+    <div class="hero-txt">
+      <div class="crumb">扣哒考级 · GESP PYTHON 四级 · 第 6 单元　|　齿轮高台 GEARWATCH TERRACE</div>
+      <h1>齿轮传动链
+        <span class="sub">递推算法</span>
+      </h1>
+      <div class="en">Recurrence (Iterative) Algorithms</div>
+      <div class="tags">        <span class="tag hot">考纲 · 递推</span>
+        <span class="tag">初始值</span>
+        <span class="tag">递推公式</span>
+        <span class="tag">斐波那契</span>
+        <span class="tag">循环实现</span></div>
+    </div>
+    <div class="hero-card">
+      <img class="ava" src="../assets/avatars/gordon.webp" alt="戈登" onerror="this.style.background='#24344a'">
+      <div class="nm">戈登</div>
+      <div class="ti">齿轮工程师 · 你的向导</div>
+    </div>
+  </div>
+</div>
+
+<div class="container">
+
+<div class="lead">
+  车间的深处有一整面墙的<b>传动齿轮</b>。你转动最左边那一个，它咬合的下一个也跟着转，
+  再下一个也跟着转……<br>
+  戈登指着链子说：看明白了吗？<b>每一环的动作，都是被上一环"推"出来的。</b><br>
+  他递给你一张纸：算数列也是同一个道理。<b>知道了前一项，就能推出后一项。</b>
+</div>
+
+<div class="cast teacher">
+  <img class="ava" src="../assets/avatars/gordon.webp" alt="戈登" onerror="this.style.display='none'">
+  <div class="bubble">
+    <div class="who">戈登 · 齿轮工程师</div>
+    从这一单元开始，我们进入"算法"的部分了。<br>
+    <strong>递推是最容易上手的一种算法</strong>——它不需要什么灵感，<br>
+    你只要问自己三个问题：<b>从哪儿开始？每步怎么推？推几次？</b>
+  </div>
+</div>
+
+<figure class="pic">
+  <img src="../assets/illustrations/py-L4-06-01_gear_chain.webp" alt="齿轮传动链"
+       onerror="this.closest('.pic').classList.add('missing')">
+  <div class="ph">
+    <div class="fn">assets/illustrations/py-L4-06-01_gear_chain.webp</div>
+    <div class="ds">【配图位】车间深处一整面墙的传动齿轮链，从左上到右下依次咬合，每个齿轮上刻着一个编号；最左侧的齿轮被一只手拨动，整条链依次亮起传递的光。</div>
+  </div>
+  <figcaption>图 1：齿轮高台的齿轮传动链——今天要从这里开始</figcaption>
+</figure>
+
+<div class="section-header" id="s0">
+  <h2>0　单元导语与目标</h2>
+  <div class="en-title">Unit Overview</div>
+
+<h3 id="s0-1">0.1 学习目标</h3>
+</div>
+
+<div class="goal-grid">
+  <div class="goal">
+    <h4><span class="ic">1</span>学完这个单元，你将能……</h4>
+    <ul>
+      <li>说清递推算法的基本思想</li>
+      <li>找出一个问题里的初始值与递推公式</li>
+      <li>用循环实现递推并输出指定项</li>
+      <li>手算斐波那契数列的前几项</li>
+      <li>用递推解决阶乘、台阶数等问题</li>
+      <li>说清递推与递归的区别</li>
+    </ul>
+  </div>
+  <div class="goal syllabus">
+    <h4><span class="ic">2</span>对标 GESP 考纲（Python 四级）</h4>
+    <ul>
+      <li>掌握递推算法的基本思想与实现步骤</li>
+      <li>能确定递推的初始条件、递推关系与迭代次数</li>
+      <li>能用递推解决数列求值、计数等基础问题</li>
+      <li>考核目标：能读懂递推程序并预测结果，能写出递推代码</li>
+    </ul>
+  </div>
+</div>
+
+<h3 id="s0-2">0.2 考纲对照</h3>
+
+<table class="styled">
+  <thead><tr><th>本单元小节</th><th>对应考纲条目</th><th>真题常考形式</th></tr></thead>
+  <tbody>
+    <tr><td>1　什么是递推</td><td>递推算法的概念</td><td>递推与递归的区别</td></tr>
+    <tr><td>2　递推的三要素</td><td>递推的实现步骤</td><td>初始值、公式、推进次数缺一不可</td></tr>
+    <tr><td>3　经典递推</td><td>用递推解决数列问题</td><td>斐波那契、阶乘、爬楼梯的公式与结果</td></tr>
+    <tr><td>4　递推与递归</td><td>两种方法的比较</td><td>哪一种更适合计算机、效率更高</td></tr>
+  </tbody>
+</table>
+
+<div class="section-header" id="s1">
+  <h2>1　什么是递推</h2>
+  <div class="en-title">What Is Recurrence</div>
+</div>
+
+<h3 id="s1-1">1.1 递推的思路</h3>
+
+<p>递推的思路只有一句话：<strong>后面的值，由前面的值算出来。</strong></p>
+
+<figure class="figure">
+  <svg class="diagram" viewBox="0 0 860 250" role="img" aria-label="递推像齿轮链">
+    <text x="24" y="34" font-size="14" font-weight="bold" fill="#1f2937">递推像齿轮链：一环带动一环</text>
+
+    <g>
+      <circle cx="120" cy="130" r="42" fill="#e6f7f5" stroke="#0e8f86" stroke-width="2.4"/>
+      <text x="120" y="136" text-anchor="middle" font-size="14" font-family="Consolas,monospace" fill="#0a6b64">a1</text>
+      <circle cx="240" cy="130" r="42" fill="#e6f7f5" stroke="#0e8f86" stroke-width="2.4"/>
+      <text x="240" y="136" text-anchor="middle" font-size="14" font-family="Consolas,monospace" fill="#0a6b64">a2</text>
+      <circle cx="360" cy="130" r="42" fill="#e6f7f5" stroke="#0e8f86" stroke-width="2.4"/>
+      <text x="360" y="136" text-anchor="middle" font-size="14" font-family="Consolas,monospace" fill="#0a6b64">a3</text>
+      <circle cx="480" cy="130" r="42" fill="#e6f7f5" stroke="#0e8f86" stroke-width="2.4"/>
+      <text x="480" y="136" text-anchor="middle" font-size="14" font-family="Consolas,monospace" fill="#0a6b64">a4</text>
+      <circle cx="600" cy="130" r="42" fill="#fdf4e0" stroke="#f59e0b" stroke-width="2.4"/>
+      <text x="600" y="136" text-anchor="middle" font-size="14" font-family="Consolas,monospace" fill="#b45309">a5</text>
+    </g>
+
+    <path d="M164 130 L196 130" stroke="#8da0a3" stroke-width="2"/>
+    <path d="M284 130 L316 130" stroke="#8da0a3" stroke-width="2"/>
+    <path d="M404 130 L436 130" stroke="#8da0a3" stroke-width="2"/>
+    <path d="M524 130 L556 130" stroke="#8da0a3" stroke-width="2"/>
+
+    <text x="360" y="206" text-anchor="middle" font-size="13" fill="#0e8f86" font-weight="bold">每一项都依赖前一项：a(n) = f( a(n-1) )</text>
+
+    <rect x="660" y="76" width="160" height="110" rx="12" fill="#14231f"/>
+    <text x="740" y="106" text-anchor="middle" font-size="12" fill="#7fd6b8">起点</text>
+    <text x="740" y="132" text-anchor="middle" font-size="13" font-family="Consolas,monospace" fill="#c3d6d1">a1 = 已知</text>
+    <text x="740" y="164" text-anchor="middle" font-size="11.5" fill="#8fb0aa">后面全靠它推</text>
+  </svg>
+  <div class="caption">图 2（SVG）：递推就是"用前面推后面"</div>
+</figure>
+
+<div class="code-card">
+  <div class="code-head">
+    <span class="dot d1"></span><span class="dot d2"></span><span class="dot d3"></span>
+    <span class="file">最简单的递推：累加求和</span>
+    <span class="lang">Python</span>
+  </div>
+  <pre><code># 每一项 = 前一项 + 当前数字
+s = 0                      # 初始值
+for i in range(1, 6):
+    s = s + i              # 递推公式
+    print(s)               # 1 3 6 10 15</code></pre>
+  <div class="out"><b>OUTPUT</b>　1<br>3<br>6<br>10<br>15</div>
+</div>
+
+<div class="section-header" id="s2">
+  <h2>2　递推的三要素</h2>
+  <div class="en-title">Three Essentials</div>
+
+<h3 id="s2-1">2.1 递推的三要素</h3>
+</div>
+
+<figure class="figure">
+  <svg class="diagram" viewBox="0 0 860 240" role="img" aria-label="递推三要素">
+    <text x="24" y="34" font-size="14" font-weight="bold" fill="#1f2937">写递推程序前，先回答这三个问题</text>
+
+    <rect x="46" y="60" width="240" height="140" rx="12" fill="#e6f7f5" stroke="#0e8f86" stroke-width="2"/>
+    <text x="166" y="88" text-anchor="middle" font-size="13.5" fill="#0a6b64" font-weight="bold">① 初始值是谁？</text>
+    <text x="66" y="118" font-size="12" fill="#3c6b68">数列的起点，或者一开始的</text>
+    <text x="66" y="140" font-size="12" fill="#3c6b68">那几个已知项。</text>
+    <text x="66" y="170" font-size="11.5" fill="#0a6b64">例：a = 1, b = 1</text>
+
+    <rect x="306" y="60" width="240" height="140" rx="12" fill="#e6f7f5" stroke="#0e8f86" stroke-width="2"/>
+    <text x="426" y="88" text-anchor="middle" font-size="13.5" fill="#0a6b64" font-weight="bold">② 怎么从前面推？</text>
+    <text x="326" y="118" font-size="12" fill="#3c6b68">也就是递推公式：</text>
+    <text x="326" y="140" font-size="12" fill="#3c6b68">后一项和前一项的关系。</text>
+    <text x="326" y="170" font-size="11.5" fill="#0a6b64">例：c = a + b</text>
+
+    <rect x="566" y="60" width="248" height="140" rx="12" fill="#fdf4e0" stroke="#f59e0b" stroke-width="2"/>
+    <text x="690" y="88" text-anchor="middle" font-size="13.5" fill="#b45309" font-weight="bold">③ 推几次？</text>
+    <text x="586" y="118" font-size="12" fill="#6b4e13">循环要跑多少轮，</text>
+    <text x="586" y="140" font-size="12" fill="#6b4e13">取决于你要第几项。</text>
+    <text x="586" y="170" font-size="11.5" fill="#b45309">例：求第 10 项 → 推 8 次</text>
+
+    <text x="430" y="226" text-anchor="middle" font-size="12" fill="#8da0a3">这三个问题答清楚了，代码几乎就是照抄下来</text>
+  </svg>
+  <div class="caption">图 3（SVG）：递推三要素——初始值、递推公式、次数</div>
+</figure>
+
+<h3 id="s2-2">2.2 万能模板</h3>
+
+<div class="box tip">
+  <span class="lb">打个比方：</span>
+  递推就像<b>沿着一条链子往下传</b>——<strong>每一环都是从上一环推出来的。</strong><br>
+  写好递推，只要回答三个问题：<br>
+  <b>① 链条的第一环是什么？（初始值）<br>
+  ② 后一环怎么从上一环算出来？（公式）<br>
+  ③ 要往前推多少次？（次数）</b><br>
+  <b>三个问题答清楚了，循环就写出来了。</b>
+</div>
+
+<div class="box remember">
+  <span class="lb">万能模板：</span>
+<pre style="margin:10px 0 0;background:#14231f;color:#c3d6d1;border-radius:10px;padding:14px 16px;font-size:13px;overflow-x:auto">初始值 = ...
+for i in range(次数):
+    新值 = 由前值算出的表达式
+    更新前值</pre>
+</div>
+
+<div class="section-header" id="s3">
+  <h2>3　三个经典递推</h2>
+  <div class="en-title">Classic Examples</div>
+</div>
+
+<h4>例题一：斐波那契数列（兔子数列）</h4>
+
+<h3 id="s3-1">3.1 斐波那契数列</h3>
+
+<p>数列是 <code class="inline">1, 1, 2, 3, 5, 8, 13, 21 …</code>，规律是<strong>每一项等于前两项之和</strong>。</p>
+
+<div class="code-card">
+  <div class="code-head">
+    <span class="dot d1"></span><span class="dot d2"></span><span class="dot d3"></span>
+    <span class="file">用滚动变量求第 n 项</span>
+    <span class="lang">Python</span>
+  </div>
+  <pre><code>n = 10
+
+a, b = 1, 1            # 初始值：前两项都是 1
+
+for i in range(n - 2):  # 已经有两项了，再推 n-2 次
+    c = a + b           # 递推公式：新的 = 前两项之和
+    a = b               # 往前滚动
+    b = c
+
+print(b)                # 第 10 项</code></pre>
+  <div class="out"><b>OUTPUT</b>　55</div>
+</div>
+
+<figure class="pic">
+  <img src="../assets/illustrations/py-L4-06-03_rolling_vars.webp" alt="两个变量，滚着往前走"
+       onerror="this.closest('.pic').classList.add('missing')">
+  <div class="ph">
+    <div class="fn">assets/illustrations/py-L4-06-03_rolling_vars.webp</div>
+    <div class="ds">【配图位】齿轮车间里一条长长的齿轮链，链上每个齿轮都刻着序号；只有最靠近英雄的两个齿轮被点亮并特写放大（表示只保存最近两项），它们后面的齿轮逐渐变暗、融进远处的背景（表示已经用不到了、可以丢掉）；一名英雄双手各扶一个齿轮，正把它们依次往前挪一格。</div>
+  </div>
+  <figcaption>图 4：只留最近两环，后面的边算边丢</figcaption>
+</figure>
+
+<div class="box tip">
+  <span class="lb">"滚动变量"是递推的灵魂：</span>
+  不需要开一个大数组把所有项都存下来，<br>
+  <strong>只要保持"最近两项"就够——a 和 b 一路往前滚。</strong><br>
+  这样不管求第几项，用的内存都一样多。
+</div>
+
+<h4>例题二：阶乘</h4>
+
+<div class="code-card">
+  <div class="code-head">
+    <span class="dot d1"></span><span class="dot d2"></span><span class="dot d3"></span>
+    <span class="file">5! = 1 × 2 × 3 × 4 × 5</span>
+    <span class="lang">Python</span>
+  </div>
+  <pre><code>n = 5
+f = 1                    # 初始值：乘法要从 1 开始
+
+for i in range(1, n + 1):
+    f = f * i            # 递推：把当前数乘进去
+
+print(f)                 # 120</code></pre>
+  <div class="out"><b>OUTPUT</b>　120</div>
+</div>
+
+<h3 id="s3-2">3.2 阶乘与爬楼梯</h3>
+
+<div class="box tip">
+  <span class="lb">为什么初始值这么讲究？</span>
+  <b>累加</b>的初始值是 <code class="inline">0</code>——因为"什么都不加"就是 0；<br>
+  <b>累乘</b>的初始值必须是 <code class="inline">1</code>——因为<strong>"什么都不乘"应该保持原样，而乘 0 会把一切变成 0。</strong><br>
+  <b>初始值写错，结果一定是错的——这是递推题最常见的丢分点。</b>
+</div>
+
+<div class="box warn">
+  <span class="lb">乘法的初始值必须是 1，不能是 0。</span>
+  如果写 <code class="inline">f = 0</code>，结果永远是 0——<strong>因为 0 乘任何数都得 0。</strong><br>
+  加法的初始值才是 0。这个区别考试常考。
+</div>
+
+<h4>例题三：爬台阶</h4>
+
+<p>一次可以迈 1 级或 2 级台阶，走到第 n 级共有多少种走法？</p>
+
+<div class="code-card">
+  <div class="code-head">
+    <span class="dot d1"></span><span class="dot d2"></span><span class="dot d3"></span>
+    <span class="file">其实还是斐波那契</span>
+    <span class="lang">Python</span>
+  </div>
+  <pre><code># 想到第 n 级，只能是"从第 n-1 级迈 1 级"或"从第 n-2 级迈 2 级"上来
+# 所以：f(n) = f(n-1) + f(n-2)
+
+n = 6
+a, b = 1, 2              # f(1)=1, f(2)=2
+for i in range(n - 2):
+    a, b = b, a + b
+print(b)                 # 13</code></pre>
+  <div class="out"><b>OUTPUT</b>　13</div>
+</div>
+
+<div class="cast hero">
+  <img class="ava" src="../assets/avatars/anya.webp" alt="安雅" onerror="this.style.display='none'">
+  <div class="bubble">
+    <div class="who">安雅 · 红发队长</div>
+    我们岗哨排班也是这样：<strong>今天几个人值班，看昨天和前天的人数定。</strong><br>
+    昨天有人伤了、前天有人歇了，今天就得补上。<br>
+    <b>不用记一整本值班簿，只要拿最近两天一比，今天的人手就出来了。</b>
+  </div>
+</div>
+
+<div class="section-header" id="s4">
+  <h2>4　递推与递归的关系</h2>
+  <div class="en-title">Recurrence vs Recursion</div>
+
+<h3 id="s4-1">4.1 递推与递归的区别</h3>
+</div>
+
+<table class="styled">
+  <thead><tr><th>对比项</th><th>递推</th><th>递归</th></tr></thead>
+  <tbody>
+    <tr><td>方向</td><td><strong>从前往后</strong>：由已知推未知</td><td><strong>从后往前</strong>：把大问题交给小问题</td></tr>
+    <tr><td>实现方式</td><td>循环</td><td>函数自己调用自己</td></tr>
+    <tr><td>优点</td><td>快、不占额外内存、不会栈溢出</td><td>代码短，和数学定义更像</td></tr>
+    <tr><td>缺点</td><td>公式要自己想清楚</td><td>重复计算多，n 大了可能崩</td></tr>
+    <tr><td>适用</td><td>绝大多数数列与计数问题</td><td>树、图、分治（五六级再学）</td></tr>
+  </tbody>
+</table>
+
+<h3 id="s4-2">4.2 一句话记住</h3>
+
+<figure class="pic">
+  <img src="../assets/illustrations/py-L4-06-02_base_case.webp" alt="第一环最亮"
+       onerror="this.closest('.pic').classList.add('missing')">
+  <div class="ph">
+    <div class="fn">assets/illustrations/py-L4-06-02_base_case.webp</div>
+    <div class="ds">【配图位】齿轮链最靠近观众的那一环被画得格外明亮，环上刻着最初的数字，底座下垫着一块刻着"起点"的奠基石；往后的齿轮一环比一环暗淡、渐渐消失在远处的雾里；英雄蹲下身，把手放在最亮那一环上。</div>
+  </div>
+  <figcaption>图 5：整条链的起点，第一节格外明亮</figcaption>
+</figure>
+
+<div class="box info">
+  <span class="lb">一句话：</span>
+  同一个问题，递推和递归常常都能做。<br>
+  <strong>四级考试里能写递推就写递推</strong>——它更快，也更不容易出错。
+</div>
+
+<div class="section-header" id="s5">
+  <h2>5　代码实战</h2>
+  <div class="en-title">Level Practice</div>
+</div>
+
+<div class="level-card">
+  <div class="lc-head"><span class="n">关卡</span><h4>驯鹿苏醒</h4><span class="go">进入关卡 →</span></div>
+  <div class="lc-body">
+    <div class="story">
+      <b>故事：</b>盲人牧民 Merek 守在围栏边，天亮了，他要把驯鹿一只只叫醒。<br>
+    可他看不见——<b>哪只醒着、哪只还睡着，得靠你记下来告诉他。</b><br>
+    戈登递来一块石板：<b>先一笔一笔把状态记上，再照着石板念。</b>
+    </div>
+    <p><strong>思路：</strong>把每只鹿的状态写进一个数组：<b>先算好"第 i 只怎么样"，存进第 i 格；
+    后面下指令时直接读第 i 格</b>。每一步都基于上一步已经算好的结果，
+    这正是<b>递推</b>的雏形——用一张表，把中间结果一路推下去。</p>
+    <figure class="pic">
+      <img src="../assets/stages/py-L4-06-stage1_reindeer_wake.webp" alt="驯鹿苏醒 关卡截图"
+           onerror="this.closest('.pic').classList.add('missing')">
+      <div class="ph">
+        <div class="fn">assets/stages/py-L4-06-stage1_reindeer_wake.webp</div>
+        <div class="ds">【关卡截图位】请把《驯鹿苏醒》的游戏画面截图放到此处（放入 assets/stages/ 目录，文件名为 py-L4-06-stage1_reindeer_wake.webp）。</div>
+      </div>
+      <figcaption>关卡实况：驯鹿苏醒</figcaption>
+    </figure>
+    <div class="code-card">
+      <div class="code-head">
+        <span class="dot d1"></span><span class="dot d2"></span><span class="dot d3"></span>
+        <span class="file">重点示例：用数组记录状态，再照着表下指令</span>
+        <span class="lang">Python</span>
+      </div>
+      <pre><code>deerStatus = []                       # ① 先准备一块"石板"
+
+for i in range(len(deer)):
+    if deer[i].pos.y > 30:
+        deerStatus.append("awake")    # 不在围栏里 → 醒着
+    else:
+        deerStatus.append("asleep")   # 在围栏里 → 睡着
+
+for i in range(len(deerStatus)):      # ② 再照着石板逐个念
+    if deerStatus[i] == "asleep" and deer[i].pos.y &lt; 30:
+        hero.say("asleep")</code></pre>
+      <div class="out"><b>要点</b>　<b>先存后读</b>：状态只算一次，后面直接查表，不用重算</div>
+    </div>
+    <div class="box info">
+      <span class="lb">和本单元的关系：</span>
+      递推的关键就是"<strong>把上一步的结果存下来，下一步直接用</strong>"。<br>
+    这里存的是每只鹿的状态；<code class="inline">a[i]</code> 由 <code class="inline">a[i-1]</code> 推出来的题目，
+    存的就是数值。<b>有了这块"石板"，重复的判断就不用做第二遍。</b>
+    </div>
+    <a class="btn-go" href="https://codecombat.cn/" target="_blank" rel="noopener">去扣哒世界闯这一关 →</a>
+  </div>
+</div>
+
+
+
+<div class="section-header" id="s6">
+  <h2>6　常见陷阱</h2>
+  <div class="en-title">Common Pitfalls</div>
+</div>
+
+<div class="cast duck">
+  <img class="ava" src="../assets/ducks/duck_senick.webp" alt="扣哒鸭" onerror="this.style.display='none'">
+  <div class="bubble">
+    <div class="who">扣哒鸭 · 调试官</div>
+    递推的错，几乎全在"差一项"上。四条，条条都能让你答案差 1。
+  </div>
+</div>
+
+<div class="pit">
+  <div class="pt">
+    <div class="x">1</div>
+    <div class="t"><b>循环次数算错，少推或多推一次。</b></div>
+  </div>
+  <div class="duck">
+    <img src="../assets/ducks/duck_zana.webp" alt="扣哒鸭" onerror="this.style.display='none'">
+    <div class="dt"><b>扣哒鸭：</b>求斐波那契第 n 项时，初始已经有 2 项了，
+    所以只需要再推 <strong>n - 2 次</strong>。<br>
+    拿不准就代个小数字：n = 3 时应该推 1 次，<code>range(3-2)</code> 正好 1 次。</div>
+  </div>
+  <div class="fix"><b>实用技巧：</b>用小 n 代入验证循环次数</div>
+</div>
+
+<div class="pit">
+  <div class="pt">
+    <div class="x">2</div>
+    <div class="t"><b>乘法类递推把初始值设成 0。</b></div>
+  </div>
+  <div class="duck">
+    <img src="../assets/ducks/duck_naria.webp" alt="扣哒鸭" onerror="this.style.display='none'">
+    <div class="dt"><b>扣哒鸭：</b><strong>加法从 0 开始，乘法从 1 开始。</strong>
+    阶乘的初值写 0 的话，结果永远是 0。</div>
+  </div>
+  <div class="fix"><b>正确写法：</b>求和 <code class="inline">s = 0</code>；求积 <code class="inline">f = 1</code></div>
+</div>
+
+<div class="pit">
+  <div class="pt">
+    <div class="x">3</div>
+    <div class="t"><b>更新顺序写反，把 b 覆盖掉了。</b></div>
+  </div>
+  <div class="duck">
+    <img src="../assets/ducks/duck_hattori.webp" alt="扣哒鸭" onerror="this.style.display='none'">
+    <div class="dt"><b>扣哒鸭：</b><code>a = b</code> 和 <code>b = c</code> 的顺序不能反。
+    如果先写 <code>b = c</code>，那 <code>c</code> 里的信息还在；<br>
+    但要是先 <code>a = b</code> 再算 <code>c</code>，公式就错了。<br>
+    <strong>最稳妥的写法是一行同时赋值：<code>a, b = b, a + b</code>。</strong></div>
+  </div>
+  <div class="fix"><b>推荐写法：</b><code class="inline">a, b = b, a + b</code></div>
+</div>
+
+<div class="pit">
+  <div class="pt">
+    <div class="x">4</div>
+    <div class="t"><b>把递推当递归写，结果算得极慢。</b></div>
+  </div>
+  <div class="duck">
+    <img src="../assets/ducks/duck_illia.webp" alt="扣哒鸭" onerror="this.style.display='none'">
+    <div class="dt"><b>扣哒鸭：</b>用递归求斐波那契，第 40 项就要算上亿次，电脑都会卡住。<br>
+    同样的结果，<strong>递推只需几十次</strong>。</div>
+  </div>
+  <div class="fix"><b>建议：</b>数列类问题优先用循环递推</div>
+</div>
+
+<div class="section-header" id="s7">
+  <h2>7　题目练习</h2>
+  <div class="en-title">Practice</div>
+</div>
+
+<p>第 1 题改编自 2026 年 9 月 · Python 四级 第 11 题，其余为原创练习题。</p>
+
+<div class="exam">
+  <div class="eh"><span class="src">改编自 2026 年 9 月 · Python 四级 · 第 11 题</span><span class="tp">单选题</span></div>
+  <div class="eb">
+    <div class="q">齿轮高台要生成一列"越往后越大"的数列。执行下面 Python 代码后，输出的结果是（　　）。<br><pre>1  a = [1, 1]
+2  for i in range(2, 10):
+3      a.append(a[i - 1] + a[i - 2])
+4  print(a[8])</pre></div>
+    <div class="opt"><i>A.</i>89　　<i>B.</i>55　　<i>C.</i>34　　<i>D.</i>21</div>
+    <details><summary>查看答案与详解</summary>
+      <div class="ans"><b>答案：C</b>。这是<strong>斐波那契数列</strong>：每一项等于前两项之和，初始值是 <code class="inline">a[0] = a[1] = 1</code>。<br>从 <code class="inline">i = 2</code> 开始一路往后加：<br>a[2]=2、a[3]=3、a[4]=5、a[5]=8、a[6]=13、a[7]=21、<b>a[8]=34</b> → 选 C。<br><b>别被范围骗了：</b><code class="inline">range(2, 10)</code> 是 i 从 2 到 9，循环结束后列表长度是 10（2 + 8 个新元素），<code class="inline">a[8]</code> 是<strong>第 9 个数</strong>。<br><b>递推三要素：</b>① 初始值 a[0]、a[1]；② 递推公式 <code class="inline">a[i] = a[i-1] + a[i-2]</code>；③ 递推方向从前往后。<br><b>建议：</b>这类题在草稿纸上把每一项写下来，比心里默算稳得多。<br><span class="tagline">对应小节</span>3 三个经典递推。</div>
+    </details>
+  </div>
+</div>
+<div class="exam">
+  <div class="eh"><span class="src ori">原创练习题</span><span class="tp">单选题</span></div>
+  <div class="eb">
+    <div class="q">斐波那契数列为 1, 1, 2, 3, 5, 8, 13 …，它的第 8 项是（　　）。</div>
+    <div class="opt"><i>A.</i>13　　<i>B.</i>21　　<i>C.</i>34　　<i>D.</i>8</div>
+    <details><summary>查看答案与详解</summary>
+      <div class="ans"><b>答案：B</b>。逐项往后写：<br>
+      第 1~8 项依次是 1、1、2、3、5、8、13、<b>21</b>。<br>
+      <b>规律：</b>每一项等于前两项之和（13 + 8 = 21）。<br>
+      <span class="tagline">对应小节</span>3 三个经典递推。</div>
+    </details>
+  </div>
+</div>
+
+<div class="exam">
+  <div class="eh"><span class="src ori">原创练习题</span><span class="tp">单选题</span></div>
+  <div class="eb">
+    <div class="q">下列 Python 代码执行后，输出的结果是（　　）。</div>
+    <pre>1  a, b = 1, 1
+2  for i in range(4):
+3      a, b = b, a + b
+4  print(b)</pre>
+    <div class="opt"><i>A.</i>5　　<i>B.</i>8　　<i>C.</i>13　　<i>D.</i>3</div>
+    <details><summary>查看答案与详解</summary>
+      <div class="ans"><b>答案：B</b>。追踪每一轮（a, b）的变化：<br>
+      初始 (1, 1) → 第 1 轮 (1, 2) → 第 2 轮 (2, 3) → 第 3 轮 (3, 5) → 第 4 轮 (5, 8)。<br>
+      循环结束后 b = <b>8</b>，也就是数列的第 6 项。<br>
+      <span class="tagline">对应小节</span>3 三个经典递推。</div>
+    </details>
+  </div>
+</div>
+
+<div class="exam">
+  <div class="eh"><span class="src ori">原创练习题</span><span class="tp">判断题</span></div>
+  <div class="eb">
+    <div class="q">用循环计算 1 到 n 的乘积时，累乘变量的初始值应该设为 0。（　　）</div>
+    <details><summary>查看答案与详解</summary>
+      <div class="ans"><b>答案：错误（×）</b>。累乘的初始值必须是 <b>1</b>：<br>
+      因为 0 乘任何数都得 0，整个结果会变成 0。<br>
+      <b>记牢这组对比：</b>求和从 0 开始，求积从 1 开始。<br>
+      <span class="tagline">对应小节</span>3 三个经典递推。</div>
+    </details>
+  </div>
+</div>
+
+<div class="exam">
+  <div class="eh"><span class="src ori">原创练习题</span><span class="tp">单选题</span></div>
+  <div class="eb">
+    <div class="q">有一数列：2, 4, 8, 16, 32 …，它的第 10 项是（　　）。</div>
+    <div class="opt"><i>A.</i>512　　<i>B.</i>1024　　<i>C.</i>2048　　<i>D.</i>20</div>
+    <details><summary>查看答案与详解</summary>
+      <div class="ans"><b>答案：B</b>。规律是<strong>后一项等于前一项乘 2</strong>，
+      也就是 <code class="inline">a(n) = 2<sup>n</sup></code>。<br>
+      第 10 项 = 2<sup>10</sup> = <b>1024</b>。<br>
+      <b>易错点：</b>A 项 512 是第 9 项。数项数时可以把前几项写出来核对。<br>
+      <span class="tagline">对应小节</span>2 递推的三要素。</div>
+    </details>
+  </div>
+</div>
+
+<div class="exam">
+  <div class="eh"><span class="src ori">原创练习题</span><span class="tp">单选题</span></div>
+  <div class="eb">
+    <div class="q">下列 Python 代码执行后，输出的结果是（　　）。</div>
+    <pre>1  s = 1
+2  for i in range(1, 5):
+3      s = s * i
+4  print(s)</pre>
+    <div class="opt"><i>A.</i>4　　<i>B.</i>10　　<i>C.</i>24　　<i>D.</i>120</div>
+    <details><summary>查看答案与详解</summary>
+      <div class="ans"><b>答案：C</b>。<code class="inline">range(1, 5)</code> 取到的是 1、2、3、4，
+      所以算的是 1×2×3×4 = <b>24</b>（也就是 4 的阶乘）。<br>
+      <b>易错点：</b>D 项 120 是 5 的阶乘，需要写成 <code class="inline">range(1, 6)</code>。<br>
+      <span class="tagline">对应小节</span>3 三个经典递推。</div>
+    </details>
+  </div>
+</div>
+
+<div class="exam">
+  <div class="eh"><span class="src ori">原创练习题</span><span class="tp">判断题</span></div>
+  <div class="eb">
+    <div class="q">同一个数列问题，通常既可以用递推（循环）解决，也可以用递归（函数自调用）解决。（　　）</div>
+    <details><summary>查看答案与详解</summary>
+      <div class="ans"><b>答案：正确（√）</b>。递推是"从前往后由已知推未知"，
+      递归是"从后往前把大问题拆小"。<br>
+      两者都能解决斐波那契、阶乘等经典问题；但<b>递推通常更快、更省内存</b>。<br>
+      <span class="tagline">对应小节</span>4 递推与递归的关系。</div>
+    </details>
+  </div>
+</div>
+
+<div class="exam">
+  <div class="eh"><span class="src ori">原创练习题</span><span class="tp">编程题</span></div>
+  <div class="eb">
+    <div class="q">题目要求：有一数列，前两项为 1、3，从第 3 项起每一项都等于前两项之和。
+    请用递推输出该数列前 10 项，并输出第 10 项的值。</div>
+    <details><summary>查看参考答案与要点</summary>
+      <div class="ans">
+<pre style="margin:0;background:#14231f;color:#c3d6d1;border-radius:10px;padding:14px 16px">a, b = 1, 3
+print(a, b, end=" ")
+
+for i in range(8):          # 还需要再推 8 项，凑够 10 项
+    a, b = b, a + b
+    print(b, end=" ")
+
+print()
+print("第 10 项：", b)</pre>
+      <p style="margin-top:12px"><b>输出：</b>1 3 4 7 11 18 29 47 76 123，第 10 项：123<br>
+      <b>要点：</b><br>
+      ① 初始值由题目直接给出（1 和 3），不用自己猜；<br>
+      ② 已经有 2 项，再推 8 次正好凑够 10 项；<br>
+      ③ <code class="inline">a, b = b, a + b</code> 这种"同时赋值"写法最稳，不用担心覆盖顺序。<br>
+      <span class="tagline">对应小节</span>2 递推的三要素；3 三个经典递推。</p>
+      </div>
+    </details>
+  </div>
+</div>
+
+<div class="section-header" id="s8">
+  <h2>8　本单元小结</h2>
+  <div class="en-title">Unit Summary</div>
+</div>
+
+<div class="cast teacher">
+  <img class="ava" src="../assets/avatars/gordon.webp" alt="戈登" onerror="this.style.display='none'">
+  <div class="bubble">
+    <div class="who">戈登 · 齿轮工程师</div>
+    递推就三句话，写在手背上都行：<br>
+    <strong>一、先问初始值：从哪儿起步？</strong><br>
+    <strong>二、再问递推公式：后一项怎么由前一项算出来？</strong><br>
+    <strong>三、最后问次数：要推多少轮？</strong><br>
+    对了，还有一句：<b>求和从 0 开，求积从 1 开。</b>
+  </div>
+</div>
+
+<div class="summary">
+  <h3>你在齿轮传动链前收获了什么</h3>
+  <ul>
+    <li><strong>递推</strong>——用前面的结果推出后面的结果，是实现数列与计数问题的主力方法。</li>
+    <li><strong>三要素</strong>——初始值、递推公式、递推次数。写代码前先把这三个问题答清。</li>
+    <li><strong>滚动变量</strong>——只保留最近需要的几个值，不断"往前滚"，省内存。</li>
+    <li><strong>斐波那契</strong>——<code class="inline">a, b = b, a + b</code>；求第 n 项需推 n-2 次。</li>
+    <li><strong>阶乘</strong>——累乘变量初值为 1（不是 0！）。</li>
+    <li><strong>爬台阶</strong>——本质就是斐波那契，<code class="inline">f(n) = f(n-1) + f(n-2)</code>。</li>
+    <li><strong>递推 vs 递归</strong>——递推"从前往后"，递归"从后往前"；四级优先用递推。</li>
+  </ul>
+</div>
+
+<div class="pager">
+  <a href="py-4-05.html"><div class="k">← 上一单元</div><div class="v">参数输送管 · 参数传递与变量作用域</div></a>
+  <a href="../index.html" target="_top" class="back"><div class="k">返回</div><div class="v">考纲之路 · 总目录</div></a>
+  <a href="py-4-07.html"><div class="k">下一单元 →</div><div class="v">队列整编台 · 排序算法与复杂度</div></a>
+</div>
+
+<div class="cta">
+  <h3>下一站：队列整编台</h3>
+  <p>一队零件高矮不齐地排在传送带上。<b>要让它们按高低排好，机器该怎么做？</b>
+  下一单元，我们学两种最经典的排序法。</p>
+  <a class="btn-go" href="https://codecombat.cn/" target="_blank" rel="noopener">加入扣哒世界，把这条考纲之路走一遍 →</a>
+</div>
+</div><!-- /container -->
+</div><!-- /page -->
+
+<script>
+const KEYWORDS = new Set(("while for if elif else break continue def return pass not and or in is None True False " +
+  "int float bool str list dict tuple set input print range len abs max min round pow import math random chr ord bin hex oct sum append copy keys values items").split(" "));
+
+function esc(s){ return s.replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;'); }
+
+function highlight(src){
+  let out = '', i = 0;
+  const n = src.length;
+  while (i < n){
+    const c = src[i];
+    if (c === '#'){
+      let j = src.indexOf('\n', i); if (j < 0) j = n;
+      out += '<span class="cm">' + esc(src.slice(i, j)) + '</span>';
+      i = j; continue;
+    }
+    if (c === '"' || c === "'"){
+      let j = i + 1;
+      while (j < n && src[j] !== c){ if (src[j] === '\\') j++; j++; }
+      j = Math.min(j + 1, n);
+      out += '<span class="st">' + esc(src.slice(i, j)) + '</span>';
+      i = j; continue;
+    }
+    if (/[0-9]/.test(c)){
+      let j = i;
+      while (j < n && /[0-9.]/.test(src[j])) j++;
+      out += '<span class="nu">' + esc(src.slice(i, j)) + '</span>';
+      i = j; continue;
+    }
+    if (/[A-Za-z_]/.test(c)){
+      let j = i;
+      while (j < n && /[A-Za-z0-9_]/.test(src[j])) j++;
+      const w = src.slice(i, j);
+      if (KEYWORDS.has(w)) out += '<span class="kw">' + esc(w) + '</span>';
+      else if (src[j] === '(') out += '<span class="fn">' + esc(w) + '</span>';
+      else out += esc(w);
+      i = j; continue;
+    }
+    out += esc(c); i++;
+  }
+  return out;
+}
+
+document.querySelectorAll('.code-card pre code').forEach(block => {
+  block.innerHTML = highlight(block.textContent);
+});
+
+if (location.search.indexOf('expand') >= 0) {
+  document.querySelectorAll('details').forEach(d => d.open = true);
+}
+document.querySelectorAll('.sidebar-nav a').forEach(a => {
+  a.addEventListener('click', () => {
+    if (window.innerWidth <= 900) document.querySelector('.sidebar-nav').classList.remove('active');
+  });
+});
+</script>
+</body>
+</html>

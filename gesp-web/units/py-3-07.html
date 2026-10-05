@@ -1,0 +1,1023 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="copyright" content="CodeCombat Inc. codecombat.cn">
+<title>穷举矿灯 · 枚举法与模拟法 | 扣哒考级 · GESP Python 三级</title>
+<style>
+  :root{
+    --primary:#6d4bd8; --primary-light:#8b6cf0; --primary-lighter:#f1ecfd; --primary-dark:#5233b8;
+    --brand:#ff6b35; --brand-dark:#e8541f; --brand-soft:#fff3ec;
+    --night:#151329; --night-2:#211d3d; --gold:#f5b301;
+    --text:#282538; --dim:#6b6580; --dim2:#9690ab;
+    --bg:#ffffff; --bg-soft:#faf9fe; --line:#e7e3f4; --sidebar:274px;
+    --code-bg:#1b1a2a; --code-tx:#cdc8e0;
+    --code-kw:#c678dd; --code-st:#98c379; --code-nu:#d19a66; --code-cm:#6f6a8a; --code-fn:#61afef;
+  }
+  *{margin:0;padding:0;box-sizing:border-box}
+  html{scroll-behavior:smooth}
+  body{font-family:"PingFang SC","Microsoft YaHei","Segoe UI",-apple-system,sans-serif;line-height:1.9;color:var(--text);background:var(--bg);font-size:15.5px}
+  .sidebar-nav{position:fixed;top:0;left:0;width:var(--sidebar);height:100vh;overflow-y:auto;background:linear-gradient(180deg,#121022,#1c1935);padding:14px 0 40px;z-index:100;border-right:3px solid var(--brand);transition:transform .3s ease}
+  .sidebar-nav::-webkit-scrollbar{width:5px}
+  .sidebar-nav::-webkit-scrollbar-thumb{background:var(--brand);border-radius:4px}
+  .sb-brand{display:flex;align-items:center;gap:10px;padding:10px 13px 12px;border-bottom:1px solid #2c2a4a;margin-bottom:8px}
+  .sidebar-nav a.sb-logo{display:flex;align-items:center;justify-content:center;flex-shrink:0;padding:0;border-left:none;transition:.2s}
+  .sb-logo:hover{transform:scale(1.08)}
+  .sb-logo img{height:34px;width:34px;display:block;object-fit:contain;border-radius:8px}
+  .sb-brand b{color:#f2f0fa;font-size:14px;letter-spacing:.5px;display:block;line-height:1.4}
+  .sb-brand span{color:#8880ab;font-size:11.5px;display:block;line-height:1.4}
+  .nav-title{color:#ffb894;font-size:12px;font-weight:800;padding:10px 18px 6px;letter-spacing:1.2px}
+  .sidebar-nav a{display:block;color:#c6c0dc;text-decoration:none;padding:6px 18px;font-size:12.5px;line-height:1.55;border-left:3px solid transparent;transition:.18s}
+  .sidebar-nav a:hover{color:#fff;background:rgba(255,107,53,.16);border-left-color:var(--brand)}
+  .sidebar-nav a.nav-section{color:#ffb894;font-weight:700;font-size:13px;margin-top:11px;padding-top:10px;border-top:1px solid #2c2a4a}
+  .sidebar-nav a.nav-section:first-of-type{border-top:none;margin-top:0;padding-top:6px}
+  .sidebar-nav a.nav-sub{padding-left:30px;color:#9d96ba;font-size:12px}
+  .sidebar-nav a.nav-sub:hover{color:#fff}
+  .sb-back{margin:16px 14px 0;display:block;text-align:center;padding:9px;border-radius:9px;background:#272348;color:#b3abd0 !important;font-size:12px;font-weight:700;border-left:none !important}
+  .sb-back:hover{background:var(--brand) !important;color:#fff !important}
+  .nav-toggle{display:none;position:fixed;top:14px;left:14px;z-index:120;background:var(--brand);color:#fff;border:none;border-radius:9px;padding:9px 13px;font-size:15px;cursor:pointer;box-shadow:0 4px 14px rgba(0,0,0,.25)}
+  .page{margin-left:var(--sidebar)}
+  .hero{position:relative;overflow:hidden;padding:44px 52px;color:#fff;background:linear-gradient(125deg,#100e20 0%,#1e1a3c 46%,#8a3a16 132%)}
+  .hero::after{content:"";position:absolute;right:-90px;top:-110px;width:400px;height:400px;border-radius:50%;background:radial-gradient(circle,rgba(245,179,1,.30),transparent 68%)}
+  .hero-top{display:flex;gap:36px;align-items:center;position:relative;z-index:2}
+  .hero-txt{flex:1;min-width:0}
+  .hero .crumb{font-size:11.5px;color:#ffb894;letter-spacing:1.5px;font-weight:700;margin-bottom:14px}
+  .hero h1{font-size:31px;font-weight:800;line-height:1.3;letter-spacing:.6px;margin-bottom:8px}
+  .hero h1 .sub{display:block;font-size:18px;font-weight:700;color:#ffd2b3;margin-top:6px;letter-spacing:.3px}
+  .hero .en{font-size:13px;color:#a49dc0;font-style:italic;margin-bottom:18px}
+  .hero .tags{display:flex;flex-wrap:wrap;gap:8px}
+  .tag{font-size:11.5px;padding:4px 12px;border-radius:20px;background:rgba(255,255,255,.12);border:1px solid rgba(255,255,255,.22);color:#e8f0f6;font-weight:600}
+  .tag.hot{background:rgba(255,107,53,.92);border-color:transparent;color:#fff}
+  .hero-card{flex-shrink:0;width:200px;text-align:center}
+  .hero-card .ava{width:148px;height:148px;border-radius:50%;object-fit:cover;object-position:top center;border:4px solid rgba(255,180,140,.6);box-shadow:0 14px 34px rgba(0,0,0,.45);background:#24344a}
+  .hero-card .nm{font-size:15px;font-weight:800;color:#fff;margin-top:10px}
+  .hero-card .ti{font-size:11.5px;color:#ffb894;margin-top:2px}
+  .container{max-width:1080px;margin:0 auto;padding:38px 52px 70px}
+  .lead{font-size:15.5px;line-height:2.05;color:#3a3650;background:linear-gradient(120deg,#fff8f3,#faf9fe);border-left:5px solid var(--brand);border-radius:0 14px 14px 0;padding:22px 26px;margin-bottom:32px}
+  .lead b{color:var(--brand-dark)}
+  .cast{display:flex;gap:16px;align-items:flex-start;border-radius:16px;padding:18px 22px;margin:24px 0}
+  .cast .ava{width:72px;height:72px;border-radius:50%;object-fit:cover;object-position:top center;flex-shrink:0;background:#e8eef5}
+  .cast .bubble{position:relative;font-size:14px;line-height:1.95;padding-top:2px;flex:1}
+  .cast .who{font-size:12px;font-weight:800;margin-bottom:5px;letter-spacing:.5px}
+  .cast.anya{background:var(--brand-soft);border:1px solid #ffdcc9}
+  .cast.anya .who{color:var(--brand-dark)}
+  .cast.anya .bubble{color:#5c4636}
+  .cast.duck{background:#fff5f5;border:1px solid #fbd5d5}
+  .cast.duck .who{color:#b91c1c}
+  .cast.duck .bubble{color:#5c4141}
+  .cast.teacher{background:linear-gradient(120deg,#f5f3fd,#ffffff);border:1px solid #e0daf5}
+  .cast.teacher .who{color:#3b2f6e}
+  .cast.teacher .bubble{color:#443c60}
+  .cast.hero{background:#f7f5fe;border:1px solid #ded6f8}
+  .cast.hero .who{color:#5233b8}
+  .cast.hero .bubble{color:#453d62}
+  .goal-grid{display:grid;grid-template-columns:1fr 1fr;gap:16px;margin-bottom:36px}
+  .goal{border:1px solid var(--line);border-radius:15px;padding:19px 21px;background:#fff;box-shadow:0 4px 16px rgba(109,75,216,.06)}
+  .goal h4{font-size:14px;font-weight:800;margin-bottom:11px;display:flex;align-items:center;gap:8px;color:var(--primary-dark)}
+  .goal h4 .ic{width:22px;height:22px;border-radius:7px;background:var(--primary-lighter);display:flex;align-items:center;justify-content:center;font-size:12px}
+  .goal ul{list-style:none}
+  .goal li{font-size:13.5px;color:#4d4a5c;line-height:1.9;padding-left:18px;position:relative}
+  .goal li::before{content:"▸";position:absolute;left:0;color:var(--primary);font-weight:800}
+  .goal.syllabus li::before{content:"✓"}
+  .section-header{margin:52px 0 24px;padding-bottom:12px;border-bottom:3px solid var(--brand);display:flex;align-items:baseline;gap:14px;flex-wrap:wrap}
+  .section-header h2{font-size:22px;font-weight:800;color:var(--night);letter-spacing:.4px}
+  .section-header .en-title{font-size:12px;color:var(--dim2);font-style:italic}
+  h3{font-size:17.5px;font-weight:800;margin:34px 0 14px;color:var(--night);display:flex;align-items:center;gap:10px}
+  h3::before{content:"";width:5px;height:17px;border-radius:3px;background:var(--brand);flex-shrink:0}
+  h4{font-size:15px;font-weight:800;margin:24px 0 10px;color:#3d3560}
+  p{margin:12px 0;color:#443c60;line-height:2}
+  strong{color:var(--primary-dark)}
+  code.inline{background:var(--primary-lighter);color:var(--primary-dark);padding:2px 7px;border-radius:6px;font-family:"SFMono-Regular",Consolas,Menlo,monospace;font-size:.9em;font-weight:600}
+  .figure{margin:24px 0;text-align:center}
+  .figure svg.diagram{max-width:100%;height:auto;background:#fff;border:1px solid var(--line);border-radius:14px;padding:10px}
+  .figure .caption{font-size:12.5px;color:var(--dim2);margin-top:9px}
+  .pic{margin:26px 0;text-align:center}
+  .pic img{max-width:100%;border-radius:16px;box-shadow:0 10px 28px rgba(60,40,120,.15);display:block;margin:0 auto}
+  .pic figcaption{font-size:12.5px;color:var(--dim2);margin-top:9px}
+  .pic .ph{display:none}
+  .pic.missing img{display:none}
+  .pic.missing .ph{display:flex;flex-direction:column;align-items:center;justify-content:center;gap:9px;border:2px dashed #cbc3e8;border-radius:16px;background:linear-gradient(135deg,#faf9ff,#f2f0fd);padding:40px 26px;color:#7d76a0}
+  .pic.missing .ph .fn{font-family:Consolas,monospace;font-size:12.5px;color:#6d4bd8;font-weight:700;word-break:break-all}
+  .pic.missing .ph .ds{font-size:12.5px;line-height:1.8;max-width:560px}
+  .box{border-radius:13px;padding:16px 20px;margin:20px 0;font-size:14px;line-height:1.95}
+  .box .lb{font-weight:800;margin-right:6px}
+  .info{background:#eef6ff;border-left:5px solid #3b82f6;color:#274768}
+  .info .lb{color:#1d4ed8}
+  .tip{background:#fff9ec;border-left:5px solid #f59e0b;color:#6b4e13}
+  .tip .lb{color:#b45309}
+  .remember{background:var(--primary-lighter);border-left:5px solid var(--primary);color:#3b2f6e}
+  .remember .lb{color:var(--primary-dark)}
+  .warn{background:#fef2f2;border-left:5px solid #ef4444;color:#7f2b2b}
+  .warn .lb{color:#b91c1c}
+  .code-card{margin:20px 0;border-radius:14px;overflow:hidden;box-shadow:0 10px 28px rgba(30,25,60,.20)}
+  .code-head{display:flex;align-items:center;gap:9px;background:#252340;padding:9px 14px}
+  .code-head .dot{width:10px;height:10px;border-radius:50%}
+  .code-head .d1{background:#ff5f57}.code-head .d2{background:#febc2e}.code-head .d3{background:#28c840}
+  .code-head .file{color:#9b94bd;font-size:11.5px;font-family:Consolas,monospace;margin-left:6px}
+  .code-head .lang{margin-left:auto;font-size:10.5px;font-weight:800;color:#17152a;background:#8b6cf0;padding:2px 9px;border-radius:6px;letter-spacing:.4px}
+  .code-card pre{background:var(--code-bg);padding:18px 20px;overflow-x:auto;margin:0;font-family:"SFMono-Regular",Consolas,"Courier New",monospace;font-size:13.5px;line-height:1.85}
+  .code-card pre::-webkit-scrollbar{height:8px}
+  .code-card pre::-webkit-scrollbar-thumb{background:#403c66;border-radius:4px}
+  .code-card code{color:var(--code-tx);white-space:pre}
+  .kw{color:var(--code-kw);font-weight:600}
+  .st{color:var(--code-st)}
+  .nu{color:var(--code-nu)}
+  .cm{color:var(--code-cm);font-style:italic}
+  .fn{color:var(--code-fn)}
+  .out{background:#151424;color:#8fd6a8;font-family:Consolas,monospace;font-size:13px;padding:12px 20px;border-top:1px solid #2c2a48}
+  .out b{color:#cdc8e0;font-weight:600;font-size:11.5px;letter-spacing:1px}
+  table.styled{width:100%;border-collapse:collapse;margin:20px 0;font-size:13.5px;border-radius:12px;overflow:hidden;box-shadow:0 4px 16px rgba(109,75,216,.08)}
+  table.styled thead{background:var(--brand)}
+  table.styled th{color:#fff;padding:11px 14px;text-align:left;font-weight:700;font-size:13px}
+  table.styled td{padding:10px 14px;border-bottom:1px solid var(--line);color:#4a4660;vertical-align:top}
+  table.styled tbody tr:nth-child(even){background:var(--bg-soft)}
+  table.styled tbody tr:last-child td{border-bottom:none}
+  .level-card{border:1px solid var(--line);border-radius:16px;overflow:hidden;margin:22px 0;box-shadow:0 6px 22px rgba(109,75,216,.08)}
+  .level-card .lc-head{background:linear-gradient(100deg,#1a1732,#8a3a16);color:#fff;padding:15px 22px;display:flex;align-items:center;gap:12px;flex-wrap:wrap}
+  .level-card .lc-head .n{font-size:12px;font-weight:800;background:rgba(255,255,255,.2);padding:3px 10px;border-radius:20px}
+  .level-card .lc-head h4{margin:0;color:#fff;font-size:16px}
+  .level-card .lc-head .go{margin-left:auto;font-size:11.5px;color:#ffd2b3}
+  .level-card .lc-body{padding:20px 24px;background:#fff}
+  .level-card .story{background:#fafafd;border-left:4px solid #a5b4fc;border-radius:0 10px 10px 0;padding:13px 18px;margin:0 0 16px;font-size:14px;line-height:1.95;color:#413f57}
+  .level-card .story b{color:#4338ca}
+  .btn-go{display:inline-flex;align-items:center;gap:8px;background:linear-gradient(135deg,var(--brand),var(--brand-dark));color:#fff;text-decoration:none;font-weight:800;font-size:13.5px;padding:10px 22px;border-radius:11px;box-shadow:0 8px 20px rgba(255,107,53,.32);transition:.2s}
+  .btn-go:hover{transform:translateY(-2px);box-shadow:0 12px 26px rgba(255,107,53,.42)}
+  .pit{border:1px solid #f6dede;border-radius:14px;overflow:hidden;margin:16px 0;background:#fff}
+  .pit .pt{display:flex;gap:12px;padding:14px 18px;background:#fffafa;align-items:flex-start}
+  .pit .x{width:26px;height:26px;border-radius:9px;background:#fee;color:#dc2626;display:flex;align-items:center;justify-content:center;font-weight:800;flex-shrink:0;font-size:13px}
+  .pit .t{font-size:13.5px;line-height:1.9;color:#5c4a4a;flex:1}
+  .pit .t b{color:#b91c1c}
+  .pit .duck{display:flex;gap:12px;padding:13px 18px;background:#fff5f5;border-top:1px dashed #f3d0d0;align-items:flex-start}
+  .pit .duck img{width:48px;height:48px;object-fit:contain;flex-shrink:0;margin-top:2px}
+  .pit .duck .dt{font-size:13.5px;line-height:1.9;color:#7a3b3b}
+  .pit .duck .dt b{color:#b91c1c}
+  .pit .fix{padding:12px 18px;background:#f7f5fe;border-top:1px dashed #ded6f8;font-size:13.5px;color:#3b2f6e}
+  .pit .fix b{color:var(--primary-dark)}
+  .exam{border:1px solid #e0dcf5;border-radius:15px;margin:16px 0;overflow:hidden;background:#fff;box-shadow:0 4px 16px rgba(60,50,120,.06)}
+  .exam .eh{display:flex;align-items:center;gap:10px;padding:11px 18px;background:linear-gradient(100deg,#f2f0ff,#faf9ff);border-bottom:1px solid #e6e2f8;flex-wrap:wrap}
+  .exam .eh .src{font-size:11px;font-weight:800;color:#fff;background:#6d4bd8;padding:2.5px 10px;border-radius:20px}
+  .exam .eh .src.ori{background:#0e9488}
+  .exam .eh .tp{font-size:11.5px;color:#6a5f9c;font-weight:700}
+  .exam .eb{padding:16px 20px}
+  .exam .q{font-weight:700;font-size:14px;color:#302c44;line-height:1.9;margin-bottom:10px}
+  .exam .opt{font-size:13.5px;color:#4d4a5c;line-height:2.05;padding-left:6px}
+  .exam .opt i{font-style:normal;font-weight:800;color:var(--primary-dark);margin-right:7px}
+  .exam pre{margin:12px 0;background:#1b1a2a;border-radius:10px;padding:14px 16px;overflow-x:auto;font-family:Consolas,monospace;font-size:13px;line-height:1.8;color:var(--code-tx)}
+  .exam details{margin-top:10px;border-top:1px dashed var(--line);padding-top:10px}
+  .exam summary{cursor:pointer;font-size:12.5px;font-weight:800;color:#6d4bd8;outline:none;user-select:none}
+  .exam details .ans{font-size:13.5px;color:#443c60;line-height:1.95;margin-top:9px;background:var(--bg-soft);padding:13px 16px;border-radius:10px}
+  .exam details .ans b{color:var(--primary-dark)}
+  .exam details .ans .tagline{display:inline-block;font-size:11px;background:#ede9fe;color:#5b21b6;padding:1.5px 8px;border-radius:6px;font-weight:700;margin-right:6px}
+  .summary{margin:40px 0 20px;border-radius:18px;padding:26px 30px;background:linear-gradient(130deg,#fff8f3,#ffffff);border:1px solid #ffe0cf}
+  .summary h3{margin-top:0}
+  .summary ul{list-style:none;margin-top:10px}
+  .summary li{font-size:14px;line-height:2;color:#443c60;padding-left:24px;position:relative}
+  .summary li::before{content:"◆";position:absolute;left:0;color:var(--brand);font-size:11px;top:6px}
+  .pager{display:flex;gap:14px;margin-top:30px;flex-wrap:wrap}
+  .pager a{flex:1;min-width:200px;text-decoration:none;border:1px solid var(--line);border-radius:14px;padding:16px 20px;background:#fff;transition:.2s;display:block}
+  .pager a:hover{border-color:var(--brand);box-shadow:0 10px 26px rgba(255,107,53,.14);transform:translateY(-2px)}
+  .pager a .k{font-size:11px;color:var(--dim2);font-weight:700;letter-spacing:1px}
+  .pager a .v{font-size:14px;font-weight:800;color:var(--night);margin-top:5px}
+  .pager a.back{background:var(--brand-soft);border-color:transparent;text-align:center}
+  .pager a.back .v{color:var(--brand-dark)}
+  .cta{margin-top:26px;border-radius:20px;padding:30px 34px;color:#fff;position:relative;overflow:hidden;background:linear-gradient(120deg,#171528,#2b2750 46%,#a8431c 132%)}
+  .cta::after{content:"";position:absolute;right:-70px;bottom:-90px;width:280px;height:280px;border-radius:50%;background:radial-gradient(circle,rgba(255,140,80,.45),transparent 68%)}
+  .cta h3{color:#fff;margin:0 0 10px;position:relative;z-index:2}
+  .cta h3::before{background:var(--brand)}
+  .cta p{color:#d6d2e8;font-size:13.5px;margin:0 0 18px;position:relative;z-index:2;max-width:640px}
+  .cta .btn-go{position:relative;z-index:2}
+  @media(max-width:900px){
+    .sidebar-nav{transform:translateX(-100%)}
+    .sidebar-nav.active{transform:translateX(0)}
+    .nav-toggle{display:block}
+    .page{margin-left:0}
+    .hero{padding:70px 22px 34px}
+    .hero-top{flex-direction:column-reverse;text-align:center}
+    .hero-card{width:auto}
+    .container{padding:26px 20px 60px}
+    .goal-grid{grid-template-columns:1fr}
+  }
+</style>
+</head>
+<body>
+
+<button class="nav-toggle" onclick="document.querySelector('.sidebar-nav').classList.toggle('active')">☰</button>
+
+<nav class="sidebar-nav">
+  <div class="sb-brand">
+    <a class="sb-logo" href="https://codecombat.cn/" target="_blank" rel="noopener" title="访问 CodeCombat 扣哒世界官网">
+      <img src="../assets/logo.png" alt="CodeCombat 扣哒世界">
+    </a>
+    <div><b>穷举矿灯</b><span>符文矿坑 · Python 三级 第 7 单元</span></div>
+  </div>
+  <div class="nav-title">本单元目录</div>
+
+  <a href="#s0" class="nav-section">0　单元导语与目标</a>
+  <a href="#s0-1" class="nav-sub">0.1 学习目标</a>
+  <a href="#s0-2" class="nav-sub">0.2 考纲对照</a>
+  <a href="#s1" class="nav-section">1　枚举法：一个个试过去</a>
+  <a href="#s1-1" class="nav-sub">1.1 枚举法是什么</a>
+  <a href="#s1-2" class="nav-sub">1.2 什么时候该想到它</a>
+  <a href="#s2" class="nav-section">2　不重不漏</a>
+  <a href="#s2-1" class="nav-sub">2.1 不重不漏</a>
+  <a href="#s2-2" class="nav-sub">2.2 起点、终点与步长</a>
+  <a href="#s3" class="nav-section">3　枚举的经典例题</a>
+  <a href="#s3-1" class="nav-sub">3.1 水仙花数</a>
+  <a href="#s3-2" class="nav-sub">3.2 怎样拆出每一位</a>
+  <a href="#s4" class="nav-section">4　模拟法：照着规则走一遍</a>
+  <a href="#s5" class="nav-section">5　代码实战</a>
+  <a href="#s6" class="nav-section">6　常见陷阱</a>
+  <a href="#s7" class="nav-section">7　题目练习</a>
+  <a href="#s8" class="nav-section">8　本单元小结</a>
+
+  <a href="../index.html" target="_top" class="sb-back">返回考纲之路</a>
+</nav>
+
+<div class="page">
+
+<div class="hero">
+  <div class="hero-top">
+    <div class="hero-txt">
+      <div class="crumb">扣哒考级 · GESP PYTHON 三级 · 第 7 单元　|　符文矿坑 RUNEMARK MINE</div>
+      <h1>穷举矿灯
+        <span class="sub">枚举法与模拟法</span>
+      </h1>
+      <div class="en">Enumeration &amp; Simulation</div>
+      <div class="tags">
+        <span class="tag hot">考纲 · 枚举与模拟</span>
+        <span class="tag">穷举</span>
+        <span class="tag">不重不漏</span>
+        <span class="tag">按规则走一遍</span>
+        <span class="tag">边界</span>
+      </div>
+    </div>
+    <div class="hero-card">
+      <img class="ava" src="../assets/avatars/hushbaum.webp" alt="贺舒曼" onerror="this.style.background='#24344a'">
+      <div class="nm">贺舒曼</div>
+      <div class="ti">镜中先知 · 你的向导</div>
+    </div>
+  </div>
+</div>
+
+<div class="container">
+
+<div class="lead">
+  矿坑最深处挂着一排矿灯，整整一百盏，一盏挨着一盏。你抬头一看，
+  <b>其中只有一盏是不亮的。</b><br>
+  哪一盏坏了？工头问你。<br>
+  你正想眯起眼睛仔细找，贺舒曼在镜子里说：别费劲用眼睛了。
+  <b>从第一盏开始，一盏一盏地试过去——总有一盏是坏的。</b><br>
+  她顿了顿：这个笨办法，恰恰是计算机最擅长的东西。
+</div>
+
+<div class="cast teacher">
+  <img class="ava" src="../assets/avatars/hushbaum.webp" alt="贺舒曼" onerror="this.style.display='none'">
+  <div class="bubble">
+    <div class="who">贺舒曼 · 镜中先知</div>
+    三级最后一个单元，学两种"最实在"的算法。<br>
+    <strong>枚举法</strong>——把所有可能一个个试过去，简单粗暴但好用。<br>
+    <strong>模拟法</strong>——照着题目的规则，一步步走一遍。<br>
+    它们不需要什么聪明点子，<b>但它们是所有算法的地基。</b>
+  </div>
+</div>
+
+<!-- ============ 0 ============ -->
+<figure class="pic">
+  <img src="../assets/illustrations/py-L3-07-01_brute_force_lamps.webp" alt="穷举矿灯"
+       onerror="this.closest('.pic').classList.add('missing')">
+  <div class="ph">
+    <div class="fn">assets/illustrations/py-L3-07-01_brute_force_lamps.webp</div>
+    <div class="ds">【配图位】矿坑深处一整排高悬的矿灯，一眼望不到头，只有远处某一盏是暗的；一名学徒举着长杆从第一盏开始逐一点过去，灯光依次亮起，形成一条向远处延伸的光带。</div>
+  </div>
+  <figcaption>图 1：符文矿坑的穷举矿灯——今天要从这里开始</figcaption>
+</figure>
+
+<div class="section-header" id="s0">
+  <h2>0　单元导语与目标</h2>
+  <div class="en-title">Unit Overview</div>
+
+<h3 id="s0-1">0.1 学习目标</h3>
+</div>
+
+<div class="goal-grid">
+  <div class="goal">
+    <h4><span class="ic">1</span>学完这个单元，你将能……</h4>
+    <ul>
+      <li>说清枚举法的思路和适用场景</li>
+      <li>写出"不重不漏"的枚举循环</li>
+      <li>用枚举法解决求因数、找特殊数等问题</li>
+      <li>说清模拟法的思路</li>
+      <li>把一段"规则描述"翻译成按步骤执行的程序</li>
+      <li>判断枚举的范围该从几到几</li>
+    </ul>
+  </div>
+  <div class="goal syllabus">
+    <h4><span class="ic">2</span>对标 GESP 考纲（Python 三级）</h4>
+    <ul>
+      <li>掌握枚举法（穷举法）的基本思想，能对有限集合逐一检验</li>
+      <li>掌握模拟法的基本思想，能按规则的先后顺序逐步求解</li>
+      <li>能确定枚举的范围与边界，做到不重不漏</li>
+      <li>考核目标：能用枚举或模拟解决简单的实际问题</li>
+    </ul>
+  </div>
+</div>
+
+<!-- ============ 1 ============ -->
+<h3 id="s0-2">0.2 考纲对照</h3>
+
+<table class="styled">
+  <thead><tr><th>本单元小节</th><th>对应考纲条目</th><th>真题常考形式</th></tr></thead>
+  <tbody>
+    <tr><td>1　枚举法</td><td>枚举算法的思想</td><td>什么情况下适合用枚举法</td></tr>
+    <tr><td>2　不重不漏</td><td>枚举的范围与顺序</td><td>循环的起点、终点、步长该怎么定</td></tr>
+    <tr><td>3　经典例题</td><td>用枚举解决实际问题</td><td>水仙花数、百钱买百鸡这类题</td></tr>
+    <tr><td>4　模拟法</td><td>按规则一步步推演</td><td>按题目给的规则模拟若干步后的结果</td></tr>
+  </tbody>
+</table>
+
+<div class="section-header" id="s1">
+  <h2>1　枚举法：一个个试过去</h2>
+  <div class="en-title">Enumeration</div>
+</div>
+
+<h3 id="s1-1">1.1 枚举法是什么</h3>
+
+<p>枚举法的思路简单到一句话：<strong>把所有可能的情况一个一个拿出来检验，找到符合条件的那个。</strong></p>
+
+<figure class="figure">
+  <svg class="diagram" viewBox="0 0 860 260" role="img" aria-label="枚举法示意">
+    <text x="24" y="34" font-size="14" font-weight="bold" fill="#1f2937">一百盏灯，一盏一盏试过去</text>
+
+    <g font-size="13">
+      <rect x="60" y="70" width="46" height="46" rx="8" fill="#e9f8ef" stroke="#2e9e5b" stroke-width="1.8"/>
+      <text x="83" y="99" text-anchor="middle" font-size="12" fill="#1f7a44">1</text>
+      <rect x="116" y="70" width="46" height="46" rx="8" fill="#e9f8ef" stroke="#2e9e5b" stroke-width="1.8"/>
+      <text x="139" y="99" text-anchor="middle" font-size="12" fill="#1f7a44">2</text>
+      <rect x="172" y="70" width="46" height="46" rx="8" fill="#e9f8ef" stroke="#2e9e5b" stroke-width="1.8"/>
+      <text x="195" y="99" text-anchor="middle" font-size="12" fill="#1f7a44">3</text>
+      <rect x="228" y="70" width="46" height="46" rx="8" fill="#fef2f2" stroke="#ef4444" stroke-width="2.4"/>
+      <text x="251" y="99" text-anchor="middle" font-size="12" fill="#b91c1c" font-weight="bold">4</text>
+      <rect x="284" y="70" width="46" height="46" rx="8" fill="#e9f8ef" stroke="#2e9e5b" stroke-width="1.8"/>
+      <text x="307" y="99" text-anchor="middle" font-size="12" fill="#1f7a44">5</text>
+      <rect x="340" y="70" width="46" height="46" rx="8" fill="#e9f8ef" stroke="#2e9e5b" stroke-width="1.8"/>
+      <text x="363" y="99" text-anchor="middle" font-size="12" fill="#1f7a44">6</text>
+      <text x="410" y="100" font-size="14" fill="#8d9d94">……</text>
+      <rect x="450" y="70" width="46" height="46" rx="8" fill="#f1f5f9" stroke="#94a3b8" stroke-width="1.6"/>
+      <text x="473" y="99" text-anchor="middle" font-size="12" fill="#64748b">100</text>
+    </g>
+
+    <text x="251" y="146" text-anchor="middle" font-size="12" fill="#b91c1c" font-weight="bold">找到它了！</text>
+
+    <rect x="60" y="168" width="740" height="72" rx="12" fill="#1b1a2a"/>
+    <text x="86" y="196" font-family="Consolas,monospace" font-size="13" fill="#61afef">for</text>
+    <text x="118" y="196" font-family="Consolas,monospace" font-size="13" fill="#cdc8e0">i </text>
+    <text x="136" y="196" font-family="Consolas,monospace" font-size="13" fill="#61afef">in</text>
+    <text x="160" y="196" font-family="Consolas,monospace" font-size="13" fill="#cdc8e0">range(1, 101):</text>
+    <text x="106" y="224" font-family="Consolas,monospace" font-size="13" fill="#61afef">if</text>
+    <text x="130" y="224" font-family="Consolas,monospace" font-size="13" fill="#cdc8e0">灯[i] 是坏的:  输出 i</text>
+    <text x="420" y="224" font-family="Consolas,monospace" font-size="12.5" fill="#8fa499">← 一圈一圈地试，试到就报出来</text>
+  </svg>
+  <div class="caption">图 2（SVG）：枚举法——把候选一个个拿出来检验</div>
+</figure>
+
+<div class="code-card">
+  <div class="code-head">
+    <span class="dot d1"></span><span class="dot d2"></span><span class="dot d3"></span>
+    <span class="file">枚举法的基本骨架</span>
+    <span class="lang">Python</span>
+  </div>
+  <pre><code>for x in 所有可能的值:
+    if 满足题目条件(x):
+        处理它，或者输出它</code></pre>
+  <div class="out"><b>骨架就这四行</b>　枚举 + 判断，是所有穷举题的标准结构</div>
+</div>
+
+<h3 id="s1-2">1.2 什么时候该想到它</h3>
+
+<div class="box tip">
+  <span class="lb">打个比方：</span>
+  枚举法就像<b>一串钥匙挨个去试锁</b>——<strong>不猜、不推理，一个一个试过去，总有一把能开。</strong><br>
+  看着笨，可它有个大优点：<strong>只要范围列全了，就一定不会漏掉答案。</strong><br>
+  <b>而且"挨个试"这件事，计算机做得又快又不会烦——人试一百次就晕了，它试一百万次也面不改色。</b>
+</div>
+
+<figure class="pic">
+  <img src="../assets/illustrations/py-L3-07-02_simulate_corridor.webp" alt="按规则一路走过去"
+       onerror="this.closest('.pic').classList.add('missing')">
+  <div class="ph">
+    <div class="fn">assets/illustrations/py-L3-07-02_simulate_corridor.webp</div>
+    <div class="ds">【配图位】矿道里一条铺着编号地砖的走廊，地砖上依次标着数字与规则记号；一名矿工从第一块砖出发，每到一块砖就按砖上的规则决定下一步走向，地面上留下连续发光的脚印与转折箭头；走廊尽头立着一块写着"结果"的石牌。</div>
+  </div>
+  <figcaption>图 3：每一步都照规则走，走完就知道结果</figcaption>
+</figure>
+
+<div class="box remember">
+  <span class="lb">什么时候该想到枚举法？</span>
+  ① 可能的情况<b>数量有限</b>，能数得清；<br>
+  ② 每种情况都<b>容易验证</b>对不对；<br>
+  ③ 想不出什么巧妙办法，但硬试一遍也不慢。<br>
+  <strong>满足这三条，就用枚举。</strong>
+</div>
+
+<div class="cast hero">
+  <img class="ava" src="../assets/avatars/okar.webp" alt="欧卡" onerror="this.style.display='none'">
+  <div class="bubble">
+    <div class="who">欧卡 · 撼地者</div>
+    找钥匙这事我最有经验：<strong>不知道在哪把锁上，就一把一把地试。</strong><br>
+    我不聪明，但我不怕烦。<br>
+    <b>计算机最厉害的地方，恰恰就是"不怕烦"。</b>
+  </div>
+</div>
+
+<!-- ============ 2 ============ -->
+<div class="section-header" id="s2">
+  <h2>2　不重不漏</h2>
+  <div class="en-title">No Missing, No Repeat</div>
+</div>
+
+<h3 id="s2-1">2.1 不重不漏</h3>
+
+<div class="box tip">
+  <span class="lb">打个比方：</span>
+  枚举要像<b>清点仓库里的箱子</b>——<strong>每一箱都要点到，一箱都不能漏；也不要来回重复点同一箱。</strong><br>
+  <b>"漏"会让答案找不到，"重"会让结果算错或多算。</b><br>
+  <b>所以动手前先想清楚三件事：从哪里开始、到哪里结束、每次跨多少——也就是循环的起点、终点和步长。</b>
+</div>
+
+<p>枚举法只有一条铁律，但它是所有错误的总源头：</p>
+
+<div class="box warn">
+  <span class="lb">铁律：</span>
+  <strong>枚举的范围必须"不重不漏"</strong>——<br>
+  漏了，可能找不到答案；重了，可能把同一个答案输出两遍。<br>
+  判断标准很简单：<b>你能不能一眼说清"我一共试了几种情况"？</b>
+</div>
+
+<figure class="figure">
+  <svg class="diagram" viewBox="0 0 860 270" role="img" aria-label="枚举范围的边界">
+    <text x="24" y="34" font-size="14" font-weight="bold" fill="#1f2937">同样是 1 到 100，三种写法的差别</text>
+
+    <rect x="46" y="60" width="240" height="150" rx="12" fill="#fef2f2" stroke="#ef4444" stroke-width="2"/>
+    <text x="166" y="88" text-anchor="middle" font-size="13" fill="#b91c1c" font-weight="bold">range(1, 100)</text>
+    <text x="66" y="118" font-size="12" fill="#7f2b2b">实际枚举：1 ~ 99</text>
+    <text x="66" y="144" font-size="12" fill="#7f2b2b">✘ 漏了 100</text>
+    <text x="66" y="178" font-size="11.5" fill="#b91c1c">含头不含尾，这是最容易错的</text>
+
+    <rect x="306" y="60" width="240" height="150" rx="12" fill="#e9f8ef" stroke="#2e9e5b" stroke-width="2"/>
+    <text x="426" y="88" text-anchor="middle" font-size="13" fill="#1f7a44" font-weight="bold">range(1, 101)</text>
+    <text x="326" y="118" font-size="12" fill="#3b7c5b">实际枚举：1 ~ 100</text>
+    <text x="326" y="144" font-size="12" fill="#3b7c5b">✔ 不重不漏</text>
+    <text x="326" y="178" font-size="11.5" fill="#1f7a44">想要 1 到 n，就写 range(1, n + 1)</text>
+
+    <rect x="566" y="60" width="240" height="150" rx="12" fill="#fff9ec" stroke="#f59e0b" stroke-width="2"/>
+    <text x="686" y="88" text-anchor="middle" font-size="13" fill="#b45309" font-weight="bold">range(0, 101)</text>
+    <text x="586" y="118" font-size="12" fill="#6b4e13">实际枚举：0 ~ 100</text>
+    <text x="586" y="144" font-size="12" fill="#6b4e13">△ 多试了 0</text>
+    <text x="586" y="178" font-size="11.5" fill="#b45309">如果 0 不在范围内，会多一个错答案</text>
+
+    <text x="430" y="242" text-anchor="middle" font-size="12" fill="#8d9d94">写循环前先问自己：我要试的第一个数是谁？最后一个数是谁？</text>
+  </svg>
+  <div class="caption">图 4（SVG）：<code>range</code> 的边界——含头不含尾，多一个少一个都会出错</div>
+</figure>
+
+<div class="code-card">
+  <div class="code-head">
+    <span class="dot d1"></span><span class="dot d2"></span><span class="dot d3"></span>
+    <span class="file">求 n 的所有因数</span>
+    <span class="lang">Python</span>
+  </div>
+  <pre><code>n = 12
+
+for i in range(1, n + 1):     # 从 1 试到 n（含 n）
+    if n % i == 0:            # 能整除就是因数
+        print(i)</code></pre>
+  <div class="out"><b>OUTPUT</b>　1　2　3　4　6　12<br><b>要点</b>　写成 range(1, n) 就会漏掉 n 自己</div>
+</div>
+
+<!-- ============ 3 ============ -->
+<h3 id="s2-2">2.2 循环的起点、终点与步长</h3>
+
+<div class="section-header" id="s3">
+  <h2>3　枚举的经典例题</h2>
+  <div class="en-title">Classic Examples</div>
+</div>
+
+<h4>例题一：找水仙花数</h4>
+
+<h3 id="s3-1">3.1 水仙花数</h3>
+
+<p>所谓水仙花数，就是一个三位数，它<strong>各位数字的立方和恰好等于它自己</strong>。
+比如 153，因为 <code class="inline">1³ + 5³ + 3³ = 1 + 125 + 27 = 153</code>。</p>
+
+<div class="code-card">
+  <div class="code-head">
+    <span class="dot d1"></span><span class="dot d2"></span><span class="dot d3"></span>
+    <span class="file">枚举所有三位数，逐个检验</span>
+    <span class="lang">Python</span>
+  </div>
+  <pre><code>for i in range(100, 1000):        # 三位数的范围：100 ~ 999
+    a = i // 100                  # 百位
+    b = i // 10 % 10              # 十位
+    c = i % 10                    # 个位
+    if a ** 3 + b ** 3 + c ** 3 == i:
+        print(i)</code></pre>
+  <div class="out"><b>OUTPUT</b>　153　370　371　407</div>
+</div>
+
+<h3 id="s3-2">3.2 怎样拆出每一位</h3>
+
+<figure class="pic">
+  <img src="../assets/illustrations/py-L3-07-03_narcissus.webp" alt="把三位数拆成三块"
+       onerror="this.closest('.pic').classList.add('missing')">
+  <div class="ph">
+    <div class="fn">assets/illustrations/py-L3-07-03_narcissus.webp</div>
+    <div class="ds">【配图位】矿灯照着一张石桌，桌上摆着一个刻着三位数的石牌；石牌被一把发光的凿子沿刻痕分成三块小牌（百位、十位、个位），三块小牌各自被送进旁边三台小机器里运算（求立方），结果汇总到最右边一只天平上与原数比较；天平两边恰好平衡，旁边亮起"符合"的字样，一名矿工在旁看着。</div>
+  </div>
+  <figcaption>图 5：一个三位数，拆成三块分别验算</figcaption>
+</figure>
+
+<div class="box tip">
+  <span class="lb">怎么从数里"拆"出每一位？</span>
+  记住这两招就够用了：<br>
+  <b>某一位 = 先整除掉它右边的位，再对 10 取余。</b><br>
+  比如 153 的十位：<code class="inline">153 // 10 = 15</code>，再 <code class="inline">15 % 10 = 5</code>。<br>
+  个位更简单：<code class="inline">153 % 10 = 3</code>。
+</div>
+
+<h4>例题二：猜数字（缩小范围）</h4>
+
+<p>枚举虽然笨，但可以在枚举的过程中<strong>提前退出</strong>，省下很多次尝试。</p>
+
+<div class="code-card">
+  <div class="code-head">
+    <span class="dot d1"></span><span class="dot d2"></span><span class="dot d3"></span>
+    <span class="file">找到第一个能被 7 整除的数就停</span>
+    <span class="lang">Python</span>
+  </div>
+  <pre><code>for i in range(1, 1000):
+    if i % 7 == 0 and i &gt; 100:
+        print(i)
+        break            # 找到了就跳出，后面的不用再试</code></pre>
+  <div class="out"><b>OUTPUT</b>　105　（找到就停，不用把 999 个数全试完）</div>
+</div>
+
+<div class="box info">
+  <span class="lb">break 的价值：</span>
+  枚举最怕"情况太多"。如果题目只要求"<strong>找到任意一个</strong>"，
+  那找到之后就该立刻停手——<b>这叫"提前退出"，能让程序快很多倍。</b>
+</div>
+
+<!-- ============ 4 ============ -->
+<div class="section-header" id="s4">
+  <h2>4　模拟法：照着规则走一遍</h2>
+  <div class="en-title">Simulation</div>
+</div>
+
+<p>模拟法更直白：<strong>题目怎么描述，你就怎么一步步写出来，让程序照着"演"一遍。</strong></p>
+
+<figure class="figure">
+  <svg class="diagram" viewBox="0 0 860 260" role="img" aria-label="模拟法示意">
+    <text x="24" y="34" font-size="14" font-weight="bold" fill="#1f2937">模拟法：题目说几步，程序就走几步</text>
+
+    <rect x="50" y="62" width="760" height="60" rx="12" fill="#f7f5fe" stroke="#ded6f8" stroke-width="1.8"/>
+    <text x="70" y="88" font-size="12.5" fill="#5233b8" font-weight="bold">题目规则</text>
+    <text x="70" y="110" font-size="12.5" fill="#524a72">小明有 10 元，每天花掉一半（向下取整），问第几天花完？</text>
+
+    <rect x="50" y="140" width="180" height="94" rx="12" fill="#eef6ff" stroke="#3b82f6" stroke-width="2"/>
+    <text x="140" y="166" text-anchor="middle" font-size="12.5" fill="#1d4ed8" font-weight="bold">第 1 天</text>
+    <text x="140" y="192" text-anchor="middle" font-size="12" font-family="Consolas,monospace" fill="#1e40af">10 → 5</text>
+    <text x="140" y="216" text-anchor="middle" font-size="11.5" fill="#3b6ea8">还剩 5 元</text>
+
+    <rect x="244" y="140" width="180" height="94" rx="12" fill="#eef6ff" stroke="#3b82f6" stroke-width="2"/>
+    <text x="334" y="166" text-anchor="middle" font-size="12.5" fill="#1d4ed8" font-weight="bold">第 2 天</text>
+    <text x="334" y="192" text-anchor="middle" font-size="12" font-family="Consolas,monospace" fill="#1e40af">5 → 2</text>
+    <text x="334" y="216" text-anchor="middle" font-size="11.5" fill="#3b6ea8">还剩 2 元</text>
+
+    <rect x="438" y="140" width="180" height="94" rx="12" fill="#eef6ff" stroke="#3b82f6" stroke-width="2"/>
+    <text x="528" y="166" text-anchor="middle" font-size="12.5" fill="#1d4ed8" font-weight="bold">第 3 天</text>
+    <text x="528" y="192" text-anchor="middle" font-size="12" font-family="Consolas,monospace" fill="#1e40af">2 → 1</text>
+    <text x="528" y="216" text-anchor="middle" font-size="11.5" fill="#3b6ea8">还剩 1 元</text>
+
+    <rect x="632" y="140" width="178" height="94" rx="12" fill="#e9f8ef" stroke="#2e9e5b" stroke-width="2"/>
+    <text x="721" y="166" text-anchor="middle" font-size="12.5" fill="#1f7a44" font-weight="bold">第 4 天</text>
+    <text x="721" y="192" text-anchor="middle" font-size="12" font-family="Consolas,monospace" fill="#166534">1 → 0</text>
+    <text x="721" y="216" text-anchor="middle" font-size="11.5" fill="#3b7c5b">花完了 ✔</text>
+  </svg>
+  <div class="caption">图 6（SVG）：模拟法——把规则一天天"演"出来</div>
+</figure>
+
+<div class="code-card">
+  <div class="code-head">
+    <span class="dot d1"></span><span class="dot d2"></span><span class="dot d3"></span>
+    <span class="file">把上面的规则翻译成代码</span>
+    <span class="lang">Python</span>
+  </div>
+  <pre><code>money = 10
+day = 0
+
+while money &gt; 0:
+    money = money // 2     # 每天花掉一半（向下取整）
+    day = day + 1          # 天数加一
+
+print(day)                 # 4</code></pre>
+  <div class="out"><b>OUTPUT</b>　4</div>
+</div>
+
+<div class="box remember">
+  <span class="lb">模拟法的两个要点：</span><br>
+  <b>① 状态变量</b>——把"当前的情况"记在变量里（上面就是 <code class="inline">money</code> 和 <code class="inline">day</code>）；<br>
+  <b>② 重复的规则</b>——每一轮都按照同样的规则更新状态，直到满足结束条件。<br>
+  <strong>说白了：一个变量记状态，一个循环走过程。</strong>
+</div>
+
+<div class="cast duck">
+  <img class="ava" src="../assets/ducks/duck_naria.webp" alt="扣哒鸭" onerror="this.style.display='none'">
+  <div class="bubble">
+    <div class="who">扣哒鸭 · 调试官</div>
+    模拟法最考验"<strong>愿不愿意老实按题目走</strong>"。<br>
+    有的同学一看题就开始想"有没有公式能一步算出来"，
+    结果绕了半天，还不如老老实实写个循环。<br>
+    <b>题目怎么描述，你就怎么模拟——这是模拟法的唯一秘诀。</b>
+  </div>
+</div>
+
+
+
+<!-- ============ 5 ============ -->
+<div class="section-header" id="s5">
+  <h2>5　代码实战</h2>
+  <div class="en-title">Level Practice</div>
+</div>
+
+<div class="level-card">
+  <div class="lc-head"><span class="n">关卡</span><h4>扫雷</h4><span class="go">进入关卡 →</span></div>
+  <div class="lc-body">
+    <div class="story">
+      <b>故事：</b>矿坑外的雷区横在必经之路上，身后还跟着几位需要保护的村民。<br>
+      可哪儿有雷，谁也说不准——<b>你没法提前规划出一条安全路线。</b><br>
+      贺舒曼在镜子里说：那就别硬规划了。<b>走一步、看一步、随时应变——这就是模拟。</b>
+    </div>
+    <p><strong>思路：</strong>用循环不停地重复"检查自己—决定动作"，
+    每一轮都根据当前的状态做出反应。
+  <figure class="pic ai-added"><img src="../assets/illustrations/py-L3-07-01_try_every_lantern.webp" alt="AI配图：py-L3-07-01_try_every_lantern.webp"></figure>
+    <b>这正是模拟法的核心：不看长远，只看当下，按规则一步步走。</b></p><figure class="pic">
+      <img src="../assets/stages/py-L3-07-stage1_minesweeper.webp" alt="扫雷 关卡截图"
+           onerror="this.closest('.pic').classList.add('missing')">
+      <div class="ph">
+        <div class="fn">assets/stages/py-L3-07-stage1_minesweeper.webp</div>
+        <div class="ds">【关卡截图位】请把《扫雷》的游戏画面截图放到此处（放入 assets/stages/ 目录，文件名为 py-L3-07-stage1_minesweeper.webp）。</div>
+      </div>
+      <figcaption>关卡实况：扫雷</figcaption>
+    </figure>
+    <div class="code-card">
+      <div class="code-head">
+        <span class="dot d1"></span><span class="dot d2"></span><span class="dot d3"></span>
+        <span class="file">重点示例：先判断状态，再决定动作</span>
+        <span class="lang">Python</span>
+      </div>
+      <pre><code>healingThreshold = hero.maxHealth / 2     # 定一个"危险线"
+
+if hero.health &lt; healingThreshold:        # 状态一：受伤太重
+    hero.moveXY(hero.pos.x - 10, hero.pos.y)
+    hero.say("Can I get a heal?")
+elif coin:                                # 状态二：还有硬币可捡
+    hero.moveXY(coin.pos.x, coin.pos.y)</code></pre>
+      <div class="out"><b>要点</b>　这就是一段典型的"模拟"——先看状态，再选动作；条件不同，行为就不同</div>
+    </div>
+    <div class="box info">
+      <span class="lb">和枚举的区别：</span>
+      <b>枚举</b>是"把所有可能试一遍"，追求<strong>找遍答案</strong>；<br>
+      <b>模拟</b>是"沿着一条时间线走一遍"，追求<strong>还原过程</strong>。<br>
+      很多题目其实两者都要用——先用枚举找出候选，再用模拟验证它是否符合规则。
+    </div>
+    
+    <a class="btn-go" href="https://codecombat.cn/" target="_blank" rel="noopener">去扣哒世界闯这一关 →</a>
+  </div>
+</div>
+
+<!-- ============ 6 ============ -->
+<div class="section-header" id="s6">
+  <h2>6　常见陷阱</h2>
+  <div class="en-title">Common Pitfalls</div>
+</div>
+
+<div class="cast duck">
+  <img class="ava" src="../assets/ducks/duck_usara.webp" alt="扣哒鸭" onerror="this.style.display='none'">
+  <div class="bubble">
+    <div class="who">扣哒鸭 · 调试官</div>
+    枚举和模拟的错，无非是"范围错了"和"步骤乱了"两类。四条，看完就能少踩很多坑。
+  </div>
+</div>
+
+<div class="pit">
+  <div class="pt">
+    <div class="x">1</div>
+    <div class="t"><b>枚举范围少了一个。</b>求因数时写 <code class="inline">range(1, n)</code>。</div>
+  </div>
+  <div class="duck">
+    <img src="../assets/ducks/duck_zana.webp" alt="扣哒鸭" onerror="this.style.display='none'">
+    <div class="dt"><b>扣哒鸭：</b><code>range(1, n)</code> 只到 n-1，<strong>把 n 自己漏掉了</strong>。<br>
+    而 n 永远是 n 的因数！想要 1 到 n，必须写 <code>range(1, n + 1)</code>。</div>
+  </div>
+  <div class="fix"><b>正确写法：</b><code class="inline">range(1, n + 1)</code></div>
+</div>
+
+<div class="pit">
+  <div class="pt">
+    <div class="x">2</div>
+    <div class="t"><b>忘了"提前退出"。</b>只要找一个，却把一千个数全试完。</div>
+  </div>
+  <div class="duck">
+    <img src="../assets/ducks/duck_naria.webp" alt="扣哒鸭" onerror="this.style.display='none'">
+    <div class="dt"><b>扣哒鸭：</b>题目说"找出<b>一个</b>"，就不是"找出所有"。<br>
+    找到之后立刻 <code>break</code>，既省时间，也避免重复输出。</div>
+  </div>
+  <div class="fix"><b>正确做法：</b>找到后用 <code class="inline">break</code> 跳出循环</div>
+</div>
+
+<div class="pit">
+  <div class="pt">
+    <div class="x">3</div>
+    <div class="t"><b>模拟时把"先做"和"后做"的顺序搞反。</b>比如先加天数再花钱。</div>
+  </div>
+  <div class="duck">
+    <img src="../assets/ducks/duck_hattori.webp" alt="扣哒鸭" onerror="this.style.display='none'">
+    <div class="dt"><b>扣哒鸭：</b>模拟法最讲究<strong>步骤顺序</strong>。
+    题目说"每天花一半"，那就是"先花，再看还剩多少，然后天数+1"。<br>
+    顺序一换，答案就可能差一天。</div>
+  </div>
+  <div class="fix"><b>正确做法：</b>严格按题目的描述顺序写语句</div>
+</div>
+
+<div class="pit">
+  <div class="pt">
+    <div class="x">4</div>
+    <div class="t"><b>拆数字的位时用错了运算。</b>把 153 的十位写成 <code class="inline">153 % 10</code>。</div>
+  </div>
+  <div class="duck">
+    <img src="../assets/ducks/duck_senick.webp" alt="扣哒鸭" onerror="this.style.display='none'">
+    <div class="dt"><b>扣哒鸭：</b><code>153 % 10</code> 拿的是<strong>个位</strong> 3。
+    十位要先砍掉个位：<code>153 // 10 = 15</code>，再取余 <code>15 % 10 = 5</code>。<br>
+    口诀：<strong>要哪一位，就先整除掉它右边所有的位，再对 10 取余。</strong></div>
+  </div>
+  <div class="fix"><b>正确写法：</b>百位 <code class="inline">i // 100</code>；十位 <code class="inline">i // 10 % 10</code>；个位 <code class="inline">i % 10</code></div>
+</div>
+
+<!-- ============ 7 ============ -->
+<div class="section-header" id="s7">
+  <h2>7　题目练习</h2>
+  <div class="en-title">Practice</div>
+</div>
+
+<p>第 1 题改编自 2026 年 9 月 · Python 三级 第 13 题，其余为原创练习题。</p>
+
+<div class="exam">
+  <div class="eh"><span class="src">改编自 2026 年 9 月 · Python 三级 · 第 13 题</span><span class="tp">单选题</span></div>
+  <div class="eb">
+    <div class="q">矿坑小卖部里，笔记本 5 元/本、笔 3 元/支、橡皮 1 元/个。用 100 元正好买 50 件文具，下面程序枚举所有购买方案，横线处应填写的条件是（　　）。<br><pre>1  for notebook in range(0, 21):
+2      for pen in range(0, 34):
+3          for eraser in range(0, 51):
+4              if ____________________:
+5                  print(notebook, pen, eraser)</pre></div>
+    <div class="opt"><i>A.</i>notebook + pen + eraser == 50 and notebook * 5 + pen * 3 + eraser * 1 == 100<br>
+      <i>B.</i>notebook + pen + eraser == 50<br>
+      <i>C.</i>notebook * 5 + pen * 3 + eraser * 1 == 100<br>
+      <i>D.</i>notebook * 5 + pen * 3 + eraser * 1 &lt;= 100</div>
+    <details><summary>查看答案与详解</summary>
+      <div class="ans"><b>答案：A</b>。枚举法的关键是把<strong>所有条件一次写全</strong>：<br>① <b>件数条件</b>——三样加起来正好 50 件：<code class="inline">notebook + pen + eraser == 50</code>；<br>② <b>钱数条件</b>——总价正好 100 元：<code class="inline">notebook * 5 + pen * 3 + eraser * 1 == 100</code>；<br>两个条件必须<strong>同时成立</strong>，所以用 <code class="inline">and</code> 连接，选 A。<br><b>B、C 错：</b>都只写了一个条件，会把"件数够但钱不对"或"钱够但件数不对"的方案也打印出来；<br><b>D 错：</b>用 <code class="inline">&lt;=</code> 表示"不超过 100 元"，但题目要求的是<strong>正好花完</strong>。<br><b>枚举法口诀：</b>把题目的每一句"限制"都翻译成一个条件，再用 <code class="inline">and</code> 串起来 —— <strong>不重不漏</strong>。<br><span class="tagline">对应小节</span>2 不重不漏。</div>
+    </details>
+  </div>
+</div>
+<div class="exam">
+  <div class="eh"><span class="src ori">原创练习题</span><span class="tp">单选题</span></div>
+  <div class="eb">
+    <div class="q">下列 Python 代码的功能是（　　）。</div>
+    <pre>1  n = 12
+2  for i in range(1, n + 1):
+3      if n % i == 0:
+4          print(i)</pre>
+    <div class="opt">
+      <i>A.</i>输出 1 到 12 的所有整数<br>
+      <i>B.</i>输出 12 的所有因数<br>
+      <i>C.</i>输出 12 的所有倍数<br>
+      <i>D.</i>判断 12 是不是质数
+    </div>
+    <details><summary>查看答案与详解</summary>
+      <div class="ans"><b>答案：B</b>。<code class="inline">n % i == 0</code> 表示 i 能整除 n，
+      也就是 i 是 n 的因数。<br>
+      输出为 1、2、3、4、6、12。<br>
+      <b>注意：</b>范围写成 <code class="inline">range(1, n + 1)</code> 才能包含 12 自己。<br>
+      <span class="tagline">对应小节</span>2 不重不漏。</div>
+    </details>
+  </div>
+</div>
+
+<div class="exam">
+  <div class="eh"><span class="src ori">原创练习题</span><span class="tp">单选题</span></div>
+  <div class="eb">
+    <div class="q">下列 Python 代码执行后，输出的结果是（　　）。</div>
+    <pre>1  money = 20
+2  day = 0
+3  while money &gt; 0:
+4      money = money // 2
+5      day = day + 1
+6  print(day)</pre>
+    <div class="opt"><i>A.</i>3　　<i>B.</i>4　　<i>C.</i>5　　<i>D.</i>6</div>
+    <details><summary>查看答案与详解</summary>
+      <div class="ans"><b>答案：C</b>。追踪每一轮的变化：<br>
+      第 1 轮：20 → 10，day = 1<br>
+      第 2 轮：10 → 5，day = 2<br>
+      第 3 轮：5 → 2，day = 3<br>
+      第 4 轮：2 → 1，day = 4<br>
+      第 5 轮：1 → 0，day = 5，循环结束<br>
+      所以答案是 <b>5</b>。<br>
+      <b>要点：</b><code class="inline">//</code> 是整除，会丢掉小数部分。<br>
+      <span class="tagline">对应小节</span>4 模拟法：照着规则走一遍。</div>
+    </details>
+  </div>
+</div>
+
+<div class="exam">
+  <div class="eh"><span class="src ori">原创练习题</span><span class="tp">判断题</span></div>
+  <div class="eb">
+    <div class="q">要枚举 100 到 999 之间的所有整数，应该写 <code class="inline">for i in range(100, 999)</code>。（　　）</div>
+    <details><summary>查看答案与详解</summary>
+      <div class="ans"><b>答案：错误（×）</b>。<code class="inline">range</code> 是<strong>含头不含尾</strong>的，
+      <code class="inline">range(100, 999)</code> 只会枚举到 998，漏掉了 999。<br>
+      <b>正确写法：</b><code class="inline">range(100, 1000)</code>。<br>
+      <span class="tagline">对应小节</span>2 不重不漏。</div>
+    </details>
+  </div>
+</div>
+
+<div class="exam">
+  <div class="eh"><span class="src ori">原创练习题</span><span class="tp">单选题</span></div>
+  <div class="eb">
+    <div class="q">下列 Python 代码执行后，输出的结果是（　　）。</div>
+    <pre>1  for i in range(100, 1000):
+2      a = i // 100
+3      b = i // 10 % 10
+4      c = i % 10
+5      if a ** 3 + b ** 3 + c ** 3 == i:
+6          print(i, end = " ")</pre>
+    <div class="opt">
+      <i>A.</i>153 370 371 407<br>
+      <i>B.</i>100 101 102 103<br>
+      <i>C.</i>1 2 3 4<br>
+      <i>D.</i>什么都不输出
+    </div>
+    <details><summary>查看答案与详解</summary>
+      <div class="ans"><b>答案：A</b>。这段程序枚举所有三位数，检验"各位数字立方和是否等于自身"，
+      也就是找<b>水仙花数</b>。<br>
+      答案正是 153、370、371、407 这四个数。<br>
+      <b>拆位技巧：</b>百位 <code class="inline">i // 100</code>；十位 <code class="inline">i // 10 % 10</code>；个位 <code class="inline">i % 10</code>。<br>
+      <span class="tagline">对应小节</span>3 枚举的经典例题。</div>
+    </details>
+  </div>
+</div>
+
+<div class="exam">
+  <div class="eh"><span class="src ori">原创练习题</span><span class="tp">判断题</span></div>
+  <div class="eb">
+    <div class="q">用枚举法解决问题时，只要把所有可能的情况都试一遍，顺序是随便的。（　　）</div>
+    <details><summary>查看答案与详解</summary>
+      <div class="ans"><b>答案：错误（×）</b>。枚举确实不需要复杂的技巧，但<strong>必须保证"不重不漏"</strong>：
+      范围不能少一个，也不能多一个；循环的起点和终点都要精确。<br>
+      顺序虽然不一定要从小到大，但范围本身必须说清楚。<br>
+      <span class="tagline">对应小节</span>2 不重不漏。</div>
+    </details>
+  </div>
+</div>
+
+<div class="exam">
+  <div class="eh"><span class="src ori">原创练习题</span><span class="tp">编程题</span></div>
+  <div class="eb">
+    <div class="q">题目要求：用枚举法找出 1 到 100 之间所有"既能被 3 整除、又能被 5 整除"的整数，
+    并输出它们的个数。</div>
+    <details><summary>查看参考答案与要点</summary>
+      <div class="ans">
+<pre style="margin:0;background:#1b1a2a;color:#cdc8e0;border-radius:10px;padding:14px 16px">count = 0
+
+for i in range(1, 101):          # 1 到 100，含 100
+    if i % 3 == 0 and i % 5 == 0:
+        print(i)
+        count = count + 1
+
+print("共", count, "个")</pre>
+      <p style="margin-top:12px"><b>输出：</b>15、30、45、60、75、90，共 6 个。<br>
+      <b>要点：</b><br>
+      ① 枚举范围是 <code class="inline">range(1, 101)</code>，写成 100 就会漏掉 100 本身；<br>
+      ② "既能…又能…"用 <code class="inline">and</code> 连接两个条件；<br>
+      ③ 顺便提一句：能同时被 3 和 5 整除，其实就是能被 <strong>15</strong> 整除。<br>
+      <span class="tagline">对应小节</span>2 不重不漏；3 枚举的经典例题。</p>
+      </div>
+    </details>
+  </div>
+</div>
+
+<!-- ============ 8 ============ -->
+<div class="section-header" id="s8">
+  <h2>8　本单元小结</h2>
+  <div class="en-title">Unit Summary</div>
+</div>
+
+<div class="cast teacher">
+  <img class="ava" src="../assets/avatars/hushbaum.webp" alt="贺舒曼" onerror="this.style.display='none'">
+  <div class="bubble">
+    <div class="who">贺舒曼 · 镜中先知</div>
+    三级到这里就收官了。最后送你三句话：<br>
+    <strong>一、枚举法：把所有可能一个个试过去——记得"不重不漏"。</strong><br>
+    <strong>二、模拟法：题目怎么描述，你就怎么一步步走。</strong><br>
+    <strong>三、想不出巧妙办法时，别硬想——先写一个"能跑通"的笨办法。</strong><br>
+    从矿坑出去，前面就是<b>齿轮高台</b>。那里有更复杂的东西在等你。
+  </div>
+</div>
+
+<div class="summary">
+  <h3>你在穷举矿灯前收获了什么</h3>
+  <ul>
+    <li><strong>枚举法</strong>——把所有可能的情况逐一检验，找到符合条件的答案。</li>
+    <li><strong>基本骨架</strong>——<code class="inline">for x in 所有可能: if 满足条件(x): 处理它</code>。</li>
+    <li><strong>不重不漏</strong>——<code class="inline">range</code> 含头不含尾；想要 1 到 n 就写 <code class="inline">range(1, n + 1)</code>。</li>
+    <li><strong>经典例题</strong>——求因数、找水仙花数；拆位用 <code class="inline">//</code> 和 <code class="inline">%</code>。</li>
+    <li><strong>提前退出</strong>——只找一个就 <code class="inline">break</code>，别白跑剩下的循环。</li>
+    <li><strong>模拟法</strong>——一个变量记状态，一个循环走过程，严格按题目顺序执行。</li>
+    <li><strong>两者关系</strong>——枚举负责"找遍答案"，模拟负责"还原过程"。</li>
+  </ul>
+</div>
+
+<div class="pager">
+  <a href="py-3-06.html"><div class="k">← 上一单元</div><div class="v">石碑上的密语 · 字符串及其函数</div></a>
+  <a href="../index.html" target="_top" class="back"><div class="k">返回</div><div class="v">考纲之路 · 总目录</div></a>
+  <a href="py-4-01.html"><div class="k">下一级别 →</div><div class="v">传送带枢纽 · 复合数据类型的嵌套</div></a>
+</div>
+
+<div class="cta">
+  <h3>三级通关，前面是齿轮高台</h3>
+  <p>符文矿坑七个单元全部学完。接下来是四级——
+  列表里装列表、字典、函数、递推……<b>从"会写程序"走向"会组织程序"。</b></p>
+  <a class="btn-go" href="https://codecombat.cn/" target="_blank" rel="noopener">加入扣哒世界，把这条考纲之路走一遍 →</a>
+</div>
+
+</div><!-- /container -->
+</div><!-- /page -->
+
+<script>
+const KEYWORDS = new Set(("while for if elif else break continue def return pass not and or in is None True False " +
+  "int float bool str list dict tuple set input print range len abs max min round pow import math random chr ord bin hex oct sum").split(" "));
+
+function esc(s){ return s.replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;'); }
+
+function highlight(src){
+  let out = '', i = 0;
+  const n = src.length;
+  while (i < n){
+    const c = src[i];
+    if (c === '#'){
+      let j = src.indexOf('\n', i); if (j < 0) j = n;
+      out += '<span class="cm">' + esc(src.slice(i, j)) + '</span>';
+      i = j; continue;
+    }
+    if (c === '"' || c === "'"){
+      let j = i + 1;
+      while (j < n && src[j] !== c){ if (src[j] === '\\') j++; j++; }
+      j = Math.min(j + 1, n);
+      out += '<span class="st">' + esc(src.slice(i, j)) + '</span>';
+      i = j; continue;
+    }
+    if (/[0-9]/.test(c)){
+      let j = i;
+      while (j < n && /[0-9.]/.test(src[j])) j++;
+      out += '<span class="nu">' + esc(src.slice(i, j)) + '</span>';
+      i = j; continue;
+    }
+    if (/[A-Za-z_]/.test(c)){
+      let j = i;
+      while (j < n && /[A-Za-z0-9_]/.test(src[j])) j++;
+      const w = src.slice(i, j);
+      if (KEYWORDS.has(w)) out += '<span class="kw">' + esc(w) + '</span>';
+      else if (src[j] === '(') out += '<span class="fn">' + esc(w) + '</span>';
+      else out += esc(w);
+      i = j; continue;
+    }
+    out += esc(c); i++;
+  }
+  return out;
+}
+
+document.querySelectorAll('.code-card pre code').forEach(block => {
+  block.innerHTML = highlight(block.textContent);
+});
+
+if (location.search.indexOf('expand') >= 0) {
+  document.querySelectorAll('details').forEach(d => d.open = true);
+}
+document.querySelectorAll('.sidebar-nav a').forEach(a => {
+  a.addEventListener('click', () => {
+    if (window.innerWidth <= 900) document.querySelector('.sidebar-nav').classList.remove('active');
+  });
+});
+</script>
+</body>
+</html>

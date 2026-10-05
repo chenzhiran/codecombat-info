@@ -1,0 +1,982 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="copyright" content="CodeCombat Inc. codecombat.cn">
+<title>档案库与安全阀 · 文件操作与异常处理 | 扣哒考级 · GESP Python 四级</title>
+<style>
+  :root{
+    --primary:#0e8f86; --primary-light:#14b8a6; --primary-lighter:#e6f7f5; --primary-dark:#0a6b64;
+    --brand:#ff6b35; --brand-dark:#e8541f; --brand-soft:#fff3ec;
+    --night:#0f1b22; --night-2:#16323a; --gold:#f5b301;
+    --text:#22333a; --dim:#5f7276; --dim2:#8da0a3;
+    --bg:#ffffff; --bg-soft:#f6fbfa; --line:#dceceb; --sidebar:274px;
+    --code-bg:#14231f; --code-tx:#c3d6d1;
+    --code-kw:#c678dd; --code-st:#98c379; --code-nu:#d19a66; --code-cm:#68807a; --code-fn:#61afef;
+  }
+  *{margin:0;padding:0;box-sizing:border-box}
+  html{scroll-behavior:smooth}
+  body{font-family:"PingFang SC","Microsoft YaHei","Segoe UI",-apple-system,sans-serif;line-height:1.9;color:var(--text);background:var(--bg);font-size:15.5px}
+  .sidebar-nav{position:fixed;top:0;left:0;width:var(--sidebar);height:100vh;overflow-y:auto;background:linear-gradient(180deg,#0c1a1e,#123037);padding:14px 0 40px;z-index:100;border-right:3px solid var(--brand);transition:transform .3s ease}
+  .sidebar-nav::-webkit-scrollbar{width:5px}
+  .sidebar-nav::-webkit-scrollbar-thumb{background:var(--brand);border-radius:4px}
+  .sb-brand{display:flex;align-items:center;gap:10px;padding:10px 13px 12px;border-bottom:1px solid #1d3d44;margin-bottom:8px}
+  .sidebar-nav a.sb-logo{display:flex;align-items:center;justify-content:center;flex-shrink:0;padding:0;border-left:none;transition:.2s}
+  .sb-logo:hover{transform:scale(1.08)}
+  .sb-logo img{height:34px;width:34px;display:block;object-fit:contain;border-radius:8px}
+  .sb-brand b{color:#eef7f6;font-size:14px;letter-spacing:.5px;display:block;line-height:1.4}
+  .sb-brand span{color:#7ba3a6;font-size:11.5px;display:block;line-height:1.4}
+  .nav-title{color:#ffb894;font-size:12px;font-weight:800;padding:10px 18px 6px;letter-spacing:1.2px}
+  .sidebar-nav a{display:block;color:#bcd3d4;text-decoration:none;padding:6px 18px;font-size:12.5px;line-height:1.55;border-left:3px solid transparent;transition:.18s}
+  .sidebar-nav a:hover{color:#fff;background:rgba(255,107,53,.16);border-left-color:var(--brand)}
+  .sidebar-nav a.nav-section{color:#ffb894;font-weight:700;font-size:13px;margin-top:11px;padding-top:10px;border-top:1px solid #1d3d44}
+  .sidebar-nav a.nav-section:first-of-type{border-top:none;margin-top:0;padding-top:6px}
+  .sidebar-nav a.nav-sub{padding-left:30px;color:#8fabad;font-size:12px}
+  .sidebar-nav a.nav-sub:hover{color:#fff}
+  .sb-back{margin:16px 14px 0;display:block;text-align:center;padding:9px;border-radius:9px;background:#1c3940;color:#a6c0c2 !important;font-size:12px;font-weight:700;border-left:none !important}
+  .sb-back:hover{background:var(--brand) !important;color:#fff !important}
+  .nav-toggle{display:none;position:fixed;top:14px;left:14px;z-index:120;background:var(--brand);color:#fff;border:none;border-radius:9px;padding:9px 13px;font-size:15px;cursor:pointer;box-shadow:0 4px 14px rgba(0,0,0,.25)}
+  .page{margin-left:var(--sidebar)}
+  .hero{position:relative;overflow:hidden;padding:44px 52px;color:#fff;background:linear-gradient(125deg,#0b171b 0%,#143038 46%,#8a3a16 132%)}
+  .hero::after{content:"";position:absolute;right:-90px;top:-110px;width:400px;height:400px;border-radius:50%;background:radial-gradient(circle,rgba(245,179,1,.30),transparent 68%)}
+  .hero-top{display:flex;gap:36px;align-items:center;position:relative;z-index:2}
+  .hero-txt{flex:1;min-width:0}
+  .hero .crumb{font-size:11.5px;color:#ffb894;letter-spacing:1.5px;font-weight:700;margin-bottom:14px}
+  .hero h1{font-size:31px;font-weight:800;line-height:1.3;letter-spacing:.6px;margin-bottom:8px}
+  .hero h1 .sub{display:block;font-size:18px;font-weight:700;color:#ffd2b3;margin-top:6px;letter-spacing:.3px}
+  .hero .en{font-size:13px;color:#98b6b8;font-style:italic;margin-bottom:18px}
+  .hero .tags{display:flex;flex-wrap:wrap;gap:8px}
+  .tag{font-size:11.5px;padding:4px 12px;border-radius:20px;background:rgba(255,255,255,.12);border:1px solid rgba(255,255,255,.22);color:#e8f0f6;font-weight:600}
+  .tag.hot{background:rgba(255,107,53,.92);border-color:transparent;color:#fff}
+  .hero-card{flex-shrink:0;width:200px;text-align:center}
+  .hero-card .ava{width:148px;height:148px;border-radius:50%;object-fit:cover;object-position:top center;border:4px solid rgba(255,180,140,.6);box-shadow:0 14px 34px rgba(0,0,0,.45);background:#24344a}
+  .hero-card .nm{font-size:15px;font-weight:800;color:#fff;margin-top:10px}
+  .hero-card .ti{font-size:11.5px;color:#ffb894;margin-top:2px}
+  .container{max-width:1080px;margin:0 auto;padding:38px 52px 70px}
+  .lead{font-size:15.5px;line-height:2.05;color:#35474a;background:linear-gradient(120deg,#fff8f3,#f6fbfa);border-left:5px solid var(--brand);border-radius:0 14px 14px 0;padding:22px 26px;margin-bottom:32px}
+  .lead b{color:var(--brand-dark)}
+  .cast{display:flex;gap:16px;align-items:flex-start;border-radius:16px;padding:18px 22px;margin:24px 0}
+  .cast .ava{width:72px;height:72px;border-radius:50%;object-fit:cover;object-position:top center;flex-shrink:0;background:#e8eef5}
+  .cast .bubble{position:relative;font-size:14px;line-height:1.95;padding-top:2px;flex:1}
+  .cast .who{font-size:12px;font-weight:800;margin-bottom:5px;letter-spacing:.5px}
+  .cast.anya{background:var(--brand-soft);border:1px solid #ffdcc9}
+  .cast.anya .who{color:var(--brand-dark)}
+  .cast.anya .bubble{color:#5c4636}
+  .cast.duck{background:#fff5f5;border:1px solid #fbd5d5}
+  .cast.duck .who{color:#b91c1c}
+  .cast.duck .bubble{color:#5c4141}
+  .cast.teacher{background:linear-gradient(120deg,#f1f8f8,#ffffff);border:1px solid #d6e8e8}
+  .cast.teacher .who{color:#134e4a}
+  .cast.teacher .bubble{color:#3c5254}
+  .cast.hero{background:#f2fbf9;border:1px solid #cfe9e6}
+  .cast.hero .who{color:#0f766e}
+  .cast.hero .bubble{color:#3d5250}
+  .goal-grid{display:grid;grid-template-columns:1fr 1fr;gap:16px;margin-bottom:36px}
+  .goal{border:1px solid var(--line);border-radius:15px;padding:19px 21px;background:#fff;box-shadow:0 4px 16px rgba(14,143,134,.06)}
+  .goal h4{font-size:14px;font-weight:800;margin-bottom:11px;display:flex;align-items:center;gap:8px;color:var(--primary-dark)}
+  .goal h4 .ic{width:22px;height:22px;border-radius:7px;background:var(--primary-lighter);display:flex;align-items:center;justify-content:center;font-size:12px}
+  .goal ul{list-style:none}
+  .goal li{font-size:13.5px;color:#46585a;line-height:1.9;padding-left:18px;position:relative}
+  .goal li::before{content:"▸";position:absolute;left:0;color:var(--primary);font-weight:800}
+  .goal.syllabus li::before{content:"✓"}
+  .section-header{margin:52px 0 24px;padding-bottom:12px;border-bottom:3px solid var(--brand);display:flex;align-items:baseline;gap:14px;flex-wrap:wrap}
+  .section-header h2{font-size:22px;font-weight:800;color:var(--night);letter-spacing:.4px}
+  .section-header .en-title{font-size:12px;color:var(--dim2);font-style:italic}
+  h3{font-size:17.5px;font-weight:800;margin:34px 0 14px;color:var(--night);display:flex;align-items:center;gap:10px}
+  h3::before{content:"";width:5px;height:17px;border-radius:3px;background:var(--brand);flex-shrink:0}
+  h4{font-size:15px;font-weight:800;margin:24px 0 10px;color:#2c4a48}
+  p{margin:12px 0;color:#3d5250;line-height:2}
+  strong{color:var(--primary-dark)}
+  code.inline{background:var(--primary-lighter);color:var(--primary-dark);padding:2px 7px;border-radius:6px;font-family:"SFMono-Regular",Consolas,Menlo,monospace;font-size:.9em;font-weight:600}
+  .figure{margin:24px 0;text-align:center}
+  .figure svg.diagram{max-width:100%;height:auto;background:#fff;border:1px solid var(--line);border-radius:14px;padding:10px}
+  .figure .caption{font-size:12.5px;color:var(--dim2);margin-top:9px}
+  .pic{margin:26px 0;text-align:center}
+  .pic img{max-width:100%;border-radius:16px;box-shadow:0 10px 28px rgba(20,60,60,.15);display:block;margin:0 auto}
+  .pic figcaption{font-size:12.5px;color:var(--dim2);margin-top:9px}
+  .pic .ph{display:none}
+  .pic.missing img{display:none}
+  .pic.missing .ph{display:flex;flex-direction:column;align-items:center;justify-content:center;gap:9px;border:2px dashed #bfdcd9;border-radius:16px;background:linear-gradient(135deg,#f8fdfc,#eef8f7);padding:40px 26px;color:#6f8f90}
+  .pic.missing .ph .fn{font-family:Consolas,monospace;font-size:12.5px;color:#0e8f86;font-weight:700;word-break:break-all}
+  .pic.missing .ph .ds{font-size:12.5px;line-height:1.8;max-width:560px}
+  .box{border-radius:13px;padding:16px 20px;margin:20px 0;font-size:14px;line-height:1.95}
+  .box .lb{font-weight:800;margin-right:6px}
+  .info{background:#eef6ff;border-left:5px solid #3b82f6;color:#274768}
+  .info .lb{color:#1d4ed8}
+  .tip{background:#fff9ec;border-left:5px solid #f59e0b;color:#6b4e13}
+  .tip .lb{color:#b45309}
+  .remember{background:var(--primary-lighter);border-left:5px solid var(--primary);color:#134e4a}
+  .remember .lb{color:var(--primary-dark)}
+  .warn{background:#fef2f2;border-left:5px solid #ef4444;color:#7f2b2b}
+  .warn .lb{color:#b91c1c}
+  .code-card{margin:20px 0;border-radius:14px;overflow:hidden;box-shadow:0 10px 28px rgba(15,40,40,.20)}
+  .code-head{display:flex;align-items:center;gap:9px;background:#1b322d;padding:9px 14px}
+  .code-head .dot{width:10px;height:10px;border-radius:50%}
+  .code-head .d1{background:#ff5f57}.code-head .d2{background:#febc2e}.code-head .d3{background:#28c840}
+  .code-head .file{color:#8fb0aa;font-size:11.5px;font-family:Consolas,monospace;margin-left:6px}
+  .code-head .lang{margin-left:auto;font-size:10.5px;font-weight:800;color:#0b1f1a;background:#2dd4bf;padding:2px 9px;border-radius:6px;letter-spacing:.4px}
+  .code-card pre{background:var(--code-bg);padding:18px 20px;overflow-x:auto;margin:0;font-family:"SFMono-Regular",Consolas,"Courier New",monospace;font-size:13.5px;line-height:1.85}
+  .code-card pre::-webkit-scrollbar{height:8px}
+  .code-card pre::-webkit-scrollbar-thumb{background:#2f4a45;border-radius:4px}
+  .code-card code{color:var(--code-tx);white-space:pre}
+  .kw{color:var(--code-kw);font-weight:600}
+  .st{color:var(--code-st)}
+  .nu{color:var(--code-nu)}
+  .cm{color:var(--code-cm);font-style:italic}
+  .fn{color:var(--code-fn)}
+  .out{background:#0e1d1a;color:#7fd6b8;font-family:Consolas,monospace;font-size:13px;padding:12px 20px;border-top:1px solid #223a35}
+  .out b{color:#c3d6d1;font-weight:600;font-size:11.5px;letter-spacing:1px}
+  table.styled{width:100%;border-collapse:collapse;margin:20px 0;font-size:13.5px;border-radius:12px;overflow:hidden;box-shadow:0 4px 16px rgba(14,143,134,.08)}
+  table.styled thead{background:var(--brand)}
+  table.styled th{color:#fff;padding:11px 14px;text-align:left;font-weight:700;font-size:13px}
+  table.styled td{padding:10px 14px;border-bottom:1px solid var(--line);color:#44585a;vertical-align:top}
+  table.styled tbody tr:nth-child(even){background:var(--bg-soft)}
+  table.styled tbody tr:last-child td{border-bottom:none}
+  .level-card{border:1px solid var(--line);border-radius:16px;overflow:hidden;margin:22px 0;box-shadow:0 6px 22px rgba(14,143,134,.08)}
+  .level-card .lc-head{background:linear-gradient(100deg,#12262c,#8a3a16);color:#fff;padding:15px 22px;display:flex;align-items:center;gap:12px;flex-wrap:wrap}
+  .level-card .lc-head .n{font-size:12px;font-weight:800;background:rgba(255,255,255,.2);padding:3px 10px;border-radius:20px}
+  .level-card .lc-head h4{margin:0;color:#fff;font-size:16px}
+  .level-card .lc-head .go{margin-left:auto;font-size:11.5px;color:#ffd2b3}
+  .level-card .lc-body{padding:20px 24px;background:#fff}
+  .level-card .story{background:#f8fcfc;border-left:4px solid #7dd3fc;border-radius:0 10px 10px 0;padding:13px 18px;margin:0 0 16px;font-size:14px;line-height:1.95;color:#3c5254}
+  .level-card .story b{color:#0369a1}
+  .btn-go{display:inline-flex;align-items:center;gap:8px;background:linear-gradient(135deg,var(--brand),var(--brand-dark));color:#fff;text-decoration:none;font-weight:800;font-size:13.5px;padding:10px 22px;border-radius:11px;box-shadow:0 8px 20px rgba(255,107,53,.32);transition:.2s}
+  .btn-go:hover{transform:translateY(-2px);box-shadow:0 12px 26px rgba(255,107,53,.42)}
+  .pit{border:1px solid #f6dede;border-radius:14px;overflow:hidden;margin:16px 0;background:#fff}
+  .pit .pt{display:flex;gap:12px;padding:14px 18px;background:#fffafa;align-items:flex-start}
+  .pit .x{width:26px;height:26px;border-radius:9px;background:#fee;color:#dc2626;display:flex;align-items:center;justify-content:center;font-weight:800;flex-shrink:0;font-size:13px}
+  .pit .t{font-size:13.5px;line-height:1.9;color:#5c4a4a;flex:1}
+  .pit .t b{color:#b91c1c}
+  .pit .duck{display:flex;gap:12px;padding:13px 18px;background:#fff5f5;border-top:1px dashed #f3d0d0;align-items:flex-start}
+  .pit .duck img{width:48px;height:48px;object-fit:contain;flex-shrink:0;margin-top:2px}
+  .pit .duck .dt{font-size:13.5px;line-height:1.9;color:#7a3b3b}
+  .pit .duck .dt b{color:#b91c1c}
+  .pit .fix{padding:12px 18px;background:#f2fbf9;border-top:1px dashed #cfe9e6;font-size:13.5px;color:#134e4a}
+  .pit .fix b{color:var(--primary-dark)}
+  .exam{border:1px solid #d8ebea;border-radius:15px;margin:16px 0;overflow:hidden;background:#fff;box-shadow:0 4px 16px rgba(30,80,80,.06)}
+  .exam .eh{display:flex;align-items:center;gap:10px;padding:11px 18px;background:linear-gradient(100deg,#eef8f7,#f8fdfc);border-bottom:1px solid #dbeceb;flex-wrap:wrap}
+  .exam .eh .src{font-size:11px;font-weight:800;color:#fff;background:#0e8f86;padding:2.5px 10px;border-radius:20px}
+  .exam .eh .src.ori{background:#0e9488}
+  .exam .eh .tp{font-size:11.5px;color:#4f7d7a;font-weight:700}
+  .exam .eb{padding:16px 20px}
+  .exam .q{font-weight:700;font-size:14px;color:#2b4042;line-height:1.9;margin-bottom:10px}
+  .exam .opt{font-size:13.5px;color:#46585a;line-height:2.05;padding-left:6px}
+  .exam .opt i{font-style:normal;font-weight:800;color:var(--primary-dark);margin-right:7px}
+  .exam pre{margin:12px 0;background:#14231f;border-radius:10px;padding:14px 16px;overflow-x:auto;font-family:Consolas,monospace;font-size:13px;line-height:1.8;color:var(--code-tx)}
+  .exam details{margin-top:10px;border-top:1px dashed var(--line);padding-top:10px}
+  .exam summary{cursor:pointer;font-size:12.5px;font-weight:800;color:#0e8f86;outline:none;user-select:none}
+  .exam details .ans{font-size:13.5px;color:#3d5250;line-height:1.95;margin-top:9px;background:var(--bg-soft);padding:13px 16px;border-radius:10px}
+  .exam details .ans b{color:var(--primary-dark)}
+  .exam details .ans .tagline{display:inline-block;font-size:11px;background:#e0f2fe;color:#0e7490;padding:1.5px 8px;border-radius:6px;font-weight:700;margin-right:6px}
+  .summary{margin:40px 0 20px;border-radius:18px;padding:26px 30px;background:linear-gradient(130deg,#fff8f3,#ffffff);border:1px solid #ffe0cf}
+  .summary h3{margin-top:0}
+  .summary ul{list-style:none;margin-top:10px}
+  .summary li{font-size:14px;line-height:2;color:#3d5250;padding-left:24px;position:relative}
+  .summary li::before{content:"◆";position:absolute;left:0;color:var(--brand);font-size:11px;top:6px}
+  .pager{display:flex;gap:14px;margin-top:30px;flex-wrap:wrap}
+  .pager a{flex:1;min-width:200px;text-decoration:none;border:1px solid var(--line);border-radius:14px;padding:16px 20px;background:#fff;transition:.2s;display:block}
+  .pager a:hover{border-color:var(--brand);box-shadow:0 10px 26px rgba(255,107,53,.14);transform:translateY(-2px)}
+  .pager a .k{font-size:11px;color:var(--dim2);font-weight:700;letter-spacing:1px}
+  .pager a .v{font-size:14px;font-weight:800;color:var(--night);margin-top:5px}
+  .pager a.back{background:var(--brand-soft);border-color:transparent;text-align:center}
+  .pager a.back .v{color:var(--brand-dark)}
+  .cta{margin-top:26px;border-radius:20px;padding:30px 34px;color:#fff;position:relative;overflow:hidden;background:linear-gradient(120deg,#12242a,#1e4a52 46%,#a8431c 132%)}
+  .cta::after{content:"";position:absolute;right:-70px;bottom:-90px;width:280px;height:280px;border-radius:50%;background:radial-gradient(circle,rgba(255,140,80,.45),transparent 68%)}
+  .cta h3{color:#fff;margin:0 0 10px;position:relative;z-index:2}
+  .cta h3::before{background:var(--brand)}
+  .cta p{color:#cfe4e2;font-size:13.5px;margin:0 0 18px;position:relative;z-index:2;max-width:640px}
+  .cta .btn-go{position:relative;z-index:2}
+  @media(max-width:900px){
+    .sidebar-nav{transform:translateX(-100%)}
+    .sidebar-nav.active{transform:translateX(0)}
+    .nav-toggle{display:block}
+    .page{margin-left:0}
+    .hero{padding:70px 22px 34px}
+    .hero-top{flex-direction:column-reverse;text-align:center}
+    .hero-card{width:auto}
+    .container{padding:26px 20px 60px}
+    .goal-grid{grid-template-columns:1fr}
+  }
+</style>
+</head>
+<body>
+
+<button class="nav-toggle" onclick="document.querySelector('.sidebar-nav').classList.toggle('active')">&#9776;</button>
+
+<nav class="sidebar-nav">
+  <div class="sb-brand">
+    <a class="sb-logo" href="https://codecombat.cn/" target="_blank" rel="noopener" title="访问 CodeCombat 扣哒世界官网">
+      <img src="../assets/logo.png" alt="CodeCombat 扣哒世界">
+    </a>
+    <div><b>档案库与安全阀</b><span>齿轮高台 · Python 四级 第 8 单元</span></div>
+  </div>
+  <div class="nav-title">本单元目录</div>
+  <a href="#s0" class="nav-section">0　单元导语与目标</a>
+  <a href="#s0-1" class="nav-sub">0.1 学习目标</a>
+  <a href="#s0-2" class="nav-sub">0.2 考纲对照</a>
+  <a href="#s1" class="nav-section">1　数据为什么会丢</a>
+  <a href="#s1-1" class="nav-sub">1.1 数据为什么会丢</a>
+  <a href="#s1-2" class="nav-sub">1.2 一句话</a>
+  <a href="#s2" class="nav-section">2　读文件</a>
+  <a href="#s2-1" class="nav-sub">2.1 读文件</a>
+  <a href="#s2-2" class="nav-sub">2.2 处理文本行的小技巧</a>
+  <a href="#s3" class="nav-section">3　写文件</a>
+  <a href="#s3-1" class="nav-sub">3.1 写文件</a>
+  <a href="#s3-2" class="nav-sub">3.2 最容易出事故的一点</a>
+  <a href="#s4" class="nav-section">4　异常是什么</a>
+  <a href="#s4-1" class="nav-sub">4.1 异常是什么</a>
+  <a href="#s5" class="nav-section">5　try-except</a>
+  <a href="#s6" class="nav-section">6　代码实战</a>
+  <a href="#s7" class="nav-section">7　常见陷阱</a>
+  <a href="#s8" class="nav-section">8　题目练习</a>
+  <a href="#s9" class="nav-section">9　本单元小结</a>
+  <a href="../index.html" target="_top" class="sb-back">返回考纲之路</a>
+</nav>
+
+<div class="page">
+
+<div class="hero">
+  <div class="hero-top">
+    <div class="hero-txt">
+      <div class="crumb">扣哒考级 · GESP PYTHON 四级 · 第 8 单元　|　齿轮高台 GEARWATCH TERRACE</div>
+      <h1>档案库与安全阀
+        <span class="sub">文件操作与异常处理</span>
+      </h1>
+      <div class="en">Files &amp; Exception Handling</div>
+      <div class="tags">        <span class="tag hot">考纲 · 文件与异常</span>
+        <span class="tag">open/read/write</span>
+        <span class="tag">with 语句</span>
+        <span class="tag">try-except</span>
+        <span class="tag">错误处理</span></div>
+    </div>
+    <div class="hero-card">
+      <img class="ava" src="../assets/avatars/gordon.webp" alt="戈登" onerror="this.style.background='#24344a'">
+      <div class="nm">戈登</div>
+      <div class="ti">齿轮工程师 · 你的向导</div>
+    </div>
+  </div>
+</div>
+
+<div class="container">
+
+<div class="lead">
+  高台最深处的档案库，锁着一柜一柜的铁盒。你随手打开一个，里面整整齐齐叠着卡片，
+  每张都写着日期和数字。<br>
+  这些是历年的产量记录。戈登说，<b>程序算出来的数，一关机就没了；
+  只有写进文件，才能留到明天。</b><br>
+  他顺手拍了拍门边的铜制<b>安全阀</b>：还有这个——<b>万一哪天出了岔子，得有个东西兜住。</b>
+</div>
+
+<div class="cast teacher">
+  <img class="ava" src="../assets/avatars/gordon.webp" alt="戈登" onerror="this.style.display='none'">
+  <div class="bubble">
+    <div class="who">戈登 · 齿轮工程师</div>
+    四级最后一个单元，讲两件"很实用但常被忽略"的事：<br>
+    <strong>文件</strong>——让数据活过这一次运行；<br>
+    <strong>异常处理</strong>——让程序遇到意外时不至于当场崩掉。<br>
+    它们不是花架子，<b>真实的程序里到处都是。</b>
+  </div>
+</div>
+
+<figure class="pic">
+  <img src="../assets/illustrations/py-L4-08-01_archive_vault.webp" alt="档案库与安全阀"
+       onerror="this.closest('.pic').classList.add('missing')">
+  <div class="ph">
+    <div class="fn">assets/illustrations/py-L4-08-01_archive_vault.webp</div>
+    <div class="ds">【配图位】沉重的档案库铁门半开，内部是一排排编号铁柜，柜门上插着写有日期的卡片；门侧装着一只铜制安全阀，蒸汽从泄压口缓缓溢出，一名工程师正在登记卡片。</div>
+  </div>
+  <figcaption>图 1：齿轮高台·档案库与安全阀——今天要从这里开始</figcaption>
+</figure>
+
+<div class="section-header" id="s0">
+  <h2>0　单元导语与目标</h2>
+  <div class="en-title">Unit Overview</div>
+
+<h3 id="s0-1">0.1 学习目标</h3>
+</div>
+
+<div class="goal-grid">
+  <div class="goal">
+    <h4><span class="ic">1</span>学完这个单元，你将能……</h4>
+    <ul>
+      <li>说清"内存数据"和"文件数据"的区别</li>
+      <li>用 open 打开文件并读取内容</li>
+      <li>把数据写入文件保存下来</li>
+      <li>用 with 语句安全地管理文件</li>
+      <li>说清什么是异常</li>
+      <li>用 try-except 让程序"出错也不崩"</li>
+    </ul>
+  </div>
+  <div class="goal syllabus">
+    <h4><span class="ic">2</span>对标 GESP 考纲（Python 四级）</h4>
+    <ul>
+      <li>掌握文件的基本操作：打开、读取、写入、关闭</li>
+      <li>掌握 with 语句的用法与好处</li>
+      <li>理解异常的概念，掌握 try-except 的基本用法</li>
+      <li>考核目标：能读懂文件读写与异常处理代码，能写出简单示例</li>
+    </ul>
+  </div>
+</div>
+
+<h3 id="s0-2">0.2 考纲对照</h3>
+
+<table class="styled">
+  <thead><tr><th>本单元小节</th><th>对应考纲条目</th><th>真题常考形式</th></tr></thead>
+  <tbody>
+    <tr><td>1　数据为什么会丢</td><td>文件的作用</td><td>为什么程序里的数据一关机就没了</td></tr>
+    <tr><td>2　读文件</td><td>文件的读取</td><td><code class="inline">open</code> 的第二个参数、读几行怎么写</td></tr>
+    <tr><td>3　写文件</td><td>文件的写入</td><td><code class="inline">"w"</code> 与 <code class="inline">"a"</code> 的区别</td></tr>
+    <tr><td>4　异常处理</td><td>异常的概念与捕获</td><td><code class="inline">try-except</code> 的执行顺序</td></tr>
+  </tbody>
+</table>
+
+<div class="section-header" id="s1">
+  <h2>1　数据为什么会丢</h2>
+  <div class="en-title">Why Data Disappears</div>
+
+<h3 id="s1-1">1.1 数据为什么会丢</h3>
+</div>
+
+<figure class="figure">
+  <svg class="diagram" viewBox="0 0 860 250" role="img" aria-label="内存与文件的区别">
+    <text x="24" y="34" font-size="14" font-weight="bold" fill="#1f2937">程序运行时在内存里，关掉就清空</text>
+
+    <rect x="60" y="62" width="330" height="146" rx="12" fill="#f8fcfc" stroke="#cbd5e1" stroke-width="1.8"/>
+    <text x="225" y="90" text-anchor="middle" font-size="13" fill="#475569" font-weight="bold">内存（变量）</text>
+    <text x="90" y="122" font-size="12.5" fill="#64748b">程序跑着的时候，数据在这儿</text>
+    <text x="90" y="148" font-size="12.5" fill="#64748b">读写极快</text>
+    <text x="90" y="180" font-size="12.5" fill="#b91c1c" font-weight="bold">程序一结束 → 全部消失</text>
+
+    <rect x="440" y="62" width="366" height="146" rx="12" fill="#e6f7f5" stroke="#0e8f86" stroke-width="2"/>
+    <text x="623" y="90" text-anchor="middle" font-size="13" fill="#0a6b64" font-weight="bold">文件（硬盘）</text>
+    <text x="470" y="122" font-size="12.5" fill="#3c6b68">写进去就留在磁盘上</text>
+    <text x="470" y="148" font-size="12.5" fill="#3c6b68">读写慢一些，但断电也在</text>
+    <text x="470" y="180" font-size="12.5" fill="#0a6b64" font-weight="bold">明天开机，数据还在</text>
+
+    <text x="430" y="236" text-anchor="middle" font-size="12" fill="#8da0a3">所以：要"记住"的东西，必须写进文件</text>
+  </svg>
+  <div class="caption">图 2（SVG）：内存是"临时桌子"，文件是"档案柜"</div>
+</figure>
+
+<h3 id="s1-2">1.2 一句话</h3>
+
+<div class="box tip">
+  <span class="lb">打个比方：</span>
+  程序里的变量就像<b>写在沙滩上的字</b>——<strong>只要程序一结束（涨潮），字就被冲掉了。</strong><br>
+  想让字留到明天，就得把它<b>刻进石头</b>——这就是把数据写进文件（硬盘）。<br>
+  <b>文件放在硬盘上，断电也不丢；变量放在内存里，程序一停就没了。</b>
+</div>
+
+<div class="box remember">
+  <span class="lb">一句话：</span>
+  <strong>变量活在内存里，程序一结束就没了；文件存在硬盘上，可以跨程序、跨时间去读。</strong><br>
+  这就是为什么"存档"必须用文件。
+</div>
+
+<div class="section-header" id="s2">
+  <h2>2　读文件</h2>
+  <div class="en-title">Reading Files</div>
+
+<h3 id="s2-1">2.1 读文件</h3>
+</div>
+
+<div class="code-card">
+  <div class="code-head">
+    <span class="dot d1"></span><span class="dot d2"></span><span class="dot d3"></span>
+    <span class="file">三步：打开 → 读取 → 关闭</span>
+    <span class="lang">Python</span>
+  </div>
+  <pre><code># 最基础的写法
+f = open("score.txt", "r", encoding="utf-8")   # r = read 读取
+content = f.read()                              # 一次读出全部内容
+print(content)
+f.close()                                       # 一定要关！
+
+# 更推荐的写法：with 会自动关闭
+with open("score.txt", "r", encoding="utf-8") as f:
+    content = f.read()
+print(content)</code></pre>
+  <div class="out"><b>要点</b>　<code>encoding="utf-8"</code> 一定要写，否则中文可能变乱码</div>
+</div>
+
+<table class="styled">
+  <thead><tr><th>读取方式</th><th>写法</th><th>得到什么</th></tr></thead>
+  <tbody>
+    <tr><td>全部读出</td><td><code class="inline">f.read()</code></td><td>一整个字符串</td></tr>
+    <tr><td>按行读出</td><td><code class="inline">f.readlines()</code></td><td>一个列表，每行一个元素</td></tr>
+    <tr><td>逐行遍历</td><td><code class="inline">for line in f:</code></td><td>一次一行，最省内存</td></tr>
+  </tbody>
+</table>
+
+<h3 id="s2-2">2.2 处理文本行的小技巧</h3>
+
+<figure class="pic">
+  <img src="../assets/illustrations/py-L4-08-03_read_write.webp" alt="一只抽屉，两种用法"
+       onerror="this.closest('.pic').classList.add('missing')">
+  <div class="ph">
+    <div class="fn">assets/illustrations/py-L4-08-03_read_write.webp</div>
+    <div class="ds">【配图位】石头档案大厅里的一排贴标签的抽屉，中间那只被拉开一半：左侧有一名英雄正从抽屉里取出一叠纸牌（读文件），右侧另一名英雄正把写好的一叠纸牌放进另一只抽屉（写文件）；两只抽屉上方各挂一块小木牌，分别写着"读"与"写"；温暖的石室灯光。</div>
+  </div>
+  <figcaption>图 3：读是从抽屉里取，写是往抽屉里放</figcaption>
+</figure>
+
+<div class="box tip">
+  <span class="lb">处理文本行的小技巧：</span>
+  每行末尾都会带一个换行符 <code class="inline">
+</code>，
+  处理前先用 <code class="inline">line.strip()</code> 去掉它。<br>
+  <strong>忘了 strip，字符串比较很容易"看起来一样却不相等"。</strong>
+</div>
+
+<div class="section-header" id="s3">
+  <h2>3　写文件</h2>
+  <div class="en-title">Writing Files</div>
+
+<h3 id="s3-1">3.1 写文件</h3>
+</div>
+
+<div class="code-card">
+  <div class="code-head">
+    <span class="dot d1"></span><span class="dot d2"></span><span class="dot d3"></span>
+    <span class="file">写入与追加</span>
+    <span class="lang">Python</span>
+  </div>
+  <pre><code># w = write 写入（会清空原内容！）
+with open("out.txt", "w", encoding="utf-8") as f:
+    f.write("第一行
+")
+    f.write("第二行
+")
+
+# a = append 追加（在末尾接着写）
+with open("out.txt", "a", encoding="utf-8") as f:
+    f.write("第三行
+")</code></pre>
+  <div class="out"><b>结果</b>　out.txt 里有三行内容</div>
+</div>
+
+<table class="styled">
+  <thead><tr><th>模式</th><th>含义</th><th>危险吗</th></tr></thead>
+  <tbody>
+    <tr><td><code class="inline">"r"</code></td><td>只读</td><td>文件不存在会报错</td></tr>
+    <tr><td><code class="inline">"w"</code></td><td>写入，<strong>会清空原内容</strong></td><td>⚠️ 小心！</td></tr>
+    <tr><td><code class="inline">"a"</code></td><td>追加，写在末尾</td><td>较安全</td></tr>
+  </tbody>
+</table>
+
+<h3 id="s3-2">3.2 最容易出事故的一点</h3>
+
+<div class="box warn">
+  <span class="lb">最容易酿成"事故"的一点：</span>
+  <code class="inline">"w"</code> 模式打开文件会<strong>立刻把原内容清空</strong>。<br>
+  如果只是想加一行，千万要用 <code class="inline">"a"</code>。<br>
+  <b>考试里也爱考这个区别。</b>
+</div>
+
+<div class="section-header" id="s4">
+  <h2>4　异常是什么</h2>
+  <div class="en-title">What Is an Exception</div>
+</div>
+
+<h3 id="s4-1">4.1 异常是什么</h3>
+
+<p>程序在运行时遇到"没法继续"的情况，就会<strong>抛出异常</strong>。
+如果不处理，程序会直接停在那里。</p>
+
+<table class="styled">
+  <thead><tr><th>异常名</th><th>什么时候出现</th><th>例子</th></tr></thead>
+  <tbody>
+    <tr><td><code class="inline">ZeroDivisionError</code></td><td>除以 0</td><td><code class="inline">10 / 0</code></td></tr>
+    <tr><td><code class="inline">ValueError</code></td><td>类型对但值不对</td><td><code class="inline">int("abc")</code></td></tr>
+    <tr><td><code class="inline">TypeError</code></td><td>类型不匹配</td><td><code class="inline">"5" + 5</code></td></tr>
+    <tr><td><code class="inline">IndexError</code></td><td>下标越界</td><td><code class="inline">[1,2][5]</code></td></tr>
+    <tr><td><code class="inline">KeyError</code></td><td>字典里没有这个键</td><td><code class="inline">{"a":1}["b"]</code></td></tr>
+    <tr><td><code class="inline">FileNotFoundError</code></td><td>文件找不到</td><td><code class="inline">open("没有这个.txt")</code></td></tr>
+  </tbody>
+</table>
+
+<figure class="pic">
+  <img src="../assets/illustrations/py-L4-08-02_safety_valve.webp" alt="安全阀自动打开"
+       onerror="this.closest('.pic').classList.add('missing')">
+  <div class="ph">
+    <div class="fn">assets/illustrations/py-L4-08-02_safety_valve.webp</div>
+    <div class="ds">【配图位】工坊里一只压力飙升的锅炉，锅身发红、蒸汽外冒；锅炉侧面一只发光的青铜安全阀自动弹开，把喷出的气流导进一条侧管、火花被挡板拦住；一名英雄站在安全阀前镇定地转动手柄，脸上没有慌张；锅炉旁一块小铭牌上刻着 "try / except"。</div>
+  </div>
+  <figcaption>图 4：出了状况，让安全阀接住它</figcaption>
+</figure>
+
+<div class="section-header" id="s5">
+  <h2>5　try-except</h2>
+  <div class="en-title">Catching Exceptions</div>
+</div>
+
+<figure class="figure">
+  <svg class="diagram" viewBox="0 0 860 280" role="img" aria-label="try-except 流程">
+    <text x="24" y="34" font-size="14" font-weight="bold" fill="#1f2937">try 里出事，就跳到 except 去处理</text>
+
+    <rect x="90" y="60" width="200" height="60" rx="10" fill="#e6f7f5" stroke="#0e8f86" stroke-width="2"/>
+    <text x="190" y="86" text-anchor="middle" font-size="12.5" fill="#0a6b64" font-weight="bold">try</text>
+    <text x="190" y="108" text-anchor="middle" font-size="11.5" fill="#3c6b68">试着执行这段代码</text>
+
+    <path d="M290 90 L360 90" stroke="#0e8f86" stroke-width="2"/>
+    <polygon points="364,90 352,84 352,96" fill="#0e8f86"/>
+
+    <polygon points="430,58 560,90 430,122 300,90" fill="#fdf4e0" stroke="#f59e0b" stroke-width="2"/>
+    <text x="430" y="88" text-anchor="middle" font-size="11.5" fill="#b45309">有没有出错？</text>
+    <text x="430" y="106" text-anchor="middle" font-size="10.5" fill="#b45309">（菱形判断）</text>
+
+    <path d="M560 90 L640 90" stroke="#2e9e5b" stroke-width="2"/>
+    <polygon points="644,90 632,84 632,96" fill="#2e9e5b"/>
+    <text x="598" y="82" font-size="11" fill="#1f7a44">没出错</text>
+    <rect x="650" y="66" width="160" height="48" rx="10" fill="#f0fdf4" stroke="#2e9e5b" stroke-width="1.8"/>
+    <text x="730" y="96" text-anchor="middle" font-size="12" fill="#1f7a44">正常往下走</text>
+
+    <path d="M430 122 L430 176" stroke="#ef4444" stroke-width="2"/>
+    <polygon points="430,180 424,168 436,168" fill="#ef4444"/>
+    <text x="446" y="152" font-size="11" fill="#b91c1c">出错了</text>
+
+    <rect x="300" y="184" width="260" height="60" rx="10" fill="#fef2f2" stroke="#ef4444" stroke-width="2"/>
+    <text x="430" y="210" text-anchor="middle" font-size="12.5" fill="#b91c1c" font-weight="bold">except</text>
+    <text x="430" y="232" text-anchor="middle" font-size="11.5" fill="#7f2b2b">在这里"兜住"错误，程序继续跑</text>
+
+    <text x="430" y="268" text-anchor="middle" font-size="12" fill="#8da0a3">关键：try 里出错的部分不会执行完，但程序不会被"摔死"</text>
+  </svg>
+  <div class="caption">图 5（SVG）：try 负责"试一试"，except 负责"接住错误"</div>
+</figure>
+
+<div class="code-card">
+  <div class="code-head">
+    <span class="dot d1"></span><span class="dot d2"></span><span class="dot d3"></span>
+    <span class="file">try-except 的三种常见写法</span>
+    <span class="lang">Python</span>
+  </div>
+  <pre><code># 写法一：基础版
+try:
+    n = int(input("请输入一个整数："))
+    print(100 / n)
+except:
+    print("输入有误，或者除数为 0")
+
+# 写法二：指定要抓哪个异常（推荐）
+try:
+    n = int(input())
+except ValueError:
+    print("这不是一个合法的整数")
+
+# 写法三：多个 except + finally
+try:
+    f = open("data.txt")
+    s = f.read()
+except FileNotFoundError:
+    print("文件不存在")
+finally:
+    print("不管成功失败，这句都会执行")</code></pre>
+  <div class="out"><b>要点</b>　<code>except 异常名:</code> 抓特定错误；<code>finally</code> 里的代码一定会执行</div>
+</div>
+
+<div class="box remember">
+  <span class="lb">三个关键字的分工：</span>
+  <b>try</b>——放"可能出错的代码"；<br>
+  <b>except</b>——出错了怎么办；<br>
+  <b>finally</b>——不管出不出错都要做的事（比如关文件）。<br>
+  <strong>不是所有代码都要套 try——只在"你确实预感到可能出错、并且知道怎么处理"时才用。</strong>
+</div>
+
+<div class="section-header" id="s6">
+  <h2>6　代码实战</h2>
+  <div class="en-title">Level Practice</div>
+</div>
+
+<div class="level-card">
+  <div class="lc-head"><span class="n">关卡</span><h4>我们中间的间谍</h4><span class="go">进入关卡 →</span></div>
+  <div class="lc-body">
+    <div class="story">
+      <b>故事：</b>高台的城门口挂着一块告示牌，牌上写着一行字。
+      守门人只告诉你一个字：<b>念出第 0 个字符。</b><br>
+      你愣住了。戈登笑了：<b>字符串也是"一格一格"的</b>，
+      第 0 个字符就是最左边那一个。<br>
+      他补了一句：不过要小心——<b>字符串太短，硬去取就会出错。</b>这就是为什么要有异常处理。
+    </div>
+    <p><strong>思路：</strong>字符串支持下标访问：<code class="inline">s[0]</code> 取第一个字符，
+    <code class="inline">len(s)</code> 求长度。<b>配合 try-except，即使取越界了程序也不会崩。</b></p><figure class="pic">
+      <img src="../assets/stages/py-L4-08-stage1_spy_among_us.webp" alt="我们中间的间谍 关卡截图"
+           onerror="this.closest('.pic').classList.add('missing')">
+      <div class="ph">
+        <div class="fn">assets/stages/py-L4-08-stage1_spy_among_us.webp</div>
+        <div class="ds">【关卡截图位】请把《我们中间的间谍》的游戏画面截图放到此处（放入 assets/stages/ 目录，文件名为 py-L4-08-stage1_spy_among_us.webp）。</div>
+      </div>
+      <figcaption>关卡实况：我们中间的间谍</figcaption>
+    </figure>
+    <div class="code-card">
+      <div class="code-head">
+        <span class="dot d1"></span><span class="dot d2"></span><span class="dot d3"></span>
+        <span class="file">重点示例：字符串下标 + 越界保护</span>
+        <span class="lang">Python</span>
+      </div>
+      <pre><code>s = "Hello World"
+
+hero.say(s[0])            # 会喊出 'H'（第 0 个字符）
+hero.say(len(s))          # 会喊出 11（一共 11 个字符）
+
+# 如果字符数不够，硬取就会 IndexError —— 这时就该兜一下
+try:
+    hero.say(s[20])
+except IndexError:
+    hero.say("这个位置没有字符")</code></pre>
+      <div class="out"><b>要点</b>　字符串和列表一样有下标；越界会抛 <code>IndexError</code>，用 except 接住即可</div>
+    </div>
+    <div class="box info">
+      <span class="lb">和本单元的关系：</span>
+      读数据这件事随时可能出意外——<b>文件不存在、字符不够长、输入不是数字</b>。<br>
+      不要指望程序永远顺利，<strong>而要事先想好"出了意外该怎么办"。</strong>
+      这就是异常处理的价值。
+    </div>
+    
+    <a class="btn-go" href="https://codecombat.cn/" target="_blank" rel="noopener">去扣哒世界闯这一关 →</a>
+  </div>
+</div>
+
+
+
+<div class="section-header" id="s7">
+  <h2>7　常见陷阱</h2>
+  <div class="en-title">Common Pitfalls</div>
+</div>
+
+<div class="cast duck">
+  <img class="ava" src="../assets/ducks/duck_usara.webp" alt="扣哒鸭" onerror="this.style.display='none'">
+  <div class="bubble">
+    <div class="who">扣哒鸭 · 调试官</div>
+    文件和异常这两件事，坑都在"细节"上。四条，条条都能让你白忙一场。
+  </div>
+</div>
+
+<div class="pit">
+  <div class="pt">
+    <div class="x">1</div>
+    <div class="t"><b>用 "w" 模式打开文件，把原内容清空了。</b></div>
+  </div>
+  <div class="duck">
+    <img src="../assets/ducks/duck_zana.webp" alt="扣哒鸭" onerror="this.style.display='none'">
+    <div class="dt"><b>扣哒鸭：</b>只有确实要"重写整份文件"时才用 <code>"w"</code>。<br>
+    想保留原内容接着写，必须用 <code>"a"</code>。这是我见过最惨的一类事故。</div>
+  </div>
+  <div class="fix"><b>正确写法：</b>追加内容用 <code class="inline">open("f.txt", "a")</code></div>
+</div>
+
+<div class="pit">
+  <div class="pt">
+    <div class="x">2</div>
+    <div class="t"><b>忘了写 encoding，中文变成乱码。</b></div>
+  </div>
+  <div class="duck">
+    <img src="../assets/ducks/duck_naria.webp" alt="扣哒鸭" onerror="this.style.display='none'">
+    <div class="dt"><b>扣哒鸭：</b>Windows 上默认编码不一定是 UTF-8，
+    含中文的文件一定要显式写 <code>encoding="utf-8"</code>。</div>
+  </div>
+  <div class="fix"><b>正确写法：</b><code class="inline">open("f.txt", "r", encoding="utf-8")</code></div>
+</div>
+
+<div class="pit">
+  <div class="pt">
+    <div class="x">3</div>
+    <div class="t"><b>把整个程序都包进 try 里。</b>什么都抓，结果把 bug 也藏起来了。</div>
+  </div>
+  <div class="duck">
+    <img src="../assets/ducks/duck_hattori.webp" alt="扣哒鸭" onerror="this.style.display='none'">
+    <div class="dt"><b>扣哒鸭：</b><code>except:</code> 什么都不写，会连"键盘中断"都抓住，
+    程序像死了一样。<br>
+    <strong>只 try 你真正预期会出错的那几行，并且指定异常类型。</strong></div>
+  </div>
+  <div class="fix"><b>正确做法：</b>try 的范围尽量小，except 写明异常类型</div>
+</div>
+
+<div class="pit">
+  <div class="pt">
+    <div class="x">4</div>
+    <div class="t"><b>读文件时不处理行末的换行符。</b>比较字符串总是失败。</div>
+  </div>
+  <div class="duck">
+    <img src="../assets/ducks/duck_illia.webp" alt="扣哒鸭" onerror="this.style.display='none'">
+    <div class="dt"><b>扣哒鸭：</b>每行末尾都有 <code>
+</code>。
+    拿它去和 <code>"apple"</code> 比较永远不相等——因为实际是 <code>"apple
+"</code>。<br>
+    记得 <code>line.strip()</code>。</div>
+  </div>
+  <div class="fix"><b>正确做法：</b><code class="inline">line.strip()</code> 去掉首尾空白与换行</div>
+</div>
+
+<div class="section-header" id="s8">
+  <h2>8　题目练习</h2>
+  <div class="en-title">Practice</div>
+</div>
+
+<p>前 2 题改编自 2026 年 9 月 · Python 四级 第 8、10 题，其余为原创练习题。</p>
+
+<div class="exam">
+  <div class="eh"><span class="src">改编自 2026 年 9 月 · Python 四级 · 第 8 题</span><span class="tp">单选题</span></div>
+  <div class="eb">
+    <div class="q">把货单存进文件时，需要选一个"能同时读写、且文件指针从开头开始"的打开模式。<br>以下哪种文件打开模式符合要求（　　）。</div>
+    <div class="opt"><i>A.</i>'r'　　<i>B.</i>'w'　　<i>C.</i>'a'　　<i>D.</i>'r+'</div>
+    <details><summary>查看答案与详解</summary>
+      <div class="ans"><b>答案：D</b>。四种常见模式的区别：<br><b>'r'</b>：只读，文件必须已存在，指针在开头；<br><b>'w'</b>：只写，<strong>会清空原文件</strong>，指针在开头；<br><b>'a'</b>：追加写，指针在<strong>末尾</strong>；<br><b>'r+'</b>：<strong>可读可写</strong>，指针在开头，文件必须已存在 —— 正是题目要的。<br><b>顺带记住：</b><code class="inline">'w+'</code> 也是可读可写，但它会先把文件清空；想"在原内容上改"就选 <code class="inline">'r+'</code>。<br><b>打个比方：</b><code class="inline">'w'</code> 像"把黑板擦干净再写"，<code class="inline">'a'</code> 像"接着黑板末尾往下写"，<code class="inline">'r+'</code> 像"直接在黑板上又看又改"。<br><span class="tagline">对应小节</span>2 读文件 / 3 写文件。</div>
+    </details>
+  </div>
+</div>
+<div class="exam">
+  <div class="eh"><span class="src">改编自 2026 年 9 月 · Python 四级 · 第 10 题</span><span class="tp">单选题</span></div>
+  <div class="eb">
+    <div class="q">关于 <code class="inline">try-except-else-finally</code> 结构，以下说法<b>正确</b>的是（　　）。</div>
+    <div class="opt"><i>A.</i>如果 try 块中有 return 语句，finally 块将不会执行<br>
+      <i>B.</i>finally 块通常用于释放资源，如关闭文件<br>
+      <i>C.</i>一个 try 块只能对应一个 except 块<br>
+      <i>D.</i>如果 try 块中发生了异常，那么 else 块也会执行</div>
+    <details><summary>查看答案与详解</summary>
+      <div class="ans"><b>答案：B</b>。<code class="inline">finally</code> 块的作用就是<strong>不管前面发生了什么，最后一定要做完的事</strong>——关闭文件、释放连接等收尾工作都放在这里。<br><b>A 错：</b>即使 try 里有 <code class="inline">return</code>，<code class="inline">finally</code> 也<strong>一定</strong>会执行（而且是在 return 真正返回之前）；<br><b>C 错：</b>一个 try 可以配<strong>多个</strong> except，分别捕获不同类型的异常；<br><b>D 错：</b><code class="inline">else</code> 块只在<strong>没有发生异常</strong>时才执行，发生了异常就跳过它。<br><b>四段的含义：</b>try 试着做 → except 出错了怎么办 → else 顺利做完了再做什么 → finally 无论如何都要做的事。<br><span class="tagline">对应小节</span>5 try-except。</div>
+    </details>
+  </div>
+</div>
+<div class="exam">
+  <div class="eh"><span class="src ori">原创练习题</span><span class="tp">单选题</span></div>
+  <div class="eb">
+    <div class="q">要在文件末尾追加内容、而不破坏原有内容，应该用哪种模式打开文件？（　　）</div>
+    <div class="opt"><i>A.</i><code class="inline">"r"</code>　　<i>B.</i><code class="inline">"w"</code>
+      　　<i>C.</i><code class="inline">"a"</code>　　<i>D.</i><code class="inline">"x"</code></div>
+    <details><summary>查看答案与详解</summary>
+      <div class="ans"><b>答案：C</b>。<code class="inline">"a"</code> 是 append（追加），
+      新内容会写在文件末尾，原内容保持不变。<br>
+      <b>提醒：</b><code class="inline">"w"</code> 会<b>先清空整个文件</b>再写，用错了数据就没了。<br>
+      <span class="tagline">对应小节</span>3 写文件。</div>
+    </details>
+  </div>
+</div>
+
+<div class="exam">
+  <div class="eh"><span class="src ori">原创练习题</span><span class="tp">单选题</span></div>
+  <div class="eb">
+    <div class="q">下列 Python 代码执行后，输出的结果是（　　）。</div>
+    <pre>1  try:
+2      print(10 / 0)
+3  except ZeroDivisionError:
+4      print("出错了")</pre>
+    <div class="opt"><i>A.</i>0　　<i>B.</i>出错信息　　<i>C.</i>出错了　　<i>D.</i>程序崩溃</div>
+    <details><summary>查看答案与详解</summary>
+      <div class="ans"><b>答案：C</b>。<code class="inline">10 / 0</code> 会抛出
+      <code class="inline">ZeroDivisionError</code>，被 except 抓住，<br>
+      于是执行 except 里的语句，输出 <b>出错了</b>，程序<b>不会崩溃</b>。<br>
+      <b>注意：</b>如果 except 写的是别的异常名（比如 ValueError），就抓不住，程序仍会崩溃。<br>
+      <span class="tagline">对应小节</span>5 try-except。</div>
+    </details>
+  </div>
+</div>
+
+<div class="exam">
+  <div class="eh"><span class="src ori">原创练习题</span><span class="tp">判断题</span></div>
+  <div class="eb">
+    <div class="q">用 with open(...) as f 打开文件，程序会自动关闭文件，不需要手动写 close()。（　　）</div>
+    <details><summary>查看答案与详解</summary>
+      <div class="ans"><b>答案：正确（√）</b>。<code class="inline">with</code> 语句会在代码块结束时
+      <b>自动关闭文件</b>，哪怕中途出了异常也会关。<br>
+      这正是推荐用 with 的原因——<b>写起来短，还不容易忘。</b><br>
+      <span class="tagline">对应小节</span>2 读文件。</div>
+    </details>
+  </div>
+</div>
+
+<div class="exam">
+  <div class="eh"><span class="src ori">原创练习题</span><span class="tp">单选题</span></div>
+  <div class="eb">
+    <div class="q">执行 <code class="inline">int("hello")</code> 会抛出哪种异常？（　　）</div>
+    <div class="opt">
+      <i>A.</i><code class="inline">TypeError</code>　　<i>B.</i><code class="inline">ValueError</code>
+      　　<i>C.</i><code class="inline">IndexError</code>　　<i>D.</i><code class="inline">KeyError</code>
+    </div>
+    <details><summary>查看答案与详解</summary>
+      <div class="ans"><b>答案：B</b>。<code class="inline">int()</code> 接收的是字符串类型（类型没错），
+      但内容不是合法数字，所以是 <b>ValueError</b>（值错误）。<br>
+      <b>对比：</b><code class="inline">"5" + 5</code> 是类型不匹配，抛 TypeError。<br>
+      <span class="tagline">对应小节</span>4 异常是什么。</div>
+    </details>
+  </div>
+</div>
+
+<div class="exam">
+  <div class="eh"><span class="src ori">原创练习题</span><span class="tp">单选题</span></div>
+  <div class="eb">
+    <div class="q">下列 Python 代码执行后，输出的结果是（　　）。</div>
+    <pre>1  s = "Kith"
+2  try:
+3      print(s[10])
+4  except IndexError:
+5      print("越界了")
+6  finally:
+7      print("结束")</pre>
+    <div class="opt">
+      <i>A.</i>越界了　　<i>B.</i>结束　　<i>C.</i>越界了 换行 结束　　<i>D.</i>程序崩溃
+    </div>
+    <details><summary>查看答案与详解</summary>
+      <div class="ans"><b>答案：C</b>。<code class="inline">s[10]</code> 越界，抛出 IndexError，
+      被 except 抓住并打印"越界了"；<br>
+      随后 <code class="inline">finally</code> 里的语句<b>无论成功失败都会执行</b>，所以再打印"结束"。<br>
+      <b>要点：</b>finally 常用于"收尾工作"，比如关闭文件、释放资源。<br>
+      <span class="tagline">对应小节</span>5 try-except。</div>
+    </details>
+  </div>
+</div>
+
+<div class="exam">
+  <div class="eh"><span class="src ori">原创练习题</span><span class="tp">判断题</span></div>
+  <div class="eb">
+    <div class="q">只要把代码放进 try 里，程序就一定不会崩溃。（　　）</div>
+    <details><summary>查看答案与详解</summary>
+      <div class="ans"><b>答案：错误（×）</b>。只有当抛出的异常<b>类型和 except 声明的匹配</b>时才会被抓住。<br>
+      而且 try 只能处理"运行时错误"，语法错误（SyntaxError）在程序运行前就会被发现，根本轮不到 try。<br>
+      <b>另外：滥用 try 会掩盖 bug，不是好习惯。</b><br>
+      <span class="tagline">对应小节</span>5 try-except。</div>
+    </details>
+  </div>
+</div>
+
+<div class="exam">
+  <div class="eh"><span class="src ori">原创练习题</span><span class="tp">编程题</span></div>
+  <div class="eb">
+    <div class="q">题目要求：编写程序，把 1 到 5 每个数的平方依次写入文件 squares.txt（每行一个）；
+    然后再把文件内容读出来打印，最后输出一共有几行。</div>
+    <details><summary>查看参考答案与要点</summary>
+      <div class="ans">
+<pre style="margin:0;background:#14231f;color:#c3d6d1;border-radius:10px;padding:14px 16px"># ① 写入
+with open("squares.txt", "w", encoding="utf-8") as f:
+    for i in range(1, 6):
+        f.write(str(i * i) + "
+")
+
+# ② 读取并打印
+with open("squares.txt", "r", encoding="utf-8") as f:
+    lines = f.readlines()
+
+for line in lines:
+    print(line.strip())
+
+print("共", len(lines), "行")</pre>
+      <p style="margin-top:12px"><b>输出：</b>1、4、9、16、25，共 5 行<br>
+      <b>要点：</b><br>
+      ① 写文件时 <code class="inline">write()</code> 只接受<b>字符串</b>，
+      数字要先 <code class="inline">str()</code> 转换；<br>
+      ② 每行末尾要自己加 <code class="inline">"
+"</code>，否则所有内容会挤在一行；<br>
+      ③ 读的时候用 <code class="inline">readlines()</code> 得到列表，
+      每行末尾带 <code class="inline">
+</code>，打印前用 <code class="inline">strip()</code> 去掉；<br>
+      ④ 两处都用了 <code class="inline">with</code>，文件会自动关闭。<br>
+      <span class="tagline">对应小节</span>2 读文件；3 写文件。</p>
+      </div>
+    </details>
+  </div>
+</div>
+
+<div class="section-header" id="s9">
+  <h2>9　本单元小结</h2>
+  <div class="en-title">Unit Summary</div>
+</div>
+
+<div class="cast teacher">
+  <img class="ava" src="../assets/avatars/gordon.webp" alt="戈登" onerror="this.style.display='none'">
+  <div class="bubble">
+    <div class="who">戈登 · 齿轮工程师</div>
+    四级到这里就收官了。最后三句话：<br>
+    <strong>一、内存断电就没，文件才能留住数据；写用 "w"（清空）、加用 "a"（追加）。</strong><br>
+    <strong>二、开文件记得 encoding="utf-8"，推荐用 with 自动关闭。</strong><br>
+    <strong>三、异常不是洪水猛兽，try-except 就是那道安全阀。</strong><br>
+    从齿轮高台出去，前面就是<b>星砂绿洲</b>——那里有更多数学与算法等着你。
+  </div>
+</div>
+
+<div class="summary">
+  <h3>你在档案库前收获了什么</h3>
+  <ul>
+    <li><strong>内存 vs 文件</strong>——变量存在内存、程序结束即消失；文件存在硬盘、可以长期保留。</li>
+    <li><strong>读文件</strong>——<code class="inline">open(路径, "r", encoding="utf-8")</code>；用 <code class="inline">read()</code>、<code class="inline">readlines()</code> 或 <code class="inline">for line in f</code> 读取。</li>
+    <li><strong>写文件</strong>——<code class="inline">"w"</code> 会清空原内容，<code class="inline">"a"</code> 是追加；<code class="inline">write()</code> 只接受字符串。</li>
+    <li><strong>with 语句</strong>——自动关闭文件，即使中途出错也能关，推荐优先使用。</li>
+    <li><strong>常见异常</strong>——ZeroDivisionError、ValueError、TypeError、IndexError、KeyError、FileNotFoundError。</li>
+    <li><strong>try-except-finally</strong>——try 放可能出错的代码，except 处理错误，finally 无论如何都执行。</li>
+    <li><strong>使用原则</strong>——try 范围要小、要写明异常类型；别用它掩盖真正的 bug。</li>
+  </ul>
+</div>
+
+<div class="pager">
+  <a href="py-4-07.html"><div class="k">← 上一单元</div><div class="v">队列整编台 · 排序算法与复杂度</div></a>
+  <a href="../index.html" target="_top" class="back"><div class="k">返回</div><div class="v">考纲之路 · 总目录</div></a>
+  <a href="py-5-01.html"><div class="k">下一级别 →</div><div class="v">绿洲密码 · 初等数论基础</div></a>
+</div>
+
+<div class="cta">
+  <h3>四级通关，前面是星砂绿洲</h3>
+  <p>齿轮高台八个单元全部学完。接下来是五级——
+  <b>数论、素数、高精度、链表、二分、递归、分治、贪心</b>，
+  真正的算法世界，从那里开始。</p>
+  <a class="btn-go" href="https://codecombat.cn/" target="_blank" rel="noopener">加入扣哒世界，把这条考纲之路走一遍 →</a>
+</div>
+</div><!-- /container -->
+</div><!-- /page -->
+
+<script>
+const KEYWORDS = new Set(("while for if elif else break continue def return pass not and or in is None True False " +
+  "int float bool str list dict tuple set input print range len abs max min round pow import math random chr ord bin hex oct sum append copy keys values items").split(" "));
+
+function esc(s){ return s.replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;'); }
+
+function highlight(src){
+  let out = '', i = 0;
+  const n = src.length;
+  while (i < n){
+    const c = src[i];
+    if (c === '#'){
+      let j = src.indexOf('\n', i); if (j < 0) j = n;
+      out += '<span class="cm">' + esc(src.slice(i, j)) + '</span>';
+      i = j; continue;
+    }
+    if (c === '"' || c === "'"){
+      let j = i + 1;
+      while (j < n && src[j] !== c){ if (src[j] === '\\') j++; j++; }
+      j = Math.min(j + 1, n);
+      out += '<span class="st">' + esc(src.slice(i, j)) + '</span>';
+      i = j; continue;
+    }
+    if (/[0-9]/.test(c)){
+      let j = i;
+      while (j < n && /[0-9.]/.test(src[j])) j++;
+      out += '<span class="nu">' + esc(src.slice(i, j)) + '</span>';
+      i = j; continue;
+    }
+    if (/[A-Za-z_]/.test(c)){
+      let j = i;
+      while (j < n && /[A-Za-z0-9_]/.test(src[j])) j++;
+      const w = src.slice(i, j);
+      if (KEYWORDS.has(w)) out += '<span class="kw">' + esc(w) + '</span>';
+      else if (src[j] === '(') out += '<span class="fn">' + esc(w) + '</span>';
+      else out += esc(w);
+      i = j; continue;
+    }
+    out += esc(c); i++;
+  }
+  return out;
+}
+
+document.querySelectorAll('.code-card pre code').forEach(block => {
+  block.innerHTML = highlight(block.textContent);
+});
+
+if (location.search.indexOf('expand') >= 0) {
+  document.querySelectorAll('details').forEach(d => d.open = true);
+}
+document.querySelectorAll('.sidebar-nav a').forEach(a => {
+  a.addEventListener('click', () => {
+    if (window.innerWidth <= 900) document.querySelector('.sidebar-nav').classList.remove('active');
+  });
+});
+</script>
+</body>
+</html>

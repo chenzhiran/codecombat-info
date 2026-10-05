@@ -1,0 +1,948 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="copyright" content="CodeCombat Inc. codecombat.cn">
+<title>参数输送管 · 参数传递与变量作用域 | 扣哒考级 · GESP Python 四级</title>
+<style>
+  :root{
+    --primary:#0e8f86; --primary-light:#14b8a6; --primary-lighter:#e6f7f5; --primary-dark:#0a6b64;
+    --brand:#ff6b35; --brand-dark:#e8541f; --brand-soft:#fff3ec;
+    --night:#0f1b22; --night-2:#16323a; --gold:#f5b301;
+    --text:#22333a; --dim:#5f7276; --dim2:#8da0a3;
+    --bg:#ffffff; --bg-soft:#f6fbfa; --line:#dceceb; --sidebar:274px;
+    --code-bg:#14231f; --code-tx:#c3d6d1;
+    --code-kw:#c678dd; --code-st:#98c379; --code-nu:#d19a66; --code-cm:#68807a; --code-fn:#61afef;
+  }
+  *{margin:0;padding:0;box-sizing:border-box}
+  html{scroll-behavior:smooth}
+  body{font-family:"PingFang SC","Microsoft YaHei","Segoe UI",-apple-system,sans-serif;line-height:1.9;color:var(--text);background:var(--bg);font-size:15.5px}
+  .sidebar-nav{position:fixed;top:0;left:0;width:var(--sidebar);height:100vh;overflow-y:auto;background:linear-gradient(180deg,#0c1a1e,#123037);padding:14px 0 40px;z-index:100;border-right:3px solid var(--brand);transition:transform .3s ease}
+  .sidebar-nav::-webkit-scrollbar{width:5px}
+  .sidebar-nav::-webkit-scrollbar-thumb{background:var(--brand);border-radius:4px}
+  .sb-brand{display:flex;align-items:center;gap:10px;padding:10px 13px 12px;border-bottom:1px solid #1d3d44;margin-bottom:8px}
+  .sidebar-nav a.sb-logo{display:flex;align-items:center;justify-content:center;flex-shrink:0;padding:0;border-left:none;transition:.2s}
+  .sb-logo:hover{transform:scale(1.08)}
+  .sb-logo img{height:34px;width:34px;display:block;object-fit:contain;border-radius:8px}
+  .sb-brand b{color:#eef7f6;font-size:14px;letter-spacing:.5px;display:block;line-height:1.4}
+  .sb-brand span{color:#7ba3a6;font-size:11.5px;display:block;line-height:1.4}
+  .nav-title{color:#ffb894;font-size:12px;font-weight:800;padding:10px 18px 6px;letter-spacing:1.2px}
+  .sidebar-nav a{display:block;color:#bcd3d4;text-decoration:none;padding:6px 18px;font-size:12.5px;line-height:1.55;border-left:3px solid transparent;transition:.18s}
+  .sidebar-nav a:hover{color:#fff;background:rgba(255,107,53,.16);border-left-color:var(--brand)}
+  .sidebar-nav a.nav-section{color:#ffb894;font-weight:700;font-size:13px;margin-top:11px;padding-top:10px;border-top:1px solid #1d3d44}
+  .sidebar-nav a.nav-section:first-of-type{border-top:none;margin-top:0;padding-top:6px}
+  .sidebar-nav a.nav-sub{padding-left:30px;color:#8fabad;font-size:12px}
+  .sidebar-nav a.nav-sub:hover{color:#fff}
+  .sb-back{margin:16px 14px 0;display:block;text-align:center;padding:9px;border-radius:9px;background:#1c3940;color:#a6c0c2 !important;font-size:12px;font-weight:700;border-left:none !important}
+  .sb-back:hover{background:var(--brand) !important;color:#fff !important}
+  .nav-toggle{display:none;position:fixed;top:14px;left:14px;z-index:120;background:var(--brand);color:#fff;border:none;border-radius:9px;padding:9px 13px;font-size:15px;cursor:pointer;box-shadow:0 4px 14px rgba(0,0,0,.25)}
+  .page{margin-left:var(--sidebar)}
+  .hero{position:relative;overflow:hidden;padding:44px 52px;color:#fff;background:linear-gradient(125deg,#0b171b 0%,#143038 46%,#8a3a16 132%)}
+  .hero::after{content:"";position:absolute;right:-90px;top:-110px;width:400px;height:400px;border-radius:50%;background:radial-gradient(circle,rgba(245,179,1,.30),transparent 68%)}
+  .hero-top{display:flex;gap:36px;align-items:center;position:relative;z-index:2}
+  .hero-txt{flex:1;min-width:0}
+  .hero .crumb{font-size:11.5px;color:#ffb894;letter-spacing:1.5px;font-weight:700;margin-bottom:14px}
+  .hero h1{font-size:31px;font-weight:800;line-height:1.3;letter-spacing:.6px;margin-bottom:8px}
+  .hero h1 .sub{display:block;font-size:18px;font-weight:700;color:#ffd2b3;margin-top:6px;letter-spacing:.3px}
+  .hero .en{font-size:13px;color:#98b6b8;font-style:italic;margin-bottom:18px}
+  .hero .tags{display:flex;flex-wrap:wrap;gap:8px}
+  .tag{font-size:11.5px;padding:4px 12px;border-radius:20px;background:rgba(255,255,255,.12);border:1px solid rgba(255,255,255,.22);color:#e8f0f6;font-weight:600}
+  .tag.hot{background:rgba(255,107,53,.92);border-color:transparent;color:#fff}
+  .hero-card{flex-shrink:0;width:200px;text-align:center}
+  .hero-card .ava{width:148px;height:148px;border-radius:50%;object-fit:cover;object-position:top center;border:4px solid rgba(255,180,140,.6);box-shadow:0 14px 34px rgba(0,0,0,.45);background:#24344a}
+  .hero-card .nm{font-size:15px;font-weight:800;color:#fff;margin-top:10px}
+  .hero-card .ti{font-size:11.5px;color:#ffb894;margin-top:2px}
+  .container{max-width:1080px;margin:0 auto;padding:38px 52px 70px}
+  .lead{font-size:15.5px;line-height:2.05;color:#35474a;background:linear-gradient(120deg,#fff8f3,#f6fbfa);border-left:5px solid var(--brand);border-radius:0 14px 14px 0;padding:22px 26px;margin-bottom:32px}
+  .lead b{color:var(--brand-dark)}
+  .cast{display:flex;gap:16px;align-items:flex-start;border-radius:16px;padding:18px 22px;margin:24px 0}
+  .cast .ava{width:72px;height:72px;border-radius:50%;object-fit:cover;object-position:top center;flex-shrink:0;background:#e8eef5}
+  .cast .bubble{position:relative;font-size:14px;line-height:1.95;padding-top:2px;flex:1}
+  .cast .who{font-size:12px;font-weight:800;margin-bottom:5px;letter-spacing:.5px}
+  .cast.anya{background:var(--brand-soft);border:1px solid #ffdcc9}
+  .cast.anya .who{color:var(--brand-dark)}
+  .cast.anya .bubble{color:#5c4636}
+  .cast.duck{background:#fff5f5;border:1px solid #fbd5d5}
+  .cast.duck .who{color:#b91c1c}
+  .cast.duck .bubble{color:#5c4141}
+  .cast.teacher{background:linear-gradient(120deg,#f1f8f8,#ffffff);border:1px solid #d6e8e8}
+  .cast.teacher .who{color:#134e4a}
+  .cast.teacher .bubble{color:#3c5254}
+  .cast.hero{background:#f2fbf9;border:1px solid #cfe9e6}
+  .cast.hero .who{color:#0f766e}
+  .cast.hero .bubble{color:#3d5250}
+  .goal-grid{display:grid;grid-template-columns:1fr 1fr;gap:16px;margin-bottom:36px}
+  .goal{border:1px solid var(--line);border-radius:15px;padding:19px 21px;background:#fff;box-shadow:0 4px 16px rgba(14,143,134,.06)}
+  .goal h4{font-size:14px;font-weight:800;margin-bottom:11px;display:flex;align-items:center;gap:8px;color:var(--primary-dark)}
+  .goal h4 .ic{width:22px;height:22px;border-radius:7px;background:var(--primary-lighter);display:flex;align-items:center;justify-content:center;font-size:12px}
+  .goal ul{list-style:none}
+  .goal li{font-size:13.5px;color:#46585a;line-height:1.9;padding-left:18px;position:relative}
+  .goal li::before{content:"▸";position:absolute;left:0;color:var(--primary);font-weight:800}
+  .goal.syllabus li::before{content:"✓"}
+  .section-header{margin:52px 0 24px;padding-bottom:12px;border-bottom:3px solid var(--brand);display:flex;align-items:baseline;gap:14px;flex-wrap:wrap}
+  .section-header h2{font-size:22px;font-weight:800;color:var(--night);letter-spacing:.4px}
+  .section-header .en-title{font-size:12px;color:var(--dim2);font-style:italic}
+  h3{font-size:17.5px;font-weight:800;margin:34px 0 14px;color:var(--night);display:flex;align-items:center;gap:10px}
+  h3::before{content:"";width:5px;height:17px;border-radius:3px;background:var(--brand);flex-shrink:0}
+  h4{font-size:15px;font-weight:800;margin:24px 0 10px;color:#2c4a48}
+  p{margin:12px 0;color:#3d5250;line-height:2}
+  strong{color:var(--primary-dark)}
+  code.inline{background:var(--primary-lighter);color:var(--primary-dark);padding:2px 7px;border-radius:6px;font-family:"SFMono-Regular",Consolas,Menlo,monospace;font-size:.9em;font-weight:600}
+  .figure{margin:24px 0;text-align:center}
+  .figure svg.diagram{max-width:100%;height:auto;background:#fff;border:1px solid var(--line);border-radius:14px;padding:10px}
+  .figure .caption{font-size:12.5px;color:var(--dim2);margin-top:9px}
+  .pic{margin:26px 0;text-align:center}
+  .pic img{max-width:100%;border-radius:16px;box-shadow:0 10px 28px rgba(20,60,60,.15);display:block;margin:0 auto}
+  .pic figcaption{font-size:12.5px;color:var(--dim2);margin-top:9px}
+  .pic .ph{display:none}
+  .pic.missing img{display:none}
+  .pic.missing .ph{display:flex;flex-direction:column;align-items:center;justify-content:center;gap:9px;border:2px dashed #bfdcd9;border-radius:16px;background:linear-gradient(135deg,#f8fdfc,#eef8f7);padding:40px 26px;color:#6f8f90}
+  .pic.missing .ph .fn{font-family:Consolas,monospace;font-size:12.5px;color:#0e8f86;font-weight:700;word-break:break-all}
+  .pic.missing .ph .ds{font-size:12.5px;line-height:1.8;max-width:560px}
+  .box{border-radius:13px;padding:16px 20px;margin:20px 0;font-size:14px;line-height:1.95}
+  .box .lb{font-weight:800;margin-right:6px}
+  .info{background:#eef6ff;border-left:5px solid #3b82f6;color:#274768}
+  .info .lb{color:#1d4ed8}
+  .tip{background:#fff9ec;border-left:5px solid #f59e0b;color:#6b4e13}
+  .tip .lb{color:#b45309}
+  .remember{background:var(--primary-lighter);border-left:5px solid var(--primary);color:#134e4a}
+  .remember .lb{color:var(--primary-dark)}
+  .warn{background:#fef2f2;border-left:5px solid #ef4444;color:#7f2b2b}
+  .warn .lb{color:#b91c1c}
+  .code-card{margin:20px 0;border-radius:14px;overflow:hidden;box-shadow:0 10px 28px rgba(15,40,40,.20)}
+  .code-head{display:flex;align-items:center;gap:9px;background:#1b322d;padding:9px 14px}
+  .code-head .dot{width:10px;height:10px;border-radius:50%}
+  .code-head .d1{background:#ff5f57}.code-head .d2{background:#febc2e}.code-head .d3{background:#28c840}
+  .code-head .file{color:#8fb0aa;font-size:11.5px;font-family:Consolas,monospace;margin-left:6px}
+  .code-head .lang{margin-left:auto;font-size:10.5px;font-weight:800;color:#0b1f1a;background:#2dd4bf;padding:2px 9px;border-radius:6px;letter-spacing:.4px}
+  .code-card pre{background:var(--code-bg);padding:18px 20px;overflow-x:auto;margin:0;font-family:"SFMono-Regular",Consolas,"Courier New",monospace;font-size:13.5px;line-height:1.85}
+  .code-card pre::-webkit-scrollbar{height:8px}
+  .code-card pre::-webkit-scrollbar-thumb{background:#2f4a45;border-radius:4px}
+  .code-card code{color:var(--code-tx);white-space:pre}
+  .kw{color:var(--code-kw);font-weight:600}
+  .st{color:var(--code-st)}
+  .nu{color:var(--code-nu)}
+  .cm{color:var(--code-cm);font-style:italic}
+  .fn{color:var(--code-fn)}
+  .out{background:#0e1d1a;color:#7fd6b8;font-family:Consolas,monospace;font-size:13px;padding:12px 20px;border-top:1px solid #223a35}
+  .out b{color:#c3d6d1;font-weight:600;font-size:11.5px;letter-spacing:1px}
+  table.styled{width:100%;border-collapse:collapse;margin:20px 0;font-size:13.5px;border-radius:12px;overflow:hidden;box-shadow:0 4px 16px rgba(14,143,134,.08)}
+  table.styled thead{background:var(--brand)}
+  table.styled th{color:#fff;padding:11px 14px;text-align:left;font-weight:700;font-size:13px}
+  table.styled td{padding:10px 14px;border-bottom:1px solid var(--line);color:#44585a;vertical-align:top}
+  table.styled tbody tr:nth-child(even){background:var(--bg-soft)}
+  table.styled tbody tr:last-child td{border-bottom:none}
+  .level-card{border:1px solid var(--line);border-radius:16px;overflow:hidden;margin:22px 0;box-shadow:0 6px 22px rgba(14,143,134,.08)}
+  .level-card .lc-head{background:linear-gradient(100deg,#12262c,#8a3a16);color:#fff;padding:15px 22px;display:flex;align-items:center;gap:12px;flex-wrap:wrap}
+  .level-card .lc-head .n{font-size:12px;font-weight:800;background:rgba(255,255,255,.2);padding:3px 10px;border-radius:20px}
+  .level-card .lc-head h4{margin:0;color:#fff;font-size:16px}
+  .level-card .lc-head .go{margin-left:auto;font-size:11.5px;color:#ffd2b3}
+  .level-card .lc-body{padding:20px 24px;background:#fff}
+  .level-card .story{background:#f8fcfc;border-left:4px solid #7dd3fc;border-radius:0 10px 10px 0;padding:13px 18px;margin:0 0 16px;font-size:14px;line-height:1.95;color:#3c5254}
+  .level-card .story b{color:#0369a1}
+  .btn-go{display:inline-flex;align-items:center;gap:8px;background:linear-gradient(135deg,var(--brand),var(--brand-dark));color:#fff;text-decoration:none;font-weight:800;font-size:13.5px;padding:10px 22px;border-radius:11px;box-shadow:0 8px 20px rgba(255,107,53,.32);transition:.2s}
+  .btn-go:hover{transform:translateY(-2px);box-shadow:0 12px 26px rgba(255,107,53,.42)}
+  .pit{border:1px solid #f6dede;border-radius:14px;overflow:hidden;margin:16px 0;background:#fff}
+  .pit .pt{display:flex;gap:12px;padding:14px 18px;background:#fffafa;align-items:flex-start}
+  .pit .x{width:26px;height:26px;border-radius:9px;background:#fee;color:#dc2626;display:flex;align-items:center;justify-content:center;font-weight:800;flex-shrink:0;font-size:13px}
+  .pit .t{font-size:13.5px;line-height:1.9;color:#5c4a4a;flex:1}
+  .pit .t b{color:#b91c1c}
+  .pit .duck{display:flex;gap:12px;padding:13px 18px;background:#fff5f5;border-top:1px dashed #f3d0d0;align-items:flex-start}
+  .pit .duck img{width:48px;height:48px;object-fit:contain;flex-shrink:0;margin-top:2px}
+  .pit .duck .dt{font-size:13.5px;line-height:1.9;color:#7a3b3b}
+  .pit .duck .dt b{color:#b91c1c}
+  .pit .fix{padding:12px 18px;background:#f2fbf9;border-top:1px dashed #cfe9e6;font-size:13.5px;color:#134e4a}
+  .pit .fix b{color:var(--primary-dark)}
+  .exam{border:1px solid #d8ebea;border-radius:15px;margin:16px 0;overflow:hidden;background:#fff;box-shadow:0 4px 16px rgba(30,80,80,.06)}
+  .exam .eh{display:flex;align-items:center;gap:10px;padding:11px 18px;background:linear-gradient(100deg,#eef8f7,#f8fdfc);border-bottom:1px solid #dbeceb;flex-wrap:wrap}
+  .exam .eh .src{font-size:11px;font-weight:800;color:#fff;background:#0e8f86;padding:2.5px 10px;border-radius:20px}
+  .exam .eh .src.ori{background:#0e9488}
+  .exam .eh .tp{font-size:11.5px;color:#4f7d7a;font-weight:700}
+  .exam .eb{padding:16px 20px}
+  .exam .q{font-weight:700;font-size:14px;color:#2b4042;line-height:1.9;margin-bottom:10px}
+  .exam .opt{font-size:13.5px;color:#46585a;line-height:2.05;padding-left:6px}
+  .exam .opt i{font-style:normal;font-weight:800;color:var(--primary-dark);margin-right:7px}
+  .exam pre{margin:12px 0;background:#14231f;border-radius:10px;padding:14px 16px;overflow-x:auto;font-family:Consolas,monospace;font-size:13px;line-height:1.8;color:var(--code-tx)}
+  .exam details{margin-top:10px;border-top:1px dashed var(--line);padding-top:10px}
+  .exam summary{cursor:pointer;font-size:12.5px;font-weight:800;color:#0e8f86;outline:none;user-select:none}
+  .exam details .ans{font-size:13.5px;color:#3d5250;line-height:1.95;margin-top:9px;background:var(--bg-soft);padding:13px 16px;border-radius:10px}
+  .exam details .ans b{color:var(--primary-dark)}
+  .exam details .ans .tagline{display:inline-block;font-size:11px;background:#e0f2fe;color:#0e7490;padding:1.5px 8px;border-radius:6px;font-weight:700;margin-right:6px}
+  .summary{margin:40px 0 20px;border-radius:18px;padding:26px 30px;background:linear-gradient(130deg,#fff8f3,#ffffff);border:1px solid #ffe0cf}
+  .summary h3{margin-top:0}
+  .summary ul{list-style:none;margin-top:10px}
+  .summary li{font-size:14px;line-height:2;color:#3d5250;padding-left:24px;position:relative}
+  .summary li::before{content:"◆";position:absolute;left:0;color:var(--brand);font-size:11px;top:6px}
+  .pager{display:flex;gap:14px;margin-top:30px;flex-wrap:wrap}
+  .pager a{flex:1;min-width:200px;text-decoration:none;border:1px solid var(--line);border-radius:14px;padding:16px 20px;background:#fff;transition:.2s;display:block}
+  .pager a:hover{border-color:var(--brand);box-shadow:0 10px 26px rgba(255,107,53,.14);transform:translateY(-2px)}
+  .pager a .k{font-size:11px;color:var(--dim2);font-weight:700;letter-spacing:1px}
+  .pager a .v{font-size:14px;font-weight:800;color:var(--night);margin-top:5px}
+  .pager a.back{background:var(--brand-soft);border-color:transparent;text-align:center}
+  .pager a.back .v{color:var(--brand-dark)}
+  .cta{margin-top:26px;border-radius:20px;padding:30px 34px;color:#fff;position:relative;overflow:hidden;background:linear-gradient(120deg,#12242a,#1e4a52 46%,#a8431c 132%)}
+  .cta::after{content:"";position:absolute;right:-70px;bottom:-90px;width:280px;height:280px;border-radius:50%;background:radial-gradient(circle,rgba(255,140,80,.45),transparent 68%)}
+  .cta h3{color:#fff;margin:0 0 10px;position:relative;z-index:2}
+  .cta h3::before{background:var(--brand)}
+  .cta p{color:#cfe4e2;font-size:13.5px;margin:0 0 18px;position:relative;z-index:2;max-width:640px}
+  .cta .btn-go{position:relative;z-index:2}
+  @media(max-width:900px){
+    .sidebar-nav{transform:translateX(-100%)}
+    .sidebar-nav.active{transform:translateX(0)}
+    .nav-toggle{display:block}
+    .page{margin-left:0}
+    .hero{padding:70px 22px 34px}
+    .hero-top{flex-direction:column-reverse;text-align:center}
+    .hero-card{width:auto}
+    .container{padding:26px 20px 60px}
+    .goal-grid{grid-template-columns:1fr}
+  }
+</style>
+</head>
+<body>
+
+<button class="nav-toggle" onclick="document.querySelector('.sidebar-nav').classList.toggle('active')">&#9776;</button>
+
+<nav class="sidebar-nav">
+  <div class="sb-brand">
+    <a class="sb-logo" href="https://codecombat.cn/" target="_blank" rel="noopener" title="访问 CodeCombat 扣哒世界官网">
+      <img src="../assets/logo.png" alt="CodeCombat 扣哒世界">
+    </a>
+    <div><b>参数输送管</b><span>齿轮高台 · Python 四级 第 5 单元</span></div>
+  </div>
+  <div class="nav-title">本单元目录</div>
+  <a href="#s0" class="nav-section">0　单元导语与目标</a>
+  <a href="#s0-1" class="nav-sub">0.1 学习目标</a>
+  <a href="#s0-2" class="nav-sub">0.2 考纲对照</a>
+  <a href="#s1" class="nav-section">1　参数是怎么传进去的</a>
+  <a href="#s1-1" class="nav-sub">1.1 形参改了，实参跟着变吗</a>
+  <a href="#s1-2" class="nav-sub">1.2 一条实用结论</a>
+  <a href="#s2" class="nav-section">2　可变对象与不可变对象</a>
+  <a href="#s2-1" class="nav-sub">2.1 可变对象与不可变对象</a>
+  <a href="#s2-2" class="nav-sub">2.2 改内容 vs 重新赋值</a>
+  <a href="#s3" class="nav-section">3　变量作用域</a>
+  <a href="#s3-1" class="nav-sub">3.1 变量在哪些地方看得见</a>
+  <a href="#s3-2" class="nav-sub">3.2 三条铁律</a>
+  <a href="#s4" class="nav-section">4　global 关键字</a>
+  <a href="#s4-1" class="nav-sub">4.1 global 关键字</a>
+  <a href="#s4-2" class="nav-sub">4.2 为什么建议尽量别用</a>
+  <a href="#s5" class="nav-section">5　代码实战</a>
+  <a href="#s6" class="nav-section">6　常见陷阱</a>
+  <a href="#s7" class="nav-section">7　题目练习</a>
+  <a href="#s8" class="nav-section">8　本单元小结</a>
+  <a href="../index.html" target="_top" class="sb-back">返回考纲之路</a>
+</nav>
+
+<div class="page">
+
+<div class="hero">
+  <div class="hero-top">
+    <div class="hero-txt">
+      <div class="crumb">扣哒考级 · GESP PYTHON 四级 · 第 5 单元　|　齿轮高台 GEARWATCH TERRACE</div>
+      <h1>参数输送管
+        <span class="sub">参数传递与变量作用域</span>
+      </h1>
+      <div class="en">Parameter Passing &amp; Scope</div>
+      <div class="tags">        <span class="tag hot">考纲 · 参数与作用域</span>
+        <span class="tag">实参形参</span>
+        <span class="tag">局部变量</span>
+        <span class="tag">全局变量</span>
+        <span class="tag">global</span></div>
+    </div>
+    <div class="hero-card">
+      <img class="ava" src="../assets/avatars/gordon.webp" alt="戈登" onerror="this.style.background='#24344a'">
+      <div class="nm">戈登</div>
+      <div class="ti">齿轮工程师 · 你的向导</div>
+    </div>
+  </div>
+</div>
+
+<div class="container">
+
+<div class="lead">
+  车间的墙里埋着一排<b>输送管</b>。你在这一头放进一颗齿轮，它顺着管道跑到另一头，
+  被机器加工，再顺着另一条管子送回来。<br>
+  可你很快发现一件怪事：<b>有些东西送出去之后，形状变了；有些却完全没变。</b><br>
+  戈登敲了敲管道：这就是今天要讲的事——<b>东西是怎么传进函数里，又是怎么出来的。</b>
+</div>
+
+<div class="cast teacher">
+  <img class="ava" src="../assets/avatars/gordon.webp" alt="戈登" onerror="this.style.display='none'">
+  <div class="bubble">
+    <div class="who">戈登 · 齿轮工程师</div>
+    上一单元你会写函数了。但有一个问题必须搞清楚：<br>
+    <strong>函数里改了一个变量，函数外面到底变没变？</strong><br>
+    这个问题搞明白，你才算真正会用函数——<b>它也是四级最容易丢分的地方。</b>
+  </div>
+</div>
+
+<figure class="pic">
+  <img src="../assets/illustrations/py-L4-05-01_pipe_system.webp" alt="参数输送管"
+       onerror="this.closest('.pic').classList.add('missing')">
+  <div class="ph">
+    <div class="fn">assets/illustrations/py-L4-05-01_pipe_system.webp</div>
+    <div class="ds">【配图位】车间墙体剖开，露出一排发光的输送管道：一端是投入口、另一端是输出口，管道内部有零件在流动；两枚零件流经同一段管道，一枚被加工后变形，另一枚原样返回。</div>
+  </div>
+  <figcaption>图 1：齿轮高台的参数输送管——今天要从这里开始</figcaption>
+</figure>
+
+<div class="section-header" id="s0">
+  <h2>0　单元导语与目标</h2>
+  <div class="en-title">Unit Overview</div>
+
+<h3 id="s0-1">0.1 学习目标</h3>
+</div>
+
+<div class="goal-grid">
+  <div class="goal">
+    <h4><span class="ic">1</span>学完这个单元，你将能……</h4>
+    <ul>
+      <li>说清实参是怎么"交给"形参的</li>
+      <li>分辨可变对象与不可变对象在传参时的差别</li>
+      <li>说清局部变量和全局变量的区别</li>
+      <li>判断一段代码里某个变量属于哪个作用域</li>
+      <li>知道 global 关键字的作用与风险</li>
+      <li>预测含函数与变量的代码输出结果</li>
+    </ul>
+  </div>
+  <div class="goal syllabus">
+    <h4><span class="ic">2</span>对标 GESP 考纲（Python 四级）</h4>
+    <ul>
+      <li>掌握参数传递的基本规则，理解形参与实参的对应关系</li>
+      <li>理解变量的作用域：局部变量与全局变量</li>
+      <li>了解 global 关键字的使用方法及其副作用</li>
+      <li>考核目标：能判断函数内外变量的可见性与修改效果</li>
+    </ul>
+  </div>
+</div>
+
+<h3 id="s0-2">0.2 考纲对照</h3>
+
+<table class="styled">
+  <thead><tr><th>本单元小节</th><th>对应考纲条目</th><th>真题常考形式</th></tr></thead>
+  <tbody>
+    <tr><td>1　参数怎么传</td><td>参数的传递方式</td><td>函数里改了形参，外面的变量会不会变</td></tr>
+    <tr><td>2　可变与不可变</td><td>可变对象与不可变对象</td><td>列表传进去被改，外面看得见吗</td></tr>
+    <tr><td>3　作用域</td><td>变量作用域</td><td>局部变量与全局变量同名时会怎样</td></tr>
+    <tr><td>4　global</td><td>全局变量的使用</td><td><code class="inline">global</code> 的作用与代价</td></tr>
+  </tbody>
+</table>
+
+<div class="section-header" id="s1">
+  <h2>1　参数是怎么传进去的</h2>
+  <div class="en-title">How Parameters Pass</div>
+</div>
+
+<h3 id="s1-1">1.1 形参改了，实参跟着变吗</h3>
+
+<p>先把最常见的疑问说清楚：<strong>函数里改了形参，外面的实参会不会跟着变？</strong></p>
+
+<div class="code-card">
+  <div class="code-head">
+    <span class="dot d1"></span><span class="dot d2"></span><span class="dot d3"></span>
+    <span class="file">数字：外面的没变</span>
+    <span class="lang">Python</span>
+  </div>
+  <pre><code>def change(n):
+    n = 99            # 改的是函数里的 n
+    print("函数里:", n)
+
+x = 10
+change(x)
+print("函数外:", x)</code></pre>
+  <div class="out"><b>OUTPUT</b>　函数里: 99<br>函数外: 10<br>
+  <b>原因</b>　数字是<b>不可变</b>的，函数收到的是"值的副本"</div>
+</div>
+
+<div class="code-card">
+  <div class="code-head">
+    <span class="dot d1"></span><span class="dot d2"></span><span class="dot d3"></span>
+    <span class="file">列表：外面的跟着变了</span>
+    <span class="lang">Python</span>
+  </div>
+  <pre><code>def addItem(lst):
+    lst.append(4)     # 往列表里加了一个元素
+
+a = [1, 2, 3]
+addItem(a)
+print(a)</code></pre>
+  <div class="out"><b>OUTPUT</b>　[1, 2, 3, 4]<br>
+  <b>原因</b>　列表是<b>可变</b>的，函数里拿到的和外面的是<b>同一个列表</b></div>
+</div>
+
+<figure class="figure">
+  <svg class="diagram" viewBox="0 0 860 280" role="img" aria-label="传参的两种情形">
+    <text x="24" y="34" font-size="14" font-weight="bold" fill="#1f2937">不可变对象传"副本"，可变对象传"同一份"</text>
+
+    <rect x="46" y="56" width="370" height="130" rx="12" fill="#f8fcfc" stroke="#cbd5e1" stroke-width="1.8"/>
+    <text x="231" y="82" text-anchor="middle" font-size="13" fill="#475569" font-weight="bold">数字 / 字符串：复印一份给对方</text>
+    <rect x="76" y="100" width="86" height="56" rx="8" fill="#fff" stroke="#94a3b8" stroke-width="1.6"/>
+    <text x="119" y="134" text-anchor="middle" font-size="14" font-family="Consolas,monospace" fill="#334155">x = 10</text>
+    <rect x="250" y="100" width="86" height="56" rx="8" fill="#e6f7f5" stroke="#5eead4" stroke-width="1.6"/>
+    <text x="293" y="134" text-anchor="middle" font-size="14" font-family="Consolas,monospace" fill="#0f766e">n = 10</text>
+    <text x="206" y="134" text-anchor="middle" font-size="16" fill="#94a3b8">→</text>
+    <text x="231" y="174" text-anchor="middle" font-size="11.5" fill="#64748b">函数里改 n，外面的 x 纹丝不动</text>
+
+    <rect x="444" y="56" width="370" height="130" rx="12" fill="#e6f7f5" stroke="#0e8f86" stroke-width="2"/>
+    <text x="629" y="82" text-anchor="middle" font-size="13" fill="#0a6b64" font-weight="bold">列表 / 字典：同一个东西两张标签</text>
+    <rect x="474" y="100" width="120" height="56" rx="8" fill="#fff" stroke="#14b8a6" stroke-width="1.6"/>
+    <text x="534" y="134" text-anchor="middle" font-size="13" font-family="Consolas,monospace" fill="#0a6b64">a = [1,2,3]</text>
+    <rect x="616" y="100" width="120" height="56" rx="8" fill="#fff" stroke="#14b8a6" stroke-width="1.6"/>
+    <text x="676" y="134" text-anchor="middle" font-size="13" font-family="Consolas,monospace" fill="#0a6b64">lst</text>
+    <text x="600" y="134" text-anchor="middle" font-size="16" fill="#0e8f86">=</text>
+    <text x="629" y="174" text-anchor="middle" font-size="11.5" fill="#0a6b64">函数里 append，外面的 a 也变了</text>
+
+    <text x="430" y="228" text-anchor="middle" font-size="12.5" fill="#8da0a3">记忆口诀：数字字符串"复印"，列表字典"借原件"</text>
+    <text x="430" y="254" text-anchor="middle" font-size="12" fill="#0e8f86">所以"函数里改列表"是有效的，而"函数里改数字"外面看不到</text>
+  </svg>
+  <div class="caption">图 2（SVG）：传参的两种情形——这决定了函数能否"改变外部数据"</div>
+</figure>
+
+<h3 id="s1-2">1.2 一条实用结论</h3>
+
+<div class="box tip">
+  <span class="lb">打个比方：</span>
+  传参数就像<b>把东西交给别人</b>，交的东西不同，结果完全不同：<br>
+  <b>数字、字符串这些"不可变对象"</b>——相当于<strong>你抄了一串号码给他，他改自己的那张纸，你手里那张还是原样</strong>；<br>
+  <b>列表、字典这些"可变对象"</b>——相当于<strong>你把屋子钥匙给了他，他在屋里挪动了家具，你回去一看也变了</strong>。<br>
+  <b>一句话：不可变对象"改了外面不变"，可变对象"改了外面会变"。</b>
+</div>
+
+<div class="box remember">
+  <span class="lb">一条实用结论：</span>
+  想让函数"带回多个结果"，最省事的办法是——<br>
+  <strong>传一个列表进去，让函数往里塞东西。</strong><br>
+  因为列表是可变对象，函数里的改动外面看得见。
+</div>
+
+<div class="section-header" id="s2">
+  <h2>2　可变对象与不可变对象</h2>
+  <div class="en-title">Mutable &amp; Immutable</div>
+
+<h3 id="s2-1">2.1 可变对象与不可变对象</h3>
+</div>
+
+<table class="styled">
+  <thead><tr><th>类型</th><th>可变吗</th><th>函数里修改后，外面能看到吗</th><th>常见例子</th></tr></thead>
+  <tbody>
+    <tr><td>数字 int / float</td><td>❌ 不可变</td><td>看不到</td><td><code class="inline">10</code>、<code class="inline">3.14</code></td></tr>
+    <tr><td>字符串 str</td><td>❌ 不可变</td><td>看不到</td><td><code class="inline">"abc"</code></td></tr>
+    <tr><td>元组 tuple</td><td>❌ 不可变</td><td>看不到</td><td><code class="inline">(1, 2)</code></td></tr>
+    <tr><td><strong>列表 list</strong></td><td>✅ 可变</td><td><strong>能看到</strong></td><td><code class="inline">[1, 2, 3]</code></td></tr>
+    <tr><td><strong>字典 dict</strong></td><td>✅ 可变</td><td><strong>能看到</strong></td><td><code class="inline">{"a": 1}</code></td></tr>
+    <tr><td>集合 set</td><td>✅ 可变</td><td>能看到</td><td><code class="inline">{1, 2, 3}</code></td></tr>
+  </tbody>
+</table>
+
+<h3 id="s2-2">2.2 改内容 vs 重新赋值</h3>
+
+<figure class="pic">
+  <img src="../assets/illustrations/py-L4-05-03_param_flow.webp" alt="两条不同的输送管"
+       onerror="this.closest('.pic').classList.add('missing')">
+  <div class="ph">
+    <div class="fn">assets/illustrations/py-L4-05-03_param_flow.webp</div>
+    <div class="ds">【配图位】车间里两根并排的玻璃输送管：左边那根管子里送的是"抄好的号码纸"（不可变对象），外面的人手里还留着一张一样的纸；右边那根管子里送的是"一串钥匙"（可变对象），管子尽头直通一间能看到内部陈设的小屋；英雄站在两根管子的入口处，分别往里投东西。</div>
+  </div>
+  <figcaption>图 3：一条送的是抄本，一条送的是钥匙</figcaption>
+</figure>
+
+<div class="box warn">
+  <span class="lb">注意区分"改内容"和"重新赋值"：</span>
+  <code class="inline">lst.append(4)</code> 是<b>改内容</b>——外面能看到；<br>
+  <code class="inline">lst = [9, 9]</code> 是<b>换了一张标签</b>——外面看不到。<br>
+  <strong>这是最微妙、也最爱考的一点。</strong>
+</div>
+
+<div class="section-header" id="s3">
+  <h2>3　变量作用域</h2>
+  <div class="en-title">Scope</div>
+</div>
+
+<h3 id="s3-1">3.1 变量在哪些地方看得见</h3>
+
+<p>接下来是另一个核心问题：<strong>一个变量在哪些地方"看得见"？</strong></p>
+
+<figure class="figure">
+  <svg class="diagram" viewBox="0 0 860 300" role="img" aria-label="作用域示意">
+    <text x="24" y="34" font-size="14" font-weight="bold" fill="#1f2937">函数内部是"自己的房间"，外面看不到里面</text>
+
+    <rect x="60" y="56" width="740" height="200" rx="14" fill="#f8fcfc" stroke="#cbd5e1" stroke-width="1.8"/>
+    <text x="86" y="84" font-size="12.5" fill="#64748b" font-weight="bold">全局作用域（房间外）</text>
+    <rect x="90" y="96" width="150" height="44" rx="8" fill="#fff" stroke="#94a3b8" stroke-width="1.6"/>
+    <text x="165" y="124" text-anchor="middle" font-size="13" font-family="Consolas,monospace" fill="#334155">total = 100</text>
+
+    <rect x="300" y="96" width="460" height="140" rx="12" fill="#e6f7f5" stroke="#0e8f86" stroke-width="2.2"/>
+    <text x="530" y="122" text-anchor="middle" font-size="12.5" fill="#0a6b64" font-weight="bold">局部作用域（房间内）</text>
+    <rect x="330" y="138" width="170" height="44" rx="8" fill="#fff" stroke="#14b8a6" stroke-width="1.6"/>
+    <text x="415" y="166" text-anchor="middle" font-size="13" font-family="Consolas,monospace" fill="#0a6b64">temp = 5</text>
+    <text x="530" y="170" font-size="12" fill="#0a6b64">← 只在这个函数里活着</text>
+    <text x="530" y="200" font-size="11.5" fill="#3b7c5b">函数一结束，temp 就消失了</text>
+    <text x="530" y="222" font-size="11.5" fill="#b45309">但函数里可以"读"到外面的 total</text>
+
+    <text x="430" y="284" text-anchor="middle" font-size="12" fill="#8da0a3">规则：里面能看到外面，外面看不到里面</text>
+  </svg>
+  <div class="caption">图 4（SVG）：局部变量只在函数里活着，全局变量到处都能读</div>
+</figure>
+
+<div class="code-card">
+  <div class="code-head">
+    <span class="dot d1"></span><span class="dot d2"></span><span class="dot d3"></span>
+    <span class="file">局部变量与全局变量</span>
+    <span class="lang">Python</span>
+  </div>
+  <pre><code>total = 100            # 全局变量
+
+def show():
+    print(total)       # 可以"读"全局变量 → 100
+
+def bad():
+    print(temp)        # ✘ 报错：temp 还没定义
+
+def local():
+    temp = 5           # 这是局部变量，外面看不见
+    print(temp)
+
+show()
+local()
+print(temp)            # ✘ 报错：外面根本没有 temp</code></pre>
+  <div class="out"><b>要点</b>　函数里<b>能读</b>全局变量，但函数里新造的变量<b>出了函数就没了</b></div>
+</div>
+
+<h3 id="s3-2">3.2 三条铁律</h3>
+
+<figure class="pic">
+  <img src="../assets/illustrations/py-L4-05-02_scope_walls.webp" alt="看得见与看不见"
+       onerror="this.closest('.pic').classList.add('missing')">
+  <div class="ph">
+    <div class="fn">assets/illustrations/py-L4-05-02_scope_walls.webp</div>
+    <div class="ds">【配图位】一座被剖开的工坊：外面是一片宽敞的外院，院内放着一只标着"全局"的工具箱；院内另有两间封闭的小室，各自放着一只标着"局部"的小工具箱；几条发光箭头从外院指向小室（表示外面能往里看），另有一些箭头在小室边界被一道光墙挡住（表示从外面看不进去）；一名英雄站在外院里，另一名站在小室里。</div>
+  </div>
+  <figcaption>图 5：外院与内室，各自有自己的工具箱</figcaption>
+</figure>
+
+<div class="box remember">
+  <span class="lb">三条铁律：</span><br>
+  <b>① 函数内部可以读取全局变量；</b><br>
+  <b>② 函数内部直接赋值的变量，默认是"局部的"，外面看不到；</b><br>
+  <b>③ 函数执行完，局部变量就被销毁。</b>
+</div>
+
+<div class="section-header" id="s4">
+  <h2>4　global 关键字</h2>
+  <div class="en-title">The global Keyword</div>
+</div>
+
+<h3 id="s4-1">4.1 global 关键字</h3>
+
+<p>如果确实想在函数里修改全局变量呢？Python 提供了 <code class="inline">global</code>。</p>
+
+<div class="code-card">
+  <div class="code-head">
+    <span class="dot d1"></span><span class="dot d2"></span><span class="dot d3"></span>
+    <span class="file">用 global 声明，才能真正改到外面</span>
+    <span class="lang">Python</span>
+  </div>
+  <pre><code>total = 100
+
+def addGold(n):
+    global total       # 声明：我要改的是外面那个 total
+    total = total + n
+
+addGold(50)
+print(total)           # 150
+
+# 如果不写 global，就成了新建一个局部变量，外面永远是 100</code></pre>
+  <div class="out"><b>OUTPUT</b>　150</div>
+</div>
+
+<h3 id="s4-2">4.2 为什么建议尽量别用</h3>
+
+<div class="box warn">
+  <span class="lb">但建议尽量别用：</span>
+  <code class="inline">global</code> 让函数的"影响范围"变得不可预测——<br>
+  <strong>你调用一个函数，却不知道它偷偷改了多少全局变量</strong>，程序很快就难以维护。<br>
+  <b>更好的做法：把结果用 return 交出去，或传一个列表进去改。</b>
+</div>
+
+<div class="section-header" id="s5">
+  <h2>5　代码实战</h2>
+  <div class="en-title">Level Practice</div>
+</div>
+
+<div class="level-card">
+  <div class="lc-head"><span class="n">关卡</span><h4>联合作战</h4><span class="go">进入关卡 →</span></div>
+  <div class="lc-body">
+    <div class="story">
+      <b>故事：</b>高台的城门外，敌人正在集结。你得不断造兵、布阵，
+      可每种兵的数量都得留意——<b>造多了浪费，造少了挡不住。</b><br>
+      戈登摊开图纸：有个取巧的办法：<b>按"已经造了几个"来决定下一个造什么</b>，
+      一轮一轮地轮着来。
+    </div>
+    <p><strong>思路：</strong>用"已造数量 ÷ 兵种总数"的<strong>余数</strong>，当作下一个兵种的编号。
+  <figure class="pic ai-added"><img src="../assets/illustrations/py-L4-05-01_pipe_delivery.webp" alt="AI配图：py-L4-05-01_pipe_delivery.webp"></figure>
+    这样每轮都会自动轮换，正是"参数 + 模块化"的实战用法。</p><figure class="pic">
+      <img src="../assets/stages/py-L4-05-stage1_joint_forces.webp" alt="联合作战 关卡截图"
+           onerror="this.closest('.pic').classList.add('missing')">
+      <div class="ph">
+        <div class="fn">assets/stages/py-L4-05-stage1_joint_forces.webp</div>
+        <div class="ds">【关卡截图位】请把《联合作战》的游戏画面截图放到此处（放入 assets/stages/ 目录，文件名为 py-L4-05-stage1_joint_forces.webp）。</div>
+      </div>
+      <figcaption>关卡实况：联合作战</figcaption>
+    </figure>
+    <div class="code-card">
+      <div class="code-head">
+        <span class="dot d1"></span><span class="dot d2"></span><span class="dot d3"></span>
+        <span class="file">重点示例：用取余自动轮换</span>
+        <span class="lang">Python</span>
+      </div>
+      <pre><code>summonTypes = ["soldier", "archer", "peasant"]
+
+# 已经造了 4 个，那么下一个应该造哪种？
+# 4 % 3 = 1  → 第 1 种（archer）
+index = len(hero.built) % len(summonTypes)
+
+summonTypes[index]</code></pre>
+      <div class="out"><b>要点</b>　<code>len(hero.built)</code> 是"已造数量"，取余让它始终落在合法编号范围内</div>
+    </div>
+    <div class="box info">
+      <span class="lb">为什么取余能"循环"？</span>
+      因为 <code class="inline">0 % 3 = 0</code>、<code class="inline">1 % 3 = 1</code>、
+      <code class="inline">2 % 3 = 2</code>、<code class="inline">3 % 3 = 0</code>……<br>
+      <strong>余数永远在 0 到 2 之间打转</strong>，正好对应三个兵种的编号。
+      这是"用数学规律代替一堆 if"的典型技巧。
+    </div>
+    
+    <a class="btn-go" href="https://codecombat.cn/" target="_blank" rel="noopener">去扣哒世界闯这一关 →</a>
+  </div>
+</div>
+
+
+
+<div class="section-header" id="s6">
+  <h2>6　常见陷阱</h2>
+  <div class="en-title">Common Pitfalls</div>
+</div>
+
+<div class="cast duck">
+  <img class="ava" src="../assets/ducks/duck_naria.webp" alt="扣哒鸭" onerror="this.style.display='none'">
+  <div class="bubble">
+    <div class="who">扣哒鸭 · 调试官</div>
+    作用域的题看起来简单，但极容易"想当然"。四条，条条都在真题里出现过。
+  </div>
+</div>
+
+<div class="pit">
+  <div class="pt">
+    <div class="x">1</div>
+    <div class="t"><b>以为函数里改了数字，外面也会变。</b></div>
+  </div>
+  <div class="duck">
+    <img src="../assets/ducks/duck_zana.webp" alt="扣哒鸭" onerror="this.style.display='none'">
+    <div class="dt"><b>扣哒鸭：</b>数字和字符串是<strong>不可变</strong>的，
+    函数拿到的是"复印件"。<br>
+    改复印件，原件当然不变。想改就 <code>return</code> 出去，再在外面接住。</div>
+  </div>
+  <div class="fix"><b>正确做法：</b><code class="inline">x = change(x)</code> —— 用返回值覆盖原变量</div>
+</div>
+
+<div class="pit">
+  <div class="pt">
+    <div class="x">2</div>
+    <div class="t"><b>函数里想改全局变量，却忘了写 global。</b></div>
+  </div>
+  <div class="duck">
+    <img src="../assets/ducks/duck_hattori.webp" alt="扣哒鸭" onerror="this.style.display='none'">
+    <div class="dt"><b>扣哒鸭：</b>不写 global 的话，<code>total = total + n</code> 会先在函数里
+    <strong>新建一个局部 total</strong>，然后报"局部变量在赋值前被引用"。<br>
+    要么加 <code>global</code>，要么用返回值——后者更推荐。</div>
+  </div>
+  <div class="fix"><b>正确做法：</b>优先用 return 传结果，少用 global</div>
+</div>
+
+<div class="pit">
+  <div class="pt">
+    <div class="x">3</div>
+    <div class="t"><b>把"重新赋值"当成"修改内容"。</b>写 <code class="inline">lst = lst + [4]</code> 却期待外面变。</div>
+  </div>
+  <div class="duck">
+    <img src="../assets/ducks/duck_senick.webp" alt="扣哒鸭" onerror="this.style.display='none'">
+    <div class="dt"><b>扣哒鸭：</b><code>lst = lst + [4]</code> 会创建一个<b>新列表</b>，
+    然后让函数里的名字指向它——外面的列表毫发无损。<br>
+    要真正改内容，用 <code>lst.append(4)</code>。</div>
+  </div>
+  <div class="fix"><b>正确做法：</b>原地修改用 append / d["k"]=v；重新赋值只影响函数内部</div>
+</div>
+
+<div class="pit">
+  <div class="pt">
+    <div class="x">4</div>
+    <div class="t"><b>在函数外使用函数里的局部变量。</b></div>
+  </div>
+  <div class="duck">
+    <img src="../assets/ducks/duck_illia.webp" alt="扣哒鸭" onerror="this.style.display='none'">
+    <div class="dt"><b>扣哒鸭：</b>会报 <code>NameError: name 'temp' is not defined</code>。<br>
+    <strong>函数一结束，它的局部变量就销毁了。</strong>
+    想让结果活下来，就必须 return 出来。</div>
+  </div>
+  <div class="fix"><b>正确做法：</b>返回值 + 在外面用变量接住</div>
+</div>
+
+<div class="section-header" id="s7">
+  <h2>7　题目练习</h2>
+  <div class="en-title">Practice</div>
+</div>
+
+<p>第 1 题改编自 2026 年 9 月 · Python 四级 第 5 题，其余为原创练习题。</p>
+
+<div class="exam">
+  <div class="eh"><span class="src">改编自 2026 年 9 月 · Python 四级 · 第 5 题</span><span class="tp">单选题</span></div>
+  <div class="eb">
+    <div class="q">高台的调度室里，函数接收了一个字典。执行下面 Python 代码后，输出的结果是（　　）。<br><pre>1  def func(d):
+2      d = {'new': 'value'}
+3      return d
+4
+5  data = {'old': 'data'}
+6  func(data)
+7  print(data)</pre></div>
+    <div class="opt"><i>A.</i>{}　　<i>B.</i>{'new': 'value'}　　<i>C.</i>{'old': 'data'}　　<i>D.</i>报错</div>
+    <details><summary>查看答案与详解</summary>
+      <div class="ans"><b>答案：C</b>。关键在于第 2 行的 <code class="inline">d = {'new': 'value'}</code> 是<strong>重新赋值</strong>，不是修改字典内容。<br>它做的是"把形参 d 这个<strong>名字</strong>指向一个新字典"，外面 <code class="inline">data</code> 这个名字<strong>完全没被碰到</strong>；函数返回的新字典也没人接住（第 6 行没有赋值），所以 <code class="inline">data</code> 还是原来的内容。<br><b>对比一下：</b>如果第 2 行写成 <code class="inline">d['new'] = 'value'</code>（改内容而不是换名字），那外面的字典就会跟着变。<br><b>一句话分清：</b><br>· <code class="inline">d = …</code> —— 换了个对象，<strong>外面不受影响</strong>；<br>· <code class="inline">d[键] = …</code>／<code class="inline">d.append(…)</code> —— 改的是同一个对象，<strong>外面会变</strong>。<br><span class="tagline">对应小节</span>2 可变对象与不可变对象。</div>
+    </details>
+  </div>
+</div>
+<div class="exam">
+  <div class="eh"><span class="src ori">原创练习题</span><span class="tp">单选题</span></div>
+  <div class="eb">
+    <div class="q">下列 Python 代码执行后，输出的结果是（　　）。</div>
+    <pre>1  def f(n):
+2      n = n + 10
+3  x = 5
+4  f(x)
+5  print(x)</pre>
+    <div class="opt"><i>A.</i>5　　<i>B.</i>15　　<i>C.</i>None　　<i>D.</i>报错</div>
+    <details><summary>查看答案与详解</summary>
+      <div class="ans"><b>答案：A</b>。数字是<b>不可变</b>对象，函数里修改形参 <code class="inline">n</code>
+      不会影响外面的 <code class="inline">x</code>。<br>
+      <b>正确做法：</b>如果想让 x 变成 15，应该写成
+      <code class="inline">def f(n): return n + 10</code>，然后在外面
+      <code class="inline">x = f(x)</code>。<br>
+      <span class="tagline">对应小节</span>1 参数是怎么传进去的。</div>
+    </details>
+  </div>
+</div>
+
+<div class="exam">
+  <div class="eh"><span class="src ori">原创练习题</span><span class="tp">单选题</span></div>
+  <div class="eb">
+    <div class="q">下列 Python 代码执行后，输出的结果是（　　）。</div>
+    <pre>1  def addItem(lst):
+2      lst.append(9)
+3  a = [1, 2]
+4  addItem(a)
+5  print(a)</pre>
+    <div class="opt"><i>A.</i>[1, 2]　　<i>B.</i>[1, 2, 9]　　<i>C.</i>[9]　　<i>D.</i>报错</div>
+    <details><summary>查看答案与详解</summary>
+      <div class="ans"><b>答案：B</b>。列表是<b>可变</b>对象，函数里的 <code class="inline">lst</code>
+      和外面的 <code class="inline">a</code> 指向的是<b>同一个列表</b>，所以 append 的改动外面看得见。<br>
+      <b>对比上一题：</b>数字"复印"，列表"借原件"。<br>
+      <span class="tagline">对应小节</span>1 参数是怎么传进去的；2 可变对象与不可变对象。</div>
+    </details>
+  </div>
+</div>
+
+<div class="exam">
+  <div class="eh"><span class="src ori">原创练习题</span><span class="tp">判断题</span></div>
+  <div class="eb">
+    <div class="q">函数内部可以直接读取全局变量的值。（　　）</div>
+    <details><summary>查看答案与详解</summary>
+      <div class="ans"><b>答案：正确（√）</b>。作用域的规则是"里面能看到外面"：<br>
+      函数内部可以<b>读取</b>全局变量；但如果在函数里对它<b>赋值</b>，
+      Python 会认为你在创建一个同名局部变量（除非用 <code class="inline">global</code> 声明）。<br>
+      <span class="tagline">对应小节</span>3 变量作用域。</div>
+    </details>
+  </div>
+</div>
+
+<div class="exam">
+  <div class="eh"><span class="src ori">原创练习题</span><span class="tp">单选题</span></div>
+  <div class="eb">
+    <div class="q">下列 Python 代码执行后，输出的结果是（　　）。</div>
+    <pre>1  total = 10
+2  def add(n):
+3      global total
+4      total = total + n
+5  add(5)
+6  print(total)</pre>
+    <div class="opt"><i>A.</i>10　　<i>B.</i>15　　<i>C.</i>None　　<i>D.</i>报错</div>
+    <details><summary>查看答案与详解</summary>
+      <div class="ans"><b>答案：B</b>。<code class="inline">global total</code> 声明了"我要改的是外面那个 total"，
+      所以 <code class="inline">total = total + 5</code> 真的把全局变量改成了 <b>15</b>。<br>
+      <b>如果删掉 global 那一行</b>，就会报 UnboundLocalError。<br>
+      <span class="tagline">对应小节</span>4 global 关键字。</div>
+    </details>
+  </div>
+</div>
+
+<div class="exam">
+  <div class="eh"><span class="src ori">原创练习题</span><span class="tp">单选题</span></div>
+  <div class="eb">
+    <div class="q">下列 Python 代码执行后，输出的结果是（　　）。</div>
+    <pre>1  def f(lst):
+2      lst = [9, 9]
+3  a = [1, 2]
+4  f(a)
+5  print(a)</pre>
+    <div class="opt"><i>A.</i>[9, 9]　　<i>B.</i>[1, 2]　　<i>C.</i>[]　　<i>D.</i>报错</div>
+    <details><summary>查看答案与详解</summary>
+      <div class="ans"><b>答案：B</b>。<code class="inline">lst = [9, 9]</code> 是<b>重新赋值</b>——
+      它让函数里的名字 <code class="inline">lst</code> 指向一个新的列表，<br>
+      外面那个 <code class="inline">a</code> 完全没动，仍然是 <b>[1, 2]</b>。<br>
+      <b>对比：</b>如果用 <code class="inline">lst.append(9)</code> 就会改变 a。这就是"改内容"和"换标签"的区别。<br>
+      <span class="tagline">对应小节</span>2 可变对象与不可变对象。</div>
+    </details>
+  </div>
+</div>
+
+<div class="exam">
+  <div class="eh"><span class="src ori">原创练习题</span><span class="tp">判断题</span></div>
+  <div class="eb">
+    <div class="q">函数执行结束后，函数内部定义的局部变量仍然可以在函数外访问。（　　）</div>
+    <details><summary>查看答案与详解</summary>
+      <div class="ans"><b>答案：错误（×）</b>。局部变量的"生命周期"只在函数执行期间，
+      函数一返回它就被销毁，函数外访问会报 <code class="inline">NameError</code>。<br>
+      想让结果活下来，必须用 <code class="inline">return</code> 交出来。<br>
+      <span class="tagline">对应小节</span>3 变量作用域。</div>
+    </details>
+  </div>
+</div>
+
+<div class="exam">
+  <div class="eh"><span class="src ori">原创练习题</span><span class="tp">编程题</span></div>
+  <div class="eb">
+    <div class="q">题目要求：定义一个函数 <code class="inline">doubleAll(nums)</code>，
+    把传入列表里的每个数字都翻倍（要求原地修改，调用后原列表真的变了），再输出新列表。</div>
+    <details><summary>查看参考答案与要点</summary>
+      <div class="ans">
+<pre style="margin:0;background:#14231f;color:#c3d6d1;border-radius:10px;padding:14px 16px">def doubleAll(nums):
+    for i in range(len(nums)):
+        nums[i] = nums[i] * 2      # 直接改列表里的元素
+
+a = [1, 2, 3]
+doubleAll(a)
+print(a)                           # [2, 4, 6]</pre>
+      <p style="margin-top:12px"><b>输出：</b>[2, 4, 6]<br>
+      <b>要点：</b><br>
+      ① 列表是可变对象，<b>按下标修改元素</b>会真正改动外面那个列表；<br>
+      ② 如果写成 <code class="inline">nums = [x*2 for x in nums]</code>，
+      那就变成了"重新赋值"，外面看不到变化；<br>
+      ③ 若不想改动原列表，就应该用 <code class="inline">return</code> 返回新列表，让调用方自己接住。<br>
+      <span class="tagline">对应小节</span>1 参数是怎么传进去的；2 可变对象与不可变对象。</p>
+      </div>
+    </details>
+  </div>
+</div>
+
+<div class="section-header" id="s8">
+  <h2>8　本单元小结</h2>
+  <div class="en-title">Unit Summary</div>
+</div>
+
+<div class="cast teacher">
+  <img class="ava" src="../assets/avatars/gordon.webp" alt="戈登" onerror="this.style.display='none'">
+  <div class="bubble">
+    <div class="who">戈登 · 齿轮工程师</div>
+    这一单元只有三句话，但每一句都直接对应考题：<br>
+    <strong>一、数字字符串传"副本"，列表字典传"原件"。</strong><br>
+    <strong>二、函数里能读全局变量；但里面对它赋值就会变成新的局部变量。</strong><br>
+    <strong>三、想让函数带回结果，首选 return，尽量别用 global。</strong><br>
+    把这三句记牢，四级里所有作用域的题你都能拿下。
+  </div>
+</div>
+
+<div class="summary">
+  <h3>你在参数输送管前收获了什么</h3>
+  <ul>
+    <li><strong>传参规则</strong>——不可变对象传副本，函数里改外面看不到；可变对象传同一份，函数里改外面能看到。</li>
+    <li><strong>可变与不可变</strong>——数字、字符串、元组不可变；列表、字典、集合可变。</li>
+    <li><strong>改内容 vs 换标签</strong>——<code class="inline">lst.append(x)</code> 外面能看到；<code class="inline">lst = [...]</code> 外面看不到。</li>
+    <li><strong>作用域</strong>——函数内部是局部作用域，外面是全局作用域；"里面能看外面，外面看不到里面"。</li>
+    <li><strong>局部变量</strong>——函数一结束就销毁，外面无法访问。</li>
+    <li><strong>global</strong>——声明后才能修改全局变量；但更推荐用 return。</li>
+    <li><strong>实战技巧</strong>——想让函数"带回多个结果"，可以传列表进去原地修改。</li>
+  </ul>
+</div>
+
+<div class="pager">
+  <a href="py-4-04.html"><div class="k">← 上一单元</div><div class="v">模块化车间 · 函数与模块化编程</div></a>
+  <a href="../index.html" target="_top" class="back"><div class="k">返回</div><div class="v">考纲之路 · 总目录</div></a>
+  <a href="py-4-06.html"><div class="k">下一单元 →</div><div class="v">齿轮传动链 · 递推算法</div></a>
+</div>
+
+<div class="cta">
+  <h3>下一站：齿轮传动链</h3>
+  <p>一排齿轮咬合在一起，第一个转一圈，第二个转两圈，第三个转三圈……
+  <b>后面的动作，全靠前面的结果推出来。</b>下一单元，我们聊聊递推。</p>
+  <a class="btn-go" href="https://codecombat.cn/" target="_blank" rel="noopener">加入扣哒世界，把这条考纲之路走一遍 →</a>
+</div>
+</div><!-- /container -->
+</div><!-- /page -->
+
+<script>
+const KEYWORDS = new Set(("while for if elif else break continue def return pass not and or in is None True False " +
+  "int float bool str list dict tuple set input print range len abs max min round pow import math random chr ord bin hex oct sum append copy keys values items").split(" "));
+
+function esc(s){ return s.replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;'); }
+
+function highlight(src){
+  let out = '', i = 0;
+  const n = src.length;
+  while (i < n){
+    const c = src[i];
+    if (c === '#'){
+      let j = src.indexOf('\n', i); if (j < 0) j = n;
+      out += '<span class="cm">' + esc(src.slice(i, j)) + '</span>';
+      i = j; continue;
+    }
+    if (c === '"' || c === "'"){
+      let j = i + 1;
+      while (j < n && src[j] !== c){ if (src[j] === '\\') j++; j++; }
+      j = Math.min(j + 1, n);
+      out += '<span class="st">' + esc(src.slice(i, j)) + '</span>';
+      i = j; continue;
+    }
+    if (/[0-9]/.test(c)){
+      let j = i;
+      while (j < n && /[0-9.]/.test(src[j])) j++;
+      out += '<span class="nu">' + esc(src.slice(i, j)) + '</span>';
+      i = j; continue;
+    }
+    if (/[A-Za-z_]/.test(c)){
+      let j = i;
+      while (j < n && /[A-Za-z0-9_]/.test(src[j])) j++;
+      const w = src.slice(i, j);
+      if (KEYWORDS.has(w)) out += '<span class="kw">' + esc(w) + '</span>';
+      else if (src[j] === '(') out += '<span class="fn">' + esc(w) + '</span>';
+      else out += esc(w);
+      i = j; continue;
+    }
+    out += esc(c); i++;
+  }
+  return out;
+}
+
+document.querySelectorAll('.code-card pre code').forEach(block => {
+  block.innerHTML = highlight(block.textContent);
+});
+
+if (location.search.indexOf('expand') >= 0) {
+  document.querySelectorAll('details').forEach(d => d.open = true);
+}
+document.querySelectorAll('.sidebar-nav a').forEach(a => {
+  a.addEventListener('click', () => {
+    if (window.innerWidth <= 900) document.querySelector('.sidebar-nav').classList.remove('active');
+  });
+});
+</script>
+</body>
+</html>

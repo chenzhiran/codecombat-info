@@ -1,0 +1,1035 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="copyright" content="CodeCombat Inc. codecombat.cn">
+<title>传送带枢纽 · 复合数据类型的嵌套 | 扣哒考级 · GESP Python 四级</title>
+<style>
+  :root{
+    --primary:#0e8f86; --primary-light:#14b8a6; --primary-lighter:#e6f7f5; --primary-dark:#0a6b64;
+    --brand:#ff6b35; --brand-dark:#e8541f; --brand-soft:#fff3ec;
+    --night:#0f1b22; --night-2:#16323a; --gold:#f5b301;
+    --text:#22333a; --dim:#5f7276; --dim2:#8da0a3;
+    --bg:#ffffff; --bg-soft:#f6fbfa; --line:#dceceb; --sidebar:274px;
+    --code-bg:#14231f; --code-tx:#c3d6d1;
+    --code-kw:#c678dd; --code-st:#98c379; --code-nu:#d19a66; --code-cm:#68807a; --code-fn:#61afef;
+  }
+  *{margin:0;padding:0;box-sizing:border-box}
+  html{scroll-behavior:smooth}
+  body{font-family:"PingFang SC","Microsoft YaHei","Segoe UI",-apple-system,sans-serif;line-height:1.9;color:var(--text);background:var(--bg);font-size:15.5px}
+  .sidebar-nav{position:fixed;top:0;left:0;width:var(--sidebar);height:100vh;overflow-y:auto;background:linear-gradient(180deg,#0c1a1e,#123037);padding:14px 0 40px;z-index:100;border-right:3px solid var(--brand);transition:transform .3s ease}
+  .sidebar-nav::-webkit-scrollbar{width:5px}
+  .sidebar-nav::-webkit-scrollbar-thumb{background:var(--brand);border-radius:4px}
+  .sb-brand{display:flex;align-items:center;gap:10px;padding:10px 13px 12px;border-bottom:1px solid #1d3d44;margin-bottom:8px}
+  .sidebar-nav a.sb-logo{display:flex;align-items:center;justify-content:center;flex-shrink:0;padding:0;border-left:none;transition:.2s}
+  .sb-logo:hover{transform:scale(1.08)}
+  .sb-logo img{height:34px;width:34px;display:block;object-fit:contain;border-radius:8px}
+  .sb-brand b{color:#eef7f6;font-size:14px;letter-spacing:.5px;display:block;line-height:1.4}
+  .sb-brand span{color:#7ba3a6;font-size:11.5px;display:block;line-height:1.4}
+  .nav-title{color:#ffb894;font-size:12px;font-weight:800;padding:10px 18px 6px;letter-spacing:1.2px}
+  .sidebar-nav a{display:block;color:#bcd3d4;text-decoration:none;padding:6px 18px;font-size:12.5px;line-height:1.55;border-left:3px solid transparent;transition:.18s}
+  .sidebar-nav a:hover{color:#fff;background:rgba(255,107,53,.16);border-left-color:var(--brand)}
+  .sidebar-nav a.nav-section{color:#ffb894;font-weight:700;font-size:13px;margin-top:11px;padding-top:10px;border-top:1px solid #1d3d44}
+  .sidebar-nav a.nav-section:first-of-type{border-top:none;margin-top:0;padding-top:6px}
+  .sidebar-nav a.nav-sub{padding-left:30px;color:#8fabad;font-size:12px}
+  .sidebar-nav a.nav-sub:hover{color:#fff}
+  .sb-back{margin:16px 14px 0;display:block;text-align:center;padding:9px;border-radius:9px;background:#1c3940;color:#a6c0c2 !important;font-size:12px;font-weight:700;border-left:none !important}
+  .sb-back:hover{background:var(--brand) !important;color:#fff !important}
+  .nav-toggle{display:none;position:fixed;top:14px;left:14px;z-index:120;background:var(--brand);color:#fff;border:none;border-radius:9px;padding:9px 13px;font-size:15px;cursor:pointer;box-shadow:0 4px 14px rgba(0,0,0,.25)}
+  .page{margin-left:var(--sidebar)}
+  .hero{position:relative;overflow:hidden;padding:44px 52px;color:#fff;background:linear-gradient(125deg,#0b171b 0%,#143038 46%,#8a3a16 132%)}
+  .hero::after{content:"";position:absolute;right:-90px;top:-110px;width:400px;height:400px;border-radius:50%;background:radial-gradient(circle,rgba(245,179,1,.30),transparent 68%)}
+  .hero-top{display:flex;gap:36px;align-items:center;position:relative;z-index:2}
+  .hero-txt{flex:1;min-width:0}
+  .hero .crumb{font-size:11.5px;color:#ffb894;letter-spacing:1.5px;font-weight:700;margin-bottom:14px}
+  .hero h1{font-size:31px;font-weight:800;line-height:1.3;letter-spacing:.6px;margin-bottom:8px}
+  .hero h1 .sub{display:block;font-size:18px;font-weight:700;color:#ffd2b3;margin-top:6px;letter-spacing:.3px}
+  .hero .en{font-size:13px;color:#98b6b8;font-style:italic;margin-bottom:18px}
+  .hero .tags{display:flex;flex-wrap:wrap;gap:8px}
+  .tag{font-size:11.5px;padding:4px 12px;border-radius:20px;background:rgba(255,255,255,.12);border:1px solid rgba(255,255,255,.22);color:#e8f0f6;font-weight:600}
+  .tag.hot{background:rgba(255,107,53,.92);border-color:transparent;color:#fff}
+  .hero-card{flex-shrink:0;width:200px;text-align:center}
+  .hero-card .ava{width:148px;height:148px;border-radius:50%;object-fit:cover;object-position:top center;border:4px solid rgba(255,180,140,.6);box-shadow:0 14px 34px rgba(0,0,0,.45);background:#24344a}
+  .hero-card .nm{font-size:15px;font-weight:800;color:#fff;margin-top:10px}
+  .hero-card .ti{font-size:11.5px;color:#ffb894;margin-top:2px}
+  .container{max-width:1080px;margin:0 auto;padding:38px 52px 70px}
+  .lead{font-size:15.5px;line-height:2.05;color:#35474a;background:linear-gradient(120deg,#fff8f3,#f6fbfa);border-left:5px solid var(--brand);border-radius:0 14px 14px 0;padding:22px 26px;margin-bottom:32px}
+  .lead b{color:var(--brand-dark)}
+  .cast{display:flex;gap:16px;align-items:flex-start;border-radius:16px;padding:18px 22px;margin:24px 0}
+  .cast .ava{width:72px;height:72px;border-radius:50%;object-fit:cover;object-position:top center;flex-shrink:0;background:#e8eef5}
+  .cast .bubble{position:relative;font-size:14px;line-height:1.95;padding-top:2px;flex:1}
+  .cast .who{font-size:12px;font-weight:800;margin-bottom:5px;letter-spacing:.5px}
+  .cast.anya{background:var(--brand-soft);border:1px solid #ffdcc9}
+  .cast.anya .who{color:var(--brand-dark)}
+  .cast.anya .bubble{color:#5c4636}
+  .cast.duck{background:#fff5f5;border:1px solid #fbd5d5}
+  .cast.duck .who{color:#b91c1c}
+  .cast.duck .bubble{color:#5c4141}
+  .cast.teacher{background:linear-gradient(120deg,#f1f8f8,#ffffff);border:1px solid #d6e8e8}
+  .cast.teacher .who{color:#134e4a}
+  .cast.teacher .bubble{color:#3c5254}
+  .cast.hero{background:#f2fbf9;border:1px solid #cfe9e6}
+  .cast.hero .who{color:#0f766e}
+  .cast.hero .bubble{color:#3d5250}
+  .goal-grid{display:grid;grid-template-columns:1fr 1fr;gap:16px;margin-bottom:36px}
+  .goal{border:1px solid var(--line);border-radius:15px;padding:19px 21px;background:#fff;box-shadow:0 4px 16px rgba(14,143,134,.06)}
+  .goal h4{font-size:14px;font-weight:800;margin-bottom:11px;display:flex;align-items:center;gap:8px;color:var(--primary-dark)}
+  .goal h4 .ic{width:22px;height:22px;border-radius:7px;background:var(--primary-lighter);display:flex;align-items:center;justify-content:center;font-size:12px}
+  .goal ul{list-style:none}
+  .goal li{font-size:13.5px;color:#46585a;line-height:1.9;padding-left:18px;position:relative}
+  .goal li::before{content:"▸";position:absolute;left:0;color:var(--primary);font-weight:800}
+  .goal.syllabus li::before{content:"✓"}
+  .section-header{margin:52px 0 24px;padding-bottom:12px;border-bottom:3px solid var(--brand);display:flex;align-items:baseline;gap:14px;flex-wrap:wrap}
+  .section-header h2{font-size:22px;font-weight:800;color:var(--night);letter-spacing:.4px}
+  .section-header .en-title{font-size:12px;color:var(--dim2);font-style:italic}
+  h3{font-size:17.5px;font-weight:800;margin:34px 0 14px;color:var(--night);display:flex;align-items:center;gap:10px}
+  h3::before{content:"";width:5px;height:17px;border-radius:3px;background:var(--brand);flex-shrink:0}
+  h4{font-size:15px;font-weight:800;margin:24px 0 10px;color:#2c4a48}
+  p{margin:12px 0;color:#3d5250;line-height:2}
+  strong{color:var(--primary-dark)}
+  code.inline{background:var(--primary-lighter);color:var(--primary-dark);padding:2px 7px;border-radius:6px;font-family:"SFMono-Regular",Consolas,Menlo,monospace;font-size:.9em;font-weight:600}
+  .figure{margin:24px 0;text-align:center}
+  .figure svg.diagram{max-width:100%;height:auto;background:#fff;border:1px solid var(--line);border-radius:14px;padding:10px}
+  .figure .caption{font-size:12.5px;color:var(--dim2);margin-top:9px}
+  .pic{margin:26px 0;text-align:center}
+  .pic img{max-width:100%;border-radius:16px;box-shadow:0 10px 28px rgba(20,60,60,.15);display:block;margin:0 auto}
+  .pic figcaption{font-size:12.5px;color:var(--dim2);margin-top:9px}
+  .pic .ph{display:none}
+  .pic.missing img{display:none}
+  .pic.missing .ph{display:flex;flex-direction:column;align-items:center;justify-content:center;gap:9px;border:2px dashed #bfdcd9;border-radius:16px;background:linear-gradient(135deg,#f8fdfc,#eef8f7);padding:40px 26px;color:#6f8f90}
+  .pic.missing .ph .fn{font-family:Consolas,monospace;font-size:12.5px;color:#0e8f86;font-weight:700;word-break:break-all}
+  .pic.missing .ph .ds{font-size:12.5px;line-height:1.8;max-width:560px}
+  .box{border-radius:13px;padding:16px 20px;margin:20px 0;font-size:14px;line-height:1.95}
+  .box .lb{font-weight:800;margin-right:6px}
+  .info{background:#eef6ff;border-left:5px solid #3b82f6;color:#274768}
+  .info .lb{color:#1d4ed8}
+  .tip{background:#fff9ec;border-left:5px solid #f59e0b;color:#6b4e13}
+  .tip .lb{color:#b45309}
+  .remember{background:var(--primary-lighter);border-left:5px solid var(--primary);color:#134e4a}
+  .remember .lb{color:var(--primary-dark)}
+  .warn{background:#fef2f2;border-left:5px solid #ef4444;color:#7f2b2b}
+  .warn .lb{color:#b91c1c}
+  .code-card{margin:20px 0;border-radius:14px;overflow:hidden;box-shadow:0 10px 28px rgba(15,40,40,.20)}
+  .code-head{display:flex;align-items:center;gap:9px;background:#1b322d;padding:9px 14px}
+  .code-head .dot{width:10px;height:10px;border-radius:50%}
+  .code-head .d1{background:#ff5f57}.code-head .d2{background:#febc2e}.code-head .d3{background:#28c840}
+  .code-head .file{color:#8fb0aa;font-size:11.5px;font-family:Consolas,monospace;margin-left:6px}
+  .code-head .lang{margin-left:auto;font-size:10.5px;font-weight:800;color:#0b1f1a;background:#2dd4bf;padding:2px 9px;border-radius:6px;letter-spacing:.4px}
+  .code-card pre{background:var(--code-bg);padding:18px 20px;overflow-x:auto;margin:0;font-family:"SFMono-Regular",Consolas,"Courier New",monospace;font-size:13.5px;line-height:1.85}
+  .code-card pre::-webkit-scrollbar{height:8px}
+  .code-card pre::-webkit-scrollbar-thumb{background:#2f4a45;border-radius:4px}
+  .code-card code{color:var(--code-tx);white-space:pre}
+  .kw{color:var(--code-kw);font-weight:600}
+  .st{color:var(--code-st)}
+  .nu{color:var(--code-nu)}
+  .cm{color:var(--code-cm);font-style:italic}
+  .fn{color:var(--code-fn)}
+  .out{background:#0e1d1a;color:#7fd6b8;font-family:Consolas,monospace;font-size:13px;padding:12px 20px;border-top:1px solid #223a35}
+  .out b{color:#c3d6d1;font-weight:600;font-size:11.5px;letter-spacing:1px}
+  table.styled{width:100%;border-collapse:collapse;margin:20px 0;font-size:13.5px;border-radius:12px;overflow:hidden;box-shadow:0 4px 16px rgba(14,143,134,.08)}
+  table.styled thead{background:var(--brand)}
+  table.styled th{color:#fff;padding:11px 14px;text-align:left;font-weight:700;font-size:13px}
+  table.styled td{padding:10px 14px;border-bottom:1px solid var(--line);color:#44585a;vertical-align:top}
+  table.styled tbody tr:nth-child(even){background:var(--bg-soft)}
+  table.styled tbody tr:last-child td{border-bottom:none}
+  .level-card{border:1px solid var(--line);border-radius:16px;overflow:hidden;margin:22px 0;box-shadow:0 6px 22px rgba(14,143,134,.08)}
+  .level-card .lc-head{background:linear-gradient(100deg,#12262c,#8a3a16);color:#fff;padding:15px 22px;display:flex;align-items:center;gap:12px;flex-wrap:wrap}
+  .level-card .lc-head .n{font-size:12px;font-weight:800;background:rgba(255,255,255,.2);padding:3px 10px;border-radius:20px}
+  .level-card .lc-head h4{margin:0;color:#fff;font-size:16px}
+  .level-card .lc-head .go{margin-left:auto;font-size:11.5px;color:#ffd2b3}
+  .level-card .lc-body{padding:20px 24px;background:#fff}
+  .level-card .story{background:#f8fcfc;border-left:4px solid #7dd3fc;border-radius:0 10px 10px 0;padding:13px 18px;margin:0 0 16px;font-size:14px;line-height:1.95;color:#3c5254}
+  .level-card .story b{color:#0369a1}
+  .btn-go{display:inline-flex;align-items:center;gap:8px;background:linear-gradient(135deg,var(--brand),var(--brand-dark));color:#fff;text-decoration:none;font-weight:800;font-size:13.5px;padding:10px 22px;border-radius:11px;box-shadow:0 8px 20px rgba(255,107,53,.32);transition:.2s}
+  .btn-go:hover{transform:translateY(-2px);box-shadow:0 12px 26px rgba(255,107,53,.42)}
+  .pit{border:1px solid #f6dede;border-radius:14px;overflow:hidden;margin:16px 0;background:#fff}
+  .pit .pt{display:flex;gap:12px;padding:14px 18px;background:#fffafa;align-items:flex-start}
+  .pit .x{width:26px;height:26px;border-radius:9px;background:#fee;color:#dc2626;display:flex;align-items:center;justify-content:center;font-weight:800;flex-shrink:0;font-size:13px}
+  .pit .t{font-size:13.5px;line-height:1.9;color:#5c4a4a;flex:1}
+  .pit .t b{color:#b91c1c}
+  .pit .duck{display:flex;gap:12px;padding:13px 18px;background:#fff5f5;border-top:1px dashed #f3d0d0;align-items:flex-start}
+  .pit .duck img{width:48px;height:48px;object-fit:contain;flex-shrink:0;margin-top:2px}
+  .pit .duck .dt{font-size:13.5px;line-height:1.9;color:#7a3b3b}
+  .pit .duck .dt b{color:#b91c1c}
+  .pit .fix{padding:12px 18px;background:#f2fbf9;border-top:1px dashed #cfe9e6;font-size:13.5px;color:#134e4a}
+  .pit .fix b{color:var(--primary-dark)}
+  .exam{border:1px solid #d8ebea;border-radius:15px;margin:16px 0;overflow:hidden;background:#fff;box-shadow:0 4px 16px rgba(30,80,80,.06)}
+  .exam .eh{display:flex;align-items:center;gap:10px;padding:11px 18px;background:linear-gradient(100deg,#eef8f7,#f8fdfc);border-bottom:1px solid #dbeceb;flex-wrap:wrap}
+  .exam .eh .src{font-size:11px;font-weight:800;color:#fff;background:#0e8f86;padding:2.5px 10px;border-radius:20px}
+  .exam .eh .src.ori{background:#0e9488}
+  .exam .eh .tp{font-size:11.5px;color:#4f7d7a;font-weight:700}
+  .exam .eb{padding:16px 20px}
+  .exam .q{font-weight:700;font-size:14px;color:#2b4042;line-height:1.9;margin-bottom:10px}
+  .exam .opt{font-size:13.5px;color:#46585a;line-height:2.05;padding-left:6px}
+  .exam .opt i{font-style:normal;font-weight:800;color:var(--primary-dark);margin-right:7px}
+  .exam pre{margin:12px 0;background:#14231f;border-radius:10px;padding:14px 16px;overflow-x:auto;font-family:Consolas,monospace;font-size:13px;line-height:1.8;color:var(--code-tx)}
+  .exam details{margin-top:10px;border-top:1px dashed var(--line);padding-top:10px}
+  .exam summary{cursor:pointer;font-size:12.5px;font-weight:800;color:#0e8f86;outline:none;user-select:none}
+  .exam details .ans{font-size:13.5px;color:#3d5250;line-height:1.95;margin-top:9px;background:var(--bg-soft);padding:13px 16px;border-radius:10px}
+  .exam details .ans b{color:var(--primary-dark)}
+  .exam details .ans .tagline{display:inline-block;font-size:11px;background:#e0f2fe;color:#0e7490;padding:1.5px 8px;border-radius:6px;font-weight:700;margin-right:6px}
+  .summary{margin:40px 0 20px;border-radius:18px;padding:26px 30px;background:linear-gradient(130deg,#fff8f3,#ffffff);border:1px solid #ffe0cf}
+  .summary h3{margin-top:0}
+  .summary ul{list-style:none;margin-top:10px}
+  .summary li{font-size:14px;line-height:2;color:#3d5250;padding-left:24px;position:relative}
+  .summary li::before{content:"◆";position:absolute;left:0;color:var(--brand);font-size:11px;top:6px}
+  .pager{display:flex;gap:14px;margin-top:30px;flex-wrap:wrap}
+  .pager a{flex:1;min-width:200px;text-decoration:none;border:1px solid var(--line);border-radius:14px;padding:16px 20px;background:#fff;transition:.2s;display:block}
+  .pager a:hover{border-color:var(--brand);box-shadow:0 10px 26px rgba(255,107,53,.14);transform:translateY(-2px)}
+  .pager a .k{font-size:11px;color:var(--dim2);font-weight:700;letter-spacing:1px}
+  .pager a .v{font-size:14px;font-weight:800;color:var(--night);margin-top:5px}
+  .pager a.back{background:var(--brand-soft);border-color:transparent;text-align:center}
+  .pager a.back .v{color:var(--brand-dark)}
+  .cta{margin-top:26px;border-radius:20px;padding:30px 34px;color:#fff;position:relative;overflow:hidden;background:linear-gradient(120deg,#12242a,#1e4a52 46%,#a8431c 132%)}
+  .cta::after{content:"";position:absolute;right:-70px;bottom:-90px;width:280px;height:280px;border-radius:50%;background:radial-gradient(circle,rgba(255,140,80,.45),transparent 68%)}
+  .cta h3{color:#fff;margin:0 0 10px;position:relative;z-index:2}
+  .cta h3::before{background:var(--brand)}
+  .cta p{color:#cfe4e2;font-size:13.5px;margin:0 0 18px;position:relative;z-index:2;max-width:640px}
+  .cta .btn-go{position:relative;z-index:2}
+  @media(max-width:900px){
+    .sidebar-nav{transform:translateX(-100%)}
+    .sidebar-nav.active{transform:translateX(0)}
+    .nav-toggle{display:block}
+    .page{margin-left:0}
+    .hero{padding:70px 22px 34px}
+    .hero-top{flex-direction:column-reverse;text-align:center}
+    .hero-card{width:auto}
+    .container{padding:26px 20px 60px}
+    .goal-grid{grid-template-columns:1fr}
+  }
+</style>
+</head>
+<body>
+
+<button class="nav-toggle" onclick="document.querySelector('.sidebar-nav').classList.toggle('active')">☰</button>
+
+<nav class="sidebar-nav">
+  <div class="sb-brand">
+    <a class="sb-logo" href="https://codecombat.cn/" target="_blank" rel="noopener" title="访问 CodeCombat 扣哒世界官网">
+      <img src="../assets/logo.png" alt="CodeCombat 扣哒世界">
+    </a>
+    <div><b>传送带枢纽</b><span>齿轮高台 · Python 四级 第 1 单元</span></div>
+  </div>
+  <div class="nav-title">本单元目录</div>
+
+  <a href="#s0" class="nav-section">0　单元导语与目标</a>
+  <a href="#s0-1" class="nav-sub">0.1 学习目标</a>
+  <a href="#s0-2" class="nav-sub">0.2 考纲对照</a>
+  <a href="#s1" class="nav-section">1　什么是"嵌套"</a>
+  <a href="#s1-1" class="nav-sub">1.1 什么是"嵌套"</a>
+  <a href="#s1-2" class="nav-sub">1.2 一句话理解</a>
+  <a href="#s2" class="nav-section">2　列表里放列表</a>
+  <a href="#s2-1" class="nav-sub">2.1 二维列表怎么读</a>
+  <a href="#s2-2" class="nav-sub">2.2 读法口诀</a>
+  <a href="#s3" class="nav-section">3　列表里放字典</a>
+  <a href="#s3-1" class="nav-sub">3.1 字典装得下什么</a>
+  <a href="#s3-2" class="nav-sub">3.2 列表和字典各管什么</a>
+  <a href="#s3-3" class="nav-sub">3.3 列表里放字典</a>
+  <a href="#s4" class="nav-section">4　一步步"拆"开数据</a>
+  <a href="#s4-1" class="nav-sub">4.1 一层一层拆开</a>
+  <a href="#s4-2" class="nav-sub">4.2 拆数据的建议</a>
+  <a href="#s5" class="nav-section">5　遍历嵌套数据</a>
+  <a href="#s5-1" class="nav-sub">5.1 嵌套结构要用嵌套循环</a>
+  <a href="#s5-2" class="nav-sub">5.2 外层管箱子，内层管格子</a>
+  <a href="#s6" class="nav-section">6　代码实战</a>
+  <a href="#s7" class="nav-section">7　常见陷阱</a>
+  <a href="#s8" class="nav-section">8　题目练习</a>
+  <a href="#s9" class="nav-section">9　本单元小结</a>
+
+  <a href="../index.html" target="_top" class="sb-back">返回考纲之路</a>
+</nav>
+
+<div class="page">
+
+<div class="hero">
+  <div class="hero-top">
+    <div class="hero-txt">
+      <div class="crumb">扣哒考级 · GESP PYTHON 四级 · 第 1 单元　|　齿轮高台 GEARWATCH TERRACE</div>
+      <h1>传送带枢纽
+        <span class="sub">复合数据类型的嵌套</span>
+      </h1>
+      <div class="en">Nested Compound Data Types</div>
+      <div class="tags">
+        <span class="tag hot">考纲 · 复合数据类型</span>
+        <span class="tag">列表套列表</span>
+        <span class="tag">字典</span>
+        <span class="tag">层层索引</span>
+        <span class="tag">遍历</span>
+      </div>
+    </div>
+    <div class="hero-card">
+      <img class="ava" src="../assets/avatars/gordon.webp" alt="戈登" onerror="this.style.background='#24344a'">
+      <div class="nm">戈登</div>
+      <div class="ti">齿轮工程师 · 你的向导</div>
+    </div>
+  </div>
+</div>
+
+<div class="container">
+
+<div class="lead">
+  绕过矿坑，前面立着一座巨大的钢铁建筑——<b>齿轮高台</b>。
+  传送带从四面八方汇聚到一个枢纽，上面跑着大大小小的箱子。<br>
+  你伸手要接，戈登拦住了你：别急。<b>这里每个大箱子里都还装着好几个小箱子。</b><br>
+  他敲了敲其中一个：<b>你要的数据，可能藏在箱子里的箱子里。</b>这就是四级的第一课。
+</div>
+
+<div class="cast teacher">
+  <img class="ava" src="../assets/avatars/gordon.webp" alt="戈登" onerror="this.style.display='none'">
+  <div class="bubble">
+    <div class="who">戈登 · 齿轮工程师</div>
+    三级你学会了列表——一个箱子里装一排格子。<br>
+    到了四级，光有"一排"就不够了。你可能会遇到：<strong>一排箱子里，每个箱子里又有一排格子。</strong><br>
+    别怕，思路没变——<b>只是取数据的时候，要多走几步。</b>
+  </div>
+</div>
+
+<!-- ============ 0 ============ -->
+<figure class="pic">
+  <img src="../assets/illustrations/py-L4-01-01_conveyor_hub.webp" alt="传送带枢纽"
+       onerror="this.closest('.pic').classList.add('missing')">
+  <div class="ph">
+    <div class="fn">assets/illustrations/py-L4-01-01_conveyor_hub.webp</div>
+    <div class="ds">【配图位】钢铁枢纽：数条传送带从不同方向汇聚，每个大货箱敞开着，里面整齐码着若干小格；一名年轻工程师站在枢纽旁核对清单，齿轮与蒸汽在背景中转动。</div>
+  </div>
+  <figcaption>图 1：齿轮高台的传送带枢纽——今天要从这里开始</figcaption>
+</figure>
+
+<div class="section-header" id="s0">
+  <h2>0　单元导语与目标</h2>
+  <div class="en-title">Unit Overview</div>
+
+<h3 id="s0-1">0.1 学习目标</h3>
+</div>
+
+<div class="goal-grid">
+  <div class="goal">
+    <h4><span class="ic">1</span>学完这个单元，你将能……</h4>
+    <ul>
+      <li>说清什么叫"嵌套"数据</li>
+      <li>创建"列表里放列表""列表里放字典"</li>
+      <li>用层层下标取出深处的数据</li>
+      <li>用双重循环遍历嵌套列表</li>
+      <li>用字典描述一个"有名字有字段"的对象</li>
+      <li>读懂复杂数据结构的访问代码</li>
+    </ul>
+  </div>
+  <div class="goal syllabus">
+    <h4><span class="ic">2</span>对标 GESP 考纲（Python 四级）</h4>
+    <ul>
+      <li>掌握复合数据类型的嵌套使用（列表套列表、列表套字典等）</li>
+      <li>掌握字典的基本概念、创建与访问方式</li>
+      <li>掌握嵌套结构的遍历与访问方法</li>
+      <li>考核目标：能读懂嵌套结构的访问代码并预测结果</li>
+    </ul>
+  </div>
+</div>
+
+<!-- ============ 1 ============ -->
+<h3 id="s0-2">0.2 考纲对照</h3>
+
+<table class="styled">
+  <thead><tr><th>本单元小节</th><th>对应考纲条目</th><th>真题常考形式</th></tr></thead>
+  <tbody>
+    <tr><td>1　什么是嵌套</td><td>复合数据类型的嵌套</td><td>判断某个结构是"几层"的</td></tr>
+    <tr><td>2　列表里放列表</td><td>二维列表</td><td>给 <code class="inline">a[1][2]</code> 问取出什么</td></tr>
+    <tr><td>3　列表里放字典</td><td>复合数据的组织</td><td>从列表里取出某个字典的某个字段</td></tr>
+    <tr><td>4　一层层拆开</td><td>嵌套数据的访问</td><td>分几步取到最深层的那个值</td></tr>
+    <tr><td>5　遍历嵌套数据</td><td>嵌套结构的遍历</td><td>用几层循环才能走遍所有元素</td></tr>
+  </tbody>
+</table>
+
+<div class="section-header" id="s1">
+  <h2>1　什么是"嵌套"</h2>
+  <div class="en-title">What Is Nesting</div>
+</div>
+
+<h3 id="s1-1">1.1 什么是"嵌套"</h3>
+
+<p>"嵌套"这个词听着吓人，意思其实很朴素：<strong>把容器放进容器里。</strong></p>
+
+<figure class="figure">
+  <svg class="diagram" viewBox="0 0 860 260" role="img" aria-label="嵌套示意">
+    <text x="24" y="34" font-size="14" font-weight="bold" fill="#1f2937">大箱子里装小箱子，小箱子里装数据</text>
+
+    <rect x="60" y="60" width="740" height="170" rx="16" fill="#e6f7f5" stroke="#0e8f86" stroke-width="2.4"/>
+    <text x="86" y="88" font-size="13" fill="#0a6b64" font-weight="bold">外层列表</text>
+
+    <rect x="90" y="102" width="200" height="108" rx="12" fill="#fff" stroke="#14b8a6" stroke-width="2"/>
+    <text x="190" y="128" text-anchor="middle" font-size="12" fill="#0f766e">第 0 个元素（一个列表）</text>
+    <rect x="110" y="140" width="60" height="40" rx="8" fill="#e6f7f5" stroke="#5eead4" stroke-width="1.6"/>
+    <text x="140" y="166" text-anchor="middle" font-size="13" font-family="Consolas,monospace" fill="#0f766e">1</text>
+    <rect x="180" y="140" width="60" height="40" rx="8" fill="#e6f7f5" stroke="#5eead4" stroke-width="1.6"/>
+    <text x="210" y="166" text-anchor="middle" font-size="13" font-family="Consolas,monospace" fill="#0f766e">2</text>
+
+    <rect x="308" y="102" width="200" height="108" rx="12" fill="#fff" stroke="#14b8a6" stroke-width="2"/>
+    <text x="408" y="128" text-anchor="middle" font-size="12" fill="#0f766e">第 1 个元素（一个列表）</text>
+    <rect x="328" y="140" width="60" height="40" rx="8" fill="#e6f7f5" stroke="#5eead4" stroke-width="1.6"/>
+    <text x="358" y="166" text-anchor="middle" font-size="13" font-family="Consolas,monospace" fill="#0f766e">3</text>
+    <rect x="398" y="140" width="60" height="40" rx="8" fill="#e6f7f5" stroke="#5eead4" stroke-width="1.6"/>
+    <text x="428" y="166" text-anchor="middle" font-size="13" font-family="Consolas,monospace" fill="#0f766e">4</text>
+
+    <rect x="526" y="102" width="250" height="108" rx="12" fill="#f8fcfc" stroke="#cbd5e1" stroke-width="1.6" stroke-dasharray="6 4"/>
+    <text x="651" y="150" text-anchor="middle" font-size="12" fill="#64748b">还可以继续往里面放……</text>
+
+    <text x="430" y="252" text-anchor="middle" font-size="12" fill="#8da0a3">[[1, 2], [3, 4]] —— 外面一层列表，里面两个小列表</text>
+  </svg>
+  <div class="caption">图 2（SVG）：嵌套结构——容器里还有容器</div>
+</figure>
+
+<h3 id="s1-2">1.2 一句话理解</h3>
+
+<div class="box tip">
+  <span class="lb">打个比方：</span>
+  嵌套就像<b>大箱子里面装小箱子</b>——<strong>要拿到最里面那个东西，得先开大箱子，再开小箱子。</strong><br>
+  每多套一层，<strong>就要多"开"一次</strong>：<br>
+  <b>开 1 次 = 一层；开 2 次 = 两层；<code class="inline">a[1][2]</code> 就是"先开第 1 个大箱，再从里面拿第 2 样东西"。</b>
+</div>
+
+<div class="box remember">
+  <span class="lb">一句话理解：</span>
+  普通列表的元素是<b>数字或字符串</b>；嵌套列表的元素<b>还是一个列表</b>。<br>
+  <strong>访问的时候，就得一层一层往下写：先取外层，再取内层。</strong>
+</div>
+
+<!-- ============ 2 ============ -->
+<div class="section-header" id="s2">
+  <h2>2　列表里放列表</h2>
+  <div class="en-title">List of Lists</div>
+
+<h3 id="s2-1">2.1 二维列表怎么读</h3>
+</div>
+
+<div class="code-card">
+  <div class="code-head">
+    <span class="dot d1"></span><span class="dot d2"></span><span class="dot d3"></span>
+    <span class="file">嵌套列表的创建与访问</span>
+    <span class="lang">Python</span>
+  </div>
+  <pre><code>grid = [[1, 2, 3], [4, 5, 6], [7, 8, 9]]
+
+print(grid[0])        # 第 0 个元素：整个小列表 [1, 2, 3]
+print(grid[0][0])     # 先取第 0 个小列表，再取它的第 0 个 → 1
+print(grid[1][2])     # 第 1 个小列表的第 2 个 → 6
+print(grid[2][1])     # 第 2 个小列表的第 1 个 → 8
+
+print(len(grid))      # 外层有 3 个元素
+print(len(grid[0]))   # 第 0 个小列表里有 3 个元素</code></pre>
+  <div class="out"><b>OUTPUT</b>　[1, 2, 3]<br>1<br>6<br>8<br>3<br>3</div>
+</div>
+
+<h3 id="s2-2">2.2 读法口诀</h3>
+
+<figure class="pic">
+  <img src="../assets/illustrations/py-L4-01-02_nested_containers.webp" alt="大箱套小箱"
+       onerror="this.closest('.pic').classList.add('missing')">
+  <div class="ph">
+    <div class="fn">assets/illustrations/py-L4-01-02_nested_containers.webp</div>
+    <div class="ds">【配图位】工作台上的一只大木箱被打开，箱内整整齐齐码着若干只贴有编号的小木箱；其中第 1 号小箱又被抽开，露出里面更小的几格抽屉；整组结构按"爆炸视图"错位排列，每层之间留有可见的缝隙与发光编号；一名英雄伸手去取最里面那格里的东西，暖色工坊灯光。</div>
+  </div>
+  <figcaption>图 3：大箱子打开，里面还有一排小箱子</figcaption>
+</figure>
+
+<div class="box tip">
+  <span class="lb">读法口诀：</span>
+  <code class="inline">grid[1][2]</code> 从右往左读——<strong>"先取第 1 个箱子，再取里面第 2 格"。</strong><br>
+  就像说"二楼的第三个房间"：先说楼层，再说房间号。
+</div>
+
+<h4>动手改一个元素</h4>
+
+<div class="code-card">
+  <div class="code-head">
+    <span class="dot d1"></span><span class="dot d2"></span><span class="dot d3"></span>
+    <span class="file">修改嵌套列表里的元素</span>
+    <span class="lang">Python</span>
+  </div>
+  <pre><code>grid = [[1, 2], [3, 4]]
+
+grid[0][1] = 99       # 把第 0 个小列表的第 1 个改成 99
+print(grid)           # [[1, 99], [3, 4]]</code></pre>
+  <div class="out"><b>OUTPUT</b>　[[1, 99], [3, 4]]</div>
+</div>
+
+<!-- ============ 3 ============ -->
+<div class="section-header" id="s3">
+  <h2>3　列表里放字典</h2>
+  <div class="en-title">List of Dictionaries</div>
+</div>
+
+<h3 id="s3-1">3.1 字典装得下"有名字的东西"</h3>
+
+<p>有时候光靠位置不够用。比如描述一个"士兵"，他有名字、有血量、有攻击力——
+<strong>用字典装，比用列表清楚得多。</strong></p>
+
+<div class="code-card">
+  <div class="code-head">
+    <span class="dot d1"></span><span class="dot d2"></span><span class="dot d3"></span>
+    <span class="file">字典：用"键"来取"值"</span>
+    <span class="lang">Python</span>
+  </div>
+  <pre><code>soldier = {"name": "塔林", "hp": 100, "atk": 25}
+
+print(soldier["name"])    # 塔林
+print(soldier["hp"])      # 100
+
+soldier["hp"] = 80        # 直接改
+print(soldier)            # {'name': '塔林', 'hp': 80, 'atk': 25}</code></pre>
+  <div class="out"><b>要点</b>　字典用<code>{}</code>写，键和值用冒号隔开；访问用<code>字典[键]</code></div>
+</div>
+
+<h3 id="s3-2">3.2 列表和字典各管什么</h3>
+
+<div class="box remember">
+  <span class="lb">列表 vs 字典：</span>
+  <strong>列表靠"位置"找东西</strong>——<code class="inline">a[0]</code> 是第 0 个；<br>
+  <strong>字典靠"名字"找东西</strong>——<code class="inline">d["name"]</code> 是名字对应的值。<br>
+  位置会变，名字不会变——<b>这就是字典存在的理由。</b>
+</div>
+
+<h3 id="s3-3">3.3 列表里放字典</h3>
+
+<p>把好几个字典放进一个列表，就成了最常见的一种嵌套结构：</p>
+
+<div class="code-card">
+  <div class="code-head">
+    <span class="dot d1"></span><span class="dot d2"></span><span class="dot d3"></span>
+    <span class="file">列表里装字典</span>
+    <span class="lang">Python</span>
+  </div>
+  <pre><code>team = [
+    {"name": "塔林", "hp": 100},
+    {"name": "安雅", "hp": 80},
+    {"name": "艾达", "hp": 60}
+]
+
+print(team[1]["name"])     # 第 1 个字典的 name → 安雅
+print(team[2]["hp"])       # 第 2 个字典的 hp → 60
+
+# 遍历：先拿到每个字典，再取字段
+for member in team:
+    print(member["name"], member["hp"])</code></pre>
+  <div class="out"><b>OUTPUT</b>　安雅<br>60<br>塔林 100<br>安雅 80<br>艾达 60</div>
+</div>
+
+<div class="cast hero">
+  <img class="ava" src="../assets/avatars/valkyrie.webp" alt="星璃" onerror="this.style.display='none'">
+  <div class="bubble">
+    <div class="who">星璃 · 女武神</div>
+    我管着全队的花名册。<br>
+    如果按排队顺序记，队伍一乱，编号就对不上了。<br>
+    <strong>所以我给每个人记的是"名字—血量—装备"这样的三栏。</strong><br>
+    不管队伍怎么变，我喊一声名字，就能立刻调出他的资料——
+    <b>这就是字典的好处。</b>
+  </div>
+</div>
+
+<!-- ============ 4 ============ -->
+<div class="section-header" id="s4">
+  <h2>4　一步步"拆"开数据</h2>
+  <div class="en-title">Reading Nested Data</div>
+</div>
+
+<h3 id="s4-1">4.1 一层一层拆开</h3>
+
+<p>面对复杂结构，最稳的办法是<strong>别一口气写完，一步一步拆</strong>：</p>
+
+<figure class="figure">
+  <svg class="diagram" viewBox="0 0 860 250" role="img" aria-label="分步拆解">
+    <text x="24" y="34" font-size="14" font-weight="bold" fill="#1f2937">拆解 data[2]["items"][0] 的思路</text>
+
+    <rect x="40" y="58" width="180" height="60" rx="10" fill="#e6f7f5" stroke="#0e8f86" stroke-width="2"/>
+    <text x="130" y="84" text-anchor="middle" font-size="12" fill="#0a6b64" font-weight="bold">① data</text>
+    <text x="130" y="106" text-anchor="middle" font-size="11.5" fill="#3c6b68">整个大列表</text>
+
+    <text x="236" y="96" font-size="16" fill="#cbd5e1">→</text>
+
+    <rect x="266" y="58" width="180" height="60" rx="10" fill="#e6f7f5" stroke="#0e8f86" stroke-width="2"/>
+    <text x="356" y="84" text-anchor="middle" font-size="12" fill="#0a6b64" font-weight="bold">② data[2]</text>
+    <text x="356" y="106" text-anchor="middle" font-size="11.5" fill="#3c6b68">取出第 2 个元素（是个字典）</text>
+
+    <text x="462" y="96" font-size="16" fill="#cbd5e1">→</text>
+
+    <rect x="492" y="58" width="180" height="60" rx="10" fill="#e6f7f5" stroke="#0e8f86" stroke-width="2"/>
+    <text x="582" y="84" text-anchor="middle" font-size="12" fill="#0a6b64" font-weight="bold">③ ...["items"]</text>
+    <text x="582" y="106" text-anchor="middle" font-size="11.5" fill="#3c6b68">取这个字典里 items 的值</text>
+
+    <text x="688" y="96" font-size="16" fill="#cbd5e1">→</text>
+
+    <rect x="716" y="58" width="110" height="60" rx="10" fill="#fef2f2" stroke="#ef4444" stroke-width="2"/>
+    <text x="771" y="84" text-anchor="middle" font-size="12" fill="#b91c1c" font-weight="bold">④ [0]</text>
+    <text x="771" y="106" text-anchor="middle" font-size="11.5" fill="#7f2b2b">再取第 0 个</text>
+
+    <rect x="40" y="146" width="786" height="84" rx="12" fill="#14231f"/>
+    <text x="66" y="176" font-family="Consolas,monospace" font-size="13" fill="#61afef">data</text>
+    <text x="112" y="176" font-family="Consolas,monospace" font-size="13" fill="#c3d6d1">= [</text>
+    <text x="140" y="176" font-family="Consolas,monospace" font-size="13" fill="#c3d6d1">{"id": 1},</text>
+    <text x="242" y="176" font-family="Consolas,monospace" font-size="13" fill="#c3d6d1">{"id": 2},</text>
+    <text x="344" y="176" font-family="Consolas,monospace" font-size="13" fill="#98c379">{"id": 3, "items": ["剑", "盾"]}</text>
+    <text x="626" y="176" font-family="Consolas,monospace" font-size="13" fill="#c3d6d1">]</text>
+    <text x="66" y="208" font-family="Consolas,monospace" font-size="13" fill="#7fd6b8">data[2]["items"][0]　→　"剑"</text>
+  </svg>
+  <div class="caption">图 4（SVG）：一层一层往下取，别想着一口吃下</div>
+</figure>
+
+<div class="code-card">
+  <div class="code-head">
+    <span class="dot d1"></span><span class="dot d2"></span><span class="dot d3"></span>
+    <span class="file">先拆成中间变量，更不容易错</span>
+    <span class="lang">Python</span>
+  </div>
+  <pre><code>data = [{"id": 1}, {"id": 2}, {"id": 3, "items": ["剑", "盾"]}]
+
+# 一步写完（能懂但容易看错）
+print(data[2]["items"][0])
+
+# 拆成两步（更清楚，调试也方便）
+node = data[2]
+print(node["items"][0])</code></pre>
+  <div class="out"><b>OUTPUT</b>　剑<br>剑</div>
+</div>
+
+<h3 id="s4-2">4.2 拆数据的建议</h3>
+
+<figure class="pic">
+  <img src="../assets/illustrations/py-L4-01-03_unpack_layers.webp" alt="一步一层，别贪快"
+       onerror="this.closest('.pic').classList.add('missing')">
+  <div class="ph">
+    <div class="fn">assets/illustrations/py-L4-01-03_unpack_layers.webp</div>
+    <div class="ds">【配图位】工作台前，一名英雄正把手伸向一只多层套箱；箱子旁悬浮着三块发光的小面板，从上到下依次显示"第一层的结果""第二层的结果""最后取到的值"，像三张逐步记下来的便条；每块面板下方各有一枚点亮的齿轮标记，表示这一步已经确认无误。</div>
+  </div>
+  <figcaption>图 5：一层只拆一步，每一步都亮一下</figcaption>
+</figure>
+
+<div class="box tip">
+  <span class="lb">实用建议：</span>
+  考试时看代码，如果一行里有三四个中括号，<strong>就在草稿纸上标注每一层取出的是什么</strong>。<br>
+  写代码时，宁可多写一行中间变量，也别硬堆成一行——
+  <b>代码是给人看的，顺便给机器跑。</b>
+</div>
+
+<!-- ============ 5 ============ -->
+<div class="section-header" id="s5">
+  <h2>5　遍历嵌套数据</h2>
+  <div class="en-title">Traversing Nested Data</div>
+</div>
+
+<h3 id="s5-1">5.1 嵌套结构要用嵌套循环</h3>
+
+<p>嵌套结构要用<b>嵌套循环</b>来遍历——外层管"哪个箱子"，内层管"箱子里的第几格"。</p>
+
+<div class="code-card">
+  <div class="code-head">
+    <span class="dot d1"></span><span class="dot d2"></span><span class="dot d3"></span>
+    <span class="file">双重循环遍历二维数据</span>
+    <span class="lang">Python</span>
+  </div>
+  <pre><code>grid = [[1, 2, 3], [4, 5, 6]]
+
+for i in range(len(grid)):          # 外层：第几个小列表
+    for j in range(len(grid[i])):   # 内层：小列表里的第几个
+        print(grid[i][j], end=" ")
+    print()                         # 一行打完就换行</code></pre>
+  <div class="out"><b>OUTPUT</b><br>1 2 3<br>4 5 6</div>
+</div>
+
+<h3 id="s5-2">5.2 外层管箱子，内层管格子</h3>
+
+<div class="box remember">
+  <span class="lb">嵌套遍历的核心：</span>
+  <strong>外层循环走一步，内层循环跑一整轮。</strong><br>
+  这里外层是 2 次（两个小列表），内层每次都跑 3 次（每个小列表有 3 个元素），
+  所以内层的语句一共执行 <b>2 × 3 = 6 次</b>。
+</div>
+
+<div class="code-card">
+  <div class="code-head">
+    <span class="dot d1"></span><span class="dot d2"></span><span class="dot d3"></span>
+    <span class="file">遍历"列表装字典"</span>
+    <span class="lang">Python</span>
+  </div>
+  <pre><code>team = [
+    {"name": "塔林", "hp": 100},
+    {"name": "安雅", "hp": 80}
+]
+
+total = 0
+for member in team:               # 直接拿到每个字典
+    print(member["name"], member["hp"])
+    total = total + member["hp"]  # 顺手累加血量
+
+print("总血量：", total)</code></pre>
+  <div class="out"><b>OUTPUT</b>　塔林 100<br>安雅 80<br>总血量：180</div>
+</div>
+
+
+
+<!-- ============ 6 ============ -->
+<div class="section-header" id="s6">
+  <h2>6　代码实战</h2>
+  <div class="en-title">Level Practice</div>
+</div>
+
+<div class="level-card">
+  <div class="lc-head"><span class="n">关卡</span><h4>图书馆谋士</h4><span class="go">进入关卡 →</span></div>
+  <div class="lc-body">
+    <div class="story">
+      <b>故事：</b>高台的图书室里，贺舒曼被食人魔伏击了。她正忙着救治伤员，
+      得靠你来指挥队伍。<br>
+      <b>可士兵和弓箭手有很多个，一个一个下命令根本来不及。</b><br>
+      戈登翻着名册说：把它们当成一组数据，<b>用循环一次指挥一整队。</b>
+    </div>
+    <p><strong>思路：</strong>先用 <code class="inline">findByType()</code> 拿到**一个装着所有同类单位的数组**，
+    再用循环逐个下命令。这正是"复合数据 + 遍历"的典型用法。</p><figure class="pic">
+      <img src="../assets/stages/py-L4-01-stage1_library_strategist.webp" alt="图书馆谋士 关卡截图"
+           onerror="this.closest('.pic').classList.add('missing')">
+      <div class="ph">
+        <div class="fn">assets/stages/py-L4-01-stage1_library_strategist.webp</div>
+        <div class="ds">【关卡截图位】请把《图书馆谋士》的游戏画面截图放到此处（放入 assets/stages/ 目录，文件名为 py-L4-01-stage1_library_strategist.webp）。</div>
+      </div>
+      <figcaption>关卡实况：图书馆谋士</figcaption>
+    </figure>
+    <div class="code-card">
+      <div class="code-head">
+        <span class="dot d1"></span><span class="dot d2"></span><span class="dot d3"></span>
+        <span class="file">重点示例：拿到一组单位，逐个指挥</span>
+        <span class="lang">Python</span>
+      </div>
+      <pre><code># 拿到"所有士兵"这一整个数组
+soldiers = hero.findByType("soldier")
+archers  = hero.findByType("archer")
+
+# 用循环逐个下命令——数组里有多少个，就指挥多少个
+for i in range(len(soldiers)):
+    soldier = soldiers[i]
+    commandSoldier(soldier, i, len(soldiers))</code></pre>
+      <div class="out"><b>要点</b>　<code>findByType</code> 返回的是数组；用下标配合 <code>len()</code> 就能遍历</div>
+    </div>
+    <div class="box info">
+      <span class="lb">这里其实有三层"复合"：</span>
+      ① <code class="inline">soldiers</code> 是一个数组；<br>
+      ② 数组里每个元素是一个<b>单位对象</b>（相当于一个带属性的字典）；<br>
+      ③ 传给 <code class="inline">commandSoldier</code> 的坐标又是一个 <code class="inline">{"x":..., "y":...}</code> 字典。<br>
+      <strong>看懂这三层，你就掌握了四级最核心的读代码能力。</strong>
+    </div>
+    
+    <a class="btn-go" href="https://codecombat.cn/" target="_blank" rel="noopener">去扣哒世界闯这一关 →</a>
+  </div>
+</div>
+
+<!-- ============ 7 ============ -->
+<div class="section-header" id="s7">
+  <h2>7　常见陷阱</h2>
+  <div class="en-title">Common Pitfalls</div>
+</div>
+
+<div class="cast duck">
+  <img class="ava" src="../assets/ducks/duck_hattori.webp" alt="扣哒鸭" onerror="this.style.display='none'">
+  <div class="bubble">
+    <div class="who">扣哒鸭 · 调试官</div>
+    嵌套结构的错误，几乎全是"少写了一层括号"。四条，看完你就能少调半天。
+  </div>
+</div>
+
+<div class="pit">
+  <div class="pt">
+    <div class="x">1</div>
+    <div class="t"><b>忘了第二层下标。</b>把 <code class="inline">grid[0]</code> 当成一个数字用。</div>
+  </div>
+  <div class="duck">
+    <img src="../assets/ducks/duck_zana.webp" alt="扣哒鸭" onerror="this.style.display='none'">
+    <div class="dt"><b>扣哒鸭：</b><code>grid[0]</code> 拿到的是<b>一整个小列表</b>，比如 <code>[1,2,3]</code>。<br>
+    要拿里面的数字，还得再写一层：<code>grid[0][0]</code>。</div>
+  </div>
+  <div class="fix"><b>正确理解：</b>外层下标取容器，内层下标取数据</div>
+</div>
+
+<div class="pit">
+  <div class="pt">
+    <div class="x">2</div>
+    <div class="t"><b>字典用位置访问。</b>写成 <code class="inline">soldier[0]</code>。</div>
+  </div>
+  <div class="duck">
+    <img src="../assets/ducks/duck_naria.webp" alt="扣哒鸭" onerror="this.style.display='none'">
+    <div class="dt"><b>扣哒鸭：</b>字典要用<strong>键</strong>来取，不是位置：<code>soldier["name"]</code>。<br>
+    写 <code>soldier[0]</code> 会报 KeyError——字典里根本没有叫 0 的键。</div>
+  </div>
+  <div class="fix"><b>正确写法：</b><code class="inline">d["键名"]</code></div>
+</div>
+
+<div class="pit">
+  <div class="pt">
+    <div class="x">3</div>
+    <div class="t"><b>遍历嵌套列表时越界。</b>内层写成 <code class="inline">range(len(grid))</code>。</div>
+  </div>
+  <div class="duck">
+    <img src="../assets/ducks/duck_senick.webp" alt="扣哒鸭" onerror="this.style.display='none'">
+    <div class="dt"><b>扣哒鸭：</b>内层要数的是<strong>当前这一行的长度</strong>：
+    <code>range(len(grid[i]))</code>。<br>
+    写成 <code>len(grid)</code> 是外层行数，如果每行元素更少，就会下标越界。</div>
+  </div>
+  <div class="fix"><b>正确写法：</b><code class="inline">for j in range(len(grid[i])):</code></div>
+</div>
+
+<div class="pit">
+  <div class="pt">
+    <div class="x">4</div>
+    <div class="t"><b>以为 <code class="inline">a = b</code> 是复制了一份。</b>改 <code class="inline">a</code> 时把 <code class="inline">b</code> 也改了。</div>
+  </div>
+  <div class="duck">
+    <img src="../assets/ducks/duck_illia.webp" alt="扣哒鸭" onerror="this.style.display='none'">
+    <div class="dt"><b>扣哒鸭：</b>对列表和字典来说，<code>a = b</code> 只是<strong>又贴了一张标签</strong>，
+    它们指的是同一个东西。<br>
+    想真的复制一份，要用 <code>a = b[:]</code>（列表）或 <code>a = b.copy()</code>。
+    这个坑在四级很常见。</div>
+  </div>
+  <div class="fix"><b>正确做法：</b>要独立副本就用切片或 <code class="inline">copy()</code></div>
+</div>
+
+<!-- ============ 8 ============ -->
+<div class="section-header" id="s8">
+  <h2>8　题目练习</h2>
+  <div class="en-title">Practice</div>
+</div>
+
+<p>第 1 题改编自 2026 年 9 月 · Python 四级 第 3 题，其余为原创练习题。</p>
+
+<div class="exam">
+  <div class="eh"><span class="src">改编自 2026 年 9 月 · Python 四级 · 第 3 题</span><span class="tp">单选题</span></div>
+  <div class="eb">
+    <div class="q">齿轮高台的货架上挂着复合数据：外层是列表，里面既套着字典、又套着列表。<br>执行下面 Python 代码后，输出的结果是（　　）。<br><pre>1  original = [{'key': 'value'}, [4, 5, 6]]
+2  new = original.copy()
+3  new[0]['key'] = 'new_value'
+4  new[1].append(7)
+5  print(original[0]['key'], original[1][-1])</pre></div>
+    <div class="opt"><i>A.</i>value 6　　<i>B.</i>new_value 7　　<i>C.</i>value 7　　<i>D.</i>new_value 6</div>
+    <details><summary>查看答案与详解</summary>
+      <div class="ans"><b>答案：B</b>。<code class="inline">list.copy()</code> 是<strong>浅拷贝</strong>：它只复制了外层列表，里面套着的字典和列表还是<strong>同一份</strong>。<br>所以 <code class="inline">new[0]['key'] = 'new_value'</code> 改的是同一个字典，原数据跟着变；<code class="inline">new[1].append(7)</code> 同理，原列表也多了个 7，<code class="inline">original[1][-1]</code> 就成了 7。<br><b>打个比方：</b>浅拷贝就像"复印了文件夹的目录页"——目录页是新的，但里面夹着的文件还是原来那几张，改文件两边都看得见。<br><b>想真正独立</b>要用 <code class="inline">copy.deepcopy()</code>。<br><span class="tagline">对应小节</span>4 一步步"拆"开数据。</div>
+    </details>
+  </div>
+</div>
+<div class="exam">
+  <div class="eh"><span class="src ori">原创练习题</span><span class="tp">单选题</span></div>
+  <div class="eb">
+    <div class="q">已知 <code class="inline">a = [[1, 2], [3, 4], [5, 6]]</code>，
+    则 <code class="inline">a[1][1]</code> 的值是（　　）。</div>
+    <div class="opt"><i>A.</i>2　　<i>B.</i>3　　<i>C.</i>4　　<i>D.</i>6</div>
+    <details><summary>查看答案与详解</summary>
+      <div class="ans"><b>答案：C</b>。先取外层下标 1，得到小列表 <code class="inline">[3, 4]</code>；
+      再取它的下标 1，得到 <b>4</b>。<br>
+      <b>记忆：</b>第一个下标管"哪个箱子"，第二个下标管"箱子里的第几格"。<br>
+      <span class="tagline">对应小节</span>2 列表里放列表。</div>
+    </details>
+  </div>
+</div>
+
+<div class="exam">
+  <div class="eh"><span class="src ori">原创练习题</span><span class="tp">单选题</span></div>
+  <div class="eb">
+    <div class="q">已知 <code class="inline">d = {"name": "安雅", "hp": 80}</code>，
+    要取出 80，正确的写法是（　　）。</div>
+    <div class="opt">
+      <i>A.</i><code class="inline">d[1]</code>　　<i>B.</i><code class="inline">d["hp"]</code>
+      　　<i>C.</i><code class="inline">d.hp</code>　　<i>D.</i><code class="inline">d(1)</code>
+    </div>
+    <details><summary>查看答案与详解</summary>
+      <div class="ans"><b>答案：B</b>。字典用<strong>键</strong>访问，键要加引号：
+      <code class="inline">d["hp"]</code>。<br>
+      <b>易错点：</b>A 项把它当列表了；C 项是别的语言的写法，Python 字典不支持。<br>
+      <span class="tagline">对应小节</span>3 列表里放字典。</div>
+    </details>
+  </div>
+</div>
+
+<div class="exam">
+  <div class="eh"><span class="src ori">原创练习题</span><span class="tp">单选题</span></div>
+  <div class="eb">
+    <div class="q">下列 Python 代码执行后，输出的结果是（　　）。</div>
+    <pre>1  t = [{"n": "A", "v": 3}, {"n": "B", "v": 7}]
+2  print(t[1]["v"])</pre>
+    <div class="opt"><i>A.</i>A　　<i>B.</i>B　　<i>C.</i>3　　<i>D.</i>7</div>
+    <details><summary>查看答案与详解</summary>
+      <div class="ans"><b>答案：D</b>。分两步看：<br>
+      ① <code class="inline">t[1]</code> 取出第 1 个字典 <code class="inline">{"n": "B", "v": 7}</code>；<br>
+      ② 再用键 <code class="inline">"v"</code> 取出值 <b>7</b>。<br>
+      <span class="tagline">对应小节</span>4 一步步"拆"开数据。</div>
+    </details>
+  </div>
+</div>
+
+<div class="exam">
+  <div class="eh"><span class="src ori">原创练习题</span><span class="tp">判断题</span></div>
+  <div class="eb">
+    <div class="q">已知 <code class="inline">grid = [[1, 2, 3], [4, 5, 6]]</code>，
+    <code class="inline">len(grid)</code> 的值是 6。（　　）</div>
+    <details><summary>查看答案与详解</summary>
+      <div class="ans"><b>答案：错误（×）</b>。<code class="inline">len(grid)</code> 数的是<b>外层</b>有几个元素，
+      这里是 <b>2</b>（两个小列表）。<br>
+      想数内层，要写 <code class="inline">len(grid[0])</code>，结果是 3。<br>
+      <b>记住：len() 只看它直接包含的元素，不会"挖"到里面去。</b><br>
+      <span class="tagline">对应小节</span>2 列表里放列表；5 遍历嵌套数据。</div>
+    </details>
+  </div>
+</div>
+
+<div class="exam">
+  <div class="eh"><span class="src ori">原创练习题</span><span class="tp">单选题</span></div>
+  <div class="eb">
+    <div class="q">下列 Python 代码执行后，输出的结果是（　　）。</div>
+    <pre>1  a = [[1, 2], [3, 4]]
+2  s = 0
+3  for row in a:
+4      for x in row:
+5          s = s + x
+6  print(s)</pre>
+    <div class="opt"><i>A.</i>4　　<i>B.</i>6　　<i>C.</i>10　　<i>D.</i>24</div>
+    <details><summary>查看答案与详解</summary>
+      <div class="ans"><b>答案：C</b>。双重循环把每个元素都加一遍：
+      1 + 2 + 3 + 4 = <b>10</b>。<br>
+      <b>过程：</b>外层先取 <code class="inline">[1,2]</code>，内层加 1、加 2；再取 <code class="inline">[3,4]</code>，加 3、加 4。<br>
+      <span class="tagline">对应小节</span>5 遍历嵌套数据。</div>
+    </details>
+  </div>
+</div>
+
+<div class="exam">
+  <div class="eh"><span class="src ori">原创练习题</span><span class="tp">编程题</span></div>
+  <div class="eb">
+    <div class="q">题目要求：已知 <code class="inline">team = [{"name": "塔林", "hp": 100}, {"name": "安雅", "hp": 80}, {"name": "艾达", "hp": 60}]</code>，
+    编程输出：① 每个成员的姓名与血量；② 血量最高者的姓名。</div>
+    <details><summary>查看参考答案与要点</summary>
+      <div class="ans">
+<pre style="margin:0;background:#14231f;color:#c3d6d1;border-radius:10px;padding:14px 16px">team = [
+    {"name": "塔林", "hp": 100},
+    {"name": "安雅", "hp": 80},
+    {"name": "艾达", "hp": 60}
+]
+
+# ① 逐个输出
+for m in team:
+    print(m["name"], m["hp"])
+
+# ② 找血量最高的人
+best = team[0]
+for m in team:
+    if m["hp"] &gt; best["hp"]:
+        best = m
+
+print("血量最高：", best["name"])</pre>
+      <p style="margin-top:12px"><b>输出：</b>塔林 100、安雅 80、艾达 60、血量最高：塔林<br>
+      <b>要点：</b><br>
+      ① 遍历"列表装字典"时，循环变量 <code class="inline">m</code> 拿到的是<b>整个字典</b>，要用键取值；<br>
+      ② 求最值时初值取 <code class="inline">team[0]</code>（整个字典），比较时用 <code class="inline">m["hp"]</code>；<br>
+      ③ 最后输出的是 <code class="inline">best["name"]</code>，而不是整个字典。<br>
+      <span class="tagline">对应小节</span>5 遍历嵌套数据。</p>
+      </div>
+    </details>
+  </div>
+</div>
+
+<!-- ============ 9 ============ -->
+<div class="section-header" id="s9">
+  <h2>9　本单元小结</h2>
+  <div class="en-title">Unit Summary</div>
+</div>
+
+<div class="cast teacher">
+  <img class="ava" src="../assets/avatars/gordon.webp" alt="戈登" onerror="this.style.display='none'">
+  <div class="bubble">
+    <div class="who">戈登 · 齿轮工程师</div>
+    三句话，够你用一整章：<br>
+    <strong>一、嵌套就是"容器里装容器"，取数据要一层一层往下写。</strong><br>
+    <strong>二、列表靠位置，字典靠名字——描述一个"东西"时字典更清楚。</strong><br>
+    <strong>三、遍历嵌套用双重循环：外层管箱子，内层管格子。</strong><br>
+    读代码时如果晕，就在草稿纸上把每一层写出来。
+  </div>
+</div>
+
+<div class="summary">
+  <h3>你在传送带枢纽收获了什么</h3>
+  <ul>
+    <li><strong>嵌套</strong>——把列表、字典放进另一个容器里，形成更复杂的结构。</li>
+    <li><strong>列表里放列表</strong>——<code class="inline">[[1,2],[3,4]]</code>；访问用 <code class="inline">a[1][0]</code> 这样层层下标。</li>
+    <li><strong>字典</strong>——<code class="inline">{"键": 值}</code>，靠名字取值：<code class="inline">d["hp"]</code>；改值也是直接赋值。</li>
+    <li><strong>列表里放字典</strong>——描述"一组有字段的对象"最常用的写法。</li>
+    <li><strong>分步拆解</strong>——复杂访问先赋值给中间变量，比堆一行中括号清楚得多。</li>
+    <li><strong>嵌套遍历</strong>——双重循环；内层要用 <code class="inline">len(外层[i])</code>，别用 <code class="inline">len(外层)</code>。</li>
+    <li><strong>引用陷阱</strong>——<code class="inline">a = b</code> 只是贴标签，要真复制用 <code class="inline">b[:]</code> 或 <code class="inline">b.copy()</code>。</li>
+  </ul>
+</div>
+
+<div class="pager">
+  <a href="py-3-07.html"><div class="k">← 上一级别</div><div class="v">穷举矿灯 · Python 三级第 7 单元</div></a>
+  <a href="../index.html" target="_top" class="back"><div class="k">返回</div><div class="v">考纲之路 · 总目录</div></a>
+  <a href="py-4-02.html"><div class="k">下一单元 →</div><div class="v">立体货架 · 二维及多维数组</div></a>
+</div>
+
+<div class="cta">
+  <h3>下一站：立体货架</h3>
+  <p>传送带把箱子送上了货架。这排货架可不简单——<b>它有两层编号：第几行、第几列。</b>
+  下一单元，我们把嵌套列表正式用起来。</p>
+  <a class="btn-go" href="https://codecombat.cn/" target="_blank" rel="noopener">加入扣哒世界，把这条考纲之路走一遍 →</a>
+</div>
+
+</div><!-- /container -->
+</div><!-- /page -->
+
+<script>
+const KEYWORDS = new Set(("while for if elif else break continue def return pass not and or in is None True False " +
+  "int float bool str list dict tuple set input print range len abs max min round pow import math random chr ord bin hex oct sum append copy keys values items").split(" "));
+
+function esc(s){ return s.replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;'); }
+
+function highlight(src){
+  let out = '', i = 0;
+  const n = src.length;
+  while (i < n){
+    const c = src[i];
+    if (c === '#'){
+      let j = src.indexOf('\n', i); if (j < 0) j = n;
+      out += '<span class="cm">' + esc(src.slice(i, j)) + '</span>';
+      i = j; continue;
+    }
+    if (c === '"' || c === "'"){
+      let j = i + 1;
+      while (j < n && src[j] !== c){ if (src[j] === '\\') j++; j++; }
+      j = Math.min(j + 1, n);
+      out += '<span class="st">' + esc(src.slice(i, j)) + '</span>';
+      i = j; continue;
+    }
+    if (/[0-9]/.test(c)){
+      let j = i;
+      while (j < n && /[0-9.]/.test(src[j])) j++;
+      out += '<span class="nu">' + esc(src.slice(i, j)) + '</span>';
+      i = j; continue;
+    }
+    if (/[A-Za-z_]/.test(c)){
+      let j = i;
+      while (j < n && /[A-Za-z0-9_]/.test(src[j])) j++;
+      const w = src.slice(i, j);
+      if (KEYWORDS.has(w)) out += '<span class="kw">' + esc(w) + '</span>';
+      else if (src[j] === '(') out += '<span class="fn">' + esc(w) + '</span>';
+      else out += esc(w);
+      i = j; continue;
+    }
+    out += esc(c); i++;
+  }
+  return out;
+}
+
+document.querySelectorAll('.code-card pre code').forEach(block => {
+  block.innerHTML = highlight(block.textContent);
+});
+
+if (location.search.indexOf('expand') >= 0) {
+  document.querySelectorAll('details').forEach(d => d.open = true);
+}
+document.querySelectorAll('.sidebar-nav a').forEach(a => {
+  a.addEventListener('click', () => {
+    if (window.innerWidth <= 900) document.querySelector('.sidebar-nav').classList.remove('active');
+  });
+});
+</script>
+</body>
+</html>

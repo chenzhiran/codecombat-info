@@ -1,0 +1,938 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="copyright" content="CodeCombat Inc. codecombat.cn">
+<title>巨钟计数师 · 大整数与高精度应用 | 扣哒考级 · GESP Python 五级</title>
+<style>
+  :root{
+    --primary:#b8820c; --primary-light:#d9a227; --primary-lighter:#fdf4e0; --primary-dark:#8a6106;
+    --brand:#ff6b35; --brand-dark:#e8541f; --brand-soft:#fff3ec;
+    --night:#0f1b22; --night-2:#16323a; --gold:#f5b301;
+    --text:#22333a; --dim:#5f7276; --dim2:#8da0a3;
+    --bg:#ffffff; --bg-soft:#f6fbfa; --line:#dceceb; --sidebar:274px;
+    --code-bg:#14231f; --code-tx:#c3d6d1;
+    --code-kw:#c678dd; --code-st:#98c379; --code-nu:#d19a66; --code-cm:#68807a; --code-fn:#61afef;
+  }
+  *{margin:0;padding:0;box-sizing:border-box}
+  html{scroll-behavior:smooth}
+  body{font-family:"PingFang SC","Microsoft YaHei","Segoe UI",-apple-system,sans-serif;line-height:1.9;color:var(--text);background:var(--bg);font-size:15.5px}
+  .sidebar-nav{position:fixed;top:0;left:0;width:var(--sidebar);height:100vh;overflow-y:auto;background:linear-gradient(180deg,#1a1305,#33260c);padding:14px 0 40px;z-index:100;border-right:3px solid var(--brand);transition:transform .3s ease}
+  .sidebar-nav::-webkit-scrollbar{width:5px}
+  .sidebar-nav::-webkit-scrollbar-thumb{background:var(--brand);border-radius:4px}
+  .sb-brand{display:flex;align-items:center;gap:10px;padding:10px 13px 12px;border-bottom:1px solid #3d3014;margin-bottom:8px}
+  .sidebar-nav a.sb-logo{display:flex;align-items:center;justify-content:center;flex-shrink:0;padding:0;border-left:none;transition:.2s}
+  .sb-logo:hover{transform:scale(1.08)}
+  .sb-logo img{height:34px;width:34px;display:block;object-fit:contain;border-radius:8px}
+  .sb-brand b{color:#eef7f6;font-size:14px;letter-spacing:.5px;display:block;line-height:1.4}
+  .sb-brand span{color:#7ba3a6;font-size:11.5px;display:block;line-height:1.4}
+  .nav-title{color:#ffb894;font-size:12px;font-weight:800;padding:10px 18px 6px;letter-spacing:1.2px}
+  .sidebar-nav a{display:block;color:#bcd3d4;text-decoration:none;padding:6px 18px;font-size:12.5px;line-height:1.55;border-left:3px solid transparent;transition:.18s}
+  .sidebar-nav a:hover{color:#fff;background:rgba(255,107,53,.16);border-left-color:var(--brand)}
+  .sidebar-nav a.nav-section{color:#ffb894;font-weight:700;font-size:13px;margin-top:11px;padding-top:10px;border-top:1px solid #3d3014}
+  .sidebar-nav a.nav-section:first-of-type{border-top:none;margin-top:0;padding-top:6px}
+  .sidebar-nav a.nav-sub{padding-left:30px;color:#8fabad;font-size:12px}
+  .sidebar-nav a.nav-sub:hover{color:#fff}
+  .sb-back{margin:16px 14px 0;display:block;text-align:center;padding:9px;border-radius:9px;background:#1c3940;color:#a6c0c2 !important;font-size:12px;font-weight:700;border-left:none !important}
+  .sb-back:hover{background:var(--brand) !important;color:#fff !important}
+  .nav-toggle{display:none;position:fixed;top:14px;left:14px;z-index:120;background:var(--brand);color:#fff;border:none;border-radius:9px;padding:9px 13px;font-size:15px;cursor:pointer;box-shadow:0 4px 14px rgba(0,0,0,.25)}
+  .page{margin-left:var(--sidebar)}
+  .hero{position:relative;overflow:hidden;padding:44px 52px;color:#fff;background:linear-gradient(125deg,#181103 0%,#3a2b0a 46%,#a8431c 132%)}
+  .hero::after{content:"";position:absolute;right:-90px;top:-110px;width:400px;height:400px;border-radius:50%;background:radial-gradient(circle,rgba(245,179,1,.30),transparent 68%)}
+  .hero-top{display:flex;gap:36px;align-items:center;position:relative;z-index:2}
+  .hero-txt{flex:1;min-width:0}
+  .hero .crumb{font-size:11.5px;color:#ffb894;letter-spacing:1.5px;font-weight:700;margin-bottom:14px}
+  .hero h1{font-size:31px;font-weight:800;line-height:1.3;letter-spacing:.6px;margin-bottom:8px}
+  .hero h1 .sub{display:block;font-size:18px;font-weight:700;color:#ffd2b3;margin-top:6px;letter-spacing:.3px}
+  .hero .en{font-size:13px;color:#98b6b8;font-style:italic;margin-bottom:18px}
+  .hero .tags{display:flex;flex-wrap:wrap;gap:8px}
+  .tag{font-size:11.5px;padding:4px 12px;border-radius:20px;background:rgba(255,255,255,.12);border:1px solid rgba(255,255,255,.22);color:#e8f0f6;font-weight:600}
+  .tag.hot{background:rgba(255,107,53,.92);border-color:transparent;color:#fff}
+  .hero-card{flex-shrink:0;width:200px;text-align:center}
+  .hero-card .ava{width:148px;height:148px;border-radius:50%;object-fit:cover;object-position:top center;border:4px solid rgba(255,180,140,.6);box-shadow:0 14px 34px rgba(0,0,0,.45);background:#24344a}
+  .hero-card .nm{font-size:15px;font-weight:800;color:#fff;margin-top:10px}
+  .hero-card .ti{font-size:11.5px;color:#ffb894;margin-top:2px}
+  .container{max-width:1080px;margin:0 auto;padding:38px 52px 70px}
+  .lead{font-size:15.5px;line-height:2.05;color:#35474a;background:linear-gradient(120deg,#fff8f3,#f6fbfa);border-left:5px solid var(--brand);border-radius:0 14px 14px 0;padding:22px 26px;margin-bottom:32px}
+  .lead b{color:var(--brand-dark)}
+  .cast{display:flex;gap:16px;align-items:flex-start;border-radius:16px;padding:18px 22px;margin:24px 0}
+  .cast .ava{width:72px;height:72px;border-radius:50%;object-fit:cover;object-position:top center;flex-shrink:0;background:#e8eef5}
+  .cast .bubble{position:relative;font-size:14px;line-height:1.95;padding-top:2px;flex:1}
+  .cast .who{font-size:12px;font-weight:800;margin-bottom:5px;letter-spacing:.5px}
+  .cast.anya{background:var(--brand-soft);border:1px solid #ffdcc9}
+  .cast.anya .who{color:var(--brand-dark)}
+  .cast.anya .bubble{color:#5c4636}
+  .cast.duck{background:#fff5f5;border:1px solid #fbd5d5}
+  .cast.duck .who{color:#b91c1c}
+  .cast.duck .bubble{color:#5c4141}
+  .cast.teacher{background:linear-gradient(120deg,#f1f8f8,#ffffff);border:1px solid #d6e8e8}
+  .cast.teacher .who{color:#134e4a}
+  .cast.teacher .bubble{color:#3c5254}
+  .cast.hero{background:#f2fbf9;border:1px solid #cfe9e6}
+  .cast.hero .who{color:#0f766e}
+  .cast.hero .bubble{color:#3d5250}
+  .goal-grid{display:grid;grid-template-columns:1fr 1fr;gap:16px;margin-bottom:36px}
+  .goal{border:1px solid var(--line);border-radius:15px;padding:19px 21px;background:#fff;box-shadow:0 4px 16px rgba(14,143,134,.06)}
+  .goal h4{font-size:14px;font-weight:800;margin-bottom:11px;display:flex;align-items:center;gap:8px;color:var(--primary-dark)}
+  .goal h4 .ic{width:22px;height:22px;border-radius:7px;background:var(--primary-lighter);display:flex;align-items:center;justify-content:center;font-size:12px}
+  .goal ul{list-style:none}
+  .goal li{font-size:13.5px;color:#46585a;line-height:1.9;padding-left:18px;position:relative}
+  .goal li::before{content:"▸";position:absolute;left:0;color:var(--primary);font-weight:800}
+  .goal.syllabus li::before{content:"✓"}
+  .section-header{margin:52px 0 24px;padding-bottom:12px;border-bottom:3px solid var(--brand);display:flex;align-items:baseline;gap:14px;flex-wrap:wrap}
+  .section-header h2{font-size:22px;font-weight:800;color:var(--night);letter-spacing:.4px}
+  .section-header .en-title{font-size:12px;color:var(--dim2);font-style:italic}
+  h3{font-size:17.5px;font-weight:800;margin:34px 0 14px;color:var(--night);display:flex;align-items:center;gap:10px}
+  h3::before{content:"";width:5px;height:17px;border-radius:3px;background:var(--brand);flex-shrink:0}
+  h4{font-size:15px;font-weight:800;margin:24px 0 10px;color:#2c4a48}
+  p{margin:12px 0;color:#3d5250;line-height:2}
+  strong{color:var(--primary-dark)}
+  code.inline{background:var(--primary-lighter);color:var(--primary-dark);padding:2px 7px;border-radius:6px;font-family:"SFMono-Regular",Consolas,Menlo,monospace;font-size:.9em;font-weight:600}
+  .figure{margin:24px 0;text-align:center}
+  .figure svg.diagram{max-width:100%;height:auto;background:#fff;border:1px solid var(--line);border-radius:14px;padding:10px}
+  .figure .caption{font-size:12.5px;color:var(--dim2);margin-top:9px}
+  .pic{margin:26px 0;text-align:center}
+  .pic img{max-width:100%;border-radius:16px;box-shadow:0 10px 28px rgba(20,60,60,.15);display:block;margin:0 auto}
+  .pic figcaption{font-size:12.5px;color:var(--dim2);margin-top:9px}
+  .pic .ph{display:none}
+  .pic.missing img{display:none}
+  .pic.missing .ph{display:flex;flex-direction:column;align-items:center;justify-content:center;gap:9px;border:2px dashed #bfdcd9;border-radius:16px;background:linear-gradient(135deg,#f8fdfc,#eef8f7);padding:40px 26px;color:#6f8f90}
+  .pic.missing .ph .fn{font-family:Consolas,monospace;font-size:12.5px;color:#0e8f86;font-weight:700;word-break:break-all}
+  .pic.missing .ph .ds{font-size:12.5px;line-height:1.8;max-width:560px}
+  .box{border-radius:13px;padding:16px 20px;margin:20px 0;font-size:14px;line-height:1.95}
+  .box .lb{font-weight:800;margin-right:6px}
+  .info{background:#eef6ff;border-left:5px solid #3b82f6;color:#274768}
+  .info .lb{color:#1d4ed8}
+  .tip{background:#fff9ec;border-left:5px solid #f59e0b;color:#6b4e13}
+  .tip .lb{color:#b45309}
+  .remember{background:var(--primary-lighter);border-left:5px solid var(--primary);color:#134e4a}
+  .remember .lb{color:var(--primary-dark)}
+  .warn{background:#fef2f2;border-left:5px solid #ef4444;color:#7f2b2b}
+  .warn .lb{color:#b91c1c}
+  .code-card{margin:20px 0;border-radius:14px;overflow:hidden;box-shadow:0 10px 28px rgba(15,40,40,.20)}
+  .code-head{display:flex;align-items:center;gap:9px;background:#332a10;padding:9px 14px}
+  .code-head .dot{width:10px;height:10px;border-radius:50%}
+  .code-head .d1{background:#ff5f57}.code-head .d2{background:#febc2e}.code-head .d3{background:#28c840}
+  .code-head .file{color:#8fb0aa;font-size:11.5px;font-family:Consolas,monospace;margin-left:6px}
+  .code-head .lang{margin-left:auto;font-size:10.5px;font-weight:800;color:#0b1f1a;background:#f0c04a;padding:2px 9px;border-radius:6px;letter-spacing:.4px}
+  .code-card pre{background:var(--code-bg);padding:18px 20px;overflow-x:auto;margin:0;font-family:"SFMono-Regular",Consolas,"Courier New",monospace;font-size:13.5px;line-height:1.85}
+  .code-card pre::-webkit-scrollbar{height:8px}
+  .code-card pre::-webkit-scrollbar-thumb{background:#2f4a45;border-radius:4px}
+  .code-card code{color:var(--code-tx);white-space:pre}
+  .kw{color:var(--code-kw);font-weight:600}
+  .st{color:var(--code-st)}
+  .nu{color:var(--code-nu)}
+  .cm{color:var(--code-cm);font-style:italic}
+  .fn{color:var(--code-fn)}
+  .out{background:#0e1d1a;color:#7fd6b8;font-family:Consolas,monospace;font-size:13px;padding:12px 20px;border-top:1px solid #223a35}
+  .out b{color:#c3d6d1;font-weight:600;font-size:11.5px;letter-spacing:1px}
+  table.styled{width:100%;border-collapse:collapse;margin:20px 0;font-size:13.5px;border-radius:12px;overflow:hidden;box-shadow:0 4px 16px rgba(14,143,134,.08)}
+  table.styled thead{background:var(--brand)}
+  table.styled th{color:#fff;padding:11px 14px;text-align:left;font-weight:700;font-size:13px}
+  table.styled td{padding:10px 14px;border-bottom:1px solid var(--line);color:#44585a;vertical-align:top}
+  table.styled tbody tr:nth-child(even){background:var(--bg-soft)}
+  table.styled tbody tr:last-child td{border-bottom:none}
+  .level-card{border:1px solid var(--line);border-radius:16px;overflow:hidden;margin:22px 0;box-shadow:0 6px 22px rgba(14,143,134,.08)}
+  .level-card .lc-head{background:linear-gradient(100deg,#12262c,#8a3a16);color:#fff;padding:15px 22px;display:flex;align-items:center;gap:12px;flex-wrap:wrap}
+  .level-card .lc-head .n{font-size:12px;font-weight:800;background:rgba(255,255,255,.2);padding:3px 10px;border-radius:20px}
+  .level-card .lc-head h4{margin:0;color:#fff;font-size:16px}
+  .level-card .lc-head .go{margin-left:auto;font-size:11.5px;color:#ffd2b3}
+  .level-card .lc-body{padding:20px 24px;background:#fff}
+  .level-card .story{background:#f8fcfc;border-left:4px solid #7dd3fc;border-radius:0 10px 10px 0;padding:13px 18px;margin:0 0 16px;font-size:14px;line-height:1.95;color:#3c5254}
+  .level-card .story b{color:#0369a1}
+  .btn-go{display:inline-flex;align-items:center;gap:8px;background:linear-gradient(135deg,var(--brand),var(--brand-dark));color:#fff;text-decoration:none;font-weight:800;font-size:13.5px;padding:10px 22px;border-radius:11px;box-shadow:0 8px 20px rgba(255,107,53,.32);transition:.2s}
+  .btn-go:hover{transform:translateY(-2px);box-shadow:0 12px 26px rgba(255,107,53,.42)}
+  .pit{border:1px solid #f6dede;border-radius:14px;overflow:hidden;margin:16px 0;background:#fff}
+  .pit .pt{display:flex;gap:12px;padding:14px 18px;background:#fffafa;align-items:flex-start}
+  .pit .x{width:26px;height:26px;border-radius:9px;background:#fee;color:#dc2626;display:flex;align-items:center;justify-content:center;font-weight:800;flex-shrink:0;font-size:13px}
+  .pit .t{font-size:13.5px;line-height:1.9;color:#5c4a4a;flex:1}
+  .pit .t b{color:#b91c1c}
+  .pit .duck{display:flex;gap:12px;padding:13px 18px;background:#fff5f5;border-top:1px dashed #f3d0d0;align-items:flex-start}
+  .pit .duck img{width:48px;height:48px;object-fit:contain;flex-shrink:0;margin-top:2px}
+  .pit .duck .dt{font-size:13.5px;line-height:1.9;color:#7a3b3b}
+  .pit .duck .dt b{color:#b91c1c}
+  .pit .fix{padding:12px 18px;background:#f2fbf9;border-top:1px dashed #cfe9e6;font-size:13.5px;color:#134e4a}
+  .pit .fix b{color:var(--primary-dark)}
+  .exam{border:1px solid #d8ebea;border-radius:15px;margin:16px 0;overflow:hidden;background:#fff;box-shadow:0 4px 16px rgba(30,80,80,.06)}
+  .exam .eh{display:flex;align-items:center;gap:10px;padding:11px 18px;background:linear-gradient(100deg,#eef8f7,#f8fdfc);border-bottom:1px solid #dbeceb;flex-wrap:wrap}
+  .exam .eh .src{font-size:11px;font-weight:800;color:#fff;background:#0e8f86;padding:2.5px 10px;border-radius:20px}
+  .exam .eh .src.ori{background:#0e9488}
+  .exam .eh .tp{font-size:11.5px;color:#4f7d7a;font-weight:700}
+  .exam .eb{padding:16px 20px}
+  .exam .q{font-weight:700;font-size:14px;color:#2b4042;line-height:1.9;margin-bottom:10px}
+  .exam .opt{font-size:13.5px;color:#46585a;line-height:2.05;padding-left:6px}
+  .exam .opt i{font-style:normal;font-weight:800;color:var(--primary-dark);margin-right:7px}
+  .exam pre{margin:12px 0;background:#14231f;border-radius:10px;padding:14px 16px;overflow-x:auto;font-family:Consolas,monospace;font-size:13px;line-height:1.8;color:var(--code-tx)}
+  .exam details{margin-top:10px;border-top:1px dashed var(--line);padding-top:10px}
+  .exam summary{cursor:pointer;font-size:12.5px;font-weight:800;color:#0e8f86;outline:none;user-select:none}
+  .exam details .ans{font-size:13.5px;color:#3d5250;line-height:1.95;margin-top:9px;background:var(--bg-soft);padding:13px 16px;border-radius:10px}
+  .exam details .ans b{color:var(--primary-dark)}
+  .exam details .ans .tagline{display:inline-block;font-size:11px;background:#e0f2fe;color:#0e7490;padding:1.5px 8px;border-radius:6px;font-weight:700;margin-right:6px}
+  .summary{margin:40px 0 20px;border-radius:18px;padding:26px 30px;background:linear-gradient(130deg,#fff8f3,#ffffff);border:1px solid #ffe0cf}
+  .summary h3{margin-top:0}
+  .summary ul{list-style:none;margin-top:10px}
+  .summary li{font-size:14px;line-height:2;color:#3d5250;padding-left:24px;position:relative}
+  .summary li::before{content:"◆";position:absolute;left:0;color:var(--brand);font-size:11px;top:6px}
+  .pager{display:flex;gap:14px;margin-top:30px;flex-wrap:wrap}
+  .pager a{flex:1;min-width:200px;text-decoration:none;border:1px solid var(--line);border-radius:14px;padding:16px 20px;background:#fff;transition:.2s;display:block}
+  .pager a:hover{border-color:var(--brand);box-shadow:0 10px 26px rgba(255,107,53,.14);transform:translateY(-2px)}
+  .pager a .k{font-size:11px;color:var(--dim2);font-weight:700;letter-spacing:1px}
+  .pager a .v{font-size:14px;font-weight:800;color:var(--night);margin-top:5px}
+  .pager a.back{background:var(--brand-soft);border-color:transparent;text-align:center}
+  .pager a.back .v{color:var(--brand-dark)}
+  .cta{margin-top:26px;border-radius:20px;padding:30px 34px;color:#fff;position:relative;overflow:hidden;background:linear-gradient(120deg,#12242a,#1e4a52 46%,#a8431c 132%)}
+  .cta::after{content:"";position:absolute;right:-70px;bottom:-90px;width:280px;height:280px;border-radius:50%;background:radial-gradient(circle,rgba(255,140,80,.45),transparent 68%)}
+  .cta h3{color:#fff;margin:0 0 10px;position:relative;z-index:2}
+  .cta h3::before{background:var(--brand)}
+  .cta p{color:#cfe4e2;font-size:13.5px;margin:0 0 18px;position:relative;z-index:2;max-width:640px}
+  .cta .btn-go{position:relative;z-index:2}
+  @media(max-width:900px){
+    .sidebar-nav{transform:translateX(-100%)}
+    .sidebar-nav.active{transform:translateX(0)}
+    .nav-toggle{display:block}
+    .page{margin-left:0}
+    .hero{padding:70px 22px 34px}
+    .hero-top{flex-direction:column-reverse;text-align:center}
+    .hero-card{width:auto}
+    .container{padding:26px 20px 60px}
+    .goal-grid{grid-template-columns:1fr}
+  }
+</style>
+</head>
+<body>
+
+<button class="nav-toggle" onclick="document.querySelector('.sidebar-nav').classList.toggle('active')">&#9776;</button>
+
+<nav class="sidebar-nav">
+  <div class="sb-brand">
+    <a class="sb-logo" href="https://codecombat.cn/" target="_blank" rel="noopener" title="访问 CodeCombat 扣哒世界官网">
+      <img src="../assets/logo.png" alt="CodeCombat 扣哒世界">
+    </a>
+    <div><b>巨钟计数师</b><span>星砂绿洲 · Python 五级 第 3 单元</span></div>
+  </div>
+  <div class="nav-title">本单元目录</div>
+  <a href="#s0" class="nav-section">0　单元导语与目标</a>
+  <a href="#s0-1" class="nav-sub">0.1 学习目标</a>
+  <a href="#s0-2" class="nav-sub">0.2 考纲对照</a>
+  <a href="#s1" class="nav-section">1　整数会"溢出"吗</a>
+  <a href="#s1-1" class="nav-sub">1.1 定长整数的天花板</a>
+  <a href="#s1-2" class="nav-sub">1.2 Python 为什么不怕</a>
+  <a href="#s2" class="nav-section">2　Python 的大整数</a>
+  <a href="#s2-1" class="nav-sub">2.1 想有多大就有多大</a>
+  <a href="#s2-2" class="nav-sub">2.2 阶乘与幂</a>
+  <a href="#s3" class="nav-section">3　大数的位数与首尾</a>
+  <a href="#s3-1" class="nav-sub">3.1 四个常用操作</a>
+  <a href="#s3-2" class="nav-sub">3.2 当成字符串处理</a>
+  <a href="#s4" class="nav-section">4　高精度的竖式思想</a>
+  <a href="#s4-1" class="nav-sub">4.1 竖式的三个要点</a>
+  <a href="#s4-2" class="nav-sub">4.2 为什么要"低位在前"</a>
+  <a href="#s5" class="nav-section">5　代码实战</a>
+  <a href="#s6" class="nav-section">6　常见陷阱</a>
+  <a href="#s7" class="nav-section">7　题目练习</a>
+  <a href="#s8" class="nav-section">8　本单元小结</a>
+  <a href="../index.html" target="_top" class="sb-back">返回考纲之路</a>
+</nav>
+
+<div class="page">
+
+<div class="hero">
+  <div class="hero-top">
+    <div class="hero-txt">
+      <div class="crumb">扣哒考级 · GESP PYTHON 五级 · 第 3 单元　|　星砂绿洲 STARDUST OASIS</div>
+      <h1>巨钟计数师
+        <span class="sub">大整数与高精度应用</span>
+      </h1>
+      <div class="en">Big Integers &amp; Arbitrary Precision</div>
+      <div class="tags">        <span class="tag hot">考纲 · 大整数</span>
+        <span class="tag">任意精度</span>
+        <span class="tag">阶乘与幂</span>
+        <span class="tag">位数统计</span>
+        <span class="tag">竖式思想</span></div>
+    </div>
+    <div class="hero-card">
+      <img class="ava" src="../assets/avatars/senick.webp" alt="塞尼克" onerror="this.style.background='#24344a'">
+      <div class="nm">塞尼克</div>
+      <div class="ti">沙海向导 · 你的向导</div>
+    </div>
+  </div>
+</div>
+
+<div class="container">
+
+<div class="lead">
+  绿洲中央立着一口<b>巨钟</b>，看守人说：它每分钟敲一下，
+  <b>一直敲到第 2 的 200 次方下才停。</b><br>
+  你在心里算了算——那是个天文数字，普通计算器根本显示不出来。<br>
+  塞尼克敲了敲钟壁：可 Python 不在乎。<b>你给它多大的数，它就算多大的数，
+  一位都不会丢。</b>
+</div>
+
+<div class="cast teacher">
+  <img class="ava" src="../assets/avatars/senick.webp" alt="塞尼克" onerror="this.style.display='none'">
+  <div class="bubble">
+    <div class="who">塞尼克 · 沙海向导</div>
+    在别的语言里，"整数能表示多大"是有上限的，超了就溢出。<br>
+    <strong>但 Python 的整数是"任意精度"的</strong>——只要内存够，多大都行。<br>
+    这给我们省了很多事，<b>但也要学会应对大数带来的新问题。</b>
+  </div>
+</div>
+
+<figure class="pic">
+  <img src="../assets/illustrations/py-L5-03-01_giant_bell.webp" alt="巨钟计数师"
+       onerror="this.closest('.pic').classList.add('missing')">
+  <div class="ph">
+    <div class="fn">assets/illustrations/py-L5-03-01_giant_bell.webp</div>
+    <div class="ds">【配图位】绿洲中央的青铜巨钟悬在石架上，钟身刻满层层叠叠的数字与进位符号；一名看守人手持记录板站在钟下，钟摆投下的影子里隐约可见"2 的 200 次方"的刻痕。</div>
+  </div>
+  <figcaption>图 1：星砂绿洲的巨钟计数师——今天要从这里开始</figcaption>
+</figure>
+
+<div class="section-header" id="s0">
+  <h2>0　单元导语与目标</h2>
+  <div class="en-title">Unit Overview</div>
+</div>
+
+<h3 id="s0-1">0.1 学习目标</h3>
+
+<div class="goal-grid">
+  <div class="goal">
+    <h4><span class="ic">1</span>学完这个单元，你将能……</h4>
+    <ul>
+      <li>说清"溢出"是什么意思</li>
+      <li>知道 Python 整数为什么不会溢出</li>
+      <li>计算阶乘、幂等会产生巨大结果的问题</li>
+      <li>求一个大数的位数、个位数、各位数字之和</li>
+      <li>说出"竖式加法"的程序实现思路</li>
+      <li>判断什么情况下真的需要高精度运算</li>
+    </ul>
+  </div>
+  <h3 id="s0-2">0.2 考纲对照</h3>
+
+<div class="goal syllabus">
+    <h4><span class="ic">2</span>对标 GESP 考纲（Python 五级）</h4>
+    <ul>
+      <li>了解大整数的概念与 Python 任意精度整数的特性</li>
+      <li>掌握大数的基本运算：加减乘、取位数、取各位数字</li>
+      <li>了解高精度运算的竖式思想（数组模拟）</li>
+      <li>考核目标：能编写处理大整数的程序并正确输出结果</li>
+    </ul>
+  </div>
+</div>
+
+<div class="section-header" id="s1">
+  <h2>1　整数会"溢出"吗</h2>
+  <div class="en-title">Integer Overflow</div>
+</div>
+
+<h3 id="s1-1">1.1 定长整数的天花板</h3>
+
+<p>先看一个"别的语言常见、Python 不会发生"的问题：</p>
+
+<div class="code-card">
+  <div class="code-head">
+    <span class="dot d1"></span><span class="dot d2"></span><span class="dot d3"></span>
+    <span class="file">32 位整数的经典事故</span>
+    <span class="lang">别的语言</span>
+  </div>
+  <pre><code>// 假设一个 32 位有符号整数，最大只能存到 2147483647
+int x = 2147483647;
+x = x + 1;        // 结果变成 -2147483648（溢出！）</code></pre>
+  <div class="out"><b>原因</b>　位数是有限的，加到顶就"翻"回负数去了——正是三级学过的补码溢出</div>
+</div>
+
+<h3 id="s1-2">1.2 Python 为什么不怕</h3>
+
+<div class="code-card">
+  <div class="code-head">
+    <span class="dot d1"></span><span class="dot d2"></span><span class="dot d3"></span>
+    <span class="file">Python：想多大就多大</span>
+    <span class="lang">Python</span>
+  </div>
+  <pre><code>x = 2147483647
+print(x + 1)              # 2147483648，一切正常
+
+print(2 ** 100)           # 1267650600228229401496703205376
+print(1000 ** 3)          # 1000000000
+print(99999999999999 * 99999999999999)   # 完全不会出错</code></pre>
+  <div class="out"><b>结论</b>　Python 的 int 会自动"变长"，只要内存够，多大都行</div>
+</div>
+
+<div class="box remember">
+  <span class="lb">为什么 Python 能做到？</span>
+  它把大整数拆成很多个"小段"分别存放，需要更多位时就自动加段——<br>
+  这其实就是<b>高精度运算</b>的思想，只不过 Python 已经帮你在底层实现了。<br>
+  <strong>所以你在 Python 里写大数运算，几乎不用操心。</strong>
+</div>
+
+<div class="section-header" id="s2">
+  <h2>2　Python 的大整数</h2>
+  <div class="en-title">Big Integers in Python</div>
+</div>
+
+<h3 id="s2-1">2.1 想有多大就有多大</h3>
+
+<figure class="figure">
+  <svg class="diagram" viewBox="0 0 860 240" role="img" aria-label="大数运算示例">
+    <text x="24" y="34" font-size="14" font-weight="bold" fill="#1f2937">几个会产生巨大结果的运算</text>
+
+    <rect x="50" y="58" width="370" height="150" rx="12" fill="#fdf4e0" stroke="#f59e0b" stroke-width="1.8"/>
+    <text x="235" y="86" text-anchor="middle" font-size="12.5" fill="#b45309" font-weight="bold">结果有多大？</text>
+    <text x="76" y="118" font-size="12" font-family="Consolas,monospace" fill="#6b4e13">20! = 2432902008176640000</text>
+    <text x="76" y="146" font-size="12" font-family="Consolas,monospace" fill="#6b4e13">2**64 = 18446744073709551616</text>
+    <text x="76" y="174" font-size="12" font-family="Consolas,monospace" fill="#6b4e13">斐波那契第 100 项 ≈ 3.5 × 10**20</text>
+    <text x="76" y="198" font-size="11.5" fill="#b45309">这些数都远超 32 位整数的上限</text>
+
+    <rect x="446" y="58" width="360" height="150" rx="12" fill="#e6f7f5" stroke="#0e8f86" stroke-width="2"/>
+    <text x="626" y="86" text-anchor="middle" font-size="12.5" fill="#0a6b64" font-weight="bold">Python 里照常算</text>
+    <text x="472" y="118" font-size="12" font-family="Consolas,monospace" fill="#0a6b64">f = 1</text>
+    <text x="472" y="146" font-size="12" font-family="Consolas,monospace" fill="#0a6b64">for i in range(1, 21):</text>
+    <text x="492" y="174" font-size="12" font-family="Consolas,monospace" fill="#0a6b64">    f = f * i</text>
+    <text x="472" y="198" font-size="12" font-family="Consolas,monospace" fill="#0a6b64">print(f)   # 一点问题都没有</text>
+  </svg>
+  <div class="caption">图 2（SVG）：大数运算在 Python 里就是普通运算</div>
+</figure>
+
+<figure class="pic">
+  <img src="../assets/illustrations/py-L5-03-02_big_pyramid.webp" alt="阶乘像越堆越高的塔"
+       onerror="this.closest('.pic').classList.add('missing')">
+  <div class="ph">
+    <div class="fn">assets/illustrations/py-L5-03-02_big_pyramid.webp</div>
+    <div class="ds">【配图位】星砂绿洲的巨钟旁堆着一座发光的高塔：塔身由一层层石块叠成，每往上一层，块数都比下一层多，塔尖已经高到看不清；一名学徒仰头数着塔层，手里的册子上写着"20! = 2432902008176640000"。</div>
+  </div>
+  <figcaption>图 3：阶乘像一座越堆越高的塔</figcaption>
+</figure>
+
+<h3 id="s2-2">2.2 阶乘与幂：增长最快的两种运算</h3>
+
+<div class="code-card">
+  <div class="code-head">
+    <span class="dot d1"></span><span class="dot d2"></span><span class="dot d3"></span>
+    <span class="file">阶乘与幂：两个"增长最快"的运算</span>
+    <span class="lang">Python</span>
+  </div>
+  <pre><code># 求 20 的阶乘
+f = 1
+for i in range(1, 21):
+    f = f * i
+print(f)          # 2432902008176640000
+
+# 求 2 的 64 次方
+print(2 ** 64)    # 18446744073709551616
+
+# 注意：最好不要用 math.factorial 之外的库，考试里手写循环更保险
+</code></pre>
+  <div class="out"><b>要点</b>　阶乘和幂增长极快，20! 就已经有 19 位了</div>
+</div>
+
+<div class="section-header" id="s3">
+  <h2>3　大数的位数与首尾</h2>
+  <div class="en-title">Digits &amp; Edges</div>
+</div>
+
+<h3 id="s3-1">3.1 四个常用操作</h3>
+
+<p>数字一大，"位数"本身就成了问题。还好 Python 提供了很方便的工具：</p>
+
+<div class="code-card">
+  <div class="code-head">
+    <span class="dot d1"></span><span class="dot d2"></span><span class="dot d3"></span>
+    <span class="file">四个常用操作</span>
+    <span class="lang">Python</span>
+  </div>
+  <pre><code>n = 2 ** 100
+
+# ① 转成字符串，位数一目了然
+s = str(n)
+print(len(s))          # 31 位
+
+# ② 个位数：对 10 取余
+print(n % 10)          # 6
+
+# ③ 各位数字之和
+total = 0
+for ch in s:
+    total = total + int(ch)
+print(total)           # 各位相加的结果
+
+# ④ 末尾有多少个 0
+print(len(s) - len(s.rstrip("0")))</code></pre>
+  <div class="out"><b>实用技巧</b>　大数问题里，"转字符串"往往比"纯数学"更方便</div>
+</div>
+
+<h3 id="s3-2">3.2 转成字符串，像处理文本一样处理它</h3>
+
+<div class="box tip">
+  <span class="lb">一条很好用的思路：</span>
+  遇到"求各位数字之和""判断是不是回文数""数一数某个数字出现几次"这类题目，<br>
+  <strong>最省事的办法就是 <code class="inline">str(n)</code> 转成字符串，然后像处理字符串一样处理它。</strong><br>
+  这比用 % 和 // 一位一位拆，写起来快得多。
+</div>
+
+<div class="section-header" id="s4">
+  <h2>4　高精度的竖式思想</h2>
+  <div class="en-title">The Vertical Form Idea</div>
+</div>
+
+<h3 id="s4-1">4.1 竖式的三个要点</h3>
+
+<p>如果哪天要自己实现"大数加法"（比如在不能自动扩展的语言里），
+就要用上我们小学学的<strong>竖式</strong>：</p>
+
+<figure class="figure">
+  <svg class="diagram" viewBox="0 0 860 280" role="img" aria-label="竖式加法">
+    <text x="24" y="34" font-size="14" font-weight="bold" fill="#1f2937">竖式加法：一位一位加，满十进一</text>
+
+    <g font-family="Consolas,monospace" font-size="18">
+      <text x="120" y="86" fill="#6b4e13">  9 8 7</text>
+      <text x="120" y="116" fill="#6b4e13">+ 6 5 4</text>
+      <text x="120" y="144" fill="#8da0a3">─────────</text>
+      <text x="120" y="176" fill="#0a6b64" font-weight="bold">1 6 4 1</text>
+    </g>
+
+    <text x="330" y="86" font-size="12" fill="#6b4e13">个位：7 + 4 = 11 → 写 1，进 1</text>
+    <text x="330" y="116" font-size="12" fill="#6b4e13">十位：8 + 5 + 1(进位) = 14 → 写 4，进 1</text>
+    <text x="330" y="146" font-size="12" fill="#6b4e13">百位：9 + 6 + 1(进位) = 16 → 写 6，进 1</text>
+    <text x="330" y="176" font-size="12" fill="#0a6b64" font-weight="bold">最高位还有进位 → 结果多一位，补上 1</text>
+
+    <rect x="60" y="200" width="740" height="58" rx="12" fill="#2a2008"/>
+    <text x="86" y="226" font-family="Consolas,monospace" font-size="13" fill="#e3d6b4">用数组存每一位：A = [9,8,7]，B = [6,5,4]（低位在前）</text>
+    <text x="86" y="248" font-family="Consolas,monospace" font-size="13" fill="#f5cf72">从前往后逐位相加 + 进位，最后处理"多出来的那一位"</text>
+  </svg>
+  <div class="caption">图 4（SVG）：竖式加法的三个要点——逐位、进位、最高位补位</div>
+</figure>
+
+<figure class="pic">
+  <img src="../assets/illustrations/py-L5-03-03_abacus_columns.webp" alt="每一位住一格——个位在最左边"
+       onerror="this.closest('.pic').classList.add('missing')">
+  <div class="ph">
+    <div class="fn">assets/illustrations/py-L5-03-03_abacus_columns.webp</div>
+    <div class="ds">【配图位】巨钟下方的石台上摆着一排格子，每格放一颗刻着数字的石珠：最左边那格是个位，往右依次是十位、百位、千位；一名学徒正把两个数逐格对齐、从最左边开始加，格与格之间有一条细小的进位渠把满十的那一颗送往右边。</div>
+  </div>
+  <figcaption>图 5：每一位住一格，个位在最左边</figcaption>
+</figure>
+
+<div class="code-card">
+  <div class="code-head">
+    <span class="dot d1"></span><span class="dot d2"></span><span class="dot d3"></span>
+    <span class="file">用列表模拟竖式加法（理解思路即可）</span>
+    <span class="lang">Python</span>
+  </div>
+  <pre><code># 把两个数按"低位在前"存进列表
+A = [7, 8, 9]        # 表示 987
+B = [4, 5, 6]        # 表示 654
+
+res = []
+carry = 0            # 进位
+i = 0
+while i &lt; len(A) or i &lt; len(B) or carry:
+    da = A[i] if i &lt; len(A) else 0
+    db = B[i] if i &lt; len(B) else 0
+    s = da + db + carry
+    res.append(s % 10)      # 这一位写几
+    carry = s // 10         # 进位是多少
+    i = i + 1
+
+# res 是低位在前，倒过来才是正常的数
+res.reverse()
+print("".join(str(x) for x in res))    # 1641</code></pre>
+  <div class="out"><b>OUTPUT</b>　1641</div>
+</div>
+
+<h3 id="s4-2">4.2 为什么要"低位在前"</h3>
+
+<div class="box info">
+  <span class="lb">为什么"低位在前"？</span>
+  因为加法是从个位开始的，而多出来的进位要往<b>后</b>（更高位）放。<br>
+  把低位放在列表前面，处理起来最自然——<strong>这也是数组模拟高精度的通用约定。</strong>
+</div>
+
+<div class="section-header" id="s5">
+  <h2>5　代码实战</h2>
+  <div class="en-title">Level Practice</div>
+</div>
+
+<div class="level-card">
+  <div class="lc-head"><span class="n">关卡</span><h4>奥林匹克比赛</h4><span class="go">进入关卡 →</span></div>
+  <div class="lc-body">
+    <div class="story">
+      <b>故事：</b>绿洲要办一场比赛，裁判拿着计时器站在场边。
+      听到 Start 就出发，<b>碰到标记再跑回来，快的人赢。</b><br>
+      塞尼克提醒你：注意，<b>裁判说的话、说话的时机，都是有讲究的</b>——
+      得判断清楚谁在说、说的是什么，才能做出正确反应。
+    </div>
+    <p><strong>思路：</strong>监听事件、判断发言人与内容，再做出对应动作。
+  <figure class="pic ai-added"><img src="../assets/illustrations/py-L5-03-01_giant_clock.webp" alt="AI配图：py-L5-03-01_giant_clock.webp"></figure>
+    这种"按条件响应"的结构，正是我们在处理大数问题时最常用的判断模式。</p><figure class="pic">
+  <figure class="pic ai-added"><img src="../assets/illustrations/py-L5-03-02_carry_bead.webp" alt="AI配图：py-L5-03-02_carry_bead.webp"></figure>
+      <img src="../assets/stages/py-L5-03-stage1_olympic.webp" alt="奥林匹克比赛 关卡截图"
+           onerror="this.closest('.pic').classList.add('missing')">
+      <div class="ph">
+        <div class="fn">assets/stages/py-L5-03-stage1_olympic.webp</div>
+        <div class="ds">【关卡截图位】请把《奥林匹克比赛》的游戏画面截图放到此处（放入 assets/stages/ 目录，文件名为 py-L5-03-stage1_olympic.webp）。</div>
+      </div>
+      <figcaption>关卡实况：奥林匹克比赛</figcaption>
+    </figure>
+    <div class="code-card">
+      <div class="code-head">
+        <span class="dot d1"></span><span class="dot d2"></span><span class="dot d3"></span>
+        <span class="file">重点示例：判断发言人 + 判断内容</span>
+        <span class="lang">Python</span>
+      </div>
+      <pre><code>def onHear(event):
+    referee = pet.findNearestByType("wizard")
+    # 只有"裁判说 Start"时才开始跑
+    if event.speaker == referee and event.message == "Start":
+        pet.moveXY(红色标记的坐标)
+        pet.moveXY(队伍标记的坐标)</code></pre>
+      <div class="out"><b>要点</b>　两个条件用 <code>and</code> 连接：既要"是裁判说的"，又要"说的是 Start"</div>
+    </div>
+    <div class="box info">
+      <span class="lb">和本单元的关联：</span>
+      大数题目里经常要判断"这个数有多少位""某一位是不是 0""有没有进位"，<br>
+      <strong>这些其实都是"多条件同时成立"的判断</strong>——和这一关里
+      <code class="inline">speaker == referee and message == "Start"</code> 是同一套写法。
+    </div>
+    
+    <a class="btn-go" href="https://codecombat.cn/" target="_blank" rel="noopener">去扣哒世界闯这一关 →</a>
+  </div>
+</div>
+
+
+
+<div class="section-header" id="s6">
+  <h2>6　常见陷阱</h2>
+  <div class="en-title">Common Pitfalls</div>
+</div>
+
+<div class="cast duck">
+  <img class="ava" src="../assets/ducks/duck_senick.webp" alt="扣哒鸭" onerror="this.style.display='none'">
+  <div class="bubble">
+    <div class="who">扣哒鸭 · 调试官</div>
+    大数的题看起来吓人，其实错的地方很固定。四条，看完就不慌了。
+  </div>
+</div>
+
+<div class="pit">
+  <div class="pt">
+    <div class="x">1</div>
+    <div class="t"><b>用 <code class="inline">math.pow</code> 或浮点运算算大整数，结果不准了。</b></div>
+  </div>
+  <div class="duck">
+    <img src="../assets/ducks/duck_zana.webp" alt="扣哒鸭" onerror="this.style.display='none'">
+    <div class="dt"><b>扣哒鸭：</b><code>math.pow</code> 返回的是<b>浮点数</b>，位数一多就会变成
+    <code>1.26e+30</code> 这种近似值，丢精度。<br>
+    <strong>算整数幂一定要用 <code>**</code> 或 <code>pow(a, b)</code>，不要用 math.pow。</strong></div>
+  </div>
+  <div class="fix"><b>正确写法：</b><code class="inline">2 ** 100</code> 或 <code class="inline">pow(2, 100)</code></div>
+</div>
+
+<div class="pit">
+  <div class="pt">
+    <div class="x">2</div>
+    <div class="t"><b>用 <code class="inline">/</code> 做除法，结果带小数。</b></div>
+  </div>
+  <div class="duck">
+    <img src="../assets/ducks/duck_naria.webp" alt="扣哒鸭" onerror="this.style.display='none'">
+    <div class="dt"><b>扣哒鸭：</b><code>/</code> 永远返回浮点数，哪怕整除也一样。<br>
+    <strong>整数运算要用 <code>//</code>，取余用 <code>%</code>。</strong></div>
+  </div>
+  <div class="fix"><b>正确写法：</b>整除用 <code class="inline">//</code></div>
+</div>
+
+<div class="pit">
+  <div class="pt">
+    <div class="x">3</div>
+    <div class="t"><b>想把大数一位一位取出来，却用错了取位方式。</b></div>
+  </div>
+  <div class="duck">
+    <img src="../assets/ducks/duck_hattori.webp" alt="扣哒鸭" onerror="this.style.display='none'">
+    <div class="dt"><b>扣哒鸭：</b>两种办法都行：<br>
+    ① 数学法：<code>n % 10</code> 取个位，<code>n //= 10</code> 去掉个位，循环；<br>
+    ② 字符串法：<code>str(n)</code> 之后直接遍历每个字符。<br>
+    <strong>做题优先用字符串法，又快又不容易错。</strong></div>
+  </div>
+  <div class="fix"><b>推荐做法：</b><code class="inline">for ch in str(n): ...</code></div>
+</div>
+
+<div class="pit">
+  <div class="pt">
+    <div class="x">4</div>
+    <div class="t"><b>以为"数字大就一定需要高精度算法"。</b></div>
+  </div>
+  <div class="duck">
+    <img src="../assets/ducks/duck_illia.webp" alt="扣哒鸭" onerror="this.style.display='none'">
+    <div class="dt"><b>扣哒鸭：</b>在 Python 里，<strong>大整数直接用就行</strong>，
+    不需要自己写竖式。<br>
+    学习竖式的意义在于<b>理解原理</b>——万一遇到不支持大数的语言，你才知道怎么自己实现。</div>
+  </div>
+  <div class="fix"><b>正确认识：</b>Python 直接算；竖式方案是为了理解原理</div>
+</div>
+
+<div class="section-header" id="s7">
+  <h2>7　题目练习</h2>
+  <div class="en-title">Practice</div>
+</div>
+
+<p>第 1 题改编自 2026 年 9 月 · Python 五级 第 15 题，其余为原创练习题。</p>
+
+<div class="exam">
+  <div class="eh"><span class="src">改编自 2026 年 9 月 · Python 五级 · 第 15 题</span><span class="tp">单选题</span></div>
+  <div class="eb">
+    <div class="q">绿洲的账本要把两个"超大整数"做加法。数组 a 和 b 按<strong>低位在前</strong>存放两个非负大整数，下面的函数实现高精度加法，横线处应填写（　　）。<br><pre>1  def add(a, b):
+2      c = []
+3      carry = 0
+4      n = max(len(a), len(b))
+5      for i in range(n):
+6          sum_val = carry
+7          if i &lt; len(a):
+8              sum_val += a[i]
+9          if i &lt; len(b):
+10             sum_val += b[i]
+11         c.append(sum_val % 10)
+12         _______________
+13     if carry != 0:
+14         c.append(carry)
+15     return c</pre></div>
+    <div class="opt"><i>A.</i>carry = sum_val % 10<br>
+      <i>B.</i>carry = sum_val<br>
+      <i>C.</i>carry = sum_val // 10<br>
+      <i>D.</i>carry = c[i] // 10</div>
+    <details><summary>查看答案与详解</summary>
+      <div class="ans"><b>答案：C</b>。竖式加法的规矩是：<strong>本位留下个位、进位交给下一位</strong>。<br>第 11 行 <code class="inline">c.append(sum_val % 10)</code> 已经把<strong>个位</strong>存进了这一位，所以第 12 行要算的是<strong>十位以上</strong>，也就是 <code class="inline">sum_val // 10</code> —— 这正是"进位"。<br><b>A 错：</b>又取了一次个位，进位永远是 0~9，加法结果会错；<br><b>B 错：</b>把整个和当进位，下一位会凭空多出好几倍；<br><b>D 错：</b><code class="inline">c[i]</code> 是刚存进去的个位数字，它除以 10 一定是 0，进位永远传不下去。<br><b>记住高精度的口诀：</b><strong>低位在前、逐位相加、取个位留下、取十位进位</strong>。最后如果还有进位，要在末尾再补一位。<br><span class="tagline">对应小节</span>4 高精度的竖式思想。</div>
+    </details>
+  </div>
+</div>
+<div class="exam">
+  <div class="eh"><span class="src ori">原创练习题</span><span class="tp">单选题</span></div>
+  <div class="eb">
+    <div class="q">下列 Python 代码执行后，输出的结果是（　　）。</div>
+    <pre>1  print(2 ** 10)
+2  print(len(str(2 ** 10)))</pre>
+    <div class="opt"><i>A.</i>1024 和 4　　<i>B.</i>1024 和 3　　<i>C.</i>20 和 2　　<i>D.</i>报错</div>
+    <details><summary>查看答案与详解</summary>
+      <div class="ans"><b>答案：A</b>。<code class="inline">2 ** 10 = 1024</code>，
+      转成字符串 <code class="inline">"1024"</code> 长度是 <b>4</b>。<br>
+      <b>要点：</b>求位数最方便的办法就是 <code class="inline">len(str(n))</code>。<br>
+      <span class="tagline">对应小节</span>3 大数的位数与首尾。</div>
+    </details>
+  </div>
+</div>
+
+<div class="exam">
+  <div class="eh"><span class="src ori">原创练习题</span><span class="tp">单选题</span></div>
+  <div class="eb">
+    <div class="q">在 Python 中，<code class="inline">10 ** 20</code> 的结果是（　　）。</div>
+    <div class="opt">
+      <i>A.</i>溢出报错　　<i>B.</i>一个精确的整数 100000000000000000000<br>
+      <i>C.</i>1e+20　　<i>D.</i>0
+    </div>
+    <details><summary>查看答案与详解</summary>
+      <div class="ans"><b>答案：B</b>。Python 的整数是任意精度的，<code class="inline">**</code>
+      运算会给出<b>精确的整数结果</b>，不会变成科学计数法。<br>
+      <b>对比：</b>C 项的 <code class="inline">1e+20</code> 是浮点数，
+      如果用 <code class="inline">10.0 ** 20</code> 才会得到近似值。<br>
+      <span class="tagline">对应小节</span>1 整数会"溢出"吗；2 Python 的大整数。</div>
+    </details>
+  </div>
+</div>
+
+<div class="exam">
+  <div class="eh"><span class="src ori">原创练习题</span><span class="tp">判断题</span></div>
+  <div class="eb">
+    <div class="q">在 Python 中，<code class="inline">math.pow(2, 10)</code> 和
+    <code class="inline">2 ** 10</code> 的结果完全相同，都是精确的整数。（　　）</div>
+    <details><summary>查看答案与详解</summary>
+      <div class="ans"><b>答案：错误（×）</b>。<code class="inline">math.pow()</code> 返回的是
+      <b>浮点数</b>（结果是 1024.0），位数一多就会丢精度；<br>
+      而 <code class="inline">2 ** 10</code> 得到的是整数 1024。<br>
+      <b>记牢：算整数幂用 <code>**</code> 或 <code>pow(a, b)</code>，不要用 math.pow。</b><br>
+      <span class="tagline">对应小节</span>6 常见陷阱。</div>
+    </details>
+  </div>
+</div>
+
+<div class="exam">
+  <div class="eh"><span class="src ori">原创练习题</span><span class="tp">单选题</span></div>
+  <div class="eb">
+    <div class="q">下列 Python 代码执行后，输出的结果是（　　）。</div>
+    <pre>1  n = 12345
+2  s = 0
+3  for ch in str(n):
+4      s = s + int(ch)
+5  print(s)</pre>
+    <div class="opt"><i>A.</i>15　　<i>B.</i>12345　　<i>C.</i>5　　<i>D.</i>10</div>
+    <details><summary>查看答案与详解</summary>
+      <div class="ans"><b>答案：A</b>。把 12345 转成字符串后逐位取出，转回数字累加：
+      1 + 2 + 3 + 4 + 5 = <b>15</b>。<br>
+      <b>要点：</b>求"各位数字之和"的经典写法就是"转字符串 → 遍历 → int 转回 → 累加"。<br>
+      <span class="tagline">对应小节</span>3 大数的位数与首尾。</div>
+    </details>
+  </div>
+</div>
+
+<div class="exam">
+  <div class="eh"><span class="src ori">原创练习题</span><span class="tp">单选题</span></div>
+  <div class="eb">
+    <div class="q">下列 Python 代码执行后，输出的结果是（　　）。</div>
+    <pre>1  f = 1
+2  for i in range(1, 6):
+3      f = f * i
+4  print(f)</pre>
+    <div class="opt"><i>A.</i>15　　<i>B.</i>120　　<i>C.</i>720　　<i>D.</i>5</div>
+    <details><summary>查看答案与详解</summary>
+      <div class="ans"><b>答案：B</b>。<code class="inline">range(1, 6)</code> 取 1、2、3、4、5，
+      所以算的是 5! = 1×2×3×4×5 = <b>120</b>。<br>
+      <b>易错点：</b>C 项 720 是 6 的阶乘，需要写成 <code class="inline">range(1, 7)</code>。<br>
+      <span class="tagline">对应小节</span>2 Python 的大整数。</div>
+    </details>
+  </div>
+</div>
+
+<div class="exam">
+  <div class="eh"><span class="src ori">原创练习题</span><span class="tp">判断题</span></div>
+  <div class="eb">
+    <div class="q">用列表模拟高精度加法时，通常把数字的"低位"放在列表的前面。（　　）</div>
+    <details><summary>查看答案与详解</summary>
+      <div class="ans"><b>答案：正确（√）</b>。因为加法是从个位开始的，
+      而进位要往更高位传——<br>
+      把低位放在前面，进位就是"往后追加"，处理起来最自然。<br>
+      <b>最后输出时记得把结果倒过来。</b><br>
+      <span class="tagline">对应小节</span>4 高精度的竖式思想。</div>
+    </details>
+  </div>
+</div>
+
+<div class="exam">
+  <div class="eh"><span class="src ori">原创练习题</span><span class="tp">编程题</span></div>
+  <div class="eb">
+    <div class="q">题目要求：计算 2 的 100 次方，并输出：① 这个数一共有多少位；
+    ② 它的个位数字；③ 它的各位数字之和。</div>
+    <details><summary>查看参考答案与要点</summary>
+      <div class="ans">
+<pre style="margin:0;background:#2a2008;color:#e3d6b4;border-radius:10px;padding:14px 16px">n = 2 ** 100
+s = str(n)
+
+print("位数：", len(s))              # ① 31
+
+print("个位：", n % 10)              # ② 6
+
+total = 0                            # ③
+for ch in s:
+    total = total + int(ch)
+print("各位之和：", total)</pre>
+      <p style="margin-top:12px"><b>输出：</b>位数 31、个位 6、各位数字之和 115<br>
+      <b>要点：</b><br>
+      ① 求位数用 <code class="inline">len(str(n))</code>，比循环除以 10 快得多；<br>
+      ② 个位数直接用 <code class="inline">n % 10</code>；<br>
+      ③ 各位求和用字符串遍历；<br>
+      ④ 2 的 100 次方是 1267650600228229401496703205376，一共 31 位。<br>
+      <span class="tagline">对应小节</span>3 大数的位数与首尾。</p>
+      </div>
+    </details>
+  </div>
+</div>
+
+<div class="section-header" id="s8">
+  <h2>8　本单元小结</h2>
+  <div class="en-title">Unit Summary</div>
+</div>
+
+<div class="cast teacher">
+  <img class="ava" src="../assets/avatars/senick.webp" alt="塞尼克" onerror="this.style.display='none'">
+  <div class="bubble">
+    <div class="who">塞尼克 · 沙海向导</div>
+    三句话记住大整数：<br>
+    <strong>一、Python 的整数想多大就多大，不用怕溢出。</strong><br>
+    <strong>二、算整数幂用 **，千万别用 math.pow（那是浮点）。</strong><br>
+    <strong>三、处理各位数字，优先转字符串再遍历，简单又稳。</strong><br>
+    竖式那套思路了解一下就好——它更多是为了让你理解"电脑怎么算大数"。
+  </div>
+</div>
+
+<div class="summary">
+  <h3>你在巨钟下收获了什么</h3>
+  <ul>
+    <li><strong>整数溢出</strong>——固定位数的整数加到顶会"翻回负数"，就是补码溢出。</li>
+    <li><strong>Python 的优势</strong>——int 是任意精度的，只要内存够，多大都能算。</li>
+    <li><strong>整数幂</strong>——用 <code class="inline">**</code> 或 <code class="inline">pow(a,b)</code>，不要用 <code class="inline">math.pow</code>。</li>
+    <li><strong>求位数</strong>——<code class="inline">len(str(n))</code> 是最省事的办法。</li>
+    <li><strong>取个位与各位和</strong>——<code class="inline">n % 10</code> 取个位；<code class="inline">for ch in str(n)</code> 求各位和。</li>
+    <li><strong>竖式思想</strong>——逐位相加 + 进位处理，低位在前存进列表。</li>
+    <li><strong>选择原则</strong>——Python 直接算；理解竖式是为了应对不支持大数的场合。</li>
+  </ul>
+</div>
+
+<div class="pager">
+  <a href="py-5-02.html"><div class="k">← 上一单元</div><div class="v">泉眼筛网 · 欧几里得算法与素数筛法</div></a>
+  <a href="../index.html" target="_top" class="back"><div class="k">返回</div><div class="v">考纲之路 · 总目录</div></a>
+  <a href="py-5-04.html"><div class="k">下一单元 →</div><div class="v">商队铁链 · 链表</div></a>
+</div>
+
+<div class="cta">
+  <h3>下一站：商队铁链</h3>
+  <p>沙漠里的商队一辆车拉着下一辆车，每辆车只知道自己后面跟着谁。
+  <b>要数清队伍有多长，就得从头一辆一辆往后走。</b>下一单元，我们聊聊链表。</p>
+  <a class="btn-go" href="https://codecombat.cn/" target="_blank" rel="noopener">加入扣哒世界，把这条考纲之路走一遍 →</a>
+</div>
+</div><!-- /container -->
+</div><!-- /page -->
+
+<script>
+const KEYWORDS = new Set(("while for if elif else break continue def return pass not and or in is None True False " +
+  "int float bool str list dict tuple set input print range len abs max min round pow import math random chr ord bin hex oct sum append copy keys values items").split(" "));
+
+function esc(s){ return s.replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;'); }
+
+function highlight(src){
+  let out = '', i = 0;
+  const n = src.length;
+  while (i < n){
+    const c = src[i];
+    if (c === '#'){
+      let j = src.indexOf('\n', i); if (j < 0) j = n;
+      out += '<span class="cm">' + esc(src.slice(i, j)) + '</span>';
+      i = j; continue;
+    }
+    if (c === '"' || c === "'"){
+      let j = i + 1;
+      while (j < n && src[j] !== c){ if (src[j] === '\\') j++; j++; }
+      j = Math.min(j + 1, n);
+      out += '<span class="st">' + esc(src.slice(i, j)) + '</span>';
+      i = j; continue;
+    }
+    if (/[0-9]/.test(c)){
+      let j = i;
+      while (j < n && /[0-9.]/.test(src[j])) j++;
+      out += '<span class="nu">' + esc(src.slice(i, j)) + '</span>';
+      i = j; continue;
+    }
+    if (/[A-Za-z_]/.test(c)){
+      let j = i;
+      while (j < n && /[A-Za-z0-9_]/.test(src[j])) j++;
+      const w = src.slice(i, j);
+      if (KEYWORDS.has(w)) out += '<span class="kw">' + esc(w) + '</span>';
+      else if (src[j] === '(') out += '<span class="fn">' + esc(w) + '</span>';
+      else out += esc(w);
+      i = j; continue;
+    }
+    out += esc(c); i++;
+  }
+  return out;
+}
+
+document.querySelectorAll('.code-card pre code').forEach(block => {
+  block.innerHTML = highlight(block.textContent);
+});
+
+if (location.search.indexOf('expand') >= 0) {
+  document.querySelectorAll('details').forEach(d => d.open = true);
+}
+document.querySelectorAll('.sidebar-nav a').forEach(a => {
+  a.addEventListener('click', () => {
+    if (window.innerWidth <= 900) document.querySelector('.sidebar-nav').classList.remove('active');
+  });
+});
+</script>
+</body>
+</html>

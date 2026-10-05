@@ -1,0 +1,1266 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="copyright" content="CodeCombat Inc. codecombat.cn">
+<title>商队铁链 · 链表 | 扣哒考级 · GESP Python 五级</title>
+<style>
+  :root{
+    --primary:#b8820c; --primary-light:#d9a227; --primary-lighter:#fdf4e0; --primary-dark:#8a6106;
+    --brand:#ff6b35; --brand-dark:#e8541f; --brand-soft:#fff3ec;
+    --night:#0f1b22; --night-2:#16323a; --gold:#f5b301;
+    --text:#22333a; --dim:#5f7276; --dim2:#8da0a3;
+    --bg:#ffffff; --bg-soft:#f6fbfa; --line:#dceceb; --sidebar:274px;
+    --code-bg:#14231f; --code-tx:#c3d6d1;
+    --code-kw:#c678dd; --code-st:#98c379; --code-nu:#d19a66; --code-cm:#68807a; --code-fn:#61afef;
+  }
+  *{margin:0;padding:0;box-sizing:border-box}
+  html{scroll-behavior:smooth}
+  body{font-family:"PingFang SC","Microsoft YaHei","Segoe UI",-apple-system,sans-serif;line-height:1.9;color:var(--text);background:var(--bg);font-size:15.5px}
+  .sidebar-nav{position:fixed;top:0;left:0;width:var(--sidebar);height:100vh;overflow-y:auto;background:linear-gradient(180deg,#1a1305,#33260c);padding:14px 0 40px;z-index:100;border-right:3px solid var(--brand);transition:transform .3s ease}
+  .sidebar-nav::-webkit-scrollbar{width:5px}
+  .sidebar-nav::-webkit-scrollbar-thumb{background:var(--brand);border-radius:4px}
+  .sb-brand{display:flex;align-items:center;gap:10px;padding:10px 13px 12px;border-bottom:1px solid #3d3014;margin-bottom:8px}
+  .sidebar-nav a.sb-logo{display:flex;align-items:center;justify-content:center;flex-shrink:0;padding:0;border-left:none;transition:.2s}
+  .sb-logo:hover{transform:scale(1.08)}
+  .sb-logo img{height:34px;width:34px;display:block;object-fit:contain;border-radius:8px}
+  .sb-brand b{color:#eef7f6;font-size:14px;letter-spacing:.5px;display:block;line-height:1.4}
+  .sb-brand span{color:#7ba3a6;font-size:11.5px;display:block;line-height:1.4}
+  .nav-title{color:#ffb894;font-size:12px;font-weight:800;padding:10px 18px 6px;letter-spacing:1.2px}
+  .sidebar-nav a{display:block;color:#bcd3d4;text-decoration:none;padding:6px 18px;font-size:12.5px;line-height:1.55;border-left:3px solid transparent;transition:.18s}
+  .sidebar-nav a:hover{color:#fff;background:rgba(255,107,53,.16);border-left-color:var(--brand)}
+  .sidebar-nav a.nav-section{color:#ffb894;font-weight:700;font-size:13px;margin-top:11px;padding-top:10px;border-top:1px solid #3d3014}
+  .sidebar-nav a.nav-section:first-of-type{border-top:none;margin-top:0;padding-top:6px}
+  .sidebar-nav a.nav-sub{padding-left:30px;color:#8fabad;font-size:12px}
+  .sidebar-nav a.nav-sub:hover{color:#fff}
+  .sb-back{margin:16px 14px 0;display:block;text-align:center;padding:9px;border-radius:9px;background:#1c3940;color:#a6c0c2 !important;font-size:12px;font-weight:700;border-left:none !important}
+  .sb-back:hover{background:var(--brand) !important;color:#fff !important}
+  .nav-toggle{display:none;position:fixed;top:14px;left:14px;z-index:120;background:var(--brand);color:#fff;border:none;border-radius:9px;padding:9px 13px;font-size:15px;cursor:pointer;box-shadow:0 4px 14px rgba(0,0,0,.25)}
+  .page{margin-left:var(--sidebar)}
+  .hero{position:relative;overflow:hidden;padding:44px 52px;color:#fff;background:linear-gradient(125deg,#181103 0%,#3a2b0a 46%,#a8431c 132%)}
+  .hero::after{content:"";position:absolute;right:-90px;top:-110px;width:400px;height:400px;border-radius:50%;background:radial-gradient(circle,rgba(245,179,1,.30),transparent 68%)}
+  .hero-top{display:flex;gap:36px;align-items:center;position:relative;z-index:2}
+  .hero-txt{flex:1;min-width:0}
+  .hero .crumb{font-size:11.5px;color:#ffb894;letter-spacing:1.5px;font-weight:700;margin-bottom:14px}
+  .hero h1{font-size:31px;font-weight:800;line-height:1.3;letter-spacing:.6px;margin-bottom:8px}
+  .hero h1 .sub{display:block;font-size:18px;font-weight:700;color:#ffd2b3;margin-top:6px;letter-spacing:.3px}
+  .hero .en{font-size:13px;color:#98b6b8;font-style:italic;margin-bottom:18px}
+  .hero .tags{display:flex;flex-wrap:wrap;gap:8px}
+  .tag{font-size:11.5px;padding:4px 12px;border-radius:20px;background:rgba(255,255,255,.12);border:1px solid rgba(255,255,255,.22);color:#e8f0f6;font-weight:600}
+  .tag.hot{background:rgba(255,107,53,.92);border-color:transparent;color:#fff}
+  .hero-card{flex-shrink:0;width:200px;text-align:center}
+  .hero-card .ava{width:148px;height:148px;border-radius:50%;object-fit:cover;object-position:top center;border:4px solid rgba(255,180,140,.6);box-shadow:0 14px 34px rgba(0,0,0,.45);background:#24344a}
+  .hero-card .nm{font-size:15px;font-weight:800;color:#fff;margin-top:10px}
+  .hero-card .ti{font-size:11.5px;color:#ffb894;margin-top:2px}
+  .container{max-width:1080px;margin:0 auto;padding:38px 52px 70px}
+  .lead{font-size:15.5px;line-height:2.05;color:#35474a;background:linear-gradient(120deg,#fff8f3,#f6fbfa);border-left:5px solid var(--brand);border-radius:0 14px 14px 0;padding:22px 26px;margin-bottom:32px}
+  .lead b{color:var(--brand-dark)}
+  .cast{display:flex;gap:16px;align-items:flex-start;border-radius:16px;padding:18px 22px;margin:24px 0}
+  .cast .ava{width:72px;height:72px;border-radius:50%;object-fit:cover;object-position:top center;flex-shrink:0;background:#e8eef5}
+  .cast .bubble{position:relative;font-size:14px;line-height:1.95;padding-top:2px;flex:1}
+  .cast .who{font-size:12px;font-weight:800;margin-bottom:5px;letter-spacing:.5px}
+  .cast.anya{background:var(--brand-soft);border:1px solid #ffdcc9}
+  .cast.anya .who{color:var(--brand-dark)}
+  .cast.anya .bubble{color:#5c4636}
+  .cast.duck{background:#fff5f5;border:1px solid #fbd5d5}
+  .cast.duck .who{color:#b91c1c}
+  .cast.duck .bubble{color:#5c4141}
+  .cast.teacher{background:linear-gradient(120deg,#f1f8f8,#ffffff);border:1px solid #d6e8e8}
+  .cast.teacher .who{color:#134e4a}
+  .cast.teacher .bubble{color:#3c5254}
+  .cast.hero{background:#f2fbf9;border:1px solid #cfe9e6}
+  .cast.hero .who{color:#0f766e}
+  .cast.hero .bubble{color:#3d5250}
+  .goal-grid{display:grid;grid-template-columns:1fr 1fr;gap:16px;margin-bottom:36px}
+  .goal{border:1px solid var(--line);border-radius:15px;padding:19px 21px;background:#fff;box-shadow:0 4px 16px rgba(14,143,134,.06)}
+  .goal h4{font-size:14px;font-weight:800;margin-bottom:11px;display:flex;align-items:center;gap:8px;color:var(--primary-dark)}
+  .goal h4 .ic{width:22px;height:22px;border-radius:7px;background:var(--primary-lighter);display:flex;align-items:center;justify-content:center;font-size:12px}
+  .goal ul{list-style:none}
+  .goal li{font-size:13.5px;color:#46585a;line-height:1.9;padding-left:18px;position:relative}
+  .goal li::before{content:"▸";position:absolute;left:0;color:var(--primary);font-weight:800}
+  .goal.syllabus li::before{content:"✓"}
+  .section-header{margin:52px 0 24px;padding-bottom:12px;border-bottom:3px solid var(--brand);display:flex;align-items:baseline;gap:14px;flex-wrap:wrap}
+  .section-header h2{font-size:22px;font-weight:800;color:var(--night);letter-spacing:.4px}
+  .section-header .en-title{font-size:12px;color:var(--dim2);font-style:italic}
+  h3{font-size:17.5px;font-weight:800;margin:34px 0 14px;color:var(--night);display:flex;align-items:center;gap:10px}
+  h3::before{content:"";width:5px;height:17px;border-radius:3px;background:var(--brand);flex-shrink:0}
+  h4{font-size:15px;font-weight:800;margin:24px 0 10px;color:#2c4a48}
+  p{margin:12px 0;color:#3d5250;line-height:2}
+  strong{color:var(--primary-dark)}
+  code.inline{background:var(--primary-lighter);color:var(--primary-dark);padding:2px 7px;border-radius:6px;font-family:"SFMono-Regular",Consolas,Menlo,monospace;font-size:.9em;font-weight:600}
+  .figure{margin:24px 0;text-align:center}
+  .figure svg.diagram{max-width:100%;height:auto;background:#fff;border:1px solid var(--line);border-radius:14px;padding:10px}
+  .figure .caption{font-size:12.5px;color:var(--dim2);margin-top:9px}
+  .pic{margin:26px 0;text-align:center}
+  .pic img{max-width:100%;border-radius:16px;box-shadow:0 10px 28px rgba(20,60,60,.15);display:block;margin:0 auto}
+  .pic figcaption{font-size:12.5px;color:var(--dim2);margin-top:9px}
+  .pic .ph{display:none}
+  .pic.missing img{display:none}
+  .pic.missing .ph{display:flex;flex-direction:column;align-items:center;justify-content:center;gap:9px;border:2px dashed #bfdcd9;border-radius:16px;background:linear-gradient(135deg,#f8fdfc,#eef8f7);padding:40px 26px;color:#6f8f90}
+  .pic.missing .ph .fn{font-family:Consolas,monospace;font-size:12.5px;color:#0e8f86;font-weight:700;word-break:break-all}
+  .pic.missing .ph .ds{font-size:12.5px;line-height:1.8;max-width:560px}
+  .box{border-radius:13px;padding:16px 20px;margin:20px 0;font-size:14px;line-height:1.95}
+  .box .lb{font-weight:800;margin-right:6px}
+  .info{background:#eef6ff;border-left:5px solid #3b82f6;color:#274768}
+  .info .lb{color:#1d4ed8}
+  .tip{background:#fff9ec;border-left:5px solid #f59e0b;color:#6b4e13}
+  .tip .lb{color:#b45309}
+  .remember{background:var(--primary-lighter);border-left:5px solid var(--primary);color:#134e4a}
+  .remember .lb{color:var(--primary-dark)}
+  .warn{background:#fef2f2;border-left:5px solid #ef4444;color:#7f2b2b}
+  .warn .lb{color:#b91c1c}
+  .code-card{margin:20px 0;border-radius:14px;overflow:hidden;box-shadow:0 10px 28px rgba(15,40,40,.20)}
+  .code-head{display:flex;align-items:center;gap:9px;background:#332a10;padding:9px 14px}
+  .code-head .dot{width:10px;height:10px;border-radius:50%}
+  .code-head .d1{background:#ff5f57}.code-head .d2{background:#febc2e}.code-head .d3{background:#28c840}
+  .code-head .file{color:#8fb0aa;font-size:11.5px;font-family:Consolas,monospace;margin-left:6px}
+  .code-head .lang{margin-left:auto;font-size:10.5px;font-weight:800;color:#0b1f1a;background:#f0c04a;padding:2px 9px;border-radius:6px;letter-spacing:.4px}
+  .code-card pre{background:var(--code-bg);padding:18px 20px;overflow-x:auto;margin:0;font-family:"SFMono-Regular",Consolas,"Courier New",monospace;font-size:13.5px;line-height:1.85}
+  .code-card pre::-webkit-scrollbar{height:8px}
+  .code-card pre::-webkit-scrollbar-thumb{background:#2f4a45;border-radius:4px}
+  .code-card code{color:var(--code-tx);white-space:pre}
+  .kw{color:var(--code-kw);font-weight:600}
+  .st{color:var(--code-st)}
+  .nu{color:var(--code-nu)}
+  .cm{color:var(--code-cm);font-style:italic}
+  .fn{color:var(--code-fn)}
+  .out{background:#0e1d1a;color:#7fd6b8;font-family:Consolas,monospace;font-size:13px;padding:12px 20px;border-top:1px solid #223a35}
+  .out b{color:#c3d6d1;font-weight:600;font-size:11.5px;letter-spacing:1px}
+  table.styled{width:100%;border-collapse:collapse;margin:20px 0;font-size:13.5px;border-radius:12px;overflow:hidden;box-shadow:0 4px 16px rgba(14,143,134,.08)}
+  table.styled thead{background:var(--brand)}
+  table.styled th{color:#fff;padding:11px 14px;text-align:left;font-weight:700;font-size:13px}
+  table.styled td{padding:10px 14px;border-bottom:1px solid var(--line);color:#44585a;vertical-align:top}
+  table.styled tbody tr:nth-child(even){background:var(--bg-soft)}
+  table.styled tbody tr:last-child td{border-bottom:none}
+  .level-card{border:1px solid var(--line);border-radius:16px;overflow:hidden;margin:22px 0;box-shadow:0 6px 22px rgba(14,143,134,.08)}
+  .level-card .lc-head{background:linear-gradient(100deg,#12262c,#8a3a16);color:#fff;padding:15px 22px;display:flex;align-items:center;gap:12px;flex-wrap:wrap}
+  .level-card .lc-head .n{font-size:12px;font-weight:800;background:rgba(255,255,255,.2);padding:3px 10px;border-radius:20px}
+  .level-card .lc-head h4{margin:0;color:#fff;font-size:16px}
+  .level-card .lc-head .go{margin-left:auto;font-size:11.5px;color:#ffd2b3}
+  .level-card .lc-body{padding:20px 24px;background:#fff}
+  .level-card .story{background:#f8fcfc;border-left:4px solid #7dd3fc;border-radius:0 10px 10px 0;padding:13px 18px;margin:0 0 16px;font-size:14px;line-height:1.95;color:#3c5254}
+  .level-card .story b{color:#0369a1}
+  .btn-go{display:inline-flex;align-items:center;gap:8px;background:linear-gradient(135deg,var(--brand),var(--brand-dark));color:#fff;text-decoration:none;font-weight:800;font-size:13.5px;padding:10px 22px;border-radius:11px;box-shadow:0 8px 20px rgba(255,107,53,.32);transition:.2s}
+  .btn-go:hover{transform:translateY(-2px);box-shadow:0 12px 26px rgba(255,107,53,.42)}
+  .pit{border:1px solid #f6dede;border-radius:14px;overflow:hidden;margin:16px 0;background:#fff}
+  .pit .pt{display:flex;gap:12px;padding:14px 18px;background:#fffafa;align-items:flex-start}
+  .pit .x{width:26px;height:26px;border-radius:9px;background:#fee;color:#dc2626;display:flex;align-items:center;justify-content:center;font-weight:800;flex-shrink:0;font-size:13px}
+  .pit .t{font-size:13.5px;line-height:1.9;color:#5c4a4a;flex:1}
+  .pit .t b{color:#b91c1c}
+  .pit .duck{display:flex;gap:12px;padding:13px 18px;background:#fff5f5;border-top:1px dashed #f3d0d0;align-items:flex-start}
+  .pit .duck img{width:48px;height:48px;object-fit:contain;flex-shrink:0;margin-top:2px}
+  .pit .duck .dt{font-size:13.5px;line-height:1.9;color:#7a3b3b}
+  .pit .duck .dt b{color:#b91c1c}
+  .pit .fix{padding:12px 18px;background:#f2fbf9;border-top:1px dashed #cfe9e6;font-size:13.5px;color:#134e4a}
+  .pit .fix b{color:var(--primary-dark)}
+  .exam{border:1px solid #d8ebea;border-radius:15px;margin:16px 0;overflow:hidden;background:#fff;box-shadow:0 4px 16px rgba(30,80,80,.06)}
+  .exam .eh{display:flex;align-items:center;gap:10px;padding:11px 18px;background:linear-gradient(100deg,#eef8f7,#f8fdfc);border-bottom:1px solid #dbeceb;flex-wrap:wrap}
+  .exam .eh .src{font-size:11px;font-weight:800;color:#fff;background:#0e8f86;padding:2.5px 10px;border-radius:20px}
+  .exam .eh .src.ori{background:#0e9488}
+  .exam .eh .tp{font-size:11.5px;color:#4f7d7a;font-weight:700}
+  .exam .eb{padding:16px 20px}
+  .exam .q{font-weight:700;font-size:14px;color:#2b4042;line-height:1.9;margin-bottom:10px}
+  .exam .opt{font-size:13.5px;color:#46585a;line-height:2.05;padding-left:6px}
+  .exam .opt i{font-style:normal;font-weight:800;color:var(--primary-dark);margin-right:7px}
+  .exam pre{margin:12px 0;background:#14231f;border-radius:10px;padding:14px 16px;overflow-x:auto;font-family:Consolas,monospace;font-size:13px;line-height:1.8;color:var(--code-tx)}
+  .exam details{margin-top:10px;border-top:1px dashed var(--line);padding-top:10px}
+  .exam summary{cursor:pointer;font-size:12.5px;font-weight:800;color:#0e8f86;outline:none;user-select:none}
+  .exam details .ans{font-size:13.5px;color:#3d5250;line-height:1.95;margin-top:9px;background:var(--bg-soft);padding:13px 16px;border-radius:10px}
+  .exam details .ans b{color:var(--primary-dark)}
+  .exam details .ans .tagline{display:inline-block;font-size:11px;background:#e0f2fe;color:#0e7490;padding:1.5px 8px;border-radius:6px;font-weight:700;margin-right:6px}
+  .summary{margin:40px 0 20px;border-radius:18px;padding:26px 30px;background:linear-gradient(130deg,#fff8f3,#ffffff);border:1px solid #ffe0cf}
+  .summary h3{margin-top:0}
+  .summary ul{list-style:none;margin-top:10px}
+  .summary li{font-size:14px;line-height:2;color:#3d5250;padding-left:24px;position:relative}
+  .summary li::before{content:"◆";position:absolute;left:0;color:var(--brand);font-size:11px;top:6px}
+  .pager{display:flex;gap:14px;margin-top:30px;flex-wrap:wrap}
+  .pager a{flex:1;min-width:200px;text-decoration:none;border:1px solid var(--line);border-radius:14px;padding:16px 20px;background:#fff;transition:.2s;display:block}
+  .pager a:hover{border-color:var(--brand);box-shadow:0 10px 26px rgba(255,107,53,.14);transform:translateY(-2px)}
+  .pager a .k{font-size:11px;color:var(--dim2);font-weight:700;letter-spacing:1px}
+  .pager a .v{font-size:14px;font-weight:800;color:var(--night);margin-top:5px}
+  .pager a.back{background:var(--brand-soft);border-color:transparent;text-align:center}
+  .pager a.back .v{color:var(--brand-dark)}
+  .cta{margin-top:26px;border-radius:20px;padding:30px 34px;color:#fff;position:relative;overflow:hidden;background:linear-gradient(120deg,#12242a,#1e4a52 46%,#a8431c 132%)}
+  .cta::after{content:"";position:absolute;right:-70px;bottom:-90px;width:280px;height:280px;border-radius:50%;background:radial-gradient(circle,rgba(255,140,80,.45),transparent 68%)}
+  .cta h3{color:#fff;margin:0 0 10px;position:relative;z-index:2}
+  .cta h3::before{background:var(--brand)}
+  .cta p{color:#cfe4e2;font-size:13.5px;margin:0 0 18px;position:relative;z-index:2;max-width:640px}
+  .cta .btn-go{position:relative;z-index:2}
+  @media(max-width:900px){
+    .sidebar-nav{transform:translateX(-100%)}
+    .sidebar-nav.active{transform:translateX(0)}
+    .nav-toggle{display:block}
+    .page{margin-left:0}
+    .hero{padding:70px 22px 34px}
+    .hero-top{flex-direction:column-reverse;text-align:center}
+    .hero-card{width:auto}
+    .container{padding:26px 20px 60px}
+    .goal-grid{grid-template-columns:1fr}
+  }
+</style>
+</head>
+<body>
+
+<button class="nav-toggle" onclick="document.querySelector('.sidebar-nav').classList.toggle('active')">&#9776;</button>
+
+<nav class="sidebar-nav">
+  <div class="sb-brand">
+    <a class="sb-logo" href="https://codecombat.cn/" target="_blank" rel="noopener" title="访问 CodeCombat 扣哒世界官网">
+      <img src="../assets/logo.png" alt="CodeCombat 扣哒世界">
+    </a>
+    <div><b>商队铁链</b><span>星砂绿洲 · Python 五级 第 4 单元</span></div>
+  </div>
+  <div class="nav-title">本单元目录</div>
+
+  <a href="#s0" class="nav-section">0　单元导语与目标</a>
+  <a href="#s0-1" class="nav-sub">0.1 学习目标</a>
+  <a href="#s0-2" class="nav-sub">0.2 考纲对照</a>
+  <a href="#s1" class="nav-section">1　为什么需要链表</a>
+  <a href="#s1-1" class="nav-sub">1.1 数组的软肋</a>
+  <a href="#s1-2" class="nav-sub">1.2 链表的想法：只记住下一节</a>
+  <a href="#s2" class="nav-section">2　结点与指针</a>
+  <a href="#s2-1" class="nav-sub">2.1 结点长什么样</a>
+  <a href="#s2-2" class="nav-sub">2.2 头指针与尾指针</a>
+  <a href="#s3" class="nav-section">3　遍历与快慢指针</a>
+  <a href="#s3-1" class="nav-sub">3.1 一路走到底</a>
+  <a href="#s3-2" class="nav-sub">3.2 快慢指针找中间</a>
+  <a href="#s4" class="nav-section">4　插入与删除</a>
+  <a href="#s4-1" class="nav-sub">4.1 在 p 之后插入</a>
+  <a href="#s4-2" class="nav-sub">4.2 删除结点</a>
+  <a href="#s5" class="nav-section">5　链表与数组的对比</a>
+  <a href="#s5-1" class="nav-sub">5.1 各自的长处</a>
+  <a href="#s5-2" class="nav-sub">5.2 双向链表</a>
+  <a href="#s6" class="nav-section">6　代码实战</a>
+  <a href="#s7" class="nav-section">7　常见陷阱</a>
+  <a href="#s8" class="nav-section">8　题目练习</a>
+  <a href="#s9" class="nav-section">9　本单元小结</a>
+
+  <a href="../index.html" target="_top" class="sb-back">返回考纲之路</a>
+</nav>
+
+<div class="page">
+
+<div class="hero">
+  <div class="hero-top">
+    <div class="hero-txt">
+      <div class="crumb">扣哒考级 · GESP PYTHON 五级 · 第 4 单元　|　星砂绿洲 STARDUST OASIS</div>
+      <h1>商队铁链
+        <span class="sub">链表</span>
+      </h1>
+      <div class="en">Linked Lists</div>
+      <div class="tags">        <span class="tag hot">考纲 · 数据结构</span>
+        <span class="tag">单链表</span>
+        <span class="tag">结点与指针</span>
+        <span class="tag">插入与删除</span>
+        <span class="tag">快慢指针</span></div>
+    </div>
+    <div class="hero-card">
+      <img class="ava" src="../assets/avatars/senick.webp" alt="塞尼克" onerror="this.style.background='#24344a';this.src='../assets/heroes/senick.webp'">
+      <div class="nm">塞尼克</div>
+      <div class="ti">沙海向导 · 你的向导</div>
+    </div>
+  </div>
+</div>
+
+<div class="container">
+
+<div class="lead">
+  黄昏的沙丘上，一支<b>骆驼商队</b>正蜿蜒前行。<br>
+  塞尼克的鞭子往前一指：你看这一队——<strong>每一峰骆驼只系着后面一峰，
+  别的它一概不管。</strong><br>
+  你愣了一下：那……<b>要找第十峰怎么办？</b><br>
+  从第一峰一峰一峰数过去。他笑了，<strong>麻烦吗？可你要是在中间插进一峰，
+  只要打开一枚锁环就行了——后面的队伍一根毛都不用动。</strong>
+</div>
+
+<div class="cast senick">
+  <img class="ava" src="../assets/avatars/senick.webp" alt="塞尼克" onerror="this.style.display='none'">
+  <div class="bubble">
+    <div class="who">塞尼克 · 沙海向导</div>
+    前面几课你用的都是数组——它就像<b>一排编好号的格子，位置固定、随叫随到。</b><br>
+    但它有个躲不开的毛病：<strong>想在中间插一个东西，就得把后面全部往后挪。</strong><br>
+    <b>这一课学链表：一种"不靠编号、只靠牵引"的数据结构。</b>
+  </div>
+</div>
+
+<figure class="pic">
+  <img src="../assets/illustrations/py-L5-04-01_caravan_chain.webp" alt="骆驼商队"
+       onerror="this.closest('.pic').classList.add('missing')">
+  <div class="ph">
+    <div class="fn">assets/illustrations/py-L5-04-01_caravan_chain.webp</div>
+    <div class="ds">【配图位】黄昏沙丘上一支蜿蜒的骆驼商队，每峰骆驼与后面的货车只用一枚发光的锁环相连，彼此之间没有轨道、也没有编号牌；商队从近处一直延伸到地平线，最前面一名披沙色斗篷的向导牵着第一峰骆驼并回头望向看不见尾的长队，天边是暖橙色的落日。</div>
+  </div>
+  <figcaption>图 1：星砂绿洲的商队铁链——今天要从这里开始</figcaption>
+</figure>
+
+<!-- ============ 0 ============ -->
+<div class="section-header" id="s0">
+  <h2>0　单元导语与目标</h2>
+  <div class="en-title">Unit Overview</div>
+</div>
+
+<h3 id="s0-1">0.1 学习目标</h3>
+<div class="goal-grid">
+  <div class="goal">
+    <h4><span class="ic">1</span>学完这个单元，你将能……</h4>
+    <ul>
+      <li>说出数组在"插入删除"上的麻烦</li>
+      <li>用结构体和指针描述一个链表结点</li>
+      <li>从表头一路遍历到表尾</li>
+      <li>在指定结点之后插入新结点</li>
+      <li>正确删除一个结点（并释放它）</li>
+      <li>用快慢指针找出链表的中间结点</li>
+    </ul>
+  </div>
+  <div class="goal syllabus">
+    <h4><span class="ic">2</span>对标 GESP 考纲（Python 五级）</h4>
+    <ul>
+      <li>理解链表的结构与存储特点</li>
+      <li>掌握单链表的定义、遍历、插入与删除</li>
+      <li>掌握头指针与尾指针的作用</li>
+      <li>了解双向链表与循环链表</li>
+      <li>考核目标：能判断插入/删除代码是否正确、能算出时间复杂度</li>
+    </ul>
+  </div>
+</div>
+
+<h3 id="s0-2">0.2 考纲对照</h3>
+<table class="styled">
+  <thead><tr><th>本单元小节</th><th>对应考纲条目</th><th>真题常考形式</th></tr></thead>
+  <tbody>
+    <tr><td>1　为什么需要链表</td><td>链表与数组的区别</td><td>存储是否连续、插入删除谁更快</td></tr>
+    <tr><td>2　结点与指针</td><td>链表的结点结构</td><td>结点里都有什么；头指针的作用</td></tr>
+    <tr><td>3　遍历与快慢指针</td><td>链表的遍历</td><td>遍历循环怎么写；快慢指针怎么走</td></tr>
+    <tr><td>4　插入与删除</td><td>链表的插入删除</td><td>几行代码的正确顺序（必考）</td></tr>
+    <tr><td>5　链表与数组的对比</td><td>两种结构的取舍</td><td>各自的优缺点；双向链表</td></tr>
+  </tbody>
+</table>
+
+<!-- ============ 1 ============ -->
+<div class="section-header" id="s1">
+  <h2>1　为什么需要链表</h2>
+  <div class="en-title">Why Linked Lists</div>
+</div>
+
+<h3 id="s1-1">1.1 数组的软肋</h3>
+
+<div class="code-card">
+  <div class="code-head">
+    <span class="dot d1"></span><span class="dot d2"></span><span class="dot d3"></span>
+    <span class="file">在数组中间插入一个数，有多麻烦</span>
+    <span class="lang">TEXT</span>
+  </div>
+  <pre><code>数组原本是：  10  20  30  40  50
+              ↑0  ↑1  ↑2  ↑3  ↑4
+
+想在 20 后面插入 25：
+
+  ① 把 30、40、50 全部往后挪一格
+         10  20  30  40  50  (空)
+         10  20  (空) 30  40  50
+  ② 再把 25 放进空出来的位置
+         10  20  25  30  40  50
+
+插一个数，动了一串数。
+如果数组里有 100 万个数、要插在最前面——
+那就要挪 100 万次。太慢了。</code></pre>
+  <div class="out"><b>两个根本原因</b>　
+  ① 数组的位置是<strong>固定的</strong>，插一个就得给别人腾地方；<br>
+  ② 因为位置固定，所以必须"把后面全部挪开"</div>
+</div>
+
+<div class="box tip">
+  <span class="lb">打个比方：</span>
+  数组就像<b>电影院里编好号的一排座位</b>——<strong>想在 3 号和 4 号之间塞进一个人，
+  4 号往后所有人都得挪一个位子。</strong><br>
+  <b>如果座位是"按票号固定"的，那就必须挪；这排有一千个人，就得挪一千次。</b><br>
+  <strong>而链表像"手拉手的队伍"——想插进去，只要松开两双手、重新牵上就行，
+  后面的人一个都不用动。</strong>
+</div>
+
+<h3 id="s1-2">1.2 链表的想法：只记住下一节</h3>
+
+<div class="box remember">
+  <span class="lb">链表的核心思想：</span>
+  <b>不用一个连续的数组，改用一堆"散落在各处的结点"，
+  每个结点里额外存一个"下一个结点在哪里"。</b><br>
+  <b>于是——</b><br>
+  <b>① 想插入？</b>只要改两个结点里的"下一节是谁"，<strong>别人一根毛都不用动</strong>；<br>
+  <b>② 想删除？</b>只要把前一个结点的"下一节"直接跳过后一个，<strong>也是两步的事</strong>；<br>
+  <b>③ 代价呢？</b><strong>想找第 10 个结点，只能从头一个一个数过去</strong>——
+  <b>因为谁也不知道第 10 个在内存的哪个角落。</b><br>
+  <strong>这就是链表：用"找得慢"换来"改得快"。</strong>
+</div>
+
+<figure class="figure">
+  <svg class="diagram" viewBox="0 0 830 250" role="img" aria-label="数组与链表的存储">
+    <text x="24" y="30" font-size="14" font-weight="bold" fill="#1f2937">存储方式完全不同：数组是连着的，链表是散着的</text>
+
+    <rect x="46" y="52" width="360" height="94" rx="12" fill="#eaf1fe" stroke="#2563eb" stroke-width="2"/>
+    <text x="226" y="74" text-anchor="middle" font-size="12.5" fill="#1d4ed8" font-weight="bold">数组：一排挨着的格子</text>
+    <g font-family="Consolas,monospace" font-size="12">
+      <rect x="66" y="86" width="52" height="34" rx="6" fill="#fff" stroke="#2563eb" stroke-width="1.6"/>
+      <text x="92" y="108" text-anchor="middle" fill="#1d4ed8">10</text>
+      <rect x="122" y="86" width="52" height="34" rx="6" fill="#fff" stroke="#2563eb" stroke-width="1.6"/>
+      <text x="148" y="108" text-anchor="middle" fill="#1d4ed8">20</text>
+      <rect x="178" y="86" width="52" height="34" rx="6" fill="#fff" stroke="#2563eb" stroke-width="1.6"/>
+      <text x="204" y="108" text-anchor="middle" fill="#1d4ed8">30</text>
+      <rect x="234" y="86" width="52" height="34" rx="6" fill="#fff" stroke="#2563eb" stroke-width="1.6"/>
+      <text x="260" y="108" text-anchor="middle" fill="#1d4ed8">40</text>
+      <rect x="290" y="86" width="52" height="34" rx="6" fill="#fff" stroke="#2563eb" stroke-width="1.6"/>
+      <text x="316" y="108" text-anchor="middle" fill="#1d4ed8">50</text>
+    </g>
+    <text x="66" y="136" font-size="11.5" fill="#3b6ea8">内存里连续摆放，靠"下标"定位</text>
+
+    <rect x="424" y="52" width="360" height="94" rx="12" fill="#e9f8ef" stroke="#2e9e5b" stroke-width="2"/>
+    <text x="604" y="74" text-anchor="middle" font-size="12.5" fill="#1f7a44" font-weight="bold">链表：散落的结点用指针牵起来</text>
+    <g font-family="Consolas,monospace" font-size="11.5">
+      <rect x="444" y="86" width="66" height="34" rx="6" fill="#fff" stroke="#2e9e5b" stroke-width="1.6"/>
+      <text x="477" y="108" text-anchor="middle" fill="#1f7a44">10 →</text>
+      <rect x="538" y="86" width="66" height="34" rx="6" fill="#fff" stroke="#2e9e5b" stroke-width="1.6"/>
+      <text x="571" y="108" text-anchor="middle" fill="#1f7a44">20 →</text>
+      <rect x="632" y="86" width="66" height="34" rx="6" fill="#fff" stroke="#2e9e5b" stroke-width="1.6"/>
+      <text x="665" y="108" text-anchor="middle" fill="#1f7a44">30 →</text>
+      <rect x="718" y="86" width="52" height="34" rx="6" fill="#f1f5f9" stroke="#94a3b8" stroke-width="1.6"/>
+      <text x="744" y="108" text-anchor="middle" fill="#94a3b8">∅</text>
+    </g>
+    <line x1="510" y1="103" x2="534" y2="103" stroke="#8b5cf6" stroke-width="1.8"/>
+    <line x1="604" y1="103" x2="628" y2="103" stroke="#8b5cf6" stroke-width="1.8"/>
+    <line x1="698" y1="103" x2="714" y2="103" stroke="#8b5cf6" stroke-width="1.8"/>
+    <text x="444" y="136" font-size="11.5" fill="#3b7c5b">存放位置随意，靠"指针"一节节找过去</text>
+
+    <rect x="46" y="164" width="738" height="70" rx="12" fill="#f7f9fd" stroke="#cbd5e1" stroke-width="1.6"/>
+    <text x="70" y="190" font-size="12.5" fill="#334155"><tspan font-weight="bold">插入对比：</tspan>数组要挪动后面所有元素（<tspan font-family="Consolas,monospace">O(n)</tspan>）；链表只要改两处指针（<tspan font-family="Consolas,monospace">O(1)</tspan>）</text>
+    <text x="70" y="216" font-size="12" fill="#b45309">★ 但链表"找第 k 个"要一个一个数过去（<tspan font-family="Consolas,monospace">O(n)</tspan>），数组却能直接算地址（<tspan font-family="Consolas,monospace">O(1)</tspan>）——各有取舍</text>
+  </svg>
+  <div class="caption">图 2（SVG）：数组连着放，链表散着放</div>
+</figure>
+
+<!-- ============ 2 ============ -->
+<div class="section-header" id="s2">
+  <h2>2　结点与指针</h2>
+  <div class="en-title">Nodes &amp; Pointers</div>
+</div>
+
+<h3 id="s2-1">2.1 结点长什么样</h3>
+
+<div class="code-card">
+  <div class="code-head">
+    <span class="dot d1"></span><span class="dot d2"></span><span class="dot d3"></span>
+    <span class="file">一个链表结点：数据 + 指向下一个的指针</span>
+    <span class="lang">Python</span>
+  </div>
+  <pre><code>class Node:
+    def __init__(self, value):
+        self.value = value      # ① 数据：这一节装的东西
+        self.next = None        # ② 指针：下一节在哪儿（没有下一节就是 None）
+
+# 造一个新结点
+p = Node(20)</code></pre>
+  <div class="out"><b>结点只有两样东西</b>　
+  <b>① 数据 <code>value</code>；② 指针 <code>next</code></b>——<strong>这就是"链"的全部秘密</strong></div>
+</div>
+
+<div class="box tip">
+  <span class="lb">注意 <code>struct Node</code> 里出现了 <code>Node *next;</code>。</span>
+  这看起来像"自己包含自己"，<strong>但其实不是</strong>——<br>
+  <code class="inline">next</code> 存的是<strong>另一个结点的地址</strong>，
+  而不是把那个结点整个塞进来。<br>
+  <strong>所以它只占一个指针的大小（8 字节）——这个概念和上一单元学的指针完全一样。</strong><br>
+  <b>顺便提醒：用 <code class="inline">new</code> 申请出来的结点，用完要 <code class="inline">delete</code> 掉。</b>
+</div>
+
+<h3 id="s2-2">2.2 头指针与尾指针</h3>
+
+<div class="code-card">
+  <div class="code-head">
+    <span class="dot d1"></span><span class="dot d2"></span><span class="dot d3"></span>
+    <span class="file">一个链表，靠两个指针"抓两头"</span>
+    <span class="lang">Python</span>
+  </div>
+  <pre><code>head = None      # 头指针：指向第一节
+tail = None      # 尾指针：指向最后一节
+
+# 空链表：head 和 tail 都是 None
+
+# 有个头指针，就能找到整条链
+# 有个尾指针，就能 O(1) 在末尾接上新的一节
+
+# 在表尾插入（已知 tail 时）
+s = Node(99)
+if head is None:            # 还是一条空链
+    head = s
+    tail = s
+else:
+    tail.next = s           # 老末尾指向新结点
+    tail = s                # 尾指针挪到新结点</code></pre>
+  <div class="out"><b>有了尾指针，尾插只要 2 步</b>　
+  <b>时间复杂度 <code>O(1)</code></b><br>
+  <b>如果没有尾指针</b>　<b>得从头一路走到最后一节，那是 <code>O(n)</code></b></div>
+</div>
+
+<div class="box remember">
+  <span class="lb">为什么头指针是"命根子"？</span>
+  <b>因为链表是散着放的——除了头指针，你不知道别的结点在哪。</b><br>
+  <strong>一旦头指针丢了，整条链就"失联"了：</strong>
+  <b>后面的结点还在内存里，可你再也找不到它们。</b><br>
+  <b>所以：① 别随手改 <code class="inline">head</code>；② 遍历时用另一个临时指针，别拿 <code class="inline">head</code> 去跑。</b>
+</div>
+
+<figure class="pic">
+  <img src="../assets/illustrations/py-L5-04-03_head_tail.webp" alt="抓两头"
+       onerror="this.closest('.pic').classList.add('missing')">
+  <div class="ph">
+    <div class="fn">assets/illustrations/py-L5-04-03_head_tail.webp</div>
+    <div class="ds">【配图位】沙丘上的骆驼商队，队首与队尾各被一只发光的机械手（形似一只小箭头夹钳）稳稳握住，表示"头指针"与"尾指针"；中间的骆驼一峰牵着一峰，锁环依次发光延伸到远处；一名披沙色斗篷的向导站在队首的机械手旁，远处地平线泛着余晖。</div>
+  </div>
+  <figcaption>图 3：抓两头——头指针和尾指针</figcaption>
+</figure>
+
+<!-- ============ 3 ============ -->
+<div class="section-header" id="s3">
+  <h2>3　遍历与快慢指针</h2>
+  <div class="en-title">Traversal</div>
+</div>
+
+<h3 id="s3-1">3.1 一路走到底</h3>
+
+<div class="code-card">
+  <div class="code-head">
+    <span class="dot d1"></span><span class="dot d2"></span><span class="dot d3"></span>
+    <span class="file">遍历链表的标准写法</span>
+    <span class="lang">Python</span>
+  </div>
+  <pre><code># 写法一：用 while
+p = head                    # ★ 从 head 开始，但不动 head
+while p is not None:
+    print(p.value, end=" ")
+    p = p.next              # ★ 走到下一节
+
+# 写法二：先把链上的值收进一个列表，再打印（更省心）
+values = []
+p = head
+while p is not None:
+    values.append(p.value)
+    p = p.next
+print(values)</code></pre>
+  <div class="out"><b>要点</b>　
+  ① <b>用临时指针 <code>p</code>，不要改 <code>head</code> 本身</b>；<br>
+  ② 判断条件用 <b><code>p != nullptr</code></b>——<strong>走到最后一个结点的 next（空）就停</strong></div>
+</div>
+
+<div class="box warn">
+  <span class="lb">最容易崩的一个写法：</span>
+  <b><code class="inline">while (p-&gt;next != nullptr)</code> 会漏掉最后一个结点。</b>
+  走完最后一个结点后 <code class="inline">p</code> 变成 <code class="inline">nullptr</code>，
+  <strong>下一轮判断 <code class="inline">p-&gt;next</code> 就是在访问空指针——程序直接崩溃。</strong><br>
+  <b>正确做法：</b>判断 <code class="inline">p != nullptr</code>，
+  <strong>在循环体里先取用 <code class="inline">p-&gt;value</code>、再 <code class="inline">p = p-&gt;next</code>。</strong><br>
+  <b>顺序记牢：先看、再走。</b>
+</div>
+
+<h3 id="s3-2">3.2 快慢指针找中间</h3>
+
+<div class="code-card">
+  <div class="code-head">
+    <span class="dot d1"></span><span class="dot d2"></span><span class="dot d3"></span>
+    <span class="file">快指针走两步，慢指针走一步</span>
+    <span class="lang">Python</span>
+  </div>
+  <pre><code>def middle(head):
+    slow = head
+    fast = head
+
+    while fast is not None and fast.next is not None:
+        slow = slow.next              # 慢的走一格
+        fast = fast.next.next         # ★ 快的走两格
+    return slow                       # 慢的正好停在中间</code></pre>
+  <div class="out"><b>横线上该填的就是</b>　<b><code>fast = fast-&gt;next-&gt;next;</code></b><br>
+  <b>原理</b>　<b>快的速度是慢的两倍——快指针走到头时，慢指针正好走了一半</b></div>
+</div>
+
+<div class="box tip">
+  <span class="lb">为什么循环条件要写两个？</span>
+  <code class="inline">while (fast != nullptr &amp;&amp; fast-&gt;next != nullptr)</code>——
+  <strong>两个都要判，缺一不可。</strong><br>
+  <b><code class="inline">fast != nullptr</code></b>：保证 <code class="inline">fast-&gt;next</code> 能安全访问
+  （<strong>否则就是在空指针上取成员，程序崩溃</strong>）。<br>
+  <b><code class="inline">fast-&gt;next != nullptr</code></b>：保证 <code class="inline">fast-&gt;next-&gt;next</code> 能安全访问。<br>
+  <strong>因为快指针一次要跳两格，所以必须"提前看一眼两格之后还在不在"。</strong>
+</div>
+
+<figure class="figure">
+  <svg class="diagram" viewBox="0 0 830 230" role="img" aria-label="快慢指针">
+    <text x="24" y="30" font-size="14" font-weight="bold" fill="#1f2937">快指针走两步，慢指针走一步</text>
+
+    <g font-family="Consolas,monospace" font-size="13">
+      <rect x="60" y="70" width="76" height="42" rx="8" fill="#eaf1fe" stroke="#2563eb" stroke-width="1.8"/>
+      <text x="98" y="97" text-anchor="middle" fill="#1d4ed8">10</text>
+      <rect x="150" y="70" width="76" height="42" rx="8" fill="#eaf1fe" stroke="#2563eb" stroke-width="1.8"/>
+      <text x="188" y="97" text-anchor="middle" fill="#1d4ed8">20</text>
+      <rect x="240" y="70" width="76" height="42" rx="8" fill="#e9f8ef" stroke="#2e9e5b" stroke-width="2.6"/>
+      <text x="278" y="97" text-anchor="middle" fill="#1f7a44" font-weight="bold">30</text>
+      <rect x="330" y="70" width="76" height="42" rx="8" fill="#eaf1fe" stroke="#2563eb" stroke-width="1.8"/>
+      <text x="368" y="97" text-anchor="middle" fill="#1d4ed8">40</text>
+      <rect x="420" y="70" width="76" height="42" rx="8" fill="#eaf1fe" stroke="#2563eb" stroke-width="1.8"/>
+      <text x="458" y="97" text-anchor="middle" fill="#1d4ed8">50</text>
+    </g>
+    <line x1="136" y1="91" x2="146" y2="91" stroke="#94a3b8" stroke-width="1.6"/>
+    <line x1="226" y1="91" x2="236" y2="91" stroke="#94a3b8" stroke-width="1.6"/>
+    <line x1="316" y1="91" x2="326" y2="91" stroke="#94a3b8" stroke-width="1.6"/>
+    <line x1="406" y1="91" x2="416" y2="91" stroke="#94a3b8" stroke-width="1.6"/>
+
+    <path d="M 98 132 Q 188 158 278 132" stroke="#f59e0b" stroke-width="2.4" fill="none"/>
+    <text x="188" y="176" text-anchor="middle" font-size="12" fill="#b45309" font-weight="bold">slow 走一格</text>
+
+    <path d="M 98 60 Q 278 20 458 60" stroke="#8b5cf6" stroke-width="2.4" fill="none"/>
+    <text x="278" y="34" text-anchor="middle" font-size="12" fill="#6d28d9" font-weight="bold">fast 走两格</text>
+
+    <rect x="530" y="70" width="254" height="98" rx="12" fill="#f7f9fd" stroke="#cbd5e1" stroke-width="1.6"/>
+    <text x="554" y="96" font-size="12.5" fill="#334155" font-weight="bold">为什么正好停在中间？</text>
+    <text x="554" y="122" font-size="12" fill="#475569">快的速度是慢的两倍</text>
+    <text x="554" y="146" font-size="12" fill="#475569">快到头时，慢正好走了一半</text>
+    <text x="554" y="164" font-size="11.5" fill="#b45309">★ 一趟遍历就找到中点</text>
+  </svg>
+  <div class="caption">图 4（SVG）：快慢指针找中间结点</div>
+</figure>
+
+<!-- ============ 4 ============ -->
+<div class="section-header" id="s4">
+  <h2>4　插入与删除</h2>
+  <div class="en-title">Insert &amp; Delete</div>
+</div>
+
+<h3 id="s4-1">4.1 在 p 之后插入</h3>
+
+<div class="code-card">
+  <div class="code-head">
+    <span class="dot d1"></span><span class="dot d2"></span><span class="dot d3"></span>
+    <span class="file">两步搞定，顺序不能反</span>
+    <span class="lang">Python</span>
+  </div>
+  <pre><code># 在结点 p 之后插入新结点 s
+s = Node(25)
+
+s.next = p.next            # ① 新结点先接上后面的链
+p.next = s                 # ② 再让 p 指向新结点
+
+# 正确顺序：先接后，再改前
+# 如果写反：
+#   p.next = s             # p 指向 s，原来的后继丢了
+#   s.next = p.next        # 这时 p.next 已经是 s 了 → s 指向自己！</code></pre>
+  <div class="out"><b>OUTPUT</b>　插入成功，<b>时间复杂度 <code>O(1)</code></b>——<br>
+  和链表的长度完全无关，<strong>只要知道 p 在哪儿就行</strong></div>
+</div>
+
+<div class="box warn">
+  <span class="lb">两句的顺序，是链表最经典的坑。</span>
+  <b>必须"先接后、再改前"：</b>
+  <code class="inline">s->next = p->next;</code> 再 <code class="inline">p->next = s;</code><br>
+  <b>写反了会怎样？</b><br>
+  ① <code class="inline">p->next = s;</code> —— <strong>p 指向了新结点，可原来的后继"没人指向"了</strong>；<br>
+  ② <code class="inline">s->next = p->next;</code> —— 这时 <code class="inline">p->next</code> 已经等于 <code class="inline">s</code>，
+  <strong>于是 <code class="inline">s->next = s</code>——新结点指向了自己，后面的整条链全丢了。</strong><br>
+  <b>记法：先用"老的 p->next"去接新结点的尾巴，最后才动 p->next。</b>
+</div>
+
+<h3 id="s4-2">4.2 删除结点</h3>
+
+<div class="code-card">
+  <div class="code-head">
+    <span class="dot d1"></span><span class="dot d2"></span><span class="dot d3"></span>
+    <span class="file">单链表：删 p 的后继</span>
+    <span class="lang">Python</span>
+  </div>
+  <pre><code># 删除 p 后面的那个结点
+q = p.next                 # ① 先记住要删的是谁
+p.next = q.next            # ② 让 p 跳过 q，直接连上 q 的后面
+
+# ③ Python 有垃圾回收：没有变量指向 q 之后，它占的内存会被自动收走
+# ★ 如果只写一句 p.next = p.next.next，链是接对了，
+#   但 q 那个结点再也找不到 —— 在需要手动释放内存的语言里就是"内存泄漏"</code></pre>
+  <div class="out"><b>三步</b>　
+  <b>① 记住它；② 跳过它；③ 释放它</b><br>
+  <b>时间复杂度也是 <code>O(1)</code></b></div>
+</div>
+
+<div class="code-card">
+  <div class="code-head">
+    <span class="dot d1"></span><span class="dot d2"></span><span class="dot d3"></span>
+    <span class="file">双向链表：删中间的结点 p</span>
+    <span class="lang">Python</span>
+  </div>
+  <pre><code>class Node:
+    def __init__(self, value):
+        self.value = value
+        self.prev = None        # 指向前一个
+        self.next = None        # 指向后一个
+
+# 删除 p（p 既不是头也不是尾）
+p.prev.next = p.next        # ① 前面的结点跳过 p，直接连 p 的后面
+p.next.prev = p.prev        # ② 后面的结点跳过 p，直接连 p 的前面</code></pre>
+  <div class="out"><b>双向链表的好处</b>　
+  <b>有了 <code>prev</code>，删 p 时不用再从表头找它的前驱</b>——<strong>两句就够</strong></div>
+</div>
+
+<figure class="pic">
+  <img src="../assets/illustrations/py-L5-04-02_insert_delete_link.webp" alt="打开锁环，插入与取出"
+       onerror="this.closest('.pic').classList.add('missing')">
+  <div class="ph">
+    <div class="fn">assets/illustrations/py-L5-04-02_insert_delete_link.webp</div>
+    <div class="ds">【配图位】锁环特写：一枚发光的锁环被打开，一辆新车顺势滑进两节之间，前后两节重新扣上、其余车辆纹丝不动；画面另一侧对照演示——另一枚锁环被打开、一辆车被取出来，前后的车重新对接；背景是沙丘与落日余晖。</div>
+  </div>
+  <figcaption>图 5：插入与取出——只动两枚锁环，整支队伍不受影响</figcaption>
+</figure>
+
+<!-- ============ 5 ============ -->
+<div class="section-header" id="s5">
+  <h2>5　链表与数组的对比</h2>
+  <div class="en-title">Comparing</div>
+</div>
+
+<h3 id="s5-1">5.1 各自的长处</h3>
+
+<table class="styled">
+  <thead><tr><th>操作</th><th>数组</th><th>单链表</th></tr></thead>
+  <tbody>
+    <tr><td>访问第 k 个元素</td><td><strong><code class="inline">O(1)</code></strong>——直接算地址</td><td><code class="inline">O(n)</code>——得从头数过去</td></tr>
+    <tr><td>在开头插入</td><td><code class="inline">O(n)</code>——后面全得挪</td><td><strong><code class="inline">O(1)</code></strong>——改一个指针</td></tr>
+    <tr><td>在已知结点后插入</td><td><code class="inline">O(n)</code></td><td><strong><code class="inline">O(1)</code></strong></td></tr>
+    <tr><td>删除已知结点的后继</td><td><code class="inline">O(n)</code></td><td><strong><code class="inline">O(1)</code></strong></td></tr>
+    <tr><td>在末尾追加</td><td><code class="inline">O(1)</code>（有长度记录时）</td><td><code class="inline">O(1)</code>（<strong>有尾指针时</strong>）</td></tr>
+    <tr><td>内存是否连续</td><td><strong>连续</strong></td><td><strong>不连续，可以散放</strong></td></tr>
+    <tr><td>能否随机访问</td><td><strong>能</strong></td><td><strong>不能，只能顺序访问</strong></td></tr>
+    <tr><td>空间开销</td><td>只存数据</td><td><strong>每个结点多一个指针</strong></td></tr>
+  </tbody>
+</table>
+
+<div class="box remember">
+  <span class="lb">一句话选结构：</span>
+  <b>经常"按下标取东西"</b> → 用<strong>数组</strong>。<br>
+  <b>经常"在中间插进插出"</b> → 用<strong>链表</strong>。<br>
+  <strong>链表用"找得慢"换来了"改得快"；数组用"改得慢"换来了"找得快"。</strong><br>
+  <b>没有哪个更好，只有哪个更合适——这就是学数据结构的意义。</b>
+</div>
+
+<h3 id="s5-2">5.2 双向链表</h3>
+
+<div class="code-card">
+  <div class="code-head">
+    <span class="dot d1"></span><span class="dot d2"></span><span class="dot d3"></span>
+    <span class="file">双向链表：两个方向都能走</span>
+    <span class="lang">Python</span>
+  </div>
+  <pre><code>class Node:
+    def __init__(self, value):
+        self.value = value
+        self.prev = None        # 前驱
+        self.next = None        # 后继
+
+# 好处一：能倒着走
+p = tail
+while p is not None:
+    print(p.value, end=" ")
+    p = p.prev
+
+# 好处二：删除自己不用找前驱
+#         单链表删 p 得先从表头找到 p 的前一个，那是 O(n)
+#         双向链表有 prev，直接就是 O(1)
+
+# 代价：每个结点多存一个引用；插入删除时要多改一处
+
+# 还有"循环链表"：让尾结点的 next 指回 head
+#   tail.next = head          → 走到末尾会自动回到开头</code></pre>
+  <div class="out"><b>三种常见变体</b>　
+  ① <strong>单链表</strong>（只有 next）；<br>
+  ② <strong>双向链表</strong>（有 prev 和 next）；<br>
+  ③ <strong>循环链表</strong>（尾连回头，转圈走）</div>
+</div>
+
+<div class="box warn">
+  <span class="lb">带哨兵结点的双向循环链表：四步操作不能随意调换顺序。</span>
+  有时为了代码简洁，会在链表头尾各放一个"哨兵结点"——
+  <strong>它们不存数据，只是为了让插入删除的逻辑统一。</strong><br>
+  <b>但在这种链表里插入一个新结点，仍然要按固定顺序改指针：</b>
+  <b>先让新结点接上两边，再让两边接上新结点。</b><br>
+  <strong>"四步操作无论什么顺序执行结果都正确"——这句话是错的。</strong><br>
+  <b>顺序一旦颠倒，中间会出现"某边指不到"的瞬间，链就断了。</b>
+</div>
+
+<!-- ============ 6 ============ -->
+<div class="section-header" id="s6">
+  <h2>6　代码实战</h2>
+  <div class="en-title">Level Practice</div>
+</div>
+
+<div class="level-card">
+  <div class="lc-head"><span class="n">关卡</span><h4>无线电</h4><span class="go">进入关卡 →</span></div>
+  <div class="lc-body">
+    <div class="story">
+      <b>故事：</b>哨站里有一串机器人炮台，靠"下一个是谁"的链接首尾相连。<br>
+    其中一个被等离子烧坏了，<b>得把它换掉——可它在队伍正中间，前后都有人。</b><br>
+    戈登说：<b>先找到它前面那位，再改他们的"下一个"。</b>
+    </div>
+    <p><strong>思路：</strong>链表只能顺着 <code class="inline">next</code> 一格一格走，
+    所以想换掉中间的一个，必须<b>一边走一边记住"前一个"</b>；
+    找到之后，让前一个指向备份、备份指向后面，链接就接上了。</p>
+    <figure class="pic">
+      <img src="../assets/stages/py-L5-04-stage1_radio.webp" alt="无线电 关卡截图"
+           onerror="this.closest('.pic').classList.add('missing')">
+      <div class="ph">
+        <div class="fn">assets/stages/py-L5-04-stage1_radio.webp</div>
+        <div class="ds">【关卡截图位】请把《无线电》的游戏画面截图放到此处（放入 assets/stages/ 目录，文件名为 py-L5-04-stage1_radio.webp）。</div>
+      </div>
+      <figcaption>关卡实况：无线电</figcaption>
+    </figure>
+    <div class="code-card">
+      <div class="code-head">
+        <span class="dot d1"></span><span class="dot d2"></span><span class="dot d3"></span>
+        <span class="file">重点示例：替换链表中间的一环</span>
+        <span class="lang">Python</span>
+      </div>
+      <pre><code>current = head
+while current.next is not None:            # 顺着 next 一格一格走
+    if current.next.id == brokenId:        # 找到坏掉的那个的"前一个"
+        backup.setNext(current.next.next)  # ① 备份接管它的后继
+        current.setNext(backup)            # ② 前一个指向备份
+        break
+    current = current.next                 # 继续往后走</code></pre>
+      <div class="out"><b>要点</b>　必须<b>先接上后面、再改前面</b>，否则链子就断了；<code>setNext()</code> 是关卡要求的写法</div>
+    </div>
+    <div class="box info">
+      <span class="lb">和本单元的关系：</span>
+      这就是链表的看家本领：<strong>插入和删除只动两三个 <code class="inline">next</code>，不用像数组那样把后面的元素整体搬家。</strong><br>
+    <b>代价是"不能直接跳到第 i 个"——只能从头顺着走。拿访问速度换修改速度，这就是链表。</b>
+    </div>
+    <a class="btn-go" href="https://codecombat.cn/" target="_blank" rel="noopener">去扣哒世界闯这一关 →</a>
+  </div>
+</div>
+
+
+
+<!-- ============ 7 ============ -->
+<div class="section-header" id="s7">
+  <h2>7　常见陷阱</h2>
+  <div class="en-title">Common Pitfalls</div>
+</div>
+
+<div class="cast duck">
+  <img class="ava" src="../assets/ducks/duck_naria.webp" alt="扣哒鸭" onerror="this.style.display='none'">
+  <div class="bubble">
+    <div class="who">扣哒鸭 · 调试官</div>
+    链表这块，错法高度集中——就四类。前两条真题都考过。
+  </div>
+</div>
+
+<div class="pit">
+  <div class="pt">
+    <div class="x">1</div>
+    <div class="t"><b>删除结点时，先 <code class="inline">delete</code> 再用它。</b></div>
+  </div>
+  <div class="duck">
+    <img src="../assets/ducks/duck_zana.webp" alt="扣哒鸭" onerror="this.style.display='none'">
+    <div class="dt"><b>扣哒鸭：</b><code>Node *p = head; delete p; head = p-&gt;next;</code> ——
+    <b>这是典型错误：p 已经被释放了，再去读 <code>p-&gt;next</code> 就是在访问已释放的内存。</b><br>
+    <strong>正确顺序是：先记下 <code>head-&gt;next</code>，再 delete。</strong></div>
+  </div>
+  <div class="fix"><b>正确写法：</b><code class="inline">Node *q = head; head = head-&gt;next; delete q;</code></div>
+</div>
+
+<div class="pit">
+  <div class="pt">
+    <div class="x">2</div>
+    <div class="t"><b>插入时两句顺序写反。</b></div>
+  </div>
+  <div class="duck">
+    <img src="../assets/ducks/duck_hattori.webp" alt="扣哒鸭" onerror="this.style.display='none'">
+    <div class="dt"><b>扣哒鸭：</b>务必<b>先 <code>s->next = p->next;</code>，再 <code>p->next = s;</code></b>。<br>
+    写反的话，<b>第二步会让新结点指向它自己——后面的整条链瞬间全部丢失。</b></div>
+  </div>
+  <div class="fix"><b>记牢：</b>先接后面，再改前面</div>
+</div>
+
+<div class="pit">
+  <div class="pt">
+    <div class="x">3</div>
+    <div class="t"><b>遍历时拿 <code class="inline">head</code> 直接往前跑。</b></div>
+  </div>
+  <div class="duck">
+    <img src="../assets/ducks/duck_senick.webp" alt="扣哒鸭" onerror="this.style.display='none'">
+    <div class="dt"><b>扣哒鸭：</b><code>while (head != nullptr) head = head->next;</code> ——
+    <b>循环结束时 head 变成了 nullptr，整条链失去了唯一的入口。</b><br>
+    <strong>结点还在内存里，可你再也没法找到它们了。</strong></div>
+  </div>
+  <div class="fix"><b>正确做法：</b>用临时指针 <code class="inline">for (Node *p = head; p != nullptr; p = p-&gt;next)</code></div>
+</div>
+
+<div class="pit">
+  <div class="pt">
+    <div class="x">4</div>
+    <div class="t"><b>遍历条件写成 <code class="inline">p-&gt;next != nullptr</code>。</b></div>
+  </div>
+  <div class="duck">
+    <img src="../assets/ducks/duck_illia.webp" alt="扣哒鸭" onerror="this.style.display='none'">
+    <div class="dt"><b>扣哒鸭：</b>这个写法会<b>漏掉最后一个结点</b>——因为最后一节的 next 是空的。<br>
+    更糟的是，如果拿它去取成员，<b>走到空指针上就会直接崩溃。</b><br>
+    <b>判断条件统一写 <code>p != nullptr</code>。</b></div>
+  </div>
+  <div class="fix"><b>正确写法：</b><code class="inline">while (p != nullptr)</code></div>
+</div>
+
+<!-- ============ 8 ============ -->
+<div class="section-header" id="s8">
+  <h2>7　常见陷阱</h2>
+  <div class="en-title">Common Pitfalls</div>
+</div>
+
+<div class="cast duck">
+  <img class="ava" src="../assets/ducks/duck_nalfar.webp" alt="扣哒鸭" onerror="this.style.display='none'">
+  <div class="bubble">
+    <div class="who">扣哒鸭 · 调试官</div>
+    链表题的错误几乎都和"顺序"有关。四条，条条都是"链子断了"。
+  </div>
+</div>
+
+<div class="pit">
+  <div class="pt">
+    <div class="x">1</div>
+    <div class="t"><b>插入时先改了前面的 next，把后面弄丢了。</b></div>
+  </div>
+  <div class="duck">
+    <img src="../assets/ducks/duck_zana.webp" alt="扣哒鸭" onerror="this.style.display='none'">
+    <div class="dt"><b>扣哒鸭：</b>必须<strong>先让新节点接住"后面"，再让前面指向新节点</strong>。<br>
+    顺序一反，原来的后半截就找不回来了。这是链表第一大坑。</div>
+  </div>
+  <div class="fix"><b>正确顺序：</b>新节点.next = 前一个.next；前一个.next = 新节点</div>
+</div>
+
+<div class="pit">
+  <div class="pt">
+    <div class="x">2</div>
+    <div class="t"><b>遍历时忘了 <code class="inline">node = node["next"]</code>，程序死循环。</b></div>
+  </div>
+  <div class="duck">
+    <img src="../assets/ducks/duck_naria.webp" alt="扣哒鸭" onerror="this.style.display='none'">
+    <div class="dt"><b>扣哒鸭：</b>循环体里<strong>必须有"往前走一步"的那句</strong>，
+    否则 node 一直停在原地，while 永远不会结束。</div>
+  </div>
+  <div class="fix"><b>正确写法：</b>循环最后一句写 <code class="inline">node = node["next"]</code></div>
+</div>
+
+<div class="pit">
+  <div class="pt">
+    <div class="x">3</div>
+    <div class="t"><b>删除了头节点，head 却没更新。</b></div>
+  </div>
+  <div class="duck">
+    <img src="../assets/ducks/duck_hattori.webp" alt="扣哒鸭" onerror="this.style.display='none'">
+    <div class="dt"><b>扣哒鸭：</b>头节点被删掉时，<strong>head 必须指向原来的第二个节点</strong>。<br>
+    否则 head 还指着一个"已经被踢出队伍"的节点，整条链就断了。</div>
+  </div>
+  <div class="fix"><b>正确做法：</b><code class="inline">head = head["next"]</code></div>
+</div>
+
+<div class="pit">
+  <div class="pt">
+    <div class="x">4</div>
+    <div class="t"><b>以为链表也能 <code class="inline">node[2]</code> 直接取第 3 个。</b></div>
+  </div>
+  <div class="duck">
+    <img src="../assets/ducks/duck_senick.webp" alt="扣哒鸭" onerror="this.style.display='none'">
+    <div class="dt"><b>扣哒鸭：</b>链表<strong>不支持随机访问</strong>。
+    想要第 3 个？只能从头走三步。<br>
+    这就是链表"找元素慢"的代价——它省下的时间都用在增删上了。</div>
+  </div>
+  <div class="fix"><b>正确做法：</b>用循环从头走 k 步</div>
+</div>
+
+<div class="section-header" id="s9">
+  <h2>8　题目练习</h2>
+  <div class="en-title">Practice</div>
+</div>
+
+<p>第 1 题改编自 2026 年 9 月 · Python 五级 第 3 题，其余为原创练习题。</p>
+
+<div class="exam">
+  <div class="eh"><span class="src">改编自 2026 年 9 月 · Python 五级 · 第 3 题</span><span class="tp">单选题</span></div>
+  <div class="eb">
+    <div class="q">绿洲的驼队排成一条单项链表，要找出中间的结点。下面的函数使用快慢变量（快慢指针），横线处应填写（　　）。<br><pre>1  class Node:
+2      def __init__(self, val):
+3          self.value = val
+4          self.next = None
+5
+6  def middle(head):
+7      slow = head
+8      fast = head
+9      while fast is not None and fast.next is not None:
+10         slow = slow.next
+11         _______________
+12     return slow</pre></div>
+    <div class="opt"><i>A.</i>fast = fast.next<br>
+      <i>B.</i>fast = fast.next.next<br>
+      <i>C.</i>fast = slow.next<br>
+      <i>D.</i>fast = slow.next.next</div>
+    <details><summary>查看答案与详解</summary>
+      <div class="ans"><b>答案：B</b>。快慢指针的分工是：<strong>慢的一次走 1 步，快的一次走 2 步</strong>。<br>慢的已经从 head 走到 slow.next，快的就必须走两步：<code class="inline">fast = fast.next.next</code>。<br><b>为什么这样能找到中点？</b>快的是慢的速度的 2 倍，快的走到末尾时，慢的正好在中间 —— <b>打个比方：</b>两人同时出发，一个跑得快一倍，快的到终点时，慢的刚跑到一半。<br><b>A 错：</b>两人速度一样，快指针会先停在末尾附近；<br><b>C、D 错：</b>把慢指针的路径混进了快指针，指针会乱套。<br><b>这条链表的常用技巧</b>还能找"倒数第 k 个结点"和"判断有没有环"。<br><span class="tagline">对应小节</span>3 遍历与快慢指针。</div>
+    </details>
+  </div>
+</div>
+<div class="exam">
+  <div class="eh"><span class="src ori">原创练习题</span><span class="tp">单选题</span></div>
+  <div class="eb">
+    <div class="q">链表与数组（列表）相比，最大的优势是（　　）。</div>
+    <div class="opt">
+      <i>A.</i>访问第 i 个元素更快<br>
+      <i>B.</i>在中间插入、删除元素更方便<br>
+      <i>C.</i>占用的内存更少<br>
+      <i>D.</i>可以用下标随机访问
+    </div>
+    <details><summary>查看答案与详解</summary>
+      <div class="ans"><b>答案：B</b>。链表的强项是<b>插入和删除</b>——
+      只需改动几根"指针"，不用像数组那样让元素整体搬家。<br>
+      A、D 恰恰相反：链表<b>不支持</b>随机访问，找第 i 个元素要从头走 i 步。<br>
+      C 也不对：链表每个节点还要额外存"下一个的引用"，占用反而略多。<br>
+      <span class="tagline">对应小节</span>1 为什么会有链表；5 链表与列表的对比。</div>
+    </details>
+  </div>
+</div>
+
+<div class="exam">
+  <div class="eh"><span class="src ori">原创练习题</span><span class="tp">单选题</span></div>
+  <div class="eb">
+    <div class="q">下列 Python 代码执行后，输出的结果是（　　）。</div>
+    <pre>1  a = {"val": 1, "next": None}
+2  b = {"val": 2, "next": None}
+3  c = {"val": 3, "next": None}
+4  a["next"] = b
+5  b["next"] = c
+6  head = a
+7  count = 0
+8  node = head
+9  while node:
+10     count = count + 1
+11     node = node["next"]
+12 print(count)</pre>
+    <div class="opt"><i>A.</i>1　　<i>B.</i>2　　<i>C.</i>3　　<i>D.</i>死循环</div>
+    <details><summary>查看答案与详解</summary>
+      <div class="ans"><b>答案：C</b>。链表是 a → b → c → None，一共 <b>3</b> 个节点。<br>
+      循环走到 c 时，<code class="inline">c["next"]</code> 是 None，循环结束。<br>
+      <b>要点：</b>这种"数长度"的写法是链表最基础的遍历模板。<br>
+      <span class="tagline">对应小节</span>3 遍历链表。</div>
+    </details>
+  </div>
+</div>
+
+<div class="exam">
+  <div class="eh"><span class="src ori">原创练习题</span><span class="tp">判断题</span></div>
+  <div class="eb">
+    <div class="q">在链表中要访问第 5 个节点，可以直接用下标一步取到。（　　）</div>
+    <details><summary>查看答案与详解</summary>
+      <div class="ans"><b>答案：错误（×）</b>。链表<b>不支持随机访问</b>，
+      要想拿到第 5 个节点，必须从 head 开始，顺着 next 走 4 步。<br>
+      <b>对比：</b>数组/列表可以用 <code class="inline">a[4]</code> 一步取到——这就是"数组访问快"的含义。<br>
+      <span class="tagline">对应小节</span>3 遍历链表；5 链表与列表的对比。</div>
+    </details>
+  </div>
+</div>
+
+<div class="exam">
+  <div class="eh"><span class="src ori">原创练习题</span><span class="tp">单选题</span></div>
+  <div class="eb">
+    <div class="q">向链表 p 和 q 之间插入一个新节点 newNode，正确的写法是（　　）。</div>
+    <div class="opt">
+      <i>A.</i><code class="inline">p["next"] = newNode</code> 然后 <code class="inline">newNode["next"] = q</code><br>
+      <i>B.</i><code class="inline">newNode["next"] = p["next"]</code> 然后 <code class="inline">p["next"] = newNode</code><br>
+      <i>C.</i><code class="inline">newNode["next"] = p</code> 然后 <code class="inline">q["next"] = newNode</code><br>
+      <i>D.</i>随便怎么写都行
+    </div>
+    <details><summary>查看答案与详解</summary>
+      <div class="ans"><b>答案：B</b>。<b>必须先让新节点"接住后面"，再让前面"指向新节点"。</b><br>
+      如果按 A 项先改 <code class="inline">p["next"]</code>，原来的 q 就找不到了，
+      后面的整段链子全部丢失。<br>
+      <b>口诀：先接后，再改前。</b><br>
+      <span class="tagline">对应小节</span>4 插入与删除。</div>
+    </details>
+  </div>
+</div>
+
+<div class="exam">
+  <div class="eh"><span class="src ori">原创练习题</span><span class="tp">单选题</span></div>
+  <div class="eb">
+    <div class="q">下列关于链表遍历的说法，正确的是（　　）。</div>
+    <div class="opt">
+      <i>A.</i>循环条件应该写 <code class="inline">while node:</code>，结束条件是走到 None<br>
+      <i>B.</i>循环体里不需要改变 node<br>
+      <i>C.</i>必须用 for 循环才能遍历链表<br>
+      <i>D.</i>链表无法被完整遍历
+    </div>
+    <details><summary>查看答案与详解</summary>
+      <div class="ans"><b>答案：A</b>。链表遍历的标准写法：<br>
+      <code class="inline">node = head</code> → <code class="inline">while node:</code> →
+      处理 node → <code class="inline">node = node["next"]</code>。<br>
+      <b>B 错：</b>不改变 node 就会死循环；<b>C 错：</b>while 更常用（for 不方便表达"直到 None"）。<br>
+      <span class="tagline">对应小节</span>3 遍历链表。</div>
+    </details>
+  </div>
+</div>
+
+<div class="exam">
+  <div class="eh"><span class="src ori">原创练习题</span><span class="tp">判断题</span></div>
+  <div class="eb">
+    <div class="q">在 Python 里做练习时，列表已经足够好用，链表更多是为了理解"数据结构的选择"。（　　）</div>
+    <details><summary>查看答案与详解</summary>
+      <div class="ans"><b>答案：正确（√）</b>。Python 的列表在很多场景下性能都不错，
+      实际写题时优先用它。<br>
+      学习链表的价值在于：<b>理解"不同结构在不同操作上各有快慢"，从而学会根据场景选结构。</b><br>
+      <span class="tagline">对应小节</span>5 链表与列表的对比。</div>
+    </details>
+  </div>
+</div>
+
+<div class="exam">
+  <div class="eh"><span class="src ori">原创练习题</span><span class="tp">编程题</span></div>
+  <div class="eb">
+    <div class="q">题目要求：用字典模拟节点，手工构造一条链表 5 → 12 → 7 → 3，
+    然后遍历输出所有节点的值，并输出节点个数与所有值的总和。</div>
+    <details><summary>查看参考答案与要点</summary>
+      <div class="ans">
+<pre style="margin:0;background:#2a2008;color:#e3d6b4;border-radius:10px;padding:14px 16px">n1 = {"val": 5,  "next": None}
+n2 = {"val": 12, "next": None}
+n3 = {"val": 7,  "next": None}
+n4 = {"val": 3,  "next": None}
+
+n1["next"] = n2          # 串起来
+n2["next"] = n3
+n3["next"] = n4
+
+head = n1
+node = head
+count = 0
+total = 0
+
+while node:              # 遍历模板
+    print(node["val"])
+    count = count + 1
+    total = total + node["val"]
+    node = node["next"]  # 别忘了往前走
+
+print("个数：", count)
+print("总和：", total)</pre>
+      <p style="margin-top:12px"><b>输出：</b>5、12、7、3，个数 4，总和 27<br>
+      <b>要点：</b><br>
+      ① 构造时按顺序给每个节点的 next 赋值；<br>
+      ② 遍历前一定要先 <code class="inline">node = head</code>，千万别直接改 head；<br>
+      ③ 统计个数和求和可以在同一个循环里完成；<br>
+      ④ 循环最后一句 <code class="inline">node = node["next"]</code> 绝不能少。<br>
+      <span class="tagline">对应小节</span>2 节点与 next；3 遍历链表。</p>
+      </div>
+    </details>
+  </div>
+</div>
+
+<div class="section-header" id="s9">
+  <h2>9　本单元小结</h2>
+  <div class="en-title">Unit Summary</div>
+</div>
+
+<div class="cast teacher">
+  <img class="ava" src="../assets/avatars/senick.webp" alt="塞尼克" onerror="this.style.display='none'">
+  <div class="bubble">
+    <div class="who">塞尼克 · 沙海向导</div>
+    三句话记住链表：<br>
+    <strong>一、每个节点只装两样：值和"下一个是谁"。</strong><br>
+    <strong>二、遍历靠 while 一路走到 None，别忘了往前走一步。</strong><br>
+    <strong>三、插入删除只需改指针——但要"先接后，再改前"。</strong><br>
+    最后提醒一句：<b>实际写题优先用列表，链表是为了让你看懂"结构的选择"。</b>
+  </div>
+</div>
+
+<div class="summary">
+  <h3>你在商队旁收获了什么</h3>
+  <ul>
+    <li><strong>链表的由来</strong>——数组在中间增删要"搬家"，链表用"指针相连"避免了这一点。</li>
+    <li><strong>节点结构</strong>——每个节点包含 <code class="inline">val</code>（值）和 <code class="inline">next</code>（下一个节点）。</li>
+    <li><strong>head 与 None</strong>——head 是入口；next 为 None 表示"到头了"。</li>
+    <li><strong>遍历模板</strong>——<code class="inline">node = head</code> → <code class="inline">while node:</code> → 处理 → <code class="inline">node = node["next"]</code>。</li>
+    <li><strong>插入</strong>——先让新节点接住后面，再让前节点指向新节点。</li>
+    <li><strong>删除</strong>——让前节点的 next 直接跳过被删节点。</li>
+    <li><strong>对比与选择</strong>——数组访问快、增删慢；链表访问慢、增删快；Python 里优先用列表。</li>
+  </ul>
+</div>
+
+<div class="pager">
+  <a href="py-5-03.html"><div class="k">← 上一单元</div><div class="v">巨钟计数师 · 大整数与高精度应用</div></a>
+  <a href="../index.html" target="_top" class="back"><div class="k">返回</div><div class="v">考纲之路 · 总目录</div></a>
+  <a href="py-5-05.html"><div class="k">下一单元 →</div><div class="v">折半寻宝 · 二分查找与二分答案</div></a>
+</div>
+
+<div class="cta">
+  <h3>下一站：折半寻宝</h3>
+  <p>绿洲的宝库有上千个格子，宝物藏在其中一格。守门人说：
+  <b>每猜一次,我只会告诉你"高了"还是"低了"。</b>
+  怎么用最少的次数找到它？下一单元，我们学二分。</p>
+  <a class="btn-go" href="https://codecombat.cn/" target="_blank" rel="noopener">加入扣哒世界，把这条考纲之路走一遍 →</a>
+</div>
+</div><!-- /container -->
+</div><!-- /page -->
+
+<script>
+const KEYWORDS = new Set(("while for if elif else break continue def return pass not and or in is None True False " +
+  "int float bool str list dict tuple set input print range len abs max min round pow import math random chr ord bin hex oct sum append copy keys values items").split(" "));
+
+function esc(s){ return s.replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;'); }
+
+function highlight(src){
+  let out = '', i = 0;
+  const n = src.length;
+  while (i < n){
+    const c = src[i];
+    if (c === '#'){
+      let j = src.indexOf('\n', i); if (j < 0) j = n;
+      out += '<span class="cm">' + esc(src.slice(i, j)) + '</span>';
+      i = j; continue;
+    }
+    if (c === '"' || c === "'"){
+      let j = i + 1;
+      while (j < n && src[j] !== c){ if (src[j] === '\\') j++; j++; }
+      j = Math.min(j + 1, n);
+      out += '<span class="st">' + esc(src.slice(i, j)) + '</span>';
+      i = j; continue;
+    }
+    if (/[0-9]/.test(c)){
+      let j = i;
+      while (j < n && /[0-9.]/.test(src[j])) j++;
+      out += '<span class="nu">' + esc(src.slice(i, j)) + '</span>';
+      i = j; continue;
+    }
+    if (/[A-Za-z_]/.test(c)){
+      let j = i;
+      while (j < n && /[A-Za-z0-9_]/.test(src[j])) j++;
+      const w = src.slice(i, j);
+      if (KEYWORDS.has(w)) out += '<span class="kw">' + esc(w) + '</span>';
+      else if (src[j] === '(') out += '<span class="fn">' + esc(w) + '</span>';
+      else out += esc(w);
+      i = j; continue;
+    }
+    out += esc(c); i++;
+  }
+  return out;
+}
+
+document.querySelectorAll('.code-card pre code').forEach(block => {
+  block.innerHTML = highlight(block.textContent);
+});
+
+if (location.search.indexOf('expand') >= 0) {
+  document.querySelectorAll('details').forEach(d => d.open = true);
+}
+document.querySelectorAll('.sidebar-nav a').forEach(a => {
+  a.addEventListener('click', () => {
+    if (window.innerWidth <= 900) document.querySelector('.sidebar-nav').classList.remove('active');
+  });
+});
+</script>
+</body>
+</html>

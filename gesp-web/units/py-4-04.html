@@ -1,0 +1,969 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="copyright" content="CodeCombat Inc. codecombat.cn">
+<title>模块化车间 · 函数与模块化编程 | 扣哒考级 · GESP Python 四级</title>
+<style>
+  :root{
+    --primary:#0e8f86; --primary-light:#14b8a6; --primary-lighter:#e6f7f5; --primary-dark:#0a6b64;
+    --brand:#ff6b35; --brand-dark:#e8541f; --brand-soft:#fff3ec;
+    --night:#0f1b22; --night-2:#16323a; --gold:#f5b301;
+    --text:#22333a; --dim:#5f7276; --dim2:#8da0a3;
+    --bg:#ffffff; --bg-soft:#f6fbfa; --line:#dceceb; --sidebar:274px;
+    --code-bg:#14231f; --code-tx:#c3d6d1;
+    --code-kw:#c678dd; --code-st:#98c379; --code-nu:#d19a66; --code-cm:#68807a; --code-fn:#61afef;
+  }
+  *{margin:0;padding:0;box-sizing:border-box}
+  html{scroll-behavior:smooth}
+  body{font-family:"PingFang SC","Microsoft YaHei","Segoe UI",-apple-system,sans-serif;line-height:1.9;color:var(--text);background:var(--bg);font-size:15.5px}
+  .sidebar-nav{position:fixed;top:0;left:0;width:var(--sidebar);height:100vh;overflow-y:auto;background:linear-gradient(180deg,#0c1a1e,#123037);padding:14px 0 40px;z-index:100;border-right:3px solid var(--brand);transition:transform .3s ease}
+  .sidebar-nav::-webkit-scrollbar{width:5px}
+  .sidebar-nav::-webkit-scrollbar-thumb{background:var(--brand);border-radius:4px}
+  .sb-brand{display:flex;align-items:center;gap:10px;padding:10px 13px 12px;border-bottom:1px solid #1d3d44;margin-bottom:8px}
+  .sidebar-nav a.sb-logo{display:flex;align-items:center;justify-content:center;flex-shrink:0;padding:0;border-left:none;transition:.2s}
+  .sb-logo:hover{transform:scale(1.08)}
+  .sb-logo img{height:34px;width:34px;display:block;object-fit:contain;border-radius:8px}
+  .sb-brand b{color:#eef7f6;font-size:14px;letter-spacing:.5px;display:block;line-height:1.4}
+  .sb-brand span{color:#7ba3a6;font-size:11.5px;display:block;line-height:1.4}
+  .nav-title{color:#ffb894;font-size:12px;font-weight:800;padding:10px 18px 6px;letter-spacing:1.2px}
+  .sidebar-nav a{display:block;color:#bcd3d4;text-decoration:none;padding:6px 18px;font-size:12.5px;line-height:1.55;border-left:3px solid transparent;transition:.18s}
+  .sidebar-nav a:hover{color:#fff;background:rgba(255,107,53,.16);border-left-color:var(--brand)}
+  .sidebar-nav a.nav-section{color:#ffb894;font-weight:700;font-size:13px;margin-top:11px;padding-top:10px;border-top:1px solid #1d3d44}
+  .sidebar-nav a.nav-section:first-of-type{border-top:none;margin-top:0;padding-top:6px}
+  .sidebar-nav a.nav-sub{padding-left:30px;color:#8fabad;font-size:12px}
+  .sidebar-nav a.nav-sub:hover{color:#fff}
+  .sb-back{margin:16px 14px 0;display:block;text-align:center;padding:9px;border-radius:9px;background:#1c3940;color:#a6c0c2 !important;font-size:12px;font-weight:700;border-left:none !important}
+  .sb-back:hover{background:var(--brand) !important;color:#fff !important}
+  .nav-toggle{display:none;position:fixed;top:14px;left:14px;z-index:120;background:var(--brand);color:#fff;border:none;border-radius:9px;padding:9px 13px;font-size:15px;cursor:pointer;box-shadow:0 4px 14px rgba(0,0,0,.25)}
+  .page{margin-left:var(--sidebar)}
+  .hero{position:relative;overflow:hidden;padding:44px 52px;color:#fff;background:linear-gradient(125deg,#0b171b 0%,#143038 46%,#8a3a16 132%)}
+  .hero::after{content:"";position:absolute;right:-90px;top:-110px;width:400px;height:400px;border-radius:50%;background:radial-gradient(circle,rgba(245,179,1,.30),transparent 68%)}
+  .hero-top{display:flex;gap:36px;align-items:center;position:relative;z-index:2}
+  .hero-txt{flex:1;min-width:0}
+  .hero .crumb{font-size:11.5px;color:#ffb894;letter-spacing:1.5px;font-weight:700;margin-bottom:14px}
+  .hero h1{font-size:31px;font-weight:800;line-height:1.3;letter-spacing:.6px;margin-bottom:8px}
+  .hero h1 .sub{display:block;font-size:18px;font-weight:700;color:#ffd2b3;margin-top:6px;letter-spacing:.3px}
+  .hero .en{font-size:13px;color:#98b6b8;font-style:italic;margin-bottom:18px}
+  .hero .tags{display:flex;flex-wrap:wrap;gap:8px}
+  .tag{font-size:11.5px;padding:4px 12px;border-radius:20px;background:rgba(255,255,255,.12);border:1px solid rgba(255,255,255,.22);color:#e8f0f6;font-weight:600}
+  .tag.hot{background:rgba(255,107,53,.92);border-color:transparent;color:#fff}
+  .hero-card{flex-shrink:0;width:200px;text-align:center}
+  .hero-card .ava{width:148px;height:148px;border-radius:50%;object-fit:cover;object-position:top center;border:4px solid rgba(255,180,140,.6);box-shadow:0 14px 34px rgba(0,0,0,.45);background:#24344a}
+  .hero-card .nm{font-size:15px;font-weight:800;color:#fff;margin-top:10px}
+  .hero-card .ti{font-size:11.5px;color:#ffb894;margin-top:2px}
+  .container{max-width:1080px;margin:0 auto;padding:38px 52px 70px}
+  .lead{font-size:15.5px;line-height:2.05;color:#35474a;background:linear-gradient(120deg,#fff8f3,#f6fbfa);border-left:5px solid var(--brand);border-radius:0 14px 14px 0;padding:22px 26px;margin-bottom:32px}
+  .lead b{color:var(--brand-dark)}
+  .cast{display:flex;gap:16px;align-items:flex-start;border-radius:16px;padding:18px 22px;margin:24px 0}
+  .cast .ava{width:72px;height:72px;border-radius:50%;object-fit:cover;object-position:top center;flex-shrink:0;background:#e8eef5}
+  .cast .bubble{position:relative;font-size:14px;line-height:1.95;padding-top:2px;flex:1}
+  .cast .who{font-size:12px;font-weight:800;margin-bottom:5px;letter-spacing:.5px}
+  .cast.anya{background:var(--brand-soft);border:1px solid #ffdcc9}
+  .cast.anya .who{color:var(--brand-dark)}
+  .cast.anya .bubble{color:#5c4636}
+  .cast.duck{background:#fff5f5;border:1px solid #fbd5d5}
+  .cast.duck .who{color:#b91c1c}
+  .cast.duck .bubble{color:#5c4141}
+  .cast.teacher{background:linear-gradient(120deg,#f1f8f8,#ffffff);border:1px solid #d6e8e8}
+  .cast.teacher .who{color:#134e4a}
+  .cast.teacher .bubble{color:#3c5254}
+  .cast.hero{background:#f2fbf9;border:1px solid #cfe9e6}
+  .cast.hero .who{color:#0f766e}
+  .cast.hero .bubble{color:#3d5250}
+  .goal-grid{display:grid;grid-template-columns:1fr 1fr;gap:16px;margin-bottom:36px}
+  .goal{border:1px solid var(--line);border-radius:15px;padding:19px 21px;background:#fff;box-shadow:0 4px 16px rgba(14,143,134,.06)}
+  .goal h4{font-size:14px;font-weight:800;margin-bottom:11px;display:flex;align-items:center;gap:8px;color:var(--primary-dark)}
+  .goal h4 .ic{width:22px;height:22px;border-radius:7px;background:var(--primary-lighter);display:flex;align-items:center;justify-content:center;font-size:12px}
+  .goal ul{list-style:none}
+  .goal li{font-size:13.5px;color:#46585a;line-height:1.9;padding-left:18px;position:relative}
+  .goal li::before{content:"▸";position:absolute;left:0;color:var(--primary);font-weight:800}
+  .goal.syllabus li::before{content:"✓"}
+  .section-header{margin:52px 0 24px;padding-bottom:12px;border-bottom:3px solid var(--brand);display:flex;align-items:baseline;gap:14px;flex-wrap:wrap}
+  .section-header h2{font-size:22px;font-weight:800;color:var(--night);letter-spacing:.4px}
+  .section-header .en-title{font-size:12px;color:var(--dim2);font-style:italic}
+  h3{font-size:17.5px;font-weight:800;margin:34px 0 14px;color:var(--night);display:flex;align-items:center;gap:10px}
+  h3::before{content:"";width:5px;height:17px;border-radius:3px;background:var(--brand);flex-shrink:0}
+  h4{font-size:15px;font-weight:800;margin:24px 0 10px;color:#2c4a48}
+  p{margin:12px 0;color:#3d5250;line-height:2}
+  strong{color:var(--primary-dark)}
+  code.inline{background:var(--primary-lighter);color:var(--primary-dark);padding:2px 7px;border-radius:6px;font-family:"SFMono-Regular",Consolas,Menlo,monospace;font-size:.9em;font-weight:600}
+  .figure{margin:24px 0;text-align:center}
+  .figure svg.diagram{max-width:100%;height:auto;background:#fff;border:1px solid var(--line);border-radius:14px;padding:10px}
+  .figure .caption{font-size:12.5px;color:var(--dim2);margin-top:9px}
+  .pic{margin:26px 0;text-align:center}
+  .pic img{max-width:100%;border-radius:16px;box-shadow:0 10px 28px rgba(20,60,60,.15);display:block;margin:0 auto}
+  .pic figcaption{font-size:12.5px;color:var(--dim2);margin-top:9px}
+  .pic .ph{display:none}
+  .pic.missing img{display:none}
+  .pic.missing .ph{display:flex;flex-direction:column;align-items:center;justify-content:center;gap:9px;border:2px dashed #bfdcd9;border-radius:16px;background:linear-gradient(135deg,#f8fdfc,#eef8f7);padding:40px 26px;color:#6f8f90}
+  .pic.missing .ph .fn{font-family:Consolas,monospace;font-size:12.5px;color:#0e8f86;font-weight:700;word-break:break-all}
+  .pic.missing .ph .ds{font-size:12.5px;line-height:1.8;max-width:560px}
+  .box{border-radius:13px;padding:16px 20px;margin:20px 0;font-size:14px;line-height:1.95}
+  .box .lb{font-weight:800;margin-right:6px}
+  .info{background:#eef6ff;border-left:5px solid #3b82f6;color:#274768}
+  .info .lb{color:#1d4ed8}
+  .tip{background:#fff9ec;border-left:5px solid #f59e0b;color:#6b4e13}
+  .tip .lb{color:#b45309}
+  .remember{background:var(--primary-lighter);border-left:5px solid var(--primary);color:#134e4a}
+  .remember .lb{color:var(--primary-dark)}
+  .warn{background:#fef2f2;border-left:5px solid #ef4444;color:#7f2b2b}
+  .warn .lb{color:#b91c1c}
+  .code-card{margin:20px 0;border-radius:14px;overflow:hidden;box-shadow:0 10px 28px rgba(15,40,40,.20)}
+  .code-head{display:flex;align-items:center;gap:9px;background:#1b322d;padding:9px 14px}
+  .code-head .dot{width:10px;height:10px;border-radius:50%}
+  .code-head .d1{background:#ff5f57}.code-head .d2{background:#febc2e}.code-head .d3{background:#28c840}
+  .code-head .file{color:#8fb0aa;font-size:11.5px;font-family:Consolas,monospace;margin-left:6px}
+  .code-head .lang{margin-left:auto;font-size:10.5px;font-weight:800;color:#0b1f1a;background:#2dd4bf;padding:2px 9px;border-radius:6px;letter-spacing:.4px}
+  .code-card pre{background:var(--code-bg);padding:18px 20px;overflow-x:auto;margin:0;font-family:"SFMono-Regular",Consolas,"Courier New",monospace;font-size:13.5px;line-height:1.85}
+  .code-card pre::-webkit-scrollbar{height:8px}
+  .code-card pre::-webkit-scrollbar-thumb{background:#2f4a45;border-radius:4px}
+  .code-card code{color:var(--code-tx);white-space:pre}
+  .kw{color:var(--code-kw);font-weight:600}
+  .st{color:var(--code-st)}
+  .nu{color:var(--code-nu)}
+  .cm{color:var(--code-cm);font-style:italic}
+  .fn{color:var(--code-fn)}
+  .out{background:#0e1d1a;color:#7fd6b8;font-family:Consolas,monospace;font-size:13px;padding:12px 20px;border-top:1px solid #223a35}
+  .out b{color:#c3d6d1;font-weight:600;font-size:11.5px;letter-spacing:1px}
+  table.styled{width:100%;border-collapse:collapse;margin:20px 0;font-size:13.5px;border-radius:12px;overflow:hidden;box-shadow:0 4px 16px rgba(14,143,134,.08)}
+  table.styled thead{background:var(--brand)}
+  table.styled th{color:#fff;padding:11px 14px;text-align:left;font-weight:700;font-size:13px}
+  table.styled td{padding:10px 14px;border-bottom:1px solid var(--line);color:#44585a;vertical-align:top}
+  table.styled tbody tr:nth-child(even){background:var(--bg-soft)}
+  table.styled tbody tr:last-child td{border-bottom:none}
+  .level-card{border:1px solid var(--line);border-radius:16px;overflow:hidden;margin:22px 0;box-shadow:0 6px 22px rgba(14,143,134,.08)}
+  .level-card .lc-head{background:linear-gradient(100deg,#12262c,#8a3a16);color:#fff;padding:15px 22px;display:flex;align-items:center;gap:12px;flex-wrap:wrap}
+  .level-card .lc-head .n{font-size:12px;font-weight:800;background:rgba(255,255,255,.2);padding:3px 10px;border-radius:20px}
+  .level-card .lc-head h4{margin:0;color:#fff;font-size:16px}
+  .level-card .lc-head .go{margin-left:auto;font-size:11.5px;color:#ffd2b3}
+  .level-card .lc-body{padding:20px 24px;background:#fff}
+  .level-card .story{background:#f8fcfc;border-left:4px solid #7dd3fc;border-radius:0 10px 10px 0;padding:13px 18px;margin:0 0 16px;font-size:14px;line-height:1.95;color:#3c5254}
+  .level-card .story b{color:#0369a1}
+  .btn-go{display:inline-flex;align-items:center;gap:8px;background:linear-gradient(135deg,var(--brand),var(--brand-dark));color:#fff;text-decoration:none;font-weight:800;font-size:13.5px;padding:10px 22px;border-radius:11px;box-shadow:0 8px 20px rgba(255,107,53,.32);transition:.2s}
+  .btn-go:hover{transform:translateY(-2px);box-shadow:0 12px 26px rgba(255,107,53,.42)}
+  .pit{border:1px solid #f6dede;border-radius:14px;overflow:hidden;margin:16px 0;background:#fff}
+  .pit .pt{display:flex;gap:12px;padding:14px 18px;background:#fffafa;align-items:flex-start}
+  .pit .x{width:26px;height:26px;border-radius:9px;background:#fee;color:#dc2626;display:flex;align-items:center;justify-content:center;font-weight:800;flex-shrink:0;font-size:13px}
+  .pit .t{font-size:13.5px;line-height:1.9;color:#5c4a4a;flex:1}
+  .pit .t b{color:#b91c1c}
+  .pit .duck{display:flex;gap:12px;padding:13px 18px;background:#fff5f5;border-top:1px dashed #f3d0d0;align-items:flex-start}
+  .pit .duck img{width:48px;height:48px;object-fit:contain;flex-shrink:0;margin-top:2px}
+  .pit .duck .dt{font-size:13.5px;line-height:1.9;color:#7a3b3b}
+  .pit .duck .dt b{color:#b91c1c}
+  .pit .fix{padding:12px 18px;background:#f2fbf9;border-top:1px dashed #cfe9e6;font-size:13.5px;color:#134e4a}
+  .pit .fix b{color:var(--primary-dark)}
+  .exam{border:1px solid #d8ebea;border-radius:15px;margin:16px 0;overflow:hidden;background:#fff;box-shadow:0 4px 16px rgba(30,80,80,.06)}
+  .exam .eh{display:flex;align-items:center;gap:10px;padding:11px 18px;background:linear-gradient(100deg,#eef8f7,#f8fdfc);border-bottom:1px solid #dbeceb;flex-wrap:wrap}
+  .exam .eh .src{font-size:11px;font-weight:800;color:#fff;background:#0e8f86;padding:2.5px 10px;border-radius:20px}
+  .exam .eh .src.ori{background:#0e9488}
+  .exam .eh .tp{font-size:11.5px;color:#4f7d7a;font-weight:700}
+  .exam .eb{padding:16px 20px}
+  .exam .q{font-weight:700;font-size:14px;color:#2b4042;line-height:1.9;margin-bottom:10px}
+  .exam .opt{font-size:13.5px;color:#46585a;line-height:2.05;padding-left:6px}
+  .exam .opt i{font-style:normal;font-weight:800;color:var(--primary-dark);margin-right:7px}
+  .exam pre{margin:12px 0;background:#14231f;border-radius:10px;padding:14px 16px;overflow-x:auto;font-family:Consolas,monospace;font-size:13px;line-height:1.8;color:var(--code-tx)}
+  .exam details{margin-top:10px;border-top:1px dashed var(--line);padding-top:10px}
+  .exam summary{cursor:pointer;font-size:12.5px;font-weight:800;color:#0e8f86;outline:none;user-select:none}
+  .exam details .ans{font-size:13.5px;color:#3d5250;line-height:1.95;margin-top:9px;background:var(--bg-soft);padding:13px 16px;border-radius:10px}
+  .exam details .ans b{color:var(--primary-dark)}
+  .exam details .ans .tagline{display:inline-block;font-size:11px;background:#e0f2fe;color:#0e7490;padding:1.5px 8px;border-radius:6px;font-weight:700;margin-right:6px}
+  .summary{margin:40px 0 20px;border-radius:18px;padding:26px 30px;background:linear-gradient(130deg,#fff8f3,#ffffff);border:1px solid #ffe0cf}
+  .summary h3{margin-top:0}
+  .summary ul{list-style:none;margin-top:10px}
+  .summary li{font-size:14px;line-height:2;color:#3d5250;padding-left:24px;position:relative}
+  .summary li::before{content:"◆";position:absolute;left:0;color:var(--brand);font-size:11px;top:6px}
+  .pager{display:flex;gap:14px;margin-top:30px;flex-wrap:wrap}
+  .pager a{flex:1;min-width:200px;text-decoration:none;border:1px solid var(--line);border-radius:14px;padding:16px 20px;background:#fff;transition:.2s;display:block}
+  .pager a:hover{border-color:var(--brand);box-shadow:0 10px 26px rgba(255,107,53,.14);transform:translateY(-2px)}
+  .pager a .k{font-size:11px;color:var(--dim2);font-weight:700;letter-spacing:1px}
+  .pager a .v{font-size:14px;font-weight:800;color:var(--night);margin-top:5px}
+  .pager a.back{background:var(--brand-soft);border-color:transparent;text-align:center}
+  .pager a.back .v{color:var(--brand-dark)}
+  .cta{margin-top:26px;border-radius:20px;padding:30px 34px;color:#fff;position:relative;overflow:hidden;background:linear-gradient(120deg,#12242a,#1e4a52 46%,#a8431c 132%)}
+  .cta::after{content:"";position:absolute;right:-70px;bottom:-90px;width:280px;height:280px;border-radius:50%;background:radial-gradient(circle,rgba(255,140,80,.45),transparent 68%)}
+  .cta h3{color:#fff;margin:0 0 10px;position:relative;z-index:2}
+  .cta h3::before{background:var(--brand)}
+  .cta p{color:#cfe4e2;font-size:13.5px;margin:0 0 18px;position:relative;z-index:2;max-width:640px}
+  .cta .btn-go{position:relative;z-index:2}
+  @media(max-width:900px){
+    .sidebar-nav{transform:translateX(-100%)}
+    .sidebar-nav.active{transform:translateX(0)}
+    .nav-toggle{display:block}
+    .page{margin-left:0}
+    .hero{padding:70px 22px 34px}
+    .hero-top{flex-direction:column-reverse;text-align:center}
+    .hero-card{width:auto}
+    .container{padding:26px 20px 60px}
+    .goal-grid{grid-template-columns:1fr}
+  }
+</style>
+</head>
+<body>
+
+<button class="nav-toggle" onclick="document.querySelector('.sidebar-nav').classList.toggle('active')">&#9776;</button>
+
+<nav class="sidebar-nav">
+  <div class="sb-brand">
+    <a class="sb-logo" href="https://codecombat.cn/" target="_blank" rel="noopener" title="访问 CodeCombat 扣哒世界官网">
+      <img src="../assets/logo.png" alt="CodeCombat 扣哒世界">
+    </a>
+    <div><b>模块化车间</b><span>齿轮高台 · Python 四级 第 4 单元</span></div>
+  </div>
+  <div class="nav-title">本单元目录</div>
+  <a href="#s0" class="nav-section">0　单元导语与目标</a>
+  <a href="#s0-1" class="nav-sub">0.1 学习目标</a>
+  <a href="#s0-2" class="nav-sub">0.2 考纲对照</a>
+  <a href="#s1" class="nav-section">1　重复的活儿该怎么办</a>
+  <a href="#s1-1" class="nav-sub">1.1 没有函数会怎样</a>
+  <a href="#s1-2" class="nav-sub">1.2 函数带来的三个好处</a>
+  <a href="#s2" class="nav-section">2　定义与调用</a>
+  <a href="#s2-1" class="nav-sub">2.1 定义与调用</a>
+  <a href="#s2-2" class="nav-sub">2.2 最容易忘的两件事</a>
+  <a href="#s3" class="nav-section">3　参数：给函数带东西进去</a>
+  <a href="#s3-1" class="nav-sub">3.1 参数：把东西带进去</a>
+  <a href="#s3-2" class="nav-sub">3.2 形参与实参</a>
+  <a href="#s4" class="nav-section">4　返回值：把结果带出来</a>
+  <a href="#s4-1" class="nav-sub">4.1 返回值：把结果带出来</a>
+  <a href="#s4-2" class="nav-sub">4.2 return 和 print 的区别</a>
+  <a href="#s5" class="nav-section">5　代码实战</a>
+  <a href="#s6" class="nav-section">6　常见陷阱</a>
+  <a href="#s7" class="nav-section">7　题目练习</a>
+  <a href="#s8" class="nav-section">8　本单元小结</a>
+  <a href="../index.html" target="_top" class="sb-back">返回考纲之路</a>
+</nav>
+
+<div class="page">
+
+<div class="hero">
+  <div class="hero-top">
+    <div class="hero-txt">
+      <div class="crumb">扣哒考级 · GESP PYTHON 四级 · 第 4 单元　|　齿轮高台 GEARWATCH TERRACE</div>
+      <h1>模块化车间
+        <span class="sub">函数与模块化编程</span>
+      </h1>
+      <div class="en">Functions &amp; Modular Programming</div>
+      <div class="tags">        <span class="tag hot">考纲 · 函数</span>
+        <span class="tag">def 定义</span>
+        <span class="tag">return 返回值</span>
+        <span class="tag">代码复用</span>
+        <span class="tag">模块化</span></div>
+    </div>
+    <div class="hero-card">
+      <img class="ava" src="../assets/avatars/gordon.webp" alt="戈登" onerror="this.style.background='#24344a'">
+      <div class="nm">戈登</div>
+      <div class="ti">齿轮工程师 · 你的向导</div>
+    </div>
+  </div>
+</div>
+
+<div class="container">
+
+<div class="lead">
+  走进模块化车间，最先看到的是墙上挂着的一排<b>工序卡</b>：<br>
+  淬火：加热到 800 度，保持 10 分钟，水冷。打磨：粗砂纸一遍，细砂纸两遍。<br>
+  工人照着卡片干活，<b>不同的人做的活儿一模一样。</b><br>
+  戈登指着一张卡片说：<b>这卡片就是函数。写一次，用无数次。</b>
+</div>
+
+<div class="cast teacher">
+  <img class="ava" src="../assets/avatars/gordon.webp" alt="戈登" onerror="this.style.display='none'">
+  <div class="bubble">
+    <div class="who">戈登 · 齿轮工程师</div>
+    前面三个单元，你学会用列表和字典"装数据"。<br>
+    这一单元换个方向：<strong>怎么把"一段会重复干活的代码"装起来。</strong><br>
+    这就是函数——<b>给它起个名字，以后喊名字就行。</b>
+  </div>
+</div>
+
+<figure class="pic">
+  <img src="../assets/illustrations/py-L4-04-01_module_workshop.webp" alt="模块化车间"
+       onerror="this.closest('.pic').classList.add('missing')">
+  <div class="ph">
+    <div class="fn">assets/illustrations/py-L4-04-01_module_workshop.webp</div>
+    <div class="ds">【配图位】车间墙上挂着一排金属工序卡，每张卡片刻着一段固定流程与编号；几名工人各自站在不同工位上照着卡片操作，动作整齐划一，背景是转动的齿轮与传送带。</div>
+  </div>
+  <figcaption>图 1：齿轮高台的模块化车间——今天要从这里开始</figcaption>
+</figure>
+
+<div class="section-header" id="s0">
+  <h2>0　单元导语与目标</h2>
+  <div class="en-title">Unit Overview</div>
+
+<h3 id="s0-1">0.1 学习目标</h3>
+</div>
+
+<div class="goal-grid">
+  <div class="goal">
+    <h4><span class="ic">1</span>学完这个单元，你将能……</h4>
+    <ul>
+      <li>说清函数解决了什么问题</li>
+      <li>用 def 定义函数，并正确调用它</li>
+      <li>给函数设计参数，让它更灵活</li>
+      <li>用 return 把结果带回调用处</li>
+      <li>说出函数带来的三个好处</li>
+      <li>把长程序拆成几个各司其职的函数</li>
+    </ul>
+  </div>
+  <div class="goal syllabus">
+    <h4><span class="ic">2</span>对标 GESP 考纲（Python 四级）</h4>
+    <ul>
+      <li>掌握函数的定义与调用语法（def、缩进、调用括号）</li>
+      <li>掌握函数的参数与返回值，理解 return 的作用</li>
+      <li>了解模块化编程思想，能用函数组织程序结构</li>
+      <li>考核目标：能读懂函数代码并预测输出，能写出简单函数</li>
+    </ul>
+  </div>
+</div>
+
+<h3 id="s0-2">0.2 考纲对照</h3>
+
+<table class="styled">
+  <thead><tr><th>本单元小节</th><th>对应考纲条目</th><th>真题常考形式</th></tr></thead>
+  <tbody>
+    <tr><td>1　为什么要用函数</td><td>函数与模块化编程</td><td>用函数比复制代码好在哪里</td></tr>
+    <tr><td>2　定义与调用</td><td>函数的定义与调用</td><td><code class="inline">def</code> 与缩进；不调用会不会执行</td></tr>
+    <tr><td>3　参数</td><td>参数的传递</td><td>形参与实参的区别、参数个数要不要对上</td></tr>
+    <tr><td>4　返回值</td><td>返回值与 <code class="inline">return</code></td><td><code class="inline">return</code> 与 <code class="inline">print</code> 的区别</td></tr>
+  </tbody>
+</table>
+
+<div class="section-header" id="s1">
+  <h2>1　重复的活儿该怎么办</h2>
+  <div class="en-title">The Problem of Repetition</div>
+</div>
+
+<h3 id="s1-1">1.1 没有函数会怎样</h3>
+
+<p>先看一段"没有函数"的代码。假设要三次给英雄加血：</p>
+
+<div class="code-card">
+  <div class="code-head">
+    <span class="dot d1"></span><span class="dot d2"></span><span class="dot d3"></span>
+    <span class="file">复制粘贴三遍</span>
+    <span class="lang">Python</span>
+  </div>
+  <pre><code>hero.say("正在治疗……")
+hero.health = hero.health + 10
+hero.say("治疗完成！")
+
+hero.say("正在治疗……")
+hero.health = hero.health + 10
+hero.say("治疗完成！")
+
+hero.say("正在治疗……")
+hero.health = hero.health + 10
+hero.say("治疗完成！")</code></pre>
+  <div class="out"><b>问题</b>　如果想把"加 10"改成"加 20"，你得改三个地方——漏掉一个就出 bug</div>
+</div>
+
+<div class="code-card">
+  <div class="code-head">
+    <span class="dot d1"></span><span class="dot d2"></span><span class="dot d3"></span>
+    <span class="file">封装成函数：只写一遍</span>
+    <span class="lang">Python</span>
+  </div>
+  <pre><code>def heal():
+    hero.say("正在治疗……")
+    hero.health = hero.health + 10
+    hero.say("治疗完成！")
+
+heal()      # 调用一次
+heal()      # 再调用一次
+heal()      # 再来一次</code></pre>
+  <div class="out"><b>好处</b>　改一处、处处生效；代码也短了一大截</div>
+</div>
+
+<h3 id="s1-2">1.2 函数带来的三个好处</h3>
+
+<div class="box tip">
+  <span class="lb">打个比方：</span>
+  函数就像车间里<b>一台做好的机器</b>——<strong>只要把料从这头送进去，成品就从那头出来。</strong><br>
+  你不需要每次都<b>重新造一台机器</b>，也不需要知道机器里怎么转的；<br>
+  <b>想用的时候，喊它的名字、把料给它就行。</b>
+</div>
+
+<div class="box remember">
+  <span class="lb">函数带来的三个好处：</span><br>
+  <b>① 复用</b>——写一次，用很多次；<br>
+  <b>② 易改</b>——要改逻辑只需改一个地方；<br>
+  <b>③ 易读</b>——<code class="inline">heal()</code> 比五行代码更能说明"我在干什么"。<br>
+  <strong>这三条，就是"模块化编程"的全部理由。</strong>
+</div>
+
+<div class="section-header" id="s2">
+  <h2>2　定义与调用</h2>
+  <div class="en-title">Define &amp; Call</div>
+
+<h3 id="s2-1">2.1 定义与调用</h3>
+</div>
+
+<figure class="figure">
+  <svg class="diagram" viewBox="0 0 860 270" role="img" aria-label="定义与调用">
+    <text x="24" y="34" font-size="14" font-weight="bold" fill="#1f2937">定义是"写菜谱"，调用是"照着做一遍"</text>
+
+    <rect x="50" y="58" width="350" height="160" rx="12" fill="#e6f7f5" stroke="#0e8f86" stroke-width="2"/>
+    <text x="225" y="86" text-anchor="middle" font-size="13" fill="#0a6b64" font-weight="bold">定义（写一次）</text>
+    <text x="76" y="120" font-family="Consolas,monospace" font-size="13" fill="#14231f">def greet():</text>
+    <text x="96" y="146" font-family="Consolas,monospace" font-size="13" fill="#14231f">    print("你好！")</text>
+    <text x="76" y="182" font-size="11.5" fill="#3b7c5b">此时程序什么都不做</text>
+    <text x="76" y="202" font-size="11.5" fill="#3b7c5b">只是"把它记下来"</text>
+
+    <rect x="450" y="58" width="360" height="160" rx="12" fill="#f8fcfc" stroke="#cbd5e1" stroke-width="1.8"/>
+    <text x="630" y="86" text-anchor="middle" font-size="13" fill="#475569" font-weight="bold">调用（用很多次）</text>
+    <text x="476" y="120" font-family="Consolas,monospace" font-size="13" fill="#14231f">greet()</text>
+    <text x="476" y="146" font-family="Consolas,monospace" font-size="13" fill="#14231f">greet()</text>
+    <text x="476" y="182" font-size="11.5" fill="#64748b">每调用一次，函数体就跑一遍</text>
+    <text x="476" y="202" font-size="11.5" fill="#64748b">输出：你好！ 你好！</text>
+
+    <text x="430" y="248" text-anchor="middle" font-size="12" fill="#8da0a3">关键：定义不会执行；只有写了调用语句，函数体才会跑起来</text>
+  </svg>
+  <div class="caption">图 2（SVG）：定义不执行，调用才执行</div>
+</figure>
+
+<div class="code-card">
+  <div class="code-head">
+    <span class="dot d1"></span><span class="dot d2"></span><span class="dot d3"></span>
+    <span class="file">函数的标准样子</span>
+    <span class="lang">Python</span>
+  </div>
+  <pre><code>def 函数名():
+    语句1
+    语句2
+    ...
+
+# 调用
+函数名()</code></pre>
+  <div class="out"><b>三个细节</b>　① def 后面要写冒号　② 函数体<b>必须缩进</b>　③ 调用时要带括号</div>
+</div>
+
+<h3 id="s2-2">2.2 最容易忘的两件事</h3>
+
+<div class="box warn">
+  <span class="lb">最容易忘的两件事：</span>
+  <b>冒号</b>和<b>缩进</b>。<br>
+  少写冒号 → <code class="inline">SyntaxError</code>；函数体没缩进 → 它就不属于这个函数了，会立刻执行。
+</div>
+
+<div class="section-header" id="s3">
+  <h2>3　参数：给函数带东西进去</h2>
+  <div class="en-title">Parameters</div>
+</div>
+
+<h3 id="s3-1">3.1 参数：把东西带进去</h3>
+
+<p>上面的 <code class="inline">heal()</code> 每次都加 10。如果想加不同的量呢？<strong>用参数。</strong></p>
+
+<div class="code-card">
+  <div class="code-head">
+    <span class="dot d1"></span><span class="dot d2"></span><span class="dot d3"></span>
+    <span class="file">带参数的函数</span>
+    <span class="lang">Python</span>
+  </div>
+  <pre><code>def heal(amount):              # amount 是"形参"，是个占位符
+    hero.say("正在治疗……")
+    hero.health = hero.health + amount
+    hero.say("治疗完成！")
+
+heal(10)                       # 把 10 交给 amount
+heal(30)                       # 把 30 交给 amount
+heal(5)                        # 把 5 交给 amount</code></pre>
+  <div class="out"><b>输出</b>　依次执行"加 10、加 30、加 5"的治疗流程</div>
+</div>
+
+<h3 id="s3-2">3.2 形参与实参</h3>
+
+<figure class="pic">
+  <img src="../assets/illustrations/py-L4-04-02_define_call_return.webp" alt="定义、调用、返回，三步"
+       onerror="this.closest('.pic').classList.add('missing')">
+  <div class="ph">
+    <div class="fn">assets/illustrations/py-L4-04-02_define_call_return.webp</div>
+    <div class="ds">【配图位】车间里同一台机器的三个阶段被画在同一画面中：最左边一面墙上挂着机器蓝图（定义）；中间一名英雄拉下机器的摇柄、料正被送进进料口（调用）；最右边一只藤筐里落下刚做好的成品（返回）；三个阶段之间用弧形箭头连成一条循环路径。</div>
+  </div>
+  <figcaption>图 3：墙上蓝图、拉动摇柄、成品入筐</figcaption>
+</figure>
+
+<div class="box remember">
+  <span class="lb">两个名字要分清：</span>
+  <b>形参</b>——定义时括号里写的名字（<code class="inline">amount</code>），只是占位；<br>
+  <b>实参</b>——调用时真正传进去的值（<code class="inline">10</code>、<code class="inline">30</code>），是真实数据。<br>
+  <strong>调用的时候，实参会"对号入座"地交给形参。</strong>
+</div>
+
+<div class="code-card">
+  <div class="code-head">
+    <span class="dot d1"></span><span class="dot d2"></span><span class="dot d3"></span>
+    <span class="file">多个参数与默认值</span>
+    <span class="lang">Python</span>
+  </div>
+  <pre><code>def rect(w, h):                  # 两个参数
+    print(w * h)
+
+rect(3, 4)                       # 12
+
+def greet(name, times=1):        # times 有默认值
+    for i in range(times):
+        print("你好，", name)
+
+greet("安雅")                    # 只传一个，times 用默认值 1
+greet("塔林", 3)                 # 两个都传，times 变成 3</code></pre>
+  <div class="out"><b>要点</b>　有默认值的参数必须写在<b>后面</b>；调用时不传就用默认值</div>
+</div>
+
+<div class="section-header" id="s4">
+  <h2>4　返回值：把结果带出来</h2>
+  <div class="en-title">Return Values</div>
+</div>
+
+<h3 id="s4-1">4.1 返回值：把结果带出来</h3>
+
+<p>很多函数不是"干件事"，而是"算个结果给你"。这时候就要用 <strong>return</strong>。</p>
+
+<div class="code-card">
+  <div class="code-head">
+    <span class="dot d1"></span><span class="dot d2"></span><span class="dot d3"></span>
+    <span class="file">有返回值的函数</span>
+    <span class="lang">Python</span>
+  </div>
+  <pre><code>def add(a, b):
+    return a + b          # 把结果"交出去"
+
+result = add(3, 5)        # 用变量接住返回值
+print(result)             # 8
+
+print(add(10, 20) + 1)    # 返回值可以直接参与运算 → 31</code></pre>
+  <div class="out"><b>OUTPUT</b>　8<br>31</div>
+</div>
+
+<figure class="figure">
+  <svg class="diagram" viewBox="0 0 860 250" role="img" aria-label="有没有参数和返回值的四种组合">
+    <text x="24" y="34" font-size="14" font-weight="bold" fill="#1f2937">四种函数，各有各的用法</text>
+
+    <rect x="46" y="58" width="184" height="150" rx="12" fill="#f8fcfc" stroke="#cbd5e1" stroke-width="1.6"/>
+    <text x="138" y="86" text-anchor="middle" font-size="12.5" fill="#475569" font-weight="bold">无参、无返回</text>
+    <text x="66" y="118" font-family="Consolas,monospace" font-size="12" fill="#334155">def f():</text>
+    <text x="82" y="140" font-family="Consolas,monospace" font-size="12" fill="#334155">  print("hi")</text>
+    <text x="138" y="180" text-anchor="middle" font-size="11" fill="#8da0a3">只干活，不给结果</text>
+
+    <rect x="246" y="58" width="184" height="150" rx="12" fill="#e6f7f5" stroke="#5eead4" stroke-width="1.6"/>
+    <text x="338" y="86" text-anchor="middle" font-size="12.5" fill="#0f766e" font-weight="bold">有参、无返回</text>
+    <text x="266" y="118" font-family="Consolas,monospace" font-size="12" fill="#0a6b64">def f(x):</text>
+    <text x="282" y="140" font-family="Consolas,monospace" font-size="12" fill="#0a6b64">  print(x)</text>
+    <text x="338" y="180" text-anchor="middle" font-size="11" fill="#3b7c5b">给点东西，干完就走</text>
+
+    <rect x="446" y="58" width="184" height="150" rx="12" fill="#e6f7f5" stroke="#0e8f86" stroke-width="2"/>
+    <text x="538" y="86" text-anchor="middle" font-size="12.5" fill="#0a6b64" font-weight="bold">有参、有返回</text>
+    <text x="466" y="118" font-family="Consolas,monospace" font-size="12" fill="#0a6b64">def f(x):</text>
+    <text x="482" y="140" font-family="Consolas,monospace" font-size="12" fill="#0a6b64">  return x*2</text>
+    <text x="538" y="180" text-anchor="middle" font-size="11" fill="#0a6b64">最常用的一种</text>
+
+    <rect x="646" y="58" width="168" height="150" rx="12" fill="#f8fcfc" stroke="#cbd5e1" stroke-width="1.6"/>
+    <text x="730" y="86" text-anchor="middle" font-size="12.5" fill="#475569" font-weight="bold">无参、有返回</text>
+    <text x="666" y="118" font-family="Consolas,monospace" font-size="12" fill="#334155">def f():</text>
+    <text x="682" y="140" font-family="Consolas,monospace" font-size="12" fill="#334155">  return 100</text>
+    <text x="730" y="180" text-anchor="middle" font-size="11" fill="#8da0a3">只交结果</text>
+
+    <text x="430" y="236" text-anchor="middle" font-size="12" fill="#8da0a3">考试里最爱考的是"有参有返回"——记得用变量接住返回值</text>
+  </svg>
+  <div class="caption">图 4（SVG）：函数的四种形态</div>
+</figure>
+
+<h3 id="s4-2">4.2 return 和 print 的区别</h3>
+
+<figure class="pic">
+  <img src="../assets/illustrations/py-L4-04-03_param_pipe.webp" alt="参数就像输送管"
+       onerror="this.closest('.pic').classList.add('missing')">
+  <div class="ph">
+    <div class="fn">assets/illustrations/py-L4-04-03_param_pipe.webp</div>
+    <div class="ds">【配图位】车间里一台封闭的机器，机器外壳上画着两个接口：左侧一根玻璃管道把外面的发光材料送进机器内部（参数传入），右侧一根管道把加工好的成品送出来落进托盘（返回值）；机器内部结构被半透明处理，能看到齿轮在转；英雄站在管道外面观察。</div>
+  </div>
+  <figcaption>图 5：料从外面送进去，成品从里面送出来</figcaption>
+</figure>
+
+<div class="box tip">
+  <span class="lb">return 和 print 的区别（必考）：</span>
+  <b>print</b> 是"给人看"——把东西显示在屏幕上；<br>
+  <b>return</b> 是"给程序用"——把结果交回调用处，可以继续参与运算。<br>
+  <strong>把 print 当成 return 用，是四级最常见的失分点。</strong>
+</div>
+
+<div class="section-header" id="s5">
+  <h2>5　代码实战</h2>
+  <div class="en-title">Level Practice</div>
+</div>
+
+<div class="level-card">
+  <div class="lc-head"><span class="n">关卡</span><h4>Killdeer 操作</h4><span class="go">进入关卡 →</span></div>
+  <div class="lc-body">
+    <div class="story">
+      <b>故事：</b>高台边缘，一群食人魔正围着诱饵转圈。它们很谨慎——
+      <b>只有你受伤了，它们才敢追上来。</b><br>
+      所以战术很清楚：<b>先判断"我是不是伤得够重"，再决定跑还是打。</b><br>
+      戈登把一张工序卡拍在你手上：这个判断你要用好几次，<b>把它写成函数。</b>
+    </div>
+    <p><strong>思路：</strong>把"该不该跑"这个判断封装成一个函数，
+  <figure class="pic ai-added"><img src="../assets/illustrations/py-L4-04-01_function_machine.webp" alt="AI配图：py-L4-04-01_function_machine.webp"></figure>
+    让它<b>返回 True 或 False</b>。主循环里直接调用它，代码立刻清爽。</p><figure class="pic">
+      <img src="../assets/stages/py-L4-04-stage1_killdeer.webp" alt="Killdeer 操作 关卡截图"
+           onerror="this.closest('.pic').classList.add('missing')">
+      <div class="ph">
+        <div class="fn">assets/stages/py-L4-04-stage1_killdeer.webp</div>
+        <div class="ds">【关卡截图位】请把《Killdeer 操作》的游戏画面截图放到此处（放入 assets/stages/ 目录，文件名为 py-L4-04-stage1_killdeer.webp）。</div>
+      </div>
+      <figcaption>关卡实况：Killdeer 操作</figcaption>
+    </figure>
+    <div class="code-card">
+      <div class="code-head">
+        <span class="dot d1"></span><span class="dot d2"></span><span class="dot d3"></span>
+        <span class="file">重点示例：写一个返回判断结果的函数</span>
+        <span class="lang">Python</span>
+      </div>
+      <pre><code>def shouldRun():
+    if hero.health &lt; hero.maxHealth / 2:
+        return True
+    else:
+        return False
+
+while True:
+    if shouldRun():          # 直接当条件用，读起来像一句话
+        hero.moveXY(75, 37)
+    else:
+        enemy = hero.findNearestEnemy()
+        if enemy:
+            hero.attack(enemy)</code></pre>
+      <div class="out"><b>要点</b>　返回 True/False 的函数，可以直接放进 if 里当条件</div>
+    </div>
+    <div class="box info">
+      <span class="lb">这段代码还可以更简洁：</span>
+      <code class="inline">def shouldRun(): return hero.health &lt; hero.maxHealth / 2</code><br>
+      因为比较表达式<strong>本身就是 True 或 False</strong>，不用再写 if-else。<br>
+      <b>但考试时写清楚一点也没关系——可读性永远不吃亏。</b>
+    </div>
+    
+    <a class="btn-go" href="https://codecombat.cn/" target="_blank" rel="noopener">去扣哒世界闯这一关 →</a>
+  </div>
+</div>
+
+
+
+<div class="section-header" id="s6">
+  <h2>6　常见陷阱</h2>
+  <div class="en-title">Common Pitfalls</div>
+</div>
+
+<div class="cast duck">
+  <img class="ava" src="../assets/ducks/duck_hattori.webp" alt="扣哒鸭" onerror="this.style.display='none'">
+  <div class="bubble">
+    <div class="who">扣哒鸭 · 调试官</div>
+    函数的错最好查——报错信息通常直接告诉你行号。但这四条，报错都不明显。
+  </div>
+</div>
+
+<div class="pit">
+  <div class="pt">
+    <div class="x">1</div>
+    <div class="t"><b>忘了写调用，只写了定义。</b>程序什么都不输出。</div>
+  </div>
+  <div class="duck">
+    <img src="../assets/ducks/duck_zana.webp" alt="扣哒鸭" onerror="this.style.display='none'">
+    <div class="dt"><b>扣哒鸭：</b><strong>定义只是"记下来"，不会执行。</strong>
+    你写完了 <code>def greet():</code>，还得在下面写一句 <code>greet()</code>。<br>
+    这是学生最常犯的第一个函数错误。</div>
+  </div>
+  <div class="fix"><b>正确做法：</b>定义之后必须写调用语句</div>
+</div>
+
+<div class="pit">
+  <div class="pt">
+    <div class="x">2</div>
+    <div class="t"><b>调用时忘了带括号。</b>写 <code class="inline">greet</code> 而不是 <code class="inline">greet()</code>。</div>
+  </div>
+  <div class="duck">
+    <img src="../assets/ducks/duck_naria.webp" alt="扣哒鸭" onerror="this.style.display='none'">
+    <div class="dt"><b>扣哒鸭：</b>写 <code>greet</code> 只是"提到了这个函数"，
+    <strong>不会执行它</strong>。要执行必须带括号：<code>greet()</code>。</div>
+  </div>
+  <div class="fix"><b>正确写法：</b><code class="inline">greet()</code></div>
+</div>
+
+<div class="pit">
+  <div class="pt">
+    <div class="x">3</div>
+    <div class="t"><b>把 print 当成 return。</b>函数里只打印，外面却想用它的结果。</div>
+  </div>
+  <div class="duck">
+    <img src="../assets/ducks/duck_senick.webp" alt="扣哒鸭" onerror="this.style.display='none'">
+    <div class="dt"><b>扣哒鸭：</b><code>print</code> 只把东西<b>显示出来</b>，
+    函数外面拿不到它。<br>
+    想拿到结果，必须写 <code>return</code>；否则函数默认返回 <code>None</code>。</div>
+  </div>
+  <div class="fix"><b>正确做法：</b>要传结果用 return，要显示才用 print</div>
+</div>
+
+<div class="pit">
+  <div class="pt">
+    <div class="x">4</div>
+    <div class="t"><b>参数个数对不上。</b>定义了 2 个参数，调用时只给 1 个。</div>
+  </div>
+  <div class="duck">
+    <img src="../assets/ducks/duck_illia.webp" alt="扣哒鸭" onerror="this.style.display='none'">
+    <div class="dt"><b>扣哒鸭：</b>会报 <code>TypeError: missing 1 required positional argument</code>。<br>
+    除非那个参数<b>有默认值</b>，否则一个都不能少。</div>
+  </div>
+  <div class="fix"><b>正确做法：</b>实参个数要和形参一致（有默认值的可以省略）</div>
+</div>
+
+<div class="section-header" id="s7">
+  <h2>7　题目练习</h2>
+  <div class="en-title">Practice</div>
+</div>
+
+<p>第 1 题改编自 2026 年 9 月 · Python 四级 第 6 题，其余为原创练习题。</p>
+
+<div class="exam">
+  <div class="eh"><span class="src">改编自 2026 年 9 月 · Python 四级 · 第 6 题</span><span class="tp">单选题</span></div>
+  <div class="eb">
+    <div class="q">关于下面这个函数，说法<b>正确</b>的是（　　）。<br><pre>1  def process(a: int, b: str = "default") -> str:
+2      return b * a</pre></div>
+    <div class="opt"><i>A.</i>调用函数时必须为形参 a 传递一个整数值<br>
+      <i>B.</i>调用函数时不能省略对形参 b 的传参<br>
+      <i>C.</i>函数返回值必须是字符串类型<br>
+      <i>D.</i>参数类型注解在运行时不会强制检查类型</div>
+    <details><summary>查看答案与详解</summary>
+      <div class="ans"><b>答案：D</b>。函数签名里的 <code class="inline">a: int</code>、<code class="inline">-> str</code> 只是<strong>类型注解（提示）</strong>，给人和工具看的，<strong>Python 运行时不会强制检查</strong> ——传个字符串进去也不会报错，只是逻辑上可能出错。<br><b>A 错：</b>注解不强制，传别的类型照样能调用；<br><b>B 错：</b><code class="inline">b: str = "default"</code> 是<strong>带默认值的参数</strong>，调用时可以不传，不传就用 "default"；<br><b>C 错：</b><code class="inline">-> str</code> 同样只是注解；这里 <code class="inline">b * a</code> 恰好返回字符串，但如果传入的 b 是数字，返回的就是数字。<br><b>两条要记牢：</b>① <strong>带默认值的参数必须写在后面</strong>；<br>② 类型注解是"君子协定"，不是强制约束。<br><span class="tagline">对应小节</span>3 参数：给函数带东西进去。</div>
+    </details>
+  </div>
+</div>
+<div class="exam">
+  <div class="eh"><span class="src ori">原创练习题</span><span class="tp">单选题</span></div>
+  <div class="eb">
+    <div class="q">下列 Python 代码执行后，输出的结果是（　　）。</div>
+    <pre>1  def add(a, b):
+2      return a + b
+3  print(add(3, 4))</pre>
+    <div class="opt"><i>A.</i>34　　<i>B.</i>7　　<i>C.</i>a + b　　<i>D.</i>报错</div>
+    <details><summary>查看答案与详解</summary>
+      <div class="ans"><b>答案：B</b>。调用 <code class="inline">add(3, 4)</code> 时，
+      实参 3 交给形参 a、4 交给形参 b；函数体返回 <code class="inline">3 + 4 = 7</code>。<br>
+      <b>易错点：</b>A 项 34 是把数字当字符串拼了。<br>
+      <span class="tagline">对应小节</span>4 返回值：把结果带出来。</div>
+    </details>
+  </div>
+</div>
+
+<div class="exam">
+  <div class="eh"><span class="src ori">原创练习题</span><span class="tp">单选题</span></div>
+  <div class="eb">
+    <div class="q">下列 Python 代码执行后，输出的结果是（　　）。</div>
+    <pre>1  def f(x):
+2      print(x * 2)
+3  r = f(5)
+4  print(r)</pre>
+    <div class="opt"><i>A.</i>10 和 10　　<i>B.</i>10 和 None　　<i>C.</i>None 和 10　　<i>D.</i>报错</div>
+    <details><summary>查看答案与详解</summary>
+      <div class="ans"><b>答案：B</b>。<code class="inline">f(5)</code> 执行时先打印 <b>10</b>；
+      但函数里只有 print 没有 return，所以它<b>默认返回 None</b>。<br>
+      因此 <code class="inline">r</code> 是 None，最后打印出 <b>None</b>。<br>
+      <b>这是最经典的"print 与 return 混淆"题。</b><br>
+      <span class="tagline">对应小节</span>4 返回值：把结果带出来。</div>
+    </details>
+  </div>
+</div>
+
+<div class="exam">
+  <div class="eh"><span class="src ori">原创练习题</span><span class="tp">判断题</span></div>
+  <div class="eb">
+    <div class="q">函数定义好之后，程序会自动执行函数体里的代码。（　　）</div>
+    <details><summary>查看答案与详解</summary>
+      <div class="ans"><b>答案：错误（×）</b>。定义只是"把这段代码记下来"，<b>并不会执行</b>。
+      必须写了调用语句（函数名加括号）才会执行。<br>
+      <b>这一条是函数部分最高频的判断题。</b><br>
+      <span class="tagline">对应小节</span>2 定义与调用。</div>
+    </details>
+  </div>
+</div>
+
+<div class="exam">
+  <div class="eh"><span class="src ori">原创练习题</span><span class="tp">单选题</span></div>
+  <div class="eb">
+    <div class="q">下列 Python 代码执行后，输出的结果是（　　）。</div>
+    <pre>1  def calc(n, times=2):
+2      return n * times
+3  print(calc(5))
+4  print(calc(5, 3))</pre>
+    <div class="opt"><i>A.</i>10 和 15　　<i>B.</i>10 和 10　　<i>C.</i>报错　　<i>D.</i>15 和 10</div>
+    <details><summary>查看答案与详解</summary>
+      <div class="ans"><b>答案：A</b>。第一次调用只传了 <code class="inline">5</code>，
+      <code class="inline">times</code> 用默认值 2 → 5 × 2 = <b>10</b>；<br>
+      第二次两个参数都传了 → 5 × 3 = <b>15</b>。<br>
+      <b>要点：</b>有默认值的参数放在后面，调用时可以省略。<br>
+      <span class="tagline">对应小节</span>3 参数：给函数带东西进去。</div>
+    </details>
+  </div>
+</div>
+
+<div class="exam">
+  <div class="eh"><span class="src ori">原创练习题</span><span class="tp">单选题</span></div>
+  <div class="eb">
+    <div class="q">下列 Python 代码执行后，输出的结果是（　　）。</div>
+    <pre>1  def greet():
+2      return "你好"
+3  greet()
+4  print(greet())</pre>
+    <div class="opt"><i>A.</i>什么都不输出　　<i>B.</i>你好　　<i>C.</i>None　　<i>D.</i>报错</div>
+    <details><summary>查看答案与详解</summary>
+      <div class="ans"><b>答案：B</b>。第 3 行的 <code class="inline">greet()</code> 调用了函数，
+      但<b>没有用 print，也没有变量接住返回值</b>——结果被丢掉了，屏幕上什么都不显示。<br>
+      第 4 行把它打印出来，输出 <b>你好</b>。<br>
+      <b>提示：</b>"调用了但没接住返回值"，是常见的"看起来没反应"的原因。<br>
+      <span class="tagline">对应小节</span>4 返回值：把结果带出来。</div>
+    </details>
+  </div>
+</div>
+
+<div class="exam">
+  <div class="eh"><span class="src ori">原创练习题</span><span class="tp">判断题</span></div>
+  <div class="eb">
+    <div class="q">把重复的代码封装成函数，可以让程序更短、更容易修改。（　　）</div>
+    <details><summary>查看答案与详解</summary>
+      <div class="ans"><b>答案：正确（√）</b>。这正是函数存在的意义：<br>
+      <b>复用</b>（写一次用多次）、<b>易改</b>（改一处即可）、<b>易读</b>（函数名说明意图）。<br>
+      <span class="tagline">对应小节</span>1 重复的活儿该怎么办。</div>
+    </details>
+  </div>
+</div>
+
+<div class="exam">
+  <div class="eh"><span class="src ori">原创练习题</span><span class="tp">编程题</span></div>
+  <div class="eb">
+    <div class="q">题目要求：① 定义一个函数 <code class="inline">isEven(n)</code>，
+    当 n 是偶数时返回 True，否则返回 False；② 用它统计列表
+    <code class="inline">[3, 8, 15, 22, 7]</code> 中有几个偶数并输出。</div>
+    <details><summary>查看参考答案与要点</summary>
+      <div class="ans">
+<pre style="margin:0;background:#14231f;color:#c3d6d1;border-radius:10px;padding:14px 16px">def isEven(n):
+    return n % 2 == 0          # 比较表达式本身就是 True 或 False
+
+nums = [3, 8, 15, 22, 7]
+
+count = 0
+for x in nums:
+    if isEven(x):              # 返回值直接当条件用
+        count = count + 1
+
+print(count)                   # 2</pre>
+      <p style="margin-top:12px"><b>输出：</b>2（8 和 22）<br>
+      <b>要点：</b><br>
+      ① <code class="inline">n % 2 == 0</code> 直接就是布尔值，不用再写 if-else；<br>
+      ② 返回 True/False 的函数可以直接放进 if 条件里，代码更接近自然语言；<br>
+      ③ 判断偶数也可以用位运算 <code class="inline">n &amp; 1 == 0</code>。<br>
+      <span class="tagline">对应小节</span>3 参数；4 返回值。</p>
+      </div>
+    </details>
+  </div>
+</div>
+
+<div class="section-header" id="s8">
+  <h2>8　本单元小结</h2>
+  <div class="en-title">Unit Summary</div>
+</div>
+
+<div class="cast teacher">
+  <img class="ava" src="../assets/avatars/gordon.webp" alt="戈登" onerror="this.style.display='none'">
+  <div class="bubble">
+    <div class="who">戈登 · 齿轮工程师</div>
+    三句话记住函数：<br>
+    <strong>一、def 定义，函数名加括号才是调用。</strong><br>
+    <strong>二、参数是"带进去的东西"，return 是"带出来的结果"。</strong><br>
+    <strong>三、print 给人看，return 给程序用——千万别混。</strong><br>
+    学会把重复的活儿封成函数，你的程序就开始"像样"了。
+  </div>
+</div>
+
+<div class="summary">
+  <h3>你在模块化车间收获了什么</h3>
+  <ul>
+    <li><strong>函数</strong>——把一段代码起个名字装起来，用 <code class="inline">def</code> 定义、用 <code class="inline">名字()</code> 调用。</li>
+    <li><strong>三个好处</strong>——复用、易改、易读。</li>
+    <li><strong>定义不执行</strong>——只有调用语句才会让函数体跑起来。</li>
+    <li><strong>参数</strong>——形参是占位符，实参是真实数据；有默认值的参数写在后面。</li>
+    <li><strong>返回值</strong>——<code class="inline">return</code> 把结果交回调用处，可以用变量接住，也可以直接参与运算。</li>
+    <li><strong>没有 return 就返回 None</strong>——这是"print 当 return 用"错误的根源。</li>
+    <li><strong>模块化</strong>——把长程序拆成几个各司其职的函数，主流程一目了然。</li>
+  </ul>
+</div>
+
+<div class="pager">
+  <a href="py-4-03.html"><div class="k">← 上一单元</div><div class="v">零件装配台 · 数据组织：字典与结构化数据</div></a>
+  <a href="../index.html" target="_top" class="back"><div class="k">返回</div><div class="v">考纲之路 · 总目录</div></a>
+  <a href="py-4-05.html"><div class="k">下一单元 →</div><div class="v">参数输送管 · 参数传递与变量作用域</div></a>
+</div>
+
+<div class="cta">
+  <h3>下一站：参数输送管</h3>
+  <p>函数像一条条输送管道：你把东西从这一头放进去，结果从那一头出来。
+  可为什么<b>函数里面改了变量，外面却没变</b>？下一单元，我们把这条管道拆开看个明白。</p>
+  <a class="btn-go" href="https://codecombat.cn/" target="_blank" rel="noopener">加入扣哒世界，把这条考纲之路走一遍 →</a>
+</div>
+</div><!-- /container -->
+</div><!-- /page -->
+
+<script>
+const KEYWORDS = new Set(("while for if elif else break continue def return pass not and or in is None True False " +
+  "int float bool str list dict tuple set input print range len abs max min round pow import math random chr ord bin hex oct sum append copy keys values items").split(" "));
+
+function esc(s){ return s.replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;'); }
+
+function highlight(src){
+  let out = '', i = 0;
+  const n = src.length;
+  while (i < n){
+    const c = src[i];
+    if (c === '#'){
+      let j = src.indexOf('\n', i); if (j < 0) j = n;
+      out += '<span class="cm">' + esc(src.slice(i, j)) + '</span>';
+      i = j; continue;
+    }
+    if (c === '"' || c === "'"){
+      let j = i + 1;
+      while (j < n && src[j] !== c){ if (src[j] === '\\') j++; j++; }
+      j = Math.min(j + 1, n);
+      out += '<span class="st">' + esc(src.slice(i, j)) + '</span>';
+      i = j; continue;
+    }
+    if (/[0-9]/.test(c)){
+      let j = i;
+      while (j < n && /[0-9.]/.test(src[j])) j++;
+      out += '<span class="nu">' + esc(src.slice(i, j)) + '</span>';
+      i = j; continue;
+    }
+    if (/[A-Za-z_]/.test(c)){
+      let j = i;
+      while (j < n && /[A-Za-z0-9_]/.test(src[j])) j++;
+      const w = src.slice(i, j);
+      if (KEYWORDS.has(w)) out += '<span class="kw">' + esc(w) + '</span>';
+      else if (src[j] === '(') out += '<span class="fn">' + esc(w) + '</span>';
+      else out += esc(w);
+      i = j; continue;
+    }
+    out += esc(c); i++;
+  }
+  return out;
+}
+
+document.querySelectorAll('.code-card pre code').forEach(block => {
+  block.innerHTML = highlight(block.textContent);
+});
+
+if (location.search.indexOf('expand') >= 0) {
+  document.querySelectorAll('details').forEach(d => d.open = true);
+}
+document.querySelectorAll('.sidebar-nav a').forEach(a => {
+  a.addEventListener('click', () => {
+    if (window.innerWidth <= 900) document.querySelector('.sidebar-nav').classList.remove('active');
+  });
+});
+</script>
+</body>
+</html>
