@@ -1,0 +1,777 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="copyright" content="CodeCombat Inc. codecombat.cn">
+<title>谜题锁孔 · 复杂的逻辑判断 | 扣哒考级 · GESP 图形化三级</title>
+<style>
+  :root{
+    --primary:#8b5cf6; --primary-light:#a78bfa; --primary-lighter:#f3efff; --primary-dark:#6d28d9;
+    --brand:#ff6b35; --brand-dark:#e8541f; --brand-soft:#fff3ec;
+    --night:#131c2b; --night-2:#1e2a3a;
+    --gold:#f5b301;
+    --text:#2a2438; --dim:#7c7794; --dim2:#a29db8;
+    --bg:#ffffff; --bg-soft:#faf8ff; --line:#e9e4f8;
+    --sidebar:274px;
+    --code-bg:#211a33; --code-tx:#d6cfe6;
+    --code-kw:#c678dd; --code-st:#98c379; --code-nu:#d19a66; --code-cm:#7d7392; --code-fn:#61afef;
+  }
+  *{margin:0;padding:0;box-sizing:border-box}
+  html{scroll-behavior:smooth}
+  body{
+    font-family:"PingFang SC","Microsoft YaHei","Segoe UI",-apple-system,sans-serif;
+    line-height:1.9;color:var(--text);background:var(--bg);font-size:15.5px;
+  }
+
+  .sidebar-nav{
+    position:fixed;top:0;left:0;width:var(--sidebar);height:100vh;overflow-y:auto;
+    background:linear-gradient(180deg,#101a26,#182636);padding:14px 0 40px;z-index:100;
+    border-right:3px solid var(--brand);transition:transform .3s ease;
+  }
+  .sidebar-nav::-webkit-scrollbar{width:5px}
+  .sidebar-nav::-webkit-scrollbar-thumb{background:var(--brand);border-radius:4px}
+  .sb-brand{display:flex;align-items:center;gap:10px;padding:10px 13px 12px;border-bottom:1px solid #26384c;margin-bottom:8px}
+  .sidebar-nav a.sb-logo{display:flex;align-items:center;justify-content:center;flex-shrink:0;padding:0;border-left:none;transition:.2s}
+  .sb-logo:hover{transform:scale(1.08)}
+  .sb-logo img{height:34px;width:34px;display:block;object-fit:contain;border-radius:8px}
+  .sb-brand b{color:#f2f6fa;font-size:14px;letter-spacing:.5px;display:block;line-height:1.4}
+  .sb-brand span{color:#7f95ab;font-size:11.5px;display:block;line-height:1.4}
+  .nav-title{color:#ffb894;font-size:12px;font-weight:800;padding:10px 18px 6px;letter-spacing:1.2px}
+  .sidebar-nav a{
+    display:block;color:#c3d0dc;text-decoration:none;padding:6px 18px;font-size:12.5px;
+    line-height:1.55;border-left:3px solid transparent;transition:.18s;
+  }
+  .sidebar-nav a:hover{color:#fff;background:rgba(255,107,53,.16);border-left-color:var(--brand)}
+  .sidebar-nav a.nav-section{color:#ffb894;font-weight:700;font-size:13px;margin-top:11px;padding-top:10px;border-top:1px solid #26384c}
+  .sidebar-nav a.nav-section:first-of-type{border-top:none;margin-top:0;padding-top:6px}
+  .sidebar-nav a.nav-sub{padding-left:30px;color:#93a8bc;font-size:12px}
+  .sidebar-nav a.nav-sub:hover{color:#fff}
+  .sb-back{margin:16px 14px 0;display:block;text-align:center;padding:9px;border-radius:9px;background:#22344a;color:#a9c0d6 !important;font-size:12px;font-weight:700;border-left:none !important}
+  .sb-back:hover{background:var(--brand) !important;color:#fff !important}
+  .nav-toggle{display:none;position:fixed;top:14px;left:14px;z-index:120;background:var(--brand);color:#fff;border:none;border-radius:9px;padding:9px 13px;font-size:15px;cursor:pointer;box-shadow:0 4px 14px rgba(0,0,0,.25)}
+
+  .page{margin-left:var(--sidebar)}
+
+  .hero{
+    position:relative;overflow:hidden;padding:44px 52px;color:#fff;
+    background:linear-gradient(125deg,#0e1724 0%,#1b2b3f 46%,#8a3a16 132%);
+  }
+  .hero::after{content:"";position:absolute;right:-90px;top:-110px;width:400px;height:400px;border-radius:50%;background:radial-gradient(circle,rgba(245,179,1,.30),transparent 68%)}
+  .hero-top{display:flex;gap:36px;align-items:center;position:relative;z-index:2}
+  .hero-txt{flex:1;min-width:0}
+  .hero .crumb{font-size:11.5px;color:#ffb894;letter-spacing:1.5px;font-weight:700;margin-bottom:14px}
+  .hero h1{font-size:31px;font-weight:800;line-height:1.3;letter-spacing:.6px;margin-bottom:8px}
+  .hero h1 .sub{display:block;font-size:18px;font-weight:700;color:#ffd2b3;margin-top:6px;letter-spacing:.3px}
+  .hero .en{font-size:13px;color:#9db4c8;font-style:italic;margin-bottom:18px}
+  .hero .tags{display:flex;flex-wrap:wrap;gap:8px}
+  .tag{font-size:11.5px;padding:4px 12px;border-radius:20px;background:rgba(255,255,255,.12);border:1px solid rgba(255,255,255,.22);color:#e8f0f6;font-weight:600}
+  .tag.hot{background:rgba(255,107,53,.92);border-color:transparent;color:#fff}
+  .hero-card{flex-shrink:0;width:200px;text-align:center}
+  .hero-card .ava{
+    width:148px;height:148px;border-radius:50%;object-fit:cover;object-position:top center;
+    border:4px solid rgba(255,180,140,.6);box-shadow:0 14px 34px rgba(0,0,0,.45);background:#24344a;
+  }
+  .hero-card .nm{font-size:15px;font-weight:800;color:#fff;margin-top:10px}
+  .hero-card .ti{font-size:11.5px;color:#ffb894;margin-top:2px}
+
+  .container{max-width:1080px;margin:0 auto;padding:38px 52px 70px}
+
+  .lead{
+    font-size:15.5px;line-height:2.05;color:#443c58;background:linear-gradient(120deg,#fff8f3,#f7fbf8);
+    border-left:5px solid var(--brand);border-radius:0 14px 14px 0;padding:22px 26px;margin-bottom:32px;
+  }
+  .lead b{color:var(--brand-dark)}
+
+  .cast{display:flex;gap:16px;align-items:flex-start;border-radius:16px;padding:18px 22px;margin:24px 0}
+  .cast .ava{width:72px;height:72px;border-radius:50%;object-fit:cover;object-position:top center;flex-shrink:0;background:#e8eef5}
+  .cast .bubble{position:relative;font-size:14px;line-height:1.95;padding-top:2px;flex:1}
+  .cast .who{font-size:12px;font-weight:800;margin-bottom:5px;letter-spacing:.5px}
+  .cast.anya{background:var(--brand-soft);border:1px solid #ffdcc9}
+  .cast.anya .who{color:var(--brand-dark)}
+  .cast.anya .bubble{color:#5c4636}
+  .cast.duck{background:#fff5f5;border:1px solid #fbd5d5}
+  .cast.duck .who{color:#b91c1c}
+  .cast.duck .bubble{color:#5c4141}
+  .cast.teacher{background:linear-gradient(120deg,#f4f7fb,#ffffff);border:1px solid #dbe4f0}
+  .cast.teacher .who{color:#1e293b}
+  .cast.teacher .bubble{color:#3c4a5a}
+  .cast.hero{background:#f7f3ff;border:1px solid #ded1fa}
+  .cast.hero .who{color:#6d28d9}
+  .cast.hero .bubble{color:#463d5c}
+
+  .goal-grid{display:grid;grid-template-columns:1fr 1fr;gap:16px;margin-bottom:36px}
+  .goal{border:1px solid var(--line);border-radius:15px;padding:19px 21px;background:#fff;box-shadow:0 4px 16px rgba(31,122,68,.05)}
+  .goal h4{font-size:14px;font-weight:800;margin-bottom:11px;display:flex;align-items:center;gap:8px;color:var(--primary-dark)}
+  .goal h4 .ic{width:22px;height:22px;border-radius:7px;background:var(--primary-lighter);display:flex;align-items:center;justify-content:center;font-size:12px}
+  .goal ul{list-style:none}
+  .goal li{font-size:13.5px;color:#6b6480;line-height:1.9;padding-left:18px;position:relative}
+  .goal li::before{content:"▸";position:absolute;left:0;color:var(--primary);font-weight:800}
+  .goal.syllabus li::before{content:"✓"}
+
+  .section-header{margin:52px 0 24px;padding-bottom:12px;border-bottom:3px solid var(--brand);display:flex;align-items:baseline;gap:14px;flex-wrap:wrap}
+  .section-header h2{font-size:22px;font-weight:800;color:var(--night);letter-spacing:.4px}
+  .section-header .en-title{font-size:12px;color:var(--dim2);font-style:italic}
+  h3{font-size:17.5px;font-weight:800;margin:34px 0 14px;color:var(--night);display:flex;align-items:center;gap:10px}
+  h3::before{content:"";width:5px;height:17px;border-radius:3px;background:var(--brand);flex-shrink:0}
+  h4{font-size:15px;font-weight:800;margin:24px 0 10px;color:#3c2f63}
+  p{margin:12px 0;color:#463d5c;line-height:2}
+  strong{color:var(--primary-dark)}
+  code.inline{background:var(--primary-lighter);color:var(--primary-dark);padding:2px 7px;border-radius:6px;font-family:"SFMono-Regular",Consolas,Menlo,monospace;font-size:.9em;font-weight:600}
+
+  .figure{margin:24px 0;text-align:center}
+  .figure svg.diagram{max-width:100%;height:auto;background:#fff;border:1px solid var(--line);border-radius:14px;padding:10px}
+  .figure .caption{font-size:12.5px;color:var(--dim2);margin-top:9px}
+
+  .pic{margin:26px 0;text-align:center}
+  .pic img{max-width:100%;border-radius:16px;box-shadow:0 10px 28px rgba(30,60,45,.15);display:block;margin:0 auto}
+  .pic figcaption{font-size:12.5px;color:var(--dim2);margin-top:9px}
+  .pic .ph{display:none}
+  .pic.missing img{display:none}
+  .pic.missing .ph{
+    display:flex;flex-direction:column;align-items:center;justify-content:center;gap:9px;
+    border:2px dashed #c9d9e8;border-radius:16px;background:linear-gradient(135deg,#f8fbfe,#eef6ff);
+    padding:40px 26px;color:#7a8fa8;
+  }
+  .pic.missing .ph .fn{font-family:Consolas,monospace;font-size:12.5px;color:#2563eb;font-weight:700;word-break:break-all}
+  .pic.missing .ph .ds{font-size:12.5px;line-height:1.8;max-width:560px}
+
+  .box{border-radius:13px;padding:16px 20px;margin:20px 0;font-size:14px;line-height:1.95}
+  .box .lb{font-weight:800;margin-right:6px}
+  .info{background:#eef6ff;border-left:5px solid #3b82f6;color:#274768}
+  .info .lb{color:#1d4ed8}
+  .tip{background:#fff9ec;border-left:5px solid #f59e0b;color:#6b4e13}
+  .tip .lb{color:#b45309}
+  .remember{background:var(--primary-lighter);border-left:5px solid var(--primary);color:#3a2a6b}
+  .remember .lb{color:var(--primary-dark)}
+  .warn{background:#fef2f2;border-left:5px solid #ef4444;color:#7f2b2b}
+  .warn .lb{color:#b91c1c}
+
+  .code-card{margin:20px 0;border-radius:14px;overflow:hidden;box-shadow:0 10px 28px rgba(20,40,28,.20)}
+  .code-head{display:flex;align-items:center;gap:9px;background:#2c2438;padding:9px 14px}
+  .code-head .dot{width:10px;height:10px;border-radius:50%}
+  .code-head .d1{background:#ff5f57}.code-head .d2{background:#febc2e}.code-head .d3{background:#28c840}
+  .code-head .file{color:#a09ab4;font-size:11.5px;font-family:Consolas,monospace;margin-left:6px}
+  .code-head .lang{margin-left:auto;font-size:10.5px;font-weight:800;color:#150f21;background:#a78bfa;padding:2px 9px;border-radius:6px;letter-spacing:.4px}
+  .code-card pre{background:var(--code-bg);padding:18px 20px;overflow-x:auto;margin:0;font-family:"SFMono-Regular",Consolas,"Courier New",monospace;font-size:13.5px;line-height:1.85}
+  .code-card pre::-webkit-scrollbar{height:8px}
+  .code-card pre::-webkit-scrollbar-thumb{background:#433a5e;border-radius:4px}
+  .code-card code{color:var(--code-tx);white-space:pre}
+  .kw{color:var(--code-kw);font-weight:600}
+  .st{color:var(--code-st)}
+  .nu{color:var(--code-nu)}
+  .cm{color:var(--code-cm);font-style:italic}
+  .fn{color:var(--code-fn)}
+  .out{background:#1d1729;color:#c4b5fd;font-family:Consolas,monospace;font-size:13px;padding:12px 20px;border-top:1px solid #352c48}
+  .out b{color:#c9d6cd;font-weight:600;font-size:11.5px;letter-spacing:1px}
+
+  table.styled{width:100%;border-collapse:collapse;margin:20px 0;font-size:13.5px;border-radius:12px;overflow:hidden;box-shadow:0 4px 16px rgba(31,122,68,.07)}
+  table.styled thead{background:var(--brand)}
+  table.styled th{color:#fff;padding:11px 14px;text-align:left;font-weight:700;font-size:13px}
+  table.styled td{padding:10px 14px;border-bottom:1px solid var(--line);color:#57506b;vertical-align:top}
+  table.styled tbody tr:nth-child(even){background:var(--bg-soft)}
+  table.styled tbody tr:last-child td{border-bottom:none}
+
+  .level-card{border:1px solid var(--line);border-radius:16px;overflow:hidden;margin:22px 0;box-shadow:0 6px 22px rgba(31,122,68,.07)}
+  .level-card .lc-head{background:linear-gradient(100deg,#17283a,#8a3a16);color:#fff;padding:15px 22px;display:flex;align-items:center;gap:12px;flex-wrap:wrap}
+  .level-card .lc-head .n{font-size:12px;font-weight:800;background:rgba(255,255,255,.2);padding:3px 10px;border-radius:20px}
+  .level-card .lc-head h4{margin:0;color:#fff;font-size:16px}
+  .level-card .lc-head .go{margin-left:auto;font-size:11.5px;color:#ffd2b3}
+  .level-card .lc-body{padding:20px 24px;background:#fff}
+  .level-card .story{background:#f9fbfd;border-left:4px solid #93c5fd;border-radius:0 10px 10px 0;padding:13px 18px;margin:0 0 16px;font-size:14px;line-height:1.95;color:#3f5163}
+  .level-card .story b{color:#1d4ed8}
+  .btn-go{
+    display:inline-flex;align-items:center;gap:8px;background:linear-gradient(135deg,var(--brand),var(--brand-dark));
+    color:#fff;text-decoration:none;font-weight:800;font-size:13.5px;padding:10px 22px;border-radius:11px;
+    box-shadow:0 8px 20px rgba(255,107,53,.32);transition:.2s;
+  }
+  .btn-go:hover{transform:translateY(-2px);box-shadow:0 12px 26px rgba(255,107,53,.42)}
+
+  .pit{border:1px solid #f6dede;border-radius:14px;overflow:hidden;margin:16px 0;background:#fff}
+  .pit .pt{display:flex;gap:12px;padding:14px 18px;background:#fffafa;align-items:flex-start}
+  .pit .x{width:26px;height:26px;border-radius:9px;background:#fee;color:#dc2626;display:flex;align-items:center;justify-content:center;font-weight:800;flex-shrink:0;font-size:13px}
+  .pit .t{font-size:13.5px;line-height:1.9;color:#5c4a4a;flex:1}
+  .pit .t b{color:#b91c1c}
+  .pit .duck{display:flex;gap:12px;padding:13px 18px;background:#fff5f5;border-top:1px dashed #f3d0d0;align-items:flex-start}
+  .pit .duck img{width:48px;height:48px;object-fit:contain;flex-shrink:0;margin-top:2px}
+  .pit .duck .dt{font-size:13.5px;line-height:1.9;color:#7a3b3b}
+  .pit .duck .dt b{color:#b91c1c}
+  .pit .fix{padding:12px 18px;background:#f7f3ff;border-top:1px dashed #ded1fa;font-size:13.5px;color:#3a2a6b}
+  .pit .fix b{color:var(--primary-dark)}
+
+  .exam{border:1px solid #dfe7f5;border-radius:15px;margin:16px 0;overflow:hidden;background:#fff;box-shadow:0 4px 16px rgba(38,62,120,.06)}
+  .exam .eh{display:flex;align-items:center;gap:10px;padding:11px 18px;background:linear-gradient(100deg,#eef4ff,#f7faff);border-bottom:1px solid #e3ebf8;flex-wrap:wrap}
+  .exam .eh .src{font-size:11px;font-weight:800;color:#fff;background:#2563eb;padding:2.5px 10px;border-radius:20px}
+  .exam .eh .src.ori{background:#8b5cf6}
+  .exam .eh .tp{font-size:11.5px;color:#5b7ba8;font-weight:700}
+  .exam .eb{padding:16px 20px}
+  .exam .q{font-weight:700;font-size:14px;color:#38304b;line-height:1.9;margin-bottom:10px}
+  .exam .opt{font-size:13.5px;color:#6b6480;line-height:2.05;padding-left:6px}
+  .exam .opt i{font-style:normal;font-weight:800;color:var(--primary-dark);margin-right:7px}
+  .exam pre{margin:12px 0;background:#1b2a21;border-radius:10px;padding:14px 16px;overflow-x:auto;font-family:Consolas,monospace;font-size:13px;line-height:1.8;color:var(--code-tx)}
+  .exam details{margin-top:10px;border-top:1px dashed var(--line);padding-top:10px}
+  .exam summary{cursor:pointer;font-size:12.5px;font-weight:800;color:#2563eb;outline:none;user-select:none}
+  .exam details .ans{font-size:13.5px;color:#463d5c;line-height:1.95;margin-top:9px;background:var(--bg-soft);padding:13px 16px;border-radius:10px}
+  .exam details .ans b{color:var(--primary-dark)}
+  .exam details .ans .tagline{display:inline-block;font-size:11px;background:#e0f2fe;color:#0e7490;padding:1.5px 8px;border-radius:6px;font-weight:700;margin-right:6px}
+
+  .summary{margin:40px 0 20px;border-radius:18px;padding:26px 30px;background:linear-gradient(130deg,#fff8f3,#ffffff);border:1px solid #ffe0cf}
+  .summary h3{margin-top:0}
+  .summary ul{list-style:none;margin-top:10px}
+  .summary li{font-size:14px;line-height:2;color:#514a64;padding-left:24px;position:relative}
+  .summary li::before{content:"◆";position:absolute;left:0;color:var(--brand);font-size:11px;top:6px}
+
+  .pager{display:flex;gap:14px;margin-top:30px;flex-wrap:wrap}
+  .pager a{flex:1;min-width:200px;text-decoration:none;border:1px solid var(--line);border-radius:14px;padding:16px 20px;background:#fff;transition:.2s;display:block}
+  .pager a:hover{border-color:var(--brand);box-shadow:0 10px 26px rgba(255,107,53,.14);transform:translateY(-2px)}
+  .pager a .k{font-size:11px;color:var(--dim2);font-weight:700;letter-spacing:1px}
+  .pager a .v{font-size:14px;font-weight:800;color:var(--night);margin-top:5px}
+  .pager a.back{background:var(--brand-soft);border-color:transparent;text-align:center}
+  .pager a.back .v{color:var(--brand-dark)}
+
+  .cta{margin-top:26px;border-radius:20px;padding:30px 34px;color:#fff;position:relative;overflow:hidden;background:linear-gradient(120deg,#16202f,#2b3a52 46%,#a8431c 132%)}
+  .cta::after{content:"";position:absolute;right:-70px;bottom:-90px;width:280px;height:280px;border-radius:50%;background:radial-gradient(circle,rgba(255,140,80,.45),transparent 68%)}
+  .cta h3{color:#fff;margin:0 0 10px;position:relative;z-index:2}
+  .cta h3::before{background:var(--brand)}
+  .cta p{color:#d8e0ef;font-size:13.5px;margin:0 0 18px;position:relative;z-index:2;max-width:640px}
+  .cta .btn-go{position:relative;z-index:2}
+
+  @media(max-width:900px){
+    .sidebar-nav{transform:translateX(-100%)}
+    .sidebar-nav.active{transform:translateX(0)}
+    .nav-toggle{display:block}
+    .page{margin-left:0}
+    .hero{padding:70px 22px 34px}
+    .hero-top{flex-direction:column-reverse;text-align:center}
+    .hero-card{width:auto}
+    .container{padding:26px 20px 60px}
+    .goal-grid{grid-template-columns:1fr}
+  }
+
+  /* ---------- 图形化：积木卡（替代代码卡） ---------- */
+  .blk-card{background:#f8f6ff;border:1px solid #e6e0fb;border-radius:14px;
+    margin:18px 0;overflow:hidden;box-shadow:0 2px 10px rgba(109,40,217,.06)}
+  .blk-head{display:flex;align-items:center;gap:7px;padding:10px 14px;
+    background:#f1ecfe;border-bottom:1px solid #e6e0fb}
+  .blk-head .file{font-size:12.5px;font-weight:700;color:#5b4a86;margin-left:4px}
+  .blk-head .lang{margin-left:auto;font-size:11px;font-weight:800;color:#fff;
+    background:#8b5cf6;border-radius:20px;padding:3px 11px;letter-spacing:.5px}
+  .blk-body{padding:20px 18px;overflow-x:auto;
+    background:
+      radial-gradient(circle at 14px 14px,#ece6fb 1.6px,transparent 1.7px) 0 0/28px 28px,
+      #ffffff}
+  .blk{display:block;max-width:100%;height:auto;margin:0 auto}
+  .blk + .blk{margin-top:16px}
+  .blk-card .out{background:#f1ecfe;border-top:1px solid #e6e0fb;color:#5b4a86}
+  .blk-card .out b{color:#6d28d9}
+  /* 积木并排（不同角色 / 不同做法对照） */
+  .blk-row{display:flex;gap:16px;flex-wrap:wrap;justify-content:center;align-items:flex-start}
+  .blk-row > *{flex:1 1 240px;min-width:0}
+  .blk-row .blk{margin:0}
+  /* 积木旁的小标题 */
+  .blk-cap{font-size:12.5px;font-weight:800;color:#6d28d9;background:#f3efff;
+    border:1px solid #e6e0fb;border-radius:8px;padding:5px 12px;margin:14px 0 10px;
+    display:inline-block}
+</style>
+</head>
+<body>
+
+<button class="nav-toggle" onclick="document.querySelector('.sidebar-nav').classList.toggle('active')">&#9776;</button>
+
+<nav class="sidebar-nav">
+  <div class="sb-brand">
+    <a class="sb-logo" href="https://codecombat.cn/" target="_blank" rel="noopener" title="访问 CodeCombat 扣哒世界官网">
+      <img src="../assets/logo.png" alt="CodeCombat 扣哒世界">
+    </a>
+    <div><b>谜题锁孔</b><span>魔法绘本馆 · 图形化三级 第 6 单元</span></div>
+  </div>
+  <div class="nav-title">本单元目录</div>
+
+  <a href="#s0" class="nav-section">0　单元导语与目标</a>
+  <a href="#s0-1" class="nav-sub">0.1 学习目标</a>
+  <a href="#s0-2" class="nav-sub">0.2 考纲对照</a>
+  <a href="#s1" class="nav-section">1　条件是一点点拼出来的</a>
+  <a href="#s1-1" class="nav-sub">1.1 简单条件与复合条件</a>
+  <a href="#s1-2" class="nav-sub">1.2 三块逻辑积木的组合</a>
+  <a href="#s2" class="nav-section">2　把中文翻译成条件</a>
+  <a href="#s2-1" class="nav-sub">2.1 圈出"都"和"有一个"</a>
+  <a href="#s2-2" class="nav-sub">2.2 处理那个"不"字</a>
+  <a href="#s2-3" class="nav-sub">2.3 只看条件、不看动作</a>
+  <a href="#s3" class="nav-section">3　复杂判断的两种写法</a>
+  <a href="#s3-1" class="nav-sub">3.1 一条复合条件</a>
+  <a href="#s3-2" class="nav-sub">3.2 嵌套判断</a>
+  <a href="#s3-3" class="nav-sub">3.3 两者怎么选</a>
+  <a href="#s4" class="nav-section">4　逻辑推理题怎么解</a>
+  <a href="#s4-1" class="nav-sub">4.1 列表法与排除法</a>
+  <a href="#s4-2" class="nav-sub">4.2 一步一步推</a>
+  <a href="#s5" class="nav-section">5　代码实战</a>
+  <a href="#s6" class="nav-section">6　常见陷阱</a>
+  <a href="#s7" class="nav-section">7　题目练习</a>
+  <a href="#s8" class="nav-section">8　本单元小结</a>
+
+  <a href="../index.html" target="_top" class="sb-back">返回考纲之路</a>
+</nav>
+
+<div class="page">
+
+<div class="hero">
+  <div class="hero-top">
+    <div class="hero-txt">
+      <div class="crumb">扣哒考级 · GESP 图形化 三级 · 第 6 单元　|　魔法绘本馆 STORYLOOM LIBRARY</div>
+      <h1>谜题锁孔
+        <span class="sub">复杂的逻辑判断</span>
+      </h1>
+      <div class="en">Complex Conditions</div>
+      <div class="tags">        <span class="tag hot">考纲 · 逻辑判断</span>
+        <span class="tag">与或非</span>
+        <span class="tag">逻辑推理</span>
+        <span class="tag">筛选条件</span></div>
+    </div>
+    <div class="hero-card">
+      <img class="ava" src="../assets/avatars/hushbaum.webp" alt="贺舒曼" onerror="this.style.background='#24344a';this.src='../assets/heroes/hushbaum.webp'">
+      <div class="nm">贺舒曼</div>
+      <div class="ti">镜中先知 · 你的向导</div>
+    </div>
+  </div>
+</div>
+
+<div class="container">
+
+
+<div class="lead">
+  绘本馆最深处的门上，密密麻麻挂着一排锁孔。每个锁孔旁边刻着一行小字：
+  "<b>须持证</b>""<b>年满十二</b>""<b>非红籍</b>"……<br>
+  你从口袋里摸出一把钥匙，插进第一个孔——没开；插进第二个——动了。<br>
+  门后传来书签的声音："<b>条件得全对上，光对一半不行。</b>"
+</div>
+
+<div class="cast anya">
+  <img class="ava" src="../assets/avatars/hushbaum.webp" alt="贺舒曼" onerror="this.style.display='none'">
+  <div class="bubble">
+    <div class="who">贺舒曼 · 镜中先知</div>
+    这一单元的题看着绕，其实只有一道工序：<b>翻译</b>。<br>
+    中文里的"并且"换成"与"，"或者"换成"或"，"不"用"不成立"包起来。
+    再加上一条铁律——<b>动作不能当条件</b>。
+  </div>
+</div>
+
+<!-- ============ 0 ============ -->
+<div class="section-header" id="s0">
+  <h2>0　单元导语与目标</h2>
+  <div class="en-title">Before We Start</div>
+</div>
+
+<h3 id="s0-1">0.1 学习目标</h3>
+
+<ul>
+  <li>会用<b>与、或、不成立</b>把简单条件拼成复合条件；</li>
+  <li>能把中文描述里的逻辑关系（"都""有一个""不"）翻译成积木；</li>
+  <li>会写"一条复合条件"和"嵌套判断"两种写法，并知道怎么选；</li>
+  <li>掌握逻辑推理题的<b>列表法与排除法</b>；</li>
+  <li>能对复杂问题写出正确的筛选条件。</li>
+</ul>
+<h3 id="s0-2">0.2 考纲对照</h3>
+
+<table class="styled">
+  <thead><tr><th>考纲知识块</th><th>考纲要求</th><th>本单元小节</th></tr></thead>
+  <tbody><tr><td>6 复杂的逻辑判断</td><td>算术运算、关系运算、逻辑运算的综合应用；对复杂逻辑的推理、分析、梳理，解决综合问题</td><td>1.1～1.2、2.1～2.3、3.1～3.3</td></tr><tr><td>（知识点详述第 6 条）</td><td>熟练掌握图形化编程中的逻辑推理能力，可以针对复杂问题写出对应的筛选条件</td><td>4.1～4.2</td></tr></tbody>
+</table>
+
+<p>这是三级里"最像智力题"的一块。'
+'它不考新积木，只考一件事：<b>你能不能把一句绕口的中文，写成一个精确的条件。</b></p>
+
+<!-- ============ 1 ============ -->
+<div class="section-header" id="s1">
+  <h2>1　条件是一点点拼出来的</h2>
+  <div class="en-title">Building Conditions</div>
+</div>
+
+<h3 id="s1-1">1.1 简单条件与复合条件</h3>
+
+<p>锁孔门上刻着一行字：<b>"带钥匙的、且年满 12 岁的读者，可以进。"</b>'
+'门上有两个锁孔——两个都得开。</p>
+<figure class="pic">
+  <img src="../assets/illustrations/scratch-L3-06-01_puzzle_keyhole.webp" alt="谜题锁孔"
+       onerror="this.closest('.pic').classList.add('missing')">
+  <div class="ph">
+    <div class="fn">assets/illustrations/scratch-L3-06-01_puzzle_keyhole.webp</div>
+    <div class="ds">【配图位】一扇布满多个锁孔的门，每个锁孔旁刻着一个条件符文，只有同时满足若干条件的那把钥匙才能开门。（提示词见《GESP配图清单与AI绘图提示词》第四节 3-6）</div>
+  </div>
+  <figcaption>图 1：挂满锁孔的门——每个锁孔都是一个条件</figcaption>
+</figure>
+
+<figure class="figure">
+<svg class="diagram" viewBox="0 0 820 210" role="img" aria-label="简单条件 vs 复合条件">
+<text x="24" y="32" font-size="14" fill="#4c1d95" text-anchor="start" font-weight="bold">简单条件 vs 复合条件</text><rect x="24" y="52" width="376" height="130" rx="12" fill="#f5f3ff" stroke="#e6e0fb" stroke-width="1.8"/><text x="212" y="82" font-size="13.5" fill="#6d28d9" text-anchor="middle" font-weight="bold">简单条件</text><circle cx="40" cy="106" r="3.4" fill="#6d28d9"/><text x="52" y="110" font-size="12.2" fill="#4c1d95" text-anchor="start">只比一次：x &gt; 10、碰到边缘？</text><circle cx="40" cy="136" r="3.4" fill="#6d28d9"/><text x="52" y="140" font-size="12.2" fill="#4c1d95" text-anchor="start">六边形，直接插进判断槽</text><rect x="420" y="52" width="376" height="130" rx="12" fill="#fff7ed" stroke="#e6e0fb" stroke-width="1.8"/><text x="608" y="82" font-size="13.5" fill="#b45309" text-anchor="middle" font-weight="bold">复合条件</text><circle cx="436" cy="106" r="3.4" fill="#b45309"/><text x="448" y="110" font-size="12.2" fill="#4c1d95" text-anchor="start">用与 / 或 / 不成立把几个简单条件连起来</text><circle cx="436" cy="136" r="3.4" fill="#b45309"/><text x="448" y="140" font-size="12.2" fill="#4c1d95" text-anchor="start">还是一个六边形，但里面套了别的条件</text><text x="24" y="196" font-size="11.8" fill="#8d9d94" text-anchor="start">复合条件并不神秘：外形一样，只是里面多套了几层</text>
+</svg>
+  <div class="caption">图 2（SVG）：简单条件与复合条件</div>
+</figure>
+
+<h3 id="s1-2">1.2 三块逻辑积木的组合</h3>
+
+<figure class="figure">
+<svg class="diagram" viewBox="0 0 820 168" role="img" aria-label="三块逻辑积木能拼出什么">
+<text x="24" y="32" font-size="14" fill="#4c1d95" text-anchor="start" font-weight="bold">三块逻辑积木能拼出什么</text><rect x="24" y="56" width="772" height="28" rx="8" fill="#f3efff"/><text x="40" y="75" font-size="12.6" fill="#6d28d9" text-anchor="start" font-weight="bold">A <b>与</b> B</text><text x="192" y="75" font-size="12.2" fill="#4c1d95" text-anchor="start">两个都要成立（比如"带钥匙"并且"年满 12 岁"）</text><rect x="24" y="90" width="772" height="28" rx="8" fill="#faf8ff"/><text x="40" y="109" font-size="12.6" fill="#6d28d9" text-anchor="start" font-weight="bold">A <b>或</b> B</text><text x="192" y="109" font-size="12.2" fill="#4c1d95" text-anchor="start">有一个成立就行（比如"带钥匙"或者"家长陪同"）</text><rect x="24" y="124" width="772" height="28" rx="8" fill="#f3efff"/><text x="40" y="143" font-size="12.6" fill="#6d28d9" text-anchor="start" font-weight="bold"><b>不成立</b> A</text><text x="192" y="143" font-size="12.2" fill="#4c1d95" text-anchor="start">把 A 反过来（比如"不是红色的"）</text>
+</svg>
+  <div class="caption">图 3（SVG）：三块逻辑积木</div>
+</figure>
+
+<div class="blk-card">
+  <div class="blk-head">
+    <span class="dot d1"></span><span class="dot d2"></span><span class="dot d3"></span>
+    <span class="file">重点示例：两个锁孔都要开</span>
+    <span class="lang">图形化积木</span>
+  </div>
+  <div class="blk-body">
+<svg class="blk" viewBox="0 0 400.6 126" width="400.6" height="126" role="img" aria-label="积木脚本"><g font-family="'PingFang SC','Microsoft YaHei','Noto Sans SC',sans-serif"><g transform="translate(3,3)"><path d="M0,5 A5,5 0 0 1 5,0 H16 v4 h12 v-4 H389 A5,5 0 0 1 394,5 V31 A5,5 0 0 1 389,36 H28 v4 h-12 v-4 H5 A5,5 0 0 1 0,31 Z" fill="#59C059" stroke="#489d48" stroke-width="1.2"/><polygon points="26.5,6.5 154.7,6.5 161.025,18 154.7,29.5 26.5,29.5 20.175,18" fill="#fff" stroke="#59C059" stroke-width="1.4"/><rect x="26" y="6.5" width="62.2" height="23" rx="11.5" fill="#fff" stroke="#cfd6e4" stroke-width="1"/><text x="57.1" y="22.4" font-size="12.5" fill="#575e75" text-anchor="middle">有钥匙</text><text x="95.2" y="22.8" font-size="13.4" fill="#575e75"> = </text><rect x="123.8" y="6.5" width="31.4" height="23" rx="5" fill="#fff" stroke="#cfd6e4" stroke-width="1"/><text x="139.5" y="22.4" font-size="12.5" fill="#575e75" text-anchor="middle">是</text><text x="173.2" y="22.8" font-size="13.4" fill="#fff"> 且 </text><polygon points="219.5,6.5 368.1,6.5 374.425,18 368.1,29.5 219.5,29.5 213.175,18" fill="#fff" stroke="#59C059" stroke-width="1.4"/><rect x="219" y="6.5" width="48.8" height="23" rx="11.5" fill="#fff" stroke="#cfd6e4" stroke-width="1"/><text x="243.4" y="22.4" font-size="12.5" fill="#575e75" text-anchor="middle">年龄</text><text x="274.8" y="22.8" font-size="13.4" fill="#575e75"> &amp;gt;= </text><rect x="332.2" y="6.5" width="36.4" height="23" rx="11.5" fill="#fff" stroke="#cfd6e4" stroke-width="1"/><text x="350.4" y="22.4" font-size="12.5" fill="#575e75" text-anchor="middle">12</text></g><g transform="translate(3,43)"><path d="M0,5 A5,5 0 0 1 5,0 H16 v4 h12 v-4 H382 A5,5 0 0 1 387,5 V31 A5,5 0 0 1 382,36 H28 v4 h-12 v-4 H5 A5,5 0 0 1 0,31 Z" fill="#59C059" stroke="#489d48" stroke-width="1.2"/><polygon points="26.5,6.5 154.7,6.5 161.025,18 154.7,29.5 26.5,29.5 20.175,18" fill="#fff" stroke="#59C059" stroke-width="1.4"/><rect x="26" y="6.5" width="62.2" height="23" rx="11.5" fill="#fff" stroke="#cfd6e4" stroke-width="1"/><text x="57.1" y="22.4" font-size="12.5" fill="#575e75" text-anchor="middle">有钥匙</text><text x="95.2" y="22.8" font-size="13.4" fill="#575e75"> = </text><rect x="123.8" y="6.5" width="31.4" height="23" rx="5" fill="#fff" stroke="#cfd6e4" stroke-width="1"/><text x="139.5" y="22.4" font-size="12.5" fill="#575e75" text-anchor="middle">是</text><text x="173.2" y="22.8" font-size="13.4" fill="#fff"> 或 </text><polygon points="219.5,6.5 361.1,6.5 367.425,18 361.1,29.5 219.5,29.5 213.175,18" fill="#fff" stroke="#59C059" stroke-width="1.4"/><rect x="219" y="6.5" width="75.6" height="23" rx="11.5" fill="#fff" stroke="#cfd6e4" stroke-width="1"/><text x="256.8" y="22.4" font-size="12.5" fill="#575e75" text-anchor="middle">家长陪同</text><text x="301.6" y="22.8" font-size="13.4" fill="#575e75"> = </text><rect x="330.2" y="6.5" width="31.4" height="23" rx="5" fill="#fff" stroke="#cfd6e4" stroke-width="1"/><text x="345.9" y="22.4" font-size="12.5" fill="#575e75" text-anchor="middle">是</text></g><g transform="translate(3,83)"><path d="M0,5 A5,5 0 0 1 5,0 H16 v4 h12 v-4 H217 A5,5 0 0 1 222,5 V31 A5,5 0 0 1 217,36 H28 v4 h-12 v-4 H5 A5,5 0 0 1 0,31 Z" fill="#59C059" stroke="#489d48" stroke-width="1.2"/><text x="15" y="22.8" font-size="13.4" fill="#fff">不成立 </text><polygon points="80.9,6.5 195.7,6.5 202.025,18 195.7,29.5 80.9,29.5 74.575,18" fill="#fff" stroke="#59C059" stroke-width="1.4"/><rect x="80.4" y="6.5" width="48.8" height="23" rx="11.5" fill="#fff" stroke="#cfd6e4" stroke-width="1"/><text x="104.8" y="22.4" font-size="12.5" fill="#575e75" text-anchor="middle">颜色</text><text x="136.2" y="22.8" font-size="13.4" fill="#575e75"> = </text><rect x="164.8" y="6.5" width="31.4" height="23" rx="5" fill="#fff" stroke="#cfd6e4" stroke-width="1"/><text x="180.5" y="22.4" font-size="12.5" fill="#575e75" text-anchor="middle">红</text></g></g></svg>
+  </div>
+  <div class="out"><b>要点</b>　三块逻辑积木<b>都是六边形</b>，可以互相嵌套，把简单条件一层层拼起来</div>
+</div>
+
+<!-- ============ 2 ============ -->
+<div class="section-header" id="s2">
+  <h2>2　把中文翻译成条件</h2>
+  <div class="en-title">Translating Chinese into Conditions</div>
+</div>
+
+<h3 id="s2-1">2.1 圈出"都"和"有一个"</h3>
+
+<figure class="figure">
+<svg class="diagram" viewBox="0 0 820 168" role="img" aria-label="中文里的关键词">
+<text x="24" y="32" font-size="14" fill="#4c1d95" text-anchor="start" font-weight="bold">中文里的关键词</text><rect x="24" y="56" width="772" height="28" rx="8" fill="#f3efff"/><text x="40" y="75" font-size="12.6" fill="#6d28d9" text-anchor="start" font-weight="bold">并且、而且、同时、都、既……又……</text><text x="192" y="75" font-size="12.2" fill="#4c1d95" text-anchor="start">→ 用<b>与</b></text><rect x="24" y="90" width="772" height="28" rx="8" fill="#faf8ff"/><text x="40" y="109" font-size="12.6" fill="#6d28d9" text-anchor="start" font-weight="bold">或者、要么……要么……、有一个</text><text x="192" y="109" font-size="12.2" fill="#4c1d95" text-anchor="start">→ 用<b>或</b></text><rect x="24" y="124" width="772" height="28" rx="8" fill="#f3efff"/><text x="40" y="143" font-size="12.6" fill="#6d28d9" text-anchor="start" font-weight="bold">不、不是、没有、除非（反着说）</text><text x="192" y="143" font-size="12.2" fill="#4c1d95" text-anchor="start">→ 用<b>不成立</b>包起来</text>
+</svg>
+  <div class="caption">图 4（SVG）：中文关键词对照表</div>
+</figure>
+
+<div class="box tip">
+  <span class="lb">打个比方：</span>做这类题像做翻译——<b>先把中文里的"连接词"圈出来，它决定了用"与"还是"或"。</b><br>圈对了连接词，剩下就是照抄成积木。
+</div>
+
+
+<h3 id="s2-2">2.2 处理那个"不"字</h3>
+
+<figure class="pic">
+  <img src="../assets/illustrations/scratch-L3-06-02_condition_web.webp" alt="条件网络"
+       onerror="this.closest('.pic').classList.add('missing')">
+  <div class="ph">
+    <div class="fn">assets/illustrations/scratch-L3-06-02_condition_web.webp</div>
+    <div class="ds">【配图位】发光的条件网络图——若同时满足 A 与 B、或满足 C 而不满足 D，则通往下一间书房，路径以光带连接。（提示词见《GESP配图清单与AI绘图提示词》第四节 3-6）</div>
+  </div>
+  <figcaption>图 5：条件像一张网，只有走对路线才能进门</figcaption>
+</figure>
+
+<figure class="figure">
+<svg class="diagram" viewBox="0 0 820 240" role="img" aria-label=""不"字放哪儿">
+<text x="24" y="32" font-size="14" fill="#4c1d95" text-anchor="start" font-weight="bold">"不"字放哪儿</text><rect x="24" y="52" width="376" height="160" rx="12" fill="#f5f3ff" stroke="#e6e0fb" stroke-width="1.8"/><text x="212" y="82" font-size="13.5" fill="#6d28d9" text-anchor="middle" font-weight="bold">正确</text><circle cx="40" cy="106" r="3.4" fill="#6d28d9"/><text x="52" y="110" font-size="12.2" fill="#4c1d95" text-anchor="start">先把被否定的部分原样写出来</text><circle cx="40" cy="136" r="3.4" fill="#6d28d9"/><text x="52" y="140" font-size="12.2" fill="#4c1d95" text-anchor="start">再用"不成立"把整块包住</text><circle cx="40" cy="166" r="3.4" fill="#6d28d9"/><text x="52" y="170" font-size="12.2" fill="#4c1d95" text-anchor="start">例：不成立 {颜色 = 红}</text><rect x="420" y="52" width="376" height="160" rx="12" fill="#fff7ed" stroke="#e6e0fb" stroke-width="1.8"/><text x="608" y="82" font-size="13.5" fill="#b45309" text-anchor="middle" font-weight="bold">错误</text><circle cx="436" cy="106" r="3.4" fill="#b45309"/><text x="448" y="110" font-size="12.2" fill="#4c1d95" text-anchor="start">把"不"塞进某个参数里（写成"颜色 = 不红"）</text><circle cx="436" cy="136" r="3.4" fill="#b45309"/><text x="448" y="140" font-size="12.2" fill="#4c1d95" text-anchor="start">"不红"不是一个合法的比较</text><text x="24" y="226" font-size="11.8" fill="#8d9d94" text-anchor="start">口诀：先写它"是什么"，再把整块翻过来</text>
+</svg>
+  <div class="caption">图 6（SVG）："不"字怎么处理</div>
+</figure>
+
+<h3 id="s2-3">2.3 只看条件、不看动作</h3>
+
+<div class="box info">
+  <span class="lb">做题的一个诀窍：</span>题目给的积木里常常混着<b>动作</b>（"移动 10 步"、"说你好"）。这些<b>不能当条件</b>——六边形的槽只收六边形。<br><strong>先把动作全部划掉，剩下的才可能是答案。</strong>
+</div>
+
+<!-- ============ 3 ============ -->
+<div class="section-header" id="s3">
+  <h2>3　复杂判断的两种写法</h2>
+  <div class="en-title">Two Ways to Judge</div>
+</div>
+
+<h3 id="s3-1">3.1 一条复合条件</h3>
+
+<div class="blk-card">
+  <div class="blk-head">
+    <span class="dot d1"></span><span class="dot d2"></span><span class="dot d3"></span>
+    <span class="file">重点示例：把两个要求写进一条条件</span>
+    <span class="lang">图形化积木</span>
+  </div>
+  <div class="blk-body">
+<svg class="blk" viewBox="0 0 477.6 100" width="477.6" height="100" role="img" aria-label="积木脚本"><g font-family="'PingFang SC','Microsoft YaHei','Noto Sans SC',sans-serif"><g transform="translate(3,3)"><path d="M0,5 A5,5 0 0 1 5,0 H16 v4 h12 v-4 H466 A5,5 0 0 1 471,5 V85 A5,5 0 0 1 466,90 H28 v4 h-12 v-4 H5 A5,5 0 0 1 0,85 V77 H16 V36 H0 Z" fill="#FFAB19" stroke="#d18c14" stroke-width="1.2"/><text x="15" y="22.8" font-size="13.4" fill="#fff">如果 </text><polygon points="67.5,6.5 404.1,6.5 410.425,18 404.1,29.5 67.5,29.5 61.175,18" fill="#fff" stroke="#FFAB19" stroke-width="1.4"/><polygon points="78.5,6.5 213.5,6.5 219.825,18 213.5,29.5 78.5,29.5 72.175,18" fill="#fff" stroke="#FFAB19" stroke-width="1.4"/><rect x="78" y="6.5" width="48.8" height="23" rx="11.5" fill="#fff" stroke="#cfd6e4" stroke-width="1"/><text x="102.4" y="22.4" font-size="12.5" fill="#575e75" text-anchor="middle">数量</text><text x="133.8" y="22.8" font-size="13.4" fill="#575e75"> &amp;gt; </text><rect x="184" y="6.5" width="30" height="23" rx="11.5" fill="#fff" stroke="#cfd6e4" stroke-width="1"/><text x="199" y="22.4" font-size="12.5" fill="#575e75" text-anchor="middle">0</text><text x="232" y="22.8" font-size="13.4" fill="#575e75"> 且 </text><polygon points="278.3,6.5 393.1,6.5 399.425,18 393.1,29.5 278.3,29.5 271.975,18" fill="#fff" stroke="#FFAB19" stroke-width="1.4"/><rect x="277.8" y="6.5" width="48.8" height="23" rx="11.5" fill="#fff" stroke="#cfd6e4" stroke-width="1"/><text x="302.2" y="22.4" font-size="12.5" fill="#575e75" text-anchor="middle">颜色</text><text x="333.6" y="22.8" font-size="13.4" fill="#575e75"> = </text><rect x="362.2" y="6.5" width="31.4" height="23" rx="5" fill="#fff" stroke="#cfd6e4" stroke-width="1"/><text x="377.9" y="22.4" font-size="12.5" fill="#575e75" text-anchor="middle">金</text><text x="422.6" y="22.8" font-size="13.4" fill="#fff"> 那么</text><g transform="translate(20,38)"><path d="M0,5 A5,5 0 0 1 5,0 H16 v4 h12 v-4 H189 A5,5 0 0 1 194,5 V31 A5,5 0 0 1 189,36 H28 v4 h-12 v-4 H5 A5,5 0 0 1 0,31 Z" fill="#9966FF" stroke="#7d53d1" stroke-width="1.2"/><text x="15" y="22.8" font-size="13.4" fill="#fff">说 </text><rect x="42.6" y="6.5" width="58.2" height="23" rx="5" fill="#fff"/><text x="71.7" y="22.4" font-size="12.5" fill="#575e75" text-anchor="middle">可以拿</text><text x="107.8" y="22.8" font-size="13.4" fill="#fff"> </text><rect x="122" y="6.5" width="30" height="23" rx="11.5" fill="#fff"/><text x="137" y="22.4" font-size="12.5" fill="#575e75" text-anchor="middle">1</text><text x="159" y="22.8" font-size="13.4" fill="#fff"> 秒</text></g></g></g></svg>
+  </div>
+  <div class="out"><b>要点</b>　一个判断块、一条复合条件就搞定，脚本最简洁</div>
+</div>
+
+<h3 id="s3-2">3.2 嵌套判断</h3>
+
+<div class="blk-card">
+  <div class="blk-head">
+    <span class="dot d1"></span><span class="dot d2"></span><span class="dot d3"></span>
+    <span class="file">重点示例：分成两层判断</span>
+    <span class="lang">图形化积木</span>
+  </div>
+  <div class="blk-body">
+<svg class="blk" viewBox="0 0 281.8 262" width="281.8" height="262" role="img" aria-label="积木脚本"><g font-family="'PingFang SC','Microsoft YaHei','Noto Sans SC',sans-serif"><g transform="translate(3,3)"><path d="M0,5 A5,5 0 0 1 5,0 H16 v4 h12 v-4 H270 A5,5 0 0 1 275,5 V234 A5,5 0 0 1 270,239 H28 v4 h-12 v-4 H5 A5,5 0 0 1 0,234 V198 H16 V185 H0 Z" fill="#FFAB19" stroke="#d18c14" stroke-width="1.2"/><text x="15" y="22.8" font-size="13.4" fill="#fff">如果 </text><polygon points="67.5,6.5 202.5,6.5 208.825,18 202.5,29.5 67.5,29.5 61.175,18" fill="#fff" stroke="#FFAB19" stroke-width="1.4"/><rect x="67" y="6.5" width="48.8" height="23" rx="11.5" fill="#fff" stroke="#cfd6e4" stroke-width="1"/><text x="91.4" y="22.4" font-size="12.5" fill="#575e75" text-anchor="middle">数量</text><text x="122.8" y="22.8" font-size="13.4" fill="#575e75"> &amp;gt; </text><rect x="173" y="6.5" width="30" height="23" rx="11.5" fill="#fff" stroke="#cfd6e4" stroke-width="1"/><text x="188" y="22.4" font-size="12.5" fill="#575e75" text-anchor="middle">0</text><text x="221" y="22.8" font-size="13.4" fill="#fff"> 那么</text><g transform="translate(20,38)"><path d="M0,5 A5,5 0 0 1 5,0 H16 v4 h12 v-4 H244 A5,5 0 0 1 249,5 V126 A5,5 0 0 1 244,131 H28 v4 h-12 v-4 H5 A5,5 0 0 1 0,126 V90 H16 V77 H0 Z" fill="#FFAB19" stroke="#d18c14" stroke-width="1.2"/><text x="15" y="22.8" font-size="13.4" fill="#fff">如果 </text><polygon points="67.5,6.5 182.3,6.5 188.625,18 182.3,29.5 67.5,29.5 61.175,18" fill="#fff" stroke="#FFAB19" stroke-width="1.4"/><rect x="67" y="6.5" width="48.8" height="23" rx="11.5" fill="#fff" stroke="#cfd6e4" stroke-width="1"/><text x="91.4" y="22.4" font-size="12.5" fill="#575e75" text-anchor="middle">颜色</text><text x="122.8" y="22.8" font-size="13.4" fill="#575e75"> = </text><rect x="151.4" y="6.5" width="31.4" height="23" rx="5" fill="#fff" stroke="#cfd6e4" stroke-width="1"/><text x="167.1" y="22.4" font-size="12.5" fill="#575e75" text-anchor="middle">金</text><text x="200.8" y="22.8" font-size="13.4" fill="#fff"> 那么</text><g transform="translate(20,38)"><path d="M0,5 A5,5 0 0 1 5,0 H16 v4 h12 v-4 H189 A5,5 0 0 1 194,5 V31 A5,5 0 0 1 189,36 H28 v4 h-12 v-4 H5 A5,5 0 0 1 0,31 Z" fill="#9966FF" stroke="#7d53d1" stroke-width="1.2"/><text x="15" y="22.8" font-size="13.4" fill="#fff">说 </text><rect x="42.6" y="6.5" width="58.2" height="23" rx="5" fill="#fff"/><text x="71.7" y="22.4" font-size="12.5" fill="#575e75" text-anchor="middle">可以拿</text><text x="107.8" y="22.8" font-size="13.4" fill="#fff"> </text><rect x="122" y="6.5" width="30" height="23" rx="11.5" fill="#fff"/><text x="137" y="22.4" font-size="12.5" fill="#575e75" text-anchor="middle">1</text><text x="159" y="22.8" font-size="13.4" fill="#fff"> 秒</text></g><g transform="translate(20,92)"><path d="M0,5 A5,5 0 0 1 5,0 H16 v4 h12 v-4 H203 A5,5 0 0 1 208,5 V31 A5,5 0 0 1 203,36 H28 v4 h-12 v-4 H5 A5,5 0 0 1 0,31 Z" fill="#9966FF" stroke="#7d53d1" stroke-width="1.2"/><text x="15" y="22.8" font-size="13.4" fill="#fff">说 </text><rect x="42.6" y="6.5" width="71.6" height="23" rx="5" fill="#fff"/><text x="78.4" y="22.4" font-size="12.5" fill="#575e75" text-anchor="middle">颜色不对</text><text x="121.2" y="22.8" font-size="13.4" fill="#fff"> </text><rect x="135.4" y="6.5" width="30" height="23" rx="11.5" fill="#fff"/><text x="150.4" y="22.4" font-size="12.5" fill="#575e75" text-anchor="middle">1</text><text x="172.4" y="22.8" font-size="13.4" fill="#fff"> 秒</text></g></g><g transform="translate(20,200)"><path d="M0,5 A5,5 0 0 1 5,0 H16 v4 h12 v-4 H203 A5,5 0 0 1 208,5 V31 A5,5 0 0 1 203,36 H28 v4 h-12 v-4 H5 A5,5 0 0 1 0,31 Z" fill="#9966FF" stroke="#7d53d1" stroke-width="1.2"/><text x="15" y="22.8" font-size="13.4" fill="#fff">说 </text><rect x="42.6" y="6.5" width="71.6" height="23" rx="5" fill="#fff"/><text x="78.4" y="22.4" font-size="12.5" fill="#575e75" text-anchor="middle">没有库存</text><text x="121.2" y="22.8" font-size="13.4" fill="#fff"> </text><rect x="135.4" y="6.5" width="30" height="23" rx="11.5" fill="#fff"/><text x="150.4" y="22.4" font-size="12.5" fill="#575e75" text-anchor="middle">1</text><text x="172.4" y="22.8" font-size="13.4" fill="#fff"> 秒</text></g></g></g></svg>
+  </div>
+  <div class="out"><b>要点</b>　外层判断"数量够不够"，内层判断"颜色对不对"——<b>每一种"不满足"都能给出不同的回应</b></div>
+</div>
+
+<h3 id="s3-3">3.3 两者怎么选</h3>
+
+<figure class="figure">
+<svg class="diagram" viewBox="0 0 820 240" role="img" aria-label="复合条件 vs 嵌套判断">
+<text x="24" y="32" font-size="14" fill="#4c1d95" text-anchor="start" font-weight="bold">复合条件 vs 嵌套判断</text><rect x="24" y="52" width="376" height="160" rx="12" fill="#f5f3ff" stroke="#e6e0fb" stroke-width="1.8"/><text x="212" y="82" font-size="13.5" fill="#6d28d9" text-anchor="middle" font-weight="bold">用一条复合条件（与 / 或）</text><circle cx="40" cy="106" r="3.4" fill="#6d28d9"/><text x="52" y="110" font-size="12.2" fill="#4c1d95" text-anchor="start">只需要"满足/不满足"一种结果</text><circle cx="40" cy="136" r="3.4" fill="#6d28d9"/><text x="52" y="140" font-size="12.2" fill="#4c1d95" text-anchor="start">脚本短、层次浅</text><circle cx="40" cy="166" r="3.4" fill="#6d28d9"/><text x="52" y="170" font-size="12.2" fill="#4c1d95" text-anchor="start">推荐优先使用</text><rect x="420" y="52" width="376" height="160" rx="12" fill="#fff7ed" stroke="#e6e0fb" stroke-width="1.8"/><text x="608" y="82" font-size="13.5" fill="#b45309" text-anchor="middle" font-weight="bold">用嵌套判断</text><circle cx="436" cy="106" r="3.4" fill="#b45309"/><text x="448" y="110" font-size="12.2" fill="#4c1d95" text-anchor="start">每一种"不满足"都要说不同的话</text><circle cx="436" cy="136" r="3.4" fill="#b45309"/><text x="448" y="140" font-size="12.2" fill="#4c1d95" text-anchor="start">或者要先处理一层、再处理下一层</text><circle cx="436" cy="166" r="3.4" fill="#b45309"/><text x="448" y="170" font-size="12.2" fill="#4c1d95" text-anchor="start">层次深，但表达力更强</text><text x="24" y="226" font-size="11.8" fill="#8d9d94" text-anchor="start">两者能做的事有重叠；简单场景优先用复合条件</text>
+</svg>
+  <div class="caption">图 7（SVG）：两种写法怎么选</div>
+</figure>
+
+<div class="box info">
+  <span class="lb">一个实用原则：</span><b>"都要满足"优先用"与"</b>——一条条件写完，不用缩进两层。<br>只有当"每种失败情况要分别处理"时，才拆成嵌套判断。
+</div>
+
+<!-- ============ 4 ============ -->
+<div class="section-header" id="s4">
+  <h2>4　逻辑推理题怎么解</h2>
+  <div class="en-title">Solving Logic Puzzles</div>
+</div>
+
+<h3 id="s4-1">4.1 列表法与排除法</h3>
+
+<figure class="figure">
+<svg class="diagram" viewBox="0 0 820 158" role="img" aria-label="逻辑推理题的通用三步">
+<text x="24" y="32" font-size="14" fill="#4c1d95" text-anchor="start" font-weight="bold">逻辑推理题的通用三步</text><rect x="24" y="56" width="240" height="68" rx="10" fill="#f3efff" stroke="#e6e0fb" stroke-width="1.8"/><text x="144" y="95" font-size="12.4" fill="#6d28d9" text-anchor="middle" font-weight="bold">把所有可能的情况列成一张表</text><line x1="269" y1="90" x2="281" y2="90" stroke="#8b5cf6" stroke-width="2.2"/><polygon points="281,90 273,85 273,95" fill="#8b5cf6"/><rect x="290" y="56" width="240" height="68" rx="10" fill="#f3efff" stroke="#e6e0fb" stroke-width="1.8"/><text x="410" y="95" font-size="12.4" fill="#6d28d9" text-anchor="middle" font-weight="bold">逐条读条件，把不可能的划掉</text><line x1="535" y1="90" x2="547" y2="90" stroke="#8b5cf6" stroke-width="2.2"/><polygon points="547,90 539,85 539,95" fill="#8b5cf6"/><rect x="556" y="56" width="240" height="68" rx="10" fill="#f3efff" stroke="#e6e0fb" stroke-width="1.8"/><text x="676" y="95" font-size="12.4" fill="#6d28d9" text-anchor="middle" font-weight="bold">剩下的就是答案</text><text x="24" y="150" font-size="11.8" fill="#8d9d94" text-anchor="start">图形化三级的选择题（比如"谁拿了哪本书"）几乎都能这样解</text>
+</svg>
+  <div class="caption">图 8（SVG）：列表法与排除法</div>
+</figure>
+
+<h3 id="s4-2">4.2 一步一步推</h3>
+
+<figure class="figure">
+<svg class="diagram" viewBox="0 0 820 194" role="img" aria-label="三个常用技巧">
+<text x="24" y="32" font-size="14" fill="#4c1d95" text-anchor="start" font-weight="bold">三个常用技巧</text><rect x="24" y="56" width="246.667" height="104" rx="12" fill="#f3efff" stroke="#e6e0fb" stroke-width="1.8"/><text x="147.333" y="104" font-size="13.5" fill="#6d28d9" text-anchor="middle" font-weight="bold">画表格</text><text x="147.333" y="126" font-size="11.6" fill="#7c7794" text-anchor="middle">横行一个人、竖列一个物，交叉格打勾或打叉</text><rect x="286.667" y="56" width="246.667" height="104" rx="12" fill="#faf8ff" stroke="#e6e0fb" stroke-width="1.8"/><text x="410" y="104" font-size="13.5" fill="#6d28d9" text-anchor="middle" font-weight="bold">先找确定项</text><text x="410" y="126" font-size="11.6" fill="#7c7794" text-anchor="middle">有"某人和某物一定不在一起"就先划掉</text><rect x="549.333" y="56" width="246.667" height="104" rx="12" fill="#f3efff" stroke="#e6e0fb" stroke-width="1.8"/><text x="672.667" y="104" font-size="13.5" fill="#6d28d9" text-anchor="middle" font-weight="bold">用到只剩一个</text><text x="672.667" y="126" font-size="11.6" fill="#7c7794" text-anchor="middle">某一行只剩一格没划掉，那它就是答案</text><text x="24" y="186" font-size="11.8" fill="#8d9d94" text-anchor="start">推理题不要凭感觉猜——把表画出来，答案自己会浮上来</text>
+</svg>
+  <div class="caption">图 9（SVG）：推理三技巧</div>
+</figure>
+
+<div class="box tip">
+  <span class="lb">打个比方：</span>推理就像拧魔方——<b>每确定一个位置，剩下的可能性就少一些</b>，一直拧到只剩一种可能。
+</div>
+
+<!-- ============ 5 ============ -->
+<div class="section-header" id="s5">
+  <h2>5　代码实战</h2>
+  <div class="en-title">Level Practice</div>
+</div>
+
+<p>这一关要把好几条条件<b>叠在一起判断</b>：符合的才处理，不符合的就跳过——
+这正是"复杂逻辑判断"的实战。</p>
+<div class="level-card">
+  <div class="lc-head"><span class="n">关卡</span><h4>宠物翻译家</h4><span class="go">进入关卡 →</span></div>
+  <div class="lc-body">
+    <div class="story">
+      <b>故事：</b>
+庄园里有好几只小宠物，它们说的话各不相同。你要<b>逐条对照规则</b>，
+判断每一句属于哪一种，再做出对应的反应——听错一条，就会答错。
+
+    </div>
+    <figure class="pic">
+      <img src="../assets/stages/py-L3-06-stage1_pet_translator.webp" alt="宠物翻译家 关卡截图"
+           onerror="this.closest('.pic').classList.add('missing')">
+      <div class="ph">
+        <div class="fn">assets/stages/py-L3-06-stage1_pet_translator.webp</div>
+        <div class="ds">【关卡截图位】请把《宠物翻译家》的游戏画面截图放到此处（放入 assets/stages/ 目录，文件名为 py-L3-06-stage1_pet_translator.webp）。</div>
+      </div>
+      <figcaption>关卡实况：宠物翻译家</figcaption>
+    </figure>
+    <p><strong>思路：</strong>把"听懂"拆成两条条件：<b>先判断它说什么类型，再判断要不要回应</b>。
+两条都用"与"连起来，就得到一条复合条件。
+</p>
+<div class="blk-card">
+  <div class="blk-head">
+    <span class="dot d1"></span><span class="dot d2"></span><span class="dot d3"></span>
+    <span class="file">重点示例：两条条件一起用</span>
+    <span class="lang">图形化积木</span>
+  </div>
+  <div class="blk-body">
+<svg class="blk" viewBox="0 0 505.4 354" width="505.4" height="354" role="img" aria-label="积木脚本"><g font-family="'PingFang SC','Microsoft YaHei','Noto Sans SC',sans-serif"><g transform="translate(3,3)"><path d="M0,12 C32.96,0 131.84,0 164.8,12 V43 A5,5 0 0 1 159.8,48 H28 v4 h-12 v-4 H5 A5,5 0 0 1 0,43 Z" fill="#FFBF00" stroke="#d19c00" stroke-width="1.2"/><text x="15" y="34.8" font-size="13.4" fill="#fff">当 </text><rect x="42.6" y="18.5" width="52.8" height="23" rx="5" fill="#CC9900"/><text x="64" y="34.4" font-size="12.5" fill="#fff" text-anchor="middle">绿旗</text><path d="M84.4 27.5 l4 5 l4 -5 z" fill="#fff" opacity=".85"/><text x="102.4" y="34.8" font-size="13.4" fill="#fff"> 被点击</text></g><g transform="translate(3,55)"><path d="M0,5 A5,5 0 0 1 5,0 H16 v4 h12 v-4 H218 A5,5 0 0 1 223,5 V31 A5,5 0 0 1 218,36 H28 v4 h-12 v-4 H5 A5,5 0 0 1 0,31 Z" fill="#5CB1D6" stroke="#4b91af" stroke-width="1.2"/><text x="15" y="22.8" font-size="13.4" fill="#fff">询问 </text><rect x="56" y="6.5" width="98.4" height="23" rx="5" fill="#fff"/><text x="105.2" y="22.4" font-size="12.5" fill="#575e75" text-anchor="middle">它说了什么？</text><text x="161.4" y="22.8" font-size="13.4" fill="#fff"> 并等待</text></g><g transform="translate(3,95)"><path d="M0,5 A5,5 0 0 1 5,0 H16 v4 h12 v-4 H494 A5,5 0 0 1 499,5 V234 A5,5 0 0 1 494,239 H28 v4 h-12 v-4 H5 A5,5 0 0 1 0,234 V90 H16 V77 H0 Z" fill="#FFAB19" stroke="#d18c14" stroke-width="1.2"/><text x="15" y="22.8" font-size="13.4" fill="#fff">如果 </text><polygon points="67.5,6.5 426.1,6.5 432.425,18 426.1,29.5 67.5,29.5 61.175,18" fill="#fff" stroke="#FFAB19" stroke-width="1.4"/><polygon points="78.5,6.5 126.3,6.5 132.625,18 126.3,29.5 78.5,29.5 72.175,18" fill="#fff" stroke="#FFAB19" stroke-width="1.4"/><rect x="78" y="6.5" width="48.8" height="23" rx="11.5" fill="#fff" stroke="#cfd6e4" stroke-width="1"/><text x="102.4" y="22.4" font-size="12.5" fill="#575e75" text-anchor="middle">回答</text><text x="144.8" y="22.8" font-size="13.4" fill="#575e75"> = </text><rect x="173.4" y="6.5" width="31.4" height="23" rx="5" fill="#fff" stroke="#cfd6e4" stroke-width="1"/><text x="189.1" y="22.4" font-size="12.5" fill="#575e75" text-anchor="middle">喵</text><text x="211.8" y="22.8" font-size="13.4" fill="#575e75"> 且 </text><polygon points="258.1,6.5 415.1,6.5 421.425,18 415.1,29.5 258.1,29.5 251.775,18" fill="#fff" stroke="#FFAB19" stroke-width="1.4"/><polygon points="269.1,6.5 316.9,6.5 323.225,18 316.9,29.5 269.1,29.5 262.775,18" fill="#fff" stroke="#FFAB19" stroke-width="1.4"/><rect x="268.6" y="6.5" width="48.8" height="23" rx="11.5" fill="#fff" stroke="#cfd6e4" stroke-width="1"/><text x="293" y="22.4" font-size="12.5" fill="#575e75" text-anchor="middle">食物</text><text x="335.4" y="22.8" font-size="13.4" fill="#575e75"> &amp;gt; </text><rect x="385.6" y="6.5" width="30" height="23" rx="11.5" fill="#fff" stroke="#cfd6e4" stroke-width="1"/><text x="400.6" y="22.4" font-size="12.5" fill="#575e75" text-anchor="middle">0</text><text x="444.6" y="22.8" font-size="13.4" fill="#fff"> 那么</text><g transform="translate(20,38)"><path d="M0,5 A5,5 0 0 1 5,0 H16 v4 h12 v-4 H229 A5,5 0 0 1 234,5 V31 A5,5 0 0 1 229,36 H28 v4 h-12 v-4 H5 A5,5 0 0 1 0,31 Z" fill="#9966FF" stroke="#7d53d1" stroke-width="1.2"/><text x="15" y="22.8" font-size="13.4" fill="#fff">说 </text><rect x="42.6" y="6.5" width="98.4" height="23" rx="5" fill="#fff"/><text x="91.8" y="22.4" font-size="12.5" fill="#575e75" text-anchor="middle">它饿了，喂它</text><text x="148" y="22.8" font-size="13.4" fill="#fff"> </text><rect x="162.2" y="6.5" width="30" height="23" rx="11.5" fill="#fff"/><text x="177.2" y="22.4" font-size="12.5" fill="#575e75" text-anchor="middle">2</text><text x="199.2" y="22.8" font-size="13.4" fill="#fff"> 秒</text></g><g transform="translate(20,92)"><path d="M0,5 A5,5 0 0 1 5,0 H16 v4 h12 v-4 H468 A5,5 0 0 1 473,5 V126 A5,5 0 0 1 468,131 H28 v4 h-12 v-4 H5 A5,5 0 0 1 0,126 V90 H16 V77 H0 Z" fill="#FFAB19" stroke="#d18c14" stroke-width="1.2"/><text x="15" y="22.8" font-size="13.4" fill="#fff">如果 </text><polygon points="67.5,6.5 405.9,6.5 412.225,18 405.9,29.5 67.5,29.5 61.175,18" fill="#fff" stroke="#FFAB19" stroke-width="1.4"/><polygon points="78.5,6.5 126.3,6.5 132.625,18 126.3,29.5 78.5,29.5 72.175,18" fill="#fff" stroke="#FFAB19" stroke-width="1.4"/><rect x="78" y="6.5" width="48.8" height="23" rx="11.5" fill="#fff" stroke="#cfd6e4" stroke-width="1"/><text x="102.4" y="22.4" font-size="12.5" fill="#575e75" text-anchor="middle">回答</text><text x="144.8" y="22.8" font-size="13.4" fill="#575e75"> = </text><rect x="173.4" y="6.5" width="31.4" height="23" rx="5" fill="#fff" stroke="#cfd6e4" stroke-width="1"/><text x="189.1" y="22.4" font-size="12.5" fill="#575e75" text-anchor="middle">喵</text><text x="211.8" y="22.8" font-size="13.4" fill="#575e75"> 或 </text><polygon points="258.1,6.5 394.9,6.5 401.225,18 394.9,29.5 258.1,29.5 251.775,18" fill="#fff" stroke="#FFAB19" stroke-width="1.4"/><polygon points="269.1,6.5 316.9,6.5 323.225,18 316.9,29.5 269.1,29.5 262.775,18" fill="#fff" stroke="#FFAB19" stroke-width="1.4"/><rect x="268.6" y="6.5" width="48.8" height="23" rx="11.5" fill="#fff" stroke="#cfd6e4" stroke-width="1"/><text x="293" y="22.4" font-size="12.5" fill="#575e75" text-anchor="middle">回答</text><text x="335.4" y="22.8" font-size="13.4" fill="#575e75"> = </text><rect x="364" y="6.5" width="31.4" height="23" rx="5" fill="#fff" stroke="#cfd6e4" stroke-width="1"/><text x="379.7" y="22.4" font-size="12.5" fill="#575e75" text-anchor="middle">呜</text><text x="424.4" y="22.8" font-size="13.4" fill="#fff"> 那么</text><g transform="translate(20,38)"><path d="M0,5 A5,5 0 0 1 5,0 H16 v4 h12 v-4 H216 A5,5 0 0 1 221,5 V31 A5,5 0 0 1 216,36 H28 v4 h-12 v-4 H5 A5,5 0 0 1 0,31 Z" fill="#9966FF" stroke="#7d53d1" stroke-width="1.2"/><text x="15" y="22.8" font-size="13.4" fill="#fff">说 </text><rect x="42.6" y="6.5" width="85" height="23" rx="5" fill="#fff"/><text x="85.1" y="22.4" font-size="12.5" fill="#575e75" text-anchor="middle">它在打招呼</text><text x="134.6" y="22.8" font-size="13.4" fill="#fff"> </text><rect x="148.8" y="6.5" width="30" height="23" rx="11.5" fill="#fff"/><text x="163.8" y="22.4" font-size="12.5" fill="#575e75" text-anchor="middle">2</text><text x="185.8" y="22.8" font-size="13.4" fill="#fff"> 秒</text></g><g transform="translate(20,92)"><path d="M0,5 A5,5 0 0 1 5,0 H16 v4 h12 v-4 H204 A5,5 0 0 1 209,5 V31 A5,5 0 0 1 204,36 H28 v4 h-12 v-4 H5 A5,5 0 0 1 0,31 Z" fill="#9966FF" stroke="#7d53d1" stroke-width="1.2"/><text x="15" y="22.8" font-size="13.4" fill="#fff">说 </text><rect x="42.6" y="6.5" width="72.6" height="23" rx="5" fill="#fff"/><text x="78.9" y="22.4" font-size="12.5" fill="#575e75" text-anchor="middle">听不懂……</text><text x="122.2" y="22.8" font-size="13.4" fill="#fff"> </text><rect x="136.4" y="6.5" width="30" height="23" rx="11.5" fill="#fff"/><text x="151.4" y="22.4" font-size="12.5" fill="#575e75" text-anchor="middle">2</text><text x="173.4" y="22.8" font-size="13.4" fill="#fff"> 秒</text></g></g></g></g></svg>
+  </div>
+  <div class="out"><b>读法</b>　第一层用"与"（既是"喵"又有食物才喂），第二层用"或"（"喵"或"呜"都算打招呼）</div>
+</div>
+
+    <div class="box tip">
+      <span class="lb">自己试一试：</span>把第一层的"与"改成"或"再跑一次——只要说了"喵"、或者只要食物大于 0，都会去喂它。<strong>体会一下"与"和"或"的区别，这就是本单元的核心。</strong>
+    </div>
+    <p>这一关把三样东西合在了一起：'
+    '<b>输入（询问）→ 复杂条件（与 / 或）→ 输出（说）</b>。</p>
+<div class="box info">
+  <span class="lb">写复杂条件的小技巧：</span>先用中文把条件<b>写一遍</b>，比如"既是喵、又有食物"；再把"既……又……"换成"与"，照抄进六边形槽里。
+</div>
+    <a class="btn-go" href="https://codecombat.cn/" target="_blank" rel="noopener">去扣哒世界闯这一关 →</a>
+  </div>
+</div>
+
+<!-- ============ 6 ============ -->
+<div class="section-header" id="s6">
+  <h2>6　常见陷阱</h2>
+  <div class="en-title">Common Traps</div>
+</div>
+
+<div class="box warn">
+  <span class="lb">陷阱 1：</span><b>把"与"和"或"用反。</b>"带钥匙并且年满 12 岁"是"与"；"带钥匙或者家长陪同"是"或"。<br><strong>正确做法：</strong>读题时把连接词圈出来——圈"并且/都"就用与，圈"或者/有一个"就用或。
+</div>
+
+<div class="box warn">
+  <span class="lb">陷阱 2：</span><b>"不"字放错位置。</b>想表达"颜色不是红色"，写成"颜色 = 不红"是不成立的。<br><strong>正确做法：</strong>先原样写"颜色 = 红"，再用<b>不成立</b>把整块包住。
+</div>
+
+<div class="box warn">
+  <span class="lb">陷阱 3：</span><b>把动作当条件。</b>"移动 10 步""说你好"这些都<b>没有"成立/不成立"的说法</b>，塞不进六边形槽。<br><strong>正确做法：</strong>条件是"能判断对错"的句子；动作只能放进"那么"的口里。
+</div>
+
+<div class="box warn">
+  <span class="lb">陷阱 4：</span><b>嵌套判断漏掉"否则"的情况。</b>题目要求"每种情况都有回应"，却只写了"如果……那么"。<br><strong>正确做法：</strong>先数一数题目里有几种情况，每种都要有对应的分支。
+</div>
+
+<!-- ============ 7 ============ -->
+<div class="section-header" id="s7">
+  <h2>7　题目练习</h2>
+  <div class="en-title">Practice</div>
+</div>
+
+<p>第 1 题改编自 2026 年 9 月 · 图形化编程 三级 第 12 题，其余为原创练习题。</p>
+<div class="exam">
+  <div class="eh"><span class="src">改编自 2026 年 9 月 · 图形化编程 三 级 · 第 12 题</span><span class="tp">单选题</span></div>
+  <div class="eb">
+    <div class="q">有两个六边形积木：<br>① <code class="inline">{数量 &gt; 0} 且 {颜色 = 红}</code><br>② <code class="inline">不成立 {数量 &gt; 0}</code><br>如果此时 <code class="inline">数量 = 0</code>、<code class="inline">颜色 = 红</code>，那么①、②两个积木的值分别是（　　）。</div>
+    <div class="opt"><i>A.</i>false　false<br>
+      <i>B.</i>false　true<br>
+      <i>C.</i>true　false<br>
+      <i>D.</i>true　true</div>
+    <details><summary>查看答案与详解</summary>
+      <div class="ans"><b>答案：B</b>。先算里面的小条件，再算外面的逻辑运算：<br>· <code class="inline">数量 &gt; 0</code>：0 大于 0 吗？<b>不成立</b>；<br>· <code class="inline">颜色 = 红</code>：<b>成立</b>；<br>· ① 是"与"：只要有一边不成立，整体就<b>不成立 → false</b>；<br>· ② 是"不成立"：把①里那句"数量 &gt; 0"反过来——它本来不成立，反过来就<b>成立 → true</b>。<br><b>A、C、D 错：</b>都是把"与"或"不成立"算错了。<br><b>口诀：</b>与是"都成立才算"，或是"有一个就算"，不成立是"整个翻个面"。<br><span class="tagline">对应小节</span>1.2、2.2 逻辑运算的取值。</div>
+    </details>
+  </div>
+</div>
+<div class="exam">
+  <div class="eh"><span class="src ori">原创练习题</span><span class="tp">单选题</span></div>
+  <div class="eb">
+    <div class="q">图书馆规定：<b>带借书证，并且没有超期未还的书</b>，才可以再借。下面哪个条件写法<b>正确</b>（　　）。</div>
+    <div class="opt">
+      <i>A.</i>{有借书证 = 是} 或 {超期数 = 0}<br>
+      <i>B.</i>{有借书证 = 是} 且 {超期数 = 0}<br>
+      <i>C.</i>不成立 {有借书证 = 是}<br>
+      <i>D.</i>{有借书证 = 是} + {超期数 = 0}
+    </div>
+    <details><summary>查看答案与详解</summary>
+      <div class="ans"><b>答案：B</b>。"并且"两个字就是提示——<b>两个要求都要满足</b>，所以用"<b>与</b>"；"没有超期"就是"超期数等于 0"。<br><b>A 错：</b>"或"太宽松了，只满足一个也能借；<br><b>C 错：</b>把条件反过来了，变成"没有借书证"；<br><b>D 错：</b>两个六边形不能相加——只有椭圆形的<b>数值</b>才能做加减。<br><span class="tagline">对应小节</span>1.2、2.1 与 / 或 的选用。</div>
+    </details>
+  </div>
+</div>
+
+<div class="exam">
+  <div class="eh"><span class="src ori">原创练习题</span><span class="tp">单选题</span></div>
+  <div class="eb">
+    <div class="q">要表达"不是红色的"，正确的写法是（　　）。</div>
+    <div class="opt">
+      <i>A.</i>{颜色 = 不红}<br>
+      <i>B.</i>不成立 {颜色 = 红}<br>
+      <i>C.</i>{颜色 &gt; 红}<br>
+      <i>D.</i>{颜色 = 红} 或 {颜色 = 蓝}
+    </div>
+    <details><summary>查看答案与详解</summary>
+      <div class="ans"><b>答案：B</b>。<b>先写出它"是什么"，再用"不成立"整块翻过来</b>——这就是处理"不"字的标准做法。<br><b>A 错：</b>"不红"不是一个能比较的值；<br><b>C 错：</b>颜色不是大小可以比较的数字；<br><b>D 错：</b>那只排除了红和蓝两种，别的颜色还是没排除。<br><span class="tagline">对应小节</span>2.2 处理那个"不"字。</div>
+    </details>
+  </div>
+</div>
+
+<div class="exam">
+  <div class="eh"><span class="src ori">原创练习题</span><span class="tp">单选题</span></div>
+  <div class="eb">
+    <div class="q">一段脚本写成"如果 数量 &gt; 0 那么 { 如果 颜色 = 金 那么 { 拿走 } }"。当数量等于 0、颜色是金时，会执行"拿走"吗（　　）。</div>
+    <div class="opt">
+      <i>A.</i>会执行一次<br>
+      <i>B.</i>不会执行<br>
+      <i>C.</i>会执行两次<br>
+      <i>D.</i>程序会报错
+    </div>
+    <details><summary>查看答案与详解</summary>
+      <div class="ans"><b>答案：B</b>。这是<b>嵌套判断</b>：外层条件"数量 &gt; 0"不成立，整块被跳过，<b>内层的判断根本不会被执行</b>，自然也不会"拿走"。<br><b>要点：</b>嵌套判断里，<b>外层不成立 → 内层完全不会跑</b>；要"两个条件都满足才做"，也可以写成一条用"与"连起来的条件。<br><span class="tagline">对应小节</span>3.2 嵌套判断。</div>
+    </details>
+  </div>
+</div>
+
+<div class="exam">
+  <div class="eh"><span class="src ori">原创练习题</span><span class="tp">多选题</span></div>
+  <div class="eb">
+    <div class="q">下面哪些<b>可以</b>放进"如果……那么"的六边形条件槽里（　　）。</div>
+    <div class="opt">
+      <i>A.</i>碰到鼠标指针？<br>
+      <i>B.</i>x &gt; 10 且 y &lt; 20<br>
+      <i>C.</i>移动 10 步<br>
+      <i>D.</i>不成立 碰到颜色 #ff0000？
+    </div>
+    <details><summary>查看答案与详解</summary>
+      <div class="ans"><b>答案：A、B、D</b>。三条都是"能判断成立或不成立"的条件，外形也都是六边形。<br><b>C 错：</b>"移动 10 步"是<b>动作</b>，它没有"成立/不成立"的说法，形状也是普通积木块，插不进去。<br><span class="tagline">对应小节</span>2.3 只看条件、不看动作。</div>
+    </details>
+  </div>
+</div>
+
+<div class="exam">
+  <div class="eh"><span class="src ori">原创练习题</span><span class="tp">判断题</span></div>
+  <div class="eb">
+    <div class="q">在图形化编程中，"A 且 B"表示 A、B 两个条件必须同时成立，整个条件才成立。（　　）</div>
+    <details><summary>查看答案与详解</summary>
+      <div class="ans"><b>答案：正确（√）</b>。"与"就是"两个都要"——只要有一个不成立，整个条件就不成立。<br>对比着记："<b>A 或 B</b>"是"有一个成立就行"，两边都不成立时才不成立。<br><span class="tagline">对应小节</span>1.2 三块逻辑积木的组合。</div>
+    </details>
+  </div>
+</div>
+
+<!-- ============ 8 ============ -->
+<div class="section-header" id="s8">
+  <h2>8　本单元小结</h2>
+  <div class="en-title">Unit Summary</div>
+</div>
+
+<div class="cast teacher">
+  <img class="ava" src="../assets/avatars/hushbaum.webp" alt="贺舒曼" onerror="this.style.display='none'">
+  <div class="bubble">
+    <div class="who">贺舒曼 · 镜中先知</div>
+    这一单元没有新积木，只有一件事：<b>把中文准确地翻译成条件</b>。<br>
+    三步走：<b>圈连接词（都→与、有一个→或）→ 处理"不"字（用不成立包起来）→
+    划掉动作，只留条件。</b>
+  </div>
+</div>
+
+<h3 id="s8-1">你在锁孔门前学到了什么</h3>
+
+<ul>
+  <li><b>复合条件</b>：用与 / 或 / 不成立把简单条件连起来，外形还是六边形；</li>
+  <li><b>中文对照</b>：并且·都 → 与；或者·有一个 → 或；不·没 → 不成立；</li>
+  <li><b>"不"字的写法</b>：先写"是什么"，再用不成立整块包住；</li>
+  <li><b>两种写法</b>：一条复合条件（简洁）vs 嵌套判断（能分别处理每种失败）；</li>
+  <li><b>推理题解法</b>：画表格 → 划掉不可能 → 用到只剩一个。</li>
+</ul>
+<h3 id="s8-2">下一站：穷举之钥</h3>
+
+<p>三级最后一站是算法：<b>枚举法</b>和<b>模拟法</b>。
+一个"把所有的可能都试一遍"，一个"照着规则一步步走"——
+它们是所有算法里最朴素、也最可靠的两个。</p>
+
+
+<div class="pager">
+  <a href="scratch-3-05.html"><div class="k">← 上一单元</div><div class="v">套娃书架 · 复杂的嵌套结构</div></a>
+  <a href="../index.html" target="_top" class="back"><div class="k">返回</div><div class="v">考纲之路 · 总目录</div></a>
+  <a href="scratch-3-07.html"><div class="k">下一单元 →</div><div class="v">穷举之钥 · 算法初步：枚举法与模拟法</div></a>
+</div>
+<div class="cta">
+  <h3>下一站：穷举之钥</h3>
+  <p>三级最后一站是算法：枚举法和模拟法。一个"把所有的可能都试一遍"，一个"照着规则一步步走"——它们是所有算法里最朴素、也最可靠的两个。</p>
+  <a class="btn-go" href="https://codecombat.cn/" target="_blank" rel="noopener">加入扣哒世界，把这条考纲之路走一遍 →</a>
+</div>
+
+</div><!-- /container -->
+</div><!-- /page -->
+
+<script>
+if (location.search.indexOf('expand') >= 0) {
+  document.querySelectorAll('details').forEach(d => d.open = true);
+}
+document.querySelectorAll('.sidebar-nav a').forEach(a => {
+  a.addEventListener('click', () => {
+    if (window.innerWidth <= 900) document.querySelector('.sidebar-nav').classList.remove('active');
+  });
+});
+</script>
+</body>
+</html>

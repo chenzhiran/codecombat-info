@@ -1,0 +1,848 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="copyright" content="CodeCombat Inc. codecombat.cn">
+<title>会听懂话的喷泉 · 事件触发与侦测 | 扣哒考级 · GESP 图形化一级</title>
+<style>
+  :root{
+    --primary:#8b5cf6; --primary-light:#a78bfa; --primary-lighter:#f3efff; --primary-dark:#6d28d9;
+    --brand:#ff6b35; --brand-dark:#e8541f; --brand-soft:#fff3ec;
+    --night:#131c2b; --night-2:#1e2a3a;
+    --gold:#f5b301;
+    --text:#2a2438; --dim:#7c7794; --dim2:#a29db8;
+    --bg:#ffffff; --bg-soft:#faf8ff; --line:#e9e4f8;
+    --sidebar:274px;
+    --code-bg:#211a33; --code-tx:#d6cfe6;
+    --code-kw:#c678dd; --code-st:#98c379; --code-nu:#d19a66; --code-cm:#7d7392; --code-fn:#61afef;
+  }
+  *{margin:0;padding:0;box-sizing:border-box}
+  html{scroll-behavior:smooth}
+  body{
+    font-family:"PingFang SC","Microsoft YaHei","Segoe UI",-apple-system,sans-serif;
+    line-height:1.9;color:var(--text);background:var(--bg);font-size:15.5px;
+  }
+
+  .sidebar-nav{
+    position:fixed;top:0;left:0;width:var(--sidebar);height:100vh;overflow-y:auto;
+    background:linear-gradient(180deg,#101a26,#182636);padding:14px 0 40px;z-index:100;
+    border-right:3px solid var(--brand);transition:transform .3s ease;
+  }
+  .sidebar-nav::-webkit-scrollbar{width:5px}
+  .sidebar-nav::-webkit-scrollbar-thumb{background:var(--brand);border-radius:4px}
+  .sb-brand{display:flex;align-items:center;gap:10px;padding:10px 13px 12px;border-bottom:1px solid #26384c;margin-bottom:8px}
+  .sidebar-nav a.sb-logo{display:flex;align-items:center;justify-content:center;flex-shrink:0;padding:0;border-left:none;transition:.2s}
+  .sb-logo:hover{transform:scale(1.08)}
+  .sb-logo img{height:34px;width:34px;display:block;object-fit:contain;border-radius:8px}
+  .sb-brand b{color:#f2f6fa;font-size:14px;letter-spacing:.5px;display:block;line-height:1.4}
+  .sb-brand span{color:#7f95ab;font-size:11.5px;display:block;line-height:1.4}
+  .nav-title{color:#ffb894;font-size:12px;font-weight:800;padding:10px 18px 6px;letter-spacing:1.2px}
+  .sidebar-nav a{
+    display:block;color:#c3d0dc;text-decoration:none;padding:6px 18px;font-size:12.5px;
+    line-height:1.55;border-left:3px solid transparent;transition:.18s;
+  }
+  .sidebar-nav a:hover{color:#fff;background:rgba(255,107,53,.16);border-left-color:var(--brand)}
+  .sidebar-nav a.nav-section{color:#ffb894;font-weight:700;font-size:13px;margin-top:11px;padding-top:10px;border-top:1px solid #26384c}
+  .sidebar-nav a.nav-section:first-of-type{border-top:none;margin-top:0;padding-top:6px}
+  .sidebar-nav a.nav-sub{padding-left:30px;color:#93a8bc;font-size:12px}
+  .sidebar-nav a.nav-sub:hover{color:#fff}
+  .sb-back{margin:16px 14px 0;display:block;text-align:center;padding:9px;border-radius:9px;background:#22344a;color:#a9c0d6 !important;font-size:12px;font-weight:700;border-left:none !important}
+  .sb-back:hover{background:var(--brand) !important;color:#fff !important}
+  .nav-toggle{display:none;position:fixed;top:14px;left:14px;z-index:120;background:var(--brand);color:#fff;border:none;border-radius:9px;padding:9px 13px;font-size:15px;cursor:pointer;box-shadow:0 4px 14px rgba(0,0,0,.25)}
+
+  .page{margin-left:var(--sidebar)}
+
+  .hero{
+    position:relative;overflow:hidden;padding:44px 52px;color:#fff;
+    background:linear-gradient(125deg,#0e1724 0%,#1b2b3f 46%,#8a3a16 132%);
+  }
+  .hero::after{content:"";position:absolute;right:-90px;top:-110px;width:400px;height:400px;border-radius:50%;background:radial-gradient(circle,rgba(245,179,1,.30),transparent 68%)}
+  .hero-top{display:flex;gap:36px;align-items:center;position:relative;z-index:2}
+  .hero-txt{flex:1;min-width:0}
+  .hero .crumb{font-size:11.5px;color:#ffb894;letter-spacing:1.5px;font-weight:700;margin-bottom:14px}
+  .hero h1{font-size:31px;font-weight:800;line-height:1.3;letter-spacing:.6px;margin-bottom:8px}
+  .hero h1 .sub{display:block;font-size:18px;font-weight:700;color:#ffd2b3;margin-top:6px;letter-spacing:.3px}
+  .hero .en{font-size:13px;color:#9db4c8;font-style:italic;margin-bottom:18px}
+  .hero .tags{display:flex;flex-wrap:wrap;gap:8px}
+  .tag{font-size:11.5px;padding:4px 12px;border-radius:20px;background:rgba(255,255,255,.12);border:1px solid rgba(255,255,255,.22);color:#e8f0f6;font-weight:600}
+  .tag.hot{background:rgba(255,107,53,.92);border-color:transparent;color:#fff}
+  .hero-card{flex-shrink:0;width:200px;text-align:center}
+  .hero-card .ava{
+    width:148px;height:148px;border-radius:50%;object-fit:cover;object-position:top center;
+    border:4px solid rgba(255,180,140,.6);box-shadow:0 14px 34px rgba(0,0,0,.45);background:#24344a;
+  }
+  .hero-card .nm{font-size:15px;font-weight:800;color:#fff;margin-top:10px}
+  .hero-card .ti{font-size:11.5px;color:#ffb894;margin-top:2px}
+
+  .container{max-width:1080px;margin:0 auto;padding:38px 52px 70px}
+
+  .lead{
+    font-size:15.5px;line-height:2.05;color:#443c58;background:linear-gradient(120deg,#fff8f3,#f7fbf8);
+    border-left:5px solid var(--brand);border-radius:0 14px 14px 0;padding:22px 26px;margin-bottom:32px;
+  }
+  .lead b{color:var(--brand-dark)}
+
+  .cast{display:flex;gap:16px;align-items:flex-start;border-radius:16px;padding:18px 22px;margin:24px 0}
+  .cast .ava{width:72px;height:72px;border-radius:50%;object-fit:cover;object-position:top center;flex-shrink:0;background:#e8eef5}
+  .cast .bubble{position:relative;font-size:14px;line-height:1.95;padding-top:2px;flex:1}
+  .cast .who{font-size:12px;font-weight:800;margin-bottom:5px;letter-spacing:.5px}
+  .cast.anya{background:var(--brand-soft);border:1px solid #ffdcc9}
+  .cast.anya .who{color:var(--brand-dark)}
+  .cast.anya .bubble{color:#5c4636}
+  .cast.duck{background:#fff5f5;border:1px solid #fbd5d5}
+  .cast.duck .who{color:#b91c1c}
+  .cast.duck .bubble{color:#5c4141}
+  .cast.teacher{background:linear-gradient(120deg,#f4f7fb,#ffffff);border:1px solid #dbe4f0}
+  .cast.teacher .who{color:#1e293b}
+  .cast.teacher .bubble{color:#3c4a5a}
+  .cast.hero{background:#f7f3ff;border:1px solid #ded1fa}
+  .cast.hero .who{color:#6d28d9}
+  .cast.hero .bubble{color:#463d5c}
+
+  .goal-grid{display:grid;grid-template-columns:1fr 1fr;gap:16px;margin-bottom:36px}
+  .goal{border:1px solid var(--line);border-radius:15px;padding:19px 21px;background:#fff;box-shadow:0 4px 16px rgba(31,122,68,.05)}
+  .goal h4{font-size:14px;font-weight:800;margin-bottom:11px;display:flex;align-items:center;gap:8px;color:var(--primary-dark)}
+  .goal h4 .ic{width:22px;height:22px;border-radius:7px;background:var(--primary-lighter);display:flex;align-items:center;justify-content:center;font-size:12px}
+  .goal ul{list-style:none}
+  .goal li{font-size:13.5px;color:#6b6480;line-height:1.9;padding-left:18px;position:relative}
+  .goal li::before{content:"▸";position:absolute;left:0;color:var(--primary);font-weight:800}
+  .goal.syllabus li::before{content:"✓"}
+
+  .section-header{margin:52px 0 24px;padding-bottom:12px;border-bottom:3px solid var(--brand);display:flex;align-items:baseline;gap:14px;flex-wrap:wrap}
+  .section-header h2{font-size:22px;font-weight:800;color:var(--night);letter-spacing:.4px}
+  .section-header .en-title{font-size:12px;color:var(--dim2);font-style:italic}
+  h3{font-size:17.5px;font-weight:800;margin:34px 0 14px;color:var(--night);display:flex;align-items:center;gap:10px}
+  h3::before{content:"";width:5px;height:17px;border-radius:3px;background:var(--brand);flex-shrink:0}
+  h4{font-size:15px;font-weight:800;margin:24px 0 10px;color:#3c2f63}
+  p{margin:12px 0;color:#463d5c;line-height:2}
+  strong{color:var(--primary-dark)}
+  code.inline{background:var(--primary-lighter);color:var(--primary-dark);padding:2px 7px;border-radius:6px;font-family:"SFMono-Regular",Consolas,Menlo,monospace;font-size:.9em;font-weight:600}
+
+  .figure{margin:24px 0;text-align:center}
+  .figure svg.diagram{max-width:100%;height:auto;background:#fff;border:1px solid var(--line);border-radius:14px;padding:10px}
+  .figure .caption{font-size:12.5px;color:var(--dim2);margin-top:9px}
+
+  .pic{margin:26px 0;text-align:center}
+  .pic img{max-width:100%;border-radius:16px;box-shadow:0 10px 28px rgba(30,60,45,.15);display:block;margin:0 auto}
+  .pic figcaption{font-size:12.5px;color:var(--dim2);margin-top:9px}
+  .pic .ph{display:none}
+  .pic.missing img{display:none}
+  .pic.missing .ph{
+    display:flex;flex-direction:column;align-items:center;justify-content:center;gap:9px;
+    border:2px dashed #c9d9e8;border-radius:16px;background:linear-gradient(135deg,#f8fbfe,#eef6ff);
+    padding:40px 26px;color:#7a8fa8;
+  }
+  .pic.missing .ph .fn{font-family:Consolas,monospace;font-size:12.5px;color:#2563eb;font-weight:700;word-break:break-all}
+  .pic.missing .ph .ds{font-size:12.5px;line-height:1.8;max-width:560px}
+
+  .box{border-radius:13px;padding:16px 20px;margin:20px 0;font-size:14px;line-height:1.95}
+  .box .lb{font-weight:800;margin-right:6px}
+  .info{background:#eef6ff;border-left:5px solid #3b82f6;color:#274768}
+  .info .lb{color:#1d4ed8}
+  .tip{background:#fff9ec;border-left:5px solid #f59e0b;color:#6b4e13}
+  .tip .lb{color:#b45309}
+  .remember{background:var(--primary-lighter);border-left:5px solid var(--primary);color:#3a2a6b}
+  .remember .lb{color:var(--primary-dark)}
+  .warn{background:#fef2f2;border-left:5px solid #ef4444;color:#7f2b2b}
+  .warn .lb{color:#b91c1c}
+
+  .code-card{margin:20px 0;border-radius:14px;overflow:hidden;box-shadow:0 10px 28px rgba(20,40,28,.20)}
+  .code-head{display:flex;align-items:center;gap:9px;background:#2c2438;padding:9px 14px}
+  .code-head .dot{width:10px;height:10px;border-radius:50%}
+  .code-head .d1{background:#ff5f57}.code-head .d2{background:#febc2e}.code-head .d3{background:#28c840}
+  .code-head .file{color:#a09ab4;font-size:11.5px;font-family:Consolas,monospace;margin-left:6px}
+  .code-head .lang{margin-left:auto;font-size:10.5px;font-weight:800;color:#150f21;background:#a78bfa;padding:2px 9px;border-radius:6px;letter-spacing:.4px}
+  .code-card pre{background:var(--code-bg);padding:18px 20px;overflow-x:auto;margin:0;font-family:"SFMono-Regular",Consolas,"Courier New",monospace;font-size:13.5px;line-height:1.85}
+  .code-card pre::-webkit-scrollbar{height:8px}
+  .code-card pre::-webkit-scrollbar-thumb{background:#433a5e;border-radius:4px}
+  .code-card code{color:var(--code-tx);white-space:pre}
+  .kw{color:var(--code-kw);font-weight:600}
+  .st{color:var(--code-st)}
+  .nu{color:var(--code-nu)}
+  .cm{color:var(--code-cm);font-style:italic}
+  .fn{color:var(--code-fn)}
+  .out{background:#1d1729;color:#c4b5fd;font-family:Consolas,monospace;font-size:13px;padding:12px 20px;border-top:1px solid #352c48}
+  .out b{color:#c9d6cd;font-weight:600;font-size:11.5px;letter-spacing:1px}
+
+  table.styled{width:100%;border-collapse:collapse;margin:20px 0;font-size:13.5px;border-radius:12px;overflow:hidden;box-shadow:0 4px 16px rgba(31,122,68,.07)}
+  table.styled thead{background:var(--brand)}
+  table.styled th{color:#fff;padding:11px 14px;text-align:left;font-weight:700;font-size:13px}
+  table.styled td{padding:10px 14px;border-bottom:1px solid var(--line);color:#57506b;vertical-align:top}
+  table.styled tbody tr:nth-child(even){background:var(--bg-soft)}
+  table.styled tbody tr:last-child td{border-bottom:none}
+
+  .level-card{border:1px solid var(--line);border-radius:16px;overflow:hidden;margin:22px 0;box-shadow:0 6px 22px rgba(31,122,68,.07)}
+  .level-card .lc-head{background:linear-gradient(100deg,#17283a,#8a3a16);color:#fff;padding:15px 22px;display:flex;align-items:center;gap:12px;flex-wrap:wrap}
+  .level-card .lc-head .n{font-size:12px;font-weight:800;background:rgba(255,255,255,.2);padding:3px 10px;border-radius:20px}
+  .level-card .lc-head h4{margin:0;color:#fff;font-size:16px}
+  .level-card .lc-head .go{margin-left:auto;font-size:11.5px;color:#ffd2b3}
+  .level-card .lc-body{padding:20px 24px;background:#fff}
+  .level-card .story{background:#f9fbfd;border-left:4px solid #93c5fd;border-radius:0 10px 10px 0;padding:13px 18px;margin:0 0 16px;font-size:14px;line-height:1.95;color:#3f5163}
+  .level-card .story b{color:#1d4ed8}
+  .btn-go{
+    display:inline-flex;align-items:center;gap:8px;background:linear-gradient(135deg,var(--brand),var(--brand-dark));
+    color:#fff;text-decoration:none;font-weight:800;font-size:13.5px;padding:10px 22px;border-radius:11px;
+    box-shadow:0 8px 20px rgba(255,107,53,.32);transition:.2s;
+  }
+  .btn-go:hover{transform:translateY(-2px);box-shadow:0 12px 26px rgba(255,107,53,.42)}
+
+  .pit{border:1px solid #f6dede;border-radius:14px;overflow:hidden;margin:16px 0;background:#fff}
+  .pit .pt{display:flex;gap:12px;padding:14px 18px;background:#fffafa;align-items:flex-start}
+  .pit .x{width:26px;height:26px;border-radius:9px;background:#fee;color:#dc2626;display:flex;align-items:center;justify-content:center;font-weight:800;flex-shrink:0;font-size:13px}
+  .pit .t{font-size:13.5px;line-height:1.9;color:#5c4a4a;flex:1}
+  .pit .t b{color:#b91c1c}
+  .pit .duck{display:flex;gap:12px;padding:13px 18px;background:#fff5f5;border-top:1px dashed #f3d0d0;align-items:flex-start}
+  .pit .duck img{width:48px;height:48px;object-fit:contain;flex-shrink:0;margin-top:2px}
+  .pit .duck .dt{font-size:13.5px;line-height:1.9;color:#7a3b3b}
+  .pit .duck .dt b{color:#b91c1c}
+  .pit .fix{padding:12px 18px;background:#f7f3ff;border-top:1px dashed #ded1fa;font-size:13.5px;color:#3a2a6b}
+  .pit .fix b{color:var(--primary-dark)}
+
+  .exam{border:1px solid #dfe7f5;border-radius:15px;margin:16px 0;overflow:hidden;background:#fff;box-shadow:0 4px 16px rgba(38,62,120,.06)}
+  .exam .eh{display:flex;align-items:center;gap:10px;padding:11px 18px;background:linear-gradient(100deg,#eef4ff,#f7faff);border-bottom:1px solid #e3ebf8;flex-wrap:wrap}
+  .exam .eh .src{font-size:11px;font-weight:800;color:#fff;background:#2563eb;padding:2.5px 10px;border-radius:20px}
+  .exam .eh .src.ori{background:#8b5cf6}
+  .exam .eh .tp{font-size:11.5px;color:#5b7ba8;font-weight:700}
+  .exam .eb{padding:16px 20px}
+  .exam .q{font-weight:700;font-size:14px;color:#38304b;line-height:1.9;margin-bottom:10px}
+  .exam .opt{font-size:13.5px;color:#6b6480;line-height:2.05;padding-left:6px}
+  .exam .opt i{font-style:normal;font-weight:800;color:var(--primary-dark);margin-right:7px}
+  .exam pre{margin:12px 0;background:#1b2a21;border-radius:10px;padding:14px 16px;overflow-x:auto;font-family:Consolas,monospace;font-size:13px;line-height:1.8;color:var(--code-tx)}
+  .exam details{margin-top:10px;border-top:1px dashed var(--line);padding-top:10px}
+  .exam summary{cursor:pointer;font-size:12.5px;font-weight:800;color:#2563eb;outline:none;user-select:none}
+  .exam details .ans{font-size:13.5px;color:#463d5c;line-height:1.95;margin-top:9px;background:var(--bg-soft);padding:13px 16px;border-radius:10px}
+  .exam details .ans b{color:var(--primary-dark)}
+  .exam details .ans .tagline{display:inline-block;font-size:11px;background:#e0f2fe;color:#0e7490;padding:1.5px 8px;border-radius:6px;font-weight:700;margin-right:6px}
+
+  .summary{margin:40px 0 20px;border-radius:18px;padding:26px 30px;background:linear-gradient(130deg,#fff8f3,#ffffff);border:1px solid #ffe0cf}
+  .summary h3{margin-top:0}
+  .summary ul{list-style:none;margin-top:10px}
+  .summary li{font-size:14px;line-height:2;color:#514a64;padding-left:24px;position:relative}
+  .summary li::before{content:"◆";position:absolute;left:0;color:var(--brand);font-size:11px;top:6px}
+
+  .pager{display:flex;gap:14px;margin-top:30px;flex-wrap:wrap}
+  .pager a{flex:1;min-width:200px;text-decoration:none;border:1px solid var(--line);border-radius:14px;padding:16px 20px;background:#fff;transition:.2s;display:block}
+  .pager a:hover{border-color:var(--brand);box-shadow:0 10px 26px rgba(255,107,53,.14);transform:translateY(-2px)}
+  .pager a .k{font-size:11px;color:var(--dim2);font-weight:700;letter-spacing:1px}
+  .pager a .v{font-size:14px;font-weight:800;color:var(--night);margin-top:5px}
+  .pager a.back{background:var(--brand-soft);border-color:transparent;text-align:center}
+  .pager a.back .v{color:var(--brand-dark)}
+
+  .cta{margin-top:26px;border-radius:20px;padding:30px 34px;color:#fff;position:relative;overflow:hidden;background:linear-gradient(120deg,#16202f,#2b3a52 46%,#a8431c 132%)}
+  .cta::after{content:"";position:absolute;right:-70px;bottom:-90px;width:280px;height:280px;border-radius:50%;background:radial-gradient(circle,rgba(255,140,80,.45),transparent 68%)}
+  .cta h3{color:#fff;margin:0 0 10px;position:relative;z-index:2}
+  .cta h3::before{background:var(--brand)}
+  .cta p{color:#d8e0ef;font-size:13.5px;margin:0 0 18px;position:relative;z-index:2;max-width:640px}
+  .cta .btn-go{position:relative;z-index:2}
+
+  @media(max-width:900px){
+    .sidebar-nav{transform:translateX(-100%)}
+    .sidebar-nav.active{transform:translateX(0)}
+    .nav-toggle{display:block}
+    .page{margin-left:0}
+    .hero{padding:70px 22px 34px}
+    .hero-top{flex-direction:column-reverse;text-align:center}
+    .hero-card{width:auto}
+    .container{padding:26px 20px 60px}
+    .goal-grid{grid-template-columns:1fr}
+  }
+
+  /* ---------- 图形化：积木卡（替代代码卡） ---------- */
+  .blk-card{background:#f8f6ff;border:1px solid #e6e0fb;border-radius:14px;
+    margin:18px 0;overflow:hidden;box-shadow:0 2px 10px rgba(109,40,217,.06)}
+  .blk-head{display:flex;align-items:center;gap:7px;padding:10px 14px;
+    background:#f1ecfe;border-bottom:1px solid #e6e0fb}
+  .blk-head .file{font-size:12.5px;font-weight:700;color:#5b4a86;margin-left:4px}
+  .blk-head .lang{margin-left:auto;font-size:11px;font-weight:800;color:#fff;
+    background:#8b5cf6;border-radius:20px;padding:3px 11px;letter-spacing:.5px}
+  .blk-body{padding:20px 18px;overflow-x:auto;
+    background:
+      radial-gradient(circle at 14px 14px,#ece6fb 1.6px,transparent 1.7px) 0 0/28px 28px,
+      #ffffff}
+  .blk{display:block;max-width:100%;height:auto;margin:0 auto}
+  .blk + .blk{margin-top:16px}
+  .blk-card .out{background:#f1ecfe;border-top:1px solid #e6e0fb;color:#5b4a86}
+  .blk-card .out b{color:#6d28d9}
+  /* 积木并排（不同角色 / 不同做法对照） */
+  .blk-row{display:flex;gap:16px;flex-wrap:wrap;justify-content:center;align-items:flex-start}
+  .blk-row > *{flex:1 1 240px;min-width:0}
+  .blk-row .blk{margin:0}
+  /* 积木旁的小标题 */
+  .blk-cap{font-size:12.5px;font-weight:800;color:#6d28d9;background:#f3efff;
+    border:1px solid #e6e0fb;border-radius:8px;padding:5px 12px;margin:14px 0 10px;
+    display:inline-block}
+</style>
+</head>
+<body>
+
+<button class="nav-toggle" onclick="document.querySelector('.sidebar-nav').classList.toggle('active')">&#9776;</button>
+
+<nav class="sidebar-nav">
+  <div class="sb-brand">
+    <a class="sb-logo" href="https://codecombat.cn/" target="_blank" rel="noopener" title="访问 CodeCombat 扣哒世界官网">
+      <img src="../assets/logo.png" alt="CodeCombat 扣哒世界">
+    </a>
+    <div><b>会听懂话的喷泉</b><span>积木花园 · 图形化一级 第 4 单元</span></div>
+  </div>
+  <div class="nav-title">本单元目录</div>
+
+  <a href="#s0" class="nav-section">0　单元导语与目标</a>
+  <a href="#s0-1" class="nav-sub">0.1 学习目标</a>
+  <a href="#s0-2" class="nav-sub">0.2 考纲对照</a>
+  <a href="#s1" class="nav-section">1　事件：谁把脚本叫醒</a>
+  <a href="#s1-1" class="nav-sub">1.1 当绿旗被点击</a>
+  <a href="#s1-2" class="nav-sub">1.2 当角色被点击</a>
+  <a href="#s1-3" class="nav-sub">1.3 当按下某个键</a>
+  <a href="#s2" class="nav-section">2　侦测：角色长出了眼睛</a>
+  <a href="#s2-1" class="nav-sub">2.1 碰到鼠标与边缘</a>
+  <a href="#s2-2" class="nav-sub">2.2 碰到颜色</a>
+  <a href="#s2-3" class="nav-sub">2.3 按下键与鼠标按下</a>
+  <a href="#s3" class="nav-section">3　侦测积木怎么用</a>
+  <a href="#s3-1" class="nav-sub">3.1 六边形要插进六边形的槽</a>
+  <a href="#s3-2" class="nav-sub">3.2 放进如果……那么</a>
+  <a href="#s3-3" class="nav-sub">3.3 停止脚本</a>
+  <a href="#s4" class="nav-section">4　一个作品里的好几段脚本</a>
+  <a href="#s4-1" class="nav-sub">4.1 每个角色各有一份脚本</a>
+  <a href="#s4-2" class="nav-sub">4.2 同时开工：并发</a>
+  <a href="#s5" class="nav-section">5　代码实战</a>
+  <a href="#s6" class="nav-section">6　常见陷阱</a>
+  <a href="#s7" class="nav-section">7　题目练习</a>
+  <a href="#s8" class="nav-section">8　本单元小结</a>
+
+  <a href="../index.html" target="_top" class="sb-back">返回考纲之路</a>
+</nav>
+
+<div class="page">
+
+<div class="hero">
+  <div class="hero-top">
+    <div class="hero-txt">
+      <div class="crumb">扣哒考级 · GESP 图形化 一级 · 第 4 单元　|　积木花园 BLOCKBLOOM GARDEN</div>
+      <h1>会听懂话的喷泉
+        <span class="sub">事件触发与侦测</span>
+      </h1>
+      <div class="en">Events and Sensing</div>
+      <div class="tags">        <span class="tag hot">考纲 · 事件触发</span>
+        <span class="tag">考纲 · 侦测</span>
+        <span class="tag">多角色并发</span>
+        <span class="tag">停止脚本</span></div>
+    </div>
+    <div class="hero-card">
+      <img class="ava" src="../assets/avatars/anya.webp" alt="安雅" onerror="this.style.background='#24344a';this.src='../assets/heroes/anya.webp'">
+      <div class="nm">安雅</div>
+      <div class="ti">红发队长 · 你的旅伴</div>
+    </div>
+  </div>
+</div>
+
+<div class="container">
+
+
+<div class="lead">
+  花径尽头有一眼喷泉。泉眼上刻着一行小字：<b>只在有人升起旗帜时喷涌。</b><br>
+  安雅把绿旗递给你。你一举起来，水柱"哗"地冲上天空；你一松手，它立刻安静下来。<br>
+  "看见没有？"她说，"<b>程序不会自己开始，它需要一个开关。</b>这个开关，就叫事件。"
+</div>
+
+<div class="cast anya">
+  <img class="ava" src="../assets/avatars/anya.webp" alt="安雅" onerror="this.style.display='none'">
+  <div class="bubble">
+    <div class="who">安雅 · 红发队长</div>
+    这一单元要分清两样东西：<b>事件</b>是"什么时候开始做"，<b>侦测</b>是"看见了什么"。<br>
+    卷子上最爱把它们混在一起考：给你一句描述，问"该用事件还是侦测"——只要你记得
+    "事件管开关、侦测管判断"，就错不了。
+  </div>
+</div>
+
+<figure class="pic">
+  <img src="../assets/illustrations/scratch-L1-04-01_fountain_events.webp" alt="会听懂话的喷泉"
+       onerror="this.closest('.pic').classList.add('missing')">
+  <div class="ph">
+    <div class="fn">assets/illustrations/scratch-L1-04-01_fountain_events.webp</div>
+    <div class="ds">【配图位】魔法花园喷泉只在升起绿旗或被按下按钮时才喷水，周围浮着几枚发光触发符文，小猫在旁等待。（提示词见《GESP配图清单与AI绘图提示词》第四节 1-4）</div>
+  </div>
+  <figcaption>图 4：会听懂话的喷泉——它只响应事件</figcaption>
+</figure>
+
+
+<!-- ============ 0 ============ -->
+<div class="section-header" id="s0">
+  <h2>0　单元导语与目标</h2>
+  <div class="en-title">Before We Start</div>
+</div>
+
+<h3 id="s0-1">0.1 学习目标</h3>
+
+<ul>
+  <li>理解<b>事件</b>是什么：脚本被"叫醒"的那一瞬间；</li>
+  <li>掌握三种最常见的触发方式：<b>点绿旗</b>、<b>点角色</b>、<b>按下键盘</b>；</li>
+  <li>会用<b>侦测</b>积木判断"碰到了什么""按下了什么"；</li>
+  <li>会把侦测积木塞进"如果……那么"里，做出"碰到就做事"的效果；</li>
+  <li>知道一个作品里可以有好几段脚本同时运行。</li>
+</ul>
+<h3 id="s0-2">0.2 考纲对照</h3>
+
+<table class="styled">
+  <thead><tr><th>考纲知识块</th><th>考纲要求</th><th>本单元小节</th></tr></thead>
+  <tbody><tr><td>5 事件触发</td><td>事件的基本概念，点击运行、当角色被点击、键盘被按下等</td><td>1.1～1.3</td></tr><tr><td>8 侦测与控制</td><td>碰到鼠标指针 / 舞台边缘 / 颜色，按下键盘 / 鼠标，停止脚本</td><td>2.1～2.3、3.1～3.3</td></tr><tr><td>6 角色的操作（多角色）</td><td>掌握多角色设置，初步理解并发程序</td><td>4.1、4.2</td></tr></tbody>
+</table>
+
+<p>这一单元是"让作品活起来"的关键——<b>事件管"什么时候做"，侦测管"看见了什么"</b>。</p>
+
+<!-- ============ 1 ============ -->
+<div class="section-header" id="s1">
+  <h2>1　事件：谁把脚本叫醒</h2>
+  <div class="en-title">Events</div>
+</div>
+
+<h3 id="s1-1">1.1 当绿旗被点击</h3>
+
+<p>花园深处有一眼魔法喷泉。它不会自己喷水——<b>得有人升起绿旗，它才开始工作</b>。</p>
+<div class="blk-card">
+  <div class="blk-head">
+    <span class="dot d1"></span><span class="dot d2"></span><span class="dot d3"></span>
+    <span class="file">重点示例：最常用的开场白</span>
+    <span class="lang">图形化积木</span>
+  </div>
+  <div class="blk-body">
+<svg class="blk" viewBox="0 0 170.8 58" width="170.8" height="58" role="img" aria-label="积木脚本"><g font-family="'PingFang SC','Microsoft YaHei','Noto Sans SC',sans-serif"><g transform="translate(3,3)"><path d="M0,12 C32.96,0 131.84,0 164.8,12 V43 A5,5 0 0 1 159.8,48 H28 v4 h-12 v-4 H5 A5,5 0 0 1 0,43 Z" fill="#FFBF00" stroke="#d19c00" stroke-width="1.2"/><text x="15" y="34.8" font-size="13.4" fill="#fff">当 </text><rect x="42.6" y="18.5" width="52.8" height="23" rx="5" fill="#CC9900"/><text x="64" y="34.4" font-size="12.5" fill="#fff" text-anchor="middle">绿旗</text><path d="M84.4 27.5 l4 5 l4 -5 z" fill="#fff" opacity=".85"/><text x="102.4" y="34.8" font-size="13.4" fill="#fff"> 被点击</text></g></g></svg>
+  </div>
+  <div class="out"><b>读法</b>　舞台上那面绿旗一被点击，下面扣着的积木就开始执行</div>
+</div>
+
+<div class="box tip">
+  <span class="lb">打个比方：</span>脚本像一台放在桌上的机器，插头还没插。<b>事件就是那个插座</b>——"当绿旗被点击"表示"有人按下开关时才通电"。没有事件块，机器再漂亮也不会转。
+</div>
+
+
+<h3 id="s1-2">1.2 当角色被点击</h3>
+
+<p>除了绿旗，还可以让<b>角色自己</b>当开关：直接点一下舞台上的它。</p>
+<div class="blk-card">
+  <div class="blk-head">
+    <span class="dot d1"></span><span class="dot d2"></span><span class="dot d3"></span>
+    <span class="file">重点示例：点谁，谁答应</span>
+    <span class="lang">图形化积木</span>
+  </div>
+  <div class="blk-body">
+<svg class="blk" viewBox="0 0 227.4 98" width="227.4" height="98" role="img" aria-label="积木脚本"><g font-family="'PingFang SC','Microsoft YaHei','Noto Sans SC',sans-serif"><g transform="translate(3,3)"><path d="M0,12 C22.08,0 88.32,0 110.4,12 V43 A5,5 0 0 1 105.4,48 H28 v4 h-12 v-4 H5 A5,5 0 0 1 0,43 Z" fill="#FFBF00" stroke="#d19c00" stroke-width="1.2"/><text x="15" y="34.8" font-size="13.4" fill="#fff">当角色被点击</text></g><g transform="translate(3,55)"><path d="M0,5 A5,5 0 0 1 5,0 H16 v4 h12 v-4 H216 A5,5 0 0 1 221,5 V31 A5,5 0 0 1 216,36 H28 v4 h-12 v-4 H5 A5,5 0 0 1 0,31 Z" fill="#9966FF" stroke="#7d53d1" stroke-width="1.2"/><text x="15" y="22.8" font-size="13.4" fill="#fff">说 </text><rect x="42.6" y="6.5" width="85" height="23" rx="5" fill="#fff"/><text x="85.1" y="22.4" font-size="12.5" fill="#575e75" text-anchor="middle">谁在叫我？</text><text x="134.6" y="22.8" font-size="13.4" fill="#fff"> </text><rect x="148.8" y="6.5" width="30" height="23" rx="11.5" fill="#fff"/><text x="163.8" y="22.4" font-size="12.5" fill="#575e75" text-anchor="middle">2</text><text x="185.8" y="22.8" font-size="13.4" fill="#fff"> 秒</text></g></g></svg>
+  </div>
+  <div class="out"><b>要点</b>　这块积木只认"<b>它自己</b>被点"——点别的角色不会触发它</div>
+</div>
+
+<h3 id="s1-3">1.3 当按下某个键</h3>
+
+<p>第三种开关在键盘上：按下指定的按键，脚本就开始执行。常见的有空格、方向键和字母键。</p>
+<div class="blk-card">
+  <div class="blk-head">
+    <span class="dot d1"></span><span class="dot d2"></span><span class="dot d3"></span>
+    <span class="file">重点示例：用键盘当遥控器</span>
+    <span class="lang">图形化积木</span>
+  </div>
+  <div class="blk-body">
+<svg class="blk" viewBox="0 0 170.8 98" width="170.8" height="98" role="img" aria-label="积木脚本"><g font-family="'PingFang SC','Microsoft YaHei','Noto Sans SC',sans-serif"><g transform="translate(3,3)"><path d="M0,12 C32.96,0 131.84,0 164.8,12 V43 A5,5 0 0 1 159.8,48 H28 v4 h-12 v-4 H5 A5,5 0 0 1 0,43 Z" fill="#FFBF00" stroke="#d19c00" stroke-width="1.2"/><text x="15" y="34.8" font-size="13.4" fill="#fff">当按下 </text><rect x="69.4" y="18.5" width="52.8" height="23" rx="5" fill="#CC9900"/><text x="90.8" y="34.4" font-size="12.5" fill="#fff" text-anchor="middle">空格</text><path d="M111.2 27.5 l4 5 l4 -5 z" fill="#fff" opacity=".85"/><text x="129.2" y="34.8" font-size="13.4" fill="#fff"> 键</text></g><g transform="translate(3,55)"><path d="M0,5 A5,5 0 0 1 5,0 H16 v4 h12 v-4 H130 A5,5 0 0 1 135,5 V31 A5,5 0 0 1 130,36 H28 v4 h-12 v-4 H5 A5,5 0 0 1 0,31 Z" fill="#4C97FF" stroke="#3e7bd1" stroke-width="1.2"/><text x="15" y="22.8" font-size="13.4" fill="#fff">移动 </text><rect x="56" y="6.5" width="36.4" height="23" rx="11.5" fill="#fff"/><text x="74.2" y="22.4" font-size="12.5" fill="#575e75" text-anchor="middle">20</text><text x="99.4" y="22.8" font-size="13.4" fill="#fff"> 步</text></g></g></svg><div class="blk-row">
+    <div>
+      <div class="blk-cap">按下右方向键就往右走</div>
+<svg class="blk" viewBox="0 0 184.2 98" width="184.2" height="98" role="img" aria-label="积木脚本"><g font-family="'PingFang SC','Microsoft YaHei','Noto Sans SC',sans-serif"><g transform="translate(3,3)"><path d="M0,12 C35.64,0 142.56,0 178.2,12 V43 A5,5 0 0 1 173.2,48 H28 v4 h-12 v-4 H5 A5,5 0 0 1 0,43 Z" fill="#FFBF00" stroke="#d19c00" stroke-width="1.2"/><text x="15" y="34.8" font-size="13.4" fill="#fff">当按下 </text><rect x="69.4" y="18.5" width="66.2" height="23" rx="5" fill="#CC9900"/><text x="97.5" y="34.4" font-size="12.5" fill="#fff" text-anchor="middle">右移键</text><path d="M124.6 27.5 l4 5 l4 -5 z" fill="#fff" opacity=".85"/><text x="142.6" y="34.8" font-size="13.4" fill="#fff"> 键</text></g><g transform="translate(3,55)"><path d="M0,5 A5,5 0 0 1 5,0 H16 v4 h12 v-4 H164 A5,5 0 0 1 169,5 V31 A5,5 0 0 1 164,36 H28 v4 h-12 v-4 H5 A5,5 0 0 1 0,31 Z" fill="#4C97FF" stroke="#3e7bd1" stroke-width="1.2"/><text x="15" y="22.8" font-size="13.4" fill="#fff">将 x 坐标增加 </text><rect x="117.8" y="6.5" width="36.4" height="23" rx="11.5" fill="#fff"/><text x="136" y="22.4" font-size="12.5" fill="#575e75" text-anchor="middle">10</text></g></g></svg>
+    </div>
+
+    <div>
+      <div class="blk-cap">按下左方向键就往左走</div>
+<svg class="blk" viewBox="0 0 184.2 98" width="184.2" height="98" role="img" aria-label="积木脚本"><g font-family="'PingFang SC','Microsoft YaHei','Noto Sans SC',sans-serif"><g transform="translate(3,3)"><path d="M0,12 C35.64,0 142.56,0 178.2,12 V43 A5,5 0 0 1 173.2,48 H28 v4 h-12 v-4 H5 A5,5 0 0 1 0,43 Z" fill="#FFBF00" stroke="#d19c00" stroke-width="1.2"/><text x="15" y="34.8" font-size="13.4" fill="#fff">当按下 </text><rect x="69.4" y="18.5" width="66.2" height="23" rx="5" fill="#CC9900"/><text x="97.5" y="34.4" font-size="12.5" fill="#fff" text-anchor="middle">左移键</text><path d="M124.6 27.5 l4 5 l4 -5 z" fill="#fff" opacity=".85"/><text x="142.6" y="34.8" font-size="13.4" fill="#fff"> 键</text></g><g transform="translate(3,55)"><path d="M0,5 A5,5 0 0 1 5,0 H16 v4 h12 v-4 H171 A5,5 0 0 1 176,5 V31 A5,5 0 0 1 171,36 H28 v4 h-12 v-4 H5 A5,5 0 0 1 0,31 Z" fill="#4C97FF" stroke="#3e7bd1" stroke-width="1.2"/><text x="15" y="22.8" font-size="13.4" fill="#fff">将 x 坐标增加 </text><rect x="117.8" y="6.5" width="43.6" height="23" rx="11.5" fill="#fff"/><text x="139.6" y="22.4" font-size="12.5" fill="#575e75" text-anchor="middle">-10</text></g></g></svg>
+    </div>
+</div>
+
+  </div>
+  <div class="out"><b>要点</b>　同一段脚本可以只响应一个键；想支持四个方向，就写四段脚本，每段配一个按键</div>
+</div>
+
+<div class="box info">
+  <span class="lb">三种事件，一句话分清：</span><b>当绿旗被点击</b>——开演；<b>当角色被点击</b>——被点名；<b>当按下某键</b>——听见指令。它们都是黄色的事件积木，都只能放在一段脚本的最上面。
+</div>
+
+<!-- ============ 2 ============ -->
+<div class="section-header" id="s2">
+  <h2>2　侦测：角色长出了眼睛</h2>
+  <div class="en-title">Sensing</div>
+</div>
+
+<h3 id="s2-1">2.1 碰到鼠标与边缘</h3>
+
+<p>安雅给喷泉挂上一副魔法眼镜。有了它，角色能"看见"三样东西：鼠标指针、舞台边缘、还有颜色。</p>
+<div class="blk-card">
+  <div class="blk-head">
+    <span class="dot d1"></span><span class="dot d2"></span><span class="dot d3"></span>
+    <span class="file">重点示例：三块最常用的侦测积木</span>
+    <span class="lang">图形化积木</span>
+  </div>
+  <div class="blk-body">
+<svg class="blk" viewBox="0 0 197.6 126" width="197.6" height="126" role="img" aria-label="积木脚本"><g font-family="'PingFang SC','Microsoft YaHei','Noto Sans SC',sans-serif"><g transform="translate(3,3)"><path d="M0,5 A5,5 0 0 1 5,0 H16 v4 h12 v-4 H167 A5,5 0 0 1 172,5 V31 A5,5 0 0 1 167,36 H28 v4 h-12 v-4 H5 A5,5 0 0 1 0,31 Z" fill="#5CB1D6" stroke="#4b91af" stroke-width="1.2"/><text x="15" y="22.8" font-size="13.4" fill="#fff">碰到 </text><rect x="56" y="6.5" width="79.6" height="23" rx="5" fill="#2E8EB8"/><text x="90.8" y="22.4" font-size="12.5" fill="#fff" text-anchor="middle">鼠标指针</text><path d="M124.6 15.5 l4 5 l4 -5 z" fill="#fff" opacity=".85"/><text x="142.6" y="22.8" font-size="13.4" fill="#fff"> ?</text></g><g transform="translate(3,43)"><path d="M0,5 A5,5 0 0 1 5,0 H16 v4 h12 v-4 H167 A5,5 0 0 1 172,5 V31 A5,5 0 0 1 167,36 H28 v4 h-12 v-4 H5 A5,5 0 0 1 0,31 Z" fill="#5CB1D6" stroke="#4b91af" stroke-width="1.2"/><text x="15" y="22.8" font-size="13.4" fill="#fff">碰到 </text><rect x="56" y="6.5" width="79.6" height="23" rx="5" fill="#2E8EB8"/><text x="90.8" y="22.4" font-size="12.5" fill="#fff" text-anchor="middle">舞台边缘</text><path d="M124.6 15.5 l4 5 l4 -5 z" fill="#fff" opacity=".85"/><text x="142.6" y="22.8" font-size="13.4" fill="#fff"> ?</text></g><g transform="translate(3,83)"><path d="M0,5 A5,5 0 0 1 5,0 H16 v4 h12 v-4 H186 A5,5 0 0 1 191,5 V31 A5,5 0 0 1 186,36 H28 v4 h-12 v-4 H5 A5,5 0 0 1 0,31 Z" fill="#5CB1D6" stroke="#4b91af" stroke-width="1.2"/><text x="15" y="22.8" font-size="13.4" fill="#fff">到 </text><rect x="42.6" y="6.5" width="79.6" height="23" rx="5" fill="#2E8EB8"/><text x="77.4" y="22.4" font-size="12.5" fill="#fff" text-anchor="middle">鼠标指针</text><path d="M111.2 15.5 l4 5 l4 -5 z" fill="#fff" opacity=".85"/><text x="129.2" y="22.8" font-size="13.4" fill="#fff"> 的距离</text></g></g></svg>
+  </div>
+  <div class="out"><b>读法</b>　前两块是六边形的"判断"，结果只有"成立"或"不成立"；第三块是一个数，告诉你离得多远</div>
+</div>
+
+<div class="box tip">
+  <span class="lb">打个比方：</span>侦测积木就是角色的眼睛和耳朵。它<b>只负责看和听</b>，不负责做事——看见之后要做什么，得靠"如果……那么"或"重复执行直到"来接。
+</div>
+
+<figure class="pic">
+  <img src="../assets/illustrations/scratch-L1-04-02_sense_stones.webp" alt="喷泉边的隐形标记"
+       onerror="this.closest('.pic').classList.add('missing')">
+  <div class="ph">
+    <div class="fn">assets/illustrations/scratch-L1-04-02_sense_stones.webp</div>
+    <div class="ds">【配图位】小猫戴上魔法眼镜，能看见隐形的标记——鼠标指针、色块与舞台边缘线，标记在草地上发光。（提示词见《GESP配图清单与AI绘图提示词》第四节 1-4）</div>
+  </div>
+  <figcaption>图 5：戴上魔法眼镜，角色就能看见鼠标、颜色和边缘</figcaption>
+</figure>
+
+
+<h3 id="s2-2">2.2 碰到颜色</h3>
+
+<p>"碰到颜色？"是图形化编程里最好玩的一块：<b>你能指定一种颜色，让角色去"摸"它</b>。</p>
+<div class="blk-card">
+  <div class="blk-head">
+    <span class="dot d1"></span><span class="dot d2"></span><span class="dot d3"></span>
+    <span class="file">重点示例：让角色沿着黑线走</span>
+    <span class="lang">图形化积木</span>
+  </div>
+  <div class="blk-body">
+<svg class="blk" viewBox="0 0 255.2 194" width="255.2" height="194" role="img" aria-label="积木脚本"><g font-family="'PingFang SC','Microsoft YaHei','Noto Sans SC',sans-serif"><g transform="translate(3,3)"><path d="M0,5 A5,5 0 0 1 5,0 H16 v4 h12 v-4 H140 A5,5 0 0 1 145,5 V31 A5,5 0 0 1 140,36 H28 v4 h-12 v-4 H5 A5,5 0 0 1 0,31 Z" fill="#5CB1D6" stroke="#4b91af" stroke-width="1.2"/><text x="15" y="22.8" font-size="13.4" fill="#fff">碰到颜色 </text><rect x="82.8" y="6.5" width="26" height="23" rx="5" fill="#000000" stroke="#ffffff" stroke-width="1.6"/><text x="115.8" y="22.8" font-size="13.4" fill="#fff"> ?</text></g><g transform="translate(3,43)"><path d="M0,5 A5,5 0 0 1 5,0 H16 v4 h12 v-4 H244 A5,5 0 0 1 249,5 V126 A5,5 0 0 1 244,131 H28 v4 h-12 v-4 H5 A5,5 0 0 1 0,126 V90 H16 V77 H0 Z" fill="#FFAB19" stroke="#d18c14" stroke-width="1.2"/><text x="15" y="22.8" font-size="13.4" fill="#fff">如果 </text><polygon points="67.5,6.5 181.7,6.5 188.025,18 181.7,29.5 67.5,29.5 61.175,18" fill="#fff" stroke="#FFAB19" stroke-width="1.4"/><text x="67" y="22.8" font-size="13.4" fill="#575e75">碰到颜色 </text><rect x="134.8" y="6.5" width="26" height="23" rx="5" fill="#000000" stroke="#ffffff" stroke-width="1.6"/><text x="167.8" y="22.8" font-size="13.4" fill="#575e75"> ?</text><text x="200.2" y="22.8" font-size="13.4" fill="#fff"> 那么</text><g transform="translate(20,38)"><path d="M0,5 A5,5 0 0 1 5,0 H16 v4 h12 v-4 H123 A5,5 0 0 1 128,5 V31 A5,5 0 0 1 123,36 H28 v4 h-12 v-4 H5 A5,5 0 0 1 0,31 Z" fill="#4C97FF" stroke="#3e7bd1" stroke-width="1.2"/><text x="15" y="22.8" font-size="13.4" fill="#fff">右转 </text><rect x="56" y="6.5" width="30" height="23" rx="11.5" fill="#fff"/><text x="71" y="22.4" font-size="12.5" fill="#575e75" text-anchor="middle">5</text><text x="93" y="22.8" font-size="13.4" fill="#fff"> 度</text></g><g transform="translate(20,92)"><path d="M0,5 A5,5 0 0 1 5,0 H16 v4 h12 v-4 H123 A5,5 0 0 1 128,5 V31 A5,5 0 0 1 123,36 H28 v4 h-12 v-4 H5 A5,5 0 0 1 0,31 Z" fill="#4C97FF" stroke="#3e7bd1" stroke-width="1.2"/><text x="15" y="22.8" font-size="13.4" fill="#fff">左转 </text><rect x="56" y="6.5" width="30" height="23" rx="11.5" fill="#fff"/><text x="71" y="22.4" font-size="12.5" fill="#575e75" text-anchor="middle">5</text><text x="93" y="22.8" font-size="13.4" fill="#fff"> 度</text></g></g></g></svg>
+  </div>
+  <div class="out"><b>要点</b>　把颜色方块点开可以吸取屏幕上的任意一种颜色；常用来做"沿着黑线前进""碰到红墙就停"这类效果</div>
+</div>
+
+<h3 id="s2-3">2.3 按下键与鼠标按下</h3>
+
+<div class="blk-card">
+  <div class="blk-head">
+    <span class="dot d1"></span><span class="dot d2"></span><span class="dot d3"></span>
+    <span class="file">重点示例：侦测键盘和鼠标</span>
+    <span class="lang">图形化积木</span>
+  </div>
+  <div class="blk-body">
+<svg class="blk" viewBox="0 0 171.8 126" width="171.8" height="126" role="img" aria-label="积木脚本"><g font-family="'PingFang SC','Microsoft YaHei','Noto Sans SC',sans-serif"><g transform="translate(3,3)"><path d="M0,5 A5,5 0 0 1 5,0 H16 v4 h12 v-4 H160 A5,5 0 0 1 165,5 V31 A5,5 0 0 1 160,36 H28 v4 h-12 v-4 H5 A5,5 0 0 1 0,31 Z" fill="#5CB1D6" stroke="#4b91af" stroke-width="1.2"/><text x="15" y="22.8" font-size="13.4" fill="#fff">按下 </text><rect x="56" y="6.5" width="52.8" height="23" rx="5" fill="#2E8EB8"/><text x="77.4" y="22.4" font-size="12.5" fill="#fff" text-anchor="middle">空格</text><path d="M97.8 15.5 l4 5 l4 -5 z" fill="#fff" opacity=".85"/><text x="115.8" y="22.8" font-size="13.4" fill="#fff"> 键 ?</text></g><g transform="translate(3,43)"><path d="M0,5 A5,5 0 0 1 5,0 H16 v4 h12 v-4 H93 A5,5 0 0 1 98,5 V31 A5,5 0 0 1 93,36 H28 v4 h-12 v-4 H5 A5,5 0 0 1 0,31 Z" fill="#5CB1D6" stroke="#4b91af" stroke-width="1.2"/><text x="15" y="22.8" font-size="13.4" fill="#fff">按下鼠标 ?</text></g><g transform="translate(3,83)"><path d="M0,5 A5,5 0 0 1 5,0 H16 v4 h12 v-4 H113 A5,5 0 0 1 118,5 V31 A5,5 0 0 1 113,36 H28 v4 h-12 v-4 H5 A5,5 0 0 1 0,31 Z" fill="#5CB1D6" stroke="#4b91af" stroke-width="1.2"/><text x="15" y="22.8" font-size="13.4" fill="#fff">鼠标的 x 坐标</text></g></g></svg>
+  </div>
+  <div class="out"><b>要点</b>　"按下……键？"问的是"<b>此刻</b>这个键是不是被按着"；"按下鼠标？"判断的是鼠标左键</div>
+</div>
+
+<div class="box info">
+  <span class="lb">别把两件事搞混：</span><b>事件</b>里的"当按下空格键"是<b>一次性</b>的触发——按一下启动一次；<br><b>侦测</b>里的"按下空格键？"是<b>持续</b>的判断——只要还按着，它就一直成立。
+</div>
+
+<!-- ============ 3 ============ -->
+<div class="section-header" id="s3">
+  <h2>3　侦测积木怎么用</h2>
+  <div class="en-title">Using the Sensing Blocks</div>
+</div>
+
+<h3 id="s3-1">3.1 六边形要插进六边形的槽</h3>
+
+<p>还记得第 2 单元说过的那条规则吗？<b>形状决定能不能扣</b>。
+侦测积木是六边形的，所以它只有两个去处：</p>
+<figure class="figure">
+<svg class="diagram" viewBox="0 0 820 194" role="img" aria-label="六边形积木的两个去处">
+<text x="24" y="32" font-size="14" fill="#4c1d95" text-anchor="start" font-weight="bold">六边形积木的两个去处</text><rect x="24" y="56" width="378" height="104" rx="12" fill="#f3efff" stroke="#e6e0fb" stroke-width="1.8"/><text x="213" y="104" font-size="13.5" fill="#6d28d9" text-anchor="middle" font-weight="bold">插进"如果……那么"</text><text x="213" y="126" font-size="11.6" fill="#7c7794" text-anchor="middle">满足条件才做事</text><rect x="418" y="56" width="378" height="104" rx="12" fill="#faf8ff" stroke="#e6e0fb" stroke-width="1.8"/><text x="607" y="104" font-size="13.5" fill="#6d28d9" text-anchor="middle" font-weight="bold">插进"重复执行直到"</text><text x="607" y="126" font-size="11.6" fill="#7c7794" text-anchor="middle">一直做，直到条件成立</text><text x="24" y="186" font-size="11.8" fill="#8d9d94" text-anchor="start">塞进白色圆框（数字槽）里是不行的——形状根本不匹配</text>
+</svg>
+  <div class="caption">图 1（SVG）：六边形积木的两个去处</div>
+</figure>
+
+<h3 id="s3-2">3.2 放进如果……那么</h3>
+
+<div class="blk-card">
+  <div class="blk-head">
+    <span class="dot d1"></span><span class="dot d2"></span><span class="dot d3"></span>
+    <span class="file">重点示例：碰到喷泉就说话</span>
+    <span class="lang">图形化积木</span>
+  </div>
+  <div class="blk-body">
+<svg class="blk" viewBox="0 0 308 244" width="308" height="244" role="img" aria-label="积木脚本"><g font-family="'PingFang SC','Microsoft YaHei','Noto Sans SC',sans-serif"><g transform="translate(3,3)"><path d="M0,12 C32.96,0 131.84,0 164.8,12 V43 A5,5 0 0 1 159.8,48 H28 v4 h-12 v-4 H5 A5,5 0 0 1 0,43 Z" fill="#FFBF00" stroke="#d19c00" stroke-width="1.2"/><text x="15" y="34.8" font-size="13.4" fill="#fff">当 </text><rect x="42.6" y="18.5" width="52.8" height="23" rx="5" fill="#CC9900"/><text x="64" y="34.4" font-size="12.5" fill="#fff" text-anchor="middle">绿旗</text><path d="M84.4 27.5 l4 5 l4 -5 z" fill="#fff" opacity=".85"/><text x="102.4" y="34.8" font-size="13.4" fill="#fff"> 被点击</text></g><g transform="translate(3,55)"><path d="M0,5 A5,5 0 0 1 5,0 H16 v4 h12 v-4 H297 A5,5 0 0 1 302,5 V177 A5,5 0 0 1 297,182 H28 v4 h-12 v-4 H5 A5,5 0 0 1 0,177 V169 H16 V36 H0 Z" fill="#FFAB19" stroke="#d18c14" stroke-width="1.2"/><text x="15" y="22.8" font-size="13.4" fill="#fff">重复执行</text><g transform="translate(20,38)"><path d="M0,5 A5,5 0 0 1 5,0 H16 v4 h12 v-4 H271 A5,5 0 0 1 276,5 V123 A5,5 0 0 1 271,128 H28 v4 h-12 v-4 H5 A5,5 0 0 1 0,123 V115 H16 V36 H0 Z" fill="#FFAB19" stroke="#d18c14" stroke-width="1.2"/><text x="15" y="22.8" font-size="13.4" fill="#fff">如果 </text><polygon points="67.5,6.5 208.5,6.5 214.825,18 208.5,29.5 67.5,29.5 61.175,18" fill="#fff" stroke="#FFAB19" stroke-width="1.4"/><text x="67" y="22.8" font-size="13.4" fill="#575e75">碰到 </text><rect x="108" y="6.5" width="79.6" height="23" rx="5" fill="#CF8B17"/><text x="142.8" y="22.4" font-size="12.5" fill="#fff" text-anchor="middle">鼠标指针</text><path d="M176.6 15.5 l4 5 l4 -5 z" fill="#fff" opacity=".85"/><text x="194.6" y="22.8" font-size="13.4" fill="#575e75"> ?</text><text x="227" y="22.8" font-size="13.4" fill="#fff"> 那么</text><g transform="translate(20,38)"><path d="M0,5 A5,5 0 0 1 5,0 H16 v4 h12 v-4 H230 A5,5 0 0 1 235,5 V31 A5,5 0 0 1 230,36 H28 v4 h-12 v-4 H5 A5,5 0 0 1 0,31 Z" fill="#9966FF" stroke="#7d53d1" stroke-width="1.2"/><text x="15" y="22.8" font-size="13.4" fill="#fff">说 </text><rect x="42.6" y="6.5" width="85" height="23" rx="5" fill="#fff"/><text x="85.1" y="22.4" font-size="12.5" fill="#575e75" text-anchor="middle">凉丝丝的！</text><text x="134.6" y="22.8" font-size="13.4" fill="#fff"> </text><rect x="148.8" y="6.5" width="43.6" height="23" rx="11.5" fill="#fff"/><text x="170.6" y="22.4" font-size="12.5" fill="#575e75" text-anchor="middle">0.5</text><text x="199.4" y="22.8" font-size="13.4" fill="#fff"> 秒</text></g><g transform="translate(20,76)"><path d="M0,5 A5,5 0 0 1 5,0 H16 v4 h12 v-4 H169 A5,5 0 0 1 174,5 V31 A5,5 0 0 1 169,36 H28 v4 h-12 v-4 H5 A5,5 0 0 1 0,31 Z" fill="#9966FF" stroke="#7d53d1" stroke-width="1.2"/><text x="15" y="22.8" font-size="13.4" fill="#fff">将颜色特效增加 </text><rect x="123" y="6.5" width="36.4" height="23" rx="11.5" fill="#fff"/><text x="141.2" y="22.4" font-size="12.5" fill="#575e75" text-anchor="middle">10</text></g></g></g></g></svg>
+  </div>
+  <div class="out"><b>读法</b>　一直检查"碰到鼠标指针吗"——碰到了就说一句话、变一次色；没碰到就什么都不做，继续检查</div>
+</div>
+
+<h3 id="s3-3">3.3 停止脚本</h3>
+
+<p>作品跑起来之后，总得能停下来。<b>控制</b>分类里有三块"停止"积木：</p>
+<figure class="figure">
+<svg class="diagram" viewBox="0 0 820 270" role="img" aria-label="三块停止积木，管的范围不一样">
+<text x="24" y="32" font-size="14" fill="#4c1d95" text-anchor="start" font-weight="bold">三块停止积木，管的范围不一样</text><rect x="24" y="56" width="772" height="52" rx="10" fill="#f3efff" stroke="#e6e0fb" stroke-width="1.6"/><text x="42" y="87" font-size="13" fill="#6d28d9" text-anchor="start" font-weight="bold">停止全部脚本</text><text x="778" y="87" font-size="11.8" fill="#7c7794" text-anchor="end">整个作品里所有脚本统统停下</text><rect x="24" y="116" width="772" height="52" rx="10" fill="#faf8ff" stroke="#e6e0fb" stroke-width="1.6"/><text x="42" y="147" font-size="13" fill="#6d28d9" text-anchor="start" font-weight="bold">停止这个脚本</text><text x="778" y="147" font-size="11.8" fill="#7c7794" text-anchor="end">只停下"我这一段"，别的角色照跑</text><rect x="24" y="176" width="772" height="52" rx="10" fill="#f3efff" stroke="#e6e0fb" stroke-width="1.6"/><text x="42" y="207" font-size="13" fill="#6d28d9" text-anchor="start" font-weight="bold">停止该角色的其他脚本</text><text x="778" y="207" font-size="11.8" fill="#7c7794" text-anchor="end">停下这个角色的其他脚本，自己这一段继续</text><text x="24" y="258" font-size="11.8" fill="#8d9d94" text-anchor="start">一级最常考"停止全部脚本"：它相当于舞台上的红色停止按钮</text>
+</svg>
+  <div class="caption">图 2（SVG）：三块停止积木</div>
+</figure>
+
+<div class="blk-card">
+  <div class="blk-head">
+    <span class="dot d1"></span><span class="dot d2"></span><span class="dot d3"></span>
+    <span class="file">重点示例：碰到边缘就收工</span>
+    <span class="lang">图形化积木</span>
+  </div>
+  <div class="blk-body">
+<svg class="blk" viewBox="0 0 294.6 140" width="294.6" height="140" role="img" aria-label="积木脚本"><g font-family="'PingFang SC','Microsoft YaHei','Noto Sans SC',sans-serif"><g transform="translate(3,3)"><path d="M0,5 A5,5 0 0 1 5,0 H16 v4 h12 v-4 H283 A5,5 0 0 1 288,5 V85 A5,5 0 0 1 283,90 H28 v4 h-12 v-4 H5 A5,5 0 0 1 0,85 V77 H16 V36 H0 Z" fill="#FFAB19" stroke="#d18c14" stroke-width="1.2"/><text x="15" y="22.8" font-size="13.4" fill="#fff">重复执行直到 </text><polygon points="121.1,6.5 262.1,6.5 268.425,18 262.1,29.5 121.1,29.5 114.775,18" fill="#fff" stroke="#FFAB19" stroke-width="1.4"/><text x="120.6" y="22.8" font-size="13.4" fill="#575e75">碰到 </text><rect x="161.6" y="6.5" width="79.6" height="23" rx="5" fill="#CF8B17"/><text x="196.4" y="22.4" font-size="12.5" fill="#fff" text-anchor="middle">舞台边缘</text><path d="M230.2 15.5 l4 5 l4 -5 z" fill="#fff" opacity=".85"/><text x="248.2" y="22.8" font-size="13.4" fill="#575e75"> ?</text><g transform="translate(20,38)"><path d="M0,5 A5,5 0 0 1 5,0 H16 v4 h12 v-4 H123 A5,5 0 0 1 128,5 V31 A5,5 0 0 1 123,36 H28 v4 h-12 v-4 H5 A5,5 0 0 1 0,31 Z" fill="#4C97FF" stroke="#3e7bd1" stroke-width="1.2"/><text x="15" y="22.8" font-size="13.4" fill="#fff">移动 </text><rect x="56" y="6.5" width="30" height="23" rx="11.5" fill="#fff"/><text x="71" y="22.4" font-size="12.5" fill="#575e75" text-anchor="middle">5</text><text x="93" y="22.8" font-size="13.4" fill="#fff"> 步</text></g></g><g transform="translate(3,97)"><path d="M0,5 A5,5 0 0 1 5,0 H16 v4 h12 v-4 H145 A5,5 0 0 1 150,5 V31 A5,5 0 0 1 145,36 H28 v4 h-12 v-4 H5 A5,5 0 0 1 0,31 Z" fill="#FFAB19" stroke="#d18c14" stroke-width="1.2"/><text x="15" y="22.8" font-size="13.4" fill="#fff">停止 </text><rect x="56" y="6.5" width="79.6" height="23" rx="5" fill="#CF8B17"/><text x="90.8" y="22.4" font-size="12.5" fill="#fff" text-anchor="middle">这个脚本</text><path d="M124.6 15.5 l4 5 l4 -5 z" fill="#fff" opacity=".85"/></g></g></svg>
+  </div>
+  <div class="out"><b>要点</b>　"重复执行直到"会一直转，一转就检查一次条件；条件成立才跳出循环，接着执行下面的"停止"</div>
+</div>
+
+<!-- ============ 4 ============ -->
+<div class="section-header" id="s4">
+  <h2>4　一个作品里的好几段脚本</h2>
+  <div class="en-title">Several Scripts at Once</div>
+</div>
+
+<h3 id="s4-1">4.1 每个角色各有一份脚本</h3>
+
+<p>回到"多角色"这件事。图形化编程里最反直觉、也最重要的一点是：</p>
+<figure class="figure">
+<svg class="diagram" viewBox="0 0 820 194" role="img" aria-label="脚本是"贴在角色身上"的">
+<text x="24" y="32" font-size="14" fill="#4c1d95" text-anchor="start" font-weight="bold">脚本是"贴在角色身上"的</text><rect x="24" y="56" width="246.667" height="104" rx="12" fill="#f3efff" stroke="#e6e0fb" stroke-width="1.8"/><text x="147.333" y="104" font-size="13.5" fill="#6d28d9" text-anchor="middle" font-weight="bold">角色区点谁</text><text x="147.333" y="126" font-size="11.6" fill="#7c7794" text-anchor="middle">脚本区就显示谁的脚本</text><rect x="286.667" y="56" width="246.667" height="104" rx="12" fill="#faf8ff" stroke="#e6e0fb" stroke-width="1.8"/><text x="410" y="104" font-size="13.5" fill="#6d28d9" text-anchor="middle" font-weight="bold">每个角色</text><text x="410" y="126" font-size="11.6" fill="#7c7794" text-anchor="middle">都有自己独立的一份脚本</text><rect x="549.333" y="56" width="246.667" height="104" rx="12" fill="#f3efff" stroke="#e6e0fb" stroke-width="1.8"/><text x="672.667" y="104" font-size="13.5" fill="#6d28d9" text-anchor="middle" font-weight="bold">想改小猫的脚本</text><text x="672.667" y="126" font-size="11.6" fill="#7c7794" text-anchor="middle">得先选中小猫</text><text x="24" y="186" font-size="11.8" fill="#8d9d94" text-anchor="start">这就是"脚本区显示的是当前选中角色的脚本"这句话的含义</text>
+</svg>
+  <div class="caption">图 3（SVG）：脚本属于角色</div>
+</figure>
+
+<h3 id="s4-2">4.2 同时开工：并发</h3>
+
+<p>点一下绿旗，会发生什么？<b>所有角色身上所有"当绿旗被点击"的脚本，一起开始跑。</b>
+这就是考纲里说的"<b>并发程序</b>"。</p>
+<div class="blk-card">
+  <div class="blk-head">
+    <span class="dot d1"></span><span class="dot d2"></span><span class="dot d3"></span>
+    <span class="file">重点示例：两个角色同时开工</span>
+    <span class="lang">图形化积木</span>
+  </div>
+  <div class="blk-body">
+<div class="blk-row">
+    <div>
+      <div class="blk-cap">角色 A：一边走一边变色</div>
+<svg class="blk" viewBox="0 0 200 190" width="200" height="190" role="img" aria-label="积木脚本"><g font-family="'PingFang SC','Microsoft YaHei','Noto Sans SC',sans-serif"><g transform="translate(3,3)"><path d="M0,12 C32.96,0 131.84,0 164.8,12 V43 A5,5 0 0 1 159.8,48 H28 v4 h-12 v-4 H5 A5,5 0 0 1 0,43 Z" fill="#FFBF00" stroke="#d19c00" stroke-width="1.2"/><text x="15" y="34.8" font-size="13.4" fill="#fff">当 </text><rect x="42.6" y="18.5" width="52.8" height="23" rx="5" fill="#CC9900"/><text x="64" y="34.4" font-size="12.5" fill="#fff" text-anchor="middle">绿旗</text><path d="M84.4 27.5 l4 5 l4 -5 z" fill="#fff" opacity=".85"/><text x="102.4" y="34.8" font-size="13.4" fill="#fff"> 被点击</text></g><g transform="translate(3,55)"><path d="M0,5 A5,5 0 0 1 5,0 H16 v4 h12 v-4 H189 A5,5 0 0 1 194,5 V123 A5,5 0 0 1 189,128 H28 v4 h-12 v-4 H5 A5,5 0 0 1 0,123 V115 H16 V36 H0 Z" fill="#FFAB19" stroke="#d18c14" stroke-width="1.2"/><text x="15" y="22.8" font-size="13.4" fill="#fff">重复执行</text><g transform="translate(20,38)"><path d="M0,5 A5,5 0 0 1 5,0 H16 v4 h12 v-4 H123 A5,5 0 0 1 128,5 V31 A5,5 0 0 1 123,36 H28 v4 h-12 v-4 H5 A5,5 0 0 1 0,31 Z" fill="#4C97FF" stroke="#3e7bd1" stroke-width="1.2"/><text x="15" y="22.8" font-size="13.4" fill="#fff">移动 </text><rect x="56" y="6.5" width="30" height="23" rx="11.5" fill="#fff"/><text x="71" y="22.4" font-size="12.5" fill="#575e75" text-anchor="middle">5</text><text x="93" y="22.8" font-size="13.4" fill="#fff"> 步</text></g><g transform="translate(20,76)"><path d="M0,5 A5,5 0 0 1 5,0 H16 v4 h12 v-4 H163 A5,5 0 0 1 168,5 V31 A5,5 0 0 1 163,36 H28 v4 h-12 v-4 H5 A5,5 0 0 1 0,31 Z" fill="#9966FF" stroke="#7d53d1" stroke-width="1.2"/><text x="15" y="22.8" font-size="13.4" fill="#fff">将颜色特效增加 </text><rect x="123" y="6.5" width="30" height="23" rx="11.5" fill="#fff"/><text x="138" y="22.4" font-size="12.5" fill="#575e75" text-anchor="middle">5</text></g></g></g></svg>
+    </div>
+
+    <div>
+      <div class="blk-cap">角色 B：原地打转</div>
+<svg class="blk" viewBox="0 0 170.8 152" width="170.8" height="152" role="img" aria-label="积木脚本"><g font-family="'PingFang SC','Microsoft YaHei','Noto Sans SC',sans-serif"><g transform="translate(3,3)"><path d="M0,12 C32.96,0 131.84,0 164.8,12 V43 A5,5 0 0 1 159.8,48 H28 v4 h-12 v-4 H5 A5,5 0 0 1 0,43 Z" fill="#FFBF00" stroke="#d19c00" stroke-width="1.2"/><text x="15" y="34.8" font-size="13.4" fill="#fff">当 </text><rect x="42.6" y="18.5" width="52.8" height="23" rx="5" fill="#CC9900"/><text x="64" y="34.4" font-size="12.5" fill="#fff" text-anchor="middle">绿旗</text><path d="M84.4 27.5 l4 5 l4 -5 z" fill="#fff" opacity=".85"/><text x="102.4" y="34.8" font-size="13.4" fill="#fff"> 被点击</text></g><g transform="translate(3,55)"><path d="M0,5 A5,5 0 0 1 5,0 H16 v4 h12 v-4 H156 A5,5 0 0 1 161,5 V85 A5,5 0 0 1 156,90 H28 v4 h-12 v-4 H5 A5,5 0 0 1 0,85 V77 H16 V36 H0 Z" fill="#FFAB19" stroke="#d18c14" stroke-width="1.2"/><text x="15" y="22.8" font-size="13.4" fill="#fff">重复执行</text><g transform="translate(20,38)"><path d="M0,5 A5,5 0 0 1 5,0 H16 v4 h12 v-4 H130 A5,5 0 0 1 135,5 V31 A5,5 0 0 1 130,36 H28 v4 h-12 v-4 H5 A5,5 0 0 1 0,31 Z" fill="#4C97FF" stroke="#3e7bd1" stroke-width="1.2"/><text x="15" y="22.8" font-size="13.4" fill="#fff">右转 </text><rect x="56" y="6.5" width="36.4" height="23" rx="11.5" fill="#fff"/><text x="74.2" y="22.4" font-size="12.5" fill="#575e75" text-anchor="middle">10</text><text x="99.4" y="22.8" font-size="13.4" fill="#fff"> 度</text></g></g></g></svg>
+    </div>
+</div>
+
+  </div>
+  <div class="out"><b>要点</b>　两段脚本谁也不用等谁，绿旗一点就同时开工——它们的积木会交替着执行</div>
+</div>
+
+<div class="box info">
+  <span class="lb">并发最直观的例子：</span>一个角色负责"走路"，另一个角色负责"说话"。如果写成一段脚本，就得先走完再说话；分成两个角色，就能边走边说。
+</div>
+
+<!-- ============ 5 ============ -->
+<div class="section-header" id="s5">
+  <h2>5　代码实战</h2>
+  <div class="en-title">Level Practice</div>
+</div>
+
+<p>这一关第一次出现"绕路"：前面明明有东西挡着，你得<b>先看、再决定怎么走</b>。
+这就是侦测的用武之地。</p>
+<div class="level-card">
+  <div class="lc-head"><span class="n">关卡 16</span><h4>绕行</h4><span class="go">进入关卡 →</span></div>
+  <div class="lc-body">
+    <div class="story">
+      <b>故事：</b>
+花园主路被一块大石头挡住了。硬撞是撞不过去的——你要先看清楚挡在哪儿，
+然后<b>绕开它</b>：先往上走两步，再往右走三步，最后往下走两步，回到主路上。
+
+    </div>
+    <p><strong>思路：</strong>把绕路拆成三段：<b>上 2、右 3、下 2</b>。每一段都是一次"面向 + 移动"。
+等你学会"如果……那么"之后，这段路还能写得更聪明——让角色自己判断要不要绕。
+</p>
+<div class="blk-card">
+  <div class="blk-head">
+    <span class="dot d1"></span><span class="dot d2"></span><span class="dot d3"></span>
+    <span class="file">重点示例：先看清，再绕开</span>
+    <span class="lang">图形化积木</span>
+  </div>
+  <div class="blk-body">
+<svg class="blk" viewBox="0 0 282 392" width="282" height="392" role="img" aria-label="积木脚本"><g font-family="'PingFang SC','Microsoft YaHei','Noto Sans SC',sans-serif"><g transform="translate(3,3)"><path d="M0,12 C32.96,0 131.84,0 164.8,12 V43 A5,5 0 0 1 159.8,48 H28 v4 h-12 v-4 H5 A5,5 0 0 1 0,43 Z" fill="#FFBF00" stroke="#d19c00" stroke-width="1.2"/><text x="15" y="34.8" font-size="13.4" fill="#fff">当 </text><rect x="42.6" y="18.5" width="52.8" height="23" rx="5" fill="#CC9900"/><text x="64" y="34.4" font-size="12.5" fill="#fff" text-anchor="middle">绿旗</text><path d="M84.4 27.5 l4 5 l4 -5 z" fill="#fff" opacity=".85"/><text x="102.4" y="34.8" font-size="13.4" fill="#fff"> 被点击</text></g><g transform="translate(3,55)"><path d="M0,5 A5,5 0 0 1 5,0 H16 v4 h12 v-4 H271 A5,5 0 0 1 276,5 V85 A5,5 0 0 1 271,90 H28 v4 h-12 v-4 H5 A5,5 0 0 1 0,85 V77 H16 V36 H0 Z" fill="#FFAB19" stroke="#d18c14" stroke-width="1.2"/><text x="15" y="22.8" font-size="13.4" fill="#fff">如果 </text><polygon points="67.5,6.5 208.5,6.5 214.825,18 208.5,29.5 67.5,29.5 61.175,18" fill="#fff" stroke="#FFAB19" stroke-width="1.4"/><text x="67" y="22.8" font-size="13.4" fill="#575e75">碰到 </text><rect x="108" y="6.5" width="79.6" height="23" rx="5" fill="#CF8B17"/><text x="142.8" y="22.4" font-size="12.5" fill="#fff" text-anchor="middle">鼠标指针</text><path d="M176.6 15.5 l4 5 l4 -5 z" fill="#fff" opacity=".85"/><text x="194.6" y="22.8" font-size="13.4" fill="#575e75"> ?</text><text x="227" y="22.8" font-size="13.4" fill="#fff"> 那么</text><g transform="translate(20,38)"><path d="M0,5 A5,5 0 0 1 5,0 H16 v4 h12 v-4 H229 A5,5 0 0 1 234,5 V31 A5,5 0 0 1 229,36 H28 v4 h-12 v-4 H5 A5,5 0 0 1 0,31 Z" fill="#9966FF" stroke="#7d53d1" stroke-width="1.2"/><text x="15" y="22.8" font-size="13.4" fill="#fff">说 </text><rect x="42.6" y="6.5" width="98.4" height="23" rx="5" fill="#fff"/><text x="91.8" y="22.4" font-size="12.5" fill="#575e75" text-anchor="middle">这里有东西！</text><text x="148" y="22.8" font-size="13.4" fill="#fff"> </text><rect x="162.2" y="6.5" width="30" height="23" rx="11.5" fill="#fff"/><text x="177.2" y="22.4" font-size="12.5" fill="#575e75" text-anchor="middle">1</text><text x="199.2" y="22.8" font-size="13.4" fill="#fff"> 秒</text></g></g><g transform="translate(3,149)"><path d="M0,5 A5,5 0 0 1 5,0 H16 v4 h12 v-4 H137 A5,5 0 0 1 142,5 V31 A5,5 0 0 1 137,36 H28 v4 h-12 v-4 H5 A5,5 0 0 1 0,31 Z" fill="#4C97FF" stroke="#3e7bd1" stroke-width="1.2"/><text x="15" y="22.8" font-size="13.4" fill="#fff">面向 </text><rect x="56" y="6.5" width="30" height="23" rx="11.5" fill="#fff"/><text x="71" y="22.4" font-size="12.5" fill="#575e75" text-anchor="middle">0</text><text x="93" y="22.8" font-size="13.4" fill="#fff"> 方向</text></g><g transform="translate(3,189)"><path d="M0,5 A5,5 0 0 1 5,0 H16 v4 h12 v-4 H123 A5,5 0 0 1 128,5 V31 A5,5 0 0 1 123,36 H28 v4 h-12 v-4 H5 A5,5 0 0 1 0,31 Z" fill="#4C97FF" stroke="#3e7bd1" stroke-width="1.2"/><text x="15" y="22.8" font-size="13.4" fill="#fff">移动 </text><rect x="56" y="6.5" width="30" height="23" rx="11.5" fill="#fff"/><text x="71" y="22.4" font-size="12.5" fill="#575e75" text-anchor="middle">2</text><text x="93" y="22.8" font-size="13.4" fill="#fff"> 步</text></g><g transform="translate(3,229)"><path d="M0,5 A5,5 0 0 1 5,0 H16 v4 h12 v-4 H143 A5,5 0 0 1 148,5 V31 A5,5 0 0 1 143,36 H28 v4 h-12 v-4 H5 A5,5 0 0 1 0,31 Z" fill="#4C97FF" stroke="#3e7bd1" stroke-width="1.2"/><text x="15" y="22.8" font-size="13.4" fill="#fff">面向 </text><rect x="56" y="6.5" width="36.4" height="23" rx="11.5" fill="#fff"/><text x="74.2" y="22.4" font-size="12.5" fill="#575e75" text-anchor="middle">90</text><text x="99.4" y="22.8" font-size="13.4" fill="#fff"> 方向</text></g><g transform="translate(3,269)"><path d="M0,5 A5,5 0 0 1 5,0 H16 v4 h12 v-4 H123 A5,5 0 0 1 128,5 V31 A5,5 0 0 1 123,36 H28 v4 h-12 v-4 H5 A5,5 0 0 1 0,31 Z" fill="#4C97FF" stroke="#3e7bd1" stroke-width="1.2"/><text x="15" y="22.8" font-size="13.4" fill="#fff">移动 </text><rect x="56" y="6.5" width="30" height="23" rx="11.5" fill="#fff"/><text x="71" y="22.4" font-size="12.5" fill="#575e75" text-anchor="middle">3</text><text x="93" y="22.8" font-size="13.4" fill="#fff"> 步</text></g><g transform="translate(3,309)"><path d="M0,5 A5,5 0 0 1 5,0 H16 v4 h12 v-4 H150 A5,5 0 0 1 155,5 V31 A5,5 0 0 1 150,36 H28 v4 h-12 v-4 H5 A5,5 0 0 1 0,31 Z" fill="#4C97FF" stroke="#3e7bd1" stroke-width="1.2"/><text x="15" y="22.8" font-size="13.4" fill="#fff">面向 </text><rect x="56" y="6.5" width="43.6" height="23" rx="11.5" fill="#fff"/><text x="77.8" y="22.4" font-size="12.5" fill="#575e75" text-anchor="middle">180</text><text x="106.6" y="22.8" font-size="13.4" fill="#fff"> 方向</text></g><g transform="translate(3,349)"><path d="M0,5 A5,5 0 0 1 5,0 H16 v4 h12 v-4 H123 A5,5 0 0 1 128,5 V31 A5,5 0 0 1 123,36 H28 v4 h-12 v-4 H5 A5,5 0 0 1 0,31 Z" fill="#4C97FF" stroke="#3e7bd1" stroke-width="1.2"/><text x="15" y="22.8" font-size="13.4" fill="#fff">移动 </text><rect x="56" y="6.5" width="30" height="23" rx="11.5" fill="#fff"/><text x="71" y="22.4" font-size="12.5" fill="#575e75" text-anchor="middle">2</text><text x="93" y="22.8" font-size="13.4" fill="#fff"> 步</text></g></g></svg>
+  </div>
+  <div class="out"><b>读法</b>　先用侦测"看一眼"有没有障碍，再按三段路线绕过去</div>
+</div>
+
+    <div class="box tip">
+      <span class="lb">自己试一试：</span>把侦测积木换成"碰到<b>舞台边缘</b>？"，判断就变成了"有没有撞墙"。<strong>想一想：如果要先向右绕呢？把三段的顺序换一下试试。</strong>
+    </div>
+    <p>这一关真正要记住的是：<b>侦测积木本身不做事，它只回答"是"或"不是"</b>。
+    真正做事的是套在外面的"如果……那么"。</p>
+<div class="box info">
+  <span class="lb">回头看看第 3 单元：</span>当时我们只会闷头往前走。现在有了侦测，角色才算真正"长出了眼睛"——下一关我们会用这个能力做更复杂的事。
+</div>
+    <a class="btn-go" href="https://codecombat.cn/" target="_blank" rel="noopener">去扣哒世界闯这一关 →</a>
+  </div>
+</div>
+
+<!-- ============ 6 ============ -->
+<div class="section-header" id="s6">
+  <h2>6　常见陷阱</h2>
+  <div class="en-title">Common Traps</div>
+</div>
+
+<div class="box warn">
+  <span class="lb">陷阱 1：</span><b>把帽子块放在脚本中间。</b>事件积木顶上是弧形的，只能放在最上面。<br><strong>正确做法：</strong>一段脚本只能有一个开头；要在别的事件里做事，就得新写一段脚本。
+</div>
+
+<div class="box warn">
+  <span class="lb">陷阱 2：</span><b>把侦测积木直接扣在脚本里。</b>六边形积木下面没有凹槽，接不上下一块积木，单独放着也不会被执行。<br><strong>正确做法：</strong>把侦测积木<b>插进</b>"如果……那么"或"重复执行直到"的六边形槽里。
+</div>
+
+<div class="box warn">
+  <span class="lb">陷阱 3：</span><b>把"当按下空格键"和"按下空格键？"当成一回事。</b>前者是事件（按一下触发一次），后者是侦测（按着就一直成立）。<br><strong>怎么选：</strong>要"按一下做一次"用事件；要"按住不放持续做"用侦测。
+</div>
+
+<div class="box warn">
+  <span class="lb">陷阱 4：</span><b>以为"停止这个脚本"会把所有角色都停下。</b>它只管自己这一段。<br><strong>正确做法：</strong>要让整个作品都停下来，用<b>停止全部脚本</b>——它的效果和点红色停止按钮一样。
+</div>
+
+<!-- ============ 7 ============ -->
+<div class="section-header" id="s7">
+  <h2>7　题目练习</h2>
+  <div class="en-title">Practice</div>
+</div>
+
+<p>第 1 题改编自 2026 年 9 月 · 图形化编程 一级 第 8 题，其余为原创练习题。</p>
+<div class="exam">
+  <div class="eh"><span class="src">改编自 2026 年 9 月 · 图形化编程 一 级 · 第 8 题</span><span class="tp">单选题</span></div>
+  <div class="eb">
+    <div class="q">角色身上有两段脚本：一段让它"一直移到鼠标指针"，另一段在"重复执行"里判断"如果碰到橙色区域，就播放声音喵"。<br>关于执行后的现象，下面说法正确的是（　　）。</div>
+    <div class="opt"><i>A.</i>角色只移动一次，始终不会播放声音<br>
+      <i>B.</i>角色移到 (0, 0) 后就停在原地，并一直播放声音<br>
+      <i>C.</i>角色不断跟随鼠标移动，只有当鼠标指针碰到橙色区域时才播放声音<br>
+      <i>D.</i>角色一直跟随鼠标移动，始终不会播放声音</div>
+    <details><summary>查看答案与详解</summary>
+      <div class="ans"><b>答案：C</b>。<b>"一直移到鼠标指针"放在循环里</b>，所以角色的位置会不断跟着鼠标跑；<br><b>"如果碰到橙色……那么播放声音"也放在循环里</b>，所以每一轮都会检查一次颜色——碰到了才响，没碰到就不响。<br><b>A 错：</b>循环里的动作会反复执行，不是只做一次；<br><b>B 错：</b>角色跟的是鼠标，不会停在原点；<br><b>D 错：</b>只要鼠标移到橙色区域上，声音就会响。<br><b>要点：</b>"循环 + 判断"的组合，就是"一遍遍检查"。<br><span class="tagline">对应小节</span>3.1、3.2 侦测积木放进循环里。</div>
+    </details>
+  </div>
+</div>
+<div class="exam">
+  <div class="eh"><span class="src ori">原创练习题</span><span class="tp">单选题</span></div>
+  <div class="eb">
+    <div class="q">花园喷泉只有在"绿旗被点击"时才喷水。要让它在<b>被鼠标点一下</b>时也喷水，应该把哪一块积木放在脚本最上面（　　）。</div>
+    <div class="opt">
+      <i>A.</i>当绿旗被点击<br>
+      <i>B.</i>当角色被点击<br>
+      <i>C.</i>当按下空格键<br>
+      <i>D.</i>移动 10 步
+    </div>
+    <details><summary>查看答案与详解</summary>
+      <div class="ans"><b>答案：B</b>。"当角色被点击"这块帽子块的效果就是"用鼠标点一下这个角色，脚本就开始执行"。<br><b>A 错：</b>那要等到有人升起绿旗；<br><b>C 错：</b>那要用键盘按键触发；<br><b>D 错：</b>"移动 10 步"是运动积木，不是事件块，也不能放在最上面当开头的帽子块。<br><span class="tagline">对应小节</span>1.2 当角色被点击。</div>
+    </details>
+  </div>
+</div>
+
+<div class="exam">
+  <div class="eh"><span class="src ori">原创练习题</span><span class="tp">单选题</span></div>
+  <div class="eb">
+    <div class="q">角色身上挂着一张"碰到鼠标指针？"的积木。它单独放在脚本区里，点绿旗后会发生什么（　　）。</div>
+    <div class="opt">
+      <i>A.</i>角色会一直跟着鼠标跑<br>
+      <i>B.</i>什么也不会发生<br>
+      <i>C.</i>角色会隐藏起来<br>
+      <i>D.</i>程序会报错
+    </div>
+    <details><summary>查看答案与详解</summary>
+      <div class="ans"><b>答案：B</b>。六边形积木只回答"是或不是"，它<b>没有接到任何事件块上、也不是一段脚本</b>，放着不会被执行。<br><b>A 错：</b>要跟着鼠标跑，得把这块积木塞进循环里的"如果……那么"，再做"移到鼠标指针"的动作；<br><b>C、D 错：</b>图形化编程里积木不会因为摆错位置就报错，只是不执行而已。<br><span class="tagline">对应小节</span>3.1、3.2 侦测积木要用在判断里。</div>
+    </details>
+  </div>
+</div>
+
+<div class="exam">
+  <div class="eh"><span class="src ori">原创练习题</span><span class="tp">单选题</span></div>
+  <div class="eb">
+    <div class="q">在图形化编程中，要让角色<b>一直</b>执行"如果碰到边缘就停下"，下面哪种做法最合适（　　）。</div>
+    <div class="opt">
+      <i>A.</i>把"如果……那么"单独放在脚本区<br>
+      <i>B.</i>用"重复执行"把"如果……那么"套起来<br>
+      <i>C.</i>把"碰到舞台边缘？"直接扣在帽子块下面<br>
+      <i>D.</i>把"如果……那么"放在帽子块上面
+    </div>
+    <details><summary>查看答案与详解</summary>
+      <div class="ans"><b>答案：B</b>。"一直做"要靠<b>循环</b>，“这件事要不要做”靠<b>判断</b>——把判断套进循环里，就得到"一直检查"。<br><b>A 错：</b>不放进脚本、不接到事件块上，就不会执行；<br><b>C 错：</b>六边形积木接不上帽子块（形状不匹配）；<br><b>D 错：</b>帽子块必须是最上面那一块，不能有东西压在它上面。<br><span class="tagline">对应小节</span>3.2 放进如果……那么；1.1 帽子块的位置。</div>
+    </details>
+  </div>
+</div>
+
+<div class="exam">
+  <div class="eh"><span class="src ori">原创练习题</span><span class="tp">多选题</span></div>
+  <div class="eb">
+    <div class="q">下面哪些属于<b>事件</b>积木（　　）。</div>
+    <div class="opt">
+      <i>A.</i>当绿旗被点击<br>
+      <i>B.</i>当角色被点击<br>
+      <i>C.</i>当按下空格键<br>
+      <i>D.</i>碰到鼠标指针？
+    </div>
+    <details><summary>查看答案与详解</summary>
+      <div class="ans"><b>答案：A、B、C</b>。这三块都是黄色的事件积木，都是"什么情况下开始执行"的开关。<br><b>D 错：</b>"碰到鼠标指针？"是<b>侦测</b>积木，只负责判断，不能当开关用。<br><b>小技巧：</b>事件块是<b>黄色</b>的、顶上有弧度；侦测块是<b>浅蓝色</b>的、六边形。<br><span class="tagline">对应小节</span>1.1～1.3 三种事件；2.1 侦测积木。</div>
+    </details>
+  </div>
+</div>
+
+<div class="exam">
+  <div class="eh"><span class="src ori">原创练习题</span><span class="tp">判断题</span></div>
+  <div class="eb">
+    <div class="q">在图形化编程中，按下绿旗后，只有"当前选中"的那个角色的脚本会执行。（　　）</div>
+    <details><summary>查看答案与详解</summary>
+      <div class="ans"><b>答案：错误（×）</b>。绿旗管的是<b>整个作品</b>——所有角色身上所有"当绿旗被点击"的脚本会<b>同时</b>开始执行。<br>"当前选中"只影响你<b>看得见谁的脚本</b>，不影响谁被执行。<br><span class="tagline">对应小节</span>4.2 同时开工：并发。</div>
+    </details>
+  </div>
+</div>
+
+<!-- ============ 8 ============ -->
+<div class="section-header" id="s8">
+  <h2>8　本单元小结</h2>
+  <div class="en-title">Unit Summary</div>
+</div>
+
+<div class="cast teacher">
+  <img class="ava" src="../assets/avatars/tharin.webp" alt="塔林" onerror="this.style.display='none'">
+  <div class="bubble">
+    <div class="who">塔林 · 花园的守门人</div>
+    今天给角色装上了耳朵和眼睛：<b>事件</b>让它被叫醒，<b>侦测</b>让它能看见。
+    再记住一句口诀——<b>侦测只回答是或不是，做事交给如果……那么</b>。
+  </div>
+</div>
+
+<h3 id="s8-1">你在喷泉边学到了什么</h3>
+
+<ul>
+  <li><b>三种事件</b>：当绿旗被点击、当角色被点击、当按下某个键；</li>
+  <li><b>侦测积木</b>：碰到鼠标指针 / 边缘 / 颜色、按下某键、按下鼠标、鼠标坐标；</li>
+  <li><b>怎么用</b>：六边形只能插进六边形的槽——"如果……那么"或"重复执行直到"；</li>
+  <li><b>停止脚本</b>：停止全部脚本 / 停止这个脚本，管的范围不一样；</li>
+  <li><b>并发</b>：点一次绿旗，所有角色的脚本一起开工。</li>
+</ul>
+<h3 id="s8-2">下一站：排队浇水</h3>
+
+<p>现在角色会走、会听、会看，可它做事还是"想到哪做到哪"。
+下一单元我们要教它<b>按顺序办事</b>——先做什么、后做什么，一步都不能乱。</p>
+
+
+<div class="pager">
+  <a href="scratch-1-03.html"><div class="k">← 上一单元</div><div class="v">花径漫步 · 坐标、角度与运动</div></a>
+  <a href="../index.html" target="_top" class="back"><div class="k">返回</div><div class="v">考纲之路 · 总目录</div></a>
+  <a href="scratch-1-05.html"><div class="k">下一单元 →</div><div class="v">排队浇水 · 顺序结构与程序思维</div></a>
+</div>
+<div class="cta">
+  <h3>下一站：排队浇水</h3>
+  <p>现在角色会走、会听、会看，可它做事还是想到哪做到哪。下一单元我们要教它按顺序办事——先做什么、后做什么，一步都不能乱。</p>
+  <a class="btn-go" href="https://codecombat.cn/" target="_blank" rel="noopener">加入扣哒世界，把这条考纲之路走一遍 →</a>
+</div>
+
+</div><!-- /container -->
+</div><!-- /page -->
+
+<script>
+if (location.search.indexOf('expand') >= 0) {
+  document.querySelectorAll('details').forEach(d => d.open = true);
+}
+document.querySelectorAll('.sidebar-nav a').forEach(a => {
+  a.addEventListener('click', () => {
+    if (window.innerWidth <= 900) document.querySelector('.sidebar-nav').classList.remove('active');
+  });
+});
+</script>
+</body>
+</html>

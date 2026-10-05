@@ -1,0 +1,860 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="copyright" content="CodeCombat Inc. codecombat.cn">
+<title>花径漫步 · 坐标、角度与运动 | 扣哒考级 · GESP 图形化一级</title>
+<style>
+  :root{
+    --primary:#8b5cf6; --primary-light:#a78bfa; --primary-lighter:#f3efff; --primary-dark:#6d28d9;
+    --brand:#ff6b35; --brand-dark:#e8541f; --brand-soft:#fff3ec;
+    --night:#131c2b; --night-2:#1e2a3a;
+    --gold:#f5b301;
+    --text:#2a2438; --dim:#7c7794; --dim2:#a29db8;
+    --bg:#ffffff; --bg-soft:#faf8ff; --line:#e9e4f8;
+    --sidebar:274px;
+    --code-bg:#211a33; --code-tx:#d6cfe6;
+    --code-kw:#c678dd; --code-st:#98c379; --code-nu:#d19a66; --code-cm:#7d7392; --code-fn:#61afef;
+  }
+  *{margin:0;padding:0;box-sizing:border-box}
+  html{scroll-behavior:smooth}
+  body{
+    font-family:"PingFang SC","Microsoft YaHei","Segoe UI",-apple-system,sans-serif;
+    line-height:1.9;color:var(--text);background:var(--bg);font-size:15.5px;
+  }
+
+  .sidebar-nav{
+    position:fixed;top:0;left:0;width:var(--sidebar);height:100vh;overflow-y:auto;
+    background:linear-gradient(180deg,#101a26,#182636);padding:14px 0 40px;z-index:100;
+    border-right:3px solid var(--brand);transition:transform .3s ease;
+  }
+  .sidebar-nav::-webkit-scrollbar{width:5px}
+  .sidebar-nav::-webkit-scrollbar-thumb{background:var(--brand);border-radius:4px}
+  .sb-brand{display:flex;align-items:center;gap:10px;padding:10px 13px 12px;border-bottom:1px solid #26384c;margin-bottom:8px}
+  .sidebar-nav a.sb-logo{display:flex;align-items:center;justify-content:center;flex-shrink:0;padding:0;border-left:none;transition:.2s}
+  .sb-logo:hover{transform:scale(1.08)}
+  .sb-logo img{height:34px;width:34px;display:block;object-fit:contain;border-radius:8px}
+  .sb-brand b{color:#f2f6fa;font-size:14px;letter-spacing:.5px;display:block;line-height:1.4}
+  .sb-brand span{color:#7f95ab;font-size:11.5px;display:block;line-height:1.4}
+  .nav-title{color:#ffb894;font-size:12px;font-weight:800;padding:10px 18px 6px;letter-spacing:1.2px}
+  .sidebar-nav a{
+    display:block;color:#c3d0dc;text-decoration:none;padding:6px 18px;font-size:12.5px;
+    line-height:1.55;border-left:3px solid transparent;transition:.18s;
+  }
+  .sidebar-nav a:hover{color:#fff;background:rgba(255,107,53,.16);border-left-color:var(--brand)}
+  .sidebar-nav a.nav-section{color:#ffb894;font-weight:700;font-size:13px;margin-top:11px;padding-top:10px;border-top:1px solid #26384c}
+  .sidebar-nav a.nav-section:first-of-type{border-top:none;margin-top:0;padding-top:6px}
+  .sidebar-nav a.nav-sub{padding-left:30px;color:#93a8bc;font-size:12px}
+  .sidebar-nav a.nav-sub:hover{color:#fff}
+  .sb-back{margin:16px 14px 0;display:block;text-align:center;padding:9px;border-radius:9px;background:#22344a;color:#a9c0d6 !important;font-size:12px;font-weight:700;border-left:none !important}
+  .sb-back:hover{background:var(--brand) !important;color:#fff !important}
+  .nav-toggle{display:none;position:fixed;top:14px;left:14px;z-index:120;background:var(--brand);color:#fff;border:none;border-radius:9px;padding:9px 13px;font-size:15px;cursor:pointer;box-shadow:0 4px 14px rgba(0,0,0,.25)}
+
+  .page{margin-left:var(--sidebar)}
+
+  .hero{
+    position:relative;overflow:hidden;padding:44px 52px;color:#fff;
+    background:linear-gradient(125deg,#0e1724 0%,#1b2b3f 46%,#8a3a16 132%);
+  }
+  .hero::after{content:"";position:absolute;right:-90px;top:-110px;width:400px;height:400px;border-radius:50%;background:radial-gradient(circle,rgba(245,179,1,.30),transparent 68%)}
+  .hero-top{display:flex;gap:36px;align-items:center;position:relative;z-index:2}
+  .hero-txt{flex:1;min-width:0}
+  .hero .crumb{font-size:11.5px;color:#ffb894;letter-spacing:1.5px;font-weight:700;margin-bottom:14px}
+  .hero h1{font-size:31px;font-weight:800;line-height:1.3;letter-spacing:.6px;margin-bottom:8px}
+  .hero h1 .sub{display:block;font-size:18px;font-weight:700;color:#ffd2b3;margin-top:6px;letter-spacing:.3px}
+  .hero .en{font-size:13px;color:#9db4c8;font-style:italic;margin-bottom:18px}
+  .hero .tags{display:flex;flex-wrap:wrap;gap:8px}
+  .tag{font-size:11.5px;padding:4px 12px;border-radius:20px;background:rgba(255,255,255,.12);border:1px solid rgba(255,255,255,.22);color:#e8f0f6;font-weight:600}
+  .tag.hot{background:rgba(255,107,53,.92);border-color:transparent;color:#fff}
+  .hero-card{flex-shrink:0;width:200px;text-align:center}
+  .hero-card .ava{
+    width:148px;height:148px;border-radius:50%;object-fit:cover;object-position:top center;
+    border:4px solid rgba(255,180,140,.6);box-shadow:0 14px 34px rgba(0,0,0,.45);background:#24344a;
+  }
+  .hero-card .nm{font-size:15px;font-weight:800;color:#fff;margin-top:10px}
+  .hero-card .ti{font-size:11.5px;color:#ffb894;margin-top:2px}
+
+  .container{max-width:1080px;margin:0 auto;padding:38px 52px 70px}
+
+  .lead{
+    font-size:15.5px;line-height:2.05;color:#443c58;background:linear-gradient(120deg,#fff8f3,#f7fbf8);
+    border-left:5px solid var(--brand);border-radius:0 14px 14px 0;padding:22px 26px;margin-bottom:32px;
+  }
+  .lead b{color:var(--brand-dark)}
+
+  .cast{display:flex;gap:16px;align-items:flex-start;border-radius:16px;padding:18px 22px;margin:24px 0}
+  .cast .ava{width:72px;height:72px;border-radius:50%;object-fit:cover;object-position:top center;flex-shrink:0;background:#e8eef5}
+  .cast .bubble{position:relative;font-size:14px;line-height:1.95;padding-top:2px;flex:1}
+  .cast .who{font-size:12px;font-weight:800;margin-bottom:5px;letter-spacing:.5px}
+  .cast.anya{background:var(--brand-soft);border:1px solid #ffdcc9}
+  .cast.anya .who{color:var(--brand-dark)}
+  .cast.anya .bubble{color:#5c4636}
+  .cast.duck{background:#fff5f5;border:1px solid #fbd5d5}
+  .cast.duck .who{color:#b91c1c}
+  .cast.duck .bubble{color:#5c4141}
+  .cast.teacher{background:linear-gradient(120deg,#f4f7fb,#ffffff);border:1px solid #dbe4f0}
+  .cast.teacher .who{color:#1e293b}
+  .cast.teacher .bubble{color:#3c4a5a}
+  .cast.hero{background:#f7f3ff;border:1px solid #ded1fa}
+  .cast.hero .who{color:#6d28d9}
+  .cast.hero .bubble{color:#463d5c}
+
+  .goal-grid{display:grid;grid-template-columns:1fr 1fr;gap:16px;margin-bottom:36px}
+  .goal{border:1px solid var(--line);border-radius:15px;padding:19px 21px;background:#fff;box-shadow:0 4px 16px rgba(31,122,68,.05)}
+  .goal h4{font-size:14px;font-weight:800;margin-bottom:11px;display:flex;align-items:center;gap:8px;color:var(--primary-dark)}
+  .goal h4 .ic{width:22px;height:22px;border-radius:7px;background:var(--primary-lighter);display:flex;align-items:center;justify-content:center;font-size:12px}
+  .goal ul{list-style:none}
+  .goal li{font-size:13.5px;color:#6b6480;line-height:1.9;padding-left:18px;position:relative}
+  .goal li::before{content:"▸";position:absolute;left:0;color:var(--primary);font-weight:800}
+  .goal.syllabus li::before{content:"✓"}
+
+  .section-header{margin:52px 0 24px;padding-bottom:12px;border-bottom:3px solid var(--brand);display:flex;align-items:baseline;gap:14px;flex-wrap:wrap}
+  .section-header h2{font-size:22px;font-weight:800;color:var(--night);letter-spacing:.4px}
+  .section-header .en-title{font-size:12px;color:var(--dim2);font-style:italic}
+  h3{font-size:17.5px;font-weight:800;margin:34px 0 14px;color:var(--night);display:flex;align-items:center;gap:10px}
+  h3::before{content:"";width:5px;height:17px;border-radius:3px;background:var(--brand);flex-shrink:0}
+  h4{font-size:15px;font-weight:800;margin:24px 0 10px;color:#3c2f63}
+  p{margin:12px 0;color:#463d5c;line-height:2}
+  strong{color:var(--primary-dark)}
+  code.inline{background:var(--primary-lighter);color:var(--primary-dark);padding:2px 7px;border-radius:6px;font-family:"SFMono-Regular",Consolas,Menlo,monospace;font-size:.9em;font-weight:600}
+
+  .figure{margin:24px 0;text-align:center}
+  .figure svg.diagram{max-width:100%;height:auto;background:#fff;border:1px solid var(--line);border-radius:14px;padding:10px}
+  .figure .caption{font-size:12.5px;color:var(--dim2);margin-top:9px}
+
+  .pic{margin:26px 0;text-align:center}
+  .pic img{max-width:100%;border-radius:16px;box-shadow:0 10px 28px rgba(30,60,45,.15);display:block;margin:0 auto}
+  .pic figcaption{font-size:12.5px;color:var(--dim2);margin-top:9px}
+  .pic .ph{display:none}
+  .pic.missing img{display:none}
+  .pic.missing .ph{
+    display:flex;flex-direction:column;align-items:center;justify-content:center;gap:9px;
+    border:2px dashed #c9d9e8;border-radius:16px;background:linear-gradient(135deg,#f8fbfe,#eef6ff);
+    padding:40px 26px;color:#7a8fa8;
+  }
+  .pic.missing .ph .fn{font-family:Consolas,monospace;font-size:12.5px;color:#2563eb;font-weight:700;word-break:break-all}
+  .pic.missing .ph .ds{font-size:12.5px;line-height:1.8;max-width:560px}
+
+  .box{border-radius:13px;padding:16px 20px;margin:20px 0;font-size:14px;line-height:1.95}
+  .box .lb{font-weight:800;margin-right:6px}
+  .info{background:#eef6ff;border-left:5px solid #3b82f6;color:#274768}
+  .info .lb{color:#1d4ed8}
+  .tip{background:#fff9ec;border-left:5px solid #f59e0b;color:#6b4e13}
+  .tip .lb{color:#b45309}
+  .remember{background:var(--primary-lighter);border-left:5px solid var(--primary);color:#3a2a6b}
+  .remember .lb{color:var(--primary-dark)}
+  .warn{background:#fef2f2;border-left:5px solid #ef4444;color:#7f2b2b}
+  .warn .lb{color:#b91c1c}
+
+  .code-card{margin:20px 0;border-radius:14px;overflow:hidden;box-shadow:0 10px 28px rgba(20,40,28,.20)}
+  .code-head{display:flex;align-items:center;gap:9px;background:#2c2438;padding:9px 14px}
+  .code-head .dot{width:10px;height:10px;border-radius:50%}
+  .code-head .d1{background:#ff5f57}.code-head .d2{background:#febc2e}.code-head .d3{background:#28c840}
+  .code-head .file{color:#a09ab4;font-size:11.5px;font-family:Consolas,monospace;margin-left:6px}
+  .code-head .lang{margin-left:auto;font-size:10.5px;font-weight:800;color:#150f21;background:#a78bfa;padding:2px 9px;border-radius:6px;letter-spacing:.4px}
+  .code-card pre{background:var(--code-bg);padding:18px 20px;overflow-x:auto;margin:0;font-family:"SFMono-Regular",Consolas,"Courier New",monospace;font-size:13.5px;line-height:1.85}
+  .code-card pre::-webkit-scrollbar{height:8px}
+  .code-card pre::-webkit-scrollbar-thumb{background:#433a5e;border-radius:4px}
+  .code-card code{color:var(--code-tx);white-space:pre}
+  .kw{color:var(--code-kw);font-weight:600}
+  .st{color:var(--code-st)}
+  .nu{color:var(--code-nu)}
+  .cm{color:var(--code-cm);font-style:italic}
+  .fn{color:var(--code-fn)}
+  .out{background:#1d1729;color:#c4b5fd;font-family:Consolas,monospace;font-size:13px;padding:12px 20px;border-top:1px solid #352c48}
+  .out b{color:#c9d6cd;font-weight:600;font-size:11.5px;letter-spacing:1px}
+
+  table.styled{width:100%;border-collapse:collapse;margin:20px 0;font-size:13.5px;border-radius:12px;overflow:hidden;box-shadow:0 4px 16px rgba(31,122,68,.07)}
+  table.styled thead{background:var(--brand)}
+  table.styled th{color:#fff;padding:11px 14px;text-align:left;font-weight:700;font-size:13px}
+  table.styled td{padding:10px 14px;border-bottom:1px solid var(--line);color:#57506b;vertical-align:top}
+  table.styled tbody tr:nth-child(even){background:var(--bg-soft)}
+  table.styled tbody tr:last-child td{border-bottom:none}
+
+  .level-card{border:1px solid var(--line);border-radius:16px;overflow:hidden;margin:22px 0;box-shadow:0 6px 22px rgba(31,122,68,.07)}
+  .level-card .lc-head{background:linear-gradient(100deg,#17283a,#8a3a16);color:#fff;padding:15px 22px;display:flex;align-items:center;gap:12px;flex-wrap:wrap}
+  .level-card .lc-head .n{font-size:12px;font-weight:800;background:rgba(255,255,255,.2);padding:3px 10px;border-radius:20px}
+  .level-card .lc-head h4{margin:0;color:#fff;font-size:16px}
+  .level-card .lc-head .go{margin-left:auto;font-size:11.5px;color:#ffd2b3}
+  .level-card .lc-body{padding:20px 24px;background:#fff}
+  .level-card .story{background:#f9fbfd;border-left:4px solid #93c5fd;border-radius:0 10px 10px 0;padding:13px 18px;margin:0 0 16px;font-size:14px;line-height:1.95;color:#3f5163}
+  .level-card .story b{color:#1d4ed8}
+  .btn-go{
+    display:inline-flex;align-items:center;gap:8px;background:linear-gradient(135deg,var(--brand),var(--brand-dark));
+    color:#fff;text-decoration:none;font-weight:800;font-size:13.5px;padding:10px 22px;border-radius:11px;
+    box-shadow:0 8px 20px rgba(255,107,53,.32);transition:.2s;
+  }
+  .btn-go:hover{transform:translateY(-2px);box-shadow:0 12px 26px rgba(255,107,53,.42)}
+
+  .pit{border:1px solid #f6dede;border-radius:14px;overflow:hidden;margin:16px 0;background:#fff}
+  .pit .pt{display:flex;gap:12px;padding:14px 18px;background:#fffafa;align-items:flex-start}
+  .pit .x{width:26px;height:26px;border-radius:9px;background:#fee;color:#dc2626;display:flex;align-items:center;justify-content:center;font-weight:800;flex-shrink:0;font-size:13px}
+  .pit .t{font-size:13.5px;line-height:1.9;color:#5c4a4a;flex:1}
+  .pit .t b{color:#b91c1c}
+  .pit .duck{display:flex;gap:12px;padding:13px 18px;background:#fff5f5;border-top:1px dashed #f3d0d0;align-items:flex-start}
+  .pit .duck img{width:48px;height:48px;object-fit:contain;flex-shrink:0;margin-top:2px}
+  .pit .duck .dt{font-size:13.5px;line-height:1.9;color:#7a3b3b}
+  .pit .duck .dt b{color:#b91c1c}
+  .pit .fix{padding:12px 18px;background:#f7f3ff;border-top:1px dashed #ded1fa;font-size:13.5px;color:#3a2a6b}
+  .pit .fix b{color:var(--primary-dark)}
+
+  .exam{border:1px solid #dfe7f5;border-radius:15px;margin:16px 0;overflow:hidden;background:#fff;box-shadow:0 4px 16px rgba(38,62,120,.06)}
+  .exam .eh{display:flex;align-items:center;gap:10px;padding:11px 18px;background:linear-gradient(100deg,#eef4ff,#f7faff);border-bottom:1px solid #e3ebf8;flex-wrap:wrap}
+  .exam .eh .src{font-size:11px;font-weight:800;color:#fff;background:#2563eb;padding:2.5px 10px;border-radius:20px}
+  .exam .eh .src.ori{background:#8b5cf6}
+  .exam .eh .tp{font-size:11.5px;color:#5b7ba8;font-weight:700}
+  .exam .eb{padding:16px 20px}
+  .exam .q{font-weight:700;font-size:14px;color:#38304b;line-height:1.9;margin-bottom:10px}
+  .exam .opt{font-size:13.5px;color:#6b6480;line-height:2.05;padding-left:6px}
+  .exam .opt i{font-style:normal;font-weight:800;color:var(--primary-dark);margin-right:7px}
+  .exam pre{margin:12px 0;background:#1b2a21;border-radius:10px;padding:14px 16px;overflow-x:auto;font-family:Consolas,monospace;font-size:13px;line-height:1.8;color:var(--code-tx)}
+  .exam details{margin-top:10px;border-top:1px dashed var(--line);padding-top:10px}
+  .exam summary{cursor:pointer;font-size:12.5px;font-weight:800;color:#2563eb;outline:none;user-select:none}
+  .exam details .ans{font-size:13.5px;color:#463d5c;line-height:1.95;margin-top:9px;background:var(--bg-soft);padding:13px 16px;border-radius:10px}
+  .exam details .ans b{color:var(--primary-dark)}
+  .exam details .ans .tagline{display:inline-block;font-size:11px;background:#e0f2fe;color:#0e7490;padding:1.5px 8px;border-radius:6px;font-weight:700;margin-right:6px}
+
+  .summary{margin:40px 0 20px;border-radius:18px;padding:26px 30px;background:linear-gradient(130deg,#fff8f3,#ffffff);border:1px solid #ffe0cf}
+  .summary h3{margin-top:0}
+  .summary ul{list-style:none;margin-top:10px}
+  .summary li{font-size:14px;line-height:2;color:#514a64;padding-left:24px;position:relative}
+  .summary li::before{content:"◆";position:absolute;left:0;color:var(--brand);font-size:11px;top:6px}
+
+  .pager{display:flex;gap:14px;margin-top:30px;flex-wrap:wrap}
+  .pager a{flex:1;min-width:200px;text-decoration:none;border:1px solid var(--line);border-radius:14px;padding:16px 20px;background:#fff;transition:.2s;display:block}
+  .pager a:hover{border-color:var(--brand);box-shadow:0 10px 26px rgba(255,107,53,.14);transform:translateY(-2px)}
+  .pager a .k{font-size:11px;color:var(--dim2);font-weight:700;letter-spacing:1px}
+  .pager a .v{font-size:14px;font-weight:800;color:var(--night);margin-top:5px}
+  .pager a.back{background:var(--brand-soft);border-color:transparent;text-align:center}
+  .pager a.back .v{color:var(--brand-dark)}
+
+  .cta{margin-top:26px;border-radius:20px;padding:30px 34px;color:#fff;position:relative;overflow:hidden;background:linear-gradient(120deg,#16202f,#2b3a52 46%,#a8431c 132%)}
+  .cta::after{content:"";position:absolute;right:-70px;bottom:-90px;width:280px;height:280px;border-radius:50%;background:radial-gradient(circle,rgba(255,140,80,.45),transparent 68%)}
+  .cta h3{color:#fff;margin:0 0 10px;position:relative;z-index:2}
+  .cta h3::before{background:var(--brand)}
+  .cta p{color:#d8e0ef;font-size:13.5px;margin:0 0 18px;position:relative;z-index:2;max-width:640px}
+  .cta .btn-go{position:relative;z-index:2}
+
+  @media(max-width:900px){
+    .sidebar-nav{transform:translateX(-100%)}
+    .sidebar-nav.active{transform:translateX(0)}
+    .nav-toggle{display:block}
+    .page{margin-left:0}
+    .hero{padding:70px 22px 34px}
+    .hero-top{flex-direction:column-reverse;text-align:center}
+    .hero-card{width:auto}
+    .container{padding:26px 20px 60px}
+    .goal-grid{grid-template-columns:1fr}
+  }
+
+  /* ---------- 图形化：积木卡（替代代码卡） ---------- */
+  .blk-card{background:#f8f6ff;border:1px solid #e6e0fb;border-radius:14px;
+    margin:18px 0;overflow:hidden;box-shadow:0 2px 10px rgba(109,40,217,.06)}
+  .blk-head{display:flex;align-items:center;gap:7px;padding:10px 14px;
+    background:#f1ecfe;border-bottom:1px solid #e6e0fb}
+  .blk-head .file{font-size:12.5px;font-weight:700;color:#5b4a86;margin-left:4px}
+  .blk-head .lang{margin-left:auto;font-size:11px;font-weight:800;color:#fff;
+    background:#8b5cf6;border-radius:20px;padding:3px 11px;letter-spacing:.5px}
+  .blk-body{padding:20px 18px;overflow-x:auto;
+    background:
+      radial-gradient(circle at 14px 14px,#ece6fb 1.6px,transparent 1.7px) 0 0/28px 28px,
+      #ffffff}
+  .blk{display:block;max-width:100%;height:auto;margin:0 auto}
+  .blk + .blk{margin-top:16px}
+  .blk-card .out{background:#f1ecfe;border-top:1px solid #e6e0fb;color:#5b4a86}
+  .blk-card .out b{color:#6d28d9}
+  /* 积木并排（不同角色 / 不同做法对照） */
+  .blk-row{display:flex;gap:16px;flex-wrap:wrap;justify-content:center;align-items:flex-start}
+  .blk-row > *{flex:1 1 240px;min-width:0}
+  .blk-row .blk{margin:0}
+  /* 积木旁的小标题 */
+  .blk-cap{font-size:12.5px;font-weight:800;color:#6d28d9;background:#f3efff;
+    border:1px solid #e6e0fb;border-radius:8px;padding:5px 12px;margin:14px 0 10px;
+    display:inline-block}
+</style>
+</head>
+<body>
+
+<button class="nav-toggle" onclick="document.querySelector('.sidebar-nav').classList.toggle('active')">&#9776;</button>
+
+<nav class="sidebar-nav">
+  <div class="sb-brand">
+    <a class="sb-logo" href="https://codecombat.cn/" target="_blank" rel="noopener" title="访问 CodeCombat 扣哒世界官网">
+      <img src="../assets/logo.png" alt="CodeCombat 扣哒世界">
+    </a>
+    <div><b>花径漫步</b><span>积木花园 · 图形化一级 第 3 单元</span></div>
+  </div>
+  <div class="nav-title">本单元目录</div>
+
+  <a href="#s0" class="nav-section">0　单元导语与目标</a>
+  <a href="#s0-1" class="nav-sub">0.1 学习目标</a>
+  <a href="#s0-2" class="nav-sub">0.2 考纲对照</a>
+  <a href="#s1" class="nav-section">1　舞台是一张坐标纸</a>
+  <a href="#s1-1" class="nav-sub">1.1 x 轴与 y 轴</a>
+  <a href="#s1-2" class="nav-sub">1.2 舞台的四个角</a>
+  <a href="#s1-3" class="nav-sub">1.3 用坐标说位置</a>
+  <a href="#s2" class="nav-section">2　让角色动起来</a>
+  <a href="#s2-1" class="nav-sub">2.1 移动 10 步</a>
+  <a href="#s2-2" class="nav-sub">2.2 移到 x: y:</a>
+  <a href="#s2-3" class="nav-sub">2.3 将坐标增加</a>
+  <a href="#s3" class="nav-section">3　方向与角度</a>
+  <a href="#s3-1" class="nav-sub">3.1 面向 90 方向</a>
+  <a href="#s3-2" class="nav-sub">3.2 左转与右转</a>
+  <a href="#s3-3" class="nav-sub">3.3 三种旋转模式</a>
+  <a href="#s4" class="nav-section">4　边界、小数与随机数</a>
+  <a href="#s4-1" class="nav-sub">4.1 碰到边缘就反弹</a>
+  <a href="#s4-2" class="nav-sub">4.2 负数、小数与随机数</a>
+  <a href="#s5" class="nav-section">5　代码实战</a>
+  <a href="#s6" class="nav-section">6　常见陷阱</a>
+  <a href="#s7" class="nav-section">7　题目练习</a>
+  <a href="#s8" class="nav-section">8　本单元小结</a>
+
+  <a href="../index.html" target="_top" class="sb-back">返回考纲之路</a>
+</nav>
+
+<div class="page">
+
+<div class="hero">
+  <div class="hero-top">
+    <div class="hero-txt">
+      <div class="crumb">扣哒考级 · GESP 图形化 一级 · 第 3 单元　|　积木花园 BLOCKBLOOM GARDEN</div>
+      <h1>花径漫步
+        <span class="sub">坐标、角度与运动</span>
+      </h1>
+      <div class="en">Coordinates, Angles and Motion</div>
+      <div class="tags">        <span class="tag hot">考纲 · 编程数学</span>
+        <span class="tag">坐标系</span>
+        <span class="tag">角度与方向</span>
+        <span class="tag">边缘反弹</span></div>
+    </div>
+    <div class="hero-card">
+      <img class="ava" src="../assets/avatars/anya.webp" alt="安雅" onerror="this.style.background='#24344a';this.src='../assets/heroes/anya.webp'">
+      <div class="nm">安雅</div>
+      <div class="ti">红发队长 · 你的旅伴</div>
+    </div>
+  </div>
+</div>
+
+<div class="container">
+
+
+<div class="lead">
+  花径是一张巨大的格子网，踩上去会泛起淡淡的光。安雅蹲下来，在网格上划了两条线：
+  一条横的、一条竖的，在正中间打了个结。<br>
+  "从这里开始算。"她说，"<b>往右是正、往左是负；往上是正、往下是负。</b>
+  记住这个，花园里没有你走不到的地方。"
+</div>
+
+<div class="cast anya">
+  <img class="ava" src="../assets/avatars/anya.webp" alt="安雅" onerror="this.style.display='none'">
+  <div class="bubble">
+    <div class="who">安雅 · 红发队长</div>
+    这一单元要记的东西有点多，但都很好记：<b>两个坐标 ±240 和 ±180、四个角度 0/90/180/-90</b>。<br>
+    考卷上最爱出一段脚本让你算"角色最后停在哪"——只要把坐标和角度分清楚，这类题就是送分题。
+  </div>
+</div>
+
+<figure class="pic">
+  <img src="../assets/illustrations/scratch-L1-03-01_garden_grid.webp" alt="花园的坐标网格"
+       onerror="this.closest('.pic').classList.add('missing')">
+  <div class="ph">
+    <div class="fn">assets/illustrations/scratch-L1-03-01_garden_grid.webp</div>
+    <div class="ds">【配图位】花园被铺成发光坐标网格，X 向右、Y 向上，小英雄抱着洒水壶站在原点，花坛沿坐标轴编号。（提示词见《GESP配图清单与AI绘图提示词》第四节 1-3）</div>
+  </div>
+  <figcaption>图 5：整座花园就是一张坐标纸</figcaption>
+</figure>
+
+
+<!-- ============ 0 ============ -->
+<div class="section-header" id="s0">
+  <h2>0　单元导语与目标</h2>
+  <div class="en-title">Before We Start</div>
+</div>
+
+<h3 id="s0-1">0.1 学习目标</h3>
+
+<ul>
+  <li>看懂舞台的坐标系：x 轴管左右、y 轴管上下，正中间是原点；</li>
+  <li>会用<b>移动</b>、<b>移到 x: y:</b>、<b>将坐标增加</b>三组积木控制位置；</li>
+  <li>理解"方向 90 是向右、0 是向上"，会用左转、右转改变朝向；</li>
+  <li>知道负数、小数在坐标里的意义，会用<b>随机数</b>让效果变得不可预测；</li>
+  <li>会用"碰到边缘就反弹"做出角色在边界来回弹跳的效果。</li>
+</ul>
+<h3 id="s0-2">0.2 考纲对照</h3>
+
+<table class="styled">
+  <thead><tr><th>考纲知识块</th><th>考纲要求</th><th>本单元小节</th></tr></thead>
+  <tbody><tr><td>3 编程数学</td><td>坐标系、坐标变化，小数、负数、随机数，顺逆时针、角度等</td><td>1.1～1.3、4.2</td></tr><tr><td>6 角色的操作</td><td>移动，旋转，控制运动方向，碰到边缘反弹</td><td>2.1～2.3、3.1～3.3、4.1</td></tr></tbody>
+</table>
+
+<p>这一单元是一级里"数学味"最重的一节，但也最有用——<b>后面所有让角色动起来的脚本，
+都建立在这几块积木上</b>。</p>
+
+<!-- ============ 1 ============ -->
+<div class="section-header" id="s1">
+  <h2>1　舞台是一张坐标纸</h2>
+  <div class="en-title">The Coordinate Plane</div>
+</div>
+
+<h3 id="s1-1">1.1 x 轴与 y 轴</h3>
+
+<p>花径被铺成了一张发光的格子网。安雅蹲下来，在网线上画了两条线：</p>
+<figure class="figure">
+<svg class="diagram" viewBox="0 0 820 194" role="img" aria-label="两条轴，四个方向">
+<text x="24" y="32" font-size="14" fill="#4c1d95" text-anchor="start" font-weight="bold">两条轴，四个方向</text><rect x="24" y="56" width="246.667" height="104" rx="12" fill="#f3efff" stroke="#e6e0fb" stroke-width="1.8"/><text x="147.333" y="104" font-size="13.5" fill="#6d28d9" text-anchor="middle" font-weight="bold">x 轴（横向）</text><text x="147.333" y="126" font-size="11.6" fill="#7c7794" text-anchor="middle">向右为正、向左为负</text><rect x="286.667" y="56" width="246.667" height="104" rx="12" fill="#faf8ff" stroke="#e6e0fb" stroke-width="1.8"/><text x="410" y="104" font-size="13.5" fill="#6d28d9" text-anchor="middle" font-weight="bold">y 轴（纵向）</text><text x="410" y="126" font-size="11.6" fill="#7c7794" text-anchor="middle">向上为正、向下为负</text><rect x="549.333" y="56" width="246.667" height="104" rx="12" fill="#f3efff" stroke="#e6e0fb" stroke-width="1.8"/><text x="672.667" y="104" font-size="13.5" fill="#6d28d9" text-anchor="middle" font-weight="bold">原点 (0, 0)</text><text x="672.667" y="126" font-size="11.6" fill="#7c7794" text-anchor="middle">两条轴在舞台正中相交</text><text x="24" y="186" font-size="11.8" fill="#8d9d94" text-anchor="start">一句话：x 管左右，y 管上下；正数往右往上，负数往左往下</text>
+</svg>
+  <div class="caption">图 1（SVG）：舞台的 x 轴与 y 轴</div>
+</figure>
+
+<div class="box tip">
+  <span class="lb">打个比方：</span>把舞台想成一张方格纸，原点就是纸的中心，插着一枚图钉。从图钉<b>往右走 100 步</b>，你就到了 x = 100；<b>往上走 50 步</b>，就到了 y = 50。两个数合起来写成 <code class="inline">(100, 50)</code>，就是你的位置坐标。
+</div>
+
+
+<h3 id="s1-2">1.2 舞台的四个角</h3>
+
+<table class="styled">
+  <thead><tr><th>位置</th><th>坐标</th><th>记忆方法</th></tr></thead>
+  <tbody><tr><td>正中间</td><td>(0, 0)</td><td>原点</td></tr><tr><td>最右边</td><td>(240, 0)</td><td>x 最大是 240</td></tr><tr><td>最左边</td><td>(-240, 0)</td><td>x 最小是 -240</td></tr><tr><td>最上边</td><td>(0, 180)</td><td>y 最大是 180</td></tr><tr><td>最下边</td><td>(0, -180)</td><td>y 最小是 -180</td></tr><tr><td>右上角</td><td>(240, 180)</td><td>x、y 都取最大值</td></tr><tr><td>左下角</td><td>(-240, -180)</td><td>x、y 都取最小值</td></tr></tbody>
+</table>
+
+<div class="box info">
+  <span class="lb">记住三个数就够了：</span>舞台宽 <b>480</b>、高 <b>360</b>，所以 x 的范围是 <b>-240 ~ 240</b>，y 的范围是 <b>-180 ~ 180</b>。考卷上问"角色走到最右边时 x 是多少"，答案就是 240。
+</div>
+
+
+<h3 id="s1-3">1.3 用坐标说位置</h3>
+
+<p>在图形化编程里，"角色在哪里"这个问题，永远用一个坐标对来回答。看这两块积木：</p>
+<div class="blk-card">
+  <div class="blk-head">
+    <span class="dot d1"></span><span class="dot d2"></span><span class="dot d3"></span>
+    <span class="file">重点示例：两种定位方式</span>
+    <span class="lang">图形化积木</span>
+  </div>
+  <div class="blk-body">
+<svg class="blk" viewBox="0 0 340.6 86" width="340.6" height="86" role="img" aria-label="积木脚本"><g font-family="'PingFang SC','Microsoft YaHei','Noto Sans SC',sans-serif"><g transform="translate(3,3)"><path d="M0,5 A5,5 0 0 1 5,0 H16 v4 h12 v-4 H190 A5,5 0 0 1 195,5 V31 A5,5 0 0 1 190,36 H28 v4 h-12 v-4 H5 A5,5 0 0 1 0,31 Z" fill="#4C97FF" stroke="#3e7bd1" stroke-width="1.2"/><text x="15" y="22.8" font-size="13.4" fill="#fff">移到 x: </text><rect x="77.6" y="6.5" width="30" height="23" rx="11.5" fill="#fff"/><text x="92.6" y="22.4" font-size="12.5" fill="#575e75" text-anchor="middle">0</text><text x="114.6" y="22.8" font-size="13.4" fill="#fff"> y: </text><rect x="150.4" y="6.5" width="30" height="23" rx="11.5" fill="#fff"/><text x="165.4" y="22.4" font-size="12.5" fill="#575e75" text-anchor="middle">0</text></g><g transform="translate(3,43)"><path d="M0,5 A5,5 0 0 1 5,0 H16 v4 h12 v-4 H329 A5,5 0 0 1 334,5 V31 A5,5 0 0 1 329,36 H28 v4 h-12 v-4 H5 A5,5 0 0 1 0,31 Z" fill="#4C97FF" stroke="#3e7bd1" stroke-width="1.2"/><text x="15" y="22.8" font-size="13.4" fill="#fff">在 </text><rect x="42.6" y="6.5" width="30" height="23" rx="11.5" fill="#fff"/><text x="57.6" y="22.4" font-size="12.5" fill="#575e75" text-anchor="middle">1</text><text x="79.6" y="22.8" font-size="13.4" fill="#fff"> 秒内滑行到 x: </text><rect x="189.6" y="6.5" width="50.8" height="23" rx="11.5" fill="#fff"/><text x="215" y="22.4" font-size="12.5" fill="#575e75" text-anchor="middle">-120</text><text x="247.4" y="22.8" font-size="13.4" fill="#fff"> y: </text><rect x="283.2" y="6.5" width="36.4" height="23" rx="11.5" fill="#fff"/><text x="301.4" y="22.4" font-size="12.5" fill="#575e75" text-anchor="middle">60</text></g></g></svg>
+  </div>
+  <div class="out"><b>读法</b>　第一块"啪"地一下出现在指定位置；第二块用 1 秒慢慢滑过去，过程看得见</div>
+</div>
+
+<!-- ============ 2 ============ -->
+<div class="section-header" id="s2">
+  <h2>2　让角色动起来</h2>
+  <div class="en-title">Making It Move</div>
+</div>
+
+<h3 id="s2-1">2.1 移动 10 步</h3>
+
+<p>最常用的运动积木是这一块。它和坐标有关，但不用你写坐标：</p>
+<div class="blk-card">
+  <div class="blk-head">
+    <span class="dot d1"></span><span class="dot d2"></span><span class="dot d3"></span>
+    <span class="file">重点示例：跟着朝向走</span>
+    <span class="lang">图形化积木</span>
+  </div>
+  <div class="blk-body">
+<svg class="blk" viewBox="0 0 170.8 138" width="170.8" height="138" role="img" aria-label="积木脚本"><g font-family="'PingFang SC','Microsoft YaHei','Noto Sans SC',sans-serif"><g transform="translate(3,3)"><path d="M0,12 C32.96,0 131.84,0 164.8,12 V43 A5,5 0 0 1 159.8,48 H28 v4 h-12 v-4 H5 A5,5 0 0 1 0,43 Z" fill="#FFBF00" stroke="#d19c00" stroke-width="1.2"/><text x="15" y="34.8" font-size="13.4" fill="#fff">当 </text><rect x="42.6" y="18.5" width="52.8" height="23" rx="5" fill="#CC9900"/><text x="64" y="34.4" font-size="12.5" fill="#fff" text-anchor="middle">绿旗</text><path d="M84.4 27.5 l4 5 l4 -5 z" fill="#fff" opacity=".85"/><text x="102.4" y="34.8" font-size="13.4" fill="#fff"> 被点击</text></g><g transform="translate(3,55)"><path d="M0,5 A5,5 0 0 1 5,0 H16 v4 h12 v-4 H143 A5,5 0 0 1 148,5 V31 A5,5 0 0 1 143,36 H28 v4 h-12 v-4 H5 A5,5 0 0 1 0,31 Z" fill="#4C97FF" stroke="#3e7bd1" stroke-width="1.2"/><text x="15" y="22.8" font-size="13.4" fill="#fff">面向 </text><rect x="56" y="6.5" width="36.4" height="23" rx="11.5" fill="#fff"/><text x="74.2" y="22.4" font-size="12.5" fill="#575e75" text-anchor="middle">90</text><text x="99.4" y="22.8" font-size="13.4" fill="#fff"> 方向</text></g><g transform="translate(3,95)"><path d="M0,5 A5,5 0 0 1 5,0 H16 v4 h12 v-4 H137 A5,5 0 0 1 142,5 V31 A5,5 0 0 1 137,36 H28 v4 h-12 v-4 H5 A5,5 0 0 1 0,31 Z" fill="#4C97FF" stroke="#3e7bd1" stroke-width="1.2"/><text x="15" y="22.8" font-size="13.4" fill="#fff">移动 </text><rect x="56" y="6.5" width="43.6" height="23" rx="11.5" fill="#fff"/><text x="77.8" y="22.4" font-size="12.5" fill="#575e75" text-anchor="middle">100</text><text x="106.6" y="22.8" font-size="13.4" fill="#fff"> 步</text></g></g></svg>
+  </div>
+  <div class="out"><b>要点</b>　"移动 100 步"是<b>沿着角色当前面对的方向</b>走 100 步，方向是 90（向右），所以它往右走</div>
+</div>
+
+<div class="box tip">
+  <span class="lb">打个比方：</span>"移动 10 步"就像蒙着眼睛往前走 10 步——<b>走多远是确定的，往哪儿走由你的朝向决定</b>。所以想让它往别的方向走，先改朝向，再移动。
+</div>
+
+
+<h3 id="s2-2">2.2 移到 x: y:</h3>
+
+<p>要让角色"直接站到某个位置"，用这两块：</p>
+<div class="blk-card">
+  <div class="blk-head">
+    <span class="dot d1"></span><span class="dot d2"></span><span class="dot d3"></span>
+    <span class="file">重点示例：一步到位</span>
+    <span class="lang">图形化积木</span>
+  </div>
+  <div class="blk-body">
+<svg class="blk" viewBox="0 0 313.4 86" width="313.4" height="86" role="img" aria-label="积木脚本"><g font-family="'PingFang SC','Microsoft YaHei','Noto Sans SC',sans-serif"><g transform="translate(3,3)"><path d="M0,5 A5,5 0 0 1 5,0 H16 v4 h12 v-4 H217 A5,5 0 0 1 222,5 V31 A5,5 0 0 1 217,36 H28 v4 h-12 v-4 H5 A5,5 0 0 1 0,31 Z" fill="#4C97FF" stroke="#3e7bd1" stroke-width="1.2"/><text x="15" y="22.8" font-size="13.4" fill="#fff">移到 x: </text><rect x="77.6" y="6.5" width="43.6" height="23" rx="11.5" fill="#fff"/><text x="99.4" y="22.4" font-size="12.5" fill="#575e75" text-anchor="middle">120</text><text x="128.2" y="22.8" font-size="13.4" fill="#fff"> y: </text><rect x="164" y="6.5" width="43.6" height="23" rx="11.5" fill="#fff"/><text x="185.8" y="22.4" font-size="12.5" fill="#575e75" text-anchor="middle">-60</text></g><g transform="translate(3,43)"><path d="M0,5 A5,5 0 0 1 5,0 H16 v4 h12 v-4 H302 A5,5 0 0 1 307,5 V31 A5,5 0 0 1 302,36 H28 v4 h-12 v-4 H5 A5,5 0 0 1 0,31 Z" fill="#4C97FF" stroke="#3e7bd1" stroke-width="1.2"/><text x="15" y="22.8" font-size="13.4" fill="#fff">在 </text><rect x="42.6" y="6.5" width="30" height="23" rx="11.5" fill="#fff"/><text x="57.6" y="22.4" font-size="12.5" fill="#575e75" text-anchor="middle">2</text><text x="79.6" y="22.8" font-size="13.4" fill="#fff"> 秒内滑行到 x: </text><rect x="189.6" y="6.5" width="30" height="23" rx="11.5" fill="#fff"/><text x="204.6" y="22.4" font-size="12.5" fill="#575e75" text-anchor="middle">0</text><text x="226.6" y="22.8" font-size="13.4" fill="#fff"> y: </text><rect x="262.4" y="6.5" width="30" height="23" rx="11.5" fill="#fff"/><text x="277.4" y="22.4" font-size="12.5" fill="#575e75" text-anchor="middle">0</text></g></g></svg>
+  </div>
+  <div class="out"><b>读法</b>　直接给终点坐标，角色就出现在那里；带"在……秒内滑行"的会走出一条看得见的轨迹</div>
+</div>
+
+<h3 id="s2-3">2.3 将坐标增加</h3>
+
+<p>还有一组积木，是在<b>原来的位置上再加一点</b>：</p>
+<div class="blk-card">
+  <div class="blk-head">
+    <span class="dot d1"></span><span class="dot d2"></span><span class="dot d3"></span>
+    <span class="file">重点示例：在原来的基础上挪一点</span>
+    <span class="lang">图形化积木</span>
+  </div>
+  <div class="blk-body">
+<svg class="blk" viewBox="0 0 182.4 126" width="182.4" height="126" role="img" aria-label="积木脚本"><g font-family="'PingFang SC','Microsoft YaHei','Noto Sans SC',sans-serif"><g transform="translate(3,3)"><path d="M0,5 A5,5 0 0 1 5,0 H16 v4 h12 v-4 H164 A5,5 0 0 1 169,5 V31 A5,5 0 0 1 164,36 H28 v4 h-12 v-4 H5 A5,5 0 0 1 0,31 Z" fill="#4C97FF" stroke="#3e7bd1" stroke-width="1.2"/><text x="15" y="22.8" font-size="13.4" fill="#fff">将 x 坐标增加 </text><rect x="117.8" y="6.5" width="36.4" height="23" rx="11.5" fill="#fff"/><text x="136" y="22.4" font-size="12.5" fill="#575e75" text-anchor="middle">10</text></g><g transform="translate(3,43)"><path d="M0,5 A5,5 0 0 1 5,0 H16 v4 h12 v-4 H171 A5,5 0 0 1 176,5 V31 A5,5 0 0 1 171,36 H28 v4 h-12 v-4 H5 A5,5 0 0 1 0,31 Z" fill="#4C97FF" stroke="#3e7bd1" stroke-width="1.2"/><text x="15" y="22.8" font-size="13.4" fill="#fff">将 y 坐标增加 </text><rect x="117.8" y="6.5" width="43.6" height="23" rx="11.5" fill="#fff"/><text x="139.6" y="22.4" font-size="12.5" fill="#575e75" text-anchor="middle">-10</text></g><g transform="translate(3,83)"><path d="M0,5 A5,5 0 0 1 5,0 H16 v4 h12 v-4 H157 A5,5 0 0 1 162,5 V31 A5,5 0 0 1 157,36 H28 v4 h-12 v-4 H5 A5,5 0 0 1 0,31 Z" fill="#4C97FF" stroke="#3e7bd1" stroke-width="1.2"/><text x="15" y="22.8" font-size="13.4" fill="#fff">将 x 坐标设为 </text><rect x="117.8" y="6.5" width="30" height="23" rx="11.5" fill="#fff"/><text x="132.8" y="22.4" font-size="12.5" fill="#575e75" text-anchor="middle">0</text></g></g></svg>
+  </div>
+  <div class="out"><b>要点</b>　"<b>增加</b>"是相对移动：不管现在在哪，往右挪 10；"<b>设为</b>"是绝对定位：不管现在在哪，直接变成 0</div>
+</div>
+
+<div class="box info">
+  <span class="lb">这两组一定要分清：</span><b>移到 / 设为</b>——给的是"目的地"，和现在在哪无关；<br><b>将坐标增加</b>——给的是"位移量"，效果取决于现在在哪。<br>考试里最爱用同一段脚本问"执行后角色在哪"，考的就是这两者的区别。
+</div>
+
+<!-- ============ 3 ============ -->
+<div class="section-header" id="s3">
+  <h2>3　方向与角度</h2>
+  <div class="en-title">Direction and Angles</div>
+</div>
+
+<h3 id="s3-1">3.1 面向 90 方向</h3>
+
+<p>图形化编程里的角度和数学课不太一样，一定要记牢这四个方向：</p>
+<figure class="figure">
+<svg class="diagram" viewBox="0 0 820 194" role="img" aria-label="四个方向的角度">
+<text x="24" y="32" font-size="14" fill="#4c1d95" text-anchor="start" font-weight="bold">四个方向的角度</text><rect x="24" y="56" width="181" height="104" rx="12" fill="#f3efff" stroke="#e6e0fb" stroke-width="1.8"/><text x="114.5" y="104" font-size="13.5" fill="#6d28d9" text-anchor="middle" font-weight="bold">90 度</text><text x="114.5" y="126" font-size="11.6" fill="#7c7794" text-anchor="middle">向右（→）</text><rect x="221" y="56" width="181" height="104" rx="12" fill="#faf8ff" stroke="#e6e0fb" stroke-width="1.8"/><text x="311.5" y="104" font-size="13.5" fill="#6d28d9" text-anchor="middle" font-weight="bold">0 度</text><text x="311.5" y="126" font-size="11.6" fill="#7c7794" text-anchor="middle">向上（↑）</text><rect x="418" y="56" width="181" height="104" rx="12" fill="#f3efff" stroke="#e6e0fb" stroke-width="1.8"/><text x="508.5" y="104" font-size="13.5" fill="#6d28d9" text-anchor="middle" font-weight="bold">180 度</text><text x="508.5" y="126" font-size="11.6" fill="#7c7794" text-anchor="middle">向下（↓）</text><rect x="615" y="56" width="181" height="104" rx="12" fill="#faf8ff" stroke="#e6e0fb" stroke-width="1.8"/><text x="705.5" y="104" font-size="13.5" fill="#6d28d9" text-anchor="middle" font-weight="bold">-90 度</text><text x="705.5" y="126" font-size="11.6" fill="#7c7794" text-anchor="middle">向左（←）</text><text x="24" y="186" font-size="11.8" fill="#8d9d94" text-anchor="start">记法：0 度朝上，顺时针为正；90 在右、180 在下、-90（也就是 270）在左</text>
+</svg>
+  <div class="caption">图 2（SVG）：四个方向对应的角度</div>
+</figure>
+
+<figure class="pic">
+  <img src="../assets/illustrations/scratch-L1-03-02_angle_compass.webp" alt="花园上空的罗盘"
+       onerror="this.closest('.pic').classList.add('missing')">
+  <div class="ph">
+    <div class="fn">assets/illustrations/scratch-L1-03-02_angle_compass.webp</div>
+    <div class="ds">【配图位】花园小径上空悬浮着罗盘玫瑰，四个方向标注度数，四角各有一只小猫朝不同方向。（提示词见《GESP配图清单与AI绘图提示词》第四节 1-3）</div>
+  </div>
+  <figcaption>图 6：花园上空的方向罗盘——0 上、90 右、180 下、-90 左</figcaption>
+</figure>
+
+<div class="blk-card">
+  <div class="blk-head">
+    <span class="dot d1"></span><span class="dot d2"></span><span class="dot d3"></span>
+    <span class="file">重点示例：先定朝向，再出发</span>
+    <span class="lang">图形化积木</span>
+  </div>
+  <div class="blk-body">
+<svg class="blk" viewBox="0 0 148 86" width="148" height="86" role="img" aria-label="积木脚本"><g font-family="'PingFang SC','Microsoft YaHei','Noto Sans SC',sans-serif"><g transform="translate(3,3)"><path d="M0,5 A5,5 0 0 1 5,0 H16 v4 h12 v-4 H137 A5,5 0 0 1 142,5 V31 A5,5 0 0 1 137,36 H28 v4 h-12 v-4 H5 A5,5 0 0 1 0,31 Z" fill="#4C97FF" stroke="#3e7bd1" stroke-width="1.2"/><text x="15" y="22.8" font-size="13.4" fill="#fff">面向 </text><rect x="56" y="6.5" width="30" height="23" rx="11.5" fill="#fff"/><text x="71" y="22.4" font-size="12.5" fill="#575e75" text-anchor="middle">0</text><text x="93" y="22.8" font-size="13.4" fill="#fff"> 方向</text></g><g transform="translate(3,43)"><path d="M0,5 A5,5 0 0 1 5,0 H16 v4 h12 v-4 H130 A5,5 0 0 1 135,5 V31 A5,5 0 0 1 130,36 H28 v4 h-12 v-4 H5 A5,5 0 0 1 0,31 Z" fill="#4C97FF" stroke="#3e7bd1" stroke-width="1.2"/><text x="15" y="22.8" font-size="13.4" fill="#fff">移动 </text><rect x="56" y="6.5" width="36.4" height="23" rx="11.5" fill="#fff"/><text x="74.2" y="22.4" font-size="12.5" fill="#575e75" text-anchor="middle">50</text><text x="99.4" y="22.8" font-size="13.4" fill="#fff"> 步</text></g></g></svg>
+  </div>
+  <div class="out"><b>要点</b>　"面向 0 方向"是朝<b>上</b>，所以角色会往上走 50 步</div>
+</div>
+
+<h3 id="s3-2">3.2 左转与右转</h3>
+
+<div class="blk-card">
+  <div class="blk-head">
+    <span class="dot d1"></span><span class="dot d2"></span><span class="dot d3"></span>
+    <span class="file">重点示例：转的是"角度"，不是"位置"</span>
+    <span class="lang">图形化积木</span>
+  </div>
+  <div class="blk-body">
+<svg class="blk" viewBox="0 0 141 86" width="141" height="86" role="img" aria-label="积木脚本"><g font-family="'PingFang SC','Microsoft YaHei','Noto Sans SC',sans-serif"><g transform="translate(3,3)"><path d="M0,5 A5,5 0 0 1 5,0 H16 v4 h12 v-4 H130 A5,5 0 0 1 135,5 V31 A5,5 0 0 1 130,36 H28 v4 h-12 v-4 H5 A5,5 0 0 1 0,31 Z" fill="#4C97FF" stroke="#3e7bd1" stroke-width="1.2"/><text x="15" y="22.8" font-size="13.4" fill="#fff">右转 </text><rect x="56" y="6.5" width="36.4" height="23" rx="11.5" fill="#fff"/><text x="74.2" y="22.4" font-size="12.5" fill="#575e75" text-anchor="middle">15</text><text x="99.4" y="22.8" font-size="13.4" fill="#fff"> 度</text></g><g transform="translate(3,43)"><path d="M0,5 A5,5 0 0 1 5,0 H16 v4 h12 v-4 H130 A5,5 0 0 1 135,5 V31 A5,5 0 0 1 130,36 H28 v4 h-12 v-4 H5 A5,5 0 0 1 0,31 Z" fill="#4C97FF" stroke="#3e7bd1" stroke-width="1.2"/><text x="15" y="22.8" font-size="13.4" fill="#fff">左转 </text><rect x="56" y="6.5" width="36.4" height="23" rx="11.5" fill="#fff"/><text x="74.2" y="22.4" font-size="12.5" fill="#575e75" text-anchor="middle">15</text><text x="99.4" y="22.8" font-size="13.4" fill="#fff"> 度</text></g></g></svg>
+  </div>
+  <div class="out"><b>要点</b>　右转是<b>顺时针</b>拧，左转是<b>逆时针</b>拧；角色只是在原地扭头，位置一动没动</div>
+</div>
+
+<div class="box tip">
+  <span class="lb">打个比方：</span><b>面向</b>是把头一次扭到指定角度；<b>右转 15 度</b>是在现在的基础上顺时针拧 15 度。就像指南针：一个是"把指针拨到 90"，一个是"再往右拨一格"。
+</div>
+
+
+<h3 id="s3-3">3.3 三种旋转模式</h3>
+
+<p>角色扭头的时候，它的"身体"到底怎么转？点角色区里的小三角能改这个设置：</p>
+<figure class="figure">
+<svg class="diagram" viewBox="0 0 820 240" role="img" aria-label="三种旋转模式">
+<text x="24" y="32" font-size="14" fill="#4c1d95" text-anchor="start" font-weight="bold">三种旋转模式</text><rect x="24" y="52" width="376" height="160" rx="12" fill="#f5f3ff" stroke="#e6e0fb" stroke-width="1.8"/><text x="212" y="82" font-size="13.5" fill="#6d28d9" text-anchor="middle" font-weight="bold">左右翻转（默认）</text><circle cx="40" cy="106" r="3.4" fill="#6d28d9"/><text x="52" y="110" font-size="12.2" fill="#4c1d95" text-anchor="start">只有朝左时把造型水平翻过来</text><circle cx="40" cy="136" r="3.4" fill="#6d28d9"/><text x="52" y="140" font-size="12.2" fill="#4c1d95" text-anchor="start">角色永远头朝上，看起来自然</text><circle cx="40" cy="166" r="3.4" fill="#6d28d9"/><text x="52" y="170" font-size="12.2" fill="#4c1d95" text-anchor="start">做走路、跑步的角色用它</text><rect x="420" y="52" width="376" height="160" rx="12" fill="#fff7ed" stroke="#e6e0fb" stroke-width="1.8"/><text x="608" y="82" font-size="13.5" fill="#b45309" text-anchor="middle" font-weight="bold">任意旋转</text><circle cx="436" cy="106" r="3.4" fill="#b45309"/><text x="448" y="110" font-size="12.2" fill="#4c1d95" text-anchor="start">朝哪个方向，整个身体就转到哪个方向</text><circle cx="436" cy="136" r="3.4" fill="#b45309"/><text x="448" y="140" font-size="12.2" fill="#4c1d95" text-anchor="start">做小鱼、飞机、子弹用它</text><circle cx="436" cy="166" r="3.4" fill="#b45309"/><text x="448" y="170" font-size="12.2" fill="#4c1d95" text-anchor="start">转起来最真实</text><text x="24" y="226" font-size="11.8" fill="#8d9d94" text-anchor="start">还有第三种"不允许旋转"：无论方向怎么改，角色都保持着原来的姿势不动</text>
+</svg>
+  <div class="caption">图 3（SVG）：三种旋转模式的区别</div>
+</figure>
+
+<div class="blk-card">
+  <div class="blk-head">
+    <span class="dot d1"></span><span class="dot d2"></span><span class="dot d3"></span>
+    <span class="file">重点示例：设置旋转模式</span>
+    <span class="lang">图形化积木</span>
+  </div>
+  <div class="blk-body">
+<svg class="blk" viewBox="0 0 223.6 46" width="223.6" height="46" role="img" aria-label="积木脚本"><g font-family="'PingFang SC','Microsoft YaHei','Noto Sans SC',sans-serif"><g transform="translate(3,3)"><path d="M0,5 A5,5 0 0 1 5,0 H16 v4 h12 v-4 H212 A5,5 0 0 1 217,5 V31 A5,5 0 0 1 212,36 H28 v4 h-12 v-4 H5 A5,5 0 0 1 0,31 Z" fill="#4C97FF" stroke="#3e7bd1" stroke-width="1.2"/><text x="15" y="22.8" font-size="13.4" fill="#fff">将旋转方式设为 </text><rect x="123" y="6.5" width="79.6" height="23" rx="5" fill="#3373CC"/><text x="157.8" y="22.4" font-size="12.5" fill="#fff" text-anchor="middle">左右翻转</text><path d="M191.6 15.5 l4 5 l4 -5 z" fill="#fff" opacity=".85"/></g></g></svg>
+  </div>
+  <div class="out"><b>要点</b>　这块积木放在脚本开头，后面所有的转向都会按这个规则来</div>
+</div>
+
+<!-- ============ 4 ============ -->
+<div class="section-header" id="s4">
+  <h2>4　边界、小数与随机数</h2>
+  <div class="en-title">Edges, Decimals and Random</div>
+</div>
+
+<h3 id="s4-1">4.1 碰到边缘就反弹</h3>
+
+<p>花园的围墙就是舞台的边缘。想让角色一直"弹"下去，只需两块积木：</p>
+<div class="blk-card">
+  <div class="blk-head">
+    <span class="dot d1"></span><span class="dot d2"></span><span class="dot d3"></span>
+    <span class="file">重点示例：在围墙里来回弹</span>
+    <span class="lang">图形化积木</span>
+  </div>
+  <div class="blk-body">
+<svg class="blk" viewBox="0 0 170.8 230" width="170.8" height="230" role="img" aria-label="积木脚本"><g font-family="'PingFang SC','Microsoft YaHei','Noto Sans SC',sans-serif"><g transform="translate(3,3)"><path d="M0,12 C32.96,0 131.84,0 164.8,12 V43 A5,5 0 0 1 159.8,48 H28 v4 h-12 v-4 H5 A5,5 0 0 1 0,43 Z" fill="#FFBF00" stroke="#d19c00" stroke-width="1.2"/><text x="15" y="34.8" font-size="13.4" fill="#fff">当 </text><rect x="42.6" y="18.5" width="52.8" height="23" rx="5" fill="#CC9900"/><text x="64" y="34.4" font-size="12.5" fill="#fff" text-anchor="middle">绿旗</text><path d="M84.4 27.5 l4 5 l4 -5 z" fill="#fff" opacity=".85"/><text x="102.4" y="34.8" font-size="13.4" fill="#fff"> 被点击</text></g><g transform="translate(3,55)"><path d="M0,5 A5,5 0 0 1 5,0 H16 v4 h12 v-4 H143 A5,5 0 0 1 148,5 V31 A5,5 0 0 1 143,36 H28 v4 h-12 v-4 H5 A5,5 0 0 1 0,31 Z" fill="#4C97FF" stroke="#3e7bd1" stroke-width="1.2"/><text x="15" y="22.8" font-size="13.4" fill="#fff">面向 </text><rect x="56" y="6.5" width="36.4" height="23" rx="11.5" fill="#fff"/><text x="74.2" y="22.4" font-size="12.5" fill="#575e75" text-anchor="middle">30</text><text x="99.4" y="22.8" font-size="13.4" fill="#fff"> 方向</text></g><g transform="translate(3,95)"><path d="M0,5 A5,5 0 0 1 5,0 H16 v4 h12 v-4 H149 A5,5 0 0 1 154,5 V123 A5,5 0 0 1 149,128 H28 v4 h-12 v-4 H5 A5,5 0 0 1 0,123 V115 H16 V36 H0 Z" fill="#FFAB19" stroke="#d18c14" stroke-width="1.2"/><text x="15" y="22.8" font-size="13.4" fill="#fff">重复执行</text><g transform="translate(20,38)"><path d="M0,5 A5,5 0 0 1 5,0 H16 v4 h12 v-4 H123 A5,5 0 0 1 128,5 V31 A5,5 0 0 1 123,36 H28 v4 h-12 v-4 H5 A5,5 0 0 1 0,31 Z" fill="#4C97FF" stroke="#3e7bd1" stroke-width="1.2"/><text x="15" y="22.8" font-size="13.4" fill="#fff">移动 </text><rect x="56" y="6.5" width="30" height="23" rx="11.5" fill="#fff"/><text x="71" y="22.4" font-size="12.5" fill="#575e75" text-anchor="middle">6</text><text x="93" y="22.8" font-size="13.4" fill="#fff"> 步</text></g><g transform="translate(20,76)"><path d="M0,5 A5,5 0 0 1 5,0 H16 v4 h12 v-4 H118 A5,5 0 0 1 123,5 V31 A5,5 0 0 1 118,36 H28 v4 h-12 v-4 H5 A5,5 0 0 1 0,31 Z" fill="#4C97FF" stroke="#3e7bd1" stroke-width="1.2"/><text x="15" y="22.8" font-size="13.4" fill="#fff">碰到边缘就反弹</text></g></g></g></svg>
+  </div>
+  <div class="out"><b>读法</b>　一直走 → 一碰到边缘就把方向反过来，于是永远在围墙里跑</div>
+</div>
+
+<div class="box info">
+  <span class="lb">注意它和"侦测"的区别：</span>"碰到边缘就反弹"是<b>运动</b>分类里的一块积木，它自己就会完成"判断 + 转向"两件事；而"碰到边缘？"是<b>侦测</b>分类里的六边形积木，只负责判断，不会自己反弹。
+</div>
+
+
+<h3 id="s4-2">4.2 负数、小数与随机数</h3>
+
+<figure class="figure">
+<svg class="diagram" viewBox="0 0 820 168" role="img" aria-label="坐标里会出现的三类数">
+<text x="24" y="32" font-size="14" fill="#4c1d95" text-anchor="start" font-weight="bold">坐标里会出现的三类数</text><rect x="24" y="56" width="772" height="28" rx="8" fill="#f3efff"/><text x="40" y="75" font-size="12.6" fill="#6d28d9" text-anchor="start" font-weight="bold">正数</text><text x="192" y="75" font-size="12.2" fill="#4c1d95" text-anchor="start">往右、往上：x = 120 表示在原点右边 120</text><rect x="24" y="90" width="772" height="28" rx="8" fill="#faf8ff"/><text x="40" y="109" font-size="12.6" fill="#6d28d9" text-anchor="start" font-weight="bold">负数</text><text x="192" y="109" font-size="12.2" fill="#4c1d95" text-anchor="start">往左、往下：y = -60 表示在原点下方 60</text><rect x="24" y="124" width="772" height="28" rx="8" fill="#f3efff"/><text x="40" y="143" font-size="12.6" fill="#6d28d9" text-anchor="start" font-weight="bold">小数</text><text x="192" y="143" font-size="12.2" fill="#4c1d95" text-anchor="start">更精确的位置：x = 12.5 也能用</text>
+</svg>
+  <div class="caption">图 4（SVG）：正数、负数与小数</div>
+</figure>
+
+<div class="blk-card">
+  <div class="blk-head">
+    <span class="dot d1"></span><span class="dot d2"></span><span class="dot d3"></span>
+    <span class="file">重点示例：让位置变得不可预测</span>
+    <span class="lang">图形化积木</span>
+  </div>
+  <div class="blk-body">
+<svg class="blk" viewBox="0 0 451.8 126" width="451.8" height="126" role="img" aria-label="积木脚本"><g font-family="'PingFang SC','Microsoft YaHei','Noto Sans SC',sans-serif"><g transform="translate(3,3)"><path d="M0,5 A5,5 0 0 1 5,0 H16 v4 h12 v-4 H283 A5,5 0 0 1 288,5 V31 A5,5 0 0 1 283,36 H28 v4 h-12 v-4 H5 A5,5 0 0 1 0,31 Z" fill="#59C059" stroke="#489d48" stroke-width="1.2"/><text x="15" y="22.8" font-size="13.4" fill="#fff">在 </text><rect x="42.6" y="6.5" width="50.8" height="23" rx="11.5" fill="#fff"/><text x="68" y="22.4" font-size="12.5" fill="#575e75" text-anchor="middle">-240</text><text x="100.4" y="22.8" font-size="13.4" fill="#fff"> 和 </text><rect x="135.2" y="6.5" width="43.6" height="23" rx="11.5" fill="#fff"/><text x="157" y="22.4" font-size="12.5" fill="#575e75" text-anchor="middle">240</text><text x="185.8" y="22.8" font-size="13.4" fill="#fff"> 之间取随机数</text></g><g transform="translate(3,43)"><path d="M0,5 A5,5 0 0 1 5,0 H16 v4 h12 v-4 H211 A5,5 0 0 1 216,5 V31 A5,5 0 0 1 211,36 H28 v4 h-12 v-4 H5 A5,5 0 0 1 0,31 Z" fill="#4C97FF" stroke="#3e7bd1" stroke-width="1.2"/><text x="15" y="22.8" font-size="13.4" fill="#fff">移到 x: </text><rect x="77.6" y="6.5" width="50.8" height="23" rx="11.5" fill="#fff"/><text x="103" y="22.4" font-size="12.5" fill="#575e75" text-anchor="middle">-240</text><text x="135.4" y="22.8" font-size="13.4" fill="#fff"> y: </text><rect x="171.2" y="6.5" width="30" height="23" rx="11.5" fill="#fff"/><text x="186.2" y="22.4" font-size="12.5" fill="#575e75" text-anchor="middle">0</text></g><g transform="translate(3,83)"><path d="M0,5 A5,5 0 0 1 5,0 H16 v4 h12 v-4 H440 A5,5 0 0 1 445,5 V31 A5,5 0 0 1 440,36 H28 v4 h-12 v-4 H5 A5,5 0 0 1 0,31 Z" fill="#4C97FF" stroke="#3e7bd1" stroke-width="1.2"/><text x="15" y="22.8" font-size="13.4" fill="#fff">移到 x: </text><polygon points="89.1,6.5 346.5,6.5 352.825,18 346.5,29.5 89.1,29.5 82.775,18" fill="#fff" stroke="#4C97FF" stroke-width="1.4"/><text x="88.6" y="22.8" font-size="13.4" fill="#575e75">在 </text><rect x="116.2" y="6.5" width="50.8" height="23" rx="11.5" fill="#fff" stroke="#cfd6e4" stroke-width="1"/><text x="141.6" y="22.4" font-size="12.5" fill="#575e75" text-anchor="middle">-240</text><text x="174" y="22.8" font-size="13.4" fill="#575e75"> 和 </text><rect x="208.8" y="6.5" width="43.6" height="23" rx="11.5" fill="#fff" stroke="#cfd6e4" stroke-width="1"/><text x="230.6" y="22.4" font-size="12.5" fill="#575e75" text-anchor="middle">240</text><text x="259.4" y="22.8" font-size="13.4" fill="#575e75"> 之间取随机数</text><text x="365" y="22.8" font-size="13.4" fill="#fff"> y: </text><rect x="400.8" y="6.5" width="30" height="23" rx="11.5" fill="#fff"/><text x="415.8" y="22.4" font-size="12.5" fill="#575e75" text-anchor="middle">0</text></g></g></svg>
+  </div>
+  <div class="out"><b>要点</b>　把绿色的随机数积木<b>塞进</b>坐标槽里，每次运行角色都会出现在不同的位置</div>
+</div>
+
+<div class="box tip">
+  <span class="lb">打个比方：</span><b>随机数</b>就像掷骰子——你只规定范围（比如 -240 到 240），具体落在哪儿由它自己决定。注意范围要写对：x 在 ±240 之间，y 在 ±180 之间，超出舞台角色就看不见了。
+</div>
+
+<!-- ============ 5 ============ -->
+<div class="section-header" id="s5">
+  <h2>5　代码实战</h2>
+  <div class="en-title">Level Practice</div>
+</div>
+
+<p>这一关要你换个思路：<b>不是"走一步"，而是"改变方向再走"</b>。
+这正是"面向"积木最典型的用法。</p>
+<div class="level-card">
+  <div class="lc-head"><span class="n">关卡 20</span><h4>一个方块</h4><span class="go">进入关卡 →</span></div>
+  <div class="lc-body">
+    <div class="story">
+      <b>故事：</b>
+花径在这里拐了三个弯：先往上，再往左，然后往下，最后往右。
+路是连通的，但每一步的朝向都不一样。你要做的，是<b>在每一段路前先把方向改对</b>。
+
+    </div>
+    <p><strong>思路：</strong>把整条路线拆成四段：<b>上 2、左 3、下 2、右 1</b>。
+每一段都由"面向某个方向"和"移动若干步"两块积木组成——方向对了，路就走对了。
+</p>
+<div class="blk-card">
+  <div class="blk-head">
+    <span class="dot d1"></span><span class="dot d2"></span><span class="dot d3"></span>
+    <span class="file">重点示例：一段路两块积木</span>
+    <span class="lang">图形化积木</span>
+  </div>
+  <div class="blk-body">
+<svg class="blk" viewBox="0 0 170.8 298" width="170.8" height="298" role="img" aria-label="积木脚本"><g font-family="'PingFang SC','Microsoft YaHei','Noto Sans SC',sans-serif"><g transform="translate(3,3)"><path d="M0,12 C32.96,0 131.84,0 164.8,12 V43 A5,5 0 0 1 159.8,48 H28 v4 h-12 v-4 H5 A5,5 0 0 1 0,43 Z" fill="#FFBF00" stroke="#d19c00" stroke-width="1.2"/><text x="15" y="34.8" font-size="13.4" fill="#fff">当 </text><rect x="42.6" y="18.5" width="52.8" height="23" rx="5" fill="#CC9900"/><text x="64" y="34.4" font-size="12.5" fill="#fff" text-anchor="middle">绿旗</text><path d="M84.4 27.5 l4 5 l4 -5 z" fill="#fff" opacity=".85"/><text x="102.4" y="34.8" font-size="13.4" fill="#fff"> 被点击</text></g><g transform="translate(3,55)"><path d="M0,5 A5,5 0 0 1 5,0 H16 v4 h12 v-4 H137 A5,5 0 0 1 142,5 V31 A5,5 0 0 1 137,36 H28 v4 h-12 v-4 H5 A5,5 0 0 1 0,31 Z" fill="#4C97FF" stroke="#3e7bd1" stroke-width="1.2"/><text x="15" y="22.8" font-size="13.4" fill="#fff">面向 </text><rect x="56" y="6.5" width="30" height="23" rx="11.5" fill="#fff"/><text x="71" y="22.4" font-size="12.5" fill="#575e75" text-anchor="middle">0</text><text x="93" y="22.8" font-size="13.4" fill="#fff"> 方向</text></g><g transform="translate(3,95)"><path d="M0,5 A5,5 0 0 1 5,0 H16 v4 h12 v-4 H123 A5,5 0 0 1 128,5 V31 A5,5 0 0 1 123,36 H28 v4 h-12 v-4 H5 A5,5 0 0 1 0,31 Z" fill="#4C97FF" stroke="#3e7bd1" stroke-width="1.2"/><text x="15" y="22.8" font-size="13.4" fill="#fff">移动 </text><rect x="56" y="6.5" width="30" height="23" rx="11.5" fill="#fff"/><text x="71" y="22.4" font-size="12.5" fill="#575e75" text-anchor="middle">2</text><text x="93" y="22.8" font-size="13.4" fill="#fff"> 步</text></g><g transform="translate(3,135)"><path d="M0,5 A5,5 0 0 1 5,0 H16 v4 h12 v-4 H150 A5,5 0 0 1 155,5 V31 A5,5 0 0 1 150,36 H28 v4 h-12 v-4 H5 A5,5 0 0 1 0,31 Z" fill="#4C97FF" stroke="#3e7bd1" stroke-width="1.2"/><text x="15" y="22.8" font-size="13.4" fill="#fff">面向 </text><rect x="56" y="6.5" width="43.6" height="23" rx="11.5" fill="#fff"/><text x="77.8" y="22.4" font-size="12.5" fill="#575e75" text-anchor="middle">-90</text><text x="106.6" y="22.8" font-size="13.4" fill="#fff"> 方向</text></g><g transform="translate(3,175)"><path d="M0,5 A5,5 0 0 1 5,0 H16 v4 h12 v-4 H123 A5,5 0 0 1 128,5 V31 A5,5 0 0 1 123,36 H28 v4 h-12 v-4 H5 A5,5 0 0 1 0,31 Z" fill="#4C97FF" stroke="#3e7bd1" stroke-width="1.2"/><text x="15" y="22.8" font-size="13.4" fill="#fff">移动 </text><rect x="56" y="6.5" width="30" height="23" rx="11.5" fill="#fff"/><text x="71" y="22.4" font-size="12.5" fill="#575e75" text-anchor="middle">3</text><text x="93" y="22.8" font-size="13.4" fill="#fff"> 步</text></g><g transform="translate(3,215)"><path d="M0,5 A5,5 0 0 1 5,0 H16 v4 h12 v-4 H150 A5,5 0 0 1 155,5 V31 A5,5 0 0 1 150,36 H28 v4 h-12 v-4 H5 A5,5 0 0 1 0,31 Z" fill="#4C97FF" stroke="#3e7bd1" stroke-width="1.2"/><text x="15" y="22.8" font-size="13.4" fill="#fff">面向 </text><rect x="56" y="6.5" width="43.6" height="23" rx="11.5" fill="#fff"/><text x="77.8" y="22.4" font-size="12.5" fill="#575e75" text-anchor="middle">180</text><text x="106.6" y="22.8" font-size="13.4" fill="#fff"> 方向</text></g><g transform="translate(3,255)"><path d="M0,5 A5,5 0 0 1 5,0 H16 v4 h12 v-4 H123 A5,5 0 0 1 128,5 V31 A5,5 0 0 1 123,36 H28 v4 h-12 v-4 H5 A5,5 0 0 1 0,31 Z" fill="#4C97FF" stroke="#3e7bd1" stroke-width="1.2"/><text x="15" y="22.8" font-size="13.4" fill="#fff">移动 </text><rect x="56" y="6.5" width="30" height="23" rx="11.5" fill="#fff"/><text x="71" y="22.4" font-size="12.5" fill="#575e75" text-anchor="middle">2</text><text x="93" y="22.8" font-size="13.4" fill="#fff"> 步</text></g></g></svg>
+  </div>
+  <div class="out"><b>读法</b>　0 朝上、-90 朝左、180 朝下——每改一次朝向，后面那块"移动"走的就是新方向</div>
+</div>
+
+    <div class="box tip">
+      <span class="lb">自己试一试：</span>最后一段"向右 1 步"还没写。想一想向右对应哪个角度（提示：<b>90 度</b>），把两块积木补在最后。
+    </div>
+    <p>你会发现，"面向 + 移动"这两块积木几乎能走出任何一条由直线段组成的路线。
+    下一单元我们会给这条路加上"什么时候该拐弯"的判断。</p>
+<div class="box info">
+  <span class="lb">回头看看上一单元那一关：</span>当时我们用"面向 + 移动"走出了方框。现在你知道了——那其实就是<b>坐标与角度的组合</b>，只不过当时还没给它起名字。
+</div>
+    <a class="btn-go" href="https://codecombat.cn/" target="_blank" rel="noopener">去扣哒世界闯这一关 →</a>
+  </div>
+</div>
+
+<!-- ============ 6 ============ -->
+<div class="section-header" id="s6">
+  <h2>6　常见陷阱</h2>
+  <div class="en-title">Common Traps</div>
+</div>
+
+<div class="box warn">
+  <span class="lb">陷阱 1：</span><b>把"面向 90"当成"往右走 90 步"。</b>"面向"只改朝向，位置一点不动。<br><strong>正确做法：</strong>要往前走，还得再接一块"移动……步"。
+</div>
+
+<div class="box warn">
+  <span class="lb">陷阱 2：</span><b>把"左转 / 右转"当成"往左 / 往右移动"。</b>这两块积木是<b>原地扭身</b>，位置不变，只改朝向。<br><strong>正确理解：</strong>带"转"字的管方向，带"移动"的管位置。
+</div>
+
+<div class="box warn">
+  <span class="lb">陷阱 3：</span><b>以为角度 0 是向右。</b>图形化编程里 <b>0 度朝上</b>，90 度才朝右，180 度朝下，-90 度朝左。<br><strong>正确记法：</strong>把 0 想象成中午 12 点的钟面，顺时针走一圈：右是 3 点（90）、下是 6 点（180）、左是 9 点（-90）。
+</div>
+
+<div class="box warn">
+  <span class="lb">陷阱 4：</span><b>把"移到 x: y:"和"将 x/y 坐标增加"混用。</b>"移到"给的是<b>终点</b>，"增加"给的是<b>位移</b>。<br><strong>正确做法：</strong>题目问"执行后角色在哪"时，一定要先看清是"移到"还是"增加"，再动手算。
+</div>
+
+<!-- ============ 7 ============ -->
+<div class="section-header" id="s7">
+  <h2>7　题目练习</h2>
+  <div class="en-title">Practice</div>
+</div>
+
+<p>前 2 题改编自 2026 年 9 月 · 图形化编程 一级 第 7 题、2026 年 6 月 · 图形化编程 二级 第 3 题，其余为原创练习题。</p>
+<div class="exam">
+  <div class="eh"><span class="src">改编自 2026 年 9 月 · 图形化编程 一 级 · 第 7 题</span><span class="tp">单选题</span></div>
+  <div class="eb">
+    <div class="q">花园里有一个箭头角色，方向初始为 90 度。鼠标点击这个箭头三次，每次执行"右转 45 度"。<br>点击三次后，箭头朝向哪个方向（　　）。</div>
+    <div class="opt"><i>A.</i>45 度<br>
+      <i>B.</i>90 度<br>
+      <i>C.</i>135 度<br>
+      <i>D.</i>180 度</div>
+    <details><summary>查看答案与详解</summary>
+      <div class="ans"><b>答案：C</b>。方向是"叠着转"的：90 度是朝右，每次右转（顺时针）45 度——<br>90 → 135 → 180 → 225（也就是 -135）。<br><b>这里要看清两件事：</b>① 起点是 90 度不是 0 度；②"转三次"是加三次，不是乘三次。<br><b>A、B 错：</b>那是转一次或没转的结果；<br><b>D 错：</b>180 度只转了两次。<br><span class="tagline">对应小节</span>3.1、3.2 方向与左右转。</div>
+    </details>
+  </div>
+</div>
+<div class="exam">
+  <div class="eh"><span class="src">改编自 2026 年 6 月 · 图形化编程 二 级 · 第 3 题</span><span class="tp">单选题</span></div>
+  <div class="eb">
+    <div class="q">默认小猫角色，当前坐标是 (10, -10)。依次执行"将 x 坐标增加 10"和"将 x 坐标增加 10"之后，小猫的坐标是（　　）。</div>
+    <div class="opt"><i>A.</i>(10, -10)<br>
+      <i>B.</i>(30, -10)<br>
+      <i>C.</i>(20, -10)<br>
+      <i>D.</i>(25, -5)</div>
+    <details><summary>查看答案与详解</summary>
+      <div class="ans"><b>答案：B</b>。"将 x 坐标增加"是在原来的位置上再挪一点：<br>10 → 20 → 30，而 y 坐标一动没动，还是 -10。<br><b>A 错：</b>那是"一次都没执行"的结果；<br><b>C 错：</b>那是只执行了一次的结果；<br><b>D 错：</b>y 坐标没有任何积木去改它，不该变。<br><b>小提醒：</b>"增加"是相对移动，做这类题一定要<b>从当前坐标往下算</b>。<br><span class="tagline">对应小节</span>2.3 将坐标增加。</div>
+    </details>
+  </div>
+</div>
+<div class="exam">
+  <div class="eh"><span class="src ori">原创练习题</span><span class="tp">单选题</span></div>
+  <div class="eb">
+    <div class="q">花园的小径是一条直线。角色当前的坐标是 (0, 0)，朝向 90 度。执行"移动 100 步"之后，它的坐标最可能是（　　）。</div>
+    <div class="opt">
+      <i>A.</i>(0, 100)<br>
+      <i>B.</i>(100, 0)<br>
+      <i>C.</i>(-100, 0)<br>
+      <i>D.</i>(0, -100)
+    </div>
+    <details><summary>查看答案与详解</summary>
+      <div class="ans"><b>答案：B</b>。"移动"是按<b>当前朝向</b>走，而 90 度正好是<b>向右</b>，所以 x 从 0 变成 100、y 不变。<br><b>A 错：</b>那是朝上走的结果（0 度）；<br><b>C 错：</b>那是朝左走的结果（-90 度）；<br><b>D 错：</b>那是朝下走的结果（180 度）。<br><span class="tagline">对应小节</span>3.1 四个方向的角度；2.1 移动。</div>
+    </details>
+  </div>
+</div>
+
+<div class="exam">
+  <div class="eh"><span class="src ori">原创练习题</span><span class="tp">单选题</span></div>
+  <div class="eb">
+    <div class="q">角色当前坐标是 (50, 20)。依次执行"将 x 坐标增加 -30"和"将 y 坐标增加 40"之后，它的坐标是（　　）。</div>
+    <div class="opt">
+      <i>A.</i>(20, 60)<br>
+      <i>B.</i>(-30, 40)<br>
+      <i>C.</i>(80, -20)<br>
+      <i>D.</i>(50, 20)
+    </div>
+    <details><summary>查看答案与详解</summary>
+      <div class="ans"><b>答案：A</b>。"将坐标增加"是在原来位置上<b>再加一点</b>：<br>x：50 + (-30) = 20；y：20 + 40 = 60。<br><b>易错点：</b>增加一个<b>负数</b>就是往相反方向挪——"增加 -30"等于"往左挪 30"。<br><span class="tagline">对应小节</span>2.3 将坐标增加。</div>
+    </details>
+  </div>
+</div>
+
+<div class="exam">
+  <div class="eh"><span class="src ori">原创练习题</span><span class="tp">单选题</span></div>
+  <div class="eb">
+    <div class="q">要让角色一直沿着墙面来回弹跳，下面哪一组积木最合适（　　）。</div>
+    <div class="opt">
+      <i>A.</i>重复执行：移动 6 步、碰到边缘就反弹<br>
+      <i>B.</i>重复执行：移到 x: 0 y: 0<br>
+      <i>C.</i>重复执行：右转 15 度<br>
+      <i>D.</i>重复执行：将大小增加 1
+    </div>
+    <details><summary>查看答案与详解</summary>
+      <div class="ans"><b>答案：A</b>。一边走一边检查边缘，撞上就把方向反过来，于是永远在围墙里跑。<br><b>B 错：</b>每轮都回到原点，角色根本没在动；<br><b>C 错：</b>只是原地转圈，位置不动；<br><b>D 错：</b>那是外观积木，只会让角色越来越大。<br><span class="tagline">对应小节</span>4.1 碰到边缘就反弹。</div>
+    </details>
+  </div>
+</div>
+
+<div class="exam">
+  <div class="eh"><span class="src ori">原创练习题</span><span class="tp">多选题</span></div>
+  <div class="eb">
+    <div class="q">下面关于角度的说法，哪些是<b>正确</b>的（　　）。</div>
+    <div class="opt">
+      <i>A.</i>面向 0 方向是朝上<br>
+      <i>B.</i>面向 90 方向是朝右<br>
+      <i>C.</i>面向 180 方向是朝左<br>
+      <i>D.</i>面向 -90 方向是朝左
+    </div>
+    <details><summary>查看答案与详解</summary>
+      <div class="ans"><b>答案：A、B、D</b>。0 朝上、90 朝右、180 朝下、-90 朝左——顺时针一圈正好 360 度。<br><b>C 错：</b>180 度是朝<b>下</b>，朝左的是 -90 度（也就是 270 度）。<br><b>小技巧：</b>画一个钟面，12 点写 0、3 点写 90、6 点写 180、9 点写 -90，一眼就能对出来。<br><span class="tagline">对应小节</span>3.1 四个方向的角度。</div>
+    </details>
+  </div>
+</div>
+
+<div class="exam">
+  <div class="eh"><span class="src ori">原创练习题</span><span class="tp">判断题</span></div>
+  <div class="eb">
+    <div class="q">在图形化编程中，"右转 15 度"会让角色向右移动 15 步。（　　）</div>
+    <details><summary>查看答案与详解</summary>
+      <div class="ans"><b>答案：错误（×）</b>。"右转"改的是<b>朝向</b>，角色只是在原地顺时针扭身，位置完全没有变化。<br>要让它真的向右走，得先"面向 90 方向"，再"移动……步"。<br><span class="tagline">对应小节</span>3.2 左转与右转。</div>
+    </details>
+  </div>
+</div>
+
+<!-- ============ 8 ============ -->
+<div class="section-header" id="s8">
+  <h2>8　本单元小结</h2>
+  <div class="en-title">Unit Summary</div>
+</div>
+
+<div class="cast teacher">
+  <img class="ava" src="../assets/avatars/tharin.webp" alt="塔林" onerror="this.style.display='none'">
+  <div class="bubble">
+    <div class="who">塔林 · 花园的守门人</div>
+    今天你给舞台装上了两把尺子：<b>坐标</b>说"在哪"，<b>角度</b>说"朝哪"。
+    把这四块积木记牢——<b>移到 x: y:、将坐标增加、面向、移动</b>——
+    一级卷子里的运动题就基本都在你的射程内了。
+  </div>
+</div>
+
+<h3 id="s8-1">你在花径上学到了什么</h3>
+
+<ul>
+  <li><b>坐标系</b>：x 管左右（±240），y 管上下（±180），正中间是原点 (0, 0)；</li>
+  <li><b>两种定位</b>：移到 / 设为是"目的地"，将坐标增加是"挪一点"；</li>
+  <li><b>四个角度</b>：0 上、90 右、180 下、-90 左；左转右转只改朝向不改位置；</li>
+  <li><b>边界与随机</b>：碰到边缘就反弹让角色在围墙里跑，随机数让位置不可预测。</li>
+</ul>
+<h3 id="s8-2">下一站：会听懂话的喷泉</h3>
+
+<p>现在角色会走了，可它还"不会听话"——你必须点绿旗它才动，而且它看不见任何东西。
+下一单元我们给它装上耳朵和眼睛：<b>事件</b>让它被叫醒，<b>侦测</b>让它能看见你在哪。</p>
+
+
+<div class="pager">
+  <a href="scratch-1-02.html"><div class="k">← 上一单元</div><div class="v">换装小屋 · 舞台、角色与背景</div></a>
+  <a href="../index.html" target="_top" class="back"><div class="k">返回</div><div class="v">考纲之路 · 总目录</div></a>
+  <a href="scratch-1-04.html"><div class="k">下一单元 →</div><div class="v">会听懂话的喷泉 · 事件触发与侦测</div></a>
+</div>
+<div class="cta">
+  <h3>下一站：会听懂话的喷泉</h3>
+  <p>现在角色会走了，可它还不会听话——你必须点绿旗它才动，而且它看不见任何东西。下一单元我们给它装上耳朵和眼睛。</p>
+  <a class="btn-go" href="https://codecombat.cn/" target="_blank" rel="noopener">加入扣哒世界，把这条考纲之路走一遍 →</a>
+</div>
+
+</div><!-- /container -->
+</div><!-- /page -->
+
+<script>
+if (location.search.indexOf('expand') >= 0) {
+  document.querySelectorAll('details').forEach(d => d.open = true);
+}
+document.querySelectorAll('.sidebar-nav a').forEach(a => {
+  a.addEventListener('click', () => {
+    if (window.innerWidth <= 900) document.querySelector('.sidebar-nav').classList.remove('active');
+  });
+});
+</script>
+</body>
+</html>

@@ -1,0 +1,780 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="copyright" content="CodeCombat Inc. codecombat.cn">
+<title>集市广播塔 · 计算机网络与 Internet | 扣哒考级 · GESP 图形化二级</title>
+<style>
+  :root{
+    --primary:#8b5cf6; --primary-light:#a78bfa; --primary-lighter:#f3efff; --primary-dark:#6d28d9;
+    --brand:#ff6b35; --brand-dark:#e8541f; --brand-soft:#fff3ec;
+    --night:#131c2b; --night-2:#1e2a3a;
+    --gold:#f5b301;
+    --text:#2a2438; --dim:#7c7794; --dim2:#a29db8;
+    --bg:#ffffff; --bg-soft:#faf8ff; --line:#e9e4f8;
+    --sidebar:274px;
+    --code-bg:#211a33; --code-tx:#d6cfe6;
+    --code-kw:#c678dd; --code-st:#98c379; --code-nu:#d19a66; --code-cm:#7d7392; --code-fn:#61afef;
+  }
+  *{margin:0;padding:0;box-sizing:border-box}
+  html{scroll-behavior:smooth}
+  body{
+    font-family:"PingFang SC","Microsoft YaHei","Segoe UI",-apple-system,sans-serif;
+    line-height:1.9;color:var(--text);background:var(--bg);font-size:15.5px;
+  }
+
+  .sidebar-nav{
+    position:fixed;top:0;left:0;width:var(--sidebar);height:100vh;overflow-y:auto;
+    background:linear-gradient(180deg,#101a26,#182636);padding:14px 0 40px;z-index:100;
+    border-right:3px solid var(--brand);transition:transform .3s ease;
+  }
+  .sidebar-nav::-webkit-scrollbar{width:5px}
+  .sidebar-nav::-webkit-scrollbar-thumb{background:var(--brand);border-radius:4px}
+  .sb-brand{display:flex;align-items:center;gap:10px;padding:10px 13px 12px;border-bottom:1px solid #26384c;margin-bottom:8px}
+  .sidebar-nav a.sb-logo{display:flex;align-items:center;justify-content:center;flex-shrink:0;padding:0;border-left:none;transition:.2s}
+  .sb-logo:hover{transform:scale(1.08)}
+  .sb-logo img{height:34px;width:34px;display:block;object-fit:contain;border-radius:8px}
+  .sb-brand b{color:#f2f6fa;font-size:14px;letter-spacing:.5px;display:block;line-height:1.4}
+  .sb-brand span{color:#7f95ab;font-size:11.5px;display:block;line-height:1.4}
+  .nav-title{color:#ffb894;font-size:12px;font-weight:800;padding:10px 18px 6px;letter-spacing:1.2px}
+  .sidebar-nav a{
+    display:block;color:#c3d0dc;text-decoration:none;padding:6px 18px;font-size:12.5px;
+    line-height:1.55;border-left:3px solid transparent;transition:.18s;
+  }
+  .sidebar-nav a:hover{color:#fff;background:rgba(255,107,53,.16);border-left-color:var(--brand)}
+  .sidebar-nav a.nav-section{color:#ffb894;font-weight:700;font-size:13px;margin-top:11px;padding-top:10px;border-top:1px solid #26384c}
+  .sidebar-nav a.nav-section:first-of-type{border-top:none;margin-top:0;padding-top:6px}
+  .sidebar-nav a.nav-sub{padding-left:30px;color:#93a8bc;font-size:12px}
+  .sidebar-nav a.nav-sub:hover{color:#fff}
+  .sb-back{margin:16px 14px 0;display:block;text-align:center;padding:9px;border-radius:9px;background:#22344a;color:#a9c0d6 !important;font-size:12px;font-weight:700;border-left:none !important}
+  .sb-back:hover{background:var(--brand) !important;color:#fff !important}
+  .nav-toggle{display:none;position:fixed;top:14px;left:14px;z-index:120;background:var(--brand);color:#fff;border:none;border-radius:9px;padding:9px 13px;font-size:15px;cursor:pointer;box-shadow:0 4px 14px rgba(0,0,0,.25)}
+
+  .page{margin-left:var(--sidebar)}
+
+  .hero{
+    position:relative;overflow:hidden;padding:44px 52px;color:#fff;
+    background:linear-gradient(125deg,#0e1724 0%,#1b2b3f 46%,#8a3a16 132%);
+  }
+  .hero::after{content:"";position:absolute;right:-90px;top:-110px;width:400px;height:400px;border-radius:50%;background:radial-gradient(circle,rgba(245,179,1,.30),transparent 68%)}
+  .hero-top{display:flex;gap:36px;align-items:center;position:relative;z-index:2}
+  .hero-txt{flex:1;min-width:0}
+  .hero .crumb{font-size:11.5px;color:#ffb894;letter-spacing:1.5px;font-weight:700;margin-bottom:14px}
+  .hero h1{font-size:31px;font-weight:800;line-height:1.3;letter-spacing:.6px;margin-bottom:8px}
+  .hero h1 .sub{display:block;font-size:18px;font-weight:700;color:#ffd2b3;margin-top:6px;letter-spacing:.3px}
+  .hero .en{font-size:13px;color:#9db4c8;font-style:italic;margin-bottom:18px}
+  .hero .tags{display:flex;flex-wrap:wrap;gap:8px}
+  .tag{font-size:11.5px;padding:4px 12px;border-radius:20px;background:rgba(255,255,255,.12);border:1px solid rgba(255,255,255,.22);color:#e8f0f6;font-weight:600}
+  .tag.hot{background:rgba(255,107,53,.92);border-color:transparent;color:#fff}
+  .hero-card{flex-shrink:0;width:200px;text-align:center}
+  .hero-card .ava{
+    width:148px;height:148px;border-radius:50%;object-fit:cover;object-position:top center;
+    border:4px solid rgba(255,180,140,.6);box-shadow:0 14px 34px rgba(0,0,0,.45);background:#24344a;
+  }
+  .hero-card .nm{font-size:15px;font-weight:800;color:#fff;margin-top:10px}
+  .hero-card .ti{font-size:11.5px;color:#ffb894;margin-top:2px}
+
+  .container{max-width:1080px;margin:0 auto;padding:38px 52px 70px}
+
+  .lead{
+    font-size:15.5px;line-height:2.05;color:#443c58;background:linear-gradient(120deg,#fff8f3,#f7fbf8);
+    border-left:5px solid var(--brand);border-radius:0 14px 14px 0;padding:22px 26px;margin-bottom:32px;
+  }
+  .lead b{color:var(--brand-dark)}
+
+  .cast{display:flex;gap:16px;align-items:flex-start;border-radius:16px;padding:18px 22px;margin:24px 0}
+  .cast .ava{width:72px;height:72px;border-radius:50%;object-fit:cover;object-position:top center;flex-shrink:0;background:#e8eef5}
+  .cast .bubble{position:relative;font-size:14px;line-height:1.95;padding-top:2px;flex:1}
+  .cast .who{font-size:12px;font-weight:800;margin-bottom:5px;letter-spacing:.5px}
+  .cast.anya{background:var(--brand-soft);border:1px solid #ffdcc9}
+  .cast.anya .who{color:var(--brand-dark)}
+  .cast.anya .bubble{color:#5c4636}
+  .cast.duck{background:#fff5f5;border:1px solid #fbd5d5}
+  .cast.duck .who{color:#b91c1c}
+  .cast.duck .bubble{color:#5c4141}
+  .cast.teacher{background:linear-gradient(120deg,#f4f7fb,#ffffff);border:1px solid #dbe4f0}
+  .cast.teacher .who{color:#1e293b}
+  .cast.teacher .bubble{color:#3c4a5a}
+  .cast.hero{background:#f7f3ff;border:1px solid #ded1fa}
+  .cast.hero .who{color:#6d28d9}
+  .cast.hero .bubble{color:#463d5c}
+
+  .goal-grid{display:grid;grid-template-columns:1fr 1fr;gap:16px;margin-bottom:36px}
+  .goal{border:1px solid var(--line);border-radius:15px;padding:19px 21px;background:#fff;box-shadow:0 4px 16px rgba(31,122,68,.05)}
+  .goal h4{font-size:14px;font-weight:800;margin-bottom:11px;display:flex;align-items:center;gap:8px;color:var(--primary-dark)}
+  .goal h4 .ic{width:22px;height:22px;border-radius:7px;background:var(--primary-lighter);display:flex;align-items:center;justify-content:center;font-size:12px}
+  .goal ul{list-style:none}
+  .goal li{font-size:13.5px;color:#6b6480;line-height:1.9;padding-left:18px;position:relative}
+  .goal li::before{content:"▸";position:absolute;left:0;color:var(--primary);font-weight:800}
+  .goal.syllabus li::before{content:"✓"}
+
+  .section-header{margin:52px 0 24px;padding-bottom:12px;border-bottom:3px solid var(--brand);display:flex;align-items:baseline;gap:14px;flex-wrap:wrap}
+  .section-header h2{font-size:22px;font-weight:800;color:var(--night);letter-spacing:.4px}
+  .section-header .en-title{font-size:12px;color:var(--dim2);font-style:italic}
+  h3{font-size:17.5px;font-weight:800;margin:34px 0 14px;color:var(--night);display:flex;align-items:center;gap:10px}
+  h3::before{content:"";width:5px;height:17px;border-radius:3px;background:var(--brand);flex-shrink:0}
+  h4{font-size:15px;font-weight:800;margin:24px 0 10px;color:#3c2f63}
+  p{margin:12px 0;color:#463d5c;line-height:2}
+  strong{color:var(--primary-dark)}
+  code.inline{background:var(--primary-lighter);color:var(--primary-dark);padding:2px 7px;border-radius:6px;font-family:"SFMono-Regular",Consolas,Menlo,monospace;font-size:.9em;font-weight:600}
+
+  .figure{margin:24px 0;text-align:center}
+  .figure svg.diagram{max-width:100%;height:auto;background:#fff;border:1px solid var(--line);border-radius:14px;padding:10px}
+  .figure .caption{font-size:12.5px;color:var(--dim2);margin-top:9px}
+
+  .pic{margin:26px 0;text-align:center}
+  .pic img{max-width:100%;border-radius:16px;box-shadow:0 10px 28px rgba(30,60,45,.15);display:block;margin:0 auto}
+  .pic figcaption{font-size:12.5px;color:var(--dim2);margin-top:9px}
+  .pic .ph{display:none}
+  .pic.missing img{display:none}
+  .pic.missing .ph{
+    display:flex;flex-direction:column;align-items:center;justify-content:center;gap:9px;
+    border:2px dashed #c9d9e8;border-radius:16px;background:linear-gradient(135deg,#f8fbfe,#eef6ff);
+    padding:40px 26px;color:#7a8fa8;
+  }
+  .pic.missing .ph .fn{font-family:Consolas,monospace;font-size:12.5px;color:#2563eb;font-weight:700;word-break:break-all}
+  .pic.missing .ph .ds{font-size:12.5px;line-height:1.8;max-width:560px}
+
+  .box{border-radius:13px;padding:16px 20px;margin:20px 0;font-size:14px;line-height:1.95}
+  .box .lb{font-weight:800;margin-right:6px}
+  .info{background:#eef6ff;border-left:5px solid #3b82f6;color:#274768}
+  .info .lb{color:#1d4ed8}
+  .tip{background:#fff9ec;border-left:5px solid #f59e0b;color:#6b4e13}
+  .tip .lb{color:#b45309}
+  .remember{background:var(--primary-lighter);border-left:5px solid var(--primary);color:#3a2a6b}
+  .remember .lb{color:var(--primary-dark)}
+  .warn{background:#fef2f2;border-left:5px solid #ef4444;color:#7f2b2b}
+  .warn .lb{color:#b91c1c}
+
+  .code-card{margin:20px 0;border-radius:14px;overflow:hidden;box-shadow:0 10px 28px rgba(20,40,28,.20)}
+  .code-head{display:flex;align-items:center;gap:9px;background:#2c2438;padding:9px 14px}
+  .code-head .dot{width:10px;height:10px;border-radius:50%}
+  .code-head .d1{background:#ff5f57}.code-head .d2{background:#febc2e}.code-head .d3{background:#28c840}
+  .code-head .file{color:#a09ab4;font-size:11.5px;font-family:Consolas,monospace;margin-left:6px}
+  .code-head .lang{margin-left:auto;font-size:10.5px;font-weight:800;color:#150f21;background:#a78bfa;padding:2px 9px;border-radius:6px;letter-spacing:.4px}
+  .code-card pre{background:var(--code-bg);padding:18px 20px;overflow-x:auto;margin:0;font-family:"SFMono-Regular",Consolas,"Courier New",monospace;font-size:13.5px;line-height:1.85}
+  .code-card pre::-webkit-scrollbar{height:8px}
+  .code-card pre::-webkit-scrollbar-thumb{background:#433a5e;border-radius:4px}
+  .code-card code{color:var(--code-tx);white-space:pre}
+  .kw{color:var(--code-kw);font-weight:600}
+  .st{color:var(--code-st)}
+  .nu{color:var(--code-nu)}
+  .cm{color:var(--code-cm);font-style:italic}
+  .fn{color:var(--code-fn)}
+  .out{background:#1d1729;color:#c4b5fd;font-family:Consolas,monospace;font-size:13px;padding:12px 20px;border-top:1px solid #352c48}
+  .out b{color:#c9d6cd;font-weight:600;font-size:11.5px;letter-spacing:1px}
+
+  table.styled{width:100%;border-collapse:collapse;margin:20px 0;font-size:13.5px;border-radius:12px;overflow:hidden;box-shadow:0 4px 16px rgba(31,122,68,.07)}
+  table.styled thead{background:var(--brand)}
+  table.styled th{color:#fff;padding:11px 14px;text-align:left;font-weight:700;font-size:13px}
+  table.styled td{padding:10px 14px;border-bottom:1px solid var(--line);color:#57506b;vertical-align:top}
+  table.styled tbody tr:nth-child(even){background:var(--bg-soft)}
+  table.styled tbody tr:last-child td{border-bottom:none}
+
+  .level-card{border:1px solid var(--line);border-radius:16px;overflow:hidden;margin:22px 0;box-shadow:0 6px 22px rgba(31,122,68,.07)}
+  .level-card .lc-head{background:linear-gradient(100deg,#17283a,#8a3a16);color:#fff;padding:15px 22px;display:flex;align-items:center;gap:12px;flex-wrap:wrap}
+  .level-card .lc-head .n{font-size:12px;font-weight:800;background:rgba(255,255,255,.2);padding:3px 10px;border-radius:20px}
+  .level-card .lc-head h4{margin:0;color:#fff;font-size:16px}
+  .level-card .lc-head .go{margin-left:auto;font-size:11.5px;color:#ffd2b3}
+  .level-card .lc-body{padding:20px 24px;background:#fff}
+  .level-card .story{background:#f9fbfd;border-left:4px solid #93c5fd;border-radius:0 10px 10px 0;padding:13px 18px;margin:0 0 16px;font-size:14px;line-height:1.95;color:#3f5163}
+  .level-card .story b{color:#1d4ed8}
+  .btn-go{
+    display:inline-flex;align-items:center;gap:8px;background:linear-gradient(135deg,var(--brand),var(--brand-dark));
+    color:#fff;text-decoration:none;font-weight:800;font-size:13.5px;padding:10px 22px;border-radius:11px;
+    box-shadow:0 8px 20px rgba(255,107,53,.32);transition:.2s;
+  }
+  .btn-go:hover{transform:translateY(-2px);box-shadow:0 12px 26px rgba(255,107,53,.42)}
+
+  .pit{border:1px solid #f6dede;border-radius:14px;overflow:hidden;margin:16px 0;background:#fff}
+  .pit .pt{display:flex;gap:12px;padding:14px 18px;background:#fffafa;align-items:flex-start}
+  .pit .x{width:26px;height:26px;border-radius:9px;background:#fee;color:#dc2626;display:flex;align-items:center;justify-content:center;font-weight:800;flex-shrink:0;font-size:13px}
+  .pit .t{font-size:13.5px;line-height:1.9;color:#5c4a4a;flex:1}
+  .pit .t b{color:#b91c1c}
+  .pit .duck{display:flex;gap:12px;padding:13px 18px;background:#fff5f5;border-top:1px dashed #f3d0d0;align-items:flex-start}
+  .pit .duck img{width:48px;height:48px;object-fit:contain;flex-shrink:0;margin-top:2px}
+  .pit .duck .dt{font-size:13.5px;line-height:1.9;color:#7a3b3b}
+  .pit .duck .dt b{color:#b91c1c}
+  .pit .fix{padding:12px 18px;background:#f7f3ff;border-top:1px dashed #ded1fa;font-size:13.5px;color:#3a2a6b}
+  .pit .fix b{color:var(--primary-dark)}
+
+  .exam{border:1px solid #dfe7f5;border-radius:15px;margin:16px 0;overflow:hidden;background:#fff;box-shadow:0 4px 16px rgba(38,62,120,.06)}
+  .exam .eh{display:flex;align-items:center;gap:10px;padding:11px 18px;background:linear-gradient(100deg,#eef4ff,#f7faff);border-bottom:1px solid #e3ebf8;flex-wrap:wrap}
+  .exam .eh .src{font-size:11px;font-weight:800;color:#fff;background:#2563eb;padding:2.5px 10px;border-radius:20px}
+  .exam .eh .src.ori{background:#8b5cf6}
+  .exam .eh .tp{font-size:11.5px;color:#5b7ba8;font-weight:700}
+  .exam .eb{padding:16px 20px}
+  .exam .q{font-weight:700;font-size:14px;color:#38304b;line-height:1.9;margin-bottom:10px}
+  .exam .opt{font-size:13.5px;color:#6b6480;line-height:2.05;padding-left:6px}
+  .exam .opt i{font-style:normal;font-weight:800;color:var(--primary-dark);margin-right:7px}
+  .exam pre{margin:12px 0;background:#1b2a21;border-radius:10px;padding:14px 16px;overflow-x:auto;font-family:Consolas,monospace;font-size:13px;line-height:1.8;color:var(--code-tx)}
+  .exam details{margin-top:10px;border-top:1px dashed var(--line);padding-top:10px}
+  .exam summary{cursor:pointer;font-size:12.5px;font-weight:800;color:#2563eb;outline:none;user-select:none}
+  .exam details .ans{font-size:13.5px;color:#463d5c;line-height:1.95;margin-top:9px;background:var(--bg-soft);padding:13px 16px;border-radius:10px}
+  .exam details .ans b{color:var(--primary-dark)}
+  .exam details .ans .tagline{display:inline-block;font-size:11px;background:#e0f2fe;color:#0e7490;padding:1.5px 8px;border-radius:6px;font-weight:700;margin-right:6px}
+
+  .summary{margin:40px 0 20px;border-radius:18px;padding:26px 30px;background:linear-gradient(130deg,#fff8f3,#ffffff);border:1px solid #ffe0cf}
+  .summary h3{margin-top:0}
+  .summary ul{list-style:none;margin-top:10px}
+  .summary li{font-size:14px;line-height:2;color:#514a64;padding-left:24px;position:relative}
+  .summary li::before{content:"◆";position:absolute;left:0;color:var(--brand);font-size:11px;top:6px}
+
+  .pager{display:flex;gap:14px;margin-top:30px;flex-wrap:wrap}
+  .pager a{flex:1;min-width:200px;text-decoration:none;border:1px solid var(--line);border-radius:14px;padding:16px 20px;background:#fff;transition:.2s;display:block}
+  .pager a:hover{border-color:var(--brand);box-shadow:0 10px 26px rgba(255,107,53,.14);transform:translateY(-2px)}
+  .pager a .k{font-size:11px;color:var(--dim2);font-weight:700;letter-spacing:1px}
+  .pager a .v{font-size:14px;font-weight:800;color:var(--night);margin-top:5px}
+  .pager a.back{background:var(--brand-soft);border-color:transparent;text-align:center}
+  .pager a.back .v{color:var(--brand-dark)}
+
+  .cta{margin-top:26px;border-radius:20px;padding:30px 34px;color:#fff;position:relative;overflow:hidden;background:linear-gradient(120deg,#16202f,#2b3a52 46%,#a8431c 132%)}
+  .cta::after{content:"";position:absolute;right:-70px;bottom:-90px;width:280px;height:280px;border-radius:50%;background:radial-gradient(circle,rgba(255,140,80,.45),transparent 68%)}
+  .cta h3{color:#fff;margin:0 0 10px;position:relative;z-index:2}
+  .cta h3::before{background:var(--brand)}
+  .cta p{color:#d8e0ef;font-size:13.5px;margin:0 0 18px;position:relative;z-index:2;max-width:640px}
+  .cta .btn-go{position:relative;z-index:2}
+
+  @media(max-width:900px){
+    .sidebar-nav{transform:translateX(-100%)}
+    .sidebar-nav.active{transform:translateX(0)}
+    .nav-toggle{display:block}
+    .page{margin-left:0}
+    .hero{padding:70px 22px 34px}
+    .hero-top{flex-direction:column-reverse;text-align:center}
+    .hero-card{width:auto}
+    .container{padding:26px 20px 60px}
+    .goal-grid{grid-template-columns:1fr}
+  }
+
+  /* ---------- 图形化：积木卡（替代代码卡） ---------- */
+  .blk-card{background:#f8f6ff;border:1px solid #e6e0fb;border-radius:14px;
+    margin:18px 0;overflow:hidden;box-shadow:0 2px 10px rgba(109,40,217,.06)}
+  .blk-head{display:flex;align-items:center;gap:7px;padding:10px 14px;
+    background:#f1ecfe;border-bottom:1px solid #e6e0fb}
+  .blk-head .file{font-size:12.5px;font-weight:700;color:#5b4a86;margin-left:4px}
+  .blk-head .lang{margin-left:auto;font-size:11px;font-weight:800;color:#fff;
+    background:#8b5cf6;border-radius:20px;padding:3px 11px;letter-spacing:.5px}
+  .blk-body{padding:20px 18px;overflow-x:auto;
+    background:
+      radial-gradient(circle at 14px 14px,#ece6fb 1.6px,transparent 1.7px) 0 0/28px 28px,
+      #ffffff}
+  .blk{display:block;max-width:100%;height:auto;margin:0 auto}
+  .blk + .blk{margin-top:16px}
+  .blk-card .out{background:#f1ecfe;border-top:1px solid #e6e0fb;color:#5b4a86}
+  .blk-card .out b{color:#6d28d9}
+  /* 积木并排（不同角色 / 不同做法对照） */
+  .blk-row{display:flex;gap:16px;flex-wrap:wrap;justify-content:center;align-items:flex-start}
+  .blk-row > *{flex:1 1 240px;min-width:0}
+  .blk-row .blk{margin:0}
+  /* 积木旁的小标题 */
+  .blk-cap{font-size:12.5px;font-weight:800;color:#6d28d9;background:#f3efff;
+    border:1px solid #e6e0fb;border-radius:8px;padding:5px 12px;margin:14px 0 10px;
+    display:inline-block}
+</style>
+</head>
+<body>
+
+<button class="nav-toggle" onclick="document.querySelector('.sidebar-nav').classList.toggle('active')">&#9776;</button>
+
+<nav class="sidebar-nav">
+  <div class="sb-brand">
+    <a class="sb-logo" href="https://codecombat.cn/" target="_blank" rel="noopener" title="访问 CodeCombat 扣哒世界官网">
+      <img src="../assets/logo.png" alt="CodeCombat 扣哒世界">
+    </a>
+    <div><b>集市广播塔</b><span>彩虹集市 · 图形化二级 第 1 单元</span></div>
+  </div>
+  <div class="nav-title">本单元目录</div>
+
+  <a href="#s0" class="nav-section">0　单元导语与目标</a>
+  <a href="#s0-1" class="nav-sub">0.1 学习目标</a>
+  <a href="#s0-2" class="nav-sub">0.2 考纲对照</a>
+  <a href="#s1" class="nav-section">1　计算机网络是什么</a>
+  <a href="#s1-1" class="nav-sub">1.1 网络由什么组成</a>
+  <a href="#s1-2" class="nav-sub">1.2 局域网与互联网</a>
+  <a href="#s1-3" class="nav-sub">1.3 网络能做什么</a>
+  <a href="#s2" class="nav-section">2　Internet 与它的服务</a>
+  <a href="#s2-1" class="nav-sub">2.1 什么是 Internet</a>
+  <a href="#s2-2" class="nav-sub">2.2 形成与发展</a>
+  <a href="#s2-3" class="nav-sub">2.3 常用服务</a>
+  <a href="#s3" class="nav-section">3　浏览器的基本操作</a>
+  <a href="#s3-1" class="nav-sub">3.1 地址栏与网址</a>
+  <a href="#s3-2" class="nav-sub">3.2 搜索与前进后退</a>
+  <a href="#s3-3" class="nav-sub">3.3 下载文件</a>
+  <a href="#s4" class="nav-section">4　电子邮件与网络安全</a>
+  <a href="#s4-1" class="nav-sub">4.1 收发电子邮件</a>
+  <a href="#s4-2" class="nav-sub">4.2 网络安全常识</a>
+  <a href="#s5" class="nav-section">5　代码实战</a>
+  <a href="#s6" class="nav-section">6　常见陷阱</a>
+  <a href="#s7" class="nav-section">7　题目练习</a>
+  <a href="#s8" class="nav-section">8　本单元小结</a>
+
+  <a href="../index.html" target="_top" class="sb-back">返回考纲之路</a>
+</nav>
+
+<div class="page">
+
+<div class="hero">
+  <div class="hero-top">
+    <div class="hero-txt">
+      <div class="crumb">扣哒考级 · GESP 图形化 二级 · 第 1 单元　|　彩虹集市 RAINBOW BAZAAR</div>
+      <h1>集市广播塔
+        <span class="sub">计算机网络与 Internet</span>
+      </h1>
+      <div class="en">Computer Networks and the Internet</div>
+      <div class="tags">        <span class="tag hot">考纲 · 计算机网络</span>
+        <span class="tag">Internet</span>
+        <span class="tag">浏览器操作</span>
+        <span class="tag">网络安全</span></div>
+    </div>
+    <div class="hero-card">
+      <img class="ava" src="../assets/avatars/anya.webp" alt="安雅" onerror="this.style.background='#24344a';this.src='../assets/heroes/anya.webp'">
+      <div class="nm">安雅</div>
+      <div class="ti">红发队长 · 你的旅伴</div>
+    </div>
+  </div>
+</div>
+
+<div class="container">
+
+
+<div class="lead">
+  彩虹集市的第一眼，是那串灯。<br>
+  几十个小摊从广场这头排到那头，每个摊子上方都挂着一串彩色灯泡，
+  而所有灯串都汇向广场正中那座高塔——<b>广播塔</b>。<br>
+  塔顶的灯一亮，整片集市的灯跟着变换一次颜色。安雅说：
+  "<b>一台机器想跟另一台说话，就得先连起来。</b>这就是网络的起点。"
+</div>
+
+<div class="cast anya">
+  <img class="ava" src="../assets/avatars/anya.webp" alt="安雅" onerror="this.style.display='none'">
+  <div class="bubble">
+    <div class="who">安雅 · 红发队长</div>
+    这一单元不用拼积木，但要记的东西不少：<b>网络三要素、局域网和 Internet 的区别、
+    浏览器怎么用、邮件怎么写、上网怎么才安全</b>。<br>
+    这些是"背了就能得分"的题——二级卷子每场都出，别在这里丢分。
+  </div>
+</div>
+
+<figure class="pic">
+  <img src="../assets/illustrations/scratch-L2-01-01_broadcast_tower.webp" alt="集市广播塔"
+       onerror="this.closest('.pic').classList.add('missing')">
+  <div class="ph">
+    <div class="fn">assets/illustrations/scratch-L2-01-01_broadcast_tower.webp</div>
+    <div class="ds">【配图位】五彩集市中矗立一座高广播塔，发光的灯串把许多小摊位与设备连起来，信号沿灯串流动。（提示词见《GESP配图清单与AI绘图提示词》第四节 2-1）</div>
+  </div>
+  <figcaption>图 12：集市广播塔——把每个摊位连成一张网</figcaption>
+</figure>
+
+
+<!-- ============ 0 ============ -->
+<div class="section-header" id="s0">
+  <h2>0　单元导语与目标</h2>
+  <div class="en-title">Before We Start</div>
+</div>
+
+<h3 id="s0-1">0.1 学习目标</h3>
+
+<ul>
+  <li>说清<b>计算机网络</b>是什么、由哪几部分组成；</li>
+  <li>知道什么是 <b>Internet</b>，了解它的形成与发展；</li>
+  <li>会用浏览器：敲网址、搜索、前进后退、下载文件；</li>
+  <li>会收发电子邮件，知道收件人、主题、附件分别是什么；</li>
+  <li>掌握基本的<b>网络安全常识</b>：密码、陌生链接、个人信息。</li>
+</ul>
+<h3 id="s0-2">0.2 考纲对照</h3>
+
+<table class="styled">
+  <thead><tr><th>考纲知识块</th><th>考纲要求</th><th>本单元小节</th></tr></thead>
+  <tbody><tr><td>1 计算机网络与 Internet</td><td>计算机网络和 Internet 的含义</td><td>1.1～1.3、2.1～2.3</td></tr><tr><td>1 计算机网络与 Internet</td><td>浏览器的基本操作</td><td>3.1～3.3</td></tr><tr><td>1 计算机网络与 Internet</td><td>电子邮件的发送与接收等</td><td>4.1</td></tr><tr><td>1 计算机网络与 Internet</td><td>计算机网络安全知识</td><td>4.2</td></tr></tbody>
+</table>
+
+<p>这一单元是二级里唯一"不用拼积木也要背"的部分，'
+'但它几乎每次考试都会出 2～3 道选择题——<b>是最好拿的分</b>。</p>
+
+<!-- ============ 1 ============ -->
+<div class="section-header" id="s1">
+  <h2>1　计算机网络是什么</h2>
+  <div class="en-title">Computer Networks</div>
+</div>
+
+<h3 id="s1-1">1.1 网络由什么组成</h3>
+
+<p>彩虹集市的广播塔把几十个摊位串了起来。安雅指着那串发光的灯链说：
+"<b>一条线把几台机器连起来，它们能互相传消息——这就是网络。</b>"</p>
+<figure class="figure">
+<svg class="diagram" viewBox="0 0 820 194" role="img" aria-label="网络的三样东西">
+<text x="24" y="32" font-size="14" fill="#4c1d95" text-anchor="start" font-weight="bold">网络的三样东西</text><rect x="24" y="56" width="246.667" height="104" rx="12" fill="#f3efff" stroke="#e6e0fb" stroke-width="1.8"/><text x="147.333" y="104" font-size="13.5" fill="#6d28d9" text-anchor="middle" font-weight="bold">若干台计算机</text><text x="147.333" y="126" font-size="11.6" fill="#7c7794" text-anchor="middle">可以是电脑、手机、平板……</text><rect x="286.667" y="56" width="246.667" height="104" rx="12" fill="#faf8ff" stroke="#e6e0fb" stroke-width="1.8"/><text x="410" y="104" font-size="13.5" fill="#6d28d9" text-anchor="middle" font-weight="bold">连接介质</text><text x="410" y="126" font-size="11.6" fill="#7c7794" text-anchor="middle">网线、光纤、无线电波</text><rect x="549.333" y="56" width="246.667" height="104" rx="12" fill="#f3efff" stroke="#e6e0fb" stroke-width="1.8"/><text x="672.667" y="104" font-size="13.5" fill="#6d28d9" text-anchor="middle" font-weight="bold">网络设备</text><text x="672.667" y="126" font-size="11.6" fill="#7c7794" text-anchor="middle">交换机、路由器：负责把消息转给对的人</text><text x="24" y="186" font-size="11.8" fill="#8d9d94" text-anchor="start">缺一样都不叫网络：只有一台机器，或者连不起来，都通不了消息</text>
+</svg>
+  <div class="caption">图 1（SVG）：计算机网络的三要素</div>
+</figure>
+
+<div class="box tip">
+  <span class="lb">打个比方：</span>网络就像集市的灯链——<b>每盏灯是一台计算机，灯线是网线，而广播塔就是交换机 / 路由器</b>。塔把你要说的话转给该收到的人。
+</div>
+
+
+<h3 id="s1-2">1.2 局域网与互联网</h3>
+
+<figure class="pic">
+  <img src="../assets/illustrations/scratch-L2-01-02_network_rings.webp" alt="三层同心圆环"
+       onerror="this.closest('.pic').classList.add('missing')">
+  <div class="ph">
+    <div class="fn">assets/illustrations/scratch-L2-01-02_network_rings.webp</div>
+    <div class="ds">【配图位】风景上空三层同心发光圆环，分别罩住一个市场街区、一座小镇、一整个王国。（提示词见《GESP配图清单与AI绘图提示词》第四节 2-1）</div>
+  </div>
+  <figcaption>图 2：网络的大小——从一间屋子到整个世界</figcaption>
+</figure>
+
+<figure class="figure">
+<svg class="diagram" viewBox="0 0 820 330" role="img" aria-label="网络由小到大">
+<text x="24" y="32" font-size="14" fill="#4c1d95" text-anchor="start" font-weight="bold">网络由小到大</text><rect x="24" y="56" width="772" height="52" rx="10" fill="#f3efff" stroke="#e6e0fb" stroke-width="1.6"/><text x="42" y="87" font-size="13" fill="#6d28d9" text-anchor="start" font-weight="bold">局域网（LAN）</text><text x="778" y="87" font-size="11.8" fill="#7c7794" text-anchor="end">一间教室、一个家庭、一栋楼，范围小、速度快</text><rect x="24" y="116" width="772" height="52" rx="10" fill="#faf8ff" stroke="#e6e0fb" stroke-width="1.6"/><text x="42" y="147" font-size="13" fill="#6d28d9" text-anchor="start" font-weight="bold">城域网（MAN）</text><text x="778" y="147" font-size="11.8" fill="#7c7794" text-anchor="end">一座城市</text><rect x="24" y="176" width="772" height="52" rx="10" fill="#f3efff" stroke="#e6e0fb" stroke-width="1.6"/><text x="42" y="207" font-size="13" fill="#6d28d9" text-anchor="start" font-weight="bold">广域网（WAN）</text><text x="778" y="207" font-size="11.8" fill="#7c7794" text-anchor="end">跨城市、跨国家</text><rect x="24" y="236" width="772" height="52" rx="10" fill="#faf8ff" stroke="#e6e0fb" stroke-width="1.6"/><text x="42" y="267" font-size="13" fill="#6d28d9" text-anchor="start" font-weight="bold">Internet（互联网）</text><text x="778" y="267" font-size="11.8" fill="#7c7794" text-anchor="end">全世界连在一起的那张最大的网</text><text x="24" y="318" font-size="11.8" fill="#8d9d94" text-anchor="start">范围从小到大：局域网 → 城域网 → 广域网 → Internet</text>
+</svg>
+  <div class="caption">图 3（SVG）：网络的规模分级</div>
+</figure>
+
+<h3 id="s1-3">1.3 网络能做什么</h3>
+
+<figure class="figure">
+<svg class="diagram" viewBox="0 0 820 202" role="img" aria-label="网络的四大用途">
+<text x="24" y="32" font-size="14" fill="#4c1d95" text-anchor="start" font-weight="bold">网络的四大用途</text><rect x="24" y="56" width="772" height="28" rx="8" fill="#f3efff"/><text x="40" y="75" font-size="12.6" fill="#6d28d9" text-anchor="start" font-weight="bold">共享信息</text><text x="192" y="75" font-size="12.2" fill="#4c1d95" text-anchor="start">查资料、看新闻、看视频</text><rect x="24" y="90" width="772" height="28" rx="8" fill="#faf8ff"/><text x="40" y="109" font-size="12.6" fill="#6d28d9" text-anchor="start" font-weight="bold">互相通信</text><text x="192" y="109" font-size="12.2" fill="#4c1d95" text-anchor="start">发邮件、聊天、视频通话</text><rect x="24" y="124" width="772" height="28" rx="8" fill="#f3efff"/><text x="40" y="143" font-size="12.6" fill="#6d28d9" text-anchor="start" font-weight="bold">共享设备</text><text x="192" y="143" font-size="12.2" fill="#4c1d95" text-anchor="start">一台打印机，全办公室一起用</text><rect x="24" y="158" width="772" height="28" rx="8" fill="#faf8ff"/><text x="40" y="177" font-size="12.6" fill="#6d28d9" text-anchor="start" font-weight="bold">在线服务</text><text x="192" y="177" font-size="12.2" fill="#4c1d95" text-anchor="start">网课、云盘、在线支付、玩游戏</text>
+</svg>
+  <div class="caption">图 4（SVG）：网络的四大用途</div>
+</figure>
+
+<div class="box info">
+  <span class="lb">一句话概括：</span>网络让"信息"和"设备"不再局限在一台机器里——<b>你能用别人的资源，别人也能用你的（在你允许的前提下）。</b>
+</div>
+
+<!-- ============ 2 ============ -->
+<div class="section-header" id="s2">
+  <h2>2　Internet 与它的服务</h2>
+  <div class="en-title">The Internet</div>
+</div>
+
+<h3 id="s2-1">2.1 什么是 Internet</h3>
+
+<p><b>Internet（互联网）</b>不是一个具体的东西，而是<b>全世界无数个网络互相连起来的结果</b>——'
+'"网络的网络"。</p>
+<figure class="figure">
+<svg class="diagram" viewBox="0 0 820 240" role="img" aria-label="局域网 vs Internet">
+<text x="24" y="32" font-size="14" fill="#4c1d95" text-anchor="start" font-weight="bold">局域网 vs Internet</text><rect x="24" y="52" width="376" height="160" rx="12" fill="#f5f3ff" stroke="#e6e0fb" stroke-width="1.8"/><text x="212" y="82" font-size="13.5" fill="#6d28d9" text-anchor="middle" font-weight="bold">局域网（LAN）</text><circle cx="40" cy="106" r="3.4" fill="#6d28d9"/><text x="52" y="110" font-size="12.2" fill="#4c1d95" text-anchor="start">范围小：一个房间、一栋楼</text><circle cx="40" cy="136" r="3.4" fill="#6d28d9"/><text x="52" y="140" font-size="12.2" fill="#4c1d95" text-anchor="start">通常由一个人或一家单位管理</text><circle cx="40" cy="166" r="3.4" fill="#6d28d9"/><text x="52" y="170" font-size="12.2" fill="#4c1d95" text-anchor="start">速度一般更快</text><rect x="420" y="52" width="376" height="160" rx="12" fill="#fff7ed" stroke="#e6e0fb" stroke-width="1.8"/><text x="608" y="82" font-size="13.5" fill="#b45309" text-anchor="middle" font-weight="bold">Internet</text><circle cx="436" cy="106" r="3.4" fill="#b45309"/><text x="448" y="110" font-size="12.2" fill="#4c1d95" text-anchor="start">范围最大：覆盖全球</text><circle cx="436" cy="136" r="3.4" fill="#b45309"/><text x="448" y="140" font-size="12.2" fill="#4c1d95" text-anchor="start">没有单一的主人，由许多机构共同维护</text><circle cx="436" cy="166" r="3.4" fill="#b45309"/><text x="448" y="170" font-size="12.2" fill="#4c1d95" text-anchor="start">速度取决于中间经过的线路</text><text x="24" y="226" font-size="11.8" fill="#8d9d94" text-anchor="start">许多局域网用路由器连起来，就成了更大的网；连到全世界，就是 Internet</text>
+</svg>
+  <div class="caption">图 5（SVG）：局域网与 Internet 的关系</div>
+</figure>
+
+<h3 id="s2-2">2.2 形成与发展</h3>
+
+<figure class="figure">
+<svg class="diagram" viewBox="0 0 820 158" role="img" aria-label="Internet 是怎么长起来的">
+<text x="24" y="32" font-size="14" fill="#4c1d95" text-anchor="start" font-weight="bold">Internet 是怎么长起来的</text><rect x="24" y="56" width="173.5" height="68" rx="10" fill="#f3efff" stroke="#e6e0fb" stroke-width="1.8"/><text x="110.75" y="95" font-size="12.4" fill="#6d28d9" text-anchor="middle" font-weight="bold">1969 年 ARPANET</text><line x1="202.5" y1="90" x2="214.5" y2="90" stroke="#8b5cf6" stroke-width="2.2"/><polygon points="214.5,90 206.5,85 206.5,95" fill="#8b5cf6"/><rect x="223.5" y="56" width="173.5" height="68" rx="10" fill="#f3efff" stroke="#e6e0fb" stroke-width="1.8"/><text x="310.25" y="95" font-size="12.4" fill="#6d28d9" text-anchor="middle" font-weight="bold">开放 TCP/IP 协议</text><line x1="402" y1="90" x2="414" y2="90" stroke="#8b5cf6" stroke-width="2.2"/><polygon points="414,90 406,85 406,95" fill="#8b5cf6"/><rect x="423" y="56" width="173.5" height="68" rx="10" fill="#f3efff" stroke="#e6e0fb" stroke-width="1.8"/><text x="509.75" y="95" font-size="12.4" fill="#6d28d9" text-anchor="middle" font-weight="bold">万维网 WWW 出现</text><line x1="601.5" y1="90" x2="613.5" y2="90" stroke="#8b5cf6" stroke-width="2.2"/><polygon points="613.5,90 605.5,85 605.5,95" fill="#8b5cf6"/><rect x="622.5" y="56" width="173.5" height="68" rx="10" fill="#f3efff" stroke="#e6e0fb" stroke-width="1.8"/><text x="709.25" y="95" font-size="12.4" fill="#6d28d9" text-anchor="middle" font-weight="bold">今天的全球互联网</text><text x="24" y="150" font-size="11.8" fill="#8d9d94" text-anchor="start">让不同的网络能互相通信，靠的是统一的"协议"——最核心的就是 TCP/IP</text>
+</svg>
+  <div class="caption">图 6（SVG）：Internet 的发展脉络</div>
+</figure>
+
+<h3 id="s2-3">2.3 常用服务</h3>
+
+<table class="styled">
+  <thead><tr><th>服务</th><th>干什么用</th><th>你在哪儿见过它</th></tr></thead>
+  <tbody><tr><td>万维网 WWW</td><td>用浏览器看网页</td><td>每次打开网页都在用它</td></tr><tr><td>电子邮件 E-mail</td><td>发信、收信、带附件</td><td>QQ 邮箱、学校邮箱</td></tr><tr><td>文件传输</td><td>上传 / 下载文件</td><td>网盘、下载软件</td></tr><tr><td>即时通信</td><td>实时聊天、语音视频</td><td>聊天软件</td></tr><tr><td>搜索引擎</td><td>按关键词找信息</td><td>在搜索框里打字</td></tr></tbody>
+</table>
+
+<div class="box info">
+  <span class="lb">两个最容易混的词：</span><b>Internet</b> 是那张"网"本身（基础设施）；<br><b>WWW（万维网）</b> 是跑在这张网上的一种"服务"（看网页）。可以说"WWW 建立在 Internet 之上"，反过来就不对了。
+</div>
+
+<!-- ============ 3 ============ -->
+<div class="section-header" id="s3">
+  <h2>3　浏览器的基本操作</h2>
+  <div class="en-title">Using a Browser</div>
+</div>
+
+<h3 id="s3-1">3.1 地址栏与网址</h3>
+
+<p>浏览器顶部长长的那一条就是<b>地址栏</b>。在里面输入网址、按回车，就能去到对应的网页。</p>
+<figure class="figure">
+<svg class="diagram" viewBox="0 0 820 168" role="img" aria-label="网址的组成部分">
+<text x="24" y="32" font-size="14" fill="#4c1d95" text-anchor="start" font-weight="bold">网址的组成部分</text><rect x="24" y="56" width="772" height="28" rx="8" fill="#f3efff"/><text x="40" y="75" font-size="12.6" fill="#6d28d9" text-anchor="start" font-weight="bold">https://</text><text x="192" y="75" font-size="12.2" fill="#4c1d95" text-anchor="start">协议：用什么方式传（https 是加密的）</text><rect x="24" y="90" width="772" height="28" rx="8" fill="#faf8ff"/><text x="40" y="109" font-size="12.6" fill="#6d28d9" text-anchor="start" font-weight="bold">www.example.com</text><text x="192" y="109" font-size="12.2" fill="#4c1d95" text-anchor="start">域名：你要去哪台服务器</text><rect x="24" y="124" width="772" height="28" rx="8" fill="#f3efff"/><text x="40" y="143" font-size="12.6" fill="#6d28d9" text-anchor="start" font-weight="bold">/page/index.html</text><text x="192" y="143" font-size="12.2" fill="#4c1d95" text-anchor="start">路径：这台服务器上的哪个页面</text>
+</svg>
+  <div class="caption">图 7（SVG）：一个网址拆开看</div>
+</figure>
+
+<div class="box tip">
+  <span class="lb">打个比方：</span>网址就像邮寄地址：<b>https 是"用快递还是平邮"、域名是"哪个小区"、路径是"几号楼几单元"</b>。三者齐了，东西才送得到。
+</div>
+
+
+<h3 id="s3-2">3.2 搜索与前进后退</h3>
+
+<figure class="figure">
+<svg class="diagram" viewBox="0 0 820 194" role="img" aria-label="浏览器的四个常用按钮">
+<text x="24" y="32" font-size="14" fill="#4c1d95" text-anchor="start" font-weight="bold">浏览器的四个常用按钮</text><rect x="24" y="56" width="181" height="104" rx="12" fill="#f3efff" stroke="#e6e0fb" stroke-width="1.8"/><text x="114.5" y="104" font-size="13.5" fill="#6d28d9" text-anchor="middle" font-weight="bold">返回</text><text x="114.5" y="126" font-size="11.6" fill="#7c7794" text-anchor="middle">回到上一个看过的页面</text><rect x="221" y="56" width="181" height="104" rx="12" fill="#faf8ff" stroke="#e6e0fb" stroke-width="1.8"/><text x="311.5" y="104" font-size="13.5" fill="#6d28d9" text-anchor="middle" font-weight="bold">前进</text><text x="311.5" y="126" font-size="11.6" fill="#7c7794" text-anchor="middle">撤销"返回"，再走回去</text><rect x="418" y="56" width="181" height="104" rx="12" fill="#f3efff" stroke="#e6e0fb" stroke-width="1.8"/><text x="508.5" y="104" font-size="13.5" fill="#6d28d9" text-anchor="middle" font-weight="bold">刷新</text><text x="508.5" y="126" font-size="11.6" fill="#7c7794" text-anchor="middle">重新加载当前页面</text><rect x="615" y="56" width="181" height="104" rx="12" fill="#faf8ff" stroke="#e6e0fb" stroke-width="1.8"/><text x="705.5" y="104" font-size="13.5" fill="#6d28d9" text-anchor="middle" font-weight="bold">主页</text><text x="705.5" y="126" font-size="11.6" fill="#7c7794" text-anchor="middle">一下子回到起始页</text><text x="24" y="186" font-size="11.8" fill="#8d9d94" text-anchor="start">考纲里的"查找并返回到最近的 web 网页"，说的就是"返回"按钮</text>
+</svg>
+  <div class="caption">图 8（SVG）：浏览器的四个常用按钮</div>
+</figure>
+
+<h3 id="s3-3">3.3 下载文件</h3>
+
+<figure class="figure">
+<svg class="diagram" viewBox="0 0 820 158" role="img" aria-label="下载一个文件的三步">
+<text x="24" y="32" font-size="14" fill="#4c1d95" text-anchor="start" font-weight="bold">下载一个文件的三步</text><rect x="24" y="56" width="240" height="68" rx="10" fill="#f3efff" stroke="#e6e0fb" stroke-width="1.8"/><text x="144" y="95" font-size="12.4" fill="#6d28d9" text-anchor="middle" font-weight="bold">点击下载链接</text><line x1="269" y1="90" x2="281" y2="90" stroke="#8b5cf6" stroke-width="2.2"/><polygon points="281,90 273,85 273,95" fill="#8b5cf6"/><rect x="290" y="56" width="240" height="68" rx="10" fill="#f3efff" stroke="#e6e0fb" stroke-width="1.8"/><text x="410" y="95" font-size="12.4" fill="#6d28d9" text-anchor="middle" font-weight="bold">选择保存位置</text><line x1="535" y1="90" x2="547" y2="90" stroke="#8b5cf6" stroke-width="2.2"/><polygon points="547,90 539,85 539,95" fill="#8b5cf6"/><rect x="556" y="56" width="240" height="68" rx="10" fill="#f3efff" stroke="#e6e0fb" stroke-width="1.8"/><text x="676" y="95" font-size="12.4" fill="#6d28d9" text-anchor="middle" font-weight="bold">在文件夹里找到它</text><text x="24" y="150" font-size="11.8" fill="#8d9d94" text-anchor="start">下载下来的文件会放进你指定的文件夹——找不到时，先看看"下载"文件夹</text>
+</svg>
+  <div class="caption">图 9（SVG）：下载文件</div>
+</figure>
+
+<div class="box info">
+  <span class="lb">注意安全：</span>下载文件要认准<b>官方网站</b>。来路不明的安装包、弹窗里的"立即下载"，都可能藏着病毒。
+</div>
+
+<!-- ============ 4 ============ -->
+<div class="section-header" id="s4">
+  <h2>4　电子邮件与网络安全</h2>
+  <div class="en-title">E-mail and Safety</div>
+</div>
+
+<h3 id="s4-1">4.1 收发电子邮件</h3>
+
+<figure class="figure">
+<svg class="diagram" viewBox="0 0 820 202" role="img" aria-label="写一封邮件要填的四样">
+<text x="24" y="32" font-size="14" fill="#4c1d95" text-anchor="start" font-weight="bold">写一封邮件要填的四样</text><rect x="24" y="56" width="772" height="28" rx="8" fill="#f3efff"/><text x="40" y="75" font-size="12.6" fill="#6d28d9" text-anchor="start" font-weight="bold">收件人</text><text x="192" y="75" font-size="12.2" fill="#4c1d95" text-anchor="start">你要发给谁（对方的邮箱地址）</text><rect x="24" y="90" width="772" height="28" rx="8" fill="#faf8ff"/><text x="40" y="109" font-size="12.6" fill="#6d28d9" text-anchor="start" font-weight="bold">主题</text><text x="192" y="109" font-size="12.2" fill="#4c1d95" text-anchor="start">一句话说清这封信是干什么的</text><rect x="24" y="124" width="772" height="28" rx="8" fill="#f3efff"/><text x="40" y="143" font-size="12.6" fill="#6d28d9" text-anchor="start" font-weight="bold">正文</text><text x="192" y="143" font-size="12.2" fill="#4c1d95" text-anchor="start">信的内容</text><rect x="24" y="158" width="772" height="28" rx="8" fill="#faf8ff"/><text x="40" y="177" font-size="12.6" fill="#6d28d9" text-anchor="start" font-weight="bold">附件</text><text x="192" y="177" font-size="12.2" fill="#4c1d95" text-anchor="start">要一起发过去的文件（图片、文档等）</text>
+</svg>
+  <div class="caption">图 10（SVG）：一封邮件由四部分组成</div>
+</figure>
+
+<div class="box tip">
+  <span class="lb">打个比方：</span><b>收件人</b>是信封上的地址，<b>主题</b>是信封上的那一行字，<b>正文</b>是信纸，<b>附件</b>是随信寄出的小包裹。
+</div>
+
+
+<h3 id="s4-2">4.2 网络安全常识</h3>
+
+<figure class="figure">
+<svg class="diagram" viewBox="0 0 820 194" role="img" aria-label="四条必须记住的安全规则">
+<text x="24" y="32" font-size="14" fill="#4c1d95" text-anchor="start" font-weight="bold">四条必须记住的安全规则</text><rect x="24" y="56" width="181" height="104" rx="12" fill="#f3efff" stroke="#e6e0fb" stroke-width="1.8"/><text x="114.5" y="104" font-size="13.5" fill="#6d28d9" text-anchor="middle" font-weight="bold">密码要复杂</text><text x="114.5" y="126" font-size="11.6" fill="#7c7794" text-anchor="middle">字母 + 数字 + 符号，不用生日和手机号</text><rect x="221" y="56" width="181" height="104" rx="12" fill="#faf8ff" stroke="#e6e0fb" stroke-width="1.8"/><text x="311.5" y="104" font-size="13.5" fill="#6d28d9" text-anchor="middle" font-weight="bold">陌生链接别点</text><text x="311.5" y="126" font-size="11.6" fill="#7c7794" text-anchor="middle">来路不明的中奖、退款，多半是骗局</text><rect x="418" y="56" width="181" height="104" rx="12" fill="#f3efff" stroke="#e6e0fb" stroke-width="1.8"/><text x="508.5" y="104" font-size="13.5" fill="#6d28d9" text-anchor="middle" font-weight="bold">个人信息不外泄</text><text x="508.5" y="126" font-size="11.6" fill="#7c7794" text-anchor="middle">家庭住址、身份证号、银行卡号</text><rect x="615" y="56" width="181" height="104" rx="12" fill="#faf8ff" stroke="#e6e0fb" stroke-width="1.8"/><text x="705.5" y="104" font-size="13.5" fill="#6d28d9" text-anchor="middle" font-weight="bold">软件从官方下载</text><text x="705.5" y="126" font-size="11.6" fill="#7c7794" text-anchor="middle">不用来路不明的安装包</text><text x="24" y="186" font-size="11.8" fill="#8d9d94" text-anchor="start">考纲里的"了解计算机网络安全知识"，主要就考这四条</text>
+</svg>
+  <div class="caption">图 11（SVG）：网络安全四条铁律</div>
+</figure>
+
+<div class="box info">
+  <span class="lb">还有一条常考：</span>在公共电脑上登录账号后，<b>离开前一定要退出登录</b>，并且不要勾选"记住密码"——否则下一个人可以直接用你的账号。
+</div>
+
+<!-- ============ 5 ============ -->
+<div class="section-header" id="s5">
+  <h2>5　代码实战</h2>
+  <div class="en-title">Level Practice</div>
+</div>
+
+<p>这一关的舞台上，你不是一个人——<b>有同伴和你一起在场上</b>。
+就像网络里的各个节点，各自做事，又互相关联。</p>
+<div class="level-card">
+  <div class="lc-head"><span class="n">关卡 61</span><h4>朋友</h4><span class="go">进入关卡 →</span></div>
+  <div class="lc-body">
+    <div class="story">
+      <b>故事：</b>
+集市的另一头有人在等你：一路上会有同伴出现，它们和你站在同一片场地上。
+每走一格，旁边就有需要帮忙的地方——你要一边前进，一边照应左右。
+
+    </div>
+    <p><strong>思路：</strong>路线是"走一格、处理一件事、再走一格、再处理一件事"。
+每一格的动作都一样，所以最自然的写法是<b>把动作放进循环里</b>，
+循环里再用"如果……那么"判断当前这一格要不要做事。
+</p>
+<div class="blk-card">
+  <div class="blk-head">
+    <span class="dot d1"></span><span class="dot d2"></span><span class="dot d3"></span>
+    <span class="file">重点示例：一步一步照应左右</span>
+    <span class="lang">图形化积木</span>
+  </div>
+  <div class="blk-body">
+<svg class="blk" viewBox="0 0 308 336" width="308" height="336" role="img" aria-label="积木脚本"><g font-family="'PingFang SC','Microsoft YaHei','Noto Sans SC',sans-serif"><g transform="translate(3,3)"><path d="M0,12 C32.96,0 131.84,0 164.8,12 V43 A5,5 0 0 1 159.8,48 H28 v4 h-12 v-4 H5 A5,5 0 0 1 0,43 Z" fill="#FFBF00" stroke="#d19c00" stroke-width="1.2"/><text x="15" y="34.8" font-size="13.4" fill="#fff">当 </text><rect x="42.6" y="18.5" width="52.8" height="23" rx="5" fill="#CC9900"/><text x="64" y="34.4" font-size="12.5" fill="#fff" text-anchor="middle">绿旗</text><path d="M84.4 27.5 l4 5 l4 -5 z" fill="#fff" opacity=".85"/><text x="102.4" y="34.8" font-size="13.4" fill="#fff"> 被点击</text></g><g transform="translate(3,55)"><path d="M0,5 A5,5 0 0 1 5,0 H16 v4 h12 v-4 H297 A5,5 0 0 1 302,5 V269 A5,5 0 0 1 297,274 H28 v4 h-12 v-4 H5 A5,5 0 0 1 0,269 V261 H16 V36 H0 Z" fill="#FFAB19" stroke="#d18c14" stroke-width="1.2"/><text x="15" y="22.8" font-size="13.4" fill="#fff">重复执行 </text><rect x="82.8" y="6.5" width="30" height="23" rx="11.5" fill="#fff"/><text x="97.8" y="22.4" font-size="12.5" fill="#575e75" text-anchor="middle">4</text><text x="119.8" y="22.8" font-size="13.4" fill="#fff"> 次</text><g transform="translate(20,38)"><path d="M0,5 A5,5 0 0 1 5,0 H16 v4 h12 v-4 H123 A5,5 0 0 1 128,5 V31 A5,5 0 0 1 123,36 H28 v4 h-12 v-4 H5 A5,5 0 0 1 0,31 Z" fill="#4C97FF" stroke="#3e7bd1" stroke-width="1.2"/><text x="15" y="22.8" font-size="13.4" fill="#fff">移动 </text><rect x="56" y="6.5" width="30" height="23" rx="11.5" fill="#fff"/><text x="71" y="22.4" font-size="12.5" fill="#575e75" text-anchor="middle">1</text><text x="93" y="22.8" font-size="13.4" fill="#fff"> 步</text></g><g transform="translate(20,76)"><path d="M0,5 A5,5 0 0 1 5,0 H16 v4 h12 v-4 H256 A5,5 0 0 1 261,5 V85 A5,5 0 0 1 256,90 H28 v4 h-12 v-4 H5 A5,5 0 0 1 0,85 V77 H16 V36 H0 Z" fill="#FFAB19" stroke="#d18c14" stroke-width="1.2"/><text x="15" y="22.8" font-size="13.4" fill="#fff">如果 </text><polygon points="67.5,6.5 181.7,6.5 188.025,18 181.7,29.5 67.5,29.5 61.175,18" fill="#fff" stroke="#FFAB19" stroke-width="1.4"/><text x="67" y="22.8" font-size="13.4" fill="#575e75">碰到颜色 </text><rect x="134.8" y="6.5" width="26" height="23" rx="5" fill="#ffcc00" stroke="#ffffff" stroke-width="1.6"/><text x="167.8" y="22.8" font-size="13.4" fill="#575e75"> ?</text><text x="200.2" y="22.8" font-size="13.4" fill="#fff"> 那么</text><g transform="translate(20,38)"><path d="M0,5 A5,5 0 0 1 5,0 H16 v4 h12 v-4 H230 A5,5 0 0 1 235,5 V31 A5,5 0 0 1 230,36 H28 v4 h-12 v-4 H5 A5,5 0 0 1 0,31 Z" fill="#9966FF" stroke="#7d53d1" stroke-width="1.2"/><text x="15" y="22.8" font-size="13.4" fill="#fff">说 </text><rect x="42.6" y="6.5" width="85" height="23" rx="5" fill="#fff"/><text x="85.1" y="22.4" font-size="12.5" fill="#575e75" text-anchor="middle">我来帮你！</text><text x="134.6" y="22.8" font-size="13.4" fill="#fff"> </text><rect x="148.8" y="6.5" width="43.6" height="23" rx="11.5" fill="#fff"/><text x="170.6" y="22.4" font-size="12.5" fill="#575e75" text-anchor="middle">0.5</text><text x="199.4" y="22.8" font-size="13.4" fill="#fff"> 秒</text></g></g><g transform="translate(20,168)"><path d="M0,5 A5,5 0 0 1 5,0 H16 v4 h12 v-4 H271 A5,5 0 0 1 276,5 V85 A5,5 0 0 1 271,90 H28 v4 h-12 v-4 H5 A5,5 0 0 1 0,85 V77 H16 V36 H0 Z" fill="#FFAB19" stroke="#d18c14" stroke-width="1.2"/><text x="15" y="22.8" font-size="13.4" fill="#fff">如果 </text><polygon points="67.5,6.5 208.5,6.5 214.825,18 208.5,29.5 67.5,29.5 61.175,18" fill="#fff" stroke="#FFAB19" stroke-width="1.4"/><text x="67" y="22.8" font-size="13.4" fill="#575e75">碰到 </text><rect x="108" y="6.5" width="79.6" height="23" rx="5" fill="#CF8B17"/><text x="142.8" y="22.4" font-size="12.5" fill="#fff" text-anchor="middle">鼠标指针</text><path d="M176.6 15.5 l4 5 l4 -5 z" fill="#fff" opacity=".85"/><text x="194.6" y="22.8" font-size="13.4" fill="#575e75"> ?</text><text x="227" y="22.8" font-size="13.4" fill="#fff"> 那么</text><g transform="translate(20,38)"><path d="M0,5 A5,5 0 0 1 5,0 H16 v4 h12 v-4 H169 A5,5 0 0 1 174,5 V31 A5,5 0 0 1 169,36 H28 v4 h-12 v-4 H5 A5,5 0 0 1 0,31 Z" fill="#9966FF" stroke="#7d53d1" stroke-width="1.2"/><text x="15" y="22.8" font-size="13.4" fill="#fff">将颜色特效增加 </text><rect x="123" y="6.5" width="36.4" height="23" rx="11.5" fill="#fff"/><text x="141.2" y="22.4" font-size="12.5" fill="#575e75" text-anchor="middle">20</text></g></g></g></g></svg>
+  </div>
+  <div class="out"><b>读法</b>　循环负责"走几格"，两个"如果"负责"这一格要不要做事"</div>
+</div>
+
+    <div class="box tip">
+      <span class="lb">自己试一试：</span>把"4 次"改成"6 次"，看看路线会不会走过头。<strong>想一想：如果每一格要做的事都不一样，该怎么写？</strong>
+    </div>
+    <p>这一关把前两个单元的两件工具合在一起用了：'
+    <b>循环负责做几遍，分支负责每一遍怎么做</b>。</p>
+<div class="box info">
+  <span class="lb">和网络有什么关系？</span>网络里的每台计算机也是这样：<b>各做各的事，同时又在通过网络互相影响</b>。这一关只是让你先感受一下"多个角色同时在场"的感觉。
+</div>
+    <a class="btn-go" href="https://codecombat.cn/" target="_blank" rel="noopener">去扣哒世界闯这一关 →</a>
+  </div>
+</div>
+
+<!-- ============ 6 ============ -->
+<div class="section-header" id="s6">
+  <h2>6　常见陷阱</h2>
+  <div class="en-title">Common Traps</div>
+</div>
+
+<div class="box warn">
+  <span class="lb">陷阱 1：</span><b>把 Internet 和 WWW 当成一回事。</b>Internet 是那张"网"，WWW 是跑在上面的"看网页"服务。<br><strong>正确说法：</strong>WWW 建立在 Internet 之上；Internet 上还跑着邮件、文件传输等别的服务。
+</div>
+
+<div class="box warn">
+  <span class="lb">陷阱 2：</span><b>以为局域网比 Internet 小就一定慢。</b>在局域网范围内，访问速度通常<b>更快</b>——因为不用绕远路。<br><strong>正确理解：</strong>范围小、链路短，速度反而好。
+</div>
+
+<div class="box warn">
+  <span class="lb">陷阱 3：</span><b>把浏览器的"返回"和"刷新"搞混。</b>"返回"是回到上一个看过的页面；"刷新"是重新加载当前页。<br><strong>正确记法：</strong>返回 = 往回走；刷新 = 原地重来。
+</div>
+
+<div class="box warn">
+  <span class="lb">陷阱 4：</span><b>用生日、手机号当密码。</b>这些信息很容易被猜到。<br><strong>正确做法：</strong>用<b>大小写字母 + 数字 + 符号</b>组成的密码，而且不同网站别用同一个。
+</div>
+
+<!-- ============ 7 ============ -->
+<div class="section-header" id="s7">
+  <h2>7　题目练习</h2>
+  <div class="en-title">Practice</div>
+</div>
+
+<p>第 1 题改编自 2026 年 6 月 · 图形化编程 二级 第 1 题，其余为原创练习题。</p>
+<div class="exam">
+  <div class="eh"><span class="src">改编自 2026 年 6 月 · 图形化编程 二 级 · 第 1 题</span><span class="tp">单选题</span></div>
+  <div class="eb">
+    <div class="q">智能温室里有一个"湿度小侦探"，它能随时感受土壤干不干，然后立刻把消息告诉中央电脑；电脑收到消息后，再决定要不要打开水龙头浇水。<br>这个"湿度小侦探"的作用，相当于计算机系统中的哪个部件（　　）。</div>
+    <div class="opt"><i>A.</i>处理器——像大脑，负责思考和计算<br>
+      <i>B.</i>存储器——像笔记本，负责记住信息<br>
+      <i>C.</i>输入设备——像耳朵和眼睛，负责接收外界信息<br>
+      <i>D.</i>输出设备——像嘴巴和手，负责把结果说出来或做出来</div>
+    <details><summary>查看答案与详解</summary>
+      <div class="ans"><b>答案：C</b>。湿度传感器只做一件事：<b>把"土壤干不干"这个外界信息收进来</b>，所以它是输入设备。<br><b>A 错：</b>真正"决定要不要浇水"的是中央电脑，那才是处理器；<br><b>B 错：</b>传感器不负责记住信息；<br><b>D 错：</b>打开水龙头才是"把结果做出来"，属于输出。<br><b>顺便说一句：</b>这类"谁感知、谁计算、谁执行"的分工，和网络里"谁收集数据、谁处理数据"是一样的思路。<br><span class="tagline">对应小节</span>1.1、1.3 计算机部件与网络的分工。</div>
+    </details>
+  </div>
+</div>
+<div class="exam">
+  <div class="eh"><span class="src ori">原创练习题</span><span class="tp">单选题</span></div>
+  <div class="eb">
+    <div class="q">彩虹集市的摊主们把电脑连成了一张网，方便互相传账目。下列关于计算机网络的描述，<strong>正确</strong>的是（　　）。</div>
+    <div class="opt">
+      <i>A.</i>网络就是一台性能特别强的计算机<br>
+      <i>B.</i>网络是把若干台计算机和设备用通信线路连接起来，实现资源共享与信息传递<br>
+      <i>C.</i>只要有两台计算机放在同一个房间里，就自动组成网络<br>
+      <i>D.</i>网络的唯一用途是玩游戏
+    </div>
+    <details><summary>查看答案与详解</summary>
+      <div class="ans"><b>答案：B</b>。网络的本质是"<b>连起来 + 能传消息 + 能共享资源</b>"。<br><b>A 错：</b>网络不是一台机器，而是一群机器之间的连接；<br><b>C 错：</b>放在一个房间但没连起来，还是两台孤立的机器；<br><b>D 错：</b>网络能共享信息、通信、共享设备、提供在线服务，用途远不止玩游戏。<br><span class="tagline">对应小节</span>1.1 网络由什么组成。</div>
+    </details>
+  </div>
+</div>
+
+<div class="exam">
+  <div class="eh"><span class="src ori">原创练习题</span><span class="tp">单选题</span></div>
+  <div class="eb">
+    <div class="q">下面关于 Internet 与万维网（WWW）的说法，<strong>正确</strong>的是（　　）。</div>
+    <div class="opt">
+      <i>A.</i>Internet 和 WWW 是同一个东西的两种叫法<br>
+      <i>B.</i>WWW 是建立在 Internet 之上的一种服务<br>
+      <i>C.</i>Internet 是建立在 WWW 之上的<br>
+      <i>D.</i>WWW 比 Internet 的范围更大
+    </div>
+    <details><summary>查看答案与详解</summary>
+      <div class="ans"><b>答案：B</b>。Internet 是那张"网"，WWW 是跑在这张网上的"看网页"服务——<b>服务建立在网络之上</b>。<br><b>A 错：</b>两者是"基础设施"与"服务"的关系；<br><b>C 错：</b>说反了；<br><b>D 错：</b>Internet 的范围最大，覆盖全球。<br><span class="tagline">对应小节</span>2.1、2.3 Internet 与常用服务。</div>
+    </details>
+  </div>
+</div>
+
+<div class="exam">
+  <div class="eh"><span class="src ori">原创练习题</span><span class="tp">单选题</span></div>
+  <div class="eb">
+    <div class="q">小明在浏览器里看了一个网页，想回到刚才看过的那个页面，应该点击浏览器的哪个按钮（　　）。</div>
+    <div class="opt">
+      <i>A.</i>刷新<br>
+      <i>B.</i>返回<br>
+      <i>C.</i>主页<br>
+      <i>D.</i>新标签页
+    </div>
+    <details><summary>查看答案与详解</summary>
+      <div class="ans"><b>答案：B</b>。"返回"就是回到上一个看过的页面，这正是考纲里"查找并返回到最近的 web 网页"的意思。<br><b>A 错：</b>刷新是重新加载当前页；<br><b>C 错：</b>主页是回到起始页，不一定是你刚才那个页面；<br><b>D 错：</b>新标签页是打开一个新的空白页。<br><span class="tagline">对应小节</span>3.2 搜索与前进后退。</div>
+    </details>
+  </div>
+</div>
+
+<div class="exam">
+  <div class="eh"><span class="src ori">原创练习题</span><span class="tp">多选题</span></div>
+  <div class="eb">
+    <div class="q">下面哪些做法有助于保护上网安全（　　）。</div>
+    <div class="opt">
+      <i>A.</i>给账号设置由字母、数字和符号组成的复杂密码<br>
+      <i>B.</i>收到"恭喜中奖"的陌生链接后先点开看看<br>
+      <i>C.</i>在公共电脑上用完账号后主动退出登录<br>
+      <i>D.</i>从软件官方网站下载安装包
+    </div>
+    <details><summary>查看答案与详解</summary>
+      <div class="ans"><b>答案：A、C、D</b>。这三条都是标准的网络安全习惯。<br><b>B 错：</b>来路不明的链接可能藏着钓鱼网站或病毒，<b>不要点开</b>——这是最典型的安全陷阱题。<br><span class="tagline">对应小节</span>4.2 网络安全常识。</div>
+    </details>
+  </div>
+</div>
+
+<div class="exam">
+  <div class="eh"><span class="src ori">原创练习题</span><span class="tp">判断题</span></div>
+  <div class="eb">
+    <div class="q">计算机网络只能用来浏览网页，不能共享打印机这样的设备。（　　）</div>
+    <details><summary>查看答案与详解</summary>
+      <div class="ans"><b>答案：错误（×）</b>。网络的作用有四类：<b>共享信息、互相通信、共享设备、在线服务</b>。<br>共享打印机正是"共享设备"的典型例子——办公室里一台打印机接上网，所有电脑都能用它。<br><span class="tagline">对应小节</span>1.3 网络能做什么。</div>
+    </details>
+  </div>
+</div>
+
+<!-- ============ 8 ============ -->
+<div class="section-header" id="s8">
+  <h2>8　本单元小结</h2>
+  <div class="en-title">Unit Summary</div>
+</div>
+
+<div class="cast teacher">
+  <img class="ava" src="../assets/avatars/hushbaum.webp" alt="贺舒曼" onerror="this.style.display='none'">
+  <div class="bubble">
+    <div class="who">贺舒曼 · 镜中先知</div>
+    这一单元没有积木，全是"要背的话"。但也正因为这样，它是最好拿分的一块——
+    <b>网络三要素、Internet 与 WWW 的区别、浏览器的四个按钮、安全四条铁律</b>，
+    把这四组记住，二级卷子上的网络题就稳了。
+  </div>
+</div>
+
+<h3 id="s8-1">你在广播塔下学到了什么</h3>
+
+<ul>
+  <li><b>网络三要素</b>：若干计算机 + 连接介质 + 网络设备；</li>
+  <li><b>范围分级</b>：局域网 → 城域网 → 广域网 → Internet；</li>
+  <li><b>Internet 是网、WWW 是服务</b>；常用服务还有邮件、文件传输、即时通信、搜索引擎；</li>
+  <li><b>浏览器</b>：地址栏敲网址、返回 / 前进 / 刷新 / 主页、从官网下载文件；</li>
+  <li><b>安全四条</b>：复杂密码、不点陌生链接、不外泄个人信息、软件从官方下载。</li>
+</ul>
+<h3 id="s8-2">下一站：摊主的流程图</h3>
+
+<p>集市的摊主做事很有条理，因为他们的柱子上钉着一张图——<b>流程图</b>。<br>
+下一单元我们学着把"做事步骤"画成有方框、有箭头的图，再把它翻译成一块块积木。</p>
+
+
+<div class="pager">
+  <a href="scratch-1-07.html"><div class="k">← 上一单元</div><div class="v">循环灌溉器 · 循环结构：重复执行</div></a>
+  <a href="../index.html" target="_top" class="back"><div class="k">返回</div><div class="v">考纲之路 · 总目录</div></a>
+  <a href="scratch-2-02.html"><div class="k">下一单元 →</div><div class="v">摊主的流程图 · 程序流程图</div></a>
+</div>
+<div class="cta">
+  <h3>下一站：摊主的流程图</h3>
+  <p>集市的摊主做事很有条理，因为他们的柱子上钉着一张图——流程图。下一单元我们学着把做事步骤画成有方框、有箭头的图，再翻译成积木。</p>
+  <a class="btn-go" href="https://codecombat.cn/" target="_blank" rel="noopener">加入扣哒世界，把这条考纲之路走一遍 →</a>
+</div>
+
+</div><!-- /container -->
+</div><!-- /page -->
+
+<script>
+if (location.search.indexOf('expand') >= 0) {
+  document.querySelectorAll('details').forEach(d => d.open = true);
+}
+document.querySelectorAll('.sidebar-nav a').forEach(a => {
+  a.addEventListener('click', () => {
+    if (window.innerWidth <= 900) document.querySelector('.sidebar-nav').classList.remove('active');
+  });
+});
+</script>
+</body>
+</html>

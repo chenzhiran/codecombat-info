@@ -1,0 +1,811 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="copyright" content="CodeCombat Inc. codecombat.cn">
+<title>会对话的书签 · 输入与输出 | 扣哒考级 · GESP 图形化三级</title>
+<style>
+  :root{
+    --primary:#8b5cf6; --primary-light:#a78bfa; --primary-lighter:#f3efff; --primary-dark:#6d28d9;
+    --brand:#ff6b35; --brand-dark:#e8541f; --brand-soft:#fff3ec;
+    --night:#131c2b; --night-2:#1e2a3a;
+    --gold:#f5b301;
+    --text:#2a2438; --dim:#7c7794; --dim2:#a29db8;
+    --bg:#ffffff; --bg-soft:#faf8ff; --line:#e9e4f8;
+    --sidebar:274px;
+    --code-bg:#211a33; --code-tx:#d6cfe6;
+    --code-kw:#c678dd; --code-st:#98c379; --code-nu:#d19a66; --code-cm:#7d7392; --code-fn:#61afef;
+  }
+  *{margin:0;padding:0;box-sizing:border-box}
+  html{scroll-behavior:smooth}
+  body{
+    font-family:"PingFang SC","Microsoft YaHei","Segoe UI",-apple-system,sans-serif;
+    line-height:1.9;color:var(--text);background:var(--bg);font-size:15.5px;
+  }
+
+  .sidebar-nav{
+    position:fixed;top:0;left:0;width:var(--sidebar);height:100vh;overflow-y:auto;
+    background:linear-gradient(180deg,#101a26,#182636);padding:14px 0 40px;z-index:100;
+    border-right:3px solid var(--brand);transition:transform .3s ease;
+  }
+  .sidebar-nav::-webkit-scrollbar{width:5px}
+  .sidebar-nav::-webkit-scrollbar-thumb{background:var(--brand);border-radius:4px}
+  .sb-brand{display:flex;align-items:center;gap:10px;padding:10px 13px 12px;border-bottom:1px solid #26384c;margin-bottom:8px}
+  .sidebar-nav a.sb-logo{display:flex;align-items:center;justify-content:center;flex-shrink:0;padding:0;border-left:none;transition:.2s}
+  .sb-logo:hover{transform:scale(1.08)}
+  .sb-logo img{height:34px;width:34px;display:block;object-fit:contain;border-radius:8px}
+  .sb-brand b{color:#f2f6fa;font-size:14px;letter-spacing:.5px;display:block;line-height:1.4}
+  .sb-brand span{color:#7f95ab;font-size:11.5px;display:block;line-height:1.4}
+  .nav-title{color:#ffb894;font-size:12px;font-weight:800;padding:10px 18px 6px;letter-spacing:1.2px}
+  .sidebar-nav a{
+    display:block;color:#c3d0dc;text-decoration:none;padding:6px 18px;font-size:12.5px;
+    line-height:1.55;border-left:3px solid transparent;transition:.18s;
+  }
+  .sidebar-nav a:hover{color:#fff;background:rgba(255,107,53,.16);border-left-color:var(--brand)}
+  .sidebar-nav a.nav-section{color:#ffb894;font-weight:700;font-size:13px;margin-top:11px;padding-top:10px;border-top:1px solid #26384c}
+  .sidebar-nav a.nav-section:first-of-type{border-top:none;margin-top:0;padding-top:6px}
+  .sidebar-nav a.nav-sub{padding-left:30px;color:#93a8bc;font-size:12px}
+  .sidebar-nav a.nav-sub:hover{color:#fff}
+  .sb-back{margin:16px 14px 0;display:block;text-align:center;padding:9px;border-radius:9px;background:#22344a;color:#a9c0d6 !important;font-size:12px;font-weight:700;border-left:none !important}
+  .sb-back:hover{background:var(--brand) !important;color:#fff !important}
+  .nav-toggle{display:none;position:fixed;top:14px;left:14px;z-index:120;background:var(--brand);color:#fff;border:none;border-radius:9px;padding:9px 13px;font-size:15px;cursor:pointer;box-shadow:0 4px 14px rgba(0,0,0,.25)}
+
+  .page{margin-left:var(--sidebar)}
+
+  .hero{
+    position:relative;overflow:hidden;padding:44px 52px;color:#fff;
+    background:linear-gradient(125deg,#0e1724 0%,#1b2b3f 46%,#8a3a16 132%);
+  }
+  .hero::after{content:"";position:absolute;right:-90px;top:-110px;width:400px;height:400px;border-radius:50%;background:radial-gradient(circle,rgba(245,179,1,.30),transparent 68%)}
+  .hero-top{display:flex;gap:36px;align-items:center;position:relative;z-index:2}
+  .hero-txt{flex:1;min-width:0}
+  .hero .crumb{font-size:11.5px;color:#ffb894;letter-spacing:1.5px;font-weight:700;margin-bottom:14px}
+  .hero h1{font-size:31px;font-weight:800;line-height:1.3;letter-spacing:.6px;margin-bottom:8px}
+  .hero h1 .sub{display:block;font-size:18px;font-weight:700;color:#ffd2b3;margin-top:6px;letter-spacing:.3px}
+  .hero .en{font-size:13px;color:#9db4c8;font-style:italic;margin-bottom:18px}
+  .hero .tags{display:flex;flex-wrap:wrap;gap:8px}
+  .tag{font-size:11.5px;padding:4px 12px;border-radius:20px;background:rgba(255,255,255,.12);border:1px solid rgba(255,255,255,.22);color:#e8f0f6;font-weight:600}
+  .tag.hot{background:rgba(255,107,53,.92);border-color:transparent;color:#fff}
+  .hero-card{flex-shrink:0;width:200px;text-align:center}
+  .hero-card .ava{
+    width:148px;height:148px;border-radius:50%;object-fit:cover;object-position:top center;
+    border:4px solid rgba(255,180,140,.6);box-shadow:0 14px 34px rgba(0,0,0,.45);background:#24344a;
+  }
+  .hero-card .nm{font-size:15px;font-weight:800;color:#fff;margin-top:10px}
+  .hero-card .ti{font-size:11.5px;color:#ffb894;margin-top:2px}
+
+  .container{max-width:1080px;margin:0 auto;padding:38px 52px 70px}
+
+  .lead{
+    font-size:15.5px;line-height:2.05;color:#443c58;background:linear-gradient(120deg,#fff8f3,#f7fbf8);
+    border-left:5px solid var(--brand);border-radius:0 14px 14px 0;padding:22px 26px;margin-bottom:32px;
+  }
+  .lead b{color:var(--brand-dark)}
+
+  .cast{display:flex;gap:16px;align-items:flex-start;border-radius:16px;padding:18px 22px;margin:24px 0}
+  .cast .ava{width:72px;height:72px;border-radius:50%;object-fit:cover;object-position:top center;flex-shrink:0;background:#e8eef5}
+  .cast .bubble{position:relative;font-size:14px;line-height:1.95;padding-top:2px;flex:1}
+  .cast .who{font-size:12px;font-weight:800;margin-bottom:5px;letter-spacing:.5px}
+  .cast.anya{background:var(--brand-soft);border:1px solid #ffdcc9}
+  .cast.anya .who{color:var(--brand-dark)}
+  .cast.anya .bubble{color:#5c4636}
+  .cast.duck{background:#fff5f5;border:1px solid #fbd5d5}
+  .cast.duck .who{color:#b91c1c}
+  .cast.duck .bubble{color:#5c4141}
+  .cast.teacher{background:linear-gradient(120deg,#f4f7fb,#ffffff);border:1px solid #dbe4f0}
+  .cast.teacher .who{color:#1e293b}
+  .cast.teacher .bubble{color:#3c4a5a}
+  .cast.hero{background:#f7f3ff;border:1px solid #ded1fa}
+  .cast.hero .who{color:#6d28d9}
+  .cast.hero .bubble{color:#463d5c}
+
+  .goal-grid{display:grid;grid-template-columns:1fr 1fr;gap:16px;margin-bottom:36px}
+  .goal{border:1px solid var(--line);border-radius:15px;padding:19px 21px;background:#fff;box-shadow:0 4px 16px rgba(31,122,68,.05)}
+  .goal h4{font-size:14px;font-weight:800;margin-bottom:11px;display:flex;align-items:center;gap:8px;color:var(--primary-dark)}
+  .goal h4 .ic{width:22px;height:22px;border-radius:7px;background:var(--primary-lighter);display:flex;align-items:center;justify-content:center;font-size:12px}
+  .goal ul{list-style:none}
+  .goal li{font-size:13.5px;color:#6b6480;line-height:1.9;padding-left:18px;position:relative}
+  .goal li::before{content:"▸";position:absolute;left:0;color:var(--primary);font-weight:800}
+  .goal.syllabus li::before{content:"✓"}
+
+  .section-header{margin:52px 0 24px;padding-bottom:12px;border-bottom:3px solid var(--brand);display:flex;align-items:baseline;gap:14px;flex-wrap:wrap}
+  .section-header h2{font-size:22px;font-weight:800;color:var(--night);letter-spacing:.4px}
+  .section-header .en-title{font-size:12px;color:var(--dim2);font-style:italic}
+  h3{font-size:17.5px;font-weight:800;margin:34px 0 14px;color:var(--night);display:flex;align-items:center;gap:10px}
+  h3::before{content:"";width:5px;height:17px;border-radius:3px;background:var(--brand);flex-shrink:0}
+  h4{font-size:15px;font-weight:800;margin:24px 0 10px;color:#3c2f63}
+  p{margin:12px 0;color:#463d5c;line-height:2}
+  strong{color:var(--primary-dark)}
+  code.inline{background:var(--primary-lighter);color:var(--primary-dark);padding:2px 7px;border-radius:6px;font-family:"SFMono-Regular",Consolas,Menlo,monospace;font-size:.9em;font-weight:600}
+
+  .figure{margin:24px 0;text-align:center}
+  .figure svg.diagram{max-width:100%;height:auto;background:#fff;border:1px solid var(--line);border-radius:14px;padding:10px}
+  .figure .caption{font-size:12.5px;color:var(--dim2);margin-top:9px}
+
+  .pic{margin:26px 0;text-align:center}
+  .pic img{max-width:100%;border-radius:16px;box-shadow:0 10px 28px rgba(30,60,45,.15);display:block;margin:0 auto}
+  .pic figcaption{font-size:12.5px;color:var(--dim2);margin-top:9px}
+  .pic .ph{display:none}
+  .pic.missing img{display:none}
+  .pic.missing .ph{
+    display:flex;flex-direction:column;align-items:center;justify-content:center;gap:9px;
+    border:2px dashed #c9d9e8;border-radius:16px;background:linear-gradient(135deg,#f8fbfe,#eef6ff);
+    padding:40px 26px;color:#7a8fa8;
+  }
+  .pic.missing .ph .fn{font-family:Consolas,monospace;font-size:12.5px;color:#2563eb;font-weight:700;word-break:break-all}
+  .pic.missing .ph .ds{font-size:12.5px;line-height:1.8;max-width:560px}
+
+  .box{border-radius:13px;padding:16px 20px;margin:20px 0;font-size:14px;line-height:1.95}
+  .box .lb{font-weight:800;margin-right:6px}
+  .info{background:#eef6ff;border-left:5px solid #3b82f6;color:#274768}
+  .info .lb{color:#1d4ed8}
+  .tip{background:#fff9ec;border-left:5px solid #f59e0b;color:#6b4e13}
+  .tip .lb{color:#b45309}
+  .remember{background:var(--primary-lighter);border-left:5px solid var(--primary);color:#3a2a6b}
+  .remember .lb{color:var(--primary-dark)}
+  .warn{background:#fef2f2;border-left:5px solid #ef4444;color:#7f2b2b}
+  .warn .lb{color:#b91c1c}
+
+  .code-card{margin:20px 0;border-radius:14px;overflow:hidden;box-shadow:0 10px 28px rgba(20,40,28,.20)}
+  .code-head{display:flex;align-items:center;gap:9px;background:#2c2438;padding:9px 14px}
+  .code-head .dot{width:10px;height:10px;border-radius:50%}
+  .code-head .d1{background:#ff5f57}.code-head .d2{background:#febc2e}.code-head .d3{background:#28c840}
+  .code-head .file{color:#a09ab4;font-size:11.5px;font-family:Consolas,monospace;margin-left:6px}
+  .code-head .lang{margin-left:auto;font-size:10.5px;font-weight:800;color:#150f21;background:#a78bfa;padding:2px 9px;border-radius:6px;letter-spacing:.4px}
+  .code-card pre{background:var(--code-bg);padding:18px 20px;overflow-x:auto;margin:0;font-family:"SFMono-Regular",Consolas,"Courier New",monospace;font-size:13.5px;line-height:1.85}
+  .code-card pre::-webkit-scrollbar{height:8px}
+  .code-card pre::-webkit-scrollbar-thumb{background:#433a5e;border-radius:4px}
+  .code-card code{color:var(--code-tx);white-space:pre}
+  .kw{color:var(--code-kw);font-weight:600}
+  .st{color:var(--code-st)}
+  .nu{color:var(--code-nu)}
+  .cm{color:var(--code-cm);font-style:italic}
+  .fn{color:var(--code-fn)}
+  .out{background:#1d1729;color:#c4b5fd;font-family:Consolas,monospace;font-size:13px;padding:12px 20px;border-top:1px solid #352c48}
+  .out b{color:#c9d6cd;font-weight:600;font-size:11.5px;letter-spacing:1px}
+
+  table.styled{width:100%;border-collapse:collapse;margin:20px 0;font-size:13.5px;border-radius:12px;overflow:hidden;box-shadow:0 4px 16px rgba(31,122,68,.07)}
+  table.styled thead{background:var(--brand)}
+  table.styled th{color:#fff;padding:11px 14px;text-align:left;font-weight:700;font-size:13px}
+  table.styled td{padding:10px 14px;border-bottom:1px solid var(--line);color:#57506b;vertical-align:top}
+  table.styled tbody tr:nth-child(even){background:var(--bg-soft)}
+  table.styled tbody tr:last-child td{border-bottom:none}
+
+  .level-card{border:1px solid var(--line);border-radius:16px;overflow:hidden;margin:22px 0;box-shadow:0 6px 22px rgba(31,122,68,.07)}
+  .level-card .lc-head{background:linear-gradient(100deg,#17283a,#8a3a16);color:#fff;padding:15px 22px;display:flex;align-items:center;gap:12px;flex-wrap:wrap}
+  .level-card .lc-head .n{font-size:12px;font-weight:800;background:rgba(255,255,255,.2);padding:3px 10px;border-radius:20px}
+  .level-card .lc-head h4{margin:0;color:#fff;font-size:16px}
+  .level-card .lc-head .go{margin-left:auto;font-size:11.5px;color:#ffd2b3}
+  .level-card .lc-body{padding:20px 24px;background:#fff}
+  .level-card .story{background:#f9fbfd;border-left:4px solid #93c5fd;border-radius:0 10px 10px 0;padding:13px 18px;margin:0 0 16px;font-size:14px;line-height:1.95;color:#3f5163}
+  .level-card .story b{color:#1d4ed8}
+  .btn-go{
+    display:inline-flex;align-items:center;gap:8px;background:linear-gradient(135deg,var(--brand),var(--brand-dark));
+    color:#fff;text-decoration:none;font-weight:800;font-size:13.5px;padding:10px 22px;border-radius:11px;
+    box-shadow:0 8px 20px rgba(255,107,53,.32);transition:.2s;
+  }
+  .btn-go:hover{transform:translateY(-2px);box-shadow:0 12px 26px rgba(255,107,53,.42)}
+
+  .pit{border:1px solid #f6dede;border-radius:14px;overflow:hidden;margin:16px 0;background:#fff}
+  .pit .pt{display:flex;gap:12px;padding:14px 18px;background:#fffafa;align-items:flex-start}
+  .pit .x{width:26px;height:26px;border-radius:9px;background:#fee;color:#dc2626;display:flex;align-items:center;justify-content:center;font-weight:800;flex-shrink:0;font-size:13px}
+  .pit .t{font-size:13.5px;line-height:1.9;color:#5c4a4a;flex:1}
+  .pit .t b{color:#b91c1c}
+  .pit .duck{display:flex;gap:12px;padding:13px 18px;background:#fff5f5;border-top:1px dashed #f3d0d0;align-items:flex-start}
+  .pit .duck img{width:48px;height:48px;object-fit:contain;flex-shrink:0;margin-top:2px}
+  .pit .duck .dt{font-size:13.5px;line-height:1.9;color:#7a3b3b}
+  .pit .duck .dt b{color:#b91c1c}
+  .pit .fix{padding:12px 18px;background:#f7f3ff;border-top:1px dashed #ded1fa;font-size:13.5px;color:#3a2a6b}
+  .pit .fix b{color:var(--primary-dark)}
+
+  .exam{border:1px solid #dfe7f5;border-radius:15px;margin:16px 0;overflow:hidden;background:#fff;box-shadow:0 4px 16px rgba(38,62,120,.06)}
+  .exam .eh{display:flex;align-items:center;gap:10px;padding:11px 18px;background:linear-gradient(100deg,#eef4ff,#f7faff);border-bottom:1px solid #e3ebf8;flex-wrap:wrap}
+  .exam .eh .src{font-size:11px;font-weight:800;color:#fff;background:#2563eb;padding:2.5px 10px;border-radius:20px}
+  .exam .eh .src.ori{background:#8b5cf6}
+  .exam .eh .tp{font-size:11.5px;color:#5b7ba8;font-weight:700}
+  .exam .eb{padding:16px 20px}
+  .exam .q{font-weight:700;font-size:14px;color:#38304b;line-height:1.9;margin-bottom:10px}
+  .exam .opt{font-size:13.5px;color:#6b6480;line-height:2.05;padding-left:6px}
+  .exam .opt i{font-style:normal;font-weight:800;color:var(--primary-dark);margin-right:7px}
+  .exam pre{margin:12px 0;background:#1b2a21;border-radius:10px;padding:14px 16px;overflow-x:auto;font-family:Consolas,monospace;font-size:13px;line-height:1.8;color:var(--code-tx)}
+  .exam details{margin-top:10px;border-top:1px dashed var(--line);padding-top:10px}
+  .exam summary{cursor:pointer;font-size:12.5px;font-weight:800;color:#2563eb;outline:none;user-select:none}
+  .exam details .ans{font-size:13.5px;color:#463d5c;line-height:1.95;margin-top:9px;background:var(--bg-soft);padding:13px 16px;border-radius:10px}
+  .exam details .ans b{color:var(--primary-dark)}
+  .exam details .ans .tagline{display:inline-block;font-size:11px;background:#e0f2fe;color:#0e7490;padding:1.5px 8px;border-radius:6px;font-weight:700;margin-right:6px}
+
+  .summary{margin:40px 0 20px;border-radius:18px;padding:26px 30px;background:linear-gradient(130deg,#fff8f3,#ffffff);border:1px solid #ffe0cf}
+  .summary h3{margin-top:0}
+  .summary ul{list-style:none;margin-top:10px}
+  .summary li{font-size:14px;line-height:2;color:#514a64;padding-left:24px;position:relative}
+  .summary li::before{content:"◆";position:absolute;left:0;color:var(--brand);font-size:11px;top:6px}
+
+  .pager{display:flex;gap:14px;margin-top:30px;flex-wrap:wrap}
+  .pager a{flex:1;min-width:200px;text-decoration:none;border:1px solid var(--line);border-radius:14px;padding:16px 20px;background:#fff;transition:.2s;display:block}
+  .pager a:hover{border-color:var(--brand);box-shadow:0 10px 26px rgba(255,107,53,.14);transform:translateY(-2px)}
+  .pager a .k{font-size:11px;color:var(--dim2);font-weight:700;letter-spacing:1px}
+  .pager a .v{font-size:14px;font-weight:800;color:var(--night);margin-top:5px}
+  .pager a.back{background:var(--brand-soft);border-color:transparent;text-align:center}
+  .pager a.back .v{color:var(--brand-dark)}
+
+  .cta{margin-top:26px;border-radius:20px;padding:30px 34px;color:#fff;position:relative;overflow:hidden;background:linear-gradient(120deg,#16202f,#2b3a52 46%,#a8431c 132%)}
+  .cta::after{content:"";position:absolute;right:-70px;bottom:-90px;width:280px;height:280px;border-radius:50%;background:radial-gradient(circle,rgba(255,140,80,.45),transparent 68%)}
+  .cta h3{color:#fff;margin:0 0 10px;position:relative;z-index:2}
+  .cta h3::before{background:var(--brand)}
+  .cta p{color:#d8e0ef;font-size:13.5px;margin:0 0 18px;position:relative;z-index:2;max-width:640px}
+  .cta .btn-go{position:relative;z-index:2}
+
+  @media(max-width:900px){
+    .sidebar-nav{transform:translateX(-100%)}
+    .sidebar-nav.active{transform:translateX(0)}
+    .nav-toggle{display:block}
+    .page{margin-left:0}
+    .hero{padding:70px 22px 34px}
+    .hero-top{flex-direction:column-reverse;text-align:center}
+    .hero-card{width:auto}
+    .container{padding:26px 20px 60px}
+    .goal-grid{grid-template-columns:1fr}
+  }
+
+  /* ---------- 图形化：积木卡（替代代码卡） ---------- */
+  .blk-card{background:#f8f6ff;border:1px solid #e6e0fb;border-radius:14px;
+    margin:18px 0;overflow:hidden;box-shadow:0 2px 10px rgba(109,40,217,.06)}
+  .blk-head{display:flex;align-items:center;gap:7px;padding:10px 14px;
+    background:#f1ecfe;border-bottom:1px solid #e6e0fb}
+  .blk-head .file{font-size:12.5px;font-weight:700;color:#5b4a86;margin-left:4px}
+  .blk-head .lang{margin-left:auto;font-size:11px;font-weight:800;color:#fff;
+    background:#8b5cf6;border-radius:20px;padding:3px 11px;letter-spacing:.5px}
+  .blk-body{padding:20px 18px;overflow-x:auto;
+    background:
+      radial-gradient(circle at 14px 14px,#ece6fb 1.6px,transparent 1.7px) 0 0/28px 28px,
+      #ffffff}
+  .blk{display:block;max-width:100%;height:auto;margin:0 auto}
+  .blk + .blk{margin-top:16px}
+  .blk-card .out{background:#f1ecfe;border-top:1px solid #e6e0fb;color:#5b4a86}
+  .blk-card .out b{color:#6d28d9}
+  /* 积木并排（不同角色 / 不同做法对照） */
+  .blk-row{display:flex;gap:16px;flex-wrap:wrap;justify-content:center;align-items:flex-start}
+  .blk-row > *{flex:1 1 240px;min-width:0}
+  .blk-row .blk{margin:0}
+  /* 积木旁的小标题 */
+  .blk-cap{font-size:12.5px;font-weight:800;color:#6d28d9;background:#f3efff;
+    border:1px solid #e6e0fb;border-radius:8px;padding:5px 12px;margin:14px 0 10px;
+    display:inline-block}
+</style>
+</head>
+<body>
+
+<button class="nav-toggle" onclick="document.querySelector('.sidebar-nav').classList.toggle('active')">&#9776;</button>
+
+<nav class="sidebar-nav">
+  <div class="sb-brand">
+    <a class="sb-logo" href="https://codecombat.cn/" target="_blank" rel="noopener" title="访问 CodeCombat 扣哒世界官网">
+      <img src="../assets/logo.png" alt="CodeCombat 扣哒世界">
+    </a>
+    <div><b>会对话的书签</b><span>魔法绘本馆 · 图形化三级 第 1 单元</span></div>
+  </div>
+  <div class="nav-title">本单元目录</div>
+
+  <a href="#s0" class="nav-section">0　单元导语与目标</a>
+  <a href="#s0-1" class="nav-sub">0.1 学习目标</a>
+  <a href="#s0-2" class="nav-sub">0.2 考纲对照</a>
+  <a href="#s1" class="nav-section">1　什么是输入和输出</a>
+  <a href="#s1-1" class="nav-sub">1.1 输入：把外面的信息收进来</a>
+  <a href="#s1-2" class="nav-sub">1.2 输出：把结果送出去</a>
+  <a href="#s2" class="nav-section">2　让角色开口提问</a>
+  <a href="#s2-1" class="nav-sub">2.1 询问并等待</a>
+  <a href="#s2-2" class="nav-sub">2.2 回答：用户刚说的话</a>
+  <a href="#s2-3" class="nav-sub">2.3 拿回答去做事</a>
+  <a href="#s3" class="nav-section">3　输出的三种方式</a>
+  <a href="#s3-1" class="nav-sub">3.1 说与思考</a>
+  <a href="#s3-2" class="nav-sub">3.2 显示在舞台上</a>
+  <a href="#s3-3" class="nav-sub">3.3 把几段话拼起来</a>
+  <a href="#s4" class="nav-section">4　一问一答的完整流程</a>
+  <a href="#s4-1" class="nav-sub">4.1 先问、再算、后答</a>
+  <a href="#s4-2" class="nav-sub">4.2 把回答变成数字</a>
+  <a href="#s5" class="nav-section">5　代码实战</a>
+  <a href="#s6" class="nav-section">6　常见陷阱</a>
+  <a href="#s7" class="nav-section">7　题目练习</a>
+  <a href="#s8" class="nav-section">8　本单元小结</a>
+
+  <a href="../index.html" target="_top" class="sb-back">返回考纲之路</a>
+</nav>
+
+<div class="page">
+
+<div class="hero">
+  <div class="hero-top">
+    <div class="hero-txt">
+      <div class="crumb">扣哒考级 · GESP 图形化 三级 · 第 1 单元　|　魔法绘本馆 STORYLOOM LIBRARY</div>
+      <h1>会对话的书签
+        <span class="sub">输入与输出</span>
+      </h1>
+      <div class="en">Input and Output</div>
+      <div class="tags">        <span class="tag hot">考纲 · 输入与输出</span>
+        <span class="tag">询问与回答</span>
+        <span class="tag">连接的用法</span>
+        <span class="tag">交互设计</span></div>
+    </div>
+    <div class="hero-card">
+      <img class="ava" src="../assets/avatars/hushbaum.webp" alt="贺舒曼" onerror="this.style.background='#24344a';this.src='../assets/heroes/hushbaum.webp'">
+      <div class="nm">贺舒曼</div>
+      <div class="ti">镜中先知 · 你的向导</div>
+    </div>
+  </div>
+</div>
+
+<div class="container">
+
+
+<div class="lead">
+  推开绘本馆的门，一枚书签从书架上飘下来，停在你面前。<br>
+  它先开口："<b>你想找哪一本？</b>"<br>
+  你愣住了——原来程序也会问问题。你说出书名，书签闪了一下：
+  "<b>《星星的旅程》，在第三排。</b>"
+</div>
+
+<div class="cast anya">
+  <img class="ava" src="../assets/avatars/hushbaum.webp" alt="贺舒曼" onerror="this.style.display='none'">
+  <div class="bubble">
+    <div class="who">贺舒曼 · 镜中先知</div>
+    三级从这里开始，程序第一次能"听见你说话"。<br>
+    只有两组积木要记：<b>输入 = 询问并等待 + 回答</b>；
+    <b>输出 = 说 / 思考 / 显示</b>。剩下的就是把它们串成"问—算—答"三步。
+  </div>
+</div>
+
+<!-- ============ 0 ============ -->
+<div class="section-header" id="s0">
+  <h2>0　单元导语与目标</h2>
+  <div class="en-title">Before We Start</div>
+</div>
+
+<h3 id="s0-1">0.1 学习目标</h3>
+
+<ul>
+  <li>理解<b>输入</b>和<b>输出</b>：程序怎么"收信息"、怎么"送结果"；</li>
+  <li>会用<b>询问并等待</b>让角色提问，用<b>回答</b>拿到用户输入的内容；</li>
+  <li>会用<b>说 / 思考 / 显示</b>三种方式把结果输出出来；</li>
+  <li>会用<b>连接</b>把几段话拼成一句完整的输出；</li>
+  <li>能设计"先问、再算、后答"的完整交互流程。</li>
+</ul>
+<h3 id="s0-2">0.2 考纲对照</h3>
+
+<table class="styled">
+  <thead><tr><th>考纲知识块</th><th>考纲要求</th><th>本单元小节</th></tr></thead>
+  <tbody><tr><td>1 输入与输出</td><td>计算机程序的输入与输出的概念</td><td>1.1～1.2</td></tr><tr><td>（知识点详述第 1 条）</td><td>了解计算机的输入、输出功能，掌握程序交互设计技巧，能够根据需求分析，选择合适的人机交互方式设计较为丰富的角色间的交互行为</td><td>2.1～2.3、3.1～3.3、4.1～4.2</td></tr></tbody>
+</table>
+
+<p>三级的第一课是"让程序和人说上话"。<b>在这之前，程序只会自己演；
+从这一单元起，它会问、会听、会答。</b></p>
+
+<!-- ============ 1 ============ -->
+<div class="section-header" id="s1">
+  <h2>1　什么是输入和输出</h2>
+  <div class="en-title">Input and Output</div>
+</div>
+
+<h3 id="s1-1">1.1 输入：把外面的信息收进来</h3>
+
+<p>绘本馆门口挂着一枚会说话的书签。它先开口问："<b>你想看哪一本？</b>"
+你回答之后，它才去架子上找。</p>
+<figure class="pic">
+  <img src="../assets/illustrations/scratch-L3-01-01_talking_bookmark.webp" alt="会说话的书签"
+       onerror="this.closest('.pic').classList.add('missing')">
+  <div class="ph">
+    <div class="fn">assets/illustrations/scratch-L3-01-01_talking_bookmark.webp</div>
+    <div class="ds">【配图位】一枚会说话的书签浮在绘本旁，书页上浮现出发光的问句，读者在下方写下答案。（提示词见《GESP配图清单与AI绘图提示词》第四节 3-1）</div>
+  </div>
+  <figcaption>图 1：会说话的书签——它先问，再听，最后回答</figcaption>
+</figure>
+
+<figure class="figure">
+<svg class="diagram" viewBox="0 0 820 194" role="img" aria-label="输入的两条路">
+<text x="24" y="32" font-size="14" fill="#4c1d95" text-anchor="start" font-weight="bold">输入的两条路</text><rect x="24" y="56" width="378" height="104" rx="12" fill="#f3efff" stroke="#e6e0fb" stroke-width="1.8"/><text x="213" y="104" font-size="13.5" fill="#6d28d9" text-anchor="middle" font-weight="bold">人和程序说话</text><text x="213" y="126" font-size="11.6" fill="#7c7794" text-anchor="middle">键盘、鼠标、麦克风……把人的意思送进程序</text><rect x="418" y="56" width="378" height="104" rx="12" fill="#faf8ff" stroke="#e6e0fb" stroke-width="1.8"/><text x="607" y="104" font-size="13.5" fill="#6d28d9" text-anchor="middle" font-weight="bold">设备和程序说话</text><text x="607" y="126" font-size="11.6" fill="#7c7794" text-anchor="middle">传感器把温度、光线、位置变成数据送进来</text><text x="24" y="186" font-size="11.8" fill="#8d9d94" text-anchor="start">共同点：信息从"外面"流向"程序里面"</text>
+</svg>
+  <div class="caption">图 2（SVG）：输入的两种来源</div>
+</figure>
+
+<div class="box tip">
+  <span class="lb">打个比方：</span><b>输入</b>就像老师提问后你举手回答——程序先问一句，你的回答就顺着这条通道进了程序。<br>没有输入，程序永远只能按你写死的内容演，问不了也答不了。
+</div>
+
+
+<h3 id="s1-2">1.2 输出：把结果送出去</h3>
+
+<figure class="pic">
+  <img src="../assets/illustrations/scratch-L3-01-02_io_bookshelf.webp" alt="两个出口的书架"
+       onerror="this.closest('.pic').classList.add('missing')">
+  <div class="ph">
+    <div class="fn">assets/illustrations/scratch-L3-01-02_io_bookshelf.webp</div>
+    <div class="ds">【配图位】书架上有两个出口——一个"提问口"向读者索取信息，一个"展示口"把结果投射到发光书页上。（提示词见《GESP配图清单与AI绘图提示词》第四节 3-1）</div>
+  </div>
+  <figcaption>图 3：书架的两个口——左边收进信息，右边送出结果</figcaption>
+</figure>
+
+<figure class="figure">
+<svg class="diagram" viewBox="0 0 820 240" role="img" aria-label="输入与输出，方向相反">
+<text x="24" y="32" font-size="14" fill="#4c1d95" text-anchor="start" font-weight="bold">输入与输出，方向相反</text><rect x="24" y="52" width="376" height="160" rx="12" fill="#f5f3ff" stroke="#e6e0fb" stroke-width="1.8"/><text x="212" y="82" font-size="13.5" fill="#6d28d9" text-anchor="middle" font-weight="bold">输入（进）</text><circle cx="40" cy="106" r="3.4" fill="#6d28d9"/><text x="52" y="110" font-size="12.2" fill="#4c1d95" text-anchor="start">人 → 程序</text><circle cx="40" cy="136" r="3.4" fill="#6d28d9"/><text x="52" y="140" font-size="12.2" fill="#4c1d95" text-anchor="start">问一句，收回一个答案</text><circle cx="40" cy="166" r="3.4" fill="#6d28d9"/><text x="52" y="170" font-size="12.2" fill="#4c1d95" text-anchor="start">积木：询问并等待、回答</text><rect x="420" y="52" width="376" height="160" rx="12" fill="#fff7ed" stroke="#e6e0fb" stroke-width="1.8"/><text x="608" y="82" font-size="13.5" fill="#b45309" text-anchor="middle" font-weight="bold">输出（出）</text><circle cx="436" cy="106" r="3.4" fill="#b45309"/><text x="448" y="110" font-size="12.2" fill="#4c1d95" text-anchor="start">程序 → 人</text><circle cx="436" cy="136" r="3.4" fill="#b45309"/><text x="448" y="140" font-size="12.2" fill="#4c1d95" text-anchor="start">说一句、显示一个数字</text><circle cx="436" cy="166" r="3.4" fill="#b45309"/><text x="448" y="170" font-size="12.2" fill="#4c1d95" text-anchor="start">积木：说、思考、显示变量</text><text x="24" y="226" font-size="11.8" fill="#8d9d94" text-anchor="start">口诀：进来的叫输入，出去的就叫输出</text>
+</svg>
+  <div class="caption">图 4（SVG）：输入与输出</div>
+</figure>
+
+<!-- ============ 2 ============ -->
+<div class="section-header" id="s2">
+  <h2>2　让角色开口提问</h2>
+  <div class="en-title">Asking Questions</div>
+</div>
+
+<h3 id="s2-1">2.1 询问并等待</h3>
+
+<p>在<b>侦测</b>分类里有这么一块积木：<b>询问（问题）并等待</b>。
+执行到它时，程序会<b>停下来</b>，等你在舞台下方的输入框里打完字、按下回车。</p>
+<div class="blk-card">
+  <div class="blk-head">
+    <span class="dot d1"></span><span class="dot d2"></span><span class="dot d3"></span>
+    <span class="file">重点示例：先问一句</span>
+    <span class="lang">图形化积木</span>
+  </div>
+  <div class="blk-body">
+<svg class="blk" viewBox="0 0 254.2 138" width="254.2" height="138" role="img" aria-label="积木脚本"><g font-family="'PingFang SC','Microsoft YaHei','Noto Sans SC',sans-serif"><g transform="translate(3,3)"><path d="M0,12 C32.96,0 131.84,0 164.8,12 V43 A5,5 0 0 1 159.8,48 H28 v4 h-12 v-4 H5 A5,5 0 0 1 0,43 Z" fill="#FFBF00" stroke="#d19c00" stroke-width="1.2"/><text x="15" y="34.8" font-size="13.4" fill="#fff">当 </text><rect x="42.6" y="18.5" width="52.8" height="23" rx="5" fill="#CC9900"/><text x="64" y="34.4" font-size="12.5" fill="#fff" text-anchor="middle">绿旗</text><path d="M84.4 27.5 l4 5 l4 -5 z" fill="#fff" opacity=".85"/><text x="102.4" y="34.8" font-size="13.4" fill="#fff"> 被点击</text></g><g transform="translate(3,55)"><path d="M0,5 A5,5 0 0 1 5,0 H16 v4 h12 v-4 H232 A5,5 0 0 1 237,5 V31 A5,5 0 0 1 232,36 H28 v4 h-12 v-4 H5 A5,5 0 0 1 0,31 Z" fill="#5CB1D6" stroke="#4b91af" stroke-width="1.2"/><text x="15" y="22.8" font-size="13.4" fill="#fff">询问 </text><rect x="56" y="6.5" width="111.8" height="23" rx="5" fill="#fff"/><text x="111.9" y="22.4" font-size="12.5" fill="#575e75" text-anchor="middle">你叫什么名字？</text><text x="174.8" y="22.8" font-size="13.4" fill="#fff"> 并等待</text></g><g transform="translate(3,95)"><path d="M0,5 A5,5 0 0 1 5,0 H16 v4 h12 v-4 H243 A5,5 0 0 1 248,5 V31 A5,5 0 0 1 243,36 H28 v4 h-12 v-4 H5 A5,5 0 0 1 0,31 Z" fill="#9966FF" stroke="#7d53d1" stroke-width="1.2"/><text x="15" y="22.8" font-size="13.4" fill="#fff">说 </text><rect x="42.6" y="6.5" width="111.8" height="23" rx="5" fill="#fff"/><text x="98.5" y="22.4" font-size="12.5" fill="#575e75" text-anchor="middle">很高兴认识你！</text><text x="161.4" y="22.8" font-size="13.4" fill="#fff"> </text><rect x="175.6" y="6.5" width="30" height="23" rx="11.5" fill="#fff"/><text x="190.6" y="22.4" font-size="12.5" fill="#575e75" text-anchor="middle">2</text><text x="212.6" y="22.8" font-size="13.4" fill="#fff"> 秒</text></g></g></svg>
+  </div>
+  <div class="out"><b>读法</b>　"询问并等待"会停在原地等用户回答，回答完才继续往下走</div>
+</div>
+
+<div class="box info">
+  <span class="lb">为什么叫"并等待"？</span>因为图形化编程是<b>一步一步往下走</b>的。如果不等，程序问完就立刻跑下一块了，用户还没输入完。<br>"并等待"就是告诉程序：<b>在这儿等着，别急。</b>
+</div>
+
+
+<h3 id="s2-2">2.2 回答：用户刚说的话</h3>
+
+<div class="blk-card">
+  <div class="blk-head">
+    <span class="dot d1"></span><span class="dot d2"></span><span class="dot d3"></span>
+    <span class="file">重点示例：把回答拿出来用</span>
+    <span class="lang">图形化积木</span>
+  </div>
+  <div class="blk-body">
+<svg class="blk" viewBox="0 0 256.6 138" width="256.6" height="138" role="img" aria-label="积木脚本"><g font-family="'PingFang SC','Microsoft YaHei','Noto Sans SC',sans-serif"><g transform="translate(3,3)"><path d="M0,12 C32.96,0 131.84,0 164.8,12 V43 A5,5 0 0 1 159.8,48 H28 v4 h-12 v-4 H5 A5,5 0 0 1 0,43 Z" fill="#FFBF00" stroke="#d19c00" stroke-width="1.2"/><text x="15" y="34.8" font-size="13.4" fill="#fff">当 </text><rect x="42.6" y="18.5" width="52.8" height="23" rx="5" fill="#CC9900"/><text x="64" y="34.4" font-size="12.5" fill="#fff" text-anchor="middle">绿旗</text><path d="M84.4 27.5 l4 5 l4 -5 z" fill="#fff" opacity=".85"/><text x="102.4" y="34.8" font-size="13.4" fill="#fff"> 被点击</text></g><g transform="translate(3,55)"><path d="M0,5 A5,5 0 0 1 5,0 H16 v4 h12 v-4 H245 A5,5 0 0 1 250,5 V31 A5,5 0 0 1 245,36 H28 v4 h-12 v-4 H5 A5,5 0 0 1 0,31 Z" fill="#5CB1D6" stroke="#4b91af" stroke-width="1.2"/><text x="15" y="22.8" font-size="13.4" fill="#fff">询问 </text><rect x="56" y="6.5" width="125.2" height="23" rx="5" fill="#fff"/><text x="118.6" y="22.4" font-size="12.5" fill="#575e75" text-anchor="middle">你最喜欢哪本书？</text><text x="188.2" y="22.8" font-size="13.4" fill="#fff"> 并等待</text></g><g transform="translate(3,95)"><path d="M0,5 A5,5 0 0 1 5,0 H16 v4 h12 v-4 H180 A5,5 0 0 1 185,5 V31 A5,5 0 0 1 180,36 H28 v4 h-12 v-4 H5 A5,5 0 0 1 0,31 Z" fill="#9966FF" stroke="#7d53d1" stroke-width="1.2"/><text x="15" y="22.8" font-size="13.4" fill="#fff">说 </text><polygon points="54.1,6.5 79.9,6.5 86.225,18 79.9,29.5 54.1,29.5 47.775,18" fill="#fff" stroke="#9966FF" stroke-width="1.4"/><text x="53.6" y="22.8" font-size="13.4" fill="#575e75">回答</text><text x="98.4" y="22.8" font-size="13.4" fill="#fff"> </text><rect x="112.6" y="6.5" width="30" height="23" rx="11.5" fill="#fff"/><text x="127.6" y="22.4" font-size="12.5" fill="#575e75" text-anchor="middle">2</text><text x="149.6" y="22.8" font-size="13.4" fill="#fff"> 秒</text></g></g></svg>
+  </div>
+  <div class="out"><b>要点</b>　"回答"是一块<b>椭圆形的值积木</b>，里面装的就是用户刚刚输入的那句话；它可以塞进任何要填内容的地方</div>
+</div>
+
+<h3 id="s2-3">2.3 拿回答去做事</h3>
+
+<div class="blk-card">
+  <div class="blk-head">
+    <span class="dot d1"></span><span class="dot d2"></span><span class="dot d3"></span>
+    <span class="file">重点示例：根据回答做不同的事</span>
+    <span class="lang">图形化积木</span>
+  </div>
+  <div class="blk-body">
+<svg class="blk" viewBox="0 0 304 194" width="304" height="194" role="img" aria-label="积木脚本"><g font-family="'PingFang SC','Microsoft YaHei','Noto Sans SC',sans-serif"><g transform="translate(3,3)"><path d="M0,5 A5,5 0 0 1 5,0 H16 v4 h12 v-4 H293 A5,5 0 0 1 298,5 V31 A5,5 0 0 1 293,36 H28 v4 h-12 v-4 H5 A5,5 0 0 1 0,31 Z" fill="#5CB1D6" stroke="#4b91af" stroke-width="1.2"/><text x="15" y="22.8" font-size="13.4" fill="#fff">询问 </text><rect x="56" y="6.5" width="172.6" height="23" rx="5" fill="#fff"/><text x="142.3" y="22.4" font-size="12.5" fill="#575e75" text-anchor="middle">今天下雨了吗？（是/否）</text><text x="235.6" y="22.8" font-size="13.4" fill="#fff"> 并等待</text></g><g transform="translate(3,43)"><path d="M0,5 A5,5 0 0 1 5,0 H16 v4 h12 v-4 H255 A5,5 0 0 1 260,5 V126 A5,5 0 0 1 255,131 H28 v4 h-12 v-4 H5 A5,5 0 0 1 0,126 V90 H16 V77 H0 Z" fill="#FFAB19" stroke="#d18c14" stroke-width="1.2"/><text x="15" y="22.8" font-size="13.4" fill="#fff">如果 </text><polygon points="67.5,6.5 182.3,6.5 188.625,18 182.3,29.5 67.5,29.5 61.175,18" fill="#fff" stroke="#FFAB19" stroke-width="1.4"/><rect x="67" y="6.5" width="48.8" height="23" rx="11.5" fill="#fff" stroke="#cfd6e4" stroke-width="1"/><text x="91.4" y="22.4" font-size="12.5" fill="#575e75" text-anchor="middle">回答</text><text x="122.8" y="22.8" font-size="13.4" fill="#575e75"> = </text><rect x="151.4" y="6.5" width="31.4" height="23" rx="5" fill="#fff" stroke="#cfd6e4" stroke-width="1"/><text x="167.1" y="22.4" font-size="12.5" fill="#575e75" text-anchor="middle">是</text><text x="200.8" y="22.8" font-size="13.4" fill="#fff"> 那么</text><g transform="translate(20,38)"><path d="M0,5 A5,5 0 0 1 5,0 H16 v4 h12 v-4 H216 A5,5 0 0 1 221,5 V31 A5,5 0 0 1 216,36 H28 v4 h-12 v-4 H5 A5,5 0 0 1 0,31 Z" fill="#9966FF" stroke="#7d53d1" stroke-width="1.2"/><text x="15" y="22.8" font-size="13.4" fill="#fff">说 </text><rect x="42.6" y="6.5" width="85" height="23" rx="5" fill="#fff"/><text x="85.1" y="22.4" font-size="12.5" fill="#575e75" text-anchor="middle">记得带伞哦</text><text x="134.6" y="22.8" font-size="13.4" fill="#fff"> </text><rect x="148.8" y="6.5" width="30" height="23" rx="11.5" fill="#fff"/><text x="163.8" y="22.4" font-size="12.5" fill="#575e75" text-anchor="middle">2</text><text x="185.8" y="22.8" font-size="13.4" fill="#fff"> 秒</text></g><g transform="translate(20,92)"><path d="M0,5 A5,5 0 0 1 5,0 H16 v4 h12 v-4 H229 A5,5 0 0 1 234,5 V31 A5,5 0 0 1 229,36 H28 v4 h-12 v-4 H5 A5,5 0 0 1 0,31 Z" fill="#9966FF" stroke="#7d53d1" stroke-width="1.2"/><text x="15" y="22.8" font-size="13.4" fill="#fff">说 </text><rect x="42.6" y="6.5" width="98.4" height="23" rx="5" fill="#fff"/><text x="91.8" y="22.4" font-size="12.5" fill="#575e75" text-anchor="middle">那就去公园吧</text><text x="148" y="22.8" font-size="13.4" fill="#fff"> </text><rect x="162.2" y="6.5" width="30" height="23" rx="11.5" fill="#fff"/><text x="177.2" y="22.4" font-size="12.5" fill="#575e75" text-anchor="middle">2</text><text x="199.2" y="22.8" font-size="13.4" fill="#fff"> 秒</text></g></g></g></svg>
+  </div>
+  <div class="out"><b>要点</b>　"回答"是六边形条件也能用的——把它跟"是"比一比，就做出了"看回答再决定"的效果</div>
+</div>
+
+<div class="box tip">
+  <span class="lb">打个比方：</span><b>"回答"就是一个临时的小盒子</b>，每次询问之后，盒子里的东西就会被换成最新的那一句。<br>所以要"问了马上用"，问完之后再问一次，前面的内容就被覆盖掉了。
+</div>
+
+<!-- ============ 3 ============ -->
+<div class="section-header" id="s3">
+  <h2>3　输出的三种方式</h2>
+  <div class="en-title">Three Ways to Output</div>
+</div>
+
+<h3 id="s3-1">3.1 说与思考</h3>
+
+<div class="blk-card">
+  <div class="blk-head">
+    <span class="dot d1"></span><span class="dot d2"></span><span class="dot d3"></span>
+    <span class="file">重点示例：两块最常用的输出积木</span>
+    <span class="lang">图形化积木</span>
+  </div>
+  <div class="blk-body">
+<svg class="blk" viewBox="0 0 241.8 86" width="241.8" height="86" role="img" aria-label="积木脚本"><g font-family="'PingFang SC','Microsoft YaHei','Noto Sans SC',sans-serif"><g transform="translate(3,3)"><path d="M0,5 A5,5 0 0 1 5,0 H16 v4 h12 v-4 H176 A5,5 0 0 1 181,5 V31 A5,5 0 0 1 176,36 H28 v4 h-12 v-4 H5 A5,5 0 0 1 0,31 Z" fill="#9966FF" stroke="#7d53d1" stroke-width="1.2"/><text x="15" y="22.8" font-size="13.4" fill="#fff">说 </text><rect x="42.6" y="6.5" width="44.8" height="23" rx="5" fill="#fff"/><text x="65" y="22.4" font-size="12.5" fill="#575e75" text-anchor="middle">你好</text><text x="94.4" y="22.8" font-size="13.4" fill="#fff"> </text><rect x="108.6" y="6.5" width="30" height="23" rx="11.5" fill="#fff"/><text x="123.6" y="22.4" font-size="12.5" fill="#575e75" text-anchor="middle">2</text><text x="145.6" y="22.8" font-size="13.4" fill="#fff"> 秒</text></g><g transform="translate(3,43)"><path d="M0,5 A5,5 0 0 1 5,0 H16 v4 h12 v-4 H230 A5,5 0 0 1 235,5 V31 A5,5 0 0 1 230,36 H28 v4 h-12 v-4 H5 A5,5 0 0 1 0,31 Z" fill="#9966FF" stroke="#7d53d1" stroke-width="1.2"/><text x="15" y="22.8" font-size="13.4" fill="#fff">思考 </text><rect x="56" y="6.5" width="86" height="23" rx="5" fill="#fff"/><text x="99" y="22.4" font-size="12.5" fill="#575e75" text-anchor="middle">让我想想……</text><text x="149" y="22.8" font-size="13.4" fill="#fff"> </text><rect x="163.2" y="6.5" width="30" height="23" rx="11.5" fill="#fff"/><text x="178.2" y="22.4" font-size="12.5" fill="#575e75" text-anchor="middle">2</text><text x="200.2" y="22.8" font-size="13.4" fill="#fff"> 秒</text></g></g></svg>
+  </div>
+  <div class="out"><b>要点</b>　"说"冒出白色气泡、"思考"冒出思想气泡，参数填 2 表示"挂 2 秒后消失"；不填秒数就一直挂着</div>
+</div>
+
+<h3 id="s3-2">3.2 显示在舞台上</h3>
+
+<div class="blk-card">
+  <div class="blk-head">
+    <span class="dot d1"></span><span class="dot d2"></span><span class="dot d3"></span>
+    <span class="file">重点示例：把结果直接显示出来</span>
+    <span class="lang">图形化积木</span>
+  </div>
+  <div class="blk-body">
+<svg class="blk" viewBox="0 0 156.6 86" width="156.6" height="86" role="img" aria-label="积木脚本"><g font-family="'PingFang SC','Microsoft YaHei','Noto Sans SC',sans-serif"><g transform="translate(3,3)"><path d="M0,5 A5,5 0 0 1 5,0 H16 v4 h12 v-4 H145 A5,5 0 0 1 150,5 V31 A5,5 0 0 1 145,36 H28 v4 h-12 v-4 H5 A5,5 0 0 1 0,31 Z" fill="#FF8C1A" stroke="#d17215" stroke-width="1.2"/><text x="15" y="22.8" font-size="13.4" fill="#fff">显示变量 </text><rect x="82.8" y="6.5" width="52.8" height="23" rx="5" fill="#DB6E00"/><text x="104.2" y="22.4" font-size="12.5" fill="#fff" text-anchor="middle">分数</text><path d="M124.6 15.5 l4 5 l4 -5 z" fill="#fff" opacity=".85"/></g><g transform="translate(3,43)"><path d="M0,5 A5,5 0 0 1 5,0 H16 v4 h12 v-4 H145 A5,5 0 0 1 150,5 V31 A5,5 0 0 1 145,36 H28 v4 h-12 v-4 H5 A5,5 0 0 1 0,31 Z" fill="#FF8C1A" stroke="#d17215" stroke-width="1.2"/><text x="15" y="22.8" font-size="13.4" fill="#fff">隐藏变量 </text><rect x="82.8" y="6.5" width="52.8" height="23" rx="5" fill="#DB6E00"/><text x="104.2" y="22.4" font-size="12.5" fill="#fff" text-anchor="middle">分数</text><path d="M124.6 15.5 l4 5 l4 -5 z" fill="#fff" opacity=".85"/></g></g></svg>
+  </div>
+  <div class="out"><b>要点</b>　变量（还有列表）在舞台上会以左上角的小面板显示，适合"随时能看到现在是多少"的输出</div>
+</div>
+
+<h3 id="s3-3">3.3 把几段话拼起来</h3>
+
+<div class="blk-card">
+  <div class="blk-head">
+    <span class="dot d1"></span><span class="dot d2"></span><span class="dot d3"></span>
+    <span class="file">重点示例：连接积木</span>
+    <span class="lang">图形化积木</span>
+  </div>
+  <div class="blk-body">
+<svg class="blk" viewBox="0 0 272.2 86" width="272.2" height="86" role="img" aria-label="积木脚本"><g font-family="'PingFang SC','Microsoft YaHei','Noto Sans SC',sans-serif"><g transform="translate(3,3)"><path d="M0,5 A5,5 0 0 1 5,0 H16 v4 h12 v-4 H194 A5,5 0 0 1 199,5 V31 A5,5 0 0 1 194,36 H28 v4 h-12 v-4 H5 A5,5 0 0 1 0,31 Z" fill="#59C059" stroke="#489d48" stroke-width="1.2"/><text x="15" y="22.8" font-size="13.4" fill="#fff">连接 </text><rect x="56" y="6.5" width="58.2" height="23" rx="5" fill="#fff"/><text x="85.1" y="22.4" font-size="12.5" fill="#575e75" text-anchor="middle">你好，</text><text x="121.2" y="22.8" font-size="13.4" fill="#fff"> </text><polygon points="146.9,6.5 172.7,6.5 179.025,18 172.7,29.5 146.9,29.5 140.575,18" fill="#fff" stroke="#59C059" stroke-width="1.4"/><text x="146.4" y="22.8" font-size="13.4" fill="#575e75">回答</text></g><g transform="translate(3,43)"><path d="M0,5 A5,5 0 0 1 5,0 H16 v4 h12 v-4 H261 A5,5 0 0 1 266,5 V31 A5,5 0 0 1 261,36 H28 v4 h-12 v-4 H5 A5,5 0 0 1 0,31 Z" fill="#59C059" stroke="#489d48" stroke-width="1.2"/><text x="15" y="22.8" font-size="13.4" fill="#fff">连接 </text><rect x="56" y="6.5" width="142.6" height="23" rx="5" fill="#fff"/><text x="127.3" y="22.4" font-size="12.5" fill="#575e75" text-anchor="middle">一共 @{@(数量)} 本</text><text x="205.6" y="22.8" font-size="13.4" fill="#fff"> </text><rect x="219.8" y="6.5" width="31.4" height="23" rx="5" fill="#fff"/><text x="235.5" y="22.4" font-size="12.5" fill="#575e75" text-anchor="middle">书</text></g></g></svg>
+  </div>
+  <div class="out"><b>要点</b>　"连接"能<b>把文字和值拼成一句话</b>，参数槽里可以塞"回答"、变量、数字——最后输出一句完整的问候语</div>
+</div>
+
+<div class="box info">
+  <span class="lb">一个常见需求：</span>想输出"你好，小明！"这种<b>带名字</b>的话，就得用"连接"把固定文字和"回答"拼起来——这正是交互程序最常用的一招。
+</div>
+
+<!-- ============ 4 ============ -->
+<div class="section-header" id="s4">
+  <h2>4　一问一答的完整流程</h2>
+  <div class="en-title">A Complete Interactive Flow</div>
+</div>
+
+<h3 id="s4-1">4.1 先问、再算、后答</h3>
+
+<figure class="figure">
+<svg class="diagram" viewBox="0 0 820 158" role="img" aria-label="交互程序的三步骨架">
+<text x="24" y="32" font-size="14" fill="#4c1d95" text-anchor="start" font-weight="bold">交互程序的三步骨架</text><rect x="24" y="56" width="240" height="68" rx="10" fill="#f3efff" stroke="#e6e0fb" stroke-width="1.8"/><text x="144" y="95" font-size="12.4" fill="#6d28d9" text-anchor="middle" font-weight="bold">询问：问一个问题</text><line x1="269" y1="90" x2="281" y2="90" stroke="#8b5cf6" stroke-width="2.2"/><polygon points="281,90 273,85 273,95" fill="#8b5cf6"/><rect x="290" y="56" width="240" height="68" rx="10" fill="#f3efff" stroke="#e6e0fb" stroke-width="1.8"/><text x="410" y="95" font-size="12.4" fill="#6d28d9" text-anchor="middle" font-weight="bold">处理：用回答算一算</text><line x1="535" y1="90" x2="547" y2="90" stroke="#8b5cf6" stroke-width="2.2"/><polygon points="547,90 539,85 539,95" fill="#8b5cf6"/><rect x="556" y="56" width="240" height="68" rx="10" fill="#f3efff" stroke="#e6e0fb" stroke-width="1.8"/><text x="676" y="95" font-size="12.4" fill="#6d28d9" text-anchor="middle" font-weight="bold">输出：把结果显示出来</text><text x="24" y="150" font-size="11.8" fill="#8d9d94" text-anchor="start">这三步几乎能套在任何一道"交互题"上</text>
+</svg>
+  <div class="caption">图 5（SVG）：交互程序的三步骨架</div>
+</figure>
+
+<h3 id="s4-2">4.2 把回答变成数字</h3>
+
+<div class="blk-card">
+  <div class="blk-head">
+    <span class="dot d1"></span><span class="dot d2"></span><span class="dot d3"></span>
+    <span class="file">重点示例：回答本身就是文字吗？</span>
+    <span class="lang">图形化积木</span>
+  </div>
+  <div class="blk-body">
+<svg class="blk" viewBox="0 0 243.2 166" width="243.2" height="166" role="img" aria-label="积木脚本"><g font-family="'PingFang SC','Microsoft YaHei','Noto Sans SC',sans-serif"><g transform="translate(3,3)"><path d="M0,5 A5,5 0 0 1 5,0 H16 v4 h12 v-4 H232 A5,5 0 0 1 237,5 V31 A5,5 0 0 1 232,36 H28 v4 h-12 v-4 H5 A5,5 0 0 1 0,31 Z" fill="#5CB1D6" stroke="#4b91af" stroke-width="1.2"/><text x="15" y="22.8" font-size="13.4" fill="#fff">询问 </text><rect x="56" y="6.5" width="111.8" height="23" rx="5" fill="#fff"/><text x="111.9" y="22.4" font-size="12.5" fill="#575e75" text-anchor="middle">请输入一个整数</text><text x="174.8" y="22.8" font-size="13.4" fill="#fff"> 并等待</text></g><g transform="translate(3,43)"><path d="M0,5 A5,5 0 0 1 5,0 H16 v4 h12 v-4 H209 A5,5 0 0 1 214,5 V31 A5,5 0 0 1 209,36 H28 v4 h-12 v-4 H5 A5,5 0 0 1 0,31 Z" fill="#FF8C1A" stroke="#d17215" stroke-width="1.2"/><text x="15" y="22.8" font-size="13.4" fill="#fff">将 </text><rect x="42.6" y="6.5" width="52.8" height="23" rx="5" fill="#DB6E00"/><text x="64" y="22.4" font-size="12.5" fill="#fff" text-anchor="middle">数字</text><path d="M84.4 15.5 l4 5 l4 -5 z" fill="#fff" opacity=".85"/><text x="102.4" y="22.8" font-size="13.4" fill="#fff"> 设为 </text><polygon points="162.1,6.5 187.9,6.5 194.225,18 187.9,29.5 162.1,29.5 155.775,18" fill="#fff" stroke="#FF8C1A" stroke-width="1.4"/><text x="161.6" y="22.8" font-size="13.4" fill="#575e75">回答</text></g><g transform="translate(3,83)"><path d="M0,5 A5,5 0 0 1 5,0 H16 v4 h12 v-4 H190 A5,5 0 0 1 195,5 V31 A5,5 0 0 1 190,36 H28 v4 h-12 v-4 H5 A5,5 0 0 1 0,31 Z" fill="#FF8C1A" stroke="#d17215" stroke-width="1.2"/><text x="15" y="22.8" font-size="13.4" fill="#fff">将 </text><rect x="42.6" y="6.5" width="52.8" height="23" rx="5" fill="#DB6E00"/><text x="64" y="22.4" font-size="12.5" fill="#fff" text-anchor="middle">数字</text><path d="M84.4 15.5 l4 5 l4 -5 z" fill="#fff" opacity=".85"/><text x="102.4" y="22.8" font-size="13.4" fill="#fff"> 增加 </text><rect x="150.6" y="6.5" width="30" height="23" rx="11.5" fill="#fff"/><text x="165.6" y="22.4" font-size="12.5" fill="#575e75" text-anchor="middle">1</text></g><g transform="translate(3,123)"><path d="M0,5 A5,5 0 0 1 5,0 H16 v4 h12 v-4 H202 A5,5 0 0 1 207,5 V31 A5,5 0 0 1 202,36 H28 v4 h-12 v-4 H5 A5,5 0 0 1 0,31 Z" fill="#9966FF" stroke="#7d53d1" stroke-width="1.2"/><text x="15" y="22.8" font-size="13.4" fill="#fff">说 </text><polygon points="54.1,6.5 101.9,6.5 108.225,18 101.9,29.5 54.1,29.5 47.775,18" fill="#fff" stroke="#9966FF" stroke-width="1.4"/><rect x="53.6" y="6.5" width="48.8" height="23" rx="11.5" fill="#fff" stroke="#cfd6e4" stroke-width="1"/><text x="78" y="22.4" font-size="12.5" fill="#575e75" text-anchor="middle">数字</text><text x="120.4" y="22.8" font-size="13.4" fill="#fff"> </text><rect x="134.6" y="6.5" width="30" height="23" rx="11.5" fill="#fff"/><text x="149.6" y="22.4" font-size="12.5" fill="#575e75" text-anchor="middle">2</text><text x="171.6" y="22.8" font-size="13.4" fill="#fff"> 秒</text></g></g></svg>
+  </div>
+  <div class="out"><b>要点</b>　在图形化编程里，输入框里的<b>数字可以直接参与计算</b>；把它存进变量，就能反复使用</div>
+</div>
+
+<div class="box info">
+  <span class="lb">为什么要先存进变量？</span>因为"回答"会被下一次询问覆盖。<b>要反复用同一个输入，就先把它存进变量。</b>
+</div>
+
+<figure class="figure">
+<svg class="diagram" viewBox="0 0 820 202" role="img" aria-label="本单元要记的四块积木">
+<text x="24" y="32" font-size="14" fill="#4c1d95" text-anchor="start" font-weight="bold">本单元要记的四块积木</text><rect x="24" y="56" width="772" height="28" rx="8" fill="#f3efff"/><text x="40" y="75" font-size="12.6" fill="#6d28d9" text-anchor="start" font-weight="bold">询问……并等待</text><text x="192" y="75" font-size="12.2" fill="#4c1d95" text-anchor="start">问问题，等用户回答</text><rect x="24" y="90" width="772" height="28" rx="8" fill="#faf8ff"/><text x="40" y="109" font-size="12.6" fill="#6d28d9" text-anchor="start" font-weight="bold">回答</text><text x="192" y="109" font-size="12.2" fill="#4c1d95" text-anchor="start">用户刚输入的那句话</text><rect x="24" y="124" width="772" height="28" rx="8" fill="#f3efff"/><text x="40" y="143" font-size="12.6" fill="#6d28d9" text-anchor="start" font-weight="bold">说 / 思考</text><text x="192" y="143" font-size="12.2" fill="#4c1d95" text-anchor="start">把结果用气泡输出</text><rect x="24" y="158" width="772" height="28" rx="8" fill="#faf8ff"/><text x="40" y="177" font-size="12.6" fill="#6d28d9" text-anchor="start" font-weight="bold">连接</text><text x="192" y="177" font-size="12.2" fill="#4c1d95" text-anchor="start">把文字和值拼成一句话</text>
+</svg>
+  <div class="caption">图 6（SVG）：输入输出的四块积木</div>
+</figure>
+
+<!-- ============ 5 ============ -->
+<div class="section-header" id="s5">
+  <h2>5　代码实战</h2>
+  <div class="en-title">Level Practice</div>
+</div>
+
+<p>这一关要在路上<b>一边判断一边行动</b>：看到什么就做什么，'
+'这正是"程序根据情况做出反应"的雏形。</p>
+<div class="level-card">
+  <div class="lc-head"><span class="n">关卡</span><h4>非与或</h4><span class="go">进入关卡 →</span></div>
+  <div class="lc-body">
+    <div class="story">
+      <b>故事：</b>
+绘本馆的走廊上依次摆着几只箱子，每只箱子上都写着条件——
+有的要你在场、有的要你没被看见。你得<b>看清条件再动手</b>，
+硬闯是过不去的。
+
+    </div>
+    <figure class="pic">
+      <img src="../assets/stages/py-L3-01-stage1_not_and_or.webp" alt="非与或 关卡截图"
+           onerror="this.closest('.pic').classList.add('missing')">
+      <div class="ph">
+        <div class="fn">assets/stages/py-L3-01-stage1_not_and_or.webp</div>
+        <div class="ds">【关卡截图位】请把《非与或》的游戏画面截图放到此处（放入 assets/stages/ 目录，文件名为 py-L3-01-stage1_not_and_or.webp）。</div>
+      </div>
+      <figcaption>关卡实况：非与或</figcaption>
+    </figure>
+    <p><strong>思路：</strong>每一步都是"先判断、再执行"：<b>条件成立就取，不成立就跳过</b>。
+把判断放进循环里，就能一路走一路看。
+</p>
+<div class="blk-card">
+  <div class="blk-head">
+    <span class="dot d1"></span><span class="dot d2"></span><span class="dot d3"></span>
+    <span class="file">重点示例：一路前进，一路判断</span>
+    <span class="lang">图形化积木</span>
+  </div>
+  <div class="blk-body">
+<svg class="blk" viewBox="0 0 281.8 336" width="281.8" height="336" role="img" aria-label="积木脚本"><g font-family="'PingFang SC','Microsoft YaHei','Noto Sans SC',sans-serif"><g transform="translate(3,3)"><path d="M0,12 C32.96,0 131.84,0 164.8,12 V43 A5,5 0 0 1 159.8,48 H28 v4 h-12 v-4 H5 A5,5 0 0 1 0,43 Z" fill="#FFBF00" stroke="#d19c00" stroke-width="1.2"/><text x="15" y="34.8" font-size="13.4" fill="#fff">当 </text><rect x="42.6" y="18.5" width="52.8" height="23" rx="5" fill="#CC9900"/><text x="64" y="34.4" font-size="12.5" fill="#fff" text-anchor="middle">绿旗</text><path d="M84.4 27.5 l4 5 l4 -5 z" fill="#fff" opacity=".85"/><text x="102.4" y="34.8" font-size="13.4" fill="#fff"> 被点击</text></g><g transform="translate(3,55)"><path d="M0,5 A5,5 0 0 1 5,0 H16 v4 h12 v-4 H270 A5,5 0 0 1 275,5 V269 A5,5 0 0 1 270,274 H28 v4 h-12 v-4 H5 A5,5 0 0 1 0,269 V261 H16 V36 H0 Z" fill="#FFAB19" stroke="#d18c14" stroke-width="1.2"/><text x="15" y="22.8" font-size="13.4" fill="#fff">重复执行 </text><rect x="82.8" y="6.5" width="30" height="23" rx="11.5" fill="#fff"/><text x="97.8" y="22.4" font-size="12.5" fill="#575e75" text-anchor="middle">6</text><text x="119.8" y="22.8" font-size="13.4" fill="#fff"> 次</text><g transform="translate(20,38)"><path d="M0,5 A5,5 0 0 1 5,0 H16 v4 h12 v-4 H244 A5,5 0 0 1 249,5 V164 A5,5 0 0 1 244,169 H28 v4 h-12 v-4 H5 A5,5 0 0 1 0,164 V128 H16 V115 H0 Z" fill="#FFAB19" stroke="#d18c14" stroke-width="1.2"/><text x="15" y="22.8" font-size="13.4" fill="#fff">如果 </text><polygon points="67.5,6.5 182.3,6.5 188.625,18 182.3,29.5 67.5,29.5 61.175,18" fill="#fff" stroke="#FFAB19" stroke-width="1.4"/><rect x="67" y="6.5" width="48.8" height="23" rx="11.5" fill="#fff" stroke="#cfd6e4" stroke-width="1"/><text x="91.4" y="22.4" font-size="12.5" fill="#575e75" text-anchor="middle">回答</text><text x="122.8" y="22.8" font-size="13.4" fill="#575e75"> = </text><rect x="151.4" y="6.5" width="31.4" height="23" rx="5" fill="#fff" stroke="#cfd6e4" stroke-width="1"/><text x="167.1" y="22.4" font-size="12.5" fill="#575e75" text-anchor="middle">取</text><text x="200.8" y="22.8" font-size="13.4" fill="#fff"> 那么</text><g transform="translate(20,38)"><path d="M0,5 A5,5 0 0 1 5,0 H16 v4 h12 v-4 H169 A5,5 0 0 1 174,5 V31 A5,5 0 0 1 169,36 H28 v4 h-12 v-4 H5 A5,5 0 0 1 0,31 Z" fill="#9966FF" stroke="#7d53d1" stroke-width="1.2"/><text x="15" y="22.8" font-size="13.4" fill="#fff">将颜色特效增加 </text><rect x="123" y="6.5" width="36.4" height="23" rx="11.5" fill="#fff"/><text x="141.2" y="22.4" font-size="12.5" fill="#575e75" text-anchor="middle">20</text></g><g transform="translate(20,76)"><path d="M0,5 A5,5 0 0 1 5,0 H16 v4 h12 v-4 H216 A5,5 0 0 1 221,5 V31 A5,5 0 0 1 216,36 H28 v4 h-12 v-4 H5 A5,5 0 0 1 0,31 Z" fill="#9966FF" stroke="#7d53d1" stroke-width="1.2"/><text x="15" y="22.8" font-size="13.4" fill="#fff">说 </text><rect x="42.6" y="6.5" width="71.6" height="23" rx="5" fill="#fff"/><text x="78.4" y="22.4" font-size="12.5" fill="#575e75" text-anchor="middle">取到了！</text><text x="121.2" y="22.8" font-size="13.4" fill="#fff"> </text><rect x="135.4" y="6.5" width="43.6" height="23" rx="11.5" fill="#fff"/><text x="157.2" y="22.4" font-size="12.5" fill="#575e75" text-anchor="middle">0.5</text><text x="186" y="22.8" font-size="13.4" fill="#fff"> 秒</text></g><g transform="translate(20,130)"><path d="M0,5 A5,5 0 0 1 5,0 H16 v4 h12 v-4 H189 A5,5 0 0 1 194,5 V31 A5,5 0 0 1 189,36 H28 v4 h-12 v-4 H5 A5,5 0 0 1 0,31 Z" fill="#9966FF" stroke="#7d53d1" stroke-width="1.2"/><text x="15" y="22.8" font-size="13.4" fill="#fff">说 </text><rect x="42.6" y="6.5" width="44.8" height="23" rx="5" fill="#fff"/><text x="65" y="22.4" font-size="12.5" fill="#575e75" text-anchor="middle">跳过</text><text x="94.4" y="22.8" font-size="13.4" fill="#fff"> </text><rect x="108.6" y="6.5" width="43.6" height="23" rx="11.5" fill="#fff"/><text x="130.4" y="22.4" font-size="12.5" fill="#575e75" text-anchor="middle">0.5</text><text x="159.2" y="22.8" font-size="13.4" fill="#fff"> 秒</text></g></g><g transform="translate(20,222)"><path d="M0,5 A5,5 0 0 1 5,0 H16 v4 h12 v-4 H123 A5,5 0 0 1 128,5 V31 A5,5 0 0 1 123,36 H28 v4 h-12 v-4 H5 A5,5 0 0 1 0,31 Z" fill="#4C97FF" stroke="#3e7bd1" stroke-width="1.2"/><text x="15" y="22.8" font-size="13.4" fill="#fff">移动 </text><rect x="56" y="6.5" width="30" height="23" rx="11.5" fill="#fff"/><text x="71" y="22.4" font-size="12.5" fill="#575e75" text-anchor="middle">1</text><text x="93" y="22.8" font-size="13.4" fill="#fff"> 步</text></g></g></g></svg>
+  </div>
+  <div class="out"><b>读法</b>　每一轮先看条件，成立就取、不成立就跳过，最后统一往前走一步</div>
+</div>
+
+    <div class="box tip">
+      <span class="lb">自己试一试：</span>把"询问并等待"放在循环<b>外面</b>和<b>里面</b>各试一次：放外面只问一次，回答一直不变；放里面每走一步问一次。<strong>体会一下两种设计的差别。</strong>
+    </div>
+    <p>这一关把两件东西合在了一起：'
+    <b>判断负责"这一格要不要做"，循环负责"走到位"</b>。</p>
+<div class="box info">
+  <span class="lb">和本单元的关系：</span>真实作品里，"条件"往往不是写死的，而是来自用户的输入——<b>问一句、拿到回答、再按回答决定怎么做</b>，这就是交互。
+</div>
+    <a class="btn-go" href="https://codecombat.cn/" target="_blank" rel="noopener">去扣哒世界闯这一关 →</a>
+  </div>
+</div>
+
+<!-- ============ 6 ============ -->
+<div class="section-header" id="s6">
+  <h2>6　常见陷阱</h2>
+  <div class="en-title">Common Traps</div>
+</div>
+
+<div class="box warn">
+  <span class="lb">陷阱 1：</span><b>只写"询问"不写"并等待"。</b>程序问完立刻跑下一块，用户还没输入，用的是上一次的答案。<br><strong>正确做法：</strong>提问一律用"<b>询问并等待</b>"。
+</div>
+
+<div class="box warn">
+  <span class="lb">陷阱 2：</span><b>忘了把"回答"用掉就去问第二个问题。</b>"回答"会被新的一次询问覆盖，之前的内容就丢了。<br><strong>正确做法：</strong>一问完就<b>马上存进变量</b>或立刻使用。
+</div>
+
+<div class="box warn">
+  <span class="lb">陷阱 3：</span><b>把"回答"当成数字直接减。</b>"回答"里可能混进空格或汉字，直接参与运算会出问题。<br><strong>正确做法：</strong>先把回答存进变量，再对变量做运算；题目要求输入数字时就提示清楚"请输入一个整数"。
+</div>
+
+<div class="box warn">
+  <span class="lb">陷阱 4：</span><b>输出只有"说"，没有"显示"。</b>结果一闪就没了，用户根本看不清。<br><strong>正确做法：</strong>想长期展示就用<b>显示变量</b>；只播报一次就用"说……2 秒"。
+</div>
+
+<!-- ============ 7 ============ -->
+<div class="section-header" id="s7">
+  <h2>7　题目练习</h2>
+  <div class="en-title">Practice</div>
+</div>
+
+<p>前 1 题改编自 2026 年 6 月 · 图形化编程 三级 第 1 题，其余为原创练习题。</p>
+<div class="exam">
+  <div class="eh"><span class="src">改编自 2026 年 6 月 · 图形化编程 三 级 · 第 1 题</span><span class="tp">单选题</span></div>
+  <div class="eb">
+    <div class="q">智能温室里有一种"湿度小侦探"，它能随时感受土壤干不干，然后立刻把消息告诉中央电脑；电脑收到消息后，再决定要不要打开水龙头浇水。<br>这个"湿度小侦探"的作用，相当于计算机系统中的哪个部件（　　）。</div>
+    <div class="opt"><i>A.</i>处理器——像大脑，负责思考和计算<br>
+      <i>B.</i>存储器——像笔记本，负责记住信息<br>
+      <i>C.</i>输入设备——像耳朵和眼睛，负责接收外界信息<br>
+      <i>D.</i>输出设备——像嘴巴和手，负责把结果说出来或做出来</div>
+    <details><summary>查看答案与详解</summary>
+      <div class="ans"><b>答案：C</b>。湿度传感器只做一件事：<b>把"土壤干不干"这个外界信息收进来</b>，所以它是输入设备。<br><b>A 错：</b>决定要不要浇水的是中央电脑，那才是处理器；<br><b>B 错：</b>传感器不负责记住信息；<br><b>D 错：</b>打开水龙头才是"把结果做出来"，属于输出。<br><b>和本单元的关系：</b>"收进来"就是输入、"送出去"就是输出——传感器的角色相当于程序里的"询问并等待"，水龙头相当于"说"与"显示"。<br><span class="tagline">对应小节</span>1.1、1.2 输入与输出。</div>
+    </details>
+  </div>
+</div>
+<div class="exam">
+  <div class="eh"><span class="src ori">原创练习题</span><span class="tp">单选题</span></div>
+  <div class="eb">
+    <div class="q">绘本馆的书签要向读者提一个问题，并把读者的回答记下来。下面哪块积木既能提问、又能拿到回答（　　）。</div>
+    <div class="opt">
+      <i>A.</i>说"你好" 2 秒<br>
+      <i>B.</i>询问"你叫什么名字？" 并等待<br>
+      <i>C.</i>思考"让我想想" 2 秒<br>
+      <i>D.</i>显示变量"回答"
+    </div>
+    <details><summary>查看答案与详解</summary>
+      <div class="ans"><b>答案：B</b>。"询问……并等待"既负责<b>提出问题</b>，又会停下等用户输入，输入完的内容就放在"回答"里。<br><b>A、C 错：</b>"说"和"思考"都是<b>输出</b>，只能把内容送出去，收不回任何信息；<br><b>D 错：</b>"显示变量"也只是把已有的值展示出来，不会向用户提问。<br><span class="tagline">对应小节</span>2.1 询问并等待。</div>
+    </details>
+  </div>
+</div>
+
+<div class="exam">
+  <div class="eh"><span class="src ori">原创练习题</span><span class="tp">多选题</span></div>
+  <div class="eb">
+    <div class="q">下面哪些属于"输出"（　　）。</div>
+    <div class="opt">
+      <i>A.</i>让角色说"你好，小明！"<br>
+      <i>B.</i>让角色思考"让我算算"<br>
+      <i>C.</i>把分数变量显示在舞台左上角<br>
+      <i>D.</i>用"询问并等待"问用户的名字
+    </div>
+    <details><summary>查看答案与详解</summary>
+      <div class="ans"><b>答案：A、B、C</b>。三条都是"程序把信息送给人"，只不过出口分别是气泡、思想气泡和舞台面板。<br><b>D 错：</b>那是<b>输入</b>——信息从人流向程序。<br><span class="tagline">对应小节</span>1.1、1.2 输入与输出。</div>
+    </details>
+  </div>
+</div>
+
+<div class="exam">
+  <div class="eh"><span class="src ori">原创练习题</span><span class="tp">单选题</span></div>
+  <div class="eb">
+    <div class="q">用户先回答了"小明"，程序想让角色说出"你好，小明！"。下面哪种做法能拼出这句话（　　）。</div>
+    <div class="opt">
+      <i>A.</i>直接说"你好，小明！"<br>
+      <i>B.</i>用"连接"把"你好，"和"回答"拼起来，再交给"说"<br>
+      <i>C.</i>把"回答"显示在舞台上<br>
+      <i>D.</i>再询问一次"你叫什么名字？"
+    </div>
+    <details><summary>查看答案与详解</summary>
+      <div class="ans"><b>答案：B</b>。固定文字 + 用户输入 = 一句话，这正是"<b>连接</b>"积木的用途。<br><b>A 错：</b>那样名字是写死的，用户输入什么都没用；<br><b>C 错：</b>显示变量只是把值摆出来，没有拼成一句问候；<br><b>D 错：</b>再问一次只会得到新的回答，还是拼不出话。<br><span class="tagline">对应小节</span>3.3 把几段话拼起来。</div>
+    </details>
+  </div>
+</div>
+
+<div class="exam">
+  <div class="eh"><span class="src ori">原创练习题</span><span class="tp">单选题</span></div>
+  <div class="eb">
+    <div class="q">一段脚本连续做了两次"询问并等待"：先问名字，再问年龄。问完年龄之后，积木"回答"里装的是（　　）。</div>
+    <div class="opt">
+      <i>A.</i>名字<br>
+      <i>B.</i>年龄<br>
+      <i>C.</i>两个都有<br>
+      <i>D.</i>空
+    </div>
+    <details><summary>查看答案与详解</summary>
+      <div class="ans"><b>答案：B</b>。"回答"就像一个临时盒子，<b>每次询问都会把盒子里的东西换成最新的那一句</b>。<br>想同时留下两个输入，就必须在第一次问完之后<b>先把它存进变量</b>。<br><span class="tagline">对应小节</span>2.2、2.3 回答的特点。</div>
+    </details>
+  </div>
+</div>
+
+<div class="exam">
+  <div class="eh"><span class="src ori">原创练习题</span><span class="tp">判断题</span></div>
+  <div class="eb">
+    <div class="q">在图形化编程中，"询问并等待"的执行过程是：显示问题后程序会暂停，直到用户输入内容并确认后，才继续执行下面的积木。（　　）</div>
+    <details><summary>查看答案与详解</summary>
+      <div class="ans"><b>答案：正确（√）</b>。"并等待"三个字说的就是这件事：<b>先停下，等用户输入完再往下走</b>。<br>如果没有这个等待，程序会在用户还没动手时就跑到下一块，拿到的是空的或者上一次的回答。<br><span class="tagline">对应小节</span>2.1 询问并等待。</div>
+    </details>
+  </div>
+</div>
+
+<!-- ============ 8 ============ -->
+<div class="section-header" id="s8">
+  <h2>8　本单元小结</h2>
+  <div class="en-title">Unit Summary</div>
+</div>
+
+<div class="cast teacher">
+  <img class="ava" src="../assets/avatars/hushbaum.webp" alt="贺舒曼" onerror="this.style.display='none'">
+  <div class="bubble">
+    <div class="who">贺舒曼 · 镜中先知</div>
+    从这一单元起，程序开始会"说话"了。记住两对概念：
+    <b>输入</b>是询问并等待 + 回答，<b>输出</b>是说 / 思考 / 显示。<br>
+    再记住一句话：<b>"回答"会被下一次询问覆盖，要用就先存进变量。</b>
+  </div>
+</div>
+
+<h3 id="s8-1">你在书签旁学到了什么</h3>
+
+<ul>
+  <li><b>输入</b>：询问……并等待 + 回答（信息从人流向程序）；</li>
+  <li><b>输出</b>：说、思考、显示变量（信息从程序流向人）；</li>
+  <li><b>连接</b>：把固定文字和值拼成一句话，做个性化问候；</li>
+  <li><b>三步骨架</b>：询问 → 处理 → 输出；</li>
+  <li><b>要反复用输入，就先存进变量</b>。</li>
+</ul>
+<h3 id="s8-2">下一站：文字魔法</h3>
+
+<p>拿到用户输入的那句话之后，还能对它做很多事：<b>数一数有几个字、找出某个字在第几位、
+把某几个字换掉</b>。下一单元我们就在文字上施魔法。</p>
+
+
+<div class="pager">
+  <a href="scratch-2-07.html"><div class="k">← 上一单元</div><div class="v">算盘小铺 · 数据运算与逻辑判断</div></a>
+  <a href="../index.html" target="_top" class="back"><div class="k">返回</div><div class="v">考纲之路 · 总目录</div></a>
+  <a href="scratch-3-02.html"><div class="k">下一单元 →</div><div class="v">文字魔法 · 字符串处理</div></a>
+</div>
+<div class="cta">
+  <h3>下一站：文字魔法</h3>
+  <p>拿到用户输入的那句话之后，还能对它做很多事：数一数有几个字、找出某个字在第几位、把某几个字换掉。下一单元我们就在文字上施魔法。</p>
+  <a class="btn-go" href="https://codecombat.cn/" target="_blank" rel="noopener">加入扣哒世界，把这条考纲之路走一遍 →</a>
+</div>
+
+</div><!-- /container -->
+</div><!-- /page -->
+
+<script>
+if (location.search.indexOf('expand') >= 0) {
+  document.querySelectorAll('details').forEach(d => d.open = true);
+}
+document.querySelectorAll('.sidebar-nav a').forEach(a => {
+  a.addEventListener('click', () => {
+    if (window.innerWidth <= 900) document.querySelector('.sidebar-nav').classList.remove('active');
+  });
+});
+</script>
+</body>
+</html>

@@ -1,0 +1,776 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="copyright" content="CodeCombat Inc. codecombat.cn">
+<title>传声筒 · 广播与变量 | 扣哒考级 · GESP 图形化二级</title>
+<style>
+  :root{
+    --primary:#8b5cf6; --primary-light:#a78bfa; --primary-lighter:#f3efff; --primary-dark:#6d28d9;
+    --brand:#ff6b35; --brand-dark:#e8541f; --brand-soft:#fff3ec;
+    --night:#131c2b; --night-2:#1e2a3a;
+    --gold:#f5b301;
+    --text:#2a2438; --dim:#7c7794; --dim2:#a29db8;
+    --bg:#ffffff; --bg-soft:#faf8ff; --line:#e9e4f8;
+    --sidebar:274px;
+    --code-bg:#211a33; --code-tx:#d6cfe6;
+    --code-kw:#c678dd; --code-st:#98c379; --code-nu:#d19a66; --code-cm:#7d7392; --code-fn:#61afef;
+  }
+  *{margin:0;padding:0;box-sizing:border-box}
+  html{scroll-behavior:smooth}
+  body{
+    font-family:"PingFang SC","Microsoft YaHei","Segoe UI",-apple-system,sans-serif;
+    line-height:1.9;color:var(--text);background:var(--bg);font-size:15.5px;
+  }
+
+  .sidebar-nav{
+    position:fixed;top:0;left:0;width:var(--sidebar);height:100vh;overflow-y:auto;
+    background:linear-gradient(180deg,#101a26,#182636);padding:14px 0 40px;z-index:100;
+    border-right:3px solid var(--brand);transition:transform .3s ease;
+  }
+  .sidebar-nav::-webkit-scrollbar{width:5px}
+  .sidebar-nav::-webkit-scrollbar-thumb{background:var(--brand);border-radius:4px}
+  .sb-brand{display:flex;align-items:center;gap:10px;padding:10px 13px 12px;border-bottom:1px solid #26384c;margin-bottom:8px}
+  .sidebar-nav a.sb-logo{display:flex;align-items:center;justify-content:center;flex-shrink:0;padding:0;border-left:none;transition:.2s}
+  .sb-logo:hover{transform:scale(1.08)}
+  .sb-logo img{height:34px;width:34px;display:block;object-fit:contain;border-radius:8px}
+  .sb-brand b{color:#f2f6fa;font-size:14px;letter-spacing:.5px;display:block;line-height:1.4}
+  .sb-brand span{color:#7f95ab;font-size:11.5px;display:block;line-height:1.4}
+  .nav-title{color:#ffb894;font-size:12px;font-weight:800;padding:10px 18px 6px;letter-spacing:1.2px}
+  .sidebar-nav a{
+    display:block;color:#c3d0dc;text-decoration:none;padding:6px 18px;font-size:12.5px;
+    line-height:1.55;border-left:3px solid transparent;transition:.18s;
+  }
+  .sidebar-nav a:hover{color:#fff;background:rgba(255,107,53,.16);border-left-color:var(--brand)}
+  .sidebar-nav a.nav-section{color:#ffb894;font-weight:700;font-size:13px;margin-top:11px;padding-top:10px;border-top:1px solid #26384c}
+  .sidebar-nav a.nav-section:first-of-type{border-top:none;margin-top:0;padding-top:6px}
+  .sidebar-nav a.nav-sub{padding-left:30px;color:#93a8bc;font-size:12px}
+  .sidebar-nav a.nav-sub:hover{color:#fff}
+  .sb-back{margin:16px 14px 0;display:block;text-align:center;padding:9px;border-radius:9px;background:#22344a;color:#a9c0d6 !important;font-size:12px;font-weight:700;border-left:none !important}
+  .sb-back:hover{background:var(--brand) !important;color:#fff !important}
+  .nav-toggle{display:none;position:fixed;top:14px;left:14px;z-index:120;background:var(--brand);color:#fff;border:none;border-radius:9px;padding:9px 13px;font-size:15px;cursor:pointer;box-shadow:0 4px 14px rgba(0,0,0,.25)}
+
+  .page{margin-left:var(--sidebar)}
+
+  .hero{
+    position:relative;overflow:hidden;padding:44px 52px;color:#fff;
+    background:linear-gradient(125deg,#0e1724 0%,#1b2b3f 46%,#8a3a16 132%);
+  }
+  .hero::after{content:"";position:absolute;right:-90px;top:-110px;width:400px;height:400px;border-radius:50%;background:radial-gradient(circle,rgba(245,179,1,.30),transparent 68%)}
+  .hero-top{display:flex;gap:36px;align-items:center;position:relative;z-index:2}
+  .hero-txt{flex:1;min-width:0}
+  .hero .crumb{font-size:11.5px;color:#ffb894;letter-spacing:1.5px;font-weight:700;margin-bottom:14px}
+  .hero h1{font-size:31px;font-weight:800;line-height:1.3;letter-spacing:.6px;margin-bottom:8px}
+  .hero h1 .sub{display:block;font-size:18px;font-weight:700;color:#ffd2b3;margin-top:6px;letter-spacing:.3px}
+  .hero .en{font-size:13px;color:#9db4c8;font-style:italic;margin-bottom:18px}
+  .hero .tags{display:flex;flex-wrap:wrap;gap:8px}
+  .tag{font-size:11.5px;padding:4px 12px;border-radius:20px;background:rgba(255,255,255,.12);border:1px solid rgba(255,255,255,.22);color:#e8f0f6;font-weight:600}
+  .tag.hot{background:rgba(255,107,53,.92);border-color:transparent;color:#fff}
+  .hero-card{flex-shrink:0;width:200px;text-align:center}
+  .hero-card .ava{
+    width:148px;height:148px;border-radius:50%;object-fit:cover;object-position:top center;
+    border:4px solid rgba(255,180,140,.6);box-shadow:0 14px 34px rgba(0,0,0,.45);background:#24344a;
+  }
+  .hero-card .nm{font-size:15px;font-weight:800;color:#fff;margin-top:10px}
+  .hero-card .ti{font-size:11.5px;color:#ffb894;margin-top:2px}
+
+  .container{max-width:1080px;margin:0 auto;padding:38px 52px 70px}
+
+  .lead{
+    font-size:15.5px;line-height:2.05;color:#443c58;background:linear-gradient(120deg,#fff8f3,#f7fbf8);
+    border-left:5px solid var(--brand);border-radius:0 14px 14px 0;padding:22px 26px;margin-bottom:32px;
+  }
+  .lead b{color:var(--brand-dark)}
+
+  .cast{display:flex;gap:16px;align-items:flex-start;border-radius:16px;padding:18px 22px;margin:24px 0}
+  .cast .ava{width:72px;height:72px;border-radius:50%;object-fit:cover;object-position:top center;flex-shrink:0;background:#e8eef5}
+  .cast .bubble{position:relative;font-size:14px;line-height:1.95;padding-top:2px;flex:1}
+  .cast .who{font-size:12px;font-weight:800;margin-bottom:5px;letter-spacing:.5px}
+  .cast.anya{background:var(--brand-soft);border:1px solid #ffdcc9}
+  .cast.anya .who{color:var(--brand-dark)}
+  .cast.anya .bubble{color:#5c4636}
+  .cast.duck{background:#fff5f5;border:1px solid #fbd5d5}
+  .cast.duck .who{color:#b91c1c}
+  .cast.duck .bubble{color:#5c4141}
+  .cast.teacher{background:linear-gradient(120deg,#f4f7fb,#ffffff);border:1px solid #dbe4f0}
+  .cast.teacher .who{color:#1e293b}
+  .cast.teacher .bubble{color:#3c4a5a}
+  .cast.hero{background:#f7f3ff;border:1px solid #ded1fa}
+  .cast.hero .who{color:#6d28d9}
+  .cast.hero .bubble{color:#463d5c}
+
+  .goal-grid{display:grid;grid-template-columns:1fr 1fr;gap:16px;margin-bottom:36px}
+  .goal{border:1px solid var(--line);border-radius:15px;padding:19px 21px;background:#fff;box-shadow:0 4px 16px rgba(31,122,68,.05)}
+  .goal h4{font-size:14px;font-weight:800;margin-bottom:11px;display:flex;align-items:center;gap:8px;color:var(--primary-dark)}
+  .goal h4 .ic{width:22px;height:22px;border-radius:7px;background:var(--primary-lighter);display:flex;align-items:center;justify-content:center;font-size:12px}
+  .goal ul{list-style:none}
+  .goal li{font-size:13.5px;color:#6b6480;line-height:1.9;padding-left:18px;position:relative}
+  .goal li::before{content:"▸";position:absolute;left:0;color:var(--primary);font-weight:800}
+  .goal.syllabus li::before{content:"✓"}
+
+  .section-header{margin:52px 0 24px;padding-bottom:12px;border-bottom:3px solid var(--brand);display:flex;align-items:baseline;gap:14px;flex-wrap:wrap}
+  .section-header h2{font-size:22px;font-weight:800;color:var(--night);letter-spacing:.4px}
+  .section-header .en-title{font-size:12px;color:var(--dim2);font-style:italic}
+  h3{font-size:17.5px;font-weight:800;margin:34px 0 14px;color:var(--night);display:flex;align-items:center;gap:10px}
+  h3::before{content:"";width:5px;height:17px;border-radius:3px;background:var(--brand);flex-shrink:0}
+  h4{font-size:15px;font-weight:800;margin:24px 0 10px;color:#3c2f63}
+  p{margin:12px 0;color:#463d5c;line-height:2}
+  strong{color:var(--primary-dark)}
+  code.inline{background:var(--primary-lighter);color:var(--primary-dark);padding:2px 7px;border-radius:6px;font-family:"SFMono-Regular",Consolas,Menlo,monospace;font-size:.9em;font-weight:600}
+
+  .figure{margin:24px 0;text-align:center}
+  .figure svg.diagram{max-width:100%;height:auto;background:#fff;border:1px solid var(--line);border-radius:14px;padding:10px}
+  .figure .caption{font-size:12.5px;color:var(--dim2);margin-top:9px}
+
+  .pic{margin:26px 0;text-align:center}
+  .pic img{max-width:100%;border-radius:16px;box-shadow:0 10px 28px rgba(30,60,45,.15);display:block;margin:0 auto}
+  .pic figcaption{font-size:12.5px;color:var(--dim2);margin-top:9px}
+  .pic .ph{display:none}
+  .pic.missing img{display:none}
+  .pic.missing .ph{
+    display:flex;flex-direction:column;align-items:center;justify-content:center;gap:9px;
+    border:2px dashed #c9d9e8;border-radius:16px;background:linear-gradient(135deg,#f8fbfe,#eef6ff);
+    padding:40px 26px;color:#7a8fa8;
+  }
+  .pic.missing .ph .fn{font-family:Consolas,monospace;font-size:12.5px;color:#2563eb;font-weight:700;word-break:break-all}
+  .pic.missing .ph .ds{font-size:12.5px;line-height:1.8;max-width:560px}
+
+  .box{border-radius:13px;padding:16px 20px;margin:20px 0;font-size:14px;line-height:1.95}
+  .box .lb{font-weight:800;margin-right:6px}
+  .info{background:#eef6ff;border-left:5px solid #3b82f6;color:#274768}
+  .info .lb{color:#1d4ed8}
+  .tip{background:#fff9ec;border-left:5px solid #f59e0b;color:#6b4e13}
+  .tip .lb{color:#b45309}
+  .remember{background:var(--primary-lighter);border-left:5px solid var(--primary);color:#3a2a6b}
+  .remember .lb{color:var(--primary-dark)}
+  .warn{background:#fef2f2;border-left:5px solid #ef4444;color:#7f2b2b}
+  .warn .lb{color:#b91c1c}
+
+  .code-card{margin:20px 0;border-radius:14px;overflow:hidden;box-shadow:0 10px 28px rgba(20,40,28,.20)}
+  .code-head{display:flex;align-items:center;gap:9px;background:#2c2438;padding:9px 14px}
+  .code-head .dot{width:10px;height:10px;border-radius:50%}
+  .code-head .d1{background:#ff5f57}.code-head .d2{background:#febc2e}.code-head .d3{background:#28c840}
+  .code-head .file{color:#a09ab4;font-size:11.5px;font-family:Consolas,monospace;margin-left:6px}
+  .code-head .lang{margin-left:auto;font-size:10.5px;font-weight:800;color:#150f21;background:#a78bfa;padding:2px 9px;border-radius:6px;letter-spacing:.4px}
+  .code-card pre{background:var(--code-bg);padding:18px 20px;overflow-x:auto;margin:0;font-family:"SFMono-Regular",Consolas,"Courier New",monospace;font-size:13.5px;line-height:1.85}
+  .code-card pre::-webkit-scrollbar{height:8px}
+  .code-card pre::-webkit-scrollbar-thumb{background:#433a5e;border-radius:4px}
+  .code-card code{color:var(--code-tx);white-space:pre}
+  .kw{color:var(--code-kw);font-weight:600}
+  .st{color:var(--code-st)}
+  .nu{color:var(--code-nu)}
+  .cm{color:var(--code-cm);font-style:italic}
+  .fn{color:var(--code-fn)}
+  .out{background:#1d1729;color:#c4b5fd;font-family:Consolas,monospace;font-size:13px;padding:12px 20px;border-top:1px solid #352c48}
+  .out b{color:#c9d6cd;font-weight:600;font-size:11.5px;letter-spacing:1px}
+
+  table.styled{width:100%;border-collapse:collapse;margin:20px 0;font-size:13.5px;border-radius:12px;overflow:hidden;box-shadow:0 4px 16px rgba(31,122,68,.07)}
+  table.styled thead{background:var(--brand)}
+  table.styled th{color:#fff;padding:11px 14px;text-align:left;font-weight:700;font-size:13px}
+  table.styled td{padding:10px 14px;border-bottom:1px solid var(--line);color:#57506b;vertical-align:top}
+  table.styled tbody tr:nth-child(even){background:var(--bg-soft)}
+  table.styled tbody tr:last-child td{border-bottom:none}
+
+  .level-card{border:1px solid var(--line);border-radius:16px;overflow:hidden;margin:22px 0;box-shadow:0 6px 22px rgba(31,122,68,.07)}
+  .level-card .lc-head{background:linear-gradient(100deg,#17283a,#8a3a16);color:#fff;padding:15px 22px;display:flex;align-items:center;gap:12px;flex-wrap:wrap}
+  .level-card .lc-head .n{font-size:12px;font-weight:800;background:rgba(255,255,255,.2);padding:3px 10px;border-radius:20px}
+  .level-card .lc-head h4{margin:0;color:#fff;font-size:16px}
+  .level-card .lc-head .go{margin-left:auto;font-size:11.5px;color:#ffd2b3}
+  .level-card .lc-body{padding:20px 24px;background:#fff}
+  .level-card .story{background:#f9fbfd;border-left:4px solid #93c5fd;border-radius:0 10px 10px 0;padding:13px 18px;margin:0 0 16px;font-size:14px;line-height:1.95;color:#3f5163}
+  .level-card .story b{color:#1d4ed8}
+  .btn-go{
+    display:inline-flex;align-items:center;gap:8px;background:linear-gradient(135deg,var(--brand),var(--brand-dark));
+    color:#fff;text-decoration:none;font-weight:800;font-size:13.5px;padding:10px 22px;border-radius:11px;
+    box-shadow:0 8px 20px rgba(255,107,53,.32);transition:.2s;
+  }
+  .btn-go:hover{transform:translateY(-2px);box-shadow:0 12px 26px rgba(255,107,53,.42)}
+
+  .pit{border:1px solid #f6dede;border-radius:14px;overflow:hidden;margin:16px 0;background:#fff}
+  .pit .pt{display:flex;gap:12px;padding:14px 18px;background:#fffafa;align-items:flex-start}
+  .pit .x{width:26px;height:26px;border-radius:9px;background:#fee;color:#dc2626;display:flex;align-items:center;justify-content:center;font-weight:800;flex-shrink:0;font-size:13px}
+  .pit .t{font-size:13.5px;line-height:1.9;color:#5c4a4a;flex:1}
+  .pit .t b{color:#b91c1c}
+  .pit .duck{display:flex;gap:12px;padding:13px 18px;background:#fff5f5;border-top:1px dashed #f3d0d0;align-items:flex-start}
+  .pit .duck img{width:48px;height:48px;object-fit:contain;flex-shrink:0;margin-top:2px}
+  .pit .duck .dt{font-size:13.5px;line-height:1.9;color:#7a3b3b}
+  .pit .duck .dt b{color:#b91c1c}
+  .pit .fix{padding:12px 18px;background:#f7f3ff;border-top:1px dashed #ded1fa;font-size:13.5px;color:#3a2a6b}
+  .pit .fix b{color:var(--primary-dark)}
+
+  .exam{border:1px solid #dfe7f5;border-radius:15px;margin:16px 0;overflow:hidden;background:#fff;box-shadow:0 4px 16px rgba(38,62,120,.06)}
+  .exam .eh{display:flex;align-items:center;gap:10px;padding:11px 18px;background:linear-gradient(100deg,#eef4ff,#f7faff);border-bottom:1px solid #e3ebf8;flex-wrap:wrap}
+  .exam .eh .src{font-size:11px;font-weight:800;color:#fff;background:#2563eb;padding:2.5px 10px;border-radius:20px}
+  .exam .eh .src.ori{background:#8b5cf6}
+  .exam .eh .tp{font-size:11.5px;color:#5b7ba8;font-weight:700}
+  .exam .eb{padding:16px 20px}
+  .exam .q{font-weight:700;font-size:14px;color:#38304b;line-height:1.9;margin-bottom:10px}
+  .exam .opt{font-size:13.5px;color:#6b6480;line-height:2.05;padding-left:6px}
+  .exam .opt i{font-style:normal;font-weight:800;color:var(--primary-dark);margin-right:7px}
+  .exam pre{margin:12px 0;background:#1b2a21;border-radius:10px;padding:14px 16px;overflow-x:auto;font-family:Consolas,monospace;font-size:13px;line-height:1.8;color:var(--code-tx)}
+  .exam details{margin-top:10px;border-top:1px dashed var(--line);padding-top:10px}
+  .exam summary{cursor:pointer;font-size:12.5px;font-weight:800;color:#2563eb;outline:none;user-select:none}
+  .exam details .ans{font-size:13.5px;color:#463d5c;line-height:1.95;margin-top:9px;background:var(--bg-soft);padding:13px 16px;border-radius:10px}
+  .exam details .ans b{color:var(--primary-dark)}
+  .exam details .ans .tagline{display:inline-block;font-size:11px;background:#e0f2fe;color:#0e7490;padding:1.5px 8px;border-radius:6px;font-weight:700;margin-right:6px}
+
+  .summary{margin:40px 0 20px;border-radius:18px;padding:26px 30px;background:linear-gradient(130deg,#fff8f3,#ffffff);border:1px solid #ffe0cf}
+  .summary h3{margin-top:0}
+  .summary ul{list-style:none;margin-top:10px}
+  .summary li{font-size:14px;line-height:2;color:#514a64;padding-left:24px;position:relative}
+  .summary li::before{content:"◆";position:absolute;left:0;color:var(--brand);font-size:11px;top:6px}
+
+  .pager{display:flex;gap:14px;margin-top:30px;flex-wrap:wrap}
+  .pager a{flex:1;min-width:200px;text-decoration:none;border:1px solid var(--line);border-radius:14px;padding:16px 20px;background:#fff;transition:.2s;display:block}
+  .pager a:hover{border-color:var(--brand);box-shadow:0 10px 26px rgba(255,107,53,.14);transform:translateY(-2px)}
+  .pager a .k{font-size:11px;color:var(--dim2);font-weight:700;letter-spacing:1px}
+  .pager a .v{font-size:14px;font-weight:800;color:var(--night);margin-top:5px}
+  .pager a.back{background:var(--brand-soft);border-color:transparent;text-align:center}
+  .pager a.back .v{color:var(--brand-dark)}
+
+  .cta{margin-top:26px;border-radius:20px;padding:30px 34px;color:#fff;position:relative;overflow:hidden;background:linear-gradient(120deg,#16202f,#2b3a52 46%,#a8431c 132%)}
+  .cta::after{content:"";position:absolute;right:-70px;bottom:-90px;width:280px;height:280px;border-radius:50%;background:radial-gradient(circle,rgba(255,140,80,.45),transparent 68%)}
+  .cta h3{color:#fff;margin:0 0 10px;position:relative;z-index:2}
+  .cta h3::before{background:var(--brand)}
+  .cta p{color:#d8e0ef;font-size:13.5px;margin:0 0 18px;position:relative;z-index:2;max-width:640px}
+  .cta .btn-go{position:relative;z-index:2}
+
+  @media(max-width:900px){
+    .sidebar-nav{transform:translateX(-100%)}
+    .sidebar-nav.active{transform:translateX(0)}
+    .nav-toggle{display:block}
+    .page{margin-left:0}
+    .hero{padding:70px 22px 34px}
+    .hero-top{flex-direction:column-reverse;text-align:center}
+    .hero-card{width:auto}
+    .container{padding:26px 20px 60px}
+    .goal-grid{grid-template-columns:1fr}
+  }
+
+  /* ---------- 图形化：积木卡（替代代码卡） ---------- */
+  .blk-card{background:#f8f6ff;border:1px solid #e6e0fb;border-radius:14px;
+    margin:18px 0;overflow:hidden;box-shadow:0 2px 10px rgba(109,40,217,.06)}
+  .blk-head{display:flex;align-items:center;gap:7px;padding:10px 14px;
+    background:#f1ecfe;border-bottom:1px solid #e6e0fb}
+  .blk-head .file{font-size:12.5px;font-weight:700;color:#5b4a86;margin-left:4px}
+  .blk-head .lang{margin-left:auto;font-size:11px;font-weight:800;color:#fff;
+    background:#8b5cf6;border-radius:20px;padding:3px 11px;letter-spacing:.5px}
+  .blk-body{padding:20px 18px;overflow-x:auto;
+    background:
+      radial-gradient(circle at 14px 14px,#ece6fb 1.6px,transparent 1.7px) 0 0/28px 28px,
+      #ffffff}
+  .blk{display:block;max-width:100%;height:auto;margin:0 auto}
+  .blk + .blk{margin-top:16px}
+  .blk-card .out{background:#f1ecfe;border-top:1px solid #e6e0fb;color:#5b4a86}
+  .blk-card .out b{color:#6d28d9}
+  /* 积木并排（不同角色 / 不同做法对照） */
+  .blk-row{display:flex;gap:16px;flex-wrap:wrap;justify-content:center;align-items:flex-start}
+  .blk-row > *{flex:1 1 240px;min-width:0}
+  .blk-row .blk{margin:0}
+  /* 积木旁的小标题 */
+  .blk-cap{font-size:12.5px;font-weight:800;color:#6d28d9;background:#f3efff;
+    border:1px solid #e6e0fb;border-radius:8px;padding:5px 12px;margin:14px 0 10px;
+    display:inline-block}
+</style>
+</head>
+<body>
+
+<button class="nav-toggle" onclick="document.querySelector('.sidebar-nav').classList.toggle('active')">&#9776;</button>
+
+<nav class="sidebar-nav">
+  <div class="sb-brand">
+    <a class="sb-logo" href="https://codecombat.cn/" target="_blank" rel="noopener" title="访问 CodeCombat 扣哒世界官网">
+      <img src="../assets/logo.png" alt="CodeCombat 扣哒世界">
+    </a>
+    <div><b>传声筒</b><span>彩虹集市 · 图形化二级 第 6 单元</span></div>
+  </div>
+  <div class="nav-title">本单元目录</div>
+
+  <a href="#s0" class="nav-section">0　单元导语与目标</a>
+  <a href="#s0-1" class="nav-sub">0.1 学习目标</a>
+  <a href="#s0-2" class="nav-sub">0.2 考纲对照</a>
+  <a href="#s1" class="nav-section">1　广播：一句话传到所有耳朵</a>
+  <a href="#s1-1" class="nav-sub">1.1 广播消息</a>
+  <a href="#s1-2" class="nav-sub">1.2 当接收到消息</a>
+  <a href="#s1-3" class="nav-sub">1.3 广播和事件有什么不一样</a>
+  <a href="#s2" class="nav-section">2　广播并等待</a>
+  <a href="#s2-1" class="nav-sub">2.1 两者的区别</a>
+  <a href="#s2-2" class="nav-sub">2.2 什么时候用"并等待"</a>
+  <a href="#s3" class="nav-section">3　变量：一个贴了标签的盒子</a>
+  <a href="#s3-1" class="nav-sub">3.1 新建变量</a>
+  <a href="#s3-2" class="nav-sub">3.2 设为、增加与显示</a>
+  <a href="#s4" class="nav-section">4　变量的作用域</a>
+  <a href="#s4-1" class="nav-sub">4.1 适用于所有角色</a>
+  <a href="#s4-2" class="nav-sub">4.2 仅适用于当前角色</a>
+  <a href="#s5" class="nav-section">5　代码实战</a>
+  <a href="#s6" class="nav-section">6　常见陷阱</a>
+  <a href="#s7" class="nav-section">7　题目练习</a>
+  <a href="#s8" class="nav-section">8　本单元小结</a>
+
+  <a href="../index.html" target="_top" class="sb-back">返回考纲之路</a>
+</nav>
+
+<div class="page">
+
+<div class="hero">
+  <div class="hero-top">
+    <div class="hero-txt">
+      <div class="crumb">扣哒考级 · GESP 图形化 二级 · 第 6 单元　|　彩虹集市 RAINBOW BAZAAR</div>
+      <h1>传声筒
+        <span class="sub">广播与变量</span>
+      </h1>
+      <div class="en">Broadcast and Variables</div>
+      <div class="tags">        <span class="tag hot">考纲 · 广播</span>
+        <span class="tag">考纲 · 变量</span>
+        <span class="tag">作用域</span>
+        <span class="tag">广播并等待</span></div>
+    </div>
+    <div class="hero-card">
+      <img class="ava" src="../assets/avatars/anya.webp" alt="安雅" onerror="this.style.background='#24344a';this.src='../assets/heroes/anya.webp'">
+      <div class="nm">安雅</div>
+      <div class="ti">红发队长 · 你的旅伴</div>
+    </div>
+  </div>
+</div>
+
+<div class="container">
+
+
+<div class="lead">
+  集市中间立着一只发光的喇叭，旁边挂着一块大黑板。<br>
+  摊主先举起喇叭喊了一声——<b>好几个摊位同时亮起了灯</b>；
+  然后他转身在黑板上的数字后面添了一笔——<b>那是今天的销售额</b>。<br>
+  "一个负责喊，一个负责记。"他说，"<b>让一群人一起做事，靠的就是这两样。</b>"
+</div>
+
+<div class="cast anya">
+  <img class="ava" src="../assets/avatars/anya.webp" alt="安雅" onerror="this.style.display='none'">
+  <div class="bubble">
+    <div class="who">安雅 · 红发队长</div>
+    广播和变量，一个管"什么时候做什么"，一个管"现在是多少"。<br>
+    考试最爱考三句：<b>消息名要一致、"并等待"会等、公共数据用"所有角色"</b>。
+    把这三句记牢，这一单元的题就稳了。
+  </div>
+</div>
+
+<!-- ============ 0 ============ -->
+<div class="section-header" id="s0">
+  <h2>0　单元导语与目标</h2>
+  <div class="en-title">Before We Start</div>
+</div>
+
+<h3 id="s0-1">0.1 学习目标</h3>
+
+<ul>
+  <li>理解<b>广播</b>：一个角色喊一声，别的角色都能听到；</li>
+  <li>掌握三块广播积木：<b>广播消息</b>、<b>广播并等待</b>、<b>当接收到消息</b>；</li>
+  <li>分清"广播"与"事件"的差别；</li>
+  <li>会新建<b>变量</b>，会用<b>设为</b>、<b>增加</b>、<b>显示 / 隐藏</b>；</li>
+  <li>理解变量的两种<b>作用域</b>：适用于所有角色 / 仅适用于当前角色。</li>
+</ul>
+<h3 id="s0-2">0.2 考纲对照</h3>
+
+<table class="styled">
+  <thead><tr><th>考纲知识块</th><th>考纲要求</th><th>本单元小节</th></tr></thead>
+  <tbody><tr><td>5 广播</td><td>广播的概念、广播消息、广播并等待、角色 / 背景之间的交互</td><td>1.1～1.3、2.1～2.2</td></tr><tr><td>6 变量</td><td>变量的新建、删除、修改、初始化、显示 / 隐藏、变量的作用域</td><td>3.1～3.2、4.1～4.2</td></tr></tbody>
+</table>
+
+<p>广播和变量是二级的两件"通信工具"：<b>广播传的是"什么时候做什么"，
+变量传的是"现在是多少"</b>。</p>
+
+<!-- ============ 1 ============ -->
+<div class="section-header" id="s1">
+  <h2>1　广播：一句话传到所有耳朵</h2>
+  <div class="en-title">Broadcasting</div>
+</div>
+
+<h3 id="s1-1">1.1 广播消息</h3>
+
+<p>集市上有个吆喝的猫，举着一只发光喇叭。它一喊，<b>好几个摊位上的人同时抬头</b>——
+这就是广播的力量。</p>
+<figure class="pic">
+  <img src="../assets/illustrations/scratch-L2-06-01_broadcast_megaphone.webp" alt="吆喝的传声筒"
+       onerror="this.closest('.pic').classList.add('missing')">
+  <div class="ph">
+    <div class="fn">assets/illustrations/scratch-L2-06-01_broadcast_megaphone.webp</div>
+    <div class="ds">【配图位】集市吆喝的猫举着发光喇叭喊话，声波传向几个摊位，摊位上的角色同时抬头。（提示词见《GESP配图清单与AI绘图提示词》第四节 2-6）</div>
+  </div>
+  <figcaption>图 1：一声吆喝，所有摊位同时收到</figcaption>
+</figure>
+
+<div class="blk-card">
+  <div class="blk-head">
+    <span class="dot d1"></span><span class="dot d2"></span><span class="dot d3"></span>
+    <span class="file">重点示例：喊一声，所有人行动</span>
+    <span class="lang">图形化积木</span>
+  </div>
+  <div class="blk-body">
+<svg class="blk" viewBox="0 0 240.8 190" width="240.8" height="190" role="img" aria-label="积木脚本"><g font-family="'PingFang SC','Microsoft YaHei','Noto Sans SC',sans-serif"><g transform="translate(3,3)"><path d="M0,12 C32.96,0 131.84,0 164.8,12 V43 A5,5 0 0 1 159.8,48 H28 v4 h-12 v-4 H5 A5,5 0 0 1 0,43 Z" fill="#FFBF00" stroke="#d19c00" stroke-width="1.2"/><text x="15" y="34.8" font-size="13.4" fill="#fff">当 </text><rect x="42.6" y="18.5" width="52.8" height="23" rx="5" fill="#CC9900"/><text x="64" y="34.4" font-size="12.5" fill="#fff" text-anchor="middle">绿旗</text><path d="M84.4 27.5 l4 5 l4 -5 z" fill="#fff" opacity=".85"/><text x="102.4" y="34.8" font-size="13.4" fill="#fff"> 被点击</text></g><g transform="translate(3,55)"><path d="M0,5 A5,5 0 0 1 5,0 H16 v4 h12 v-4 H132 A5,5 0 0 1 137,5 V31 A5,5 0 0 1 132,36 H28 v4 h-12 v-4 H5 A5,5 0 0 1 0,31 Z" fill="#FFAB19" stroke="#d18c14" stroke-width="1.2"/><text x="15" y="22.8" font-size="13.4" fill="#fff">广播 </text><rect x="56" y="6.5" width="66.2" height="23" rx="5" fill="#CF8B17"/><text x="84.1" y="22.4" font-size="12.5" fill="#fff" text-anchor="middle">开市啦</text><path d="M111.2 15.5 l4 5 l4 -5 z" fill="#fff" opacity=".85"/></g><g transform="translate(3,95)"><path d="M0,12 C32.8,0 131.2,0 164,12 V43 A5,5 0 0 1 159,48 H28 v4 h-12 v-4 H5 A5,5 0 0 1 0,43 Z" fill="#FFAB19" stroke="#d18c14" stroke-width="1.2"/><text x="15" y="34.8" font-size="13.4" fill="#fff">当接收到 </text><rect x="82.8" y="18.5" width="66.2" height="23" rx="5" fill="#CF8B17"/><text x="110.9" y="34.4" font-size="12.5" fill="#fff" text-anchor="middle">开市啦</text><path d="M138 27.5 l4 5 l4 -5 z" fill="#fff" opacity=".85"/></g><g transform="translate(3,147)"><path d="M0,5 A5,5 0 0 1 5,0 H16 v4 h12 v-4 H229 A5,5 0 0 1 234,5 V31 A5,5 0 0 1 229,36 H28 v4 h-12 v-4 H5 A5,5 0 0 1 0,31 Z" fill="#9966FF" stroke="#7d53d1" stroke-width="1.2"/><text x="15" y="22.8" font-size="13.4" fill="#fff">说 </text><rect x="42.6" y="6.5" width="98.4" height="23" rx="5" fill="#fff"/><text x="91.8" y="22.4" font-size="12.5" fill="#575e75" text-anchor="middle">开门做生意！</text><text x="148" y="22.8" font-size="13.4" fill="#fff"> </text><rect x="162.2" y="6.5" width="30" height="23" rx="11.5" fill="#fff"/><text x="177.2" y="22.4" font-size="12.5" fill="#575e75" text-anchor="middle">2</text><text x="199.2" y="22.8" font-size="13.4" fill="#fff"> 秒</text></g></g></svg>
+  </div>
+  <div class="out"><b>读法</b>　上面那块负责"喊"，下面那块负责"听到之后做什么"——两块可以在不同的角色身上</div>
+</div>
+
+<div class="box tip">
+  <span class="lb">打个比方：</span>广播就像学校里的广播喇叭——<b>一句话喊出去，所有听得见的人都行动</b>，喊话的人不需要知道到底有哪些人在听。
+</div>
+
+
+<h3 id="s1-2">1.2 当接收到消息</h3>
+
+<figure class="figure">
+<svg class="diagram" viewBox="0 0 820 194" role="img" aria-label="广播的三块积木">
+<text x="24" y="32" font-size="14" fill="#4c1d95" text-anchor="start" font-weight="bold">广播的三块积木</text><rect x="24" y="56" width="246.667" height="104" rx="12" fill="#f3efff" stroke="#e6e0fb" stroke-width="1.8"/><text x="147.333" y="104" font-size="13.5" fill="#6d28d9" text-anchor="middle" font-weight="bold">广播 消息1</text><text x="147.333" y="126" font-size="11.6" fill="#7c7794" text-anchor="middle">喊一声，立刻往下走</text><rect x="286.667" y="56" width="246.667" height="104" rx="12" fill="#faf8ff" stroke="#e6e0fb" stroke-width="1.8"/><text x="410" y="104" font-size="13.5" fill="#6d28d9" text-anchor="middle" font-weight="bold">广播 消息1 并等待</text><text x="410" y="126" font-size="11.6" fill="#7c7794" text-anchor="middle">喊一声，等大家做完再往下走</text><rect x="549.333" y="56" width="246.667" height="104" rx="12" fill="#f3efff" stroke="#e6e0fb" stroke-width="1.8"/><text x="672.667" y="104" font-size="13.5" fill="#6d28d9" text-anchor="middle" font-weight="bold">当接收到 消息1</text><text x="672.667" y="126" font-size="11.6" fill="#7c7794" text-anchor="middle">听到之后做什么（帽子块）</text><text x="24" y="186" font-size="11.8" fill="#8d9d94" text-anchor="start">消息的名字可以自己起，收发双方要用同一个名字才能对上</text>
+</svg>
+  <div class="caption">图 2（SVG）：广播的三块积木</div>
+</figure>
+
+<h3 id="s1-3">1.3 广播和事件有什么不一样</h3>
+
+<figure class="figure">
+<svg class="diagram" viewBox="0 0 820 240" role="img" aria-label="广播 vs 事件">
+<text x="24" y="32" font-size="14" fill="#4c1d95" text-anchor="start" font-weight="bold">广播 vs 事件</text><rect x="24" y="52" width="376" height="160" rx="12" fill="#f5f3ff" stroke="#e6e0fb" stroke-width="1.8"/><text x="212" y="82" font-size="13.5" fill="#6d28d9" text-anchor="middle" font-weight="bold">事件（如"当绿旗被点击"）</text><circle cx="40" cy="106" r="3.4" fill="#6d28d9"/><text x="52" y="110" font-size="12.2" fill="#4c1d95" text-anchor="start">由"外部动作"触发：点绿旗、按键、点角色</text><circle cx="40" cy="136" r="3.4" fill="#6d28d9"/><text x="52" y="140" font-size="12.2" fill="#4c1d95" text-anchor="start">是程序的起点</text><circle cx="40" cy="166" r="3.4" fill="#6d28d9"/><text x="52" y="170" font-size="12.2" fill="#4c1d95" text-anchor="start">一个作品里有几个事件，就几条启动线</text><rect x="420" y="52" width="376" height="160" rx="12" fill="#fff7ed" stroke="#e6e0fb" stroke-width="1.8"/><text x="608" y="82" font-size="13.5" fill="#b45309" text-anchor="middle" font-weight="bold">广播（如"当接收到消息1"）</text><circle cx="436" cy="106" r="3.4" fill="#b45309"/><text x="448" y="110" font-size="12.2" fill="#4c1d95" text-anchor="start">由<b>另一个角色</b>触发</text><circle cx="436" cy="136" r="3.4" fill="#b45309"/><text x="448" y="140" font-size="12.2" fill="#4c1d95" text-anchor="start">角色之间互相通气的桥梁</text><circle cx="436" cy="166" r="3.4" fill="#b45309"/><text x="448" y="170" font-size="12.2" fill="#4c1d95" text-anchor="start">一条广播可以同时叫醒好几个角色</text><text x="24" y="226" font-size="11.8" fill="#8d9d94" text-anchor="start">事件是"外面的人叫我"，广播是"里面的同伴叫我"</text>
+</svg>
+  <div class="caption">图 3（SVG）：广播与事件的区别</div>
+</figure>
+
+<div class="box info">
+  <span class="lb">一句话记住：</span><b>广播是角色与角色之间说话的工具。</b>背景要换、角色要动、多个角色要同时做一件事——都用广播来协调。
+</div>
+
+<!-- ============ 2 ============ -->
+<div class="section-header" id="s2">
+  <h2>2　广播并等待</h2>
+  <div class="en-title">Broadcast and Wait</div>
+</div>
+
+<h3 id="s2-1">2.1 两者的区别</h3>
+
+<figure class="figure">
+<svg class="diagram" viewBox="0 0 820 240" role="img" aria-label="广播 vs 广播并等待">
+<text x="24" y="32" font-size="14" fill="#4c1d95" text-anchor="start" font-weight="bold">广播 vs 广播并等待</text><rect x="24" y="52" width="376" height="160" rx="12" fill="#f5f3ff" stroke="#e6e0fb" stroke-width="1.8"/><text x="212" y="82" font-size="13.5" fill="#6d28d9" text-anchor="middle" font-weight="bold">广播 消息1</text><circle cx="40" cy="106" r="3.4" fill="#6d28d9"/><text x="52" y="110" font-size="12.2" fill="#4c1d95" text-anchor="start">喊完立刻往下走</text><circle cx="40" cy="136" r="3.4" fill="#6d28d9"/><text x="52" y="140" font-size="12.2" fill="#4c1d95" text-anchor="start">不等别人做完</text><circle cx="40" cy="166" r="3.4" fill="#6d28d9"/><text x="52" y="170" font-size="12.2" fill="#4c1d95" text-anchor="start">适合"通知一声就走"</text><rect x="420" y="52" width="376" height="160" rx="12" fill="#fff7ed" stroke="#e6e0fb" stroke-width="1.8"/><text x="608" y="82" font-size="13.5" fill="#b45309" text-anchor="middle" font-weight="bold">广播 消息1 并等待</text><circle cx="436" cy="106" r="3.4" fill="#b45309"/><text x="448" y="110" font-size="12.2" fill="#4c1d95" text-anchor="start">喊完先停下等</text><circle cx="436" cy="136" r="3.4" fill="#b45309"/><text x="448" y="140" font-size="12.2" fill="#4c1d95" text-anchor="start">等所有收到消息的脚本都做完，才继续往下</text><circle cx="436" cy="166" r="3.4" fill="#b45309"/><text x="448" y="170" font-size="12.2" fill="#4c1d95" text-anchor="start">适合"等大家准备好再开始"</text><text x="24" y="226" font-size="11.8" fill="#8d9d94" text-anchor="start">差别只有三个字——"并等待"，但执行顺序完全不同</text>
+</svg>
+  <div class="caption">图 4（SVG）：普通广播与"并等待"</div>
+</figure>
+
+<h3 id="s2-2">2.2 什么时候用"并等待"</h3>
+
+<div class="blk-card">
+  <div class="blk-head">
+    <span class="dot d1"></span><span class="dot d2"></span><span class="dot d3"></span>
+    <span class="file">重点示例：等大家准备好再开幕</span>
+    <span class="lang">图形化积木</span>
+  </div>
+  <div class="blk-body">
+<svg class="blk" viewBox="0 0 227.4 178" width="227.4" height="178" role="img" aria-label="积木脚本"><g font-family="'PingFang SC','Microsoft YaHei','Noto Sans SC',sans-serif"><g transform="translate(3,3)"><path d="M0,12 C32.96,0 131.84,0 164.8,12 V43 A5,5 0 0 1 159.8,48 H28 v4 h-12 v-4 H5 A5,5 0 0 1 0,43 Z" fill="#FFBF00" stroke="#d19c00" stroke-width="1.2"/><text x="15" y="34.8" font-size="13.4" fill="#fff">当 </text><rect x="42.6" y="18.5" width="52.8" height="23" rx="5" fill="#CC9900"/><text x="64" y="34.4" font-size="12.5" fill="#fff" text-anchor="middle">绿旗</text><path d="M84.4 27.5 l4 5 l4 -5 z" fill="#fff" opacity=".85"/><text x="102.4" y="34.8" font-size="13.4" fill="#fff"> 被点击</text></g><g transform="translate(3,55)"><path d="M0,5 A5,5 0 0 1 5,0 H16 v4 h12 v-4 H133 A5,5 0 0 1 138,5 V31 A5,5 0 0 1 133,36 H28 v4 h-12 v-4 H5 A5,5 0 0 1 0,31 Z" fill="#FFAB19" stroke="#d18c14" stroke-width="1.2"/><text x="15" y="22.8" font-size="13.4" fill="#fff">广播 </text><rect x="56" y="6.5" width="52.8" height="23" rx="5" fill="#CF8B17"/><text x="77.4" y="22.4" font-size="12.5" fill="#fff" text-anchor="middle">准备</text><path d="M97.8 15.5 l4 5 l4 -5 z" fill="#fff" opacity=".85"/><text x="115.8" y="22.8" font-size="13.4" fill="#fff"> </text></g><g transform="translate(3,95)"><path d="M0,5 A5,5 0 0 1 5,0 H16 v4 h12 v-4 H173 A5,5 0 0 1 178,5 V31 A5,5 0 0 1 173,36 H28 v4 h-12 v-4 H5 A5,5 0 0 1 0,31 Z" fill="#FFAB19" stroke="#d18c14" stroke-width="1.2"/><text x="15" y="22.8" font-size="13.4" fill="#fff">广播 </text><rect x="56" y="6.5" width="52.8" height="23" rx="5" fill="#CF8B17"/><text x="77.4" y="22.4" font-size="12.5" fill="#fff" text-anchor="middle">开始</text><path d="M97.8 15.5 l4 5 l4 -5 z" fill="#fff" opacity=".85"/><text x="115.8" y="22.8" font-size="13.4" fill="#fff"> 并等待</text></g><g transform="translate(3,135)"><path d="M0,5 A5,5 0 0 1 5,0 H16 v4 h12 v-4 H216 A5,5 0 0 1 221,5 V31 A5,5 0 0 1 216,36 H28 v4 h-12 v-4 H5 A5,5 0 0 1 0,31 Z" fill="#9966FF" stroke="#7d53d1" stroke-width="1.2"/><text x="15" y="22.8" font-size="13.4" fill="#fff">说 </text><rect x="42.6" y="6.5" width="85" height="23" rx="5" fill="#fff"/><text x="85.1" y="22.4" font-size="12.5" fill="#575e75" text-anchor="middle">市场开张！</text><text x="134.6" y="22.8" font-size="13.4" fill="#fff"> </text><rect x="148.8" y="6.5" width="30" height="23" rx="11.5" fill="#fff"/><text x="163.8" y="22.4" font-size="12.5" fill="#575e75" text-anchor="middle">2</text><text x="185.8" y="22.8" font-size="13.4" fill="#fff"> 秒</text></g></g></svg>
+  </div>
+  <div class="out"><b>要点</b>　"广播准备"喊完马上继续；"广播开始并等待"会<b>先等所有收到"开始"的角色做完</b>，再执行下面那句"说市场开张"</div>
+</div>
+
+<div class="box tip">
+  <span class="lb">打个比方：</span><b>广播</b>像发一条群消息——发完你就去干别的了；<br><b>广播并等待</b>像开班会时老师点名——<b>叫完所有人回答完，才继续下一步</b>。想保证"事情按顺序发生"，就用"并等待"。
+</div>
+
+<!-- ============ 3 ============ -->
+<div class="section-header" id="s3">
+  <h2>3　变量：一个贴了标签的盒子</h2>
+  <div class="en-title">Variables</div>
+</div>
+
+<h3 id="s3-1">3.1 新建变量</h3>
+
+<p>集市上挂着一块大黑板，上面写着"今日销售额"。摊主说：
+"<b>这个名字贴上去，数字就有人记着了。</b>"</p>
+<figure class="pic">
+  <img src="../assets/illustrations/scratch-L2-06-02_variable_scoreboard.webp" alt="集市记数黑板"
+       onerror="this.closest('.pic').classList.add('missing')">
+  <div class="ph">
+    <div class="fn">assets/illustrations/scratch-L2-06-02_variable_scoreboard.webp</div>
+    <div class="ds">【配图位】集市里一块巨大的木制记数黑板记录着总销售额，一只猫正用粉笔改写数字，其他摊主看着黑板。（提示词见《GESP配图清单与AI绘图提示词》第四节 2-6）</div>
+  </div>
+  <figcaption>图 5：记数黑板——变量就是贴了标签的盒子</figcaption>
+</figure>
+
+<figure class="figure">
+<svg class="diagram" viewBox="0 0 820 158" role="img" aria-label="新建一个变量的三步">
+<text x="24" y="32" font-size="14" fill="#4c1d95" text-anchor="start" font-weight="bold">新建一个变量的三步</text><rect x="24" y="56" width="240" height="68" rx="10" fill="#f3efff" stroke="#e6e0fb" stroke-width="1.8"/><text x="144" y="95" font-size="12.4" fill="#6d28d9" text-anchor="middle" font-weight="bold">在"变量"分类里点"建立一个变量"</text><line x1="269" y1="90" x2="281" y2="90" stroke="#8b5cf6" stroke-width="2.2"/><polygon points="281,90 273,85 273,95" fill="#8b5cf6"/><rect x="290" y="56" width="240" height="68" rx="10" fill="#f3efff" stroke="#e6e0fb" stroke-width="1.8"/><text x="410" y="95" font-size="12.4" fill="#6d28d9" text-anchor="middle" font-weight="bold">给它起个名字（如"分数"）</text><line x1="535" y1="90" x2="547" y2="90" stroke="#8b5cf6" stroke-width="2.2"/><polygon points="547,90 539,85 539,95" fill="#8b5cf6"/><rect x="556" y="56" width="240" height="68" rx="10" fill="#f3efff" stroke="#e6e0fb" stroke-width="1.8"/><text x="676" y="95" font-size="12.4" fill="#6d28d9" text-anchor="middle" font-weight="bold">选择"适用于所有角色 / 仅适用于当前角色"</text><text x="24" y="150" font-size="11.8" fill="#8d9d94" text-anchor="start">名字起得好，看脚本时一眼就知道这个变量在数什么</text>
+</svg>
+  <div class="caption">图 6（SVG）：新建变量的三步</div>
+</figure>
+
+<h3 id="s3-2">3.2 设为、增加与显示</h3>
+
+<div class="blk-card">
+  <div class="blk-head">
+    <span class="dot d1"></span><span class="dot d2"></span><span class="dot d3"></span>
+    <span class="file">重点示例：变量最常用的四块积木</span>
+    <span class="lang">图形化积木</span>
+  </div>
+  <div class="blk-body">
+<svg class="blk" viewBox="0 0 201.6 166" width="201.6" height="166" role="img" aria-label="积木脚本"><g font-family="'PingFang SC','Microsoft YaHei','Noto Sans SC',sans-serif"><g transform="translate(3,3)"><path d="M0,5 A5,5 0 0 1 5,0 H16 v4 h12 v-4 H190 A5,5 0 0 1 195,5 V31 A5,5 0 0 1 190,36 H28 v4 h-12 v-4 H5 A5,5 0 0 1 0,31 Z" fill="#FF8C1A" stroke="#d17215" stroke-width="1.2"/><text x="15" y="22.8" font-size="13.4" fill="#fff">将 </text><rect x="42.6" y="6.5" width="52.8" height="23" rx="5" fill="#DB6E00"/><text x="64" y="22.4" font-size="12.5" fill="#fff" text-anchor="middle">分数</text><path d="M84.4 15.5 l4 5 l4 -5 z" fill="#fff" opacity=".85"/><text x="102.4" y="22.8" font-size="13.4" fill="#fff"> 设为 </text><rect x="150.6" y="6.5" width="30" height="23" rx="11.5" fill="#fff"/><text x="165.6" y="22.4" font-size="12.5" fill="#575e75" text-anchor="middle">0</text></g><g transform="translate(3,43)"><path d="M0,5 A5,5 0 0 1 5,0 H16 v4 h12 v-4 H190 A5,5 0 0 1 195,5 V31 A5,5 0 0 1 190,36 H28 v4 h-12 v-4 H5 A5,5 0 0 1 0,31 Z" fill="#FF8C1A" stroke="#d17215" stroke-width="1.2"/><text x="15" y="22.8" font-size="13.4" fill="#fff">将 </text><rect x="42.6" y="6.5" width="52.8" height="23" rx="5" fill="#DB6E00"/><text x="64" y="22.4" font-size="12.5" fill="#fff" text-anchor="middle">分数</text><path d="M84.4 15.5 l4 5 l4 -5 z" fill="#fff" opacity=".85"/><text x="102.4" y="22.8" font-size="13.4" fill="#fff"> 增加 </text><rect x="150.6" y="6.5" width="30" height="23" rx="11.5" fill="#fff"/><text x="165.6" y="22.4" font-size="12.5" fill="#575e75" text-anchor="middle">1</text></g><g transform="translate(3,83)"><path d="M0,5 A5,5 0 0 1 5,0 H16 v4 h12 v-4 H145 A5,5 0 0 1 150,5 V31 A5,5 0 0 1 145,36 H28 v4 h-12 v-4 H5 A5,5 0 0 1 0,31 Z" fill="#FF8C1A" stroke="#d17215" stroke-width="1.2"/><text x="15" y="22.8" font-size="13.4" fill="#fff">显示变量 </text><rect x="82.8" y="6.5" width="52.8" height="23" rx="5" fill="#DB6E00"/><text x="104.2" y="22.4" font-size="12.5" fill="#fff" text-anchor="middle">分数</text><path d="M124.6 15.5 l4 5 l4 -5 z" fill="#fff" opacity=".85"/></g><g transform="translate(3,123)"><path d="M0,5 A5,5 0 0 1 5,0 H16 v4 h12 v-4 H145 A5,5 0 0 1 150,5 V31 A5,5 0 0 1 145,36 H28 v4 h-12 v-4 H5 A5,5 0 0 1 0,31 Z" fill="#FF8C1A" stroke="#d17215" stroke-width="1.2"/><text x="15" y="22.8" font-size="13.4" fill="#fff">隐藏变量 </text><rect x="82.8" y="6.5" width="52.8" height="23" rx="5" fill="#DB6E00"/><text x="104.2" y="22.4" font-size="12.5" fill="#fff" text-anchor="middle">分数</text><path d="M124.6 15.5 l4 5 l4 -5 z" fill="#fff" opacity=".85"/></g></g></svg>
+  </div>
+  <div class="out"><b>要点</b>　"设为"是直接换成某个值（常用来初始化）；"增加"是在原来的基础上加一点</div>
+</div>
+
+<div class="box info">
+  <span class="lb">初始化为什么很重要？</span>"将分数设为 0"这一步叫<b>初始化</b>。如果不做，上次玩完留下的旧分数会一直留在盒子里，新一局一开始就是个大数字。
+</div>
+
+<!-- ============ 4 ============ -->
+<div class="section-header" id="s4">
+  <h2>4　变量的作用域</h2>
+  <div class="en-title">Variable Scope</div>
+</div>
+
+<h3 id="s4-1">4.1 适用于所有角色</h3>
+
+<figure class="figure">
+<svg class="diagram" viewBox="0 0 820 240" role="img" aria-label="两种作用域怎么选">
+<text x="24" y="32" font-size="14" fill="#4c1d95" text-anchor="start" font-weight="bold">两种作用域怎么选</text><rect x="24" y="52" width="376" height="160" rx="12" fill="#f5f3ff" stroke="#e6e0fb" stroke-width="1.8"/><text x="212" y="82" font-size="13.5" fill="#6d28d9" text-anchor="middle" font-weight="bold">适用于所有角色（全局）</text><circle cx="40" cy="106" r="3.4" fill="#6d28d9"/><text x="52" y="110" font-size="12.2" fill="#4c1d95" text-anchor="start">所有角色都能读、能改</text><circle cx="40" cy="136" r="3.4" fill="#6d28d9"/><text x="52" y="140" font-size="12.2" fill="#4c1d95" text-anchor="start">适合记"总分""剩余时间"这类公共数据</text><rect x="420" y="52" width="376" height="160" rx="12" fill="#fff7ed" stroke="#e6e0fb" stroke-width="1.8"/><text x="608" y="82" font-size="13.5" fill="#b45309" text-anchor="middle" font-weight="bold">仅适用于当前角色（局部）</text><circle cx="436" cy="106" r="3.4" fill="#b45309"/><text x="448" y="110" font-size="12.2" fill="#4c1d95" text-anchor="start">只有这个角色自己能用</text><circle cx="436" cy="136" r="3.4" fill="#b45309"/><text x="448" y="140" font-size="12.2" fill="#4c1d95" text-anchor="start">别的角色看不见这个变量</text><circle cx="436" cy="166" r="3.4" fill="#b45309"/><text x="448" y="170" font-size="12.2" fill="#4c1d95" text-anchor="start">适合记"我自己走到第几步"</text><text x="24" y="226" font-size="11.8" fill="#8d9d94" text-anchor="start">作用域在新建变量时就定下来了；选错了，别的角色就找不到它</text>
+</svg>
+  <div class="caption">图 7（SVG）：两种作用域</div>
+</figure>
+
+<h3 id="s4-2">4.2 选错作用域会怎样</h3>
+
+<div class="box info">
+  <span class="lb">一个典型场景：</span>游戏里要记"总分"，两个角色都会加分。<br>· 选<b>适用于所有角色</b>——两个角色加的是同一个分数，总分正常累加；<br>· 选<b>仅适用于当前角色</b>——两个角色各记各的，分数永远只显示其中一个的。<br><b>要共享的数据，一定要选"适用于所有角色"。</b>
+</div>
+
+<figure class="figure">
+<svg class="diagram" viewBox="0 0 820 202" role="img" aria-label="变量的四个常用操作">
+<text x="24" y="32" font-size="14" fill="#4c1d95" text-anchor="start" font-weight="bold">变量的四个常用操作</text><rect x="24" y="56" width="772" height="28" rx="8" fill="#f3efff"/><text x="40" y="75" font-size="12.6" fill="#6d28d9" text-anchor="start" font-weight="bold">设为</text><text x="192" y="75" font-size="12.2" fill="#4c1d95" text-anchor="start">把盒子里的东西换成新的</text><rect x="24" y="90" width="772" height="28" rx="8" fill="#faf8ff"/><text x="40" y="109" font-size="12.6" fill="#6d28d9" text-anchor="start" font-weight="bold">增加</text><text x="192" y="109" font-size="12.2" fill="#4c1d95" text-anchor="start">在原来的基础上再加一点</text><rect x="24" y="124" width="772" height="28" rx="8" fill="#f3efff"/><text x="40" y="143" font-size="12.6" fill="#6d28d9" text-anchor="start" font-weight="bold">显示 / 隐藏</text><text x="192" y="143" font-size="12.2" fill="#4c1d95" text-anchor="start">要不要把它显示在舞台上</text><rect x="24" y="158" width="772" height="28" rx="8" fill="#faf8ff"/><text x="40" y="177" font-size="12.6" fill="#6d28d9" text-anchor="start" font-weight="bold">删除</text><text x="192" y="177" font-size="12.2" fill="#4c1d95" text-anchor="start">不再需要这个变量时把它删掉</text>
+</svg>
+  <div class="caption">图 8（SVG）：变量的四个常用操作</div>
+</figure>
+
+<!-- ============ 5 ============ -->
+<div class="section-header" id="s5">
+  <h2>5　代码实战</h2>
+  <div class="en-title">Level Practice</div>
+</div>
+
+<p>这一关的核心是"记住一个数"：<b>走到第几步了、还剩多少路要走</b>——
+这种"要记东西"的活儿，正是变量干的。</p>
+<div class="level-card">
+  <div class="lc-head"><span class="n">关卡 159</span><h4>变量（Variables）</h4><span class="go">进入关卡 →</span></div>
+  <div class="lc-body">
+    <div class="story">
+      <b>故事：</b>
+集市的长廊要走上好几段，每一段的长度都不一样。你没法一次算清总共要走多少，
+只能<b>一边走一边记</b>：已经走了几步、还剩几段没走。
+
+    </div>
+    <p><strong>思路：</strong>先把"步数"这个变量建起来、设成 0；每走一步就"将步数增加 1"。
+这样一来，"我走了多少"这件事就被记在盒子里了，随时能取出来看。
+</p>
+<div class="blk-card">
+  <div class="blk-head">
+    <span class="dot d1"></span><span class="dot d2"></span><span class="dot d3"></span>
+    <span class="file">重点示例：边走边记</span>
+    <span class="lang">图形化积木</span>
+  </div>
+  <div class="blk-body">
+<svg class="blk" viewBox="0 0 254.4 364" width="254.4" height="364" role="img" aria-label="积木脚本"><g font-family="'PingFang SC','Microsoft YaHei','Noto Sans SC',sans-serif"><g transform="translate(3,3)"><path d="M0,12 C32.96,0 131.84,0 164.8,12 V43 A5,5 0 0 1 159.8,48 H28 v4 h-12 v-4 H5 A5,5 0 0 1 0,43 Z" fill="#FFBF00" stroke="#d19c00" stroke-width="1.2"/><text x="15" y="34.8" font-size="13.4" fill="#fff">当 </text><rect x="42.6" y="18.5" width="52.8" height="23" rx="5" fill="#CC9900"/><text x="64" y="34.4" font-size="12.5" fill="#fff" text-anchor="middle">绿旗</text><path d="M84.4 27.5 l4 5 l4 -5 z" fill="#fff" opacity=".85"/><text x="102.4" y="34.8" font-size="13.4" fill="#fff"> 被点击</text></g><g transform="translate(3,55)"><path d="M0,5 A5,5 0 0 1 5,0 H16 v4 h12 v-4 H190 A5,5 0 0 1 195,5 V31 A5,5 0 0 1 190,36 H28 v4 h-12 v-4 H5 A5,5 0 0 1 0,31 Z" fill="#FF8C1A" stroke="#d17215" stroke-width="1.2"/><text x="15" y="22.8" font-size="13.4" fill="#fff">将 </text><rect x="42.6" y="6.5" width="52.8" height="23" rx="5" fill="#DB6E00"/><text x="64" y="22.4" font-size="12.5" fill="#fff" text-anchor="middle">步数</text><path d="M84.4 15.5 l4 5 l4 -5 z" fill="#fff" opacity=".85"/><text x="102.4" y="22.8" font-size="13.4" fill="#fff"> 设为 </text><rect x="150.6" y="6.5" width="30" height="23" rx="11.5" fill="#fff"/><text x="165.6" y="22.4" font-size="12.5" fill="#575e75" text-anchor="middle">0</text></g><g transform="translate(3,95)"><path d="M0,5 A5,5 0 0 1 5,0 H16 v4 h12 v-4 H145 A5,5 0 0 1 150,5 V31 A5,5 0 0 1 145,36 H28 v4 h-12 v-4 H5 A5,5 0 0 1 0,31 Z" fill="#FF8C1A" stroke="#d17215" stroke-width="1.2"/><text x="15" y="22.8" font-size="13.4" fill="#fff">显示变量 </text><rect x="82.8" y="6.5" width="52.8" height="23" rx="5" fill="#DB6E00"/><text x="104.2" y="22.4" font-size="12.5" fill="#fff" text-anchor="middle">步数</text><path d="M124.6 15.5 l4 5 l4 -5 z" fill="#fff" opacity=".85"/></g><g transform="translate(3,135)"><path d="M0,5 A5,5 0 0 1 5,0 H16 v4 h12 v-4 H216 A5,5 0 0 1 221,5 V123 A5,5 0 0 1 216,128 H28 v4 h-12 v-4 H5 A5,5 0 0 1 0,123 V115 H16 V36 H0 Z" fill="#FFAB19" stroke="#d18c14" stroke-width="1.2"/><text x="15" y="22.8" font-size="13.4" fill="#fff">重复执行 </text><rect x="82.8" y="6.5" width="30" height="23" rx="11.5" fill="#fff"/><text x="97.8" y="22.4" font-size="12.5" fill="#575e75" text-anchor="middle">5</text><text x="119.8" y="22.8" font-size="13.4" fill="#fff"> 次</text><g transform="translate(20,38)"><path d="M0,5 A5,5 0 0 1 5,0 H16 v4 h12 v-4 H123 A5,5 0 0 1 128,5 V31 A5,5 0 0 1 123,36 H28 v4 h-12 v-4 H5 A5,5 0 0 1 0,31 Z" fill="#4C97FF" stroke="#3e7bd1" stroke-width="1.2"/><text x="15" y="22.8" font-size="13.4" fill="#fff">移动 </text><rect x="56" y="6.5" width="30" height="23" rx="11.5" fill="#fff"/><text x="71" y="22.4" font-size="12.5" fill="#575e75" text-anchor="middle">1</text><text x="93" y="22.8" font-size="13.4" fill="#fff"> 步</text></g><g transform="translate(20,76)"><path d="M0,5 A5,5 0 0 1 5,0 H16 v4 h12 v-4 H190 A5,5 0 0 1 195,5 V31 A5,5 0 0 1 190,36 H28 v4 h-12 v-4 H5 A5,5 0 0 1 0,31 Z" fill="#FF8C1A" stroke="#d17215" stroke-width="1.2"/><text x="15" y="22.8" font-size="13.4" fill="#fff">将 </text><rect x="42.6" y="6.5" width="52.8" height="23" rx="5" fill="#DB6E00"/><text x="64" y="22.4" font-size="12.5" fill="#fff" text-anchor="middle">步数</text><path d="M84.4 15.5 l4 5 l4 -5 z" fill="#fff" opacity=".85"/><text x="102.4" y="22.8" font-size="13.4" fill="#fff"> 增加 </text><rect x="150.6" y="6.5" width="30" height="23" rx="11.5" fill="#fff"/><text x="165.6" y="22.4" font-size="12.5" fill="#575e75" text-anchor="middle">1</text></g></g><g transform="translate(3,267)"><path d="M0,5 A5,5 0 0 1 5,0 H16 v4 h12 v-4 H243 A5,5 0 0 1 248,5 V85 A5,5 0 0 1 243,90 H28 v4 h-12 v-4 H5 A5,5 0 0 1 0,85 V77 H16 V36 H0 Z" fill="#FFAB19" stroke="#d18c14" stroke-width="1.2"/><text x="15" y="22.8" font-size="13.4" fill="#fff">如果 </text><polygon points="67.5,6.5 180.9,6.5 187.225,18 180.9,29.5 67.5,29.5 61.175,18" fill="#fff" stroke="#FFAB19" stroke-width="1.4"/><rect x="67" y="6.5" width="48.8" height="23" rx="11.5" fill="#fff" stroke="#cfd6e4" stroke-width="1"/><text x="91.4" y="22.4" font-size="12.5" fill="#575e75" text-anchor="middle">步数</text><text x="122.8" y="22.8" font-size="13.4" fill="#575e75"> = </text><rect x="151.4" y="6.5" width="30" height="23" rx="11.5" fill="#fff" stroke="#cfd6e4" stroke-width="1"/><text x="166.4" y="22.4" font-size="12.5" fill="#575e75" text-anchor="middle">5</text><text x="199.4" y="22.8" font-size="13.4" fill="#fff"> 那么</text><g transform="translate(20,38)"><path d="M0,5 A5,5 0 0 1 5,0 H16 v4 h12 v-4 H203 A5,5 0 0 1 208,5 V31 A5,5 0 0 1 203,36 H28 v4 h-12 v-4 H5 A5,5 0 0 1 0,31 Z" fill="#9966FF" stroke="#7d53d1" stroke-width="1.2"/><text x="15" y="22.8" font-size="13.4" fill="#fff">说 </text><rect x="42.6" y="6.5" width="71.6" height="23" rx="5" fill="#fff"/><text x="78.4" y="22.4" font-size="12.5" fill="#575e75" text-anchor="middle">走完啦！</text><text x="121.2" y="22.8" font-size="13.4" fill="#fff"> </text><rect x="135.4" y="6.5" width="30" height="23" rx="11.5" fill="#fff"/><text x="150.4" y="22.4" font-size="12.5" fill="#575e75" text-anchor="middle">2</text><text x="172.4" y="22.8" font-size="13.4" fill="#fff"> 秒</text></g></g></g></svg>
+  </div>
+  <div class="out"><b>读法</b>　开头初始化 → 每走一步加 1 → 走完后用判断检查"到 5 了吗"</div>
+</div>
+
+    <div class="box tip">
+      <span class="lb">自己试一试：</span>把"将步数设为 0"这一块<b>删掉</b>再跑一遍——你会发现数字从上次的结果继续往上加。<strong>这就是"初始化"为什么重要。</strong>
+    </div>
+    <p>注意最后那个"如果……那么"：'
+    <b>变量一旦被记住，就能当作条件来用</b>——</p>
+<div class="box info">
+  <span class="lb">变量最常见的三个用途：</span>① <b>计分</b>（每做对一次加 1）；<br>② <b>计数</b>（走了几步、剩几条命）；<br>③ <b>当条件</b>（分数到 10 就通关）。
+</div>
+    <a class="btn-go" href="https://codecombat.cn/" target="_blank" rel="noopener">去扣哒世界闯这一关 →</a>
+  </div>
+</div>
+
+<!-- ============ 6 ============ -->
+<div class="section-header" id="s6">
+  <h2>6　常见陷阱</h2>
+  <div class="en-title">Common Traps</div>
+</div>
+
+<div class="box warn">
+  <span class="lb">陷阱 1：</span><b>广播的名字两边写得不一样。</b>喊的是"开始"，听的是"开始啦"——那谁也不会响应。<br><strong>正确做法：</strong>收发双方的消息名必须<b>一字不差</b>。
+</div>
+
+<div class="box warn">
+  <span class="lb">陷阱 2：</span><b>把"广播"和"广播并等待"当成一回事。</b>前者喊完就走，后者要等大家做完。<br><strong>怎么选：</strong>需要"按顺序发生"就用"并等待"。
+</div>
+
+<div class="box warn">
+  <span class="lb">陷阱 3：</span><b>忘了初始化变量。</b>上一局的旧值会留下来，新一局一开始数字就不对。<br><strong>正确做法：</strong>在"当绿旗被点击"的开头，先"将……设为 0"。
+</div>
+
+<div class="box warn">
+  <span class="lb">陷阱 4：</span><b>要共享的数据建成了"仅适用于当前角色"。</b>别的角色找不到它，分数就会各算各的。<br><strong>正确做法：</strong>公共数据一律选<b>适用于所有角色</b>。
+</div>
+
+<!-- ============ 7 ============ -->
+<div class="section-header" id="s7">
+  <h2>7　题目练习</h2>
+  <div class="en-title">Practice</div>
+</div>
+
+<p>前 2 题改编自 2026 年 9 月 · 图形化编程 二级 第 7 题、第 8 题，其余为原创练习题。</p>
+<div class="exam">
+  <div class="eh"><span class="src">改编自 2026 年 9 月 · 图形化编程 二 级 · 第 7 题</span><span class="tp">单选题</span></div>
+  <div class="eb">
+    <div class="q">关于舞台背景能否发送和接收广播，下列说法<b>正确</b>的是（　　）。</div>
+    <div class="opt"><i>A.</i>舞台背景只能接收广播，不能发送广播<br>
+      <i>B.</i>舞台背景只能发送广播，不能接收广播<br>
+      <i>C.</i>舞台背景既能发送广播，也能接收广播，只不过要在"背景"的脚本区里编程<br>
+      <i>D.</i>舞台背景既不能发送也不能接收广播，广播只限角色之间</div>
+    <details><summary>查看答案与详解</summary>
+      <div class="ans"><b>答案：C</b>。背景在图形化编程里就是一个"大角色"——点一下背景区里的它，脚本区就会切换到它的脚本，那里同样能放"广播""当接收到"这些积木。<br><b>A、B 错：</b>只限制了一半；<br><b>D 错：</b>广播并不限于角色之间，角色和背景照样能互相通气，这正是二级考纲里说的"<b>角色 / 背景之间的交互</b>"。<br><span class="tagline">对应小节</span>1.1、1.3 广播与背景。</div>
+    </details>
+  </div>
+</div>
+<div class="exam">
+  <div class="eh"><span class="src">改编自 2026 年 9 月 · 图形化编程 二 级 · 第 8 题</span><span class="tp">单选题</span></div>
+  <div class="eb">
+    <div class="q">默认小猫角色，某个变量 x 的初始值是 0。脚本里执行"将 x 增加 1"，然后再执行"将 x 增加 1"，最后执行一次"将 x 设为 1"。<br>执行完这段脚本后，变量 x 的值是（　　）。</div>
+    <div class="opt"><i>A.</i>0<br>
+      <i>B.</i>1<br>
+      <i>C.</i>2<br>
+      <i>D.</i>3</div>
+    <details><summary>查看答案与详解</summary>
+      <div class="ans"><b>答案：B</b>。一步一步算：<br>0 → 增加 1 → 1 → 增加 1 → 2 → <b>设为 1</b> → 1。<br><b>关键在最后一句：</b>"<b>设为</b>"是把盒子里的东西直接换掉，不看原来是多少；而"<b>增加</b>"是在原来基础上再加。<br><b>A、D 错：</b>把两种操作混着算了；<br><b>C 错：</b>漏了最后那句"设为 1"。<br><span class="tagline">对应小节</span>3.2 设为、增加与显示。</div>
+    </details>
+  </div>
+</div>
+<div class="exam">
+  <div class="eh"><span class="src ori">原创练习题</span><span class="tp">单选题</span></div>
+  <div class="eb">
+    <div class="q">集市的摊主要换背景，同时让三个角色的动作一起开始。下面哪种做法最合适（　　）。</div>
+    <div class="opt">
+      <i>A.</i>在每个角色里都写一遍"当绿旗被点击"<br>
+      <i>B.</i>用一块"广播"消息，让三个角色都用"当接收到"来响应<br>
+      <i>C.</i>在每个角色的脚本里写上另外两个角色的名字<br>
+      <i>D.</i>把三个角色合成一个角色
+    </div>
+    <details><summary>查看答案与详解</summary>
+      <div class="ans"><b>答案：B</b>。广播正是"一个角色喊、多个角色同时响应"的工具，这是它最典型的用法。<br><b>A 错：</b>虽然也能同时开始，但没法协调"谁先谁后"，也没法让一个动作触发另一串动作；<br><b>C 错：</b>脚本里没法直接"叫别的角色做事"；<br><b>D 错：</b>三个角色各有各的造型和脚本，合并不现实。<br><span class="tagline">对应小节</span>1.1～1.3 广播。</div>
+    </details>
+  </div>
+</div>
+
+<div class="exam">
+  <div class="eh"><span class="src ori">原创练习题</span><span class="tp">单选题</span></div>
+  <div class="eb">
+    <div class="q">"广播 消息1"和"广播 消息1 并等待"的区别是（　　）。</div>
+    <div class="opt">
+      <i>A.</i>前者只有自己听得到，后者所有人都听得到<br>
+      <i>B.</i>后者会等所有收到消息的脚本执行完，再继续往下<br>
+      <i>C.</i>后者不会真的发出消息<br>
+      <i>D.</i>两者完全一样
+    </div>
+    <details><summary>查看答案与详解</summary>
+      <div class="ans"><b>答案：B</b>。差别就在"并等待"三个字——<b>等大家做完再往下走</b>。<br><b>A 错：</b>两者都是发给所有角色听的；<br><b>C 错：</b>它照样发消息，只是会等；<br><b>D 错：</b>执行顺序不同，效果就不同。<br><span class="tagline">对应小节</span>2.1 两者的区别。</div>
+    </details>
+  </div>
+</div>
+
+<div class="exam">
+  <div class="eh"><span class="src ori">原创练习题</span><span class="tp">单选题</span></div>
+  <div class="eb">
+    <div class="q">小摊主要记录"今天一共卖了几件商品"，每卖出一件就加 1。下面哪种做法最合适（　　）。</div>
+    <div class="opt">
+      <i>A.</i>新建一个变量"件数"，先设为 0，每卖出一件就"将件数增加 1"<br>
+      <i>B.</i>用"重复执行 10 次"数一数<br>
+      <i>C.</i>让角色说一句话<br>
+      <i>D.</i>换一个背景
+    </div>
+    <details><summary>查看答案与详解</summary>
+      <div class="ans"><b>答案：A</b>。"要记住一个会变化的数字"——这正是变量的本职。先<b>初始化</b>为 0，再用"增加 1"累加。<br><b>B 错：</b>重复次数是固定的，数不出实际卖出多少；<br><b>C、D 错：</b>说话和换背景都不会"记住"数字。<br><span class="tagline">对应小节</span>3.2 设为、增加与显示。</div>
+    </details>
+  </div>
+</div>
+
+<div class="exam">
+  <div class="eh"><span class="src ori">原创练习题</span><span class="tp">多选题</span></div>
+  <div class="eb">
+    <div class="q">关于变量的作用域，下面说法哪些是<b>正确</b>的（　　）。</div>
+    <div class="opt">
+      <i>A.</i>"适用于所有角色"的变量，所有角色都能读、能改<br>
+      <i>B.</i>"仅适用于当前角色"的变量，别的角色看不到<br>
+      <i>C.</i>作用域在变量新建时就确定，之后不能改<br>
+      <i>D.</i>记总分这种公共数据，应该选"适用于所有角色"
+    </div>
+    <details><summary>查看答案与详解</summary>
+      <div class="ans"><b>答案：A、B、D</b>。这三条正是作用域的核心规则。<br><b>C 错：</b>其实可以通过"重命名 / 删除后重建"来调整，但更重要的是——<b>作用域确实是新建时就得选对</b>，选错了常常要回头改脚本，所以别在这里马虎。<br><span class="tagline">对应小节</span>4.1、4.2 变量的作用域。</div>
+    </details>
+  </div>
+</div>
+
+<div class="exam">
+  <div class="eh"><span class="src ori">原创练习题</span><span class="tp">判断题</span></div>
+  <div class="eb">
+    <div class="q">在图形化编程中，如果角色的脚本里没有写"将分数设为 0"，那么分数会一直保留上一次运行结束时的值。（　　）</div>
+    <details><summary>查看答案与详解</summary>
+      <div class="ans"><b>答案：正确（√）</b>。变量就像一个盒子，<b>里面的东西不会自己消失</b>——程序停了，值还在。<br>所以新一局开始时，一定要先"将分数设为 0"（初始化），否则数字会从上次的结果接着往上加。<br><span class="tagline">对应小节</span>3.2 设为、增加与显示。</div>
+    </details>
+  </div>
+</div>
+
+<!-- ============ 8 ============ -->
+<div class="section-header" id="s8">
+  <h2>8　本单元小结</h2>
+  <div class="en-title">Unit Summary</div>
+</div>
+
+<div class="cast teacher">
+  <img class="ava" src="../assets/avatars/hushbaum.webp" alt="贺舒曼" onerror="this.style.display='none'">
+  <div class="bubble">
+    <div class="who">贺舒曼 · 镜中先知</div>
+    这一单元学的是"通信"：<b>广播让角色互相通知，变量让数字被记住</b>。<br>
+    记住三件事：<b>消息名两边要一致</b>、<b>"并等待"会等</b>、
+    <b>公共数据要用"适用于所有角色"</b>。二级卷子上的广播和变量题，基本都围着这三条出。
+  </div>
+</div>
+
+<h3 id="s8-1">你在传声筒边学到了什么</h3>
+
+<ul>
+  <li><b>广播三块</b>：广播消息、广播并等待、当接收到消息；</li>
+  <li><b>广播 vs 事件</b>：事件是"外面叫我"，广播是"同伴叫我"；</li>
+  <li><b>并等待</b>：喊完先等大家做完，再继续往下；</li>
+  <li><b>变量四操作</b>：新建、设为、增加、显示 / 隐藏（外加删除）；</li>
+  <li><b>作用域</b>：要共享的数据必须选"适用于所有角色"；初始化别忘。</li>
+</ul>
+<h3 id="s8-2">下一站：算盘小铺</h3>
+
+<p>最后一块拼图是"算"：<b>加减乘除、比较大小、与或非</b>。
+下一单元我们把集市算盘铺开，把这些运算积木一块块算清楚。</p>
+
+
+<div class="pager">
+  <a href="scratch-2-05.html"><div class="k">← 上一单元</div><div class="v">彩绘师 · 画笔</div></a>
+  <a href="../index.html" target="_top" class="back"><div class="k">返回</div><div class="v">考纲之路 · 总目录</div></a>
+  <a href="scratch-2-07.html"><div class="k">下一单元 →</div><div class="v">算盘小铺 · 数据运算与逻辑判断</div></a>
+</div>
+<div class="cta">
+  <h3>下一站：算盘小铺</h3>
+  <p>最后一块拼图是"算"：加减乘除、比较大小、与或非。下一单元我们把集市算盘铺开，把这些运算积木一块块算清楚。</p>
+  <a class="btn-go" href="https://codecombat.cn/" target="_blank" rel="noopener">加入扣哒世界，把这条考纲之路走一遍 →</a>
+</div>
+
+</div><!-- /container -->
+</div><!-- /page -->
+
+<script>
+if (location.search.indexOf('expand') >= 0) {
+  document.querySelectorAll('details').forEach(d => d.open = true);
+}
+document.querySelectorAll('.sidebar-nav a').forEach(a => {
+  a.addEventListener('click', () => {
+    if (window.innerWidth <= 900) document.querySelector('.sidebar-nav').classList.remove('active');
+  });
+});
+</script>
+</body>
+</html>

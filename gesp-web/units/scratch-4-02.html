@@ -1,0 +1,796 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="copyright" content="CodeCombat Inc. codecombat.cn">
+<title>多轴机械臂 · 多参函数 | 扣哒考级 · GESP 图形化四级</title>
+<style>
+  :root{
+    --primary:#8b5cf6; --primary-light:#a78bfa; --primary-lighter:#f3efff; --primary-dark:#6d28d9;
+    --brand:#ff6b35; --brand-dark:#e8541f; --brand-soft:#fff3ec;
+    --night:#131c2b; --night-2:#1e2a3a;
+    --gold:#f5b301;
+    --text:#2a2438; --dim:#7c7794; --dim2:#a29db8;
+    --bg:#ffffff; --bg-soft:#faf8ff; --line:#e9e4f8;
+    --sidebar:274px;
+    --code-bg:#211a33; --code-tx:#d6cfe6;
+    --code-kw:#c678dd; --code-st:#98c379; --code-nu:#d19a66; --code-cm:#7d7392; --code-fn:#61afef;
+  }
+  *{margin:0;padding:0;box-sizing:border-box}
+  html{scroll-behavior:smooth}
+  body{
+    font-family:"PingFang SC","Microsoft YaHei","Segoe UI",-apple-system,sans-serif;
+    line-height:1.9;color:var(--text);background:var(--bg);font-size:15.5px;
+  }
+
+  .sidebar-nav{
+    position:fixed;top:0;left:0;width:var(--sidebar);height:100vh;overflow-y:auto;
+    background:linear-gradient(180deg,#101a26,#182636);padding:14px 0 40px;z-index:100;
+    border-right:3px solid var(--brand);transition:transform .3s ease;
+  }
+  .sidebar-nav::-webkit-scrollbar{width:5px}
+  .sidebar-nav::-webkit-scrollbar-thumb{background:var(--brand);border-radius:4px}
+  .sb-brand{display:flex;align-items:center;gap:10px;padding:10px 13px 12px;border-bottom:1px solid #26384c;margin-bottom:8px}
+  .sidebar-nav a.sb-logo{display:flex;align-items:center;justify-content:center;flex-shrink:0;padding:0;border-left:none;transition:.2s}
+  .sb-logo:hover{transform:scale(1.08)}
+  .sb-logo img{height:34px;width:34px;display:block;object-fit:contain;border-radius:8px}
+  .sb-brand b{color:#f2f6fa;font-size:14px;letter-spacing:.5px;display:block;line-height:1.4}
+  .sb-brand span{color:#7f95ab;font-size:11.5px;display:block;line-height:1.4}
+  .nav-title{color:#ffb894;font-size:12px;font-weight:800;padding:10px 18px 6px;letter-spacing:1.2px}
+  .sidebar-nav a{
+    display:block;color:#c3d0dc;text-decoration:none;padding:6px 18px;font-size:12.5px;
+    line-height:1.55;border-left:3px solid transparent;transition:.18s;
+  }
+  .sidebar-nav a:hover{color:#fff;background:rgba(255,107,53,.16);border-left-color:var(--brand)}
+  .sidebar-nav a.nav-section{color:#ffb894;font-weight:700;font-size:13px;margin-top:11px;padding-top:10px;border-top:1px solid #26384c}
+  .sidebar-nav a.nav-section:first-of-type{border-top:none;margin-top:0;padding-top:6px}
+  .sidebar-nav a.nav-sub{padding-left:30px;color:#93a8bc;font-size:12px}
+  .sidebar-nav a.nav-sub:hover{color:#fff}
+  .sb-back{margin:16px 14px 0;display:block;text-align:center;padding:9px;border-radius:9px;background:#22344a;color:#a9c0d6 !important;font-size:12px;font-weight:700;border-left:none !important}
+  .sb-back:hover{background:var(--brand) !important;color:#fff !important}
+  .nav-toggle{display:none;position:fixed;top:14px;left:14px;z-index:120;background:var(--brand);color:#fff;border:none;border-radius:9px;padding:9px 13px;font-size:15px;cursor:pointer;box-shadow:0 4px 14px rgba(0,0,0,.25)}
+
+  .page{margin-left:var(--sidebar)}
+
+  .hero{
+    position:relative;overflow:hidden;padding:44px 52px;color:#fff;
+    background:linear-gradient(125deg,#0e1724 0%,#1b2b3f 46%,#8a3a16 132%);
+  }
+  .hero::after{content:"";position:absolute;right:-90px;top:-110px;width:400px;height:400px;border-radius:50%;background:radial-gradient(circle,rgba(245,179,1,.30),transparent 68%)}
+  .hero-top{display:flex;gap:36px;align-items:center;position:relative;z-index:2}
+  .hero-txt{flex:1;min-width:0}
+  .hero .crumb{font-size:11.5px;color:#ffb894;letter-spacing:1.5px;font-weight:700;margin-bottom:14px}
+  .hero h1{font-size:31px;font-weight:800;line-height:1.3;letter-spacing:.6px;margin-bottom:8px}
+  .hero h1 .sub{display:block;font-size:18px;font-weight:700;color:#ffd2b3;margin-top:6px;letter-spacing:.3px}
+  .hero .en{font-size:13px;color:#9db4c8;font-style:italic;margin-bottom:18px}
+  .hero .tags{display:flex;flex-wrap:wrap;gap:8px}
+  .tag{font-size:11.5px;padding:4px 12px;border-radius:20px;background:rgba(255,255,255,.12);border:1px solid rgba(255,255,255,.22);color:#e8f0f6;font-weight:600}
+  .tag.hot{background:rgba(255,107,53,.92);border-color:transparent;color:#fff}
+  .hero-card{flex-shrink:0;width:200px;text-align:center}
+  .hero-card .ava{
+    width:148px;height:148px;border-radius:50%;object-fit:cover;object-position:top center;
+    border:4px solid rgba(255,180,140,.6);box-shadow:0 14px 34px rgba(0,0,0,.45);background:#24344a;
+  }
+  .hero-card .nm{font-size:15px;font-weight:800;color:#fff;margin-top:10px}
+  .hero-card .ti{font-size:11.5px;color:#ffb894;margin-top:2px}
+
+  .container{max-width:1080px;margin:0 auto;padding:38px 52px 70px}
+
+  .lead{
+    font-size:15.5px;line-height:2.05;color:#443c58;background:linear-gradient(120deg,#fff8f3,#f7fbf8);
+    border-left:5px solid var(--brand);border-radius:0 14px 14px 0;padding:22px 26px;margin-bottom:32px;
+  }
+  .lead b{color:var(--brand-dark)}
+
+  .cast{display:flex;gap:16px;align-items:flex-start;border-radius:16px;padding:18px 22px;margin:24px 0}
+  .cast .ava{width:72px;height:72px;border-radius:50%;object-fit:cover;object-position:top center;flex-shrink:0;background:#e8eef5}
+  .cast .bubble{position:relative;font-size:14px;line-height:1.95;padding-top:2px;flex:1}
+  .cast .who{font-size:12px;font-weight:800;margin-bottom:5px;letter-spacing:.5px}
+  .cast.anya{background:var(--brand-soft);border:1px solid #ffdcc9}
+  .cast.anya .who{color:var(--brand-dark)}
+  .cast.anya .bubble{color:#5c4636}
+  .cast.duck{background:#fff5f5;border:1px solid #fbd5d5}
+  .cast.duck .who{color:#b91c1c}
+  .cast.duck .bubble{color:#5c4141}
+  .cast.teacher{background:linear-gradient(120deg,#f4f7fb,#ffffff);border:1px solid #dbe4f0}
+  .cast.teacher .who{color:#1e293b}
+  .cast.teacher .bubble{color:#3c4a5a}
+  .cast.hero{background:#f7f3ff;border:1px solid #ded1fa}
+  .cast.hero .who{color:#6d28d9}
+  .cast.hero .bubble{color:#463d5c}
+
+  .goal-grid{display:grid;grid-template-columns:1fr 1fr;gap:16px;margin-bottom:36px}
+  .goal{border:1px solid var(--line);border-radius:15px;padding:19px 21px;background:#fff;box-shadow:0 4px 16px rgba(31,122,68,.05)}
+  .goal h4{font-size:14px;font-weight:800;margin-bottom:11px;display:flex;align-items:center;gap:8px;color:var(--primary-dark)}
+  .goal h4 .ic{width:22px;height:22px;border-radius:7px;background:var(--primary-lighter);display:flex;align-items:center;justify-content:center;font-size:12px}
+  .goal ul{list-style:none}
+  .goal li{font-size:13.5px;color:#6b6480;line-height:1.9;padding-left:18px;position:relative}
+  .goal li::before{content:"▸";position:absolute;left:0;color:var(--primary);font-weight:800}
+  .goal.syllabus li::before{content:"✓"}
+
+  .section-header{margin:52px 0 24px;padding-bottom:12px;border-bottom:3px solid var(--brand);display:flex;align-items:baseline;gap:14px;flex-wrap:wrap}
+  .section-header h2{font-size:22px;font-weight:800;color:var(--night);letter-spacing:.4px}
+  .section-header .en-title{font-size:12px;color:var(--dim2);font-style:italic}
+  h3{font-size:17.5px;font-weight:800;margin:34px 0 14px;color:var(--night);display:flex;align-items:center;gap:10px}
+  h3::before{content:"";width:5px;height:17px;border-radius:3px;background:var(--brand);flex-shrink:0}
+  h4{font-size:15px;font-weight:800;margin:24px 0 10px;color:#3c2f63}
+  p{margin:12px 0;color:#463d5c;line-height:2}
+  strong{color:var(--primary-dark)}
+  code.inline{background:var(--primary-lighter);color:var(--primary-dark);padding:2px 7px;border-radius:6px;font-family:"SFMono-Regular",Consolas,Menlo,monospace;font-size:.9em;font-weight:600}
+
+  .figure{margin:24px 0;text-align:center}
+  .figure svg.diagram{max-width:100%;height:auto;background:#fff;border:1px solid var(--line);border-radius:14px;padding:10px}
+  .figure .caption{font-size:12.5px;color:var(--dim2);margin-top:9px}
+
+  .pic{margin:26px 0;text-align:center}
+  .pic img{max-width:100%;border-radius:16px;box-shadow:0 10px 28px rgba(30,60,45,.15);display:block;margin:0 auto}
+  .pic figcaption{font-size:12.5px;color:var(--dim2);margin-top:9px}
+  .pic .ph{display:none}
+  .pic.missing img{display:none}
+  .pic.missing .ph{
+    display:flex;flex-direction:column;align-items:center;justify-content:center;gap:9px;
+    border:2px dashed #c9d9e8;border-radius:16px;background:linear-gradient(135deg,#f8fbfe,#eef6ff);
+    padding:40px 26px;color:#7a8fa8;
+  }
+  .pic.missing .ph .fn{font-family:Consolas,monospace;font-size:12.5px;color:#2563eb;font-weight:700;word-break:break-all}
+  .pic.missing .ph .ds{font-size:12.5px;line-height:1.8;max-width:560px}
+
+  .box{border-radius:13px;padding:16px 20px;margin:20px 0;font-size:14px;line-height:1.95}
+  .box .lb{font-weight:800;margin-right:6px}
+  .info{background:#eef6ff;border-left:5px solid #3b82f6;color:#274768}
+  .info .lb{color:#1d4ed8}
+  .tip{background:#fff9ec;border-left:5px solid #f59e0b;color:#6b4e13}
+  .tip .lb{color:#b45309}
+  .remember{background:var(--primary-lighter);border-left:5px solid var(--primary);color:#3a2a6b}
+  .remember .lb{color:var(--primary-dark)}
+  .warn{background:#fef2f2;border-left:5px solid #ef4444;color:#7f2b2b}
+  .warn .lb{color:#b91c1c}
+
+  .code-card{margin:20px 0;border-radius:14px;overflow:hidden;box-shadow:0 10px 28px rgba(20,40,28,.20)}
+  .code-head{display:flex;align-items:center;gap:9px;background:#2c2438;padding:9px 14px}
+  .code-head .dot{width:10px;height:10px;border-radius:50%}
+  .code-head .d1{background:#ff5f57}.code-head .d2{background:#febc2e}.code-head .d3{background:#28c840}
+  .code-head .file{color:#a09ab4;font-size:11.5px;font-family:Consolas,monospace;margin-left:6px}
+  .code-head .lang{margin-left:auto;font-size:10.5px;font-weight:800;color:#150f21;background:#a78bfa;padding:2px 9px;border-radius:6px;letter-spacing:.4px}
+  .code-card pre{background:var(--code-bg);padding:18px 20px;overflow-x:auto;margin:0;font-family:"SFMono-Regular",Consolas,"Courier New",monospace;font-size:13.5px;line-height:1.85}
+  .code-card pre::-webkit-scrollbar{height:8px}
+  .code-card pre::-webkit-scrollbar-thumb{background:#433a5e;border-radius:4px}
+  .code-card code{color:var(--code-tx);white-space:pre}
+  .kw{color:var(--code-kw);font-weight:600}
+  .st{color:var(--code-st)}
+  .nu{color:var(--code-nu)}
+  .cm{color:var(--code-cm);font-style:italic}
+  .fn{color:var(--code-fn)}
+  .out{background:#1d1729;color:#c4b5fd;font-family:Consolas,monospace;font-size:13px;padding:12px 20px;border-top:1px solid #352c48}
+  .out b{color:#c9d6cd;font-weight:600;font-size:11.5px;letter-spacing:1px}
+
+  table.styled{width:100%;border-collapse:collapse;margin:20px 0;font-size:13.5px;border-radius:12px;overflow:hidden;box-shadow:0 4px 16px rgba(31,122,68,.07)}
+  table.styled thead{background:var(--brand)}
+  table.styled th{color:#fff;padding:11px 14px;text-align:left;font-weight:700;font-size:13px}
+  table.styled td{padding:10px 14px;border-bottom:1px solid var(--line);color:#57506b;vertical-align:top}
+  table.styled tbody tr:nth-child(even){background:var(--bg-soft)}
+  table.styled tbody tr:last-child td{border-bottom:none}
+
+  .level-card{border:1px solid var(--line);border-radius:16px;overflow:hidden;margin:22px 0;box-shadow:0 6px 22px rgba(31,122,68,.07)}
+  .level-card .lc-head{background:linear-gradient(100deg,#17283a,#8a3a16);color:#fff;padding:15px 22px;display:flex;align-items:center;gap:12px;flex-wrap:wrap}
+  .level-card .lc-head .n{font-size:12px;font-weight:800;background:rgba(255,255,255,.2);padding:3px 10px;border-radius:20px}
+  .level-card .lc-head h4{margin:0;color:#fff;font-size:16px}
+  .level-card .lc-head .go{margin-left:auto;font-size:11.5px;color:#ffd2b3}
+  .level-card .lc-body{padding:20px 24px;background:#fff}
+  .level-card .story{background:#f9fbfd;border-left:4px solid #93c5fd;border-radius:0 10px 10px 0;padding:13px 18px;margin:0 0 16px;font-size:14px;line-height:1.95;color:#3f5163}
+  .level-card .story b{color:#1d4ed8}
+  .btn-go{
+    display:inline-flex;align-items:center;gap:8px;background:linear-gradient(135deg,var(--brand),var(--brand-dark));
+    color:#fff;text-decoration:none;font-weight:800;font-size:13.5px;padding:10px 22px;border-radius:11px;
+    box-shadow:0 8px 20px rgba(255,107,53,.32);transition:.2s;
+  }
+  .btn-go:hover{transform:translateY(-2px);box-shadow:0 12px 26px rgba(255,107,53,.42)}
+
+  .pit{border:1px solid #f6dede;border-radius:14px;overflow:hidden;margin:16px 0;background:#fff}
+  .pit .pt{display:flex;gap:12px;padding:14px 18px;background:#fffafa;align-items:flex-start}
+  .pit .x{width:26px;height:26px;border-radius:9px;background:#fee;color:#dc2626;display:flex;align-items:center;justify-content:center;font-weight:800;flex-shrink:0;font-size:13px}
+  .pit .t{font-size:13.5px;line-height:1.9;color:#5c4a4a;flex:1}
+  .pit .t b{color:#b91c1c}
+  .pit .duck{display:flex;gap:12px;padding:13px 18px;background:#fff5f5;border-top:1px dashed #f3d0d0;align-items:flex-start}
+  .pit .duck img{width:48px;height:48px;object-fit:contain;flex-shrink:0;margin-top:2px}
+  .pit .duck .dt{font-size:13.5px;line-height:1.9;color:#7a3b3b}
+  .pit .duck .dt b{color:#b91c1c}
+  .pit .fix{padding:12px 18px;background:#f7f3ff;border-top:1px dashed #ded1fa;font-size:13.5px;color:#3a2a6b}
+  .pit .fix b{color:var(--primary-dark)}
+
+  .exam{border:1px solid #dfe7f5;border-radius:15px;margin:16px 0;overflow:hidden;background:#fff;box-shadow:0 4px 16px rgba(38,62,120,.06)}
+  .exam .eh{display:flex;align-items:center;gap:10px;padding:11px 18px;background:linear-gradient(100deg,#eef4ff,#f7faff);border-bottom:1px solid #e3ebf8;flex-wrap:wrap}
+  .exam .eh .src{font-size:11px;font-weight:800;color:#fff;background:#2563eb;padding:2.5px 10px;border-radius:20px}
+  .exam .eh .src.ori{background:#8b5cf6}
+  .exam .eh .tp{font-size:11.5px;color:#5b7ba8;font-weight:700}
+  .exam .eb{padding:16px 20px}
+  .exam .q{font-weight:700;font-size:14px;color:#38304b;line-height:1.9;margin-bottom:10px}
+  .exam .opt{font-size:13.5px;color:#6b6480;line-height:2.05;padding-left:6px}
+  .exam .opt i{font-style:normal;font-weight:800;color:var(--primary-dark);margin-right:7px}
+  .exam pre{margin:12px 0;background:#1b2a21;border-radius:10px;padding:14px 16px;overflow-x:auto;font-family:Consolas,monospace;font-size:13px;line-height:1.8;color:var(--code-tx)}
+  .exam details{margin-top:10px;border-top:1px dashed var(--line);padding-top:10px}
+  .exam summary{cursor:pointer;font-size:12.5px;font-weight:800;color:#2563eb;outline:none;user-select:none}
+  .exam details .ans{font-size:13.5px;color:#463d5c;line-height:1.95;margin-top:9px;background:var(--bg-soft);padding:13px 16px;border-radius:10px}
+  .exam details .ans b{color:var(--primary-dark)}
+  .exam details .ans .tagline{display:inline-block;font-size:11px;background:#e0f2fe;color:#0e7490;padding:1.5px 8px;border-radius:6px;font-weight:700;margin-right:6px}
+
+  .summary{margin:40px 0 20px;border-radius:18px;padding:26px 30px;background:linear-gradient(130deg,#fff8f3,#ffffff);border:1px solid #ffe0cf}
+  .summary h3{margin-top:0}
+  .summary ul{list-style:none;margin-top:10px}
+  .summary li{font-size:14px;line-height:2;color:#514a64;padding-left:24px;position:relative}
+  .summary li::before{content:"◆";position:absolute;left:0;color:var(--brand);font-size:11px;top:6px}
+
+  .pager{display:flex;gap:14px;margin-top:30px;flex-wrap:wrap}
+  .pager a{flex:1;min-width:200px;text-decoration:none;border:1px solid var(--line);border-radius:14px;padding:16px 20px;background:#fff;transition:.2s;display:block}
+  .pager a:hover{border-color:var(--brand);box-shadow:0 10px 26px rgba(255,107,53,.14);transform:translateY(-2px)}
+  .pager a .k{font-size:11px;color:var(--dim2);font-weight:700;letter-spacing:1px}
+  .pager a .v{font-size:14px;font-weight:800;color:var(--night);margin-top:5px}
+  .pager a.back{background:var(--brand-soft);border-color:transparent;text-align:center}
+  .pager a.back .v{color:var(--brand-dark)}
+
+  .cta{margin-top:26px;border-radius:20px;padding:30px 34px;color:#fff;position:relative;overflow:hidden;background:linear-gradient(120deg,#16202f,#2b3a52 46%,#a8431c 132%)}
+  .cta::after{content:"";position:absolute;right:-70px;bottom:-90px;width:280px;height:280px;border-radius:50%;background:radial-gradient(circle,rgba(255,140,80,.45),transparent 68%)}
+  .cta h3{color:#fff;margin:0 0 10px;position:relative;z-index:2}
+  .cta h3::before{background:var(--brand)}
+  .cta p{color:#d8e0ef;font-size:13.5px;margin:0 0 18px;position:relative;z-index:2;max-width:640px}
+  .cta .btn-go{position:relative;z-index:2}
+
+  @media(max-width:900px){
+    .sidebar-nav{transform:translateX(-100%)}
+    .sidebar-nav.active{transform:translateX(0)}
+    .nav-toggle{display:block}
+    .page{margin-left:0}
+    .hero{padding:70px 22px 34px}
+    .hero-top{flex-direction:column-reverse;text-align:center}
+    .hero-card{width:auto}
+    .container{padding:26px 20px 60px}
+    .goal-grid{grid-template-columns:1fr}
+  }
+
+  /* ---------- 图形化：积木卡（替代代码卡） ---------- */
+  .blk-card{background:#f8f6ff;border:1px solid #e6e0fb;border-radius:14px;
+    margin:18px 0;overflow:hidden;box-shadow:0 2px 10px rgba(109,40,217,.06)}
+  .blk-head{display:flex;align-items:center;gap:7px;padding:10px 14px;
+    background:#f1ecfe;border-bottom:1px solid #e6e0fb}
+  .blk-head .file{font-size:12.5px;font-weight:700;color:#5b4a86;margin-left:4px}
+  .blk-head .lang{margin-left:auto;font-size:11px;font-weight:800;color:#fff;
+    background:#8b5cf6;border-radius:20px;padding:3px 11px;letter-spacing:.5px}
+  .blk-body{padding:20px 18px;overflow-x:auto;
+    background:
+      radial-gradient(circle at 14px 14px,#ece6fb 1.6px,transparent 1.7px) 0 0/28px 28px,
+      #ffffff}
+  .blk{display:block;max-width:100%;height:auto;margin:0 auto}
+  .blk + .blk{margin-top:16px}
+  .blk-card .out{background:#f1ecfe;border-top:1px solid #e6e0fb;color:#5b4a86}
+  .blk-card .out b{color:#6d28d9}
+  /* 积木并排（不同角色 / 不同做法对照） */
+  .blk-row{display:flex;gap:16px;flex-wrap:wrap;justify-content:center;align-items:flex-start}
+  .blk-row > *{flex:1 1 240px;min-width:0}
+  .blk-row .blk{margin:0}
+  /* 积木旁的小标题 */
+  .blk-cap{font-size:12.5px;font-weight:800;color:#6d28d9;background:#f3efff;
+    border:1px solid #e6e0fb;border-radius:8px;padding:5px 12px;margin:14px 0 10px;
+    display:inline-block}
+</style>
+</head>
+<body>
+
+<button class="nav-toggle" onclick="document.querySelector('.sidebar-nav').classList.toggle('active')">&#9776;</button>
+
+<nav class="sidebar-nav">
+  <div class="sb-brand">
+    <a class="sb-logo" href="https://codecombat.cn/" target="_blank" rel="noopener" title="访问 CodeCombat 扣哒世界官网">
+      <img src="../assets/logo.png" alt="CodeCombat 扣哒世界">
+    </a>
+    <div><b>多轴机械臂</b><span>机械乐园 · 图形化四级 第 2 单元</span></div>
+  </div>
+  <div class="nav-title">本单元目录</div>
+
+  <a href="#s0" class="nav-section">0　单元导语与目标</a>
+  <a href="#s0-1" class="nav-sub">0.1 学习目标</a>
+  <a href="#s0-2" class="nav-sub">0.2 考纲对照</a>
+  <a href="#s1" class="nav-section">1　一个投币口不够用</a>
+  <a href="#s1-1" class="nav-sub">1.1 单参函数的局限</a>
+  <a href="#s1-2" class="nav-sub">1.2 多参函数：多开几个口</a>
+  <a href="#s2" class="nav-section">2　形参与实参</a>
+  <a href="#s2-1" class="nav-sub">2.1 形参：定义时占个名字</a>
+  <a href="#s2-2" class="nav-sub">2.2 实参：调用时递进去的值</a>
+  <a href="#s2-3" class="nav-sub">2.3 一一对应，不多不少</a>
+  <a href="#s3" class="nav-section">3　参数是怎么传进去的</a>
+  <a href="#s3-1" class="nav-sub">3.1 按位置对号入座</a>
+  <a href="#s3-2" class="nav-sub">3.2 参数可以是变量或算式</a>
+  <a href="#s3-3" class="nav-sub">3.3 顺序弄反会怎样</a>
+  <a href="#s4" class="nav-section">4　多参函数的实战</a>
+  <a href="#s4-1" class="nav-sub">4.1 画任意正多边形</a>
+  <a href="#s4-2" class="nav-sub">4.2 多参函数的阅读方法</a>
+  <a href="#s5" class="nav-section">5　代码实战</a>
+  <a href="#s6" class="nav-section">6　常见陷阱</a>
+  <a href="#s7" class="nav-section">7　题目练习</a>
+  <a href="#s8" class="nav-section">8　本单元小结</a>
+
+  <a href="../index.html" target="_top" class="sb-back">返回考纲之路</a>
+</nav>
+
+<div class="page">
+
+<div class="hero">
+  <div class="hero-top">
+    <div class="hero-txt">
+      <div class="crumb">扣哒考级 · GESP 图形化 四级 · 第 2 单元　|　机械乐园 COGWHEEL PARK</div>
+      <h1>多轴机械臂
+        <span class="sub">多参函数</span>
+      </h1>
+      <div class="en">Functions with Multiple Parameters</div>
+      <div class="tags">        <span class="tag hot">考纲 · 多参函数</span>
+        <span class="tag">形参与实参</span>
+        <span class="tag">参数传递</span>
+        <span class="tag">通用函数</span></div>
+    </div>
+    <div class="hero-card">
+      <img class="ava" src="../assets/avatars/gordon.webp" alt="戈登" onerror="this.style.background='#24344a';this.src='../assets/heroes/gordon.webp'">
+      <div class="nm">戈登</div>
+      <div class="ti">机械师 · 你的向导</div>
+    </div>
+  </div>
+</div>
+
+<div class="container">
+
+
+<div class="lead">
+  车间的另一头立着一台更复杂的机械臂——它有<b>三根输送管</b>，
+  分别送进角度、力度和颜色。<br>
+  "同一台机器，"戈登说，"<b>管子送什么进去，它就做出什么来。</b>"<br>
+  你换了换管子里的东西，机械臂果然做出了完全不同的零件。
+</div>
+
+<div class="cast anya">
+  <img class="ava" src="../assets/avatars/gordon.webp" alt="戈登" onerror="this.style.display='none'">
+  <div class="bubble">
+    <div class="who">戈登 · 机械师</div>
+    这一单元只有两组词要分清：<b>形参</b>（定义时占位置的名字）、<b>实参</b>（调用时真正递进去的值）。<br>
+    考试最爱考"顺序填反了会怎样"——答案永远是：<b>不报错，但结果错。</b>
+  </div>
+</div>
+
+<!-- ============ 0 ============ -->
+<div class="section-header" id="s0">
+  <h2>0　单元导语与目标</h2>
+  <div class="en-title">Before We Start</div>
+</div>
+
+<h3 id="s0-1">0.1 学习目标</h3>
+
+<ul>
+  <li>理解<b>多参函数</b>：一个函数可以接收好几个参数；</li>
+  <li>分清<b>形参</b>（定义时的占位名）与<b>实参</b>（调用时真正递进去的值）；</li>
+  <li>知道参数是<b>按位置一一对应</b>的，顺序弄反会出大问题；</li>
+  <li>会用多参函数画出"任意边数、任意边长"的正多边形；</li>
+  <li>能读懂别人写的多参函数，说出每个参数管什么。</li>
+</ul>
+<h3 id="s0-2">0.2 考纲对照</h3>
+
+<table class="styled">
+  <thead><tr><th>考纲知识块</th><th>考纲要求</th><th>本单元小节</th></tr></thead>
+  <tbody><tr><td>2 多参函数</td><td>定义方法、形参、实参、参数的传递、调用</td><td>1.1～1.2、2.1～2.3、3.1～3.3</td></tr><tr><td>（知识点详述第 1 条）</td><td>了解多参函数，并能够熟练应用</td><td>4.1～4.2</td></tr></tbody>
+</table>
+
+<p>上一单元的机械臂只有一个投币口；这一单元要给它装<b>三五个口</b>。'
+'卷子上关于参数最爱考两件事：<b>形参实参对应</b>、<b>顺序不能反</b>。</p>
+
+<!-- ============ 1 ============ -->
+<div class="section-header" id="s1">
+  <h2>1　一个投币口不够用</h2>
+  <div class="en-title">Why Multiple Parameters</div>
+</div>
+
+<h3 id="s1-1">1.1 单参函数的局限</h3>
+
+<p>上一单元那台机械臂只能调"边长"。可要是想让它同时管<b>边长、方向、颜色</b>呢？
+一个投币口显然不够。</p>
+<figure class="pic">
+  <img src="../assets/illustrations/scratch-L4-02-01_multi_axis_arm.webp" alt="多轴机械臂"
+       onerror="this.closest('.pic').classList.add('missing')">
+  <div class="ph">
+    <div class="fn">assets/illustrations/scratch-L4-02-01_multi_axis_arm.webp</div>
+    <div class="ds">【配图位】一台多关节机械臂同时接收三路输入——角度、力度、颜色，各由一根输送管送入。（提示词见《GESP配图清单与AI绘图提示词》第四节 4-2）</div>
+  </div>
+  <figcaption>图 1：多轴机械臂——三路输入各走一根管子</figcaption>
+</figure>
+
+<div class="box tip">
+  <span class="lb">打个比方：</span><b>单参函数像自动售货机</b>——只能投币、只能选一种饮料；<br><b>多参函数像点餐</b>——"大杯、少冰、加珍珠"，一口气说清三件事。
+</div>
+
+
+<h3 id="s1-2">1.2 多参函数：多开几个口</h3>
+
+<div class="blk-card">
+  <div class="blk-head">
+    <span class="dot d1"></span><span class="dot d2"></span><span class="dot d3"></span>
+    <span class="file">重点示例：定义时多加两个输入项</span>
+    <span class="lang">图形化积木</span>
+  </div>
+  <div class="blk-body">
+<svg class="blk" viewBox="0 0 310 270" width="310" height="270" role="img" aria-label="积木脚本"><g font-family="'PingFang SC','Microsoft YaHei','Noto Sans SC',sans-serif"><g transform="translate(3,3)"><path d="M0,12 C60.8,0 243.2,0 304,12 V43 A5,5 0 0 1 299,48 H28 v4 h-12 v-4 H5 A5,5 0 0 1 0,43 Z" fill="#FF6680" stroke="#d15368" stroke-width="1.2"/><text x="15" y="34.8" font-size="13.4" fill="#fff">定义 </text><rect x="56" y="18.5" width="93" height="23" rx="5" fill="#FF3355"/><text x="97.5" y="34.4" font-size="12.5" fill="#fff" text-anchor="middle">画正多边形</text><path d="M138 27.5 l4 5 l4 -5 z" fill="#fff" opacity=".85"/><text x="156" y="34.8" font-size="13.4" fill="#fff"> </text><rect x="170.2" y="18.5" width="48.8" height="23" rx="11.5" fill="#fff"/><text x="194.6" y="34.4" font-size="12.5" fill="#575e75" text-anchor="middle">边数</text><text x="226" y="34.8" font-size="13.4" fill="#fff"> </text><rect x="240.2" y="18.5" width="48.8" height="23" rx="11.5" fill="#fff"/><text x="264.6" y="34.4" font-size="12.5" fill="#575e75" text-anchor="middle">边长</text></g><g transform="translate(3,55)"><path d="M0,5 A5,5 0 0 1 5,0 H16 v4 h12 v-4 H71 A5,5 0 0 1 76,5 V31 A5,5 0 0 1 71,36 H28 v4 h-12 v-4 H5 A5,5 0 0 1 0,31 Z" fill="#0FBD8C" stroke="#0c9a72" stroke-width="1.2"/><text x="15" y="22.8" font-size="13.4" fill="#fff">落笔</text></g><g transform="translate(3,95)"><path d="M0,5 A5,5 0 0 1 5,0 H16 v4 h12 v-4 H269 A5,5 0 0 1 274,5 V123 A5,5 0 0 1 269,128 H28 v4 h-12 v-4 H5 A5,5 0 0 1 0,123 V115 H16 V36 H0 Z" fill="#FFAB19" stroke="#d18c14" stroke-width="1.2"/><text x="15" y="22.8" font-size="13.4" fill="#fff">重复执行 </text><polygon points="94.3,6.5 142.1,6.5 148.425,18 142.1,29.5 94.3,29.5 87.975,18" fill="#fff" stroke="#FFAB19" stroke-width="1.4"/><rect x="93.8" y="6.5" width="48.8" height="23" rx="11.5" fill="#fff" stroke="#cfd6e4" stroke-width="1"/><text x="118.2" y="22.4" font-size="12.5" fill="#575e75" text-anchor="middle">边数</text><text x="160.6" y="22.8" font-size="13.4" fill="#fff"> 次</text><g transform="translate(20,38)"><path d="M0,5 A5,5 0 0 1 5,0 H16 v4 h12 v-4 H164 A5,5 0 0 1 169,5 V31 A5,5 0 0 1 164,36 H28 v4 h-12 v-4 H5 A5,5 0 0 1 0,31 Z" fill="#4C97FF" stroke="#3e7bd1" stroke-width="1.2"/><text x="15" y="22.8" font-size="13.4" fill="#fff">移动 </text><polygon points="67.5,6.5 115.3,6.5 121.625,18 115.3,29.5 67.5,29.5 61.175,18" fill="#fff" stroke="#4C97FF" stroke-width="1.4"/><rect x="67" y="6.5" width="48.8" height="23" rx="11.5" fill="#fff" stroke="#cfd6e4" stroke-width="1"/><text x="91.4" y="22.4" font-size="12.5" fill="#575e75" text-anchor="middle">边长</text><text x="133.8" y="22.8" font-size="13.4" fill="#fff"> 步</text></g><g transform="translate(20,76)"><path d="M0,5 A5,5 0 0 1 5,0 H16 v4 h12 v-4 H243 A5,5 0 0 1 248,5 V31 A5,5 0 0 1 243,36 H28 v4 h-12 v-4 H5 A5,5 0 0 1 0,31 Z" fill="#4C97FF" stroke="#3e7bd1" stroke-width="1.2"/><text x="15" y="22.8" font-size="13.4" fill="#fff">右转 </text><polygon points="67.5,6.5 194.5,6.5 200.825,18 194.5,29.5 67.5,29.5 61.175,18" fill="#fff" stroke="#4C97FF" stroke-width="1.4"/><rect x="67" y="6.5" width="43.6" height="23" rx="11.5" fill="#fff" stroke="#cfd6e4" stroke-width="1"/><text x="88.8" y="22.4" font-size="12.5" fill="#575e75" text-anchor="middle">360</text><text x="117.6" y="22.8" font-size="13.4" fill="#575e75"> / </text><rect x="146.2" y="6.5" width="48.8" height="23" rx="11.5" fill="#fff" stroke="#cfd6e4" stroke-width="1"/><text x="170.6" y="22.4" font-size="12.5" fill="#575e75" text-anchor="middle">边数</text><text x="213" y="22.8" font-size="13.4" fill="#fff"> 度</text></g></g><g transform="translate(3,227)"><path d="M0,5 A5,5 0 0 1 5,0 H16 v4 h12 v-4 H71 A5,5 0 0 1 76,5 V31 A5,5 0 0 1 71,36 H28 v4 h-12 v-4 H5 A5,5 0 0 1 0,31 Z" fill="#0FBD8C" stroke="#0c9a72" stroke-width="1.2"/><text x="15" y="22.8" font-size="13.4" fill="#fff">抬笔</text></g></g></svg>
+  </div>
+  <div class="out"><b>要点</b>　做积木时点两次"添加输入项"，就有了"边数"和"边长"两个口；定义里的积木直接用这两个名字</div>
+</div>
+
+<div class="box info">
+  <span class="lb">注意"360 ÷ 边数"这一句：</span><b>边数变了，每次转的角度也跟着变</b>——正三角形转 120 度、正方形转 90 度、正六边形转 60 度。<br>这正是"用参数写通用程序"的威力：<b>一个函数管所有正多边形。</b>
+</div>
+
+<!-- ============ 2 ============ -->
+<div class="section-header" id="s2">
+  <h2>2　形参与实参</h2>
+  <div class="en-title">Formal and Actual Parameters</div>
+</div>
+
+<h3 id="s2-1">2.1 形参：定义时占个名字</h3>
+
+<p>定义里那个"边数"，其实只是一个<b>占位的名字</b>——
+告诉程序"这里待会儿会来一个数，先叫它边数"。这个名字叫<b>形参</b>。</p>
+<figure class="figure">
+<svg class="diagram" viewBox="0 0 820 168" role="img" aria-label="形参的三条特点">
+<text x="24" y="32" font-size="14" fill="#4c1d95" text-anchor="start" font-weight="bold">形参的三条特点</text><rect x="24" y="56" width="772" height="28" rx="8" fill="#f3efff"/><text x="40" y="75" font-size="12.6" fill="#6d28d9" text-anchor="start" font-weight="bold">只在定义里出现</text><text x="192" y="75" font-size="12.2" fill="#4c1d95" text-anchor="start">写在"定义 画正多边形"那一块上</text><rect x="24" y="90" width="772" height="28" rx="8" fill="#faf8ff"/><text x="40" y="109" font-size="12.6" fill="#6d28d9" text-anchor="start" font-weight="bold">是个"空位"</text><text x="192" y="109" font-size="12.2" fill="#4c1d95" text-anchor="start">本身没有值，等调用时被填上</text><rect x="24" y="124" width="772" height="28" rx="8" fill="#f3efff"/><text x="40" y="143" font-size="12.6" fill="#6d28d9" text-anchor="start" font-weight="bold">名字要起得有意义</text><text x="192" y="143" font-size="12.2" fill="#4c1d95" text-anchor="start">"边长"比"a"好读得多</text>
+</svg>
+  <div class="caption">图 2（SVG）：形参</div>
+</figure>
+
+<h3 id="s2-2">2.2 实参：调用时递进去的值</h3>
+
+<figure class="pic">
+  <img src="../assets/illustrations/scratch-L4-02-02_param_slots.webp" alt="三个标着刻度的插槽"
+       onerror="this.closest('.pic').classList.add('missing')">
+  <div class="ph">
+    <div class="fn">assets/illustrations/scratch-L4-02-02_param_slots.webp</div>
+    <div class="ds">【配图位】机械臂基座上三个标着不同刻度的插槽，工程师把不同颜色的材料分别插进去，输出结果随之改变。（提示词见《GESP配图清单与AI绘图提示词》第四节 4-2）</div>
+  </div>
+  <figcaption>图 3：实参就是真正插进去的那些值</figcaption>
+</figure>
+
+<div class="blk-card">
+  <div class="blk-head">
+    <span class="dot d1"></span><span class="dot d2"></span><span class="dot d3"></span>
+    <span class="file">重点示例：三次调用，三个结果</span>
+    <span class="lang">图形化积木</span>
+  </div>
+  <div class="blk-body">
+<svg class="blk" viewBox="0 0 212 126" width="212" height="126" role="img" aria-label="积木脚本"><g font-family="'PingFang SC','Microsoft YaHei','Noto Sans SC',sans-serif"><g transform="translate(3,3)"><path d="M0,5 A5,5 0 0 1 5,0 H16 v4 h12 v-4 H193 A5,5 0 0 1 198,5 V31 A5,5 0 0 1 193,36 H28 v4 h-12 v-4 H5 A5,5 0 0 1 0,31 Z" fill="#FF6680" stroke="#d15368" stroke-width="1.2"/><text x="15" y="22.8" font-size="13.4" fill="#fff">画正多边形 </text><rect x="96.2" y="6.5" width="30" height="23" rx="11.5" fill="#fff"/><text x="111.2" y="22.4" font-size="12.5" fill="#575e75" text-anchor="middle">6</text><text x="133.2" y="22.8" font-size="13.4" fill="#fff"> </text><rect x="147.4" y="6.5" width="36.4" height="23" rx="11.5" fill="#fff"/><text x="165.6" y="22.4" font-size="12.5" fill="#575e75" text-anchor="middle">80</text></g><g transform="translate(3,43)"><path d="M0,5 A5,5 0 0 1 5,0 H16 v4 h12 v-4 H201 A5,5 0 0 1 206,5 V31 A5,5 0 0 1 201,36 H28 v4 h-12 v-4 H5 A5,5 0 0 1 0,31 Z" fill="#FF6680" stroke="#d15368" stroke-width="1.2"/><text x="15" y="22.8" font-size="13.4" fill="#fff">画正多边形 </text><rect x="96.2" y="6.5" width="30" height="23" rx="11.5" fill="#fff"/><text x="111.2" y="22.4" font-size="12.5" fill="#575e75" text-anchor="middle">3</text><text x="133.2" y="22.8" font-size="13.4" fill="#fff"> </text><rect x="147.4" y="6.5" width="43.6" height="23" rx="11.5" fill="#fff"/><text x="169.2" y="22.4" font-size="12.5" fill="#575e75" text-anchor="middle">120</text></g><g transform="translate(3,83)"><path d="M0,5 A5,5 0 0 1 5,0 H16 v4 h12 v-4 H193 A5,5 0 0 1 198,5 V31 A5,5 0 0 1 193,36 H28 v4 h-12 v-4 H5 A5,5 0 0 1 0,31 Z" fill="#FF6680" stroke="#d15368" stroke-width="1.2"/><text x="15" y="22.8" font-size="13.4" fill="#fff">画正多边形 </text><rect x="96.2" y="6.5" width="30" height="23" rx="11.5" fill="#fff"/><text x="111.2" y="22.4" font-size="12.5" fill="#575e75" text-anchor="middle">4</text><text x="133.2" y="22.8" font-size="13.4" fill="#fff"> </text><rect x="147.4" y="6.5" width="36.4" height="23" rx="11.5" fill="#fff"/><text x="165.6" y="22.4" font-size="12.5" fill="#575e75" text-anchor="middle">50</text></g></g></svg>
+  </div>
+  <div class="out"><b>要点</b>　同一个函数，<b>实参不同，画出来的图形就不同</b></div>
+</div>
+
+<h3 id="s2-3">2.3 一一对应，不多不少</h3>
+
+<figure class="figure">
+<svg class="diagram" viewBox="0 0 820 210" role="img" aria-label="形参和实参要一样多">
+<text x="24" y="32" font-size="14" fill="#4c1d95" text-anchor="start" font-weight="bold">形参和实参要一样多</text><rect x="24" y="52" width="376" height="130" rx="12" fill="#f5f3ff" stroke="#e6e0fb" stroke-width="1.8"/><text x="212" y="82" font-size="13.5" fill="#6d28d9" text-anchor="middle" font-weight="bold">正确</text><circle cx="40" cy="106" r="3.4" fill="#6d28d9"/><text x="52" y="110" font-size="12.2" fill="#4c1d95" text-anchor="start">定义有 2 个形参 → 调用时给 2 个实参</text><circle cx="40" cy="136" r="3.4" fill="#6d28d9"/><text x="52" y="140" font-size="12.2" fill="#4c1d95" text-anchor="start">第 1 个给"边数"、第 2 个给"边长"</text><rect x="420" y="52" width="376" height="130" rx="12" fill="#fff7ed" stroke="#e6e0fb" stroke-width="1.8"/><text x="608" y="82" font-size="13.5" fill="#b45309" text-anchor="middle" font-weight="bold">有问题</text><circle cx="436" cy="106" r="3.4" fill="#b45309"/><text x="448" y="110" font-size="12.2" fill="#4c1d95" text-anchor="start">定义有 2 个形参，调用只给 1 个</text><circle cx="436" cy="136" r="3.4" fill="#b45309"/><text x="448" y="140" font-size="12.2" fill="#4c1d95" text-anchor="start">（图形化编辑器一般会在拖出来时就固定好槽数）</text><text x="24" y="196" font-size="11.8" fill="#8d9d94" text-anchor="start">槽数在拖出积木时就定好了，所以更常见的错误是"顺序填反"</text>
+</svg>
+  <div class="caption">图 4（SVG）：形参与实参一一对应</div>
+</figure>
+
+<div class="box info">
+  <span class="lb">一句话记住：</span><b>形参是"位置"，实参是"东西"。</b>定义时圈出几个位置，调用时就往这几个位置里放东西。
+</div>
+
+<!-- ============ 3 ============ -->
+<div class="section-header" id="s3">
+  <h2>3　参数是怎么传进去的</h2>
+  <div class="en-title">Passing Parameters</div>
+</div>
+
+<h3 id="s3-1">3.1 按位置对号入座</h3>
+
+<figure class="figure">
+<svg class="diagram" viewBox="0 0 820 158" role="img" aria-label="参数传递的全过程">
+<text x="24" y="32" font-size="14" fill="#4c1d95" text-anchor="start" font-weight="bold">参数传递的全过程</text><rect x="24" y="56" width="173.5" height="68" rx="10" fill="#f3efff" stroke="#e6e0fb" stroke-width="1.8"/><text x="110.75" y="95" font-size="12.4" fill="#6d28d9" text-anchor="middle" font-weight="bold">调用：画正多边形 3、100</text><line x1="202.5" y1="90" x2="214.5" y2="90" stroke="#8b5cf6" stroke-width="2.2"/><polygon points="214.5,90 206.5,85 206.5,95" fill="#8b5cf6"/><rect x="223.5" y="56" width="173.5" height="68" rx="10" fill="#f3efff" stroke="#e6e0fb" stroke-width="1.8"/><text x="310.25" y="95" font-size="12.4" fill="#6d28d9" text-anchor="middle" font-weight="bold">第 1 个实参 3 → 填给形参"边数"</text><line x1="402" y1="90" x2="414" y2="90" stroke="#8b5cf6" stroke-width="2.2"/><polygon points="414,90 406,85 406,95" fill="#8b5cf6"/><rect x="423" y="56" width="173.5" height="68" rx="10" fill="#f3efff" stroke="#e6e0fb" stroke-width="1.8"/><text x="509.75" y="95" font-size="12.4" fill="#6d28d9" text-anchor="middle" font-weight="bold">第 2 个实参 100 → 填给形参"边长"</text><line x1="601.5" y1="90" x2="613.5" y2="90" stroke="#8b5cf6" stroke-width="2.2"/><polygon points="613.5,90 605.5,85 605.5,95" fill="#8b5cf6"/><rect x="622.5" y="56" width="173.5" height="68" rx="10" fill="#f3efff" stroke="#e6e0fb" stroke-width="1.8"/><text x="709.25" y="95" font-size="12.4" fill="#6d28d9" text-anchor="middle" font-weight="bold">带着这两个值去跑定义里的积木</text><text x="24" y="150" font-size="11.8" fill="#8d9d94" text-anchor="start">顺序决定谁填谁——这是参数题最爱考的一点</text>
+</svg>
+  <div class="caption">图 5（SVG）：参数按位置传递</div>
+</figure>
+
+<h3 id="s3-2">3.2 参数可以是变量或算式</h3>
+
+<div class="blk-card">
+  <div class="blk-head">
+    <span class="dot d1"></span><span class="dot d2"></span><span class="dot d3"></span>
+    <span class="file">重点示例：实参不一定是写死的数字</span>
+    <span class="lang">图形化积木</span>
+  </div>
+  <div class="blk-body">
+<svg class="blk" viewBox="0 0 323.6 86" width="323.6" height="86" role="img" aria-label="积木脚本"><g font-family="'PingFang SC','Microsoft YaHei','Noto Sans SC',sans-serif"><g transform="translate(3,3)"><path d="M0,5 A5,5 0 0 1 5,0 H16 v4 h12 v-4 H312 A5,5 0 0 1 317,5 V31 A5,5 0 0 1 312,36 H28 v4 h-12 v-4 H5 A5,5 0 0 1 0,31 Z" fill="#FF6680" stroke="#d15368" stroke-width="1.2"/><text x="15" y="22.8" font-size="13.4" fill="#fff">画正多边形 </text><rect x="96.2" y="6.5" width="48.8" height="23" rx="11.5" fill="#fff"/><text x="120.6" y="22.4" font-size="12.5" fill="#575e75" text-anchor="middle">边数</text><text x="152" y="22.8" font-size="13.4" fill="#fff"> </text><polygon points="177.7,6.5 291.1,6.5 297.425,18 291.1,29.5 177.7,29.5 171.375,18" fill="#fff" stroke="#FF6680" stroke-width="1.4"/><rect x="177.2" y="6.5" width="48.8" height="23" rx="11.5" fill="#fff" stroke="#cfd6e4" stroke-width="1"/><text x="201.6" y="22.4" font-size="12.5" fill="#575e75" text-anchor="middle">边长</text><text x="233" y="22.8" font-size="13.4" fill="#575e75"> * </text><rect x="261.6" y="6.5" width="30" height="23" rx="11.5" fill="#fff" stroke="#cfd6e4" stroke-width="1"/><text x="276.6" y="22.4" font-size="12.5" fill="#575e75" text-anchor="middle">2</text></g><g transform="translate(3,43)"><path d="M0,5 A5,5 0 0 1 5,0 H16 v4 h12 v-4 H234 A5,5 0 0 1 239,5 V31 A5,5 0 0 1 234,36 H28 v4 h-12 v-4 H5 A5,5 0 0 1 0,31 Z" fill="#FF6680" stroke="#d15368" stroke-width="1.2"/><text x="15" y="22.8" font-size="13.4" fill="#fff">画正多边形 </text><polygon points="107.7,6.5 155.5,6.5 161.825,18 155.5,29.5 107.7,29.5 101.375,18" fill="#fff" stroke="#FF6680" stroke-width="1.4"/><rect x="107.2" y="6.5" width="48.8" height="23" rx="11.5" fill="#fff" stroke="#cfd6e4" stroke-width="1"/><text x="131.6" y="22.4" font-size="12.5" fill="#575e75" text-anchor="middle">回答</text><text x="174" y="22.8" font-size="13.4" fill="#fff"> </text><rect x="188.2" y="6.5" width="36.4" height="23" rx="11.5" fill="#fff"/><text x="206.4" y="22.4" font-size="12.5" fill="#575e75" text-anchor="middle">60</text></g></g></svg>
+  </div>
+  <div class="out"><b>要点</b>　实参的位置能塞<b>数字、变量、算式，甚至"回答"</b>——只要最后能算出/取出一个值就行</div>
+</div>
+
+<h3 id="s3-3">3.3 顺序弄反会怎样</h3>
+
+<div class="box warn">
+  <span class="lb">一个经典错误：</span>定义是"画正多边形 <b>边数</b> <b>边长</b>"，调用时却写成"画正多边形 <b>100</b> <b>3</b>"——把 100 当成了边数、3 当成了边长。<br><strong>程序不会报错，但会画出一个转 3 度的"图形"（几乎是直线）。</strong><br>这类错误<b>只能靠看代码发现</b>，所以填实参时一定要对着形参的名字一个一个看。
+</div>
+
+<figure class="figure">
+<svg class="diagram" viewBox="0 0 820 168" role="img" aria-label="读多参函数的三步">
+<text x="24" y="32" font-size="14" fill="#4c1d95" text-anchor="start" font-weight="bold">读多参函数的三步</text><rect x="24" y="56" width="772" height="28" rx="8" fill="#f3efff"/><text x="40" y="75" font-size="12.6" fill="#6d28d9" text-anchor="start" font-weight="bold">看定义</text><text x="192" y="75" font-size="12.2" fill="#4c1d95" text-anchor="start">它有几个形参？分别叫什么名字？</text><rect x="24" y="90" width="772" height="28" rx="8" fill="#faf8ff"/><text x="40" y="109" font-size="12.6" fill="#6d28d9" text-anchor="start" font-weight="bold">看调用</text><text x="192" y="109" font-size="12.2" fill="#4c1d95" text-anchor="start">每个位置上填的是什么？</text><rect x="24" y="124" width="772" height="28" rx="8" fill="#f3efff"/><text x="40" y="143" font-size="12.6" fill="#6d28d9" text-anchor="start" font-weight="bold">对一对</text><text x="192" y="143" font-size="12.2" fill="#4c1d95" text-anchor="start">填的东西和形参的意思对得上吗？</text>
+</svg>
+  <div class="caption">图 6（SVG）：怎么读懂多参函数</div>
+</figure>
+
+<!-- ============ 4 ============ -->
+<div class="section-header" id="s4">
+  <h2>4　多参函数的实战</h2>
+  <div class="en-title">Multiple Parameters in Practice</div>
+</div>
+
+<h3 id="s4-1">4.1 画任意正多边形</h3>
+
+<div class="blk-card">
+  <div class="blk-head">
+    <span class="dot d1"></span><span class="dot d2"></span><span class="dot d3"></span>
+    <span class="file">重点示例：一个函数搞定所有正多边形</span>
+    <span class="lang">图形化积木</span>
+  </div>
+  <div class="blk-body">
+<svg class="blk" viewBox="0 0 310 270" width="310" height="270" role="img" aria-label="积木脚本"><g font-family="'PingFang SC','Microsoft YaHei','Noto Sans SC',sans-serif"><g transform="translate(3,3)"><path d="M0,12 C60.8,0 243.2,0 304,12 V43 A5,5 0 0 1 299,48 H28 v4 h-12 v-4 H5 A5,5 0 0 1 0,43 Z" fill="#FF6680" stroke="#d15368" stroke-width="1.2"/><text x="15" y="34.8" font-size="13.4" fill="#fff">定义 </text><rect x="56" y="18.5" width="93" height="23" rx="5" fill="#FF3355"/><text x="97.5" y="34.4" font-size="12.5" fill="#fff" text-anchor="middle">画正多边形</text><path d="M138 27.5 l4 5 l4 -5 z" fill="#fff" opacity=".85"/><text x="156" y="34.8" font-size="13.4" fill="#fff"> </text><rect x="170.2" y="18.5" width="48.8" height="23" rx="11.5" fill="#fff"/><text x="194.6" y="34.4" font-size="12.5" fill="#575e75" text-anchor="middle">边数</text><text x="226" y="34.8" font-size="13.4" fill="#fff"> </text><rect x="240.2" y="18.5" width="48.8" height="23" rx="11.5" fill="#fff"/><text x="264.6" y="34.4" font-size="12.5" fill="#575e75" text-anchor="middle">边长</text></g><g transform="translate(3,55)"><path d="M0,5 A5,5 0 0 1 5,0 H16 v4 h12 v-4 H71 A5,5 0 0 1 76,5 V31 A5,5 0 0 1 71,36 H28 v4 h-12 v-4 H5 A5,5 0 0 1 0,31 Z" fill="#0FBD8C" stroke="#0c9a72" stroke-width="1.2"/><text x="15" y="22.8" font-size="13.4" fill="#fff">落笔</text></g><g transform="translate(3,95)"><path d="M0,5 A5,5 0 0 1 5,0 H16 v4 h12 v-4 H269 A5,5 0 0 1 274,5 V123 A5,5 0 0 1 269,128 H28 v4 h-12 v-4 H5 A5,5 0 0 1 0,123 V115 H16 V36 H0 Z" fill="#FFAB19" stroke="#d18c14" stroke-width="1.2"/><text x="15" y="22.8" font-size="13.4" fill="#fff">重复执行 </text><polygon points="94.3,6.5 142.1,6.5 148.425,18 142.1,29.5 94.3,29.5 87.975,18" fill="#fff" stroke="#FFAB19" stroke-width="1.4"/><rect x="93.8" y="6.5" width="48.8" height="23" rx="11.5" fill="#fff" stroke="#cfd6e4" stroke-width="1"/><text x="118.2" y="22.4" font-size="12.5" fill="#575e75" text-anchor="middle">边数</text><text x="160.6" y="22.8" font-size="13.4" fill="#fff"> 次</text><g transform="translate(20,38)"><path d="M0,5 A5,5 0 0 1 5,0 H16 v4 h12 v-4 H164 A5,5 0 0 1 169,5 V31 A5,5 0 0 1 164,36 H28 v4 h-12 v-4 H5 A5,5 0 0 1 0,31 Z" fill="#4C97FF" stroke="#3e7bd1" stroke-width="1.2"/><text x="15" y="22.8" font-size="13.4" fill="#fff">移动 </text><polygon points="67.5,6.5 115.3,6.5 121.625,18 115.3,29.5 67.5,29.5 61.175,18" fill="#fff" stroke="#4C97FF" stroke-width="1.4"/><rect x="67" y="6.5" width="48.8" height="23" rx="11.5" fill="#fff" stroke="#cfd6e4" stroke-width="1"/><text x="91.4" y="22.4" font-size="12.5" fill="#575e75" text-anchor="middle">边长</text><text x="133.8" y="22.8" font-size="13.4" fill="#fff"> 步</text></g><g transform="translate(20,76)"><path d="M0,5 A5,5 0 0 1 5,0 H16 v4 h12 v-4 H243 A5,5 0 0 1 248,5 V31 A5,5 0 0 1 243,36 H28 v4 h-12 v-4 H5 A5,5 0 0 1 0,31 Z" fill="#4C97FF" stroke="#3e7bd1" stroke-width="1.2"/><text x="15" y="22.8" font-size="13.4" fill="#fff">右转 </text><polygon points="67.5,6.5 194.5,6.5 200.825,18 194.5,29.5 67.5,29.5 61.175,18" fill="#fff" stroke="#4C97FF" stroke-width="1.4"/><rect x="67" y="6.5" width="43.6" height="23" rx="11.5" fill="#fff" stroke="#cfd6e4" stroke-width="1"/><text x="88.8" y="22.4" font-size="12.5" fill="#575e75" text-anchor="middle">360</text><text x="117.6" y="22.8" font-size="13.4" fill="#575e75"> / </text><rect x="146.2" y="6.5" width="48.8" height="23" rx="11.5" fill="#fff" stroke="#cfd6e4" stroke-width="1"/><text x="170.6" y="22.4" font-size="12.5" fill="#575e75" text-anchor="middle">边数</text><text x="213" y="22.8" font-size="13.4" fill="#fff"> 度</text></g></g><g transform="translate(3,227)"><path d="M0,5 A5,5 0 0 1 5,0 H16 v4 h12 v-4 H71 A5,5 0 0 1 76,5 V31 A5,5 0 0 1 71,36 H28 v4 h-12 v-4 H5 A5,5 0 0 1 0,31 Z" fill="#0FBD8C" stroke="#0c9a72" stroke-width="1.2"/><text x="15" y="22.8" font-size="13.4" fill="#fff">抬笔</text></g></g></svg><div class="blk-row">
+    <div>
+      <div class="blk-cap">画正三角形</div>
+<svg class="blk" viewBox="0 0 212 46" width="212" height="46" role="img" aria-label="积木脚本"><g font-family="'PingFang SC','Microsoft YaHei','Noto Sans SC',sans-serif"><g transform="translate(3,3)"><path d="M0,5 A5,5 0 0 1 5,0 H16 v4 h12 v-4 H201 A5,5 0 0 1 206,5 V31 A5,5 0 0 1 201,36 H28 v4 h-12 v-4 H5 A5,5 0 0 1 0,31 Z" fill="#FF6680" stroke="#d15368" stroke-width="1.2"/><text x="15" y="22.8" font-size="13.4" fill="#fff">画正多边形 </text><rect x="96.2" y="6.5" width="30" height="23" rx="11.5" fill="#fff"/><text x="111.2" y="22.4" font-size="12.5" fill="#575e75" text-anchor="middle">3</text><text x="133.2" y="22.8" font-size="13.4" fill="#fff"> </text><rect x="147.4" y="6.5" width="43.6" height="23" rx="11.5" fill="#fff"/><text x="169.2" y="22.4" font-size="12.5" fill="#575e75" text-anchor="middle">100</text></g></g></svg>
+    </div>
+
+    <div>
+      <div class="blk-cap">画正六边形</div>
+<svg class="blk" viewBox="0 0 204.8 46" width="204.8" height="46" role="img" aria-label="积木脚本"><g font-family="'PingFang SC','Microsoft YaHei','Noto Sans SC',sans-serif"><g transform="translate(3,3)"><path d="M0,5 A5,5 0 0 1 5,0 H16 v4 h12 v-4 H193 A5,5 0 0 1 198,5 V31 A5,5 0 0 1 193,36 H28 v4 h-12 v-4 H5 A5,5 0 0 1 0,31 Z" fill="#FF6680" stroke="#d15368" stroke-width="1.2"/><text x="15" y="22.8" font-size="13.4" fill="#fff">画正多边形 </text><rect x="96.2" y="6.5" width="30" height="23" rx="11.5" fill="#fff"/><text x="111.2" y="22.4" font-size="12.5" fill="#575e75" text-anchor="middle">6</text><text x="133.2" y="22.8" font-size="13.4" fill="#fff"> </text><rect x="147.4" y="6.5" width="36.4" height="23" rx="11.5" fill="#fff"/><text x="165.6" y="22.4" font-size="12.5" fill="#575e75" text-anchor="middle">60</text></g></g></svg>
+    </div>
+</div>
+
+  </div>
+  <div class="out"><b>要点</b>　<strong>形参"边数"同时被用在两处</strong>：循环的次数、以及每次转的角度（360 ÷ 边数）</div>
+</div>
+
+<h3 id="s4-2">4.2 多参函数的阅读方法</h3>
+
+<figure class="figure">
+<svg class="diagram" viewBox="0 0 820 194" role="img" aria-label="三个能套用的通用函数">
+<text x="24" y="32" font-size="14" fill="#4c1d95" text-anchor="start" font-weight="bold">三个能套用的通用函数</text><rect x="24" y="56" width="246.667" height="104" rx="12" fill="#f3efff" stroke="#e6e0fb" stroke-width="1.8"/><text x="147.333" y="104" font-size="13.5" fill="#6d28d9" text-anchor="middle" font-weight="bold">画正多边形（边数, 边长）</text><text x="147.333" y="126" font-size="11.6" fill="#7c7794" text-anchor="middle">一个函数画出所有正多边形</text><rect x="286.667" y="56" width="246.667" height="104" rx="12" fill="#faf8ff" stroke="#e6e0fb" stroke-width="1.8"/><text x="410" y="104" font-size="13.5" fill="#6d28d9" text-anchor="middle" font-weight="bold">走（距离, 方向）</text><text x="410" y="126" font-size="11.6" fill="#7c7794" text-anchor="middle">先面向方向，再走指定距离</text><rect x="549.333" y="56" width="246.667" height="104" rx="12" fill="#f3efff" stroke="#e6e0fb" stroke-width="1.8"/><text x="672.667" y="104" font-size="13.5" fill="#6d28d9" text-anchor="middle" font-weight="bold">画矩形（宽, 高）</text><text x="672.667" y="126" font-size="11.6" fill="#7c7794" text-anchor="middle">两条长边 + 两条短边</text><text x="24" y="186" font-size="11.8" fill="#8d9d94" text-anchor="start">把"每次都要改的数字"抽成参数，函数就通用了</text>
+</svg>
+  <div class="caption">图 7（SVG）：三个通用函数</div>
+</figure>
+
+<div class="box tip">
+  <span class="lb">打个比方：</span><b>多参函数就像打印机</b>——你可以告诉它"纸张大小、份数、单双面"，它按你说的组合出一份文件。<br>参数越多，这个"函数"能应付的场合就越多。
+</div>
+
+<!-- ============ 5 ============ -->
+<div class="section-header" id="s5">
+  <h2>5　代码实战</h2>
+  <div class="en-title">Level Practice</div>
+</div>
+
+<p>这一关要把"同一套动作"用<b>不同的数值</b>做很多次——
+正是多参函数最擅长的场景。</p>
+<div class="level-card">
+  <div class="lc-head"><span class="n">关卡</span><h4>黄金选择</h4><span class="go">进入关卡 →</span></div>
+  <div class="lc-body">
+    <div class="story">
+      <b>故事：</b>
+乐园的岔路口摆着一排黄金方块，每一块都写着"往哪个方向走多少步"。
+方向不同、距离也不同——<b>但动作本身只有一套</b>。
+
+    </div>
+    <figure class="pic">
+      <img src="../assets/stages/py-L4-02-stage1_gold_choice.webp" alt="黄金选择 关卡截图"
+           onerror="this.closest('.pic').classList.add('missing')">
+      <div class="ph">
+        <div class="fn">assets/stages/py-L4-02-stage1_gold_choice.webp</div>
+        <div class="ds">【关卡截图位】请把《黄金选择》的游戏画面截图放到此处（放入 assets/stages/ 目录，文件名为 py-L4-02-stage1_gold_choice.webp）。</div>
+      </div>
+      <figcaption>关卡实况：黄金选择</figcaption>
+    </figure>
+    <p><strong>思路：</strong>把"往某个方向走某段距离"做成一个<b>带两个参数的函数</b>，
+主脚本里每次只改这两个数字。<b>动作写一遍，路线全靠参数变化。</b>
+</p>
+<div class="blk-card">
+  <div class="blk-head">
+    <span class="dot d1"></span><span class="dot d2"></span><span class="dot d3"></span>
+    <span class="file">重点示例：两个参数的"前进"函数</span>
+    <span class="lang">图形化积木</span>
+  </div>
+  <div class="blk-body">
+<svg class="blk" viewBox="0 0 310 192" width="310" height="192" role="img" aria-label="积木脚本"><g font-family="'PingFang SC','Microsoft YaHei','Noto Sans SC',sans-serif"><g transform="translate(3,3)"><path d="M0,12 C60.8,0 243.2,0 304,12 V43 A5,5 0 0 1 299,48 H28 v4 h-12 v-4 H5 A5,5 0 0 1 0,43 Z" fill="#FF6680" stroke="#d15368" stroke-width="1.2"/><text x="15" y="34.8" font-size="13.4" fill="#fff">定义 </text><rect x="56" y="18.5" width="93" height="23" rx="5" fill="#FF3355"/><text x="97.5" y="34.4" font-size="12.5" fill="#fff" text-anchor="middle">朝某方向走</text><path d="M138 27.5 l4 5 l4 -5 z" fill="#fff" opacity=".85"/><text x="156" y="34.8" font-size="13.4" fill="#fff"> </text><rect x="170.2" y="18.5" width="48.8" height="23" rx="11.5" fill="#fff"/><text x="194.6" y="34.4" font-size="12.5" fill="#575e75" text-anchor="middle">方向</text><text x="226" y="34.8" font-size="13.4" fill="#fff"> </text><rect x="240.2" y="18.5" width="48.8" height="23" rx="11.5" fill="#fff"/><text x="264.6" y="34.4" font-size="12.5" fill="#575e75" text-anchor="middle">步数</text></g><g transform="translate(3,55)"><path d="M0,5 A5,5 0 0 1 5,0 H16 v4 h12 v-4 H177 A5,5 0 0 1 182,5 V31 A5,5 0 0 1 177,36 H28 v4 h-12 v-4 H5 A5,5 0 0 1 0,31 Z" fill="#4C97FF" stroke="#3e7bd1" stroke-width="1.2"/><text x="15" y="22.8" font-size="13.4" fill="#fff">面向 </text><polygon points="67.5,6.5 115.3,6.5 121.625,18 115.3,29.5 67.5,29.5 61.175,18" fill="#fff" stroke="#4C97FF" stroke-width="1.4"/><rect x="67" y="6.5" width="48.8" height="23" rx="11.5" fill="#fff" stroke="#cfd6e4" stroke-width="1"/><text x="91.4" y="22.4" font-size="12.5" fill="#575e75" text-anchor="middle">方向</text><text x="133.8" y="22.8" font-size="13.4" fill="#fff"> 方向</text></g><g transform="translate(3,95)"><path d="M0,5 A5,5 0 0 1 5,0 H16 v4 h12 v-4 H191 A5,5 0 0 1 196,5 V85 A5,5 0 0 1 191,90 H28 v4 h-12 v-4 H5 A5,5 0 0 1 0,85 V77 H16 V36 H0 Z" fill="#FFAB19" stroke="#d18c14" stroke-width="1.2"/><text x="15" y="22.8" font-size="13.4" fill="#fff">重复执行 </text><polygon points="94.3,6.5 142.1,6.5 148.425,18 142.1,29.5 94.3,29.5 87.975,18" fill="#fff" stroke="#FFAB19" stroke-width="1.4"/><rect x="93.8" y="6.5" width="48.8" height="23" rx="11.5" fill="#fff" stroke="#cfd6e4" stroke-width="1"/><text x="118.2" y="22.4" font-size="12.5" fill="#575e75" text-anchor="middle">步数</text><text x="160.6" y="22.8" font-size="13.4" fill="#fff"> 次</text><g transform="translate(20,38)"><path d="M0,5 A5,5 0 0 1 5,0 H16 v4 h12 v-4 H123 A5,5 0 0 1 128,5 V31 A5,5 0 0 1 123,36 H28 v4 h-12 v-4 H5 A5,5 0 0 1 0,31 Z" fill="#4C97FF" stroke="#3e7bd1" stroke-width="1.2"/><text x="15" y="22.8" font-size="13.4" fill="#fff">移动 </text><rect x="56" y="6.5" width="30" height="23" rx="11.5" fill="#fff"/><text x="71" y="22.4" font-size="12.5" fill="#575e75" text-anchor="middle">1</text><text x="93" y="22.8" font-size="13.4" fill="#fff"> 步</text></g></g></g></svg><div class="blk-row">
+    <div>
+      <div class="blk-cap">主脚本：三次调用，三条路线</div>
+<svg class="blk" viewBox="0 0 212 126" width="212" height="126" role="img" aria-label="积木脚本"><g font-family="'PingFang SC','Microsoft YaHei','Noto Sans SC',sans-serif"><g transform="translate(3,3)"><path d="M0,5 A5,5 0 0 1 5,0 H16 v4 h12 v-4 H193 A5,5 0 0 1 198,5 V31 A5,5 0 0 1 193,36 H28 v4 h-12 v-4 H5 A5,5 0 0 1 0,31 Z" fill="#FF6680" stroke="#d15368" stroke-width="1.2"/><text x="15" y="22.8" font-size="13.4" fill="#fff">朝某方向走 </text><rect x="96.2" y="6.5" width="36.4" height="23" rx="11.5" fill="#fff"/><text x="114.4" y="22.4" font-size="12.5" fill="#575e75" text-anchor="middle">90</text><text x="139.6" y="22.8" font-size="13.4" fill="#fff"> </text><rect x="153.8" y="6.5" width="30" height="23" rx="11.5" fill="#fff"/><text x="168.8" y="22.4" font-size="12.5" fill="#575e75" text-anchor="middle">5</text></g><g transform="translate(3,43)"><path d="M0,5 A5,5 0 0 1 5,0 H16 v4 h12 v-4 H187 A5,5 0 0 1 192,5 V31 A5,5 0 0 1 187,36 H28 v4 h-12 v-4 H5 A5,5 0 0 1 0,31 Z" fill="#FF6680" stroke="#d15368" stroke-width="1.2"/><text x="15" y="22.8" font-size="13.4" fill="#fff">朝某方向走 </text><rect x="96.2" y="6.5" width="30" height="23" rx="11.5" fill="#fff"/><text x="111.2" y="22.4" font-size="12.5" fill="#575e75" text-anchor="middle">0</text><text x="133.2" y="22.8" font-size="13.4" fill="#fff"> </text><rect x="147.4" y="6.5" width="30" height="23" rx="11.5" fill="#fff"/><text x="162.4" y="22.4" font-size="12.5" fill="#575e75" text-anchor="middle">3</text></g><g transform="translate(3,83)"><path d="M0,5 A5,5 0 0 1 5,0 H16 v4 h12 v-4 H201 A5,5 0 0 1 206,5 V31 A5,5 0 0 1 201,36 H28 v4 h-12 v-4 H5 A5,5 0 0 1 0,31 Z" fill="#FF6680" stroke="#d15368" stroke-width="1.2"/><text x="15" y="22.8" font-size="13.4" fill="#fff">朝某方向走 </text><rect x="96.2" y="6.5" width="43.6" height="23" rx="11.5" fill="#fff"/><text x="118" y="22.4" font-size="12.5" fill="#575e75" text-anchor="middle">180</text><text x="146.8" y="22.8" font-size="13.4" fill="#fff"> </text><rect x="161" y="6.5" width="30" height="23" rx="11.5" fill="#fff"/><text x="176" y="22.4" font-size="12.5" fill="#575e75" text-anchor="middle">2</text></g></g></svg>
+    </div>
+</div>
+
+  </div>
+  <div class="out"><b>读法</b>　定义里用两个形参"方向"和"步数"；调用时把方向和步数分别填进去，就走出三条不同的路线</div>
+</div>
+
+    <div class="box tip">
+      <span class="lb">自己试一试：</span>把第一次调用的两个数<b>交换位置</b>（写成"朝某方向走 5、90"）再跑一次——<strong>程序不会报错，但路线完全不对了。这就是"顺序不能反"。</strong>
+    </div>
+    <p>这一关的重点不是路线，而是<b>参数的位置</b>：'
+    "方向"和"步数"两个形参各有各的含义，实参填错位置就会"对不上号"。</p>
+<div class="box info">
+  <span class="lb">和上一单元的呼应：</span>单参函数只能"变一个东西"，多参函数能"同时变好几个"——<b>参数越多，函数越通用，但填的时候越要小心。</b>
+</div>
+    <a class="btn-go" href="https://codecombat.cn/" target="_blank" rel="noopener">去扣哒世界闯这一关 →</a>
+  </div>
+</div>
+
+<!-- ============ 6 ============ -->
+<div class="section-header" id="s6">
+  <h2>6　常见陷阱</h2>
+  <div class="en-title">Common Traps</div>
+</div>
+
+<div class="box warn">
+  <span class="lb">陷阱 1：</span><b>实参顺序填反。</b>定义是（边数, 边长），调用却填成（100, 3）。程序不报错，但结果完全不对。<br><strong>正确做法：</strong>填的时候对着形参的名字一个一个看。
+</div>
+
+<div class="box warn">
+  <span class="lb">陷阱 2：</span><b>把形参当成"有值的变量"直接用在定义外面。</b>形参只在"定义"那一段里有效。<br><strong>正确做法：</strong>形参只在定义内部使用；外面要用就先把它存进变量。
+</div>
+
+<div class="box warn">
+  <span class="lb">陷阱 3：</span><b>以为实参必须是数字。</b>实参可以是变量、算式、回答——只要能取到一个值。<br><strong>正确用法：</strong>"画正多边形（回答）"也是合法的，用户输几就画几边形。
+</div>
+
+<div class="box warn">
+  <span class="lb">陷阱 4：</span><b>一个函数恨不得加十个参数。</b>参数太多，调用时根本记不清哪个是哪个。<br><strong>正确做法：</strong>只把"真正需要变化的"做成参数，固定不变的部分留在定义里。
+</div>
+
+<!-- ============ 7 ============ -->
+<div class="section-header" id="s7">
+  <h2>7　题目练习</h2>
+  <div class="en-title">Practice</div>
+</div>
+
+<p>第 1 题改编自 2026 年 6 月 · 图形化编程 四级 第 6 题，其余为原创练习题。</p>
+<div class="exam">
+  <div class="eh"><span class="src">改编自 2026 年 6 月 · 图形化编程 四 级 · 第 6 题</span><span class="tp">单选题</span></div>
+  <div class="eb">
+    <div class="q">小猫写了两个自制积木："startwith s a"用来检查字符串 s 是否以 a 开头，"endwith s a"用来检查字符串 s 是否以 a 结尾。<br>阅读这段程序后，下面说法<b>正确</b>的是（　　）。</div>
+    <div class="opt"><i>A.</i>函数 endwith 的功能是检查字符串 s 是否以参数 a 开头<br>
+      <i>B.</i>函数 startwith 的功能是检查字符串 s 是否以参数 a 结尾<br>
+      <i>C.</i>点击绿旗执行该程序，小猫会说"匹配成功"2 秒<br>
+      <i>D.</i>点击绿旗执行该程序，小猫会说"匹配失败"2 秒</div>
+    <details><summary>查看答案与详解</summary>
+      <div class="ans"><b>答案：D</b>。两个函数各带<b>两个参数</b>（s 和 a），名字已经说明了用途：<br>· <b>startwith</b> 检查"以 a <b>开头</b>"；<br>· <b>endwith</b> 检查"以 a <b>结尾</b>"。<br><b>A、B 错：</b>把两个函数的功能说反了——名字里的 start / end 就是提示；<br><b>C 错：</b>题中给出的字符串并不满足"既以它开头、又以它结尾"，所以走的是"否则"那一路，输出"匹配失败"。<br><b>看函数先看什么：</b>先看<b>名字</b>（说明干什么）、再看<b>参数</b>（每一路输入分别是什么）。<br><span class="tagline">对应小节</span>2.1、3.1 多参函数的阅读。</div>
+    </details>
+  </div>
+</div>
+<div class="exam">
+  <div class="eh"><span class="src ori">原创练习题</span><span class="tp">单选题</span></div>
+  <div class="eb">
+    <div class="q">自制积木"画正多边形"的定义上有两个输入项："边数""边长"。调用时写成"画正多边形 100、3"，会发生什么（　　）。</div>
+    <div class="opt">
+      <i>A.</i>程序会提示错误，无法运行<br>
+      <i>B.</i>程序照常运行，但把 100 当成边数、3 当成边长，结果不对<br>
+      <i>C.</i>程序会自动把两个数调整成正确的顺序<br>
+      <i>D.</i>只画出一个三角形
+    </div>
+    <details><summary>查看答案与详解</summary>
+      <div class="ans"><b>答案：B</b>。参数是<b>按位置对号入座</b>的：第 1 个实参填给第 1 个形参"边数"，第 2 个填给"边长"。<br>所以 100 成了边数、3 成了边长——<b>程序不会报错</b>，但会画出一个"每次转 3.6 度"的怪图形。<br><b>C 错：</b>程序没有"根据名字猜意思"的能力；<br><b>D 错：</b>和三角形无关。<br><span class="tagline">对应小节</span>3.1、3.3 参数的传递。</div>
+    </details>
+  </div>
+</div>
+
+<div class="exam">
+  <div class="eh"><span class="src ori">原创练习题</span><span class="tp">单选题</span></div>
+  <div class="eb">
+    <div class="q">关于形参和实参，下列说法<b>正确</b>的是（　　）。</div>
+    <div class="opt">
+      <i>A.</i>形参是调用时真正递进去的值<br>
+      <i>B.</i>形参是定义时的占位名字，实参是调用时递进去的值<br>
+      <i>C.</i>形参和实参必须是同一个名字<br>
+      <i>D.</i>实参只能写数字，不能写变量
+    </div>
+    <details><summary>查看答案与详解</summary>
+      <div class="ans"><b>答案：B</b>。这是最标准的定义：<b>形参 = 定义时占个位置的名字；实参 = 调用时真正放进去的值</b>。<br><b>A 错：</b>说反了；<br><b>C 错：</b>两者名字根本不需要一样，它们只在"对号入座"的那一瞬发生关系；<br><b>D 错：</b>实参可以写数字、变量、算式、回答。<br><span class="tagline">对应小节</span>2.1、2.2 形参与实参。</div>
+    </details>
+  </div>
+</div>
+
+<div class="exam">
+  <div class="eh"><span class="src ori">原创练习题</span><span class="tp">单选题</span></div>
+  <div class="eb">
+    <div class="q">一个函数"画矩形"有两个参数（宽, 高）。要画一个宽 120、高 40 的矩形，正确的调用是（　　）。</div>
+    <div class="opt">
+      <i>A.</i>画矩形 40、120<br>
+      <i>B.</i>画矩形 120、40<br>
+      <i>C.</i>画矩形 120<br>
+      <i>D.</i>画矩形 40
+    </div>
+    <details><summary>查看答案与详解</summary>
+      <div class="ans"><b>答案：B</b>。形参的顺序是（宽, 高），所以实参也要按"宽在前、高在后"填：<b>120、40</b>。<br><b>A 错：</b>顺序反了，画出来是"宽 40、高 120"的高瘦矩形；<br><b>C、D 错：</b>参数个数对不上——有两个形参就要给两个实参。<br><span class="tagline">对应小节</span>2.3、3.1 一一对应与按位置传递。</div>
+    </details>
+  </div>
+</div>
+
+<div class="exam">
+  <div class="eh"><span class="src ori">原创练习题</span><span class="tp">多选题</span></div>
+  <div class="eb">
+    <div class="q">在自制积木"画正多边形（边数, 边长）"的定义里，形参"边数"可以出现在哪些地方（　　）。</div>
+    <div class="opt">
+      <i>A.</i>作为"重复执行"的次数<br>
+      <i>B.</i>参与"360 ÷ 边数"的算式<br>
+      <i>C.</i>作为"移动"的步数<br>
+      <i>D.</i>写在定义那一块的输入槽上
+    </div>
+    <details><summary>查看答案与详解</summary>
+      <div class="ans"><b>答案：A、B、D</b>。形参就是一个"待填的位置"，凡是需要用到它的地方都能塞进去：循环次数、算式、条件……<br><b>C 错：</b>"移动的步数"对应的是另一个形参——"边长"。把"边数"塞进移动的步数，逻辑上就错了（这正是"参数不能张冠李戴"的考点）。<br><span class="tagline">对应小节</span>1.2、4.1 多参函数的定义。</div>
+    </details>
+  </div>
+</div>
+
+<div class="exam">
+  <div class="eh"><span class="src ori">原创练习题</span><span class="tp">判断题</span></div>
+  <div class="eb">
+    <div class="q">在图形化编程中，多参函数调用时，实参是按照"位置"与形参一一对应的，因此顺序写反了程序也不会报错，但结果会不正确。（　　）</div>
+    <details><summary>查看答案与详解</summary>
+      <div class="ans"><b>答案：正确（√）</b>。参数传递是"<b>按位置对号入座</b>"的：第 1 个实参给第 1 个形参，第 2 个给第 2 个。<br>正因为程序不会检查"名字对不对"，顺序写反时它照样运行，只是<b>把值放错了地方</b>——这类错误只能靠自己看代码发现。<br><span class="tagline">对应小节</span>3.1、3.3 参数的传递。</div>
+    </details>
+  </div>
+</div>
+
+<!-- ============ 8 ============ -->
+<div class="section-header" id="s8">
+  <h2>8　本单元小结</h2>
+  <div class="en-title">Unit Summary</div>
+</div>
+
+<div class="cast teacher">
+  <img class="ava" src="../assets/avatars/gordon.webp" alt="戈登" onerror="this.style.display='none'">
+  <div class="bubble">
+    <div class="who">戈登 · 机械师</div>
+    多参函数就是"多开几个投币口"。记住两组词：<br>
+    <b>形参</b>是定义时的占位名字，<b>实参</b>是调用时真正递进去的值；<br>
+    传递规则只有一条——<b>按位置对号入座，顺序反了不报错但结果错</b>。
+  </div>
+</div>
+
+<h3 id="s8-1">你在多轴机械臂旁学到了什么</h3>
+
+<ul>
+  <li><b>多参函数</b>：一个函数可以接收好几个参数，管住好几件可变的事；</li>
+  <li><b>形参</b>：定义时占位，本身没有值；<b>实参</b>：调用时递进去的值；</li>
+  <li><b>传递规则</b>：按位置一一对应，顺序反了程序不报错但结果错；</li>
+  <li><b>实参的灵活性</b>：可以是数字、变量、算式、回答；</li>
+  <li><b>通用函数</b>：画正多边形（边数, 边长）、走（距离, 方向）。</li>
+</ul>
+<h3 id="s8-2">下一站：图纸工坊</h3>
+
+<p>有了函数这个"零件"，就可以开始搭大东西了。下一单元我们摊开图纸：
+<b>怎么把一道复杂的实际问题，一步步变成可执行的算法。</b></p>
+
+
+<div class="pager">
+  <a href="scratch-4-01.html"><div class="k">← 上一单元</div><div class="v">万能机械臂 · 函数</div></a>
+  <a href="../index.html" target="_top" class="back"><div class="k">返回</div><div class="v">考纲之路 · 总目录</div></a>
+  <a href="scratch-4-03.html"><div class="k">下一单元 →</div><div class="v">图纸工坊 · 算法的复杂应用</div></a>
+</div>
+<div class="cta">
+  <h3>下一站：图纸工坊</h3>
+  <p>有了函数这个零件，就可以开始搭大东西了。下一单元我们摊开图纸：怎么把一道复杂的实际问题，一步步变成可执行的算法。</p>
+  <a class="btn-go" href="https://codecombat.cn/" target="_blank" rel="noopener">加入扣哒世界，把这条考纲之路走一遍 →</a>
+</div>
+
+</div><!-- /container -->
+</div><!-- /page -->
+
+<script>
+if (location.search.indexOf('expand') >= 0) {
+  document.querySelectorAll('details').forEach(d => d.open = true);
+}
+document.querySelectorAll('.sidebar-nav a').forEach(a => {
+  a.addEventListener('click', () => {
+    if (window.innerWidth <= 900) document.querySelector('.sidebar-nav').classList.remove('active');
+  });
+});
+</script>
+</body>
+</html>

@@ -1,0 +1,764 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="copyright" content="CodeCombat Inc. codecombat.cn">
+<title>分身魔术摊 · 克隆 | 扣哒考级 · GESP 图形化二级</title>
+<style>
+  :root{
+    --primary:#8b5cf6; --primary-light:#a78bfa; --primary-lighter:#f3efff; --primary-dark:#6d28d9;
+    --brand:#ff6b35; --brand-dark:#e8541f; --brand-soft:#fff3ec;
+    --night:#131c2b; --night-2:#1e2a3a;
+    --gold:#f5b301;
+    --text:#2a2438; --dim:#7c7794; --dim2:#a29db8;
+    --bg:#ffffff; --bg-soft:#faf8ff; --line:#e9e4f8;
+    --sidebar:274px;
+    --code-bg:#211a33; --code-tx:#d6cfe6;
+    --code-kw:#c678dd; --code-st:#98c379; --code-nu:#d19a66; --code-cm:#7d7392; --code-fn:#61afef;
+  }
+  *{margin:0;padding:0;box-sizing:border-box}
+  html{scroll-behavior:smooth}
+  body{
+    font-family:"PingFang SC","Microsoft YaHei","Segoe UI",-apple-system,sans-serif;
+    line-height:1.9;color:var(--text);background:var(--bg);font-size:15.5px;
+  }
+
+  .sidebar-nav{
+    position:fixed;top:0;left:0;width:var(--sidebar);height:100vh;overflow-y:auto;
+    background:linear-gradient(180deg,#101a26,#182636);padding:14px 0 40px;z-index:100;
+    border-right:3px solid var(--brand);transition:transform .3s ease;
+  }
+  .sidebar-nav::-webkit-scrollbar{width:5px}
+  .sidebar-nav::-webkit-scrollbar-thumb{background:var(--brand);border-radius:4px}
+  .sb-brand{display:flex;align-items:center;gap:10px;padding:10px 13px 12px;border-bottom:1px solid #26384c;margin-bottom:8px}
+  .sidebar-nav a.sb-logo{display:flex;align-items:center;justify-content:center;flex-shrink:0;padding:0;border-left:none;transition:.2s}
+  .sb-logo:hover{transform:scale(1.08)}
+  .sb-logo img{height:34px;width:34px;display:block;object-fit:contain;border-radius:8px}
+  .sb-brand b{color:#f2f6fa;font-size:14px;letter-spacing:.5px;display:block;line-height:1.4}
+  .sb-brand span{color:#7f95ab;font-size:11.5px;display:block;line-height:1.4}
+  .nav-title{color:#ffb894;font-size:12px;font-weight:800;padding:10px 18px 6px;letter-spacing:1.2px}
+  .sidebar-nav a{
+    display:block;color:#c3d0dc;text-decoration:none;padding:6px 18px;font-size:12.5px;
+    line-height:1.55;border-left:3px solid transparent;transition:.18s;
+  }
+  .sidebar-nav a:hover{color:#fff;background:rgba(255,107,53,.16);border-left-color:var(--brand)}
+  .sidebar-nav a.nav-section{color:#ffb894;font-weight:700;font-size:13px;margin-top:11px;padding-top:10px;border-top:1px solid #26384c}
+  .sidebar-nav a.nav-section:first-of-type{border-top:none;margin-top:0;padding-top:6px}
+  .sidebar-nav a.nav-sub{padding-left:30px;color:#93a8bc;font-size:12px}
+  .sidebar-nav a.nav-sub:hover{color:#fff}
+  .sb-back{margin:16px 14px 0;display:block;text-align:center;padding:9px;border-radius:9px;background:#22344a;color:#a9c0d6 !important;font-size:12px;font-weight:700;border-left:none !important}
+  .sb-back:hover{background:var(--brand) !important;color:#fff !important}
+  .nav-toggle{display:none;position:fixed;top:14px;left:14px;z-index:120;background:var(--brand);color:#fff;border:none;border-radius:9px;padding:9px 13px;font-size:15px;cursor:pointer;box-shadow:0 4px 14px rgba(0,0,0,.25)}
+
+  .page{margin-left:var(--sidebar)}
+
+  .hero{
+    position:relative;overflow:hidden;padding:44px 52px;color:#fff;
+    background:linear-gradient(125deg,#0e1724 0%,#1b2b3f 46%,#8a3a16 132%);
+  }
+  .hero::after{content:"";position:absolute;right:-90px;top:-110px;width:400px;height:400px;border-radius:50%;background:radial-gradient(circle,rgba(245,179,1,.30),transparent 68%)}
+  .hero-top{display:flex;gap:36px;align-items:center;position:relative;z-index:2}
+  .hero-txt{flex:1;min-width:0}
+  .hero .crumb{font-size:11.5px;color:#ffb894;letter-spacing:1.5px;font-weight:700;margin-bottom:14px}
+  .hero h1{font-size:31px;font-weight:800;line-height:1.3;letter-spacing:.6px;margin-bottom:8px}
+  .hero h1 .sub{display:block;font-size:18px;font-weight:700;color:#ffd2b3;margin-top:6px;letter-spacing:.3px}
+  .hero .en{font-size:13px;color:#9db4c8;font-style:italic;margin-bottom:18px}
+  .hero .tags{display:flex;flex-wrap:wrap;gap:8px}
+  .tag{font-size:11.5px;padding:4px 12px;border-radius:20px;background:rgba(255,255,255,.12);border:1px solid rgba(255,255,255,.22);color:#e8f0f6;font-weight:600}
+  .tag.hot{background:rgba(255,107,53,.92);border-color:transparent;color:#fff}
+  .hero-card{flex-shrink:0;width:200px;text-align:center}
+  .hero-card .ava{
+    width:148px;height:148px;border-radius:50%;object-fit:cover;object-position:top center;
+    border:4px solid rgba(255,180,140,.6);box-shadow:0 14px 34px rgba(0,0,0,.45);background:#24344a;
+  }
+  .hero-card .nm{font-size:15px;font-weight:800;color:#fff;margin-top:10px}
+  .hero-card .ti{font-size:11.5px;color:#ffb894;margin-top:2px}
+
+  .container{max-width:1080px;margin:0 auto;padding:38px 52px 70px}
+
+  .lead{
+    font-size:15.5px;line-height:2.05;color:#443c58;background:linear-gradient(120deg,#fff8f3,#f7fbf8);
+    border-left:5px solid var(--brand);border-radius:0 14px 14px 0;padding:22px 26px;margin-bottom:32px;
+  }
+  .lead b{color:var(--brand-dark)}
+
+  .cast{display:flex;gap:16px;align-items:flex-start;border-radius:16px;padding:18px 22px;margin:24px 0}
+  .cast .ava{width:72px;height:72px;border-radius:50%;object-fit:cover;object-position:top center;flex-shrink:0;background:#e8eef5}
+  .cast .bubble{position:relative;font-size:14px;line-height:1.95;padding-top:2px;flex:1}
+  .cast .who{font-size:12px;font-weight:800;margin-bottom:5px;letter-spacing:.5px}
+  .cast.anya{background:var(--brand-soft);border:1px solid #ffdcc9}
+  .cast.anya .who{color:var(--brand-dark)}
+  .cast.anya .bubble{color:#5c4636}
+  .cast.duck{background:#fff5f5;border:1px solid #fbd5d5}
+  .cast.duck .who{color:#b91c1c}
+  .cast.duck .bubble{color:#5c4141}
+  .cast.teacher{background:linear-gradient(120deg,#f4f7fb,#ffffff);border:1px solid #dbe4f0}
+  .cast.teacher .who{color:#1e293b}
+  .cast.teacher .bubble{color:#3c4a5a}
+  .cast.hero{background:#f7f3ff;border:1px solid #ded1fa}
+  .cast.hero .who{color:#6d28d9}
+  .cast.hero .bubble{color:#463d5c}
+
+  .goal-grid{display:grid;grid-template-columns:1fr 1fr;gap:16px;margin-bottom:36px}
+  .goal{border:1px solid var(--line);border-radius:15px;padding:19px 21px;background:#fff;box-shadow:0 4px 16px rgba(31,122,68,.05)}
+  .goal h4{font-size:14px;font-weight:800;margin-bottom:11px;display:flex;align-items:center;gap:8px;color:var(--primary-dark)}
+  .goal h4 .ic{width:22px;height:22px;border-radius:7px;background:var(--primary-lighter);display:flex;align-items:center;justify-content:center;font-size:12px}
+  .goal ul{list-style:none}
+  .goal li{font-size:13.5px;color:#6b6480;line-height:1.9;padding-left:18px;position:relative}
+  .goal li::before{content:"▸";position:absolute;left:0;color:var(--primary);font-weight:800}
+  .goal.syllabus li::before{content:"✓"}
+
+  .section-header{margin:52px 0 24px;padding-bottom:12px;border-bottom:3px solid var(--brand);display:flex;align-items:baseline;gap:14px;flex-wrap:wrap}
+  .section-header h2{font-size:22px;font-weight:800;color:var(--night);letter-spacing:.4px}
+  .section-header .en-title{font-size:12px;color:var(--dim2);font-style:italic}
+  h3{font-size:17.5px;font-weight:800;margin:34px 0 14px;color:var(--night);display:flex;align-items:center;gap:10px}
+  h3::before{content:"";width:5px;height:17px;border-radius:3px;background:var(--brand);flex-shrink:0}
+  h4{font-size:15px;font-weight:800;margin:24px 0 10px;color:#3c2f63}
+  p{margin:12px 0;color:#463d5c;line-height:2}
+  strong{color:var(--primary-dark)}
+  code.inline{background:var(--primary-lighter);color:var(--primary-dark);padding:2px 7px;border-radius:6px;font-family:"SFMono-Regular",Consolas,Menlo,monospace;font-size:.9em;font-weight:600}
+
+  .figure{margin:24px 0;text-align:center}
+  .figure svg.diagram{max-width:100%;height:auto;background:#fff;border:1px solid var(--line);border-radius:14px;padding:10px}
+  .figure .caption{font-size:12.5px;color:var(--dim2);margin-top:9px}
+
+  .pic{margin:26px 0;text-align:center}
+  .pic img{max-width:100%;border-radius:16px;box-shadow:0 10px 28px rgba(30,60,45,.15);display:block;margin:0 auto}
+  .pic figcaption{font-size:12.5px;color:var(--dim2);margin-top:9px}
+  .pic .ph{display:none}
+  .pic.missing img{display:none}
+  .pic.missing .ph{
+    display:flex;flex-direction:column;align-items:center;justify-content:center;gap:9px;
+    border:2px dashed #c9d9e8;border-radius:16px;background:linear-gradient(135deg,#f8fbfe,#eef6ff);
+    padding:40px 26px;color:#7a8fa8;
+  }
+  .pic.missing .ph .fn{font-family:Consolas,monospace;font-size:12.5px;color:#2563eb;font-weight:700;word-break:break-all}
+  .pic.missing .ph .ds{font-size:12.5px;line-height:1.8;max-width:560px}
+
+  .box{border-radius:13px;padding:16px 20px;margin:20px 0;font-size:14px;line-height:1.95}
+  .box .lb{font-weight:800;margin-right:6px}
+  .info{background:#eef6ff;border-left:5px solid #3b82f6;color:#274768}
+  .info .lb{color:#1d4ed8}
+  .tip{background:#fff9ec;border-left:5px solid #f59e0b;color:#6b4e13}
+  .tip .lb{color:#b45309}
+  .remember{background:var(--primary-lighter);border-left:5px solid var(--primary);color:#3a2a6b}
+  .remember .lb{color:var(--primary-dark)}
+  .warn{background:#fef2f2;border-left:5px solid #ef4444;color:#7f2b2b}
+  .warn .lb{color:#b91c1c}
+
+  .code-card{margin:20px 0;border-radius:14px;overflow:hidden;box-shadow:0 10px 28px rgba(20,40,28,.20)}
+  .code-head{display:flex;align-items:center;gap:9px;background:#2c2438;padding:9px 14px}
+  .code-head .dot{width:10px;height:10px;border-radius:50%}
+  .code-head .d1{background:#ff5f57}.code-head .d2{background:#febc2e}.code-head .d3{background:#28c840}
+  .code-head .file{color:#a09ab4;font-size:11.5px;font-family:Consolas,monospace;margin-left:6px}
+  .code-head .lang{margin-left:auto;font-size:10.5px;font-weight:800;color:#150f21;background:#a78bfa;padding:2px 9px;border-radius:6px;letter-spacing:.4px}
+  .code-card pre{background:var(--code-bg);padding:18px 20px;overflow-x:auto;margin:0;font-family:"SFMono-Regular",Consolas,"Courier New",monospace;font-size:13.5px;line-height:1.85}
+  .code-card pre::-webkit-scrollbar{height:8px}
+  .code-card pre::-webkit-scrollbar-thumb{background:#433a5e;border-radius:4px}
+  .code-card code{color:var(--code-tx);white-space:pre}
+  .kw{color:var(--code-kw);font-weight:600}
+  .st{color:var(--code-st)}
+  .nu{color:var(--code-nu)}
+  .cm{color:var(--code-cm);font-style:italic}
+  .fn{color:var(--code-fn)}
+  .out{background:#1d1729;color:#c4b5fd;font-family:Consolas,monospace;font-size:13px;padding:12px 20px;border-top:1px solid #352c48}
+  .out b{color:#c9d6cd;font-weight:600;font-size:11.5px;letter-spacing:1px}
+
+  table.styled{width:100%;border-collapse:collapse;margin:20px 0;font-size:13.5px;border-radius:12px;overflow:hidden;box-shadow:0 4px 16px rgba(31,122,68,.07)}
+  table.styled thead{background:var(--brand)}
+  table.styled th{color:#fff;padding:11px 14px;text-align:left;font-weight:700;font-size:13px}
+  table.styled td{padding:10px 14px;border-bottom:1px solid var(--line);color:#57506b;vertical-align:top}
+  table.styled tbody tr:nth-child(even){background:var(--bg-soft)}
+  table.styled tbody tr:last-child td{border-bottom:none}
+
+  .level-card{border:1px solid var(--line);border-radius:16px;overflow:hidden;margin:22px 0;box-shadow:0 6px 22px rgba(31,122,68,.07)}
+  .level-card .lc-head{background:linear-gradient(100deg,#17283a,#8a3a16);color:#fff;padding:15px 22px;display:flex;align-items:center;gap:12px;flex-wrap:wrap}
+  .level-card .lc-head .n{font-size:12px;font-weight:800;background:rgba(255,255,255,.2);padding:3px 10px;border-radius:20px}
+  .level-card .lc-head h4{margin:0;color:#fff;font-size:16px}
+  .level-card .lc-head .go{margin-left:auto;font-size:11.5px;color:#ffd2b3}
+  .level-card .lc-body{padding:20px 24px;background:#fff}
+  .level-card .story{background:#f9fbfd;border-left:4px solid #93c5fd;border-radius:0 10px 10px 0;padding:13px 18px;margin:0 0 16px;font-size:14px;line-height:1.95;color:#3f5163}
+  .level-card .story b{color:#1d4ed8}
+  .btn-go{
+    display:inline-flex;align-items:center;gap:8px;background:linear-gradient(135deg,var(--brand),var(--brand-dark));
+    color:#fff;text-decoration:none;font-weight:800;font-size:13.5px;padding:10px 22px;border-radius:11px;
+    box-shadow:0 8px 20px rgba(255,107,53,.32);transition:.2s;
+  }
+  .btn-go:hover{transform:translateY(-2px);box-shadow:0 12px 26px rgba(255,107,53,.42)}
+
+  .pit{border:1px solid #f6dede;border-radius:14px;overflow:hidden;margin:16px 0;background:#fff}
+  .pit .pt{display:flex;gap:12px;padding:14px 18px;background:#fffafa;align-items:flex-start}
+  .pit .x{width:26px;height:26px;border-radius:9px;background:#fee;color:#dc2626;display:flex;align-items:center;justify-content:center;font-weight:800;flex-shrink:0;font-size:13px}
+  .pit .t{font-size:13.5px;line-height:1.9;color:#5c4a4a;flex:1}
+  .pit .t b{color:#b91c1c}
+  .pit .duck{display:flex;gap:12px;padding:13px 18px;background:#fff5f5;border-top:1px dashed #f3d0d0;align-items:flex-start}
+  .pit .duck img{width:48px;height:48px;object-fit:contain;flex-shrink:0;margin-top:2px}
+  .pit .duck .dt{font-size:13.5px;line-height:1.9;color:#7a3b3b}
+  .pit .duck .dt b{color:#b91c1c}
+  .pit .fix{padding:12px 18px;background:#f7f3ff;border-top:1px dashed #ded1fa;font-size:13.5px;color:#3a2a6b}
+  .pit .fix b{color:var(--primary-dark)}
+
+  .exam{border:1px solid #dfe7f5;border-radius:15px;margin:16px 0;overflow:hidden;background:#fff;box-shadow:0 4px 16px rgba(38,62,120,.06)}
+  .exam .eh{display:flex;align-items:center;gap:10px;padding:11px 18px;background:linear-gradient(100deg,#eef4ff,#f7faff);border-bottom:1px solid #e3ebf8;flex-wrap:wrap}
+  .exam .eh .src{font-size:11px;font-weight:800;color:#fff;background:#2563eb;padding:2.5px 10px;border-radius:20px}
+  .exam .eh .src.ori{background:#8b5cf6}
+  .exam .eh .tp{font-size:11.5px;color:#5b7ba8;font-weight:700}
+  .exam .eb{padding:16px 20px}
+  .exam .q{font-weight:700;font-size:14px;color:#38304b;line-height:1.9;margin-bottom:10px}
+  .exam .opt{font-size:13.5px;color:#6b6480;line-height:2.05;padding-left:6px}
+  .exam .opt i{font-style:normal;font-weight:800;color:var(--primary-dark);margin-right:7px}
+  .exam pre{margin:12px 0;background:#1b2a21;border-radius:10px;padding:14px 16px;overflow-x:auto;font-family:Consolas,monospace;font-size:13px;line-height:1.8;color:var(--code-tx)}
+  .exam details{margin-top:10px;border-top:1px dashed var(--line);padding-top:10px}
+  .exam summary{cursor:pointer;font-size:12.5px;font-weight:800;color:#2563eb;outline:none;user-select:none}
+  .exam details .ans{font-size:13.5px;color:#463d5c;line-height:1.95;margin-top:9px;background:var(--bg-soft);padding:13px 16px;border-radius:10px}
+  .exam details .ans b{color:var(--primary-dark)}
+  .exam details .ans .tagline{display:inline-block;font-size:11px;background:#e0f2fe;color:#0e7490;padding:1.5px 8px;border-radius:6px;font-weight:700;margin-right:6px}
+
+  .summary{margin:40px 0 20px;border-radius:18px;padding:26px 30px;background:linear-gradient(130deg,#fff8f3,#ffffff);border:1px solid #ffe0cf}
+  .summary h3{margin-top:0}
+  .summary ul{list-style:none;margin-top:10px}
+  .summary li{font-size:14px;line-height:2;color:#514a64;padding-left:24px;position:relative}
+  .summary li::before{content:"◆";position:absolute;left:0;color:var(--brand);font-size:11px;top:6px}
+
+  .pager{display:flex;gap:14px;margin-top:30px;flex-wrap:wrap}
+  .pager a{flex:1;min-width:200px;text-decoration:none;border:1px solid var(--line);border-radius:14px;padding:16px 20px;background:#fff;transition:.2s;display:block}
+  .pager a:hover{border-color:var(--brand);box-shadow:0 10px 26px rgba(255,107,53,.14);transform:translateY(-2px)}
+  .pager a .k{font-size:11px;color:var(--dim2);font-weight:700;letter-spacing:1px}
+  .pager a .v{font-size:14px;font-weight:800;color:var(--night);margin-top:5px}
+  .pager a.back{background:var(--brand-soft);border-color:transparent;text-align:center}
+  .pager a.back .v{color:var(--brand-dark)}
+
+  .cta{margin-top:26px;border-radius:20px;padding:30px 34px;color:#fff;position:relative;overflow:hidden;background:linear-gradient(120deg,#16202f,#2b3a52 46%,#a8431c 132%)}
+  .cta::after{content:"";position:absolute;right:-70px;bottom:-90px;width:280px;height:280px;border-radius:50%;background:radial-gradient(circle,rgba(255,140,80,.45),transparent 68%)}
+  .cta h3{color:#fff;margin:0 0 10px;position:relative;z-index:2}
+  .cta h3::before{background:var(--brand)}
+  .cta p{color:#d8e0ef;font-size:13.5px;margin:0 0 18px;position:relative;z-index:2;max-width:640px}
+  .cta .btn-go{position:relative;z-index:2}
+
+  @media(max-width:900px){
+    .sidebar-nav{transform:translateX(-100%)}
+    .sidebar-nav.active{transform:translateX(0)}
+    .nav-toggle{display:block}
+    .page{margin-left:0}
+    .hero{padding:70px 22px 34px}
+    .hero-top{flex-direction:column-reverse;text-align:center}
+    .hero-card{width:auto}
+    .container{padding:26px 20px 60px}
+    .goal-grid{grid-template-columns:1fr}
+  }
+
+  /* ---------- 图形化：积木卡（替代代码卡） ---------- */
+  .blk-card{background:#f8f6ff;border:1px solid #e6e0fb;border-radius:14px;
+    margin:18px 0;overflow:hidden;box-shadow:0 2px 10px rgba(109,40,217,.06)}
+  .blk-head{display:flex;align-items:center;gap:7px;padding:10px 14px;
+    background:#f1ecfe;border-bottom:1px solid #e6e0fb}
+  .blk-head .file{font-size:12.5px;font-weight:700;color:#5b4a86;margin-left:4px}
+  .blk-head .lang{margin-left:auto;font-size:11px;font-weight:800;color:#fff;
+    background:#8b5cf6;border-radius:20px;padding:3px 11px;letter-spacing:.5px}
+  .blk-body{padding:20px 18px;overflow-x:auto;
+    background:
+      radial-gradient(circle at 14px 14px,#ece6fb 1.6px,transparent 1.7px) 0 0/28px 28px,
+      #ffffff}
+  .blk{display:block;max-width:100%;height:auto;margin:0 auto}
+  .blk + .blk{margin-top:16px}
+  .blk-card .out{background:#f1ecfe;border-top:1px solid #e6e0fb;color:#5b4a86}
+  .blk-card .out b{color:#6d28d9}
+  /* 积木并排（不同角色 / 不同做法对照） */
+  .blk-row{display:flex;gap:16px;flex-wrap:wrap;justify-content:center;align-items:flex-start}
+  .blk-row > *{flex:1 1 240px;min-width:0}
+  .blk-row .blk{margin:0}
+  /* 积木旁的小标题 */
+  .blk-cap{font-size:12.5px;font-weight:800;color:#6d28d9;background:#f3efff;
+    border:1px solid #e6e0fb;border-radius:8px;padding:5px 12px;margin:14px 0 10px;
+    display:inline-block}
+</style>
+</head>
+<body>
+
+<button class="nav-toggle" onclick="document.querySelector('.sidebar-nav').classList.toggle('active')">&#9776;</button>
+
+<nav class="sidebar-nav">
+  <div class="sb-brand">
+    <a class="sb-logo" href="https://codecombat.cn/" target="_blank" rel="noopener" title="访问 CodeCombat 扣哒世界官网">
+      <img src="../assets/logo.png" alt="CodeCombat 扣哒世界">
+    </a>
+    <div><b>分身魔术摊</b><span>彩虹集市 · 图形化二级 第 4 单元</span></div>
+  </div>
+  <div class="nav-title">本单元目录</div>
+
+  <a href="#s0" class="nav-section">0　单元导语与目标</a>
+  <a href="#s0-1" class="nav-sub">0.1 学习目标</a>
+  <a href="#s0-2" class="nav-sub">0.2 考纲对照</a>
+  <a href="#s1" class="nav-section">1　克隆是什么</a>
+  <a href="#s1-1" class="nav-sub">1.1 本体与克隆体</a>
+  <a href="#s1-2" class="nav-sub">1.2 为什么要克隆</a>
+  <a href="#s2" class="nav-section">2　三块克隆积木</a>
+  <a href="#s2-1" class="nav-sub">2.1 克隆自己</a>
+  <a href="#s2-2" class="nav-sub">2.2 当作为克隆体启动时</a>
+  <a href="#s2-3" class="nav-sub">2.3 删除此克隆体</a>
+  <a href="#s3" class="nav-section">3　本体和克隆体的区别</a>
+  <a href="#s3-1" class="nav-sub">3.1 谁执行哪段脚本</a>
+  <a href="#s3-2" class="nav-sub">3.2 克隆体的位置与方向</a>
+  <a href="#s4" class="nav-section">4　克隆的常见用法</a>
+  <a href="#s4-1" class="nav-sub">4.1 一群一模一样的角色</a>
+  <a href="#s4-2" class="nav-sub">4.2 别忘了删掉它们</a>
+  <a href="#s5" class="nav-section">5　代码实战</a>
+  <a href="#s6" class="nav-section">6　常见陷阱</a>
+  <a href="#s7" class="nav-section">7　题目练习</a>
+  <a href="#s8" class="nav-section">8　本单元小结</a>
+
+  <a href="../index.html" target="_top" class="sb-back">返回考纲之路</a>
+</nav>
+
+<div class="page">
+
+<div class="hero">
+  <div class="hero-top">
+    <div class="hero-txt">
+      <div class="crumb">扣哒考级 · GESP 图形化 二级 · 第 4 单元　|　彩虹集市 RAINBOW BAZAAR</div>
+      <h1>分身魔术摊
+        <span class="sub">克隆</span>
+      </h1>
+      <div class="en">Cloning</div>
+      <div class="tags">        <span class="tag hot">考纲 · 克隆</span>
+        <span class="tag">本体与克隆体</span>
+        <span class="tag">克隆的用法</span>
+        <span class="tag">删除克隆体</span></div>
+    </div>
+    <div class="hero-card">
+      <img class="ava" src="../assets/avatars/anya.webp" alt="安雅" onerror="this.style.background='#24344a';this.src='../assets/heroes/anya.webp'">
+      <div class="nm">安雅</div>
+      <div class="ti">红发队长 · 你的旅伴</div>
+    </div>
+  </div>
+</div>
+
+<div class="container">
+
+
+<div class="lead">
+  魔术摊的帐篷帘子一掀，你先看到的是一面镜子。<br>
+  一只小猫从左边走进去，镜子里走出一只一模一样的小猫；
+  它走到右边，镜子里又走出一只……<b>三只、四只、五只，全长得一样。</b><br>
+  安雅在旁边笑："这不是魔法，是<b>克隆</b>——机器复制的本事。"
+</div>
+
+<div class="cast anya">
+  <img class="ava" src="../assets/avatars/anya.webp" alt="安雅" onerror="this.style.display='none'">
+  <div class="bubble">
+    <div class="who">安雅 · 红发队长</div>
+    克隆说难也不难，就三块积木：<b>克隆自己、当作为克隆体启动时、删除此克隆体</b>。<br>
+    考试最爱考两句：<b>"克隆体执行哪一段脚本"</b>和<b>"克隆体会不会影响本体"</b>。
+    把这两句想明白，克隆题就通了。
+  </div>
+</div>
+
+<!-- ============ 0 ============ -->
+<div class="section-header" id="s0">
+  <h2>0　单元导语与目标</h2>
+  <div class="en-title">Before We Start</div>
+</div>
+
+<h3 id="s0-1">0.1 学习目标</h3>
+
+<ul>
+  <li>理解<b>克隆</b>：让一个角色"复制"出许多个自己的分身；</li>
+  <li>掌握三块积木：<b>克隆自己</b>、<b>当作为克隆体启动时</b>、<b>删除此克隆体</b>；</li>
+  <li>分清<b>本体</b>与<b>克隆体</b>：它们各执行哪一段脚本；</li>
+  <li>会让克隆体出现在不同的位置、做不同的事；</li>
+  <li>知道克隆体不会自己消失，用完要删掉。</li>
+</ul>
+<h3 id="s0-2">0.2 考纲对照</h3>
+
+<table class="styled">
+  <thead><tr><th>考纲知识块</th><th>考纲要求</th><th>本单元小节</th></tr></thead>
+  <tbody><tr><td>3 克隆</td><td>克隆自己 / 角色、克隆体启动的设置、删除克隆体</td><td>1.1～1.2、2.1～2.3</td></tr><tr><td>（知识点详述第 6 条）</td><td>掌握克隆的概念，熟练控制当作为克隆体启动时的基本操作，灵活控制克隆体和本体</td><td>3.1～3.2、4.1～4.2</td></tr></tbody>
+</table>
+
+<p>克隆是二级最有"魔法感"的一块。考试里最爱考两句：
+<b>"克隆体有自己的位置和方向"</b>、<b>"克隆体用完要删掉"</b>。</p>
+
+<!-- ============ 1 ============ -->
+<div class="section-header" id="s1">
+  <h2>1　克隆是什么</h2>
+  <div class="en-title">What Is Cloning</div>
+</div>
+
+<h3 id="s1-1">1.1 本体与克隆体</h3>
+
+<p>魔术摊的帐篷里有一面镜子。一只小猫走进去，镜子里走出一模一样的复制品——'
+'一个、两个、三个。<b>原来的那只叫本体，复制出来的叫克隆体。</b></p>
+<figure class="pic">
+  <img src="../assets/illustrations/scratch-L2-04-01_clone_tent.webp" alt="分身魔术摊"
+       onerror="this.closest('.pic').classList.add('missing')">
+  <div class="ph">
+    <div class="fn">assets/illustrations/scratch-L2-04-01_clone_tent.webp</div>
+    <div class="ds">【配图位】魔术帐篷里，一只小猫走到镜子前，多个一模一样的复制体依次走出，本体发出不同的光。（提示词见《GESP配图清单与AI绘图提示词》第四节 2-4）</div>
+  </div>
+  <figcaption>图 1：分身魔术摊——一个本体，许多个克隆体</figcaption>
+</figure>
+
+<div class="box tip">
+  <span class="lb">打个比方：</span>本体就像"印钞的模子"，克隆体是"印出来的钞票"——<b>长得一模一样，但每一张都是独立的一张</b>。你挪动其中一张，别的不会跟着动。
+</div>
+
+
+<h3 id="s1-2">1.2 为什么要克隆</h3>
+
+<figure class="figure">
+<svg class="diagram" viewBox="0 0 820 240" role="img" aria-label="要 30 个一样的东西，两种做法">
+<text x="24" y="32" font-size="14" fill="#4c1d95" text-anchor="start" font-weight="bold">要 30 个一样的东西，两种做法</text><rect x="24" y="52" width="376" height="160" rx="12" fill="#f5f3ff" stroke="#e6e0fb" stroke-width="1.8"/><text x="212" y="82" font-size="13.5" fill="#6d28d9" text-anchor="middle" font-weight="bold">一个个添加角色</text><circle cx="40" cy="106" r="3.4" fill="#6d28d9"/><text x="52" y="110" font-size="12.2" fill="#4c1d95" text-anchor="start">手动加 30 次，很麻烦</text><circle cx="40" cy="136" r="3.4" fill="#6d28d9"/><text x="52" y="140" font-size="12.2" fill="#4c1d95" text-anchor="start">改一个，其余 29 个都要改</text><circle cx="40" cy="166" r="3.4" fill="#6d28d9"/><text x="52" y="170" font-size="12.2" fill="#4c1d95" text-anchor="start">运行时数量固定</text><rect x="420" y="52" width="376" height="160" rx="12" fill="#fff7ed" stroke="#e6e0fb" stroke-width="1.8"/><text x="608" y="82" font-size="13.5" fill="#b45309" text-anchor="middle" font-weight="bold">用一个角色克隆</text><circle cx="436" cy="106" r="3.4" fill="#b45309"/><text x="448" y="110" font-size="12.2" fill="#4c1d95" text-anchor="start">一块积木就复制一个</text><circle cx="436" cy="136" r="3.4" fill="#b45309"/><text x="448" y="140" font-size="12.2" fill="#4c1d95" text-anchor="start">所有克隆体共用同一段脚本</text><circle cx="436" cy="166" r="3.4" fill="#b45309"/><text x="448" y="170" font-size="12.2" fill="#4c1d95" text-anchor="start">运行时可多可少</text><text x="24" y="226" font-size="11.8" fill="#8d9d94" text-anchor="start">克隆体"长得一样、脚本一样"，但各自的位置、方向是独立的</text>
+</svg>
+  <div class="caption">图 2（SVG）：为什么要用克隆</div>
+</figure>
+
+<!-- ============ 2 ============ -->
+<div class="section-header" id="s2">
+  <h2>2　三块克隆积木</h2>
+  <div class="en-title">The Three Clone Blocks</div>
+</div>
+
+<h3 id="s2-1">2.1 克隆自己</h3>
+
+<p>在<b>控制</b>分类里能找到这一块。它执行一次，就复制出一个克隆体。</p>
+<div class="blk-card">
+  <div class="blk-head">
+    <span class="dot d1"></span><span class="dot d2"></span><span class="dot d3"></span>
+    <span class="file">重点示例：复制三个分身</span>
+    <span class="lang">图形化积木</span>
+  </div>
+  <div class="blk-body">
+<svg class="blk" viewBox="0 0 174.2 190" width="174.2" height="190" role="img" aria-label="积木脚本"><g font-family="'PingFang SC','Microsoft YaHei','Noto Sans SC',sans-serif"><g transform="translate(3,3)"><path d="M0,12 C32.96,0 131.84,0 164.8,12 V43 A5,5 0 0 1 159.8,48 H28 v4 h-12 v-4 H5 A5,5 0 0 1 0,43 Z" fill="#FFBF00" stroke="#d19c00" stroke-width="1.2"/><text x="15" y="34.8" font-size="13.4" fill="#fff">当 </text><rect x="42.6" y="18.5" width="52.8" height="23" rx="5" fill="#CC9900"/><text x="64" y="34.4" font-size="12.5" fill="#fff" text-anchor="middle">绿旗</text><path d="M84.4 27.5 l4 5 l4 -5 z" fill="#fff" opacity=".85"/><text x="102.4" y="34.8" font-size="13.4" fill="#fff"> 被点击</text></g><g transform="translate(3,55)"><path d="M0,5 A5,5 0 0 1 5,0 H16 v4 h12 v-4 H163 A5,5 0 0 1 168,5 V123 A5,5 0 0 1 163,128 H28 v4 h-12 v-4 H5 A5,5 0 0 1 0,123 V115 H16 V36 H0 Z" fill="#FFAB19" stroke="#d18c14" stroke-width="1.2"/><text x="15" y="22.8" font-size="13.4" fill="#fff">重复执行 </text><rect x="82.8" y="6.5" width="30" height="23" rx="11.5" fill="#fff"/><text x="97.8" y="22.4" font-size="12.5" fill="#575e75" text-anchor="middle">3</text><text x="119.8" y="22.8" font-size="13.4" fill="#fff"> 次</text><g transform="translate(20,38)"><path d="M0,5 A5,5 0 0 1 5,0 H16 v4 h12 v-4 H118 A5,5 0 0 1 123,5 V31 A5,5 0 0 1 118,36 H28 v4 h-12 v-4 H5 A5,5 0 0 1 0,31 Z" fill="#FFAB19" stroke="#d18c14" stroke-width="1.2"/><text x="15" y="22.8" font-size="13.4" fill="#fff">克隆 </text><rect x="56" y="6.5" width="52.8" height="23" rx="5" fill="#CF8B17"/><text x="77.4" y="22.4" font-size="12.5" fill="#fff" text-anchor="middle">自己</text><path d="M97.8 15.5 l4 5 l4 -5 z" fill="#fff" opacity=".85"/></g><g transform="translate(20,76)"><path d="M0,5 A5,5 0 0 1 5,0 H16 v4 h12 v-4 H137 A5,5 0 0 1 142,5 V31 A5,5 0 0 1 137,36 H28 v4 h-12 v-4 H5 A5,5 0 0 1 0,31 Z" fill="#FFAB19" stroke="#d18c14" stroke-width="1.2"/><text x="15" y="22.8" font-size="13.4" fill="#fff">等待 </text><rect x="56" y="6.5" width="43.6" height="23" rx="11.5" fill="#fff"/><text x="77.8" y="22.4" font-size="12.5" fill="#575e75" text-anchor="middle">0.3</text><text x="106.6" y="22.8" font-size="13.4" fill="#fff"> 秒</text></g></g></g></svg>
+  </div>
+  <div class="out"><b>要点</b>　"克隆自己"放在循环里执行 3 次，就得到 3 个克隆体；中间加一点等待，能看清它们依次出现</div>
+</div>
+
+<div class="box info">
+  <span class="lb">要记得一件事：</span><b>"克隆自己"执行一次就多一个分身</b>，但它不会自动停。如果把它放进"一直重复"里，分身会源源不断冒出来，很快把舞台挤满。
+</div>
+
+
+<h3 id="s2-2">2.2 当作为克隆体启动时</h3>
+
+<p>克隆体出生后，怎么知道该做什么？靠这一块<b>帽子积木</b>：</p>
+<div class="blk-card">
+  <div class="blk-head">
+    <span class="dot d1"></span><span class="dot d2"></span><span class="dot d3"></span>
+    <span class="file">重点示例：每个分身出生后各自去做事</span>
+    <span class="lang">图形化积木</span>
+  </div>
+  <div class="blk-body">
+<svg class="blk" viewBox="0 0 451.8 230" width="451.8" height="230" role="img" aria-label="积木脚本"><g font-family="'PingFang SC','Microsoft YaHei','Noto Sans SC',sans-serif"><g transform="translate(3,3)"><path d="M0,12 C30.12,0 120.48,0 150.6,12 V43 A5,5 0 0 1 145.6,48 H28 v4 h-12 v-4 H5 A5,5 0 0 1 0,43 Z" fill="#FFAB19" stroke="#d18c14" stroke-width="1.2"/><text x="15" y="34.8" font-size="13.4" fill="#fff">当作为克隆体启动时</text></g><g transform="translate(3,55)"><path d="M0,5 A5,5 0 0 1 5,0 H16 v4 h12 v-4 H440 A5,5 0 0 1 445,5 V31 A5,5 0 0 1 440,36 H28 v4 h-12 v-4 H5 A5,5 0 0 1 0,31 Z" fill="#4C97FF" stroke="#3e7bd1" stroke-width="1.2"/><text x="15" y="22.8" font-size="13.4" fill="#fff">移到 x: </text><polygon points="89.1,6.5 346.5,6.5 352.825,18 346.5,29.5 89.1,29.5 82.775,18" fill="#fff" stroke="#4C97FF" stroke-width="1.4"/><text x="88.6" y="22.8" font-size="13.4" fill="#575e75">在 </text><rect x="116.2" y="6.5" width="50.8" height="23" rx="11.5" fill="#fff" stroke="#cfd6e4" stroke-width="1"/><text x="141.6" y="22.4" font-size="12.5" fill="#575e75" text-anchor="middle">-200</text><text x="174" y="22.8" font-size="13.4" fill="#575e75"> 和 </text><rect x="208.8" y="6.5" width="43.6" height="23" rx="11.5" fill="#fff" stroke="#cfd6e4" stroke-width="1"/><text x="230.6" y="22.4" font-size="12.5" fill="#575e75" text-anchor="middle">200</text><text x="259.4" y="22.8" font-size="13.4" fill="#575e75"> 之间取随机数</text><text x="365" y="22.8" font-size="13.4" fill="#fff"> y: </text><rect x="400.8" y="6.5" width="30" height="23" rx="11.5" fill="#fff"/><text x="415.8" y="22.4" font-size="12.5" fill="#575e75" text-anchor="middle">0</text></g><g transform="translate(3,95)"><path d="M0,5 A5,5 0 0 1 5,0 H16 v4 h12 v-4 H156 A5,5 0 0 1 161,5 V123 A5,5 0 0 1 156,128 H28 v4 h-12 v-4 H5 A5,5 0 0 1 0,123 V115 H16 V36 H0 Z" fill="#FFAB19" stroke="#d18c14" stroke-width="1.2"/><text x="15" y="22.8" font-size="13.4" fill="#fff">重复执行 </text><rect x="82.8" y="6.5" width="36.4" height="23" rx="11.5" fill="#fff"/><text x="101" y="22.4" font-size="12.5" fill="#575e75" text-anchor="middle">10</text><text x="126.2" y="22.8" font-size="13.4" fill="#fff"> 次</text><g transform="translate(20,38)"><path d="M0,5 A5,5 0 0 1 5,0 H16 v4 h12 v-4 H123 A5,5 0 0 1 128,5 V31 A5,5 0 0 1 123,36 H28 v4 h-12 v-4 H5 A5,5 0 0 1 0,31 Z" fill="#4C97FF" stroke="#3e7bd1" stroke-width="1.2"/><text x="15" y="22.8" font-size="13.4" fill="#fff">移动 </text><rect x="56" y="6.5" width="30" height="23" rx="11.5" fill="#fff"/><text x="71" y="22.4" font-size="12.5" fill="#575e75" text-anchor="middle">5</text><text x="93" y="22.8" font-size="13.4" fill="#fff"> 步</text></g><g transform="translate(20,76)"><path d="M0,5 A5,5 0 0 1 5,0 H16 v4 h12 v-4 H130 A5,5 0 0 1 135,5 V31 A5,5 0 0 1 130,36 H28 v4 h-12 v-4 H5 A5,5 0 0 1 0,31 Z" fill="#4C97FF" stroke="#3e7bd1" stroke-width="1.2"/><text x="15" y="22.8" font-size="13.4" fill="#fff">右转 </text><rect x="56" y="6.5" width="36.4" height="23" rx="11.5" fill="#fff"/><text x="74.2" y="22.4" font-size="12.5" fill="#575e75" text-anchor="middle">36</text><text x="99.4" y="22.8" font-size="13.4" fill="#fff"> 度</text></g></g></g></svg>
+  </div>
+  <div class="out"><b>要点</b>　这是一段<b>只属于克隆体</b>的脚本：本体不会执行它；每个克隆体一出生就各自跑一遍</div>
+</div>
+
+<h3 id="s2-3">2.3 删除此克隆体</h3>
+
+<div class="blk-card">
+  <div class="blk-head">
+    <span class="dot d1"></span><span class="dot d2"></span><span class="dot d3"></span>
+    <span class="file">重点示例：做完事就把自己删掉</span>
+    <span class="lang">图形化积木</span>
+  </div>
+  <div class="blk-body">
+<svg class="blk" viewBox="0 0 200 230" width="200" height="230" role="img" aria-label="积木脚本"><g font-family="'PingFang SC','Microsoft YaHei','Noto Sans SC',sans-serif"><g transform="translate(3,3)"><path d="M0,12 C30.12,0 120.48,0 150.6,12 V43 A5,5 0 0 1 145.6,48 H28 v4 h-12 v-4 H5 A5,5 0 0 1 0,43 Z" fill="#FFAB19" stroke="#d18c14" stroke-width="1.2"/><text x="15" y="34.8" font-size="13.4" fill="#fff">当作为克隆体启动时</text></g><g transform="translate(3,55)"><path d="M0,5 A5,5 0 0 1 5,0 H16 v4 h12 v-4 H189 A5,5 0 0 1 194,5 V123 A5,5 0 0 1 189,128 H28 v4 h-12 v-4 H5 A5,5 0 0 1 0,123 V115 H16 V36 H0 Z" fill="#FFAB19" stroke="#d18c14" stroke-width="1.2"/><text x="15" y="22.8" font-size="13.4" fill="#fff">重复执行 </text><rect x="82.8" y="6.5" width="36.4" height="23" rx="11.5" fill="#fff"/><text x="101" y="22.4" font-size="12.5" fill="#575e75" text-anchor="middle">20</text><text x="126.2" y="22.8" font-size="13.4" fill="#fff"> 次</text><g transform="translate(20,38)"><path d="M0,5 A5,5 0 0 1 5,0 H16 v4 h12 v-4 H123 A5,5 0 0 1 128,5 V31 A5,5 0 0 1 123,36 H28 v4 h-12 v-4 H5 A5,5 0 0 1 0,31 Z" fill="#4C97FF" stroke="#3e7bd1" stroke-width="1.2"/><text x="15" y="22.8" font-size="13.4" fill="#fff">移动 </text><rect x="56" y="6.5" width="30" height="23" rx="11.5" fill="#fff"/><text x="71" y="22.4" font-size="12.5" fill="#575e75" text-anchor="middle">5</text><text x="93" y="22.8" font-size="13.4" fill="#fff"> 步</text></g><g transform="translate(20,76)"><path d="M0,5 A5,5 0 0 1 5,0 H16 v4 h12 v-4 H163 A5,5 0 0 1 168,5 V31 A5,5 0 0 1 163,36 H28 v4 h-12 v-4 H5 A5,5 0 0 1 0,31 Z" fill="#9966FF" stroke="#7d53d1" stroke-width="1.2"/><text x="15" y="22.8" font-size="13.4" fill="#fff">将颜色特效增加 </text><rect x="123" y="6.5" width="30" height="23" rx="11.5" fill="#fff"/><text x="138" y="22.4" font-size="12.5" fill="#575e75" text-anchor="middle">5</text></g></g><g transform="translate(3,187)"><path d="M0,5 A5,5 0 0 1 5,0 H16 v4 h12 v-4 H105 A5,5 0 0 1 110,5 V31 A5,5 0 0 1 105,36 H28 v4 h-12 v-4 H5 A5,5 0 0 1 0,31 Z" fill="#FFAB19" stroke="#d18c14" stroke-width="1.2"/><text x="15" y="22.8" font-size="13.4" fill="#fff">删除此克隆体</text></g></g></svg>
+  </div>
+  <div class="out"><b>要点</b>　"删除此克隆体"只会删掉<b>执行它的那一个</b>，别的克隆体和本体都还在</div>
+</div>
+
+<div class="box info">
+  <span class="lb">为什么一定要删？</span>克隆体<b>不会自己消失</b>。舞台上堆着几十个看不见的克隆体，既占内存又会让画面变乱。<b>用完就删，是写克隆程序的好习惯。</b>
+</div>
+
+<!-- ============ 3 ============ -->
+<div class="section-header" id="s3">
+  <h2>3　本体和克隆体的区别</h2>
+  <div class="en-title">Clones vs the Original</div>
+</div>
+
+<h3 id="s3-1">3.1 谁执行哪段脚本</h3>
+
+<figure class="figure">
+<svg class="diagram" viewBox="0 0 820 210" role="img" aria-label="两段脚本，分别归谁">
+<text x="24" y="32" font-size="14" fill="#4c1d95" text-anchor="start" font-weight="bold">两段脚本，分别归谁</text><rect x="24" y="52" width="376" height="130" rx="12" fill="#f5f3ff" stroke="#e6e0fb" stroke-width="1.8"/><text x="212" y="82" font-size="13.5" fill="#6d28d9" text-anchor="middle" font-weight="bold">"当绿旗被点击"里</text><circle cx="40" cy="106" r="3.4" fill="#6d28d9"/><text x="52" y="110" font-size="12.2" fill="#4c1d95" text-anchor="start">本体执行</text><circle cx="40" cy="136" r="3.4" fill="#6d28d9"/><text x="52" y="140" font-size="12.2" fill="#4c1d95" text-anchor="start">克隆体不执行（出生时绿旗早就点过了）</text><rect x="420" y="52" width="376" height="130" rx="12" fill="#fff7ed" stroke="#e6e0fb" stroke-width="1.8"/><text x="608" y="82" font-size="13.5" fill="#b45309" text-anchor="middle" font-weight="bold">"当作为克隆体启动时"里</text><circle cx="436" cy="106" r="3.4" fill="#b45309"/><text x="448" y="110" font-size="12.2" fill="#4c1d95" text-anchor="start">每一个克隆体一出生就执行一次</text><circle cx="436" cy="136" r="3.4" fill="#b45309"/><text x="448" y="140" font-size="12.2" fill="#4c1d95" text-anchor="start">本体不执行</text><text x="24" y="196" font-size="11.8" fill="#8d9d94" text-anchor="start">两段脚本互不干扰——这正是克隆最好用的地方</text>
+</svg>
+  <div class="caption">图 3（SVG）：本体与克隆体各管一段</div>
+</figure>
+
+<h3 id="s3-2">3.2 克隆体的位置与方向</h3>
+
+<div class="box info">
+  <span class="lb">最容易考的一条：</span>克隆体出生时，<b>位置、方向、造型和当时的本体一模一样</b>；但只要一执行"移到……"或"移动……"，<b>每个克隆体都会按自己的路线走，互不影响</b>。
+</div>
+
+<figure class="pic">
+  <img src="../assets/illustrations/scratch-L2-04-02_clone_crowd.webp" alt="广场上的分身"
+       onerror="this.closest('.pic').classList.add('missing')">
+  <div class="ph">
+    <div class="fn">assets/illustrations/scratch-L2-04-02_clone_crowd.webp</div>
+    <div class="ds">【配图位】集市广场上几十个一模一样的小角色同步跳着同一支舞，俯视构图，热闹多彩。（提示词见《GESP配图清单与AI绘图提示词》第四节 2-4）</div>
+  </div>
+  <figcaption>图 4：几十个分身，各跳各的</figcaption>
+</figure>
+
+<!-- ============ 4 ============ -->
+<div class="section-header" id="s4">
+  <h2>4　克隆的常见用法</h2>
+  <div class="en-title">Common Uses of Cloning</div>
+</div>
+
+<h3 id="s4-1">4.1 一群一模一样的角色</h3>
+
+<figure class="figure">
+<svg class="diagram" viewBox="0 0 820 194" role="img" aria-label="克隆的四种典型用法">
+<text x="24" y="32" font-size="14" fill="#4c1d95" text-anchor="start" font-weight="bold">克隆的四种典型用法</text><rect x="24" y="56" width="181" height="104" rx="12" fill="#f3efff" stroke="#e6e0fb" stroke-width="1.8"/><text x="114.5" y="104" font-size="13.5" fill="#6d28d9" text-anchor="middle" font-weight="bold">下雪 / 落花</text><text x="114.5" y="126" font-size="11.6" fill="#7c7794" text-anchor="middle">不断克隆出小雪花，落到底部就删</text><rect x="221" y="56" width="181" height="104" rx="12" fill="#faf8ff" stroke="#e6e0fb" stroke-width="1.8"/><text x="311.5" y="104" font-size="13.5" fill="#6d28d9" text-anchor="middle" font-weight="bold">打敌人</text><text x="311.5" y="126" font-size="11.6" fill="#7c7794" text-anchor="middle">同一批敌人用同一个角色克隆出来</text><rect x="418" y="56" width="181" height="104" rx="12" fill="#f3efff" stroke="#e6e0fb" stroke-width="1.8"/><text x="508.5" y="104" font-size="13.5" fill="#6d28d9" text-anchor="middle" font-weight="bold">子弹连发</text><text x="508.5" y="126" font-size="11.6" fill="#7c7794" text-anchor="middle">每按一次键就克隆一颗子弹</text><rect x="615" y="56" width="181" height="104" rx="12" fill="#faf8ff" stroke="#e6e0fb" stroke-width="1.8"/><text x="705.5" y="104" font-size="13.5" fill="#6d28d9" text-anchor="middle" font-weight="bold">铺满屏幕</text><text x="705.5" y="126" font-size="11.6" fill="#7c7794" text-anchor="middle">复制一片整齐排列的图案</text><text x="24" y="186" font-size="11.8" fill="#8d9d94" text-anchor="start">共同点：要很多个"长得一样"的东西，而且数量会变</text>
+</svg>
+  <div class="caption">图 5（SVG）：克隆的四种常见用法</div>
+</figure>
+
+<h3 id="s4-2">4.2 别忘了删掉它们</h3>
+
+<figure class="figure">
+<svg class="diagram" viewBox="0 0 820 158" role="img" aria-label="一个克隆体的完整一生">
+<text x="24" y="32" font-size="14" fill="#4c1d95" text-anchor="start" font-weight="bold">一个克隆体的完整一生</text><rect x="24" y="56" width="173.5" height="68" rx="10" fill="#f3efff" stroke="#e6e0fb" stroke-width="1.8"/><text x="110.75" y="95" font-size="12.4" fill="#6d28d9" text-anchor="middle" font-weight="bold">被克隆出来</text><line x1="202.5" y1="90" x2="214.5" y2="90" stroke="#8b5cf6" stroke-width="2.2"/><polygon points="214.5,90 206.5,85 206.5,95" fill="#8b5cf6"/><rect x="223.5" y="56" width="173.5" height="68" rx="10" fill="#f3efff" stroke="#e6e0fb" stroke-width="1.8"/><text x="310.25" y="95" font-size="12.4" fill="#6d28d9" text-anchor="middle" font-weight="bold">执行"当作为克隆体启动时"</text><line x1="402" y1="90" x2="414" y2="90" stroke="#8b5cf6" stroke-width="2.2"/><polygon points="414,90 406,85 406,95" fill="#8b5cf6"/><rect x="423" y="56" width="173.5" height="68" rx="10" fill="#f3efff" stroke="#e6e0fb" stroke-width="1.8"/><text x="509.75" y="95" font-size="12.4" fill="#6d28d9" text-anchor="middle" font-weight="bold">做完自己的事</text><line x1="601.5" y1="90" x2="613.5" y2="90" stroke="#8b5cf6" stroke-width="2.2"/><polygon points="613.5,90 605.5,85 605.5,95" fill="#8b5cf6"/><rect x="622.5" y="56" width="173.5" height="68" rx="10" fill="#f3efff" stroke="#e6e0fb" stroke-width="1.8"/><text x="709.25" y="95" font-size="12.4" fill="#6d28d9" text-anchor="middle" font-weight="bold">删除此克隆体</text><text x="24" y="150" font-size="11.8" fill="#8d9d94" text-anchor="start">少了最后一步，克隆体就会一直留在舞台上（虽然可能看不见）</text>
+</svg>
+  <div class="caption">图 6（SVG）：克隆体的一生</div>
+</figure>
+
+<div class="box tip">
+  <span class="lb">打个比方：</span>克隆体就像临时请来的帮手——<b>活儿干完了要记得让人家走</b>。不删的话，台前台后攒着几百个帮手，程序很快就跑不动了。
+</div>
+
+<!-- ============ 5 ============ -->
+<div class="section-header" id="s5">
+  <h2>5　代码实战</h2>
+  <div class="en-title">Level Practice</div>
+</div>
+
+<p>这一关要清掉一群一模一样的小东西——<b>它们长得全一样，
+用"克隆"来理解最直观</b>。</p>
+<div class="level-card">
+  <div class="lc-head"><span class="n">关卡 94</span><h4>螃蟹巢（Crab Nest）</h4><span class="go">进入关卡 →</span></div>
+  <div class="lc-body">
+    <div class="story">
+      <b>故事：</b>
+集市的角落攒了一大群小虫，密密麻麻围成一片。它们长得一模一样，
+一个挨着一个排成好几列。你要一排一排地清理过去。
+
+    </div>
+    <p><strong>思路：</strong>清理的动作用"重复执行"就能写：<b>清一个、往前走一格</b>，重复若干次。
+清完一列，换个方向再清下一列——这就是上一单元学的"循环里套循环"。
+</p>
+<div class="blk-card">
+  <div class="blk-head">
+    <span class="dot d1"></span><span class="dot d2"></span><span class="dot d3"></span>
+    <span class="file">重点示例：一排一排清过去</span>
+    <span class="lang">图形化积木</span>
+  </div>
+  <div class="blk-body">
+<svg class="blk" viewBox="0 0 232.4 320" width="232.4" height="320" role="img" aria-label="积木脚本"><g font-family="'PingFang SC','Microsoft YaHei','Noto Sans SC',sans-serif"><g transform="translate(3,3)"><path d="M0,12 C32.96,0 131.84,0 164.8,12 V43 A5,5 0 0 1 159.8,48 H28 v4 h-12 v-4 H5 A5,5 0 0 1 0,43 Z" fill="#FFBF00" stroke="#d19c00" stroke-width="1.2"/><text x="15" y="34.8" font-size="13.4" fill="#fff">当 </text><rect x="42.6" y="18.5" width="52.8" height="23" rx="5" fill="#CC9900"/><text x="64" y="34.4" font-size="12.5" fill="#fff" text-anchor="middle">绿旗</text><path d="M84.4 27.5 l4 5 l4 -5 z" fill="#fff" opacity=".85"/><text x="102.4" y="34.8" font-size="13.4" fill="#fff"> 被点击</text></g><g transform="translate(3,55)"><path d="M0,5 A5,5 0 0 1 5,0 H16 v4 h12 v-4 H221 A5,5 0 0 1 226,5 V253 A5,5 0 0 1 221,258 H28 v4 h-12 v-4 H5 A5,5 0 0 1 0,253 V245 H16 V36 H0 Z" fill="#FFAB19" stroke="#d18c14" stroke-width="1.2"/><text x="15" y="22.8" font-size="13.4" fill="#fff">重复执行 </text><rect x="82.8" y="6.5" width="30" height="23" rx="11.5" fill="#fff"/><text x="97.8" y="22.4" font-size="12.5" fill="#575e75" text-anchor="middle">3</text><text x="119.8" y="22.8" font-size="13.4" fill="#fff"> 次</text><g transform="translate(20,38)"><path d="M0,5 A5,5 0 0 1 5,0 H16 v4 h12 v-4 H195 A5,5 0 0 1 200,5 V123 A5,5 0 0 1 195,128 H28 v4 h-12 v-4 H5 A5,5 0 0 1 0,123 V115 H16 V36 H0 Z" fill="#FFAB19" stroke="#d18c14" stroke-width="1.2"/><text x="15" y="22.8" font-size="13.4" fill="#fff">重复执行 </text><rect x="82.8" y="6.5" width="30" height="23" rx="11.5" fill="#fff"/><text x="97.8" y="22.4" font-size="12.5" fill="#575e75" text-anchor="middle">4</text><text x="119.8" y="22.8" font-size="13.4" fill="#fff"> 次</text><g transform="translate(20,38)"><path d="M0,5 A5,5 0 0 1 5,0 H16 v4 h12 v-4 H169 A5,5 0 0 1 174,5 V31 A5,5 0 0 1 169,36 H28 v4 h-12 v-4 H5 A5,5 0 0 1 0,31 Z" fill="#9966FF" stroke="#7d53d1" stroke-width="1.2"/><text x="15" y="22.8" font-size="13.4" fill="#fff">将颜色特效增加 </text><rect x="123" y="6.5" width="36.4" height="23" rx="11.5" fill="#fff"/><text x="141.2" y="22.4" font-size="12.5" fill="#575e75" text-anchor="middle">30</text></g><g transform="translate(20,76)"><path d="M0,5 A5,5 0 0 1 5,0 H16 v4 h12 v-4 H123 A5,5 0 0 1 128,5 V31 A5,5 0 0 1 123,36 H28 v4 h-12 v-4 H5 A5,5 0 0 1 0,31 Z" fill="#4C97FF" stroke="#3e7bd1" stroke-width="1.2"/><text x="15" y="22.8" font-size="13.4" fill="#fff">移动 </text><rect x="56" y="6.5" width="30" height="23" rx="11.5" fill="#fff"/><text x="71" y="22.4" font-size="12.5" fill="#575e75" text-anchor="middle">1</text><text x="93" y="22.8" font-size="13.4" fill="#fff"> 步</text></g></g><g transform="translate(20,168)"><path d="M0,5 A5,5 0 0 1 5,0 H16 v4 h12 v-4 H150 A5,5 0 0 1 155,5 V31 A5,5 0 0 1 150,36 H28 v4 h-12 v-4 H5 A5,5 0 0 1 0,31 Z" fill="#4C97FF" stroke="#3e7bd1" stroke-width="1.2"/><text x="15" y="22.8" font-size="13.4" fill="#fff">面向 </text><rect x="56" y="6.5" width="43.6" height="23" rx="11.5" fill="#fff"/><text x="77.8" y="22.4" font-size="12.5" fill="#575e75" text-anchor="middle">180</text><text x="106.6" y="22.8" font-size="13.4" fill="#fff"> 方向</text></g><g transform="translate(20,206)"><path d="M0,5 A5,5 0 0 1 5,0 H16 v4 h12 v-4 H123 A5,5 0 0 1 128,5 V31 A5,5 0 0 1 123,36 H28 v4 h-12 v-4 H5 A5,5 0 0 1 0,31 Z" fill="#4C97FF" stroke="#3e7bd1" stroke-width="1.2"/><text x="15" y="22.8" font-size="13.4" fill="#fff">移动 </text><rect x="56" y="6.5" width="30" height="23" rx="11.5" fill="#fff"/><text x="71" y="22.4" font-size="12.5" fill="#575e75" text-anchor="middle">4</text><text x="93" y="22.8" font-size="13.4" fill="#fff"> 步</text></g></g></g></svg>
+  </div>
+  <div class="out"><b>读法</b>　内层"清 4 个"是一列；外层把"清一列 + 回到起点"做 3 遍</div>
+</div>
+
+    <div class="box tip">
+      <span class="lb">自己试一试：</span>把内层循环换成"克隆 4 个分身，各清一个"——<strong>体会一下：什么时候用循环就够，什么时候非用克隆不可。</strong>
+    </div>
+    <p>这一关用的是循环，但你可以想象一下：如果那群小东西是"不断刷出来"的，'
+    数量根本数不清，循环就写不出来了——那就必须用<b>克隆</b>。</p>
+<div class="box info">
+  <span class="lb">什么时候必须用克隆？</span>当"要几个"在写程序时说不准的时候。比如雪花一直落、子弹一直发——<b>数量是运行时才决定，只能用克隆。</b>
+</div>
+    <a class="btn-go" href="https://codecombat.cn/" target="_blank" rel="noopener">去扣哒世界闯这一关 →</a>
+  </div>
+</div>
+
+<!-- ============ 6 ============ -->
+<div class="section-header" id="s6">
+  <h2>6　常见陷阱</h2>
+  <div class="en-title">Common Traps</div>
+</div>
+
+<div class="box warn">
+  <span class="lb">陷阱 1：</span><b>把"克隆自己"放进"一直重复"里。</b>分身会源源不断地冒出来，几秒钟就几百个，程序卡死。<br><strong>正确做法：</strong>用"重复执行 N 次"限制数量，或者用"重复执行直到"控制时机。
+</div>
+
+<div class="box warn">
+  <span class="lb">陷阱 2：</span><b>忘了写"当作为克隆体启动时"。</b>克隆体出生后不知道该做什么，会和本体叠在一起一动不动。<br><strong>正确做法：</strong>克隆体要做的事，都写进"当作为克隆体启动时"这一段。
+</div>
+
+<div class="box warn">
+  <span class="lb">陷阱 3：</span><b>用完不删克隆体。</b>它们会一直留在舞台上，越积越多。<br><strong>正确做法：</strong>在克隆体脚本的最后加上"删除此克隆体"。
+</div>
+
+<div class="box warn">
+  <span class="lb">陷阱 4：</span><b>想用"停止全部脚本"来收摊。</b>那是把整个作品都停了。<br><strong>正确做法：</strong>只让克隆体自己退场，用"删除此克隆体"。
+</div>
+
+<!-- ============ 7 ============ -->
+<div class="section-header" id="s7">
+  <h2>7　题目练习</h2>
+  <div class="en-title">Practice</div>
+</div>
+
+<p>前 2 题改编自 2026 年 9 月 · 图形化编程 二级 第 5 题、2026 年 6 月 · 图形化编程 二级 第 5 题，其余为原创练习题。</p>
+<div class="exam">
+  <div class="eh"><span class="src">改编自 2026 年 9 月 · 图形化编程 二 级 · 第 5 题</span><span class="tp">单选题</span></div>
+  <div class="eb">
+    <div class="q">关于克隆体，下列描述<b>正确</b>的是（　　）。</div>
+    <div class="opt"><i>A.</i>克隆体不能移动，也不能改变外观<br>
+      <i>B.</i>克隆体无法接收"广播"消息<br>
+      <i>C.</i>一个角色最多只能克隆出 5 个克隆体<br>
+      <i>D.</i>克隆体是原角色的独立副本，拥有独立的脚本和状态</div>
+    <details><summary>查看答案与详解</summary>
+      <div class="ans"><b>答案：D</b>。克隆体出生时和本体一样，但它有自己的<b>位置、方向、大小、特效</b>这些"状态"，也照样能执行脚本、接收广播。<br><b>A 错：</b>克隆体完全可以移动、换造型、变大小；<br><b>B 错：</b>克隆体同样可以用"当接收到……"响应广播；<br><b>C 错：</b>没有"最多 5 个"的限制，数量由你写几次"克隆自己"决定（写太多会让程序变卡）。<br><span class="tagline">对应小节</span>1.1、3.2 本体与克隆体。</div>
+    </details>
+  </div>
+</div>
+<div class="exam">
+  <div class="eh"><span class="src">改编自 2026 年 6 月 · 图形化编程 二 级 · 第 5 题</span><span class="tp">单选题</span></div>
+  <div class="eb">
+    <div class="q">角色先执行"克隆自己"，然后每一个克隆体都执行"图章"一次，本体自己不做任何动作。<br>如果"克隆自己"一共执行了 4 次，舞台上最终能看到几只小猫（　　）。</div>
+    <div class="opt"><i>A.</i>4<br>
+      <i>B.</i>5<br>
+      <i>C.</i>6<br>
+      <i>D.</i>7</div>
+    <details><summary>查看答案与详解</summary>
+      <div class="ans"><b>答案：B</b>。这就是"1 + 4"的账：<b>本体 1 只，克隆体 4 只</b>，合起来舞台上有 5 只小猫。<br><b>最容易错的地方：</b>忘了把<b>本体</b>算进去——"克隆自己"不是"把自己换掉"，而是"多做一个"。<br><b>A 错：</b>只算了克隆体，漏掉本体；<br><b>C、D 错：</b>把克隆次数或本体重复算了。<br><span class="tagline">对应小节</span>2.1 克隆自己。</div>
+    </details>
+  </div>
+</div>
+<div class="exam">
+  <div class="eh"><span class="src ori">原创练习题</span><span class="tp">单选题</span></div>
+  <div class="eb">
+    <div class="q">魔术摊里的小猫执行了三次"克隆自己"。关于舞台上出现的小猫，下列说法正确的是（　　）。</div>
+    <div class="opt">
+      <i>A.</i>舞台上一共出现 4 只猫：1 个本体 + 3 个克隆体<br>
+      <i>B.</i>舞台上一共出现 3 只猫，本体消失了<br>
+      <i>C.</i>克隆出来的猫和本体没有区别，连位置也永远绑定在一起<br>
+      <i>D.</i>克隆体不能被删除
+    </div>
+    <details><summary>查看答案与详解</summary>
+      <div class="ans"><b>答案：A</b>。"克隆自己"是<b>复制出一个新的</b>，本体不会消失，所以是 1 + 3 = 4 只。<br><b>B 错：</b>本体一直都在；<br><b>C 错：</b>克隆体出生的那一刻位置和本体一样，但之后可以各自移动，互不影响；<br><b>D 错：</b>"删除此克隆体"就是专门删克隆体的积木。<br><span class="tagline">对应小节</span>2.1 克隆自己；3.2 位置与方向。</div>
+    </details>
+  </div>
+</div>
+
+<div class="exam">
+  <div class="eh"><span class="src ori">原创练习题</span><span class="tp">单选题</span></div>
+  <div class="eb">
+    <div class="q">克隆体出生后，会自动执行下面哪一段脚本（　　）。</div>
+    <div class="opt">
+      <i>A.</i>当绿旗被点击那一段里的积木<br>
+      <i>B.</i>当作为克隆体启动时那一段里的积木<br>
+      <i>C.</i>所有角色身上的全部脚本<br>
+      <i>D.</i>什么也不执行
+    </div>
+    <details><summary>查看答案与详解</summary>
+      <div class="ans"><b>答案：B</b>。克隆体出生时绿旗早就点过了，所以"当绿旗被点击"这一段<b>不会</b>为它重新执行；它执行的是专门写给克隆体的"当作为克隆体启动时"。<br><b>A、C 错：</b>都扩大了范围；<br><b>D 错：</b>只要写了那段脚本，克隆体一出生就会执行它。<br><span class="tagline">对应小节</span>3.1 谁执行哪段脚本。</div>
+    </details>
+  </div>
+</div>
+
+<div class="exam">
+  <div class="eh"><span class="src ori">原创练习题</span><span class="tp">单选题</span></div>
+  <div class="eb">
+    <div class="q">小雪花从屏幕上方不断落下，落到地面后就不见了。要让"不见"这件事发生，应该在克隆体的脚本里加哪一块积木（　　）。</div>
+    <div class="opt">
+      <i>A.</i>隐藏<br>
+      <i>B.</i>停止全部脚本<br>
+      <i>C.</i>删除此克隆体<br>
+      <i>D.</i>移到 x: 0 y: 0
+    </div>
+    <details><summary>查看答案与详解</summary>
+      <div class="ans"><b>答案：C</b>。"删除此克隆体"让这一片雪花彻底退场，不再占资源，也不影响别的雪花。<br><b>A 错：</b>隐藏只是看不见，克隆体还在，越积越多；<br><b>B 错：</b>那会把整个作品的脚本都停掉；<br><b>D 错：</b>移回原点只会让雪花重新出现在上面。（如果只是移回去，还得多加别的处理）<br><span class="tagline">对应小节</span>2.3 删除此克隆体。</div>
+    </details>
+  </div>
+</div>
+
+<div class="exam">
+  <div class="eh"><span class="src ori">原创练习题</span><span class="tp">多选题</span></div>
+  <div class="eb">
+    <div class="q">下面哪些情形<b>适合</b>用克隆来实现（　　）。</div>
+    <div class="opt">
+      <i>A.</i>天上不断落下、数量不固定的雪花<br>
+      <i>B.</i>固定三个、位置不变的角色<br>
+      <i>C.</i>按一次键就发射一颗、数量由玩家决定的子弹<br>
+      <i>D.</i>屏幕上整齐排列的一大片格子
+    </div>
+    <details><summary>查看答案与详解</summary>
+      <div class="ans"><b>答案：A、C、D</b>。它们的共同点是"要很多个长得一样的东西，而且数量在写程序时不好确定（或写起来太啰嗦）"。<br><b>B 错：</b>只有三个、位置还固定，直接在角色区添加三个角色更简单，不需要克隆。<br><span class="tagline">对应小节</span>1.2、4.1 为什么要克隆。</div>
+    </details>
+  </div>
+</div>
+
+<div class="exam">
+  <div class="eh"><span class="src ori">原创练习题</span><span class="tp">判断题</span></div>
+  <div class="eb">
+    <div class="q">在图形化编程中，删除一个克隆体时，舞台上的本体也会一起消失。（　　）</div>
+    <details><summary>查看答案与详解</summary>
+      <div class="ans"><b>答案：错误（×）</b>。"删除此克隆体"只会删掉<b>执行它的那一个克隆体</b>，本体和别的克隆体都还在。<br>要区分的是：<b>克隆体之间互不影响，克隆体也不影响本体</b>。<br><span class="tagline">对应小节</span>2.3、3.2 本体与克隆体。</div>
+    </details>
+  </div>
+</div>
+
+<!-- ============ 8 ============ -->
+<div class="section-header" id="s8">
+  <h2>8　本单元小结</h2>
+  <div class="en-title">Unit Summary</div>
+</div>
+
+<div class="cast teacher">
+  <img class="ava" src="../assets/avatars/hushbaum.webp" alt="贺舒曼" onerror="this.style.display='none'">
+  <div class="bubble">
+    <div class="who">贺舒曼 · 镜中先知</div>
+    镜子照出一个，帐篷里就多一个。克隆的三块积木要记牢：
+    <b>克隆自己、当作为克隆体启动时、删除此克隆体</b>。<br>
+    再记住那句话：<b>克隆体有自己的位置和方向，用完要删掉</b>——
+    二级卷子上的克隆题，基本就围着这两句转。
+  </div>
+</div>
+
+<h3 id="s8-1">你在魔术摊里学到了什么</h3>
+
+<ul>
+  <li><b>本体与克隆体</b>：本体被复制出克隆体，克隆体长得和本体一样；</li>
+  <li><b>三块积木</b>：克隆自己、当作为克隆体启动时、删除此克隆体；</li>
+  <li><b>谁执行哪段</b>：克隆体执行"当作为克隆体启动时"，本体执行"当绿旗被点击"；</li>
+  <li><b>位置独立</b>：克隆体出生时位置相同，之后各走各的、互不影响；</li>
+  <li><b>用完要删</b>：克隆体不会自己消失，留着会越积越多。</li>
+</ul>
+<h3 id="s8-2">下一站：彩绘师</h3>
+
+<p>下一单元换一种玩法：不再让角色跑来跑去，而是让它<b>边走边留下痕迹</b>——
+像一支笔在纸上游走。这就是画笔模块。</p>
+
+
+<div class="pager">
+  <a href="scratch-2-03.html"><div class="k">← 上一单元</div><div class="v">旋转木马 · 循环与分支的进阶</div></a>
+  <a href="../index.html" target="_top" class="back"><div class="k">返回</div><div class="v">考纲之路 · 总目录</div></a>
+  <a href="scratch-2-05.html"><div class="k">下一单元 →</div><div class="v">彩绘师 · 画笔</div></a>
+</div>
+<div class="cta">
+  <h3>下一站：彩绘师</h3>
+  <p>下一单元换一种玩法：不再让角色跑来跑去，而是让它边走边留下痕迹——像一支笔在纸上游走。这就是画笔模块。</p>
+  <a class="btn-go" href="https://codecombat.cn/" target="_blank" rel="noopener">加入扣哒世界，把这条考纲之路走一遍 →</a>
+</div>
+
+</div><!-- /container -->
+</div><!-- /page -->
+
+<script>
+if (location.search.indexOf('expand') >= 0) {
+  document.querySelectorAll('details').forEach(d => d.open = true);
+}
+document.querySelectorAll('.sidebar-nav a').forEach(a => {
+  a.addEventListener('click', () => {
+    if (window.innerWidth <= 900) document.querySelector('.sidebar-nav').classList.remove('active');
+  });
+});
+</script>
+</body>
+</html>

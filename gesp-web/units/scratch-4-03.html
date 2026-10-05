@@ -1,0 +1,772 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="copyright" content="CodeCombat Inc. codecombat.cn">
+<title>图纸工坊 · 算法的复杂应用 | 扣哒考级 · GESP 图形化四级</title>
+<style>
+  :root{
+    --primary:#8b5cf6; --primary-light:#a78bfa; --primary-lighter:#f3efff; --primary-dark:#6d28d9;
+    --brand:#ff6b35; --brand-dark:#e8541f; --brand-soft:#fff3ec;
+    --night:#131c2b; --night-2:#1e2a3a;
+    --gold:#f5b301;
+    --text:#2a2438; --dim:#7c7794; --dim2:#a29db8;
+    --bg:#ffffff; --bg-soft:#faf8ff; --line:#e9e4f8;
+    --sidebar:274px;
+    --code-bg:#211a33; --code-tx:#d6cfe6;
+    --code-kw:#c678dd; --code-st:#98c379; --code-nu:#d19a66; --code-cm:#7d7392; --code-fn:#61afef;
+  }
+  *{margin:0;padding:0;box-sizing:border-box}
+  html{scroll-behavior:smooth}
+  body{
+    font-family:"PingFang SC","Microsoft YaHei","Segoe UI",-apple-system,sans-serif;
+    line-height:1.9;color:var(--text);background:var(--bg);font-size:15.5px;
+  }
+
+  .sidebar-nav{
+    position:fixed;top:0;left:0;width:var(--sidebar);height:100vh;overflow-y:auto;
+    background:linear-gradient(180deg,#101a26,#182636);padding:14px 0 40px;z-index:100;
+    border-right:3px solid var(--brand);transition:transform .3s ease;
+  }
+  .sidebar-nav::-webkit-scrollbar{width:5px}
+  .sidebar-nav::-webkit-scrollbar-thumb{background:var(--brand);border-radius:4px}
+  .sb-brand{display:flex;align-items:center;gap:10px;padding:10px 13px 12px;border-bottom:1px solid #26384c;margin-bottom:8px}
+  .sidebar-nav a.sb-logo{display:flex;align-items:center;justify-content:center;flex-shrink:0;padding:0;border-left:none;transition:.2s}
+  .sb-logo:hover{transform:scale(1.08)}
+  .sb-logo img{height:34px;width:34px;display:block;object-fit:contain;border-radius:8px}
+  .sb-brand b{color:#f2f6fa;font-size:14px;letter-spacing:.5px;display:block;line-height:1.4}
+  .sb-brand span{color:#7f95ab;font-size:11.5px;display:block;line-height:1.4}
+  .nav-title{color:#ffb894;font-size:12px;font-weight:800;padding:10px 18px 6px;letter-spacing:1.2px}
+  .sidebar-nav a{
+    display:block;color:#c3d0dc;text-decoration:none;padding:6px 18px;font-size:12.5px;
+    line-height:1.55;border-left:3px solid transparent;transition:.18s;
+  }
+  .sidebar-nav a:hover{color:#fff;background:rgba(255,107,53,.16);border-left-color:var(--brand)}
+  .sidebar-nav a.nav-section{color:#ffb894;font-weight:700;font-size:13px;margin-top:11px;padding-top:10px;border-top:1px solid #26384c}
+  .sidebar-nav a.nav-section:first-of-type{border-top:none;margin-top:0;padding-top:6px}
+  .sidebar-nav a.nav-sub{padding-left:30px;color:#93a8bc;font-size:12px}
+  .sidebar-nav a.nav-sub:hover{color:#fff}
+  .sb-back{margin:16px 14px 0;display:block;text-align:center;padding:9px;border-radius:9px;background:#22344a;color:#a9c0d6 !important;font-size:12px;font-weight:700;border-left:none !important}
+  .sb-back:hover{background:var(--brand) !important;color:#fff !important}
+  .nav-toggle{display:none;position:fixed;top:14px;left:14px;z-index:120;background:var(--brand);color:#fff;border:none;border-radius:9px;padding:9px 13px;font-size:15px;cursor:pointer;box-shadow:0 4px 14px rgba(0,0,0,.25)}
+
+  .page{margin-left:var(--sidebar)}
+
+  .hero{
+    position:relative;overflow:hidden;padding:44px 52px;color:#fff;
+    background:linear-gradient(125deg,#0e1724 0%,#1b2b3f 46%,#8a3a16 132%);
+  }
+  .hero::after{content:"";position:absolute;right:-90px;top:-110px;width:400px;height:400px;border-radius:50%;background:radial-gradient(circle,rgba(245,179,1,.30),transparent 68%)}
+  .hero-top{display:flex;gap:36px;align-items:center;position:relative;z-index:2}
+  .hero-txt{flex:1;min-width:0}
+  .hero .crumb{font-size:11.5px;color:#ffb894;letter-spacing:1.5px;font-weight:700;margin-bottom:14px}
+  .hero h1{font-size:31px;font-weight:800;line-height:1.3;letter-spacing:.6px;margin-bottom:8px}
+  .hero h1 .sub{display:block;font-size:18px;font-weight:700;color:#ffd2b3;margin-top:6px;letter-spacing:.3px}
+  .hero .en{font-size:13px;color:#9db4c8;font-style:italic;margin-bottom:18px}
+  .hero .tags{display:flex;flex-wrap:wrap;gap:8px}
+  .tag{font-size:11.5px;padding:4px 12px;border-radius:20px;background:rgba(255,255,255,.12);border:1px solid rgba(255,255,255,.22);color:#e8f0f6;font-weight:600}
+  .tag.hot{background:rgba(255,107,53,.92);border-color:transparent;color:#fff}
+  .hero-card{flex-shrink:0;width:200px;text-align:center}
+  .hero-card .ava{
+    width:148px;height:148px;border-radius:50%;object-fit:cover;object-position:top center;
+    border:4px solid rgba(255,180,140,.6);box-shadow:0 14px 34px rgba(0,0,0,.45);background:#24344a;
+  }
+  .hero-card .nm{font-size:15px;font-weight:800;color:#fff;margin-top:10px}
+  .hero-card .ti{font-size:11.5px;color:#ffb894;margin-top:2px}
+
+  .container{max-width:1080px;margin:0 auto;padding:38px 52px 70px}
+
+  .lead{
+    font-size:15.5px;line-height:2.05;color:#443c58;background:linear-gradient(120deg,#fff8f3,#f7fbf8);
+    border-left:5px solid var(--brand);border-radius:0 14px 14px 0;padding:22px 26px;margin-bottom:32px;
+  }
+  .lead b{color:var(--brand-dark)}
+
+  .cast{display:flex;gap:16px;align-items:flex-start;border-radius:16px;padding:18px 22px;margin:24px 0}
+  .cast .ava{width:72px;height:72px;border-radius:50%;object-fit:cover;object-position:top center;flex-shrink:0;background:#e8eef5}
+  .cast .bubble{position:relative;font-size:14px;line-height:1.95;padding-top:2px;flex:1}
+  .cast .who{font-size:12px;font-weight:800;margin-bottom:5px;letter-spacing:.5px}
+  .cast.anya{background:var(--brand-soft);border:1px solid #ffdcc9}
+  .cast.anya .who{color:var(--brand-dark)}
+  .cast.anya .bubble{color:#5c4636}
+  .cast.duck{background:#fff5f5;border:1px solid #fbd5d5}
+  .cast.duck .who{color:#b91c1c}
+  .cast.duck .bubble{color:#5c4141}
+  .cast.teacher{background:linear-gradient(120deg,#f4f7fb,#ffffff);border:1px solid #dbe4f0}
+  .cast.teacher .who{color:#1e293b}
+  .cast.teacher .bubble{color:#3c4a5a}
+  .cast.hero{background:#f7f3ff;border:1px solid #ded1fa}
+  .cast.hero .who{color:#6d28d9}
+  .cast.hero .bubble{color:#463d5c}
+
+  .goal-grid{display:grid;grid-template-columns:1fr 1fr;gap:16px;margin-bottom:36px}
+  .goal{border:1px solid var(--line);border-radius:15px;padding:19px 21px;background:#fff;box-shadow:0 4px 16px rgba(31,122,68,.05)}
+  .goal h4{font-size:14px;font-weight:800;margin-bottom:11px;display:flex;align-items:center;gap:8px;color:var(--primary-dark)}
+  .goal h4 .ic{width:22px;height:22px;border-radius:7px;background:var(--primary-lighter);display:flex;align-items:center;justify-content:center;font-size:12px}
+  .goal ul{list-style:none}
+  .goal li{font-size:13.5px;color:#6b6480;line-height:1.9;padding-left:18px;position:relative}
+  .goal li::before{content:"▸";position:absolute;left:0;color:var(--primary);font-weight:800}
+  .goal.syllabus li::before{content:"✓"}
+
+  .section-header{margin:52px 0 24px;padding-bottom:12px;border-bottom:3px solid var(--brand);display:flex;align-items:baseline;gap:14px;flex-wrap:wrap}
+  .section-header h2{font-size:22px;font-weight:800;color:var(--night);letter-spacing:.4px}
+  .section-header .en-title{font-size:12px;color:var(--dim2);font-style:italic}
+  h3{font-size:17.5px;font-weight:800;margin:34px 0 14px;color:var(--night);display:flex;align-items:center;gap:10px}
+  h3::before{content:"";width:5px;height:17px;border-radius:3px;background:var(--brand);flex-shrink:0}
+  h4{font-size:15px;font-weight:800;margin:24px 0 10px;color:#3c2f63}
+  p{margin:12px 0;color:#463d5c;line-height:2}
+  strong{color:var(--primary-dark)}
+  code.inline{background:var(--primary-lighter);color:var(--primary-dark);padding:2px 7px;border-radius:6px;font-family:"SFMono-Regular",Consolas,Menlo,monospace;font-size:.9em;font-weight:600}
+
+  .figure{margin:24px 0;text-align:center}
+  .figure svg.diagram{max-width:100%;height:auto;background:#fff;border:1px solid var(--line);border-radius:14px;padding:10px}
+  .figure .caption{font-size:12.5px;color:var(--dim2);margin-top:9px}
+
+  .pic{margin:26px 0;text-align:center}
+  .pic img{max-width:100%;border-radius:16px;box-shadow:0 10px 28px rgba(30,60,45,.15);display:block;margin:0 auto}
+  .pic figcaption{font-size:12.5px;color:var(--dim2);margin-top:9px}
+  .pic .ph{display:none}
+  .pic.missing img{display:none}
+  .pic.missing .ph{
+    display:flex;flex-direction:column;align-items:center;justify-content:center;gap:9px;
+    border:2px dashed #c9d9e8;border-radius:16px;background:linear-gradient(135deg,#f8fbfe,#eef6ff);
+    padding:40px 26px;color:#7a8fa8;
+  }
+  .pic.missing .ph .fn{font-family:Consolas,monospace;font-size:12.5px;color:#2563eb;font-weight:700;word-break:break-all}
+  .pic.missing .ph .ds{font-size:12.5px;line-height:1.8;max-width:560px}
+
+  .box{border-radius:13px;padding:16px 20px;margin:20px 0;font-size:14px;line-height:1.95}
+  .box .lb{font-weight:800;margin-right:6px}
+  .info{background:#eef6ff;border-left:5px solid #3b82f6;color:#274768}
+  .info .lb{color:#1d4ed8}
+  .tip{background:#fff9ec;border-left:5px solid #f59e0b;color:#6b4e13}
+  .tip .lb{color:#b45309}
+  .remember{background:var(--primary-lighter);border-left:5px solid var(--primary);color:#3a2a6b}
+  .remember .lb{color:var(--primary-dark)}
+  .warn{background:#fef2f2;border-left:5px solid #ef4444;color:#7f2b2b}
+  .warn .lb{color:#b91c1c}
+
+  .code-card{margin:20px 0;border-radius:14px;overflow:hidden;box-shadow:0 10px 28px rgba(20,40,28,.20)}
+  .code-head{display:flex;align-items:center;gap:9px;background:#2c2438;padding:9px 14px}
+  .code-head .dot{width:10px;height:10px;border-radius:50%}
+  .code-head .d1{background:#ff5f57}.code-head .d2{background:#febc2e}.code-head .d3{background:#28c840}
+  .code-head .file{color:#a09ab4;font-size:11.5px;font-family:Consolas,monospace;margin-left:6px}
+  .code-head .lang{margin-left:auto;font-size:10.5px;font-weight:800;color:#150f21;background:#a78bfa;padding:2px 9px;border-radius:6px;letter-spacing:.4px}
+  .code-card pre{background:var(--code-bg);padding:18px 20px;overflow-x:auto;margin:0;font-family:"SFMono-Regular",Consolas,"Courier New",monospace;font-size:13.5px;line-height:1.85}
+  .code-card pre::-webkit-scrollbar{height:8px}
+  .code-card pre::-webkit-scrollbar-thumb{background:#433a5e;border-radius:4px}
+  .code-card code{color:var(--code-tx);white-space:pre}
+  .kw{color:var(--code-kw);font-weight:600}
+  .st{color:var(--code-st)}
+  .nu{color:var(--code-nu)}
+  .cm{color:var(--code-cm);font-style:italic}
+  .fn{color:var(--code-fn)}
+  .out{background:#1d1729;color:#c4b5fd;font-family:Consolas,monospace;font-size:13px;padding:12px 20px;border-top:1px solid #352c48}
+  .out b{color:#c9d6cd;font-weight:600;font-size:11.5px;letter-spacing:1px}
+
+  table.styled{width:100%;border-collapse:collapse;margin:20px 0;font-size:13.5px;border-radius:12px;overflow:hidden;box-shadow:0 4px 16px rgba(31,122,68,.07)}
+  table.styled thead{background:var(--brand)}
+  table.styled th{color:#fff;padding:11px 14px;text-align:left;font-weight:700;font-size:13px}
+  table.styled td{padding:10px 14px;border-bottom:1px solid var(--line);color:#57506b;vertical-align:top}
+  table.styled tbody tr:nth-child(even){background:var(--bg-soft)}
+  table.styled tbody tr:last-child td{border-bottom:none}
+
+  .level-card{border:1px solid var(--line);border-radius:16px;overflow:hidden;margin:22px 0;box-shadow:0 6px 22px rgba(31,122,68,.07)}
+  .level-card .lc-head{background:linear-gradient(100deg,#17283a,#8a3a16);color:#fff;padding:15px 22px;display:flex;align-items:center;gap:12px;flex-wrap:wrap}
+  .level-card .lc-head .n{font-size:12px;font-weight:800;background:rgba(255,255,255,.2);padding:3px 10px;border-radius:20px}
+  .level-card .lc-head h4{margin:0;color:#fff;font-size:16px}
+  .level-card .lc-head .go{margin-left:auto;font-size:11.5px;color:#ffd2b3}
+  .level-card .lc-body{padding:20px 24px;background:#fff}
+  .level-card .story{background:#f9fbfd;border-left:4px solid #93c5fd;border-radius:0 10px 10px 0;padding:13px 18px;margin:0 0 16px;font-size:14px;line-height:1.95;color:#3f5163}
+  .level-card .story b{color:#1d4ed8}
+  .btn-go{
+    display:inline-flex;align-items:center;gap:8px;background:linear-gradient(135deg,var(--brand),var(--brand-dark));
+    color:#fff;text-decoration:none;font-weight:800;font-size:13.5px;padding:10px 22px;border-radius:11px;
+    box-shadow:0 8px 20px rgba(255,107,53,.32);transition:.2s;
+  }
+  .btn-go:hover{transform:translateY(-2px);box-shadow:0 12px 26px rgba(255,107,53,.42)}
+
+  .pit{border:1px solid #f6dede;border-radius:14px;overflow:hidden;margin:16px 0;background:#fff}
+  .pit .pt{display:flex;gap:12px;padding:14px 18px;background:#fffafa;align-items:flex-start}
+  .pit .x{width:26px;height:26px;border-radius:9px;background:#fee;color:#dc2626;display:flex;align-items:center;justify-content:center;font-weight:800;flex-shrink:0;font-size:13px}
+  .pit .t{font-size:13.5px;line-height:1.9;color:#5c4a4a;flex:1}
+  .pit .t b{color:#b91c1c}
+  .pit .duck{display:flex;gap:12px;padding:13px 18px;background:#fff5f5;border-top:1px dashed #f3d0d0;align-items:flex-start}
+  .pit .duck img{width:48px;height:48px;object-fit:contain;flex-shrink:0;margin-top:2px}
+  .pit .duck .dt{font-size:13.5px;line-height:1.9;color:#7a3b3b}
+  .pit .duck .dt b{color:#b91c1c}
+  .pit .fix{padding:12px 18px;background:#f7f3ff;border-top:1px dashed #ded1fa;font-size:13.5px;color:#3a2a6b}
+  .pit .fix b{color:var(--primary-dark)}
+
+  .exam{border:1px solid #dfe7f5;border-radius:15px;margin:16px 0;overflow:hidden;background:#fff;box-shadow:0 4px 16px rgba(38,62,120,.06)}
+  .exam .eh{display:flex;align-items:center;gap:10px;padding:11px 18px;background:linear-gradient(100deg,#eef4ff,#f7faff);border-bottom:1px solid #e3ebf8;flex-wrap:wrap}
+  .exam .eh .src{font-size:11px;font-weight:800;color:#fff;background:#2563eb;padding:2.5px 10px;border-radius:20px}
+  .exam .eh .src.ori{background:#8b5cf6}
+  .exam .eh .tp{font-size:11.5px;color:#5b7ba8;font-weight:700}
+  .exam .eb{padding:16px 20px}
+  .exam .q{font-weight:700;font-size:14px;color:#38304b;line-height:1.9;margin-bottom:10px}
+  .exam .opt{font-size:13.5px;color:#6b6480;line-height:2.05;padding-left:6px}
+  .exam .opt i{font-style:normal;font-weight:800;color:var(--primary-dark);margin-right:7px}
+  .exam pre{margin:12px 0;background:#1b2a21;border-radius:10px;padding:14px 16px;overflow-x:auto;font-family:Consolas,monospace;font-size:13px;line-height:1.8;color:var(--code-tx)}
+  .exam details{margin-top:10px;border-top:1px dashed var(--line);padding-top:10px}
+  .exam summary{cursor:pointer;font-size:12.5px;font-weight:800;color:#2563eb;outline:none;user-select:none}
+  .exam details .ans{font-size:13.5px;color:#463d5c;line-height:1.95;margin-top:9px;background:var(--bg-soft);padding:13px 16px;border-radius:10px}
+  .exam details .ans b{color:var(--primary-dark)}
+  .exam details .ans .tagline{display:inline-block;font-size:11px;background:#e0f2fe;color:#0e7490;padding:1.5px 8px;border-radius:6px;font-weight:700;margin-right:6px}
+
+  .summary{margin:40px 0 20px;border-radius:18px;padding:26px 30px;background:linear-gradient(130deg,#fff8f3,#ffffff);border:1px solid #ffe0cf}
+  .summary h3{margin-top:0}
+  .summary ul{list-style:none;margin-top:10px}
+  .summary li{font-size:14px;line-height:2;color:#514a64;padding-left:24px;position:relative}
+  .summary li::before{content:"◆";position:absolute;left:0;color:var(--brand);font-size:11px;top:6px}
+
+  .pager{display:flex;gap:14px;margin-top:30px;flex-wrap:wrap}
+  .pager a{flex:1;min-width:200px;text-decoration:none;border:1px solid var(--line);border-radius:14px;padding:16px 20px;background:#fff;transition:.2s;display:block}
+  .pager a:hover{border-color:var(--brand);box-shadow:0 10px 26px rgba(255,107,53,.14);transform:translateY(-2px)}
+  .pager a .k{font-size:11px;color:var(--dim2);font-weight:700;letter-spacing:1px}
+  .pager a .v{font-size:14px;font-weight:800;color:var(--night);margin-top:5px}
+  .pager a.back{background:var(--brand-soft);border-color:transparent;text-align:center}
+  .pager a.back .v{color:var(--brand-dark)}
+
+  .cta{margin-top:26px;border-radius:20px;padding:30px 34px;color:#fff;position:relative;overflow:hidden;background:linear-gradient(120deg,#16202f,#2b3a52 46%,#a8431c 132%)}
+  .cta::after{content:"";position:absolute;right:-70px;bottom:-90px;width:280px;height:280px;border-radius:50%;background:radial-gradient(circle,rgba(255,140,80,.45),transparent 68%)}
+  .cta h3{color:#fff;margin:0 0 10px;position:relative;z-index:2}
+  .cta h3::before{background:var(--brand)}
+  .cta p{color:#d8e0ef;font-size:13.5px;margin:0 0 18px;position:relative;z-index:2;max-width:640px}
+  .cta .btn-go{position:relative;z-index:2}
+
+  @media(max-width:900px){
+    .sidebar-nav{transform:translateX(-100%)}
+    .sidebar-nav.active{transform:translateX(0)}
+    .nav-toggle{display:block}
+    .page{margin-left:0}
+    .hero{padding:70px 22px 34px}
+    .hero-top{flex-direction:column-reverse;text-align:center}
+    .hero-card{width:auto}
+    .container{padding:26px 20px 60px}
+    .goal-grid{grid-template-columns:1fr}
+  }
+
+  /* ---------- 图形化：积木卡（替代代码卡） ---------- */
+  .blk-card{background:#f8f6ff;border:1px solid #e6e0fb;border-radius:14px;
+    margin:18px 0;overflow:hidden;box-shadow:0 2px 10px rgba(109,40,217,.06)}
+  .blk-head{display:flex;align-items:center;gap:7px;padding:10px 14px;
+    background:#f1ecfe;border-bottom:1px solid #e6e0fb}
+  .blk-head .file{font-size:12.5px;font-weight:700;color:#5b4a86;margin-left:4px}
+  .blk-head .lang{margin-left:auto;font-size:11px;font-weight:800;color:#fff;
+    background:#8b5cf6;border-radius:20px;padding:3px 11px;letter-spacing:.5px}
+  .blk-body{padding:20px 18px;overflow-x:auto;
+    background:
+      radial-gradient(circle at 14px 14px,#ece6fb 1.6px,transparent 1.7px) 0 0/28px 28px,
+      #ffffff}
+  .blk{display:block;max-width:100%;height:auto;margin:0 auto}
+  .blk + .blk{margin-top:16px}
+  .blk-card .out{background:#f1ecfe;border-top:1px solid #e6e0fb;color:#5b4a86}
+  .blk-card .out b{color:#6d28d9}
+  /* 积木并排（不同角色 / 不同做法对照） */
+  .blk-row{display:flex;gap:16px;flex-wrap:wrap;justify-content:center;align-items:flex-start}
+  .blk-row > *{flex:1 1 240px;min-width:0}
+  .blk-row .blk{margin:0}
+  /* 积木旁的小标题 */
+  .blk-cap{font-size:12.5px;font-weight:800;color:#6d28d9;background:#f3efff;
+    border:1px solid #e6e0fb;border-radius:8px;padding:5px 12px;margin:14px 0 10px;
+    display:inline-block}
+</style>
+</head>
+<body>
+
+<button class="nav-toggle" onclick="document.querySelector('.sidebar-nav').classList.toggle('active')">&#9776;</button>
+
+<nav class="sidebar-nav">
+  <div class="sb-brand">
+    <a class="sb-logo" href="https://codecombat.cn/" target="_blank" rel="noopener" title="访问 CodeCombat 扣哒世界官网">
+      <img src="../assets/logo.png" alt="CodeCombat 扣哒世界">
+    </a>
+    <div><b>图纸工坊</b><span>机械乐园 · 图形化四级 第 3 单元</span></div>
+  </div>
+  <div class="nav-title">本单元目录</div>
+
+  <a href="#s0" class="nav-section">0　单元导语与目标</a>
+  <a href="#s0-1" class="nav-sub">0.1 学习目标</a>
+  <a href="#s0-2" class="nav-sub">0.2 考纲对照</a>
+  <a href="#s1" class="nav-section">1　什么是算法</a>
+  <a href="#s1-1" class="nav-sub">1.1 算法就是"解决问题的步骤"</a>
+  <a href="#s1-2" class="nav-sub">1.2 同一个问题可以有多种算法</a>
+  <a href="#s2" class="nav-section">2　算法好不好，怎么评</a>
+  <a href="#s2-1" class="nav-sub">2.1 第一条：对不对</a>
+  <a href="#s2-2" class="nav-sub">2.2 第二条：步骤是多是少</a>
+  <a href="#s2-3" class="nav-sub">2.3 第三条：好不好懂、好不好改</a>
+  <a href="#s3" class="nav-section">3　从图纸到程序</a>
+  <a href="#s3-1" class="nav-sub">3.1 第一步：把问题读成"要做什么"</a>
+  <a href="#s3-2" class="nav-sub">3.2 第二步：写步骤、画流程图</a>
+  <a href="#s3-3" class="nav-sub">3.3 第三步：拼成积木</a>
+  <a href="#s4" class="nav-section">4　模块化搭建</a>
+  <a href="#s4-1" class="nav-sub">4.1 用函数把大问题拆成小问题</a>
+  <a href="#s4-2" class="nav-sub">4.2 分块做、分块调</a>
+  <a href="#s5" class="nav-section">5　代码实战</a>
+  <a href="#s6" class="nav-section">6　常见陷阱</a>
+  <a href="#s7" class="nav-section">7　题目练习</a>
+  <a href="#s8" class="nav-section">8　本单元小结</a>
+
+  <a href="../index.html" target="_top" class="sb-back">返回考纲之路</a>
+</nav>
+
+<div class="page">
+
+<div class="hero">
+  <div class="hero-top">
+    <div class="hero-txt">
+      <div class="crumb">扣哒考级 · GESP 图形化 四级 · 第 3 单元　|　机械乐园 COGWHEEL PARK</div>
+      <h1>图纸工坊
+        <span class="sub">算法的复杂应用</span>
+      </h1>
+      <div class="en">Algorithms in Practice</div>
+      <div class="tags">        <span class="tag hot">考纲 · 算法应用</span>
+        <span class="tag">算法评价</span>
+        <span class="tag">从图纸到程序</span>
+        <span class="tag">模块化</span></div>
+    </div>
+    <div class="hero-card">
+      <img class="ava" src="../assets/avatars/gordon.webp" alt="戈登" onerror="this.style.background='#24344a';this.src='../assets/heroes/gordon.webp'">
+      <div class="nm">戈登</div>
+      <div class="ti">机械师 · 你的向导</div>
+    </div>
+  </div>
+</div>
+
+<div class="container">
+
+
+<div class="lead">
+  工坊的桌子上摊着一张比人还大的图纸。上面画的不是零件，而是一排排方框和箭头。<br>
+  "这是我们造过山车的图纸。"戈登说，"<b>图纸上写的是"先做什么、再做什么"。</b>"<br>
+  你忽然明白：<b>写程序之前，先得把"怎么干"想清楚。</b>
+</div>
+
+<div class="cast anya">
+  <img class="ava" src="../assets/avatars/gordon.webp" alt="戈登" onerror="this.style.display='none'">
+  <div class="bubble">
+    <div class="who">戈登 · 机械师</div>
+    这一单元的题不考积木，考思路。记住一套流程就行：<br>
+    <b>先圈出输入、输出、限制 → 用中文写步骤 → 画流程图 → 拆成几个函数 → 分块做、分块测。</b>
+  </div>
+</div>
+
+<!-- ============ 0 ============ -->
+<div class="section-header" id="s0">
+  <h2>0　单元导语与目标</h2>
+  <div class="en-title">Before We Start</div>
+</div>
+
+<h3 id="s0-1">0.1 学习目标</h3>
+
+<ul>
+  <li>理解<b>算法</b>：解决一个问题的、清晰的、有限的步骤；</li>
+  <li>知道同一个问题可以有<b>多种算法</b>，好坏可以比较；</li>
+  <li>会从"<b>对不对、步骤多少、好不好懂</b>"三个角度评价算法；</li>
+  <li>掌握"<b>读题 → 写步骤 → 画流程图 → 拼积木</b>"的完整流程；</li>
+  <li>会用<b>函数</b>把大问题拆成小问题，分块完成、分块调试。</li>
+</ul>
+<h3 id="s0-2">0.2 考纲对照</h3>
+
+<table class="styled">
+  <thead><tr><th>考纲知识块</th><th>考纲要求</th><th>本单元小节</th></tr></thead>
+  <tbody><tr><td>3 算法的复杂应用</td><td>概念及应用、将实际问题对应到算法设计问题</td><td>1.1～1.2、2.1～2.3</td></tr><tr><td>（知识点详述第 2、5、6 条）</td><td>具备问题分析能力，能够将实际问题对应到算法设计问题；掌握算法的概念及应用，了解算法优劣的评价；具备将复杂问题及复杂算法用流程图和语言表达的能力</td><td>3.1～3.3、4.1～4.2</td></tr></tbody>
+</table>
+
+<p>这一单元不教新积木，教的是"<b>怎么想</b>"。'
+'四级卷子里的综合题，考的都是这套思路。</p>
+
+<!-- ============ 1 ============ -->
+<div class="section-header" id="s1">
+  <h2>1　什么是算法</h2>
+  <div class="en-title">What Is an Algorithm</div>
+</div>
+
+<h3 id="s1-1">1.1 算法就是"解决问题的步骤"</h3>
+
+<p>图纸工坊的桌上摊着一张巨大的图纸。戈登指着它说：
+"<b>图纸上画的不是零件，是"怎么造这个零件"的步骤。</b>"</p>
+<figure class="pic">
+  <img src="../assets/illustrations/scratch-L4-03-01_blueprint_workshop.webp" alt="图纸工坊"
+       onerror="this.closest('.pic').classList.add('missing')">
+  <div class="ph">
+    <div class="fn">assets/illustrations/scratch-L4-03-01_blueprint_workshop.webp</div>
+    <div class="ds">【配图位】乐园工坊桌上摊着大型游乐设施图纸，工程师们围着图纸把"实际问题"翻译成"步骤图"。（提示词见《GESP配图清单与AI绘图提示词》第四节 4-3）</div>
+  </div>
+  <figcaption>图 1：工坊里的图纸——把问题变成步骤</figcaption>
+</figure>
+
+<figure class="figure">
+<svg class="diagram" viewBox="0 0 820 194" role="img" aria-label="算法的三条要求">
+<text x="24" y="32" font-size="14" fill="#4c1d95" text-anchor="start" font-weight="bold">算法的三条要求</text><rect x="24" y="56" width="246.667" height="104" rx="12" fill="#f3efff" stroke="#e6e0fb" stroke-width="1.8"/><text x="147.333" y="104" font-size="13.5" fill="#6d28d9" text-anchor="middle" font-weight="bold">有输入、有输出</text><text x="147.333" y="126" font-size="11.6" fill="#7c7794" text-anchor="middle">给它什么、要它算出什么，都得说清</text><rect x="286.667" y="56" width="246.667" height="104" rx="12" fill="#faf8ff" stroke="#e6e0fb" stroke-width="1.8"/><text x="410" y="104" font-size="13.5" fill="#6d28d9" text-anchor="middle" font-weight="bold">每一步都明确</text><text x="410" y="126" font-size="11.6" fill="#7c7794" text-anchor="middle">不能有"看情况吧"这种含糊的步骤</text><rect x="549.333" y="56" width="246.667" height="104" rx="12" fill="#f3efff" stroke="#e6e0fb" stroke-width="1.8"/><text x="672.667" y="104" font-size="13.5" fill="#6d28d9" text-anchor="middle" font-weight="bold">步骤有限、会结束</text><text x="672.667" y="126" font-size="11.6" fill="#7c7794" text-anchor="middle">不能没完没了地做下去</text><text x="24" y="186" font-size="11.8" fill="#8d9d94" text-anchor="start">含糊的说明不是算法——算法必须"照着做谁都能做出来"</text>
+</svg>
+  <div class="caption">图 2（SVG）：算法的三条要求</div>
+</figure>
+
+<div class="box tip">
+  <span class="lb">打个比方：</span><b>算法就像菜谱。</b>一份好菜谱要写清"放多少盐、炒几分钟"，而不是"差不多就行"。<br>照着菜谱谁都能做出这道菜——<b>这正是"步骤明确"的含义。</b>
+</div>
+
+
+<h3 id="s1-2">1.2 同一个问题可以有多种算法</h3>
+
+<figure class="figure">
+<svg class="diagram" viewBox="0 0 820 240" role="img" aria-label="同一件事，两种算法">
+<text x="24" y="32" font-size="14" fill="#4c1d95" text-anchor="start" font-weight="bold">同一件事，两种算法</text><rect x="24" y="52" width="376" height="160" rx="12" fill="#f5f3ff" stroke="#e6e0fb" stroke-width="1.8"/><text x="212" y="82" font-size="13.5" fill="#6d28d9" text-anchor="middle" font-weight="bold">办法一：一个一个找</text><circle cx="40" cy="106" r="3.4" fill="#6d28d9"/><text x="52" y="110" font-size="12.2" fill="#4c1d95" text-anchor="start">从头到尾挨个看一遍</text><circle cx="40" cy="136" r="3.4" fill="#6d28d9"/><text x="52" y="140" font-size="12.2" fill="#4c1d95" text-anchor="start">n 个数最多看 n 次</text><circle cx="40" cy="166" r="3.4" fill="#6d28d9"/><text x="52" y="170" font-size="12.2" fill="#4c1d95" text-anchor="start">简单，但慢</text><rect x="420" y="52" width="376" height="160" rx="12" fill="#fff7ed" stroke="#e6e0fb" stroke-width="1.8"/><text x="608" y="82" font-size="13.5" fill="#b45309" text-anchor="middle" font-weight="bold">办法二：先排好序再找</text><circle cx="436" cy="106" r="3.4" fill="#b45309"/><text x="448" y="110" font-size="12.2" fill="#4c1d95" text-anchor="start">先花工夫排一遍序</text><circle cx="436" cy="136" r="3.4" fill="#b45309"/><text x="448" y="140" font-size="12.2" fill="#4c1d95" text-anchor="start">之后每次找都快很多</text><circle cx="436" cy="166" r="3.4" fill="#b45309"/><text x="448" y="170" font-size="12.2" fill="#4c1d95" text-anchor="start">麻烦一点，但找得快</text><text x="24" y="226" font-size="11.8" fill="#8d9d94" text-anchor="start">两种都能得到正确答案——差别在"花了多少步"</text>
+</svg>
+  <div class="caption">图 3（SVG）：一个问题的两种算法</div>
+</figure>
+
+<div class="box info">
+  <span class="lb">重要观念：</span><b>"能算出来"只是及格线，"算得省事"才是好算法。</b><br>后面的排序单元会看到：同样是排序，有的算法要比别人多比较好几倍。
+</div>
+
+<!-- ============ 2 ============ -->
+<div class="section-header" id="s2">
+  <h2>2　算法好不好，怎么评</h2>
+  <div class="en-title">Evaluating Algorithms</div>
+</div>
+
+<h3 id="s2-1">2.1 第一条：对不对</h3>
+
+<figure class="figure">
+<svg class="diagram" viewBox="0 0 820 158" role="img" aria-label="评价算法的三步检查">
+<text x="24" y="32" font-size="14" fill="#4c1d95" text-anchor="start" font-weight="bold">评价算法的三步检查</text><rect x="24" y="56" width="240" height="68" rx="10" fill="#f3efff" stroke="#e6e0fb" stroke-width="1.8"/><text x="144" y="95" font-size="12.4" fill="#6d28d9" text-anchor="middle" font-weight="bold">先看对不对（结果正确吗）</text><line x1="269" y1="90" x2="281" y2="90" stroke="#8b5cf6" stroke-width="2.2"/><polygon points="281,90 273,85 273,95" fill="#8b5cf6"/><rect x="290" y="56" width="240" height="68" rx="10" fill="#f3efff" stroke="#e6e0fb" stroke-width="1.8"/><text x="410" y="95" font-size="12.4" fill="#6d28d9" text-anchor="middle" font-weight="bold">再看快不快（步骤/时间 多不多）</text><line x1="535" y1="90" x2="547" y2="90" stroke="#8b5cf6" stroke-width="2.2"/><polygon points="547,90 539,85 539,95" fill="#8b5cf6"/><rect x="556" y="56" width="240" height="68" rx="10" fill="#f3efff" stroke="#e6e0fb" stroke-width="1.8"/><text x="676" y="95" font-size="12.4" fill="#6d28d9" text-anchor="middle" font-weight="bold">最后看好不好懂、好不好改</text><text x="24" y="150" font-size="11.8" fill="#8d9d94" text-anchor="start">顺序不能反——一个"很快但会算错"的算法毫无价值</text>
+</svg>
+  <div class="caption">图 4（SVG）：评价算法</div>
+</figure>
+
+<h3 id="s2-2">2.2 第二条：步骤是多是少</h3>
+
+<figure class="figure">
+<svg class="diagram" viewBox="0 0 820 168" role="img" aria-label=""步骤多少"怎么数">
+<text x="24" y="32" font-size="14" fill="#4c1d95" text-anchor="start" font-weight="bold">"步骤多少"怎么数</text><rect x="24" y="56" width="772" height="28" rx="8" fill="#f3efff"/><text x="40" y="75" font-size="12.6" fill="#6d28d9" text-anchor="start" font-weight="bold">看循环跑几圈</text><text x="192" y="75" font-size="12.2" fill="#4c1d95" text-anchor="start">外层 n 次、内层 n 次 → 大约 n × n 步</text><rect x="24" y="90" width="772" height="28" rx="8" fill="#faf8ff"/><text x="40" y="109" font-size="12.6" fill="#6d28d9" text-anchor="start" font-weight="bold">看有没有重复劳动</text><text x="192" y="109" font-size="12.2" fill="#4c1d95" text-anchor="start">同一件事反复算，就是浪费</text><rect x="24" y="124" width="772" height="28" rx="8" fill="#f3efff"/><text x="40" y="143" font-size="12.6" fill="#6d28d9" text-anchor="start" font-weight="bold">和数据规模的关系</text><text x="192" y="143" font-size="12.2" fill="#4c1d95" text-anchor="start">数据变多时，步骤增长得快不快</text>
+</svg>
+  <div class="caption">图 5（SVG）：步骤怎么数</div>
+</figure>
+
+<div class="box info">
+  <span class="lb">一个直观的例子：</span>要在一个有 100 个名字的清单里找一个人——<br>· 挨个看：最坏要看 <b>100 次</b>；<br>· 先按拼音排好序再"折半找"：最多只要 <b>7 次</b>左右（每看一次就排除一半）。<br>这就是"算法不一样，效率差很多"。
+</div>
+
+
+<h3 id="s2-3">2.3 第三条：好不好懂、好不好改</h3>
+
+<div class="box tip">
+  <span class="lb">打个比方：</span>两个人都能把你送回家——一个走小巷抄近路但你不认识，一个走大路绕一点但你一看就懂。<br><b>程序也是给人看的</b>：起好名字、拆成函数，别人（和三个月后的你）才改得动。
+</div>
+
+<!-- ============ 3 ============ -->
+<div class="section-header" id="s3">
+  <h2>3　从图纸到程序</h2>
+  <div class="en-title">From Blueprint to Program</div>
+</div>
+
+<h3 id="s3-1">3.1 第一步：把问题读成"要做什么"</h3>
+
+<figure class="pic">
+  <img src="../assets/illustrations/scratch-L4-03-02_plan_to_code.webp" alt="从图纸到积木"
+       onerror="this.closest('.pic').classList.add('missing')">
+  <div class="ph">
+    <div class="fn">assets/illustrations/scratch-L4-03-02_plan_to_code.webp</div>
+    <div class="ds">【配图位】图纸上的方框逐步变成发光积木块，从纸面"长"出来登上操作台。（提示词见《GESP配图清单与AI绘图提示词》第四节 4-3）</div>
+  </div>
+  <figcaption>图 6：图纸上的方框，一块块变成积木</figcaption>
+</figure>
+
+<figure class="figure">
+<svg class="diagram" viewBox="0 0 820 168" role="img" aria-label="读题时圈出三样东西">
+<text x="24" y="32" font-size="14" fill="#4c1d95" text-anchor="start" font-weight="bold">读题时圈出三样东西</text><rect x="24" y="56" width="772" height="28" rx="8" fill="#f3efff"/><text x="40" y="75" font-size="12.6" fill="#6d28d9" text-anchor="start" font-weight="bold">输入</text><text x="192" y="75" font-size="12.2" fill="#4c1d95" text-anchor="start">题目会给你什么？（用户输入、初始坐标、一个列表……）</text><rect x="24" y="90" width="772" height="28" rx="8" fill="#faf8ff"/><text x="40" y="109" font-size="12.6" fill="#6d28d9" text-anchor="start" font-weight="bold">输出</text><text x="192" y="109" font-size="12.2" fill="#4c1d95" text-anchor="start">要你算出/做出什么？（说出结果、走到终点、把答案存进变量）</text><rect x="24" y="124" width="772" height="28" rx="8" fill="#f3efff"/><text x="40" y="143" font-size="12.6" fill="#6d28d9" text-anchor="start" font-weight="bold">约束</text><text x="192" y="143" font-size="12.2" fill="#4c1d95" text-anchor="start">有没有限制？（最多走几步、只能用已有的积木……）</text>
+</svg>
+  <div class="caption">图 7（SVG）：读题圈三样</div>
+</figure>
+
+<h3 id="s3-2">3.2 第二步：写步骤、画流程图</h3>
+
+<figure class="figure">
+<svg class="diagram" viewBox="0 0 820 158" role="img" aria-label="把问题变成步骤的四问">
+<text x="24" y="32" font-size="14" fill="#4c1d95" text-anchor="start" font-weight="bold">把问题变成步骤的四问</text><rect x="24" y="56" width="173.5" height="68" rx="10" fill="#f3efff" stroke="#e6e0fb" stroke-width="1.8"/><text x="110.75" y="95" font-size="12.4" fill="#6d28d9" text-anchor="middle" font-weight="bold">先做什么？</text><line x1="202.5" y1="90" x2="214.5" y2="90" stroke="#8b5cf6" stroke-width="2.2"/><polygon points="214.5,90 206.5,85 206.5,95" fill="#8b5cf6"/><rect x="223.5" y="56" width="173.5" height="68" rx="10" fill="#f3efff" stroke="#e6e0fb" stroke-width="1.8"/><text x="310.25" y="95" font-size="12.4" fill="#6d28d9" text-anchor="middle" font-weight="bold">然后重复做什么？</text><line x1="402" y1="90" x2="414" y2="90" stroke="#8b5cf6" stroke-width="2.2"/><polygon points="414,90 406,85 406,95" fill="#8b5cf6"/><rect x="423" y="56" width="173.5" height="68" rx="10" fill="#f3efff" stroke="#e6e0fb" stroke-width="1.8"/><text x="509.75" y="95" font-size="12.4" fill="#6d28d9" text-anchor="middle" font-weight="bold">什么情况下要分岔？</text><line x1="601.5" y1="90" x2="613.5" y2="90" stroke="#8b5cf6" stroke-width="2.2"/><polygon points="613.5,90 605.5,85 605.5,95" fill="#8b5cf6"/><rect x="622.5" y="56" width="173.5" height="68" rx="10" fill="#f3efff" stroke="#e6e0fb" stroke-width="1.8"/><text x="709.25" y="95" font-size="12.4" fill="#6d28d9" text-anchor="middle" font-weight="bold">什么时候结束？</text><text x="24" y="150" font-size="11.8" fill="#8d9d94" text-anchor="start">把这四问答清楚，流程图基本就出来了</text>
+</svg>
+  <div class="caption">图 8（SVG）：把问题变成步骤</div>
+</figure>
+
+<h3 id="s3-3">3.3 第三步：拼成积木</h3>
+
+<div class="blk-card">
+  <div class="blk-head">
+    <span class="dot d1"></span><span class="dot d2"></span><span class="dot d3"></span>
+    <span class="file">重点示例：一段"读题 → 积木"的对照</span>
+    <span class="lang">图形化积木</span>
+  </div>
+  <div class="blk-body">
+<svg class="blk" viewBox="0 0 402.6 298" width="402.6" height="298" role="img" aria-label="积木脚本"><g font-family="'PingFang SC','Microsoft YaHei','Noto Sans SC',sans-serif"><g transform="translate(3,3)"><path d="M0,5 A5,5 0 0 1 5,0 H16 v4 h12 v-4 H232 A5,5 0 0 1 237,5 V31 A5,5 0 0 1 232,36 H28 v4 h-12 v-4 H5 A5,5 0 0 1 0,31 Z" fill="#5CB1D6" stroke="#4b91af" stroke-width="1.2"/><text x="15" y="22.8" font-size="13.4" fill="#fff">询问 </text><rect x="56" y="6.5" width="111.8" height="23" rx="5" fill="#fff"/><text x="111.9" y="22.4" font-size="12.5" fill="#575e75" text-anchor="middle">请输入一个整数</text><text x="174.8" y="22.8" font-size="13.4" fill="#fff"> 并等待</text></g><g transform="translate(3,43)"><path d="M0,5 A5,5 0 0 1 5,0 H16 v4 h12 v-4 H231 A5,5 0 0 1 236,5 V31 A5,5 0 0 1 231,36 H28 v4 h-12 v-4 H5 A5,5 0 0 1 0,31 Z" fill="#FF8C1A" stroke="#d17215" stroke-width="1.2"/><text x="15" y="22.8" font-size="13.4" fill="#fff">将 </text><rect x="42.6" y="6.5" width="52.8" height="23" rx="5" fill="#DB6E00"/><text x="64" y="22.4" font-size="12.5" fill="#fff" text-anchor="middle">数字</text><path d="M84.4 15.5 l4 5 l4 -5 z" fill="#fff" opacity=".85"/><text x="102.4" y="22.8" font-size="13.4" fill="#fff"> 设为 </text><polygon points="162.1,6.5 209.9,6.5 216.225,18 209.9,29.5 162.1,29.5 155.775,18" fill="#fff" stroke="#FF8C1A" stroke-width="1.4"/><rect x="161.6" y="6.5" width="48.8" height="23" rx="11.5" fill="#fff" stroke="#cfd6e4" stroke-width="1"/><text x="186" y="22.4" font-size="12.5" fill="#575e75" text-anchor="middle">回答</text></g><g transform="translate(3,83)"><path d="M0,5 A5,5 0 0 1 5,0 H16 v4 h12 v-4 H190 A5,5 0 0 1 195,5 V31 A5,5 0 0 1 190,36 H28 v4 h-12 v-4 H5 A5,5 0 0 1 0,31 Z" fill="#FF8C1A" stroke="#d17215" stroke-width="1.2"/><text x="15" y="22.8" font-size="13.4" fill="#fff">将 </text><rect x="42.6" y="6.5" width="52.8" height="23" rx="5" fill="#DB6E00"/><text x="64" y="22.4" font-size="12.5" fill="#fff" text-anchor="middle">总和</text><path d="M84.4 15.5 l4 5 l4 -5 z" fill="#fff" opacity=".85"/><text x="102.4" y="22.8" font-size="13.4" fill="#fff"> 设为 </text><rect x="150.6" y="6.5" width="30" height="23" rx="11.5" fill="#fff"/><text x="165.6" y="22.4" font-size="12.5" fill="#575e75" text-anchor="middle">0</text></g><g transform="translate(3,123)"><path d="M0,5 A5,5 0 0 1 5,0 H16 v4 h12 v-4 H257 A5,5 0 0 1 262,5 V123 A5,5 0 0 1 257,128 H28 v4 h-12 v-4 H5 A5,5 0 0 1 0,123 V115 H16 V36 H0 Z" fill="#FFAB19" stroke="#d18c14" stroke-width="1.2"/><text x="15" y="22.8" font-size="13.4" fill="#fff">重复执行直到 </text><polygon points="121.1,6.5 234.5,6.5 240.825,18 234.5,29.5 121.1,29.5 114.775,18" fill="#fff" stroke="#FFAB19" stroke-width="1.4"/><rect x="120.6" y="6.5" width="48.8" height="23" rx="11.5" fill="#fff" stroke="#cfd6e4" stroke-width="1"/><text x="145" y="22.4" font-size="12.5" fill="#575e75" text-anchor="middle">数字</text><text x="176.4" y="22.8" font-size="13.4" fill="#575e75"> = </text><rect x="205" y="6.5" width="30" height="23" rx="11.5" fill="#fff" stroke="#cfd6e4" stroke-width="1"/><text x="220" y="22.4" font-size="12.5" fill="#575e75" text-anchor="middle">0</text><g transform="translate(20,38)"><path d="M0,5 A5,5 0 0 1 5,0 H16 v4 h12 v-4 H231 A5,5 0 0 1 236,5 V31 A5,5 0 0 1 231,36 H28 v4 h-12 v-4 H5 A5,5 0 0 1 0,31 Z" fill="#FF8C1A" stroke="#d17215" stroke-width="1.2"/><text x="15" y="22.8" font-size="13.4" fill="#fff">将 </text><rect x="42.6" y="6.5" width="52.8" height="23" rx="5" fill="#DB6E00"/><text x="64" y="22.4" font-size="12.5" fill="#fff" text-anchor="middle">总和</text><path d="M84.4 15.5 l4 5 l4 -5 z" fill="#fff" opacity=".85"/><text x="102.4" y="22.8" font-size="13.4" fill="#fff"> 增加 </text><polygon points="162.1,6.5 209.9,6.5 216.225,18 209.9,29.5 162.1,29.5 155.775,18" fill="#fff" stroke="#FF8C1A" stroke-width="1.4"/><rect x="161.6" y="6.5" width="48.8" height="23" rx="11.5" fill="#fff" stroke="#cfd6e4" stroke-width="1"/><text x="186" y="22.4" font-size="12.5" fill="#575e75" text-anchor="middle">数字</text></g><g transform="translate(20,76)"><path d="M0,5 A5,5 0 0 1 5,0 H16 v4 h12 v-4 H197 A5,5 0 0 1 202,5 V31 A5,5 0 0 1 197,36 H28 v4 h-12 v-4 H5 A5,5 0 0 1 0,31 Z" fill="#FF8C1A" stroke="#d17215" stroke-width="1.2"/><text x="15" y="22.8" font-size="13.4" fill="#fff">将 </text><rect x="42.6" y="6.5" width="52.8" height="23" rx="5" fill="#DB6E00"/><text x="64" y="22.4" font-size="12.5" fill="#fff" text-anchor="middle">数字</text><path d="M84.4 15.5 l4 5 l4 -5 z" fill="#fff" opacity=".85"/><text x="102.4" y="22.8" font-size="13.4" fill="#fff"> 增加 </text><rect x="150.6" y="6.5" width="36.4" height="23" rx="11.5" fill="#fff"/><text x="168.8" y="22.4" font-size="12.5" fill="#575e75" text-anchor="middle">-1</text></g></g><g transform="translate(3,255)"><path d="M0,5 A5,5 0 0 1 5,0 H16 v4 h12 v-4 H391 A5,5 0 0 1 396,5 V31 A5,5 0 0 1 391,36 H28 v4 h-12 v-4 H5 A5,5 0 0 1 0,31 Z" fill="#9966FF" stroke="#7d53d1" stroke-width="1.2"/><text x="15" y="22.8" font-size="13.4" fill="#fff">说 </text><polygon points="54.1,6.5 291.3,6.5 297.625,18 291.3,29.5 54.1,29.5 47.775,18" fill="#fff" stroke="#9966FF" stroke-width="1.4"/><text x="53.6" y="22.8" font-size="13.4" fill="#575e75">连接 </text><rect x="94.6" y="6.5" width="127.2" height="23" rx="5" fill="#fff" stroke="#cfd6e4" stroke-width="1"/><text x="158.2" y="22.4" font-size="12.5" fill="#575e75" text-anchor="middle">从 1 加到它等于 </text><text x="228.8" y="22.8" font-size="13.4" fill="#575e75"> </text><rect x="243" y="6.5" width="48.8" height="23" rx="11.5" fill="#fff" stroke="#cfd6e4" stroke-width="1"/><text x="267.4" y="22.4" font-size="12.5" fill="#575e75" text-anchor="middle">总和</text><text x="309.8" y="22.8" font-size="13.4" fill="#fff"> </text><rect x="324" y="6.5" width="30" height="23" rx="11.5" fill="#fff"/><text x="339" y="22.4" font-size="12.5" fill="#575e75" text-anchor="middle">3</text><text x="361" y="22.8" font-size="13.4" fill="#fff"> 秒</text></g></g></svg>
+  </div>
+  <div class="out"><b>读法</b>　输入（询问）→ 初始值（设为 0、设为回答）→ 循环累加（重复执行直到）→ 输出（说）</div>
+</div>
+
+<div class="box info">
+  <span class="lb">流程图的用处：</span><b>先把图上的方框数清楚，再动手拼积木。</b>图上有几个框，脚本里就大致有几组积木——这样拼的时候心里有数，不会越拼越乱。
+</div>
+
+<!-- ============ 4 ============ -->
+<div class="section-header" id="s4">
+  <h2>4　模块化搭建</h2>
+  <div class="en-title">Modular Building</div>
+</div>
+
+<h3 id="s4-1">4.1 用函数把大问题拆成小问题</h3>
+
+<figure class="figure">
+<svg class="diagram" viewBox="0 0 820 194" role="img" aria-label="拆问题的三步">
+<text x="24" y="32" font-size="14" fill="#4c1d95" text-anchor="start" font-weight="bold">拆问题的三步</text><rect x="24" y="56" width="246.667" height="104" rx="12" fill="#f3efff" stroke="#e6e0fb" stroke-width="1.8"/><text x="147.333" y="104" font-size="13.5" fill="#6d28d9" text-anchor="middle" font-weight="bold">找出"一件独立的小事"</text><text x="147.333" y="126" font-size="11.6" fill="#7c7794" text-anchor="middle">比如"画一个窗户""检查这一格"</text><rect x="286.667" y="56" width="246.667" height="104" rx="12" fill="#faf8ff" stroke="#e6e0fb" stroke-width="1.8"/><text x="410" y="104" font-size="13.5" fill="#6d28d9" text-anchor="middle" font-weight="bold">把它做成一个函数</text><text x="410" y="126" font-size="11.6" fill="#7c7794" text-anchor="middle">起个说人话的名字</text><rect x="549.333" y="56" width="246.667" height="104" rx="12" fill="#f3efff" stroke="#e6e0fb" stroke-width="1.8"/><text x="672.667" y="104" font-size="13.5" fill="#6d28d9" text-anchor="middle" font-weight="bold">主程序只写"调用顺序"</text><text x="672.667" y="126" font-size="11.6" fill="#7c7794" text-anchor="middle">一眼就能看出整体在干什么</text><text x="24" y="186" font-size="11.8" fill="#8d9d94" text-anchor="start">大问题拆成小问题，每个小问题做成一个函数——这就是模块化</text>
+</svg>
+  <div class="caption">图 9（SVG）：拆问题的三步</div>
+</figure>
+
+<h3 id="s4-2">4.2 分块做、分块调</h3>
+
+<figure class="figure">
+<svg class="diagram" viewBox="0 0 820 240" role="img" aria-label="一次做完 vs 分块做">
+<text x="24" y="32" font-size="14" fill="#4c1d95" text-anchor="start" font-weight="bold">一次做完 vs 分块做</text><rect x="24" y="52" width="376" height="160" rx="12" fill="#f5f3ff" stroke="#e6e0fb" stroke-width="1.8"/><text x="212" y="82" font-size="13.5" fill="#6d28d9" text-anchor="middle" font-weight="bold">一次写完所有积木</text><circle cx="40" cy="106" r="3.4" fill="#6d28d9"/><text x="52" y="110" font-size="12.2" fill="#4c1d95" text-anchor="start">几十块积木堆在一起</text><circle cx="40" cy="136" r="3.4" fill="#6d28d9"/><text x="52" y="140" font-size="12.2" fill="#4c1d95" text-anchor="start">一出错不知道是哪一块</text><circle cx="40" cy="166" r="3.4" fill="#6d28d9"/><text x="52" y="170" font-size="12.2" fill="#4c1d95" text-anchor="start">改一处可能碰坏另一处</text><rect x="420" y="52" width="376" height="160" rx="12" fill="#fff7ed" stroke="#e6e0fb" stroke-width="1.8"/><text x="608" y="82" font-size="13.5" fill="#b45309" text-anchor="middle" font-weight="bold">分块做、每块单独测</text><circle cx="436" cy="106" r="3.4" fill="#b45309"/><text x="448" y="110" font-size="12.2" fill="#4c1d95" text-anchor="start">每做好一个函数就单独调用试一次</text><circle cx="436" cy="136" r="3.4" fill="#b45309"/><text x="448" y="140" font-size="12.2" fill="#4c1d95" text-anchor="start">错只会出在刚做的那一块</text><circle cx="436" cy="166" r="3.4" fill="#b45309"/><text x="448" y="170" font-size="12.2" fill="#4c1d95" text-anchor="start">主程序永远是清楚的三五行</text><text x="24" y="226" font-size="11.8" fill="#8d9d94" text-anchor="start">这就是四级考纲里说的"程序调试和优化能力"</text>
+</svg>
+  <div class="caption">图 10（SVG）：分块做、分块调</div>
+</figure>
+
+<div class="box info">
+  <span class="lb">一句话总结：</span><b>写大程序不是"一口气写完"，而是"把小事一件件做对，再拼起来"。</b>
+</div>
+
+<!-- ============ 5 ============ -->
+<div class="section-header" id="s5">
+  <h2>5　代码实战</h2>
+  <div class="en-title">Level Practice</div>
+</div>
+
+<p>这一关要把一整串"订单"按规则处理掉——<b>先读清规则，再一步步执行</b>，
+正是"把实际问题对应到算法"的过程。</p>
+<div class="level-card">
+  <div class="lc-head"><span class="n">关卡</span><h4>编码订单</h4><span class="go">进入关卡 →</span></div>
+  <div class="lc-body">
+    <div class="story">
+      <b>故事：</b>
+乐园的仓库每天收到一长串订单，每张订单上写着"货号 + 数量"。
+要么按顺序一件件处理，要么先按货号归好类再处理——
+<b>两种做法都能完成，但工作量差很多。</b>
+
+    </div>
+    <figure class="pic">
+      <img src="../assets/stages/py-L4-03-stage1_encoding_order.webp" alt="编码订单 关卡截图"
+           onerror="this.closest('.pic').classList.add('missing')">
+      <div class="ph">
+        <div class="fn">assets/stages/py-L4-03-stage1_encoding_order.webp</div>
+        <div class="ds">【关卡截图位】请把《编码订单》的游戏画面截图放到此处（放入 assets/stages/ 目录，文件名为 py-L4-03-stage1_encoding_order.webp）。</div>
+      </div>
+      <figcaption>关卡实况：编码订单</figcaption>
+    </figure>
+    <p><strong>思路：</strong>先把任务拆成三件小事：<b>读订单、分类、按类输出</b>。
+每件小事做成一个函数，主脚本就只剩三行调用——清楚、也好改。
+</p>
+<div class="blk-card">
+  <div class="blk-head">
+    <span class="dot d1"></span><span class="dot d2"></span><span class="dot d3"></span>
+    <span class="file">重点示例：主脚本只留三步</span>
+    <span class="lang">图形化积木</span>
+  </div>
+  <div class="blk-body">
+<svg class="blk" viewBox="0 0 295.2 190" width="295.2" height="190" role="img" aria-label="积木脚本"><g font-family="'PingFang SC','Microsoft YaHei','Noto Sans SC',sans-serif"><g transform="translate(3,3)"><path d="M0,12 C27.44,0 109.76,0 137.2,12 V43 A5,5 0 0 1 132.2,48 H28 v4 h-12 v-4 H5 A5,5 0 0 1 0,43 Z" fill="#FF6680" stroke="#d15368" stroke-width="1.2"/><text x="15" y="34.8" font-size="13.4" fill="#fff">定义 </text><rect x="56" y="18.5" width="66.2" height="23" rx="5" fill="#FF3355"/><text x="84.1" y="34.4" font-size="12.5" fill="#fff" text-anchor="middle">读订单</text><path d="M111.2 27.5 l4 5 l4 -5 z" fill="#fff" opacity=".85"/></g><g transform="translate(3,55)"><path d="M0,5 A5,5 0 0 1 5,0 H16 v4 h12 v-4 H284 A5,5 0 0 1 289,5 V123 A5,5 0 0 1 284,128 H28 v4 h-12 v-4 H5 A5,5 0 0 1 0,123 V115 H16 V36 H0 Z" fill="#FFAB19" stroke="#d18c14" stroke-width="1.2"/><text x="15" y="22.8" font-size="13.4" fill="#fff">重复执行 </text><rect x="82.8" y="6.5" width="30" height="23" rx="11.5" fill="#fff"/><text x="97.8" y="22.4" font-size="12.5" fill="#575e75" text-anchor="middle">5</text><text x="119.8" y="22.8" font-size="13.4" fill="#fff"> 次</text><g transform="translate(20,38)"><path d="M0,5 A5,5 0 0 1 5,0 H16 v4 h12 v-4 H258 A5,5 0 0 1 263,5 V31 A5,5 0 0 1 258,36 H28 v4 h-12 v-4 H5 A5,5 0 0 1 0,31 Z" fill="#FF8C1A" stroke="#d17215" stroke-width="1.2"/><text x="15" y="22.8" font-size="13.4" fill="#fff">将 </text><polygon points="54.1,6.5 101.9,6.5 108.225,18 101.9,29.5 54.1,29.5 47.775,18" fill="#fff" stroke="#FF8C1A" stroke-width="1.4"/><rect x="53.6" y="6.5" width="48.8" height="23" rx="11.5" fill="#fff" stroke="#cfd6e4" stroke-width="1"/><text x="78" y="22.4" font-size="12.5" fill="#575e75" text-anchor="middle">货号</text><text x="120.4" y="22.8" font-size="13.4" fill="#fff"> 加入 </text><rect x="168.6" y="6.5" width="79.6" height="23" rx="5" fill="#DB6E00"/><text x="203.4" y="22.4" font-size="12.5" fill="#fff" text-anchor="middle">订单清单</text><path d="M237.2 15.5 l4 5 l4 -5 z" fill="#fff" opacity=".85"/></g><g transform="translate(20,76)"><path d="M0,5 A5,5 0 0 1 5,0 H16 v4 h12 v-4 H190 A5,5 0 0 1 195,5 V31 A5,5 0 0 1 190,36 H28 v4 h-12 v-4 H5 A5,5 0 0 1 0,31 Z" fill="#FF8C1A" stroke="#d17215" stroke-width="1.2"/><text x="15" y="22.8" font-size="13.4" fill="#fff">将 </text><rect x="42.6" y="6.5" width="52.8" height="23" rx="5" fill="#DB6E00"/><text x="64" y="22.4" font-size="12.5" fill="#fff" text-anchor="middle">编号</text><path d="M84.4 15.5 l4 5 l4 -5 z" fill="#fff" opacity=".85"/><text x="102.4" y="22.8" font-size="13.4" fill="#fff"> 增加 </text><rect x="150.6" y="6.5" width="30" height="23" rx="11.5" fill="#fff"/><text x="165.6" y="22.4" font-size="12.5" fill="#575e75" text-anchor="middle">1</text></g></g></g></svg><div class="blk-row">
+    <div>
+      <div class="blk-cap">主脚本：三行看清整体</div>
+<svg class="blk" viewBox="0 0 170.8 178" width="170.8" height="178" role="img" aria-label="积木脚本"><g font-family="'PingFang SC','Microsoft YaHei','Noto Sans SC',sans-serif"><g transform="translate(3,3)"><path d="M0,12 C32.96,0 131.84,0 164.8,12 V43 A5,5 0 0 1 159.8,48 H28 v4 h-12 v-4 H5 A5,5 0 0 1 0,43 Z" fill="#FFBF00" stroke="#d19c00" stroke-width="1.2"/><text x="15" y="34.8" font-size="13.4" fill="#fff">当 </text><rect x="42.6" y="18.5" width="52.8" height="23" rx="5" fill="#CC9900"/><text x="64" y="34.4" font-size="12.5" fill="#fff" text-anchor="middle">绿旗</text><path d="M84.4 27.5 l4 5 l4 -5 z" fill="#fff" opacity=".85"/><text x="102.4" y="34.8" font-size="13.4" fill="#fff"> 被点击</text></g><g transform="translate(3,55)"><path d="M0,5 A5,5 0 0 1 5,0 H16 v4 h12 v-4 H71 A5,5 0 0 1 76,5 V31 A5,5 0 0 1 71,36 H28 v4 h-12 v-4 H5 A5,5 0 0 1 0,31 Z" fill="#FF6680" stroke="#d15368" stroke-width="1.2"/><text x="15" y="22.8" font-size="13.4" fill="#fff">读订单</text></g><g transform="translate(3,95)"><path d="M0,5 A5,5 0 0 1 5,0 H16 v4 h12 v-4 H71 A5,5 0 0 1 76,5 V31 A5,5 0 0 1 71,36 H28 v4 h-12 v-4 H5 A5,5 0 0 1 0,31 Z" fill="#FF6680" stroke="#d15368" stroke-width="1.2"/><text x="15" y="22.8" font-size="13.4" fill="#fff">分类</text></g><g transform="translate(3,135)"><path d="M0,5 A5,5 0 0 1 5,0 H16 v4 h12 v-4 H78 A5,5 0 0 1 83,5 V31 A5,5 0 0 1 78,36 H28 v4 h-12 v-4 H5 A5,5 0 0 1 0,31 Z" fill="#FF6680" stroke="#d15368" stroke-width="1.2"/><text x="15" y="22.8" font-size="13.4" fill="#fff">按类输出</text></g></g></svg>
+    </div>
+</div>
+
+  </div>
+  <div class="out"><b>读法</b>　定义里是细节，主脚本是骨架——<b>光看主脚本三行，就知道这个程序在干什么</b></div>
+</div>
+
+    <div class="box tip">
+      <span class="lb">自己试一试：</span>把"读订单"这三行换成几十块积木直接写进主脚本，程序照样能跑。<strong>但你现在还看得懂它吗？还能一眼找出错在哪吗？</strong>
+    </div>
+    <p>这一关真正想教你的是<b>"模块化的好处"</b>：'
+    '把复杂的事拆成小函数，主程序就变成了一份"目录"。</p>
+<div class="box info">
+  <span class="lb">四级考纲里的一句话：</span>"具备将复杂问题及复杂算法用流程图和语言表达的能力"——<b>能把它说清楚，才能把它写清楚。</b>
+</div>
+    <a class="btn-go" href="https://codecombat.cn/" target="_blank" rel="noopener">去扣哒世界闯这一关 →</a>
+  </div>
+</div>
+
+<!-- ============ 6 ============ -->
+<div class="section-header" id="s6">
+  <h2>6　常见陷阱</h2>
+  <div class="en-title">Common Traps</div>
+</div>
+
+<div class="box warn">
+  <span class="lb">陷阱 1：</span><b>一上来就拼积木。</b>题目还没读清就动手，拼到一半发现方向错了。<br><strong>正确做法：</strong>先圈出输入、输出、约束，用中文把步骤写一遍。
+</div>
+
+<div class="box warn">
+  <span class="lb">陷阱 2：</span><b>只看"能不能算出来"，不看"花多少步"。</b>考试里常问"哪种算法更好"，考的就是效率意识。<br><strong>正确做法：</strong>比较时先看对不对，再比较步骤多少（尤其看数据变大时的增长）。
+</div>
+
+<div class="box warn">
+  <span class="lb">陷阱 3：</span><b>一个函数塞进整个程序。</b>那和不用函数没区别，只是换了个名字。<br><strong>正确做法：</strong>一个函数只负责"一件独立的小事"，名字要能说出这件事。
+</div>
+
+<div class="box warn">
+  <span class="lb">陷阱 4：</span><b>所有积木一起写完再运行。</b>一旦出错，几十块积木里不知道是哪一块的问题。<br><strong>正确做法：</strong>做好一个函数就单独调用测一次，确认对了再往下做。
+</div>
+
+<!-- ============ 7 ============ -->
+<div class="section-header" id="s7">
+  <h2>7　题目练习</h2>
+  <div class="en-title">Practice</div>
+</div>
+
+<p>第 1 题改编自 2026 年 9 月 · 图形化编程 四级 第 2 题，其余为原创练习题。</p>
+<div class="exam">
+  <div class="eh"><span class="src">改编自 2026 年 9 月 · 图形化编程 四 级 · 第 2 题</span><span class="tp">单选题</span></div>
+  <div class="eb">
+    <div class="q">某程序用循环做累加，它的流程图如下所示。执行这段程序后，输出的结果是（　　）。</div>
+    <div class="opt"><i>A.</i>6<br>
+      <i>B.</i>7<br>
+      <i>C.</i>8<br>
+      <i>D.</i>9</div>
+    <details><summary>查看答案与详解</summary>
+      <div class="ans"><b>答案：C</b>。读流程图的通用方法就三步：<br>① <b>顺着箭头走</b>，遇到矩形框就执行它写的事；<br>② 遇到<b>菱形框</b>就判断一次，按"是 / 否"选一条路；<br>③ 遇到<b>绕回去的箭头</b>，就说明这是循环——<b>把每转一圈的结果记在手边，一圈一圈算</b>。<br>这道题里循环在累加，把每一圈的和写下来，最后输出的就是 <b>8</b>。<br><b>要点：</b>流程图题最稳的办法是<b>在草稿纸上画一张"每转一圈时各变量是多少"的小表</b>，不要光盯着图硬看。<br><span class="tagline">对应小节</span>3.2 从流程图读算法。</div>
+    </details>
+  </div>
+</div>
+<div class="exam">
+  <div class="eh"><span class="src ori">原创练习题</span><span class="tp">单选题</span></div>
+  <div class="eb">
+    <div class="q">关于"算法"的说法，下面哪一个<b>不</b>符合算法的要求（　　）。</div>
+    <div class="opt">
+      <i>A.</i>步骤清晰，每一步都明确<br>
+      <i>B.</i>有一定的输入，并产生结果<br>
+      <i>C.</i>步骤要足够多，越多越好<br>
+      <i>D.</i>步骤有限，执行下去一定会结束
+    </div>
+    <details><summary>查看答案与详解</summary>
+      <div class="ans"><b>答案：C</b>。算法要求的是"<b>步骤清晰、有限、能结束</b>"，<b>并不是越多越好</b>——在同样正确的前提下，步骤越少越好。<br><b>A、B、D 都是算法的基本要求：</b>明确、有输入输出、有限且会结束。<br><span class="tagline">对应小节</span>1.1、2.2 算法的要求与评价。</div>
+    </details>
+  </div>
+</div>
+
+<div class="exam">
+  <div class="eh"><span class="src ori">原创练习题</span><span class="tp">单选题</span></div>
+  <div class="eb">
+    <div class="q">要从一张有 1000 个名字的名单里找出某一个人。下面关于两种做法的说法，<b>正确</b>的是（　　）。</div>
+    <div class="opt">
+      <i>A.</i>两种做法一样快<br>
+      <i>B.</i>先排序再查找，通常比从头挨个找更省事<br>
+      <i>C.</i>从头挨个找一定更快<br>
+      <i>D.</i>只要程序能写出结果，就说明算法是好的
+    </div>
+    <details><summary>查看答案与详解</summary>
+      <div class="ans"><b>答案：B</b>。同一个问题可以有多种算法，而<b>"能算出来"只是及格线</b>——<br>挨个找最坏要看 1000 次；先把名单排好序，之后每次查找都能"排除一半"，大大减少步骤。<br><b>D 错：</b>"能出结果"和"算法好"是两回事，评价算法还要看步骤多少、好不好懂。<br><span class="tagline">对应小节</span>1.2、2.2 多种算法与效率。</div>
+    </details>
+  </div>
+</div>
+
+<div class="exam">
+  <div class="eh"><span class="src ori">原创练习题</span><span class="tp">单选题</span></div>
+  <div class="eb">
+    <div class="q">面对一道复杂的综合编程题，下面哪种做法<b>最合理</b>（　　）。</div>
+    <div class="opt">
+      <i>A.</i>想到哪儿写到哪儿，一口气把积木拼完<br>
+      <i>B.</i>先读清题目（输入、输出、限制），把步骤写下来，再拆成几个小函数分块完成<br>
+      <i>C.</i>先把所有积木拖到脚本区，再想怎么连<br>
+      <i>D.</i>直接抄一个差不多的程序改改
+    </div>
+    <details><summary>查看答案与详解</summary>
+      <div class="ans"><b>答案：B</b>。这正是四级考纲要求的流程：<b>分析问题 → 写步骤 / 画流程图 → 拆成模块 → 分块实现与调试</b>。<br><b>A、C 错：</b>没有想清楚就动手，很容易拼到一半发现方向错了、又找不出错在哪一块；<br><b>D 错：</b>题目要求往往不一样，硬抄会错得莫名其妙。<br><span class="tagline">对应小节</span>3.1～3.3、4.1～4.2 从图纸到程序。</div>
+    </details>
+  </div>
+</div>
+
+<div class="exam">
+  <div class="eh"><span class="src ori">原创练习题</span><span class="tp">多选题</span></div>
+  <div class="eb">
+    <div class="q">用函数把大问题拆成几个小问题，有哪些好处（　　）。</div>
+    <div class="opt">
+      <i>A.</i>每个函数只做一件事，写起来更容易想清楚<br>
+      <i>B.</i>主脚本只剩几行调用，整体结构一眼看得懂<br>
+      <i>C.</i>出错时能缩小范围，只要单独测那一个函数<br>
+      <i>D.</i>拆成函数之后，程序一定会跑得更快
+    </div>
+    <details><summary>查看答案与详解</summary>
+      <div class="ans"><b>答案：A、B、C</b>。这三条正是模块化的三大好处。<br><b>D 错：</b>拆成函数主要让程序"<b>好写、好读、好改、好调</b>"，它执行的工作量和原来一样——并不会让计算机算得更快。<br><span class="tagline">对应小节</span>4.1、4.2 模块化搭建。</div>
+    </details>
+  </div>
+</div>
+
+<div class="exam">
+  <div class="eh"><span class="src ori">原创练习题</span><span class="tp">判断题</span></div>
+  <div class="eb">
+    <div class="q">在评价一个算法时，只要它能算出正确的结果，就不需要再考虑它执行步骤的多少了。（　　）</div>
+    <details><summary>查看答案与详解</summary>
+      <div class="ans"><b>答案：错误（×）</b>。正确只是<b>第一条</b>要求。评价算法通常还要看两点：<br>① <b>步骤多少（效率）</b>——同样能算对，花十步和花一千步差别很大；<br>② <b>好不好懂、好不好改</b>——程序是给人看的。<br><span class="tagline">对应小节</span>2.1～2.3 算法好不好怎么评。</div>
+    </details>
+  </div>
+</div>
+
+<!-- ============ 8 ============ -->
+<div class="section-header" id="s8">
+  <h2>8　本单元小结</h2>
+  <div class="en-title">Unit Summary</div>
+</div>
+
+<div class="cast teacher">
+  <img class="ava" src="../assets/avatars/gordon.webp" alt="戈登" onerror="this.style.display='none'">
+  <div class="bubble">
+    <div class="who">戈登 · 机械师</div>
+    这一单元学的是"怎么想"，不是"怎么拼"。<br>
+    一套流程：<b>读题（输入/输出/限制）→ 写步骤 → 画流程图 → 拆成函数 → 分块做分块调</b>；<br>
+    三个标准：<b>对不对、步骤多少、好不好懂。</b>
+  </div>
+</div>
+
+<h3 id="s8-1">你在图纸工坊里学到了什么</h3>
+
+<ul>
+  <li><b>算法</b>：解决问题的清晰步骤，有输入输出、每步明确、有限且会结束；</li>
+  <li><b>同一问题多种算法</b>：都能算对，差别在花了多少步；</li>
+  <li><b>三条评价标准</b>：正确性 → 步骤多少 → 好不好懂好改；</li>
+  <li><b>四个环节</b>：读题 → 写步骤 / 画流程图 → 拼积木 → 调试；</li>
+  <li><b>模块化</b>：拆成小函数，分块做、分块调，主脚本只留调用。</li>
+</ul>
+<h3 id="s8-2">下一站：大小秤</h3>
+
+<p>下一单元进入四级最"重"的一块——<b>排序</b>。先弄明白什么叫"稳定"，再动手把一串数排好。</p>
+
+
+<div class="pager">
+  <a href="scratch-4-02.html"><div class="k">← 上一单元</div><div class="v">多轴机械臂 · 多参函数</div></a>
+  <a href="../index.html" target="_top" class="back"><div class="k">返回</div><div class="v">考纲之路 · 总目录</div></a>
+  <a href="scratch-4-04.html"><div class="k">下一单元 →</div><div class="v">大小秤 · 排序的概念与稳定性</div></a>
+</div>
+<div class="cta">
+  <h3>下一站：大小秤</h3>
+  <p>下一单元进入四级最"重"的一块——排序。先弄明白什么叫"稳定"，再动手把一串数排好。</p>
+  <a class="btn-go" href="https://codecombat.cn/" target="_blank" rel="noopener">加入扣哒世界，把这条考纲之路走一遍 →</a>
+</div>
+
+</div><!-- /container -->
+</div><!-- /page -->
+
+<script>
+if (location.search.indexOf('expand') >= 0) {
+  document.querySelectorAll('details').forEach(d => d.open = true);
+}
+document.querySelectorAll('.sidebar-nav a').forEach(a => {
+  a.addEventListener('click', () => {
+    if (window.innerWidth <= 900) document.querySelector('.sidebar-nav').classList.remove('active');
+  });
+});
+</script>
+</body>
+</html>

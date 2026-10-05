@@ -1,0 +1,826 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="copyright" content="CodeCombat Inc. codecombat.cn">
+<title>彩绘师 · 画笔 | 扣哒考级 · GESP 图形化二级</title>
+<style>
+  :root{
+    --primary:#8b5cf6; --primary-light:#a78bfa; --primary-lighter:#f3efff; --primary-dark:#6d28d9;
+    --brand:#ff6b35; --brand-dark:#e8541f; --brand-soft:#fff3ec;
+    --night:#131c2b; --night-2:#1e2a3a;
+    --gold:#f5b301;
+    --text:#2a2438; --dim:#7c7794; --dim2:#a29db8;
+    --bg:#ffffff; --bg-soft:#faf8ff; --line:#e9e4f8;
+    --sidebar:274px;
+    --code-bg:#211a33; --code-tx:#d6cfe6;
+    --code-kw:#c678dd; --code-st:#98c379; --code-nu:#d19a66; --code-cm:#7d7392; --code-fn:#61afef;
+  }
+  *{margin:0;padding:0;box-sizing:border-box}
+  html{scroll-behavior:smooth}
+  body{
+    font-family:"PingFang SC","Microsoft YaHei","Segoe UI",-apple-system,sans-serif;
+    line-height:1.9;color:var(--text);background:var(--bg);font-size:15.5px;
+  }
+
+  .sidebar-nav{
+    position:fixed;top:0;left:0;width:var(--sidebar);height:100vh;overflow-y:auto;
+    background:linear-gradient(180deg,#101a26,#182636);padding:14px 0 40px;z-index:100;
+    border-right:3px solid var(--brand);transition:transform .3s ease;
+  }
+  .sidebar-nav::-webkit-scrollbar{width:5px}
+  .sidebar-nav::-webkit-scrollbar-thumb{background:var(--brand);border-radius:4px}
+  .sb-brand{display:flex;align-items:center;gap:10px;padding:10px 13px 12px;border-bottom:1px solid #26384c;margin-bottom:8px}
+  .sidebar-nav a.sb-logo{display:flex;align-items:center;justify-content:center;flex-shrink:0;padding:0;border-left:none;transition:.2s}
+  .sb-logo:hover{transform:scale(1.08)}
+  .sb-logo img{height:34px;width:34px;display:block;object-fit:contain;border-radius:8px}
+  .sb-brand b{color:#f2f6fa;font-size:14px;letter-spacing:.5px;display:block;line-height:1.4}
+  .sb-brand span{color:#7f95ab;font-size:11.5px;display:block;line-height:1.4}
+  .nav-title{color:#ffb894;font-size:12px;font-weight:800;padding:10px 18px 6px;letter-spacing:1.2px}
+  .sidebar-nav a{
+    display:block;color:#c3d0dc;text-decoration:none;padding:6px 18px;font-size:12.5px;
+    line-height:1.55;border-left:3px solid transparent;transition:.18s;
+  }
+  .sidebar-nav a:hover{color:#fff;background:rgba(255,107,53,.16);border-left-color:var(--brand)}
+  .sidebar-nav a.nav-section{color:#ffb894;font-weight:700;font-size:13px;margin-top:11px;padding-top:10px;border-top:1px solid #26384c}
+  .sidebar-nav a.nav-section:first-of-type{border-top:none;margin-top:0;padding-top:6px}
+  .sidebar-nav a.nav-sub{padding-left:30px;color:#93a8bc;font-size:12px}
+  .sidebar-nav a.nav-sub:hover{color:#fff}
+  .sb-back{margin:16px 14px 0;display:block;text-align:center;padding:9px;border-radius:9px;background:#22344a;color:#a9c0d6 !important;font-size:12px;font-weight:700;border-left:none !important}
+  .sb-back:hover{background:var(--brand) !important;color:#fff !important}
+  .nav-toggle{display:none;position:fixed;top:14px;left:14px;z-index:120;background:var(--brand);color:#fff;border:none;border-radius:9px;padding:9px 13px;font-size:15px;cursor:pointer;box-shadow:0 4px 14px rgba(0,0,0,.25)}
+
+  .page{margin-left:var(--sidebar)}
+
+  .hero{
+    position:relative;overflow:hidden;padding:44px 52px;color:#fff;
+    background:linear-gradient(125deg,#0e1724 0%,#1b2b3f 46%,#8a3a16 132%);
+  }
+  .hero::after{content:"";position:absolute;right:-90px;top:-110px;width:400px;height:400px;border-radius:50%;background:radial-gradient(circle,rgba(245,179,1,.30),transparent 68%)}
+  .hero-top{display:flex;gap:36px;align-items:center;position:relative;z-index:2}
+  .hero-txt{flex:1;min-width:0}
+  .hero .crumb{font-size:11.5px;color:#ffb894;letter-spacing:1.5px;font-weight:700;margin-bottom:14px}
+  .hero h1{font-size:31px;font-weight:800;line-height:1.3;letter-spacing:.6px;margin-bottom:8px}
+  .hero h1 .sub{display:block;font-size:18px;font-weight:700;color:#ffd2b3;margin-top:6px;letter-spacing:.3px}
+  .hero .en{font-size:13px;color:#9db4c8;font-style:italic;margin-bottom:18px}
+  .hero .tags{display:flex;flex-wrap:wrap;gap:8px}
+  .tag{font-size:11.5px;padding:4px 12px;border-radius:20px;background:rgba(255,255,255,.12);border:1px solid rgba(255,255,255,.22);color:#e8f0f6;font-weight:600}
+  .tag.hot{background:rgba(255,107,53,.92);border-color:transparent;color:#fff}
+  .hero-card{flex-shrink:0;width:200px;text-align:center}
+  .hero-card .ava{
+    width:148px;height:148px;border-radius:50%;object-fit:cover;object-position:top center;
+    border:4px solid rgba(255,180,140,.6);box-shadow:0 14px 34px rgba(0,0,0,.45);background:#24344a;
+  }
+  .hero-card .nm{font-size:15px;font-weight:800;color:#fff;margin-top:10px}
+  .hero-card .ti{font-size:11.5px;color:#ffb894;margin-top:2px}
+
+  .container{max-width:1080px;margin:0 auto;padding:38px 52px 70px}
+
+  .lead{
+    font-size:15.5px;line-height:2.05;color:#443c58;background:linear-gradient(120deg,#fff8f3,#f7fbf8);
+    border-left:5px solid var(--brand);border-radius:0 14px 14px 0;padding:22px 26px;margin-bottom:32px;
+  }
+  .lead b{color:var(--brand-dark)}
+
+  .cast{display:flex;gap:16px;align-items:flex-start;border-radius:16px;padding:18px 22px;margin:24px 0}
+  .cast .ava{width:72px;height:72px;border-radius:50%;object-fit:cover;object-position:top center;flex-shrink:0;background:#e8eef5}
+  .cast .bubble{position:relative;font-size:14px;line-height:1.95;padding-top:2px;flex:1}
+  .cast .who{font-size:12px;font-weight:800;margin-bottom:5px;letter-spacing:.5px}
+  .cast.anya{background:var(--brand-soft);border:1px solid #ffdcc9}
+  .cast.anya .who{color:var(--brand-dark)}
+  .cast.anya .bubble{color:#5c4636}
+  .cast.duck{background:#fff5f5;border:1px solid #fbd5d5}
+  .cast.duck .who{color:#b91c1c}
+  .cast.duck .bubble{color:#5c4141}
+  .cast.teacher{background:linear-gradient(120deg,#f4f7fb,#ffffff);border:1px solid #dbe4f0}
+  .cast.teacher .who{color:#1e293b}
+  .cast.teacher .bubble{color:#3c4a5a}
+  .cast.hero{background:#f7f3ff;border:1px solid #ded1fa}
+  .cast.hero .who{color:#6d28d9}
+  .cast.hero .bubble{color:#463d5c}
+
+  .goal-grid{display:grid;grid-template-columns:1fr 1fr;gap:16px;margin-bottom:36px}
+  .goal{border:1px solid var(--line);border-radius:15px;padding:19px 21px;background:#fff;box-shadow:0 4px 16px rgba(31,122,68,.05)}
+  .goal h4{font-size:14px;font-weight:800;margin-bottom:11px;display:flex;align-items:center;gap:8px;color:var(--primary-dark)}
+  .goal h4 .ic{width:22px;height:22px;border-radius:7px;background:var(--primary-lighter);display:flex;align-items:center;justify-content:center;font-size:12px}
+  .goal ul{list-style:none}
+  .goal li{font-size:13.5px;color:#6b6480;line-height:1.9;padding-left:18px;position:relative}
+  .goal li::before{content:"▸";position:absolute;left:0;color:var(--primary);font-weight:800}
+  .goal.syllabus li::before{content:"✓"}
+
+  .section-header{margin:52px 0 24px;padding-bottom:12px;border-bottom:3px solid var(--brand);display:flex;align-items:baseline;gap:14px;flex-wrap:wrap}
+  .section-header h2{font-size:22px;font-weight:800;color:var(--night);letter-spacing:.4px}
+  .section-header .en-title{font-size:12px;color:var(--dim2);font-style:italic}
+  h3{font-size:17.5px;font-weight:800;margin:34px 0 14px;color:var(--night);display:flex;align-items:center;gap:10px}
+  h3::before{content:"";width:5px;height:17px;border-radius:3px;background:var(--brand);flex-shrink:0}
+  h4{font-size:15px;font-weight:800;margin:24px 0 10px;color:#3c2f63}
+  p{margin:12px 0;color:#463d5c;line-height:2}
+  strong{color:var(--primary-dark)}
+  code.inline{background:var(--primary-lighter);color:var(--primary-dark);padding:2px 7px;border-radius:6px;font-family:"SFMono-Regular",Consolas,Menlo,monospace;font-size:.9em;font-weight:600}
+
+  .figure{margin:24px 0;text-align:center}
+  .figure svg.diagram{max-width:100%;height:auto;background:#fff;border:1px solid var(--line);border-radius:14px;padding:10px}
+  .figure .caption{font-size:12.5px;color:var(--dim2);margin-top:9px}
+
+  .pic{margin:26px 0;text-align:center}
+  .pic img{max-width:100%;border-radius:16px;box-shadow:0 10px 28px rgba(30,60,45,.15);display:block;margin:0 auto}
+  .pic figcaption{font-size:12.5px;color:var(--dim2);margin-top:9px}
+  .pic .ph{display:none}
+  .pic.missing img{display:none}
+  .pic.missing .ph{
+    display:flex;flex-direction:column;align-items:center;justify-content:center;gap:9px;
+    border:2px dashed #c9d9e8;border-radius:16px;background:linear-gradient(135deg,#f8fbfe,#eef6ff);
+    padding:40px 26px;color:#7a8fa8;
+  }
+  .pic.missing .ph .fn{font-family:Consolas,monospace;font-size:12.5px;color:#2563eb;font-weight:700;word-break:break-all}
+  .pic.missing .ph .ds{font-size:12.5px;line-height:1.8;max-width:560px}
+
+  .box{border-radius:13px;padding:16px 20px;margin:20px 0;font-size:14px;line-height:1.95}
+  .box .lb{font-weight:800;margin-right:6px}
+  .info{background:#eef6ff;border-left:5px solid #3b82f6;color:#274768}
+  .info .lb{color:#1d4ed8}
+  .tip{background:#fff9ec;border-left:5px solid #f59e0b;color:#6b4e13}
+  .tip .lb{color:#b45309}
+  .remember{background:var(--primary-lighter);border-left:5px solid var(--primary);color:#3a2a6b}
+  .remember .lb{color:var(--primary-dark)}
+  .warn{background:#fef2f2;border-left:5px solid #ef4444;color:#7f2b2b}
+  .warn .lb{color:#b91c1c}
+
+  .code-card{margin:20px 0;border-radius:14px;overflow:hidden;box-shadow:0 10px 28px rgba(20,40,28,.20)}
+  .code-head{display:flex;align-items:center;gap:9px;background:#2c2438;padding:9px 14px}
+  .code-head .dot{width:10px;height:10px;border-radius:50%}
+  .code-head .d1{background:#ff5f57}.code-head .d2{background:#febc2e}.code-head .d3{background:#28c840}
+  .code-head .file{color:#a09ab4;font-size:11.5px;font-family:Consolas,monospace;margin-left:6px}
+  .code-head .lang{margin-left:auto;font-size:10.5px;font-weight:800;color:#150f21;background:#a78bfa;padding:2px 9px;border-radius:6px;letter-spacing:.4px}
+  .code-card pre{background:var(--code-bg);padding:18px 20px;overflow-x:auto;margin:0;font-family:"SFMono-Regular",Consolas,"Courier New",monospace;font-size:13.5px;line-height:1.85}
+  .code-card pre::-webkit-scrollbar{height:8px}
+  .code-card pre::-webkit-scrollbar-thumb{background:#433a5e;border-radius:4px}
+  .code-card code{color:var(--code-tx);white-space:pre}
+  .kw{color:var(--code-kw);font-weight:600}
+  .st{color:var(--code-st)}
+  .nu{color:var(--code-nu)}
+  .cm{color:var(--code-cm);font-style:italic}
+  .fn{color:var(--code-fn)}
+  .out{background:#1d1729;color:#c4b5fd;font-family:Consolas,monospace;font-size:13px;padding:12px 20px;border-top:1px solid #352c48}
+  .out b{color:#c9d6cd;font-weight:600;font-size:11.5px;letter-spacing:1px}
+
+  table.styled{width:100%;border-collapse:collapse;margin:20px 0;font-size:13.5px;border-radius:12px;overflow:hidden;box-shadow:0 4px 16px rgba(31,122,68,.07)}
+  table.styled thead{background:var(--brand)}
+  table.styled th{color:#fff;padding:11px 14px;text-align:left;font-weight:700;font-size:13px}
+  table.styled td{padding:10px 14px;border-bottom:1px solid var(--line);color:#57506b;vertical-align:top}
+  table.styled tbody tr:nth-child(even){background:var(--bg-soft)}
+  table.styled tbody tr:last-child td{border-bottom:none}
+
+  .level-card{border:1px solid var(--line);border-radius:16px;overflow:hidden;margin:22px 0;box-shadow:0 6px 22px rgba(31,122,68,.07)}
+  .level-card .lc-head{background:linear-gradient(100deg,#17283a,#8a3a16);color:#fff;padding:15px 22px;display:flex;align-items:center;gap:12px;flex-wrap:wrap}
+  .level-card .lc-head .n{font-size:12px;font-weight:800;background:rgba(255,255,255,.2);padding:3px 10px;border-radius:20px}
+  .level-card .lc-head h4{margin:0;color:#fff;font-size:16px}
+  .level-card .lc-head .go{margin-left:auto;font-size:11.5px;color:#ffd2b3}
+  .level-card .lc-body{padding:20px 24px;background:#fff}
+  .level-card .story{background:#f9fbfd;border-left:4px solid #93c5fd;border-radius:0 10px 10px 0;padding:13px 18px;margin:0 0 16px;font-size:14px;line-height:1.95;color:#3f5163}
+  .level-card .story b{color:#1d4ed8}
+  .btn-go{
+    display:inline-flex;align-items:center;gap:8px;background:linear-gradient(135deg,var(--brand),var(--brand-dark));
+    color:#fff;text-decoration:none;font-weight:800;font-size:13.5px;padding:10px 22px;border-radius:11px;
+    box-shadow:0 8px 20px rgba(255,107,53,.32);transition:.2s;
+  }
+  .btn-go:hover{transform:translateY(-2px);box-shadow:0 12px 26px rgba(255,107,53,.42)}
+
+  .pit{border:1px solid #f6dede;border-radius:14px;overflow:hidden;margin:16px 0;background:#fff}
+  .pit .pt{display:flex;gap:12px;padding:14px 18px;background:#fffafa;align-items:flex-start}
+  .pit .x{width:26px;height:26px;border-radius:9px;background:#fee;color:#dc2626;display:flex;align-items:center;justify-content:center;font-weight:800;flex-shrink:0;font-size:13px}
+  .pit .t{font-size:13.5px;line-height:1.9;color:#5c4a4a;flex:1}
+  .pit .t b{color:#b91c1c}
+  .pit .duck{display:flex;gap:12px;padding:13px 18px;background:#fff5f5;border-top:1px dashed #f3d0d0;align-items:flex-start}
+  .pit .duck img{width:48px;height:48px;object-fit:contain;flex-shrink:0;margin-top:2px}
+  .pit .duck .dt{font-size:13.5px;line-height:1.9;color:#7a3b3b}
+  .pit .duck .dt b{color:#b91c1c}
+  .pit .fix{padding:12px 18px;background:#f7f3ff;border-top:1px dashed #ded1fa;font-size:13.5px;color:#3a2a6b}
+  .pit .fix b{color:var(--primary-dark)}
+
+  .exam{border:1px solid #dfe7f5;border-radius:15px;margin:16px 0;overflow:hidden;background:#fff;box-shadow:0 4px 16px rgba(38,62,120,.06)}
+  .exam .eh{display:flex;align-items:center;gap:10px;padding:11px 18px;background:linear-gradient(100deg,#eef4ff,#f7faff);border-bottom:1px solid #e3ebf8;flex-wrap:wrap}
+  .exam .eh .src{font-size:11px;font-weight:800;color:#fff;background:#2563eb;padding:2.5px 10px;border-radius:20px}
+  .exam .eh .src.ori{background:#8b5cf6}
+  .exam .eh .tp{font-size:11.5px;color:#5b7ba8;font-weight:700}
+  .exam .eb{padding:16px 20px}
+  .exam .q{font-weight:700;font-size:14px;color:#38304b;line-height:1.9;margin-bottom:10px}
+  .exam .opt{font-size:13.5px;color:#6b6480;line-height:2.05;padding-left:6px}
+  .exam .opt i{font-style:normal;font-weight:800;color:var(--primary-dark);margin-right:7px}
+  .exam pre{margin:12px 0;background:#1b2a21;border-radius:10px;padding:14px 16px;overflow-x:auto;font-family:Consolas,monospace;font-size:13px;line-height:1.8;color:var(--code-tx)}
+  .exam details{margin-top:10px;border-top:1px dashed var(--line);padding-top:10px}
+  .exam summary{cursor:pointer;font-size:12.5px;font-weight:800;color:#2563eb;outline:none;user-select:none}
+  .exam details .ans{font-size:13.5px;color:#463d5c;line-height:1.95;margin-top:9px;background:var(--bg-soft);padding:13px 16px;border-radius:10px}
+  .exam details .ans b{color:var(--primary-dark)}
+  .exam details .ans .tagline{display:inline-block;font-size:11px;background:#e0f2fe;color:#0e7490;padding:1.5px 8px;border-radius:6px;font-weight:700;margin-right:6px}
+
+  .summary{margin:40px 0 20px;border-radius:18px;padding:26px 30px;background:linear-gradient(130deg,#fff8f3,#ffffff);border:1px solid #ffe0cf}
+  .summary h3{margin-top:0}
+  .summary ul{list-style:none;margin-top:10px}
+  .summary li{font-size:14px;line-height:2;color:#514a64;padding-left:24px;position:relative}
+  .summary li::before{content:"◆";position:absolute;left:0;color:var(--brand);font-size:11px;top:6px}
+
+  .pager{display:flex;gap:14px;margin-top:30px;flex-wrap:wrap}
+  .pager a{flex:1;min-width:200px;text-decoration:none;border:1px solid var(--line);border-radius:14px;padding:16px 20px;background:#fff;transition:.2s;display:block}
+  .pager a:hover{border-color:var(--brand);box-shadow:0 10px 26px rgba(255,107,53,.14);transform:translateY(-2px)}
+  .pager a .k{font-size:11px;color:var(--dim2);font-weight:700;letter-spacing:1px}
+  .pager a .v{font-size:14px;font-weight:800;color:var(--night);margin-top:5px}
+  .pager a.back{background:var(--brand-soft);border-color:transparent;text-align:center}
+  .pager a.back .v{color:var(--brand-dark)}
+
+  .cta{margin-top:26px;border-radius:20px;padding:30px 34px;color:#fff;position:relative;overflow:hidden;background:linear-gradient(120deg,#16202f,#2b3a52 46%,#a8431c 132%)}
+  .cta::after{content:"";position:absolute;right:-70px;bottom:-90px;width:280px;height:280px;border-radius:50%;background:radial-gradient(circle,rgba(255,140,80,.45),transparent 68%)}
+  .cta h3{color:#fff;margin:0 0 10px;position:relative;z-index:2}
+  .cta h3::before{background:var(--brand)}
+  .cta p{color:#d8e0ef;font-size:13.5px;margin:0 0 18px;position:relative;z-index:2;max-width:640px}
+  .cta .btn-go{position:relative;z-index:2}
+
+  @media(max-width:900px){
+    .sidebar-nav{transform:translateX(-100%)}
+    .sidebar-nav.active{transform:translateX(0)}
+    .nav-toggle{display:block}
+    .page{margin-left:0}
+    .hero{padding:70px 22px 34px}
+    .hero-top{flex-direction:column-reverse;text-align:center}
+    .hero-card{width:auto}
+    .container{padding:26px 20px 60px}
+    .goal-grid{grid-template-columns:1fr}
+  }
+
+  /* ---------- 图形化：积木卡（替代代码卡） ---------- */
+  .blk-card{background:#f8f6ff;border:1px solid #e6e0fb;border-radius:14px;
+    margin:18px 0;overflow:hidden;box-shadow:0 2px 10px rgba(109,40,217,.06)}
+  .blk-head{display:flex;align-items:center;gap:7px;padding:10px 14px;
+    background:#f1ecfe;border-bottom:1px solid #e6e0fb}
+  .blk-head .file{font-size:12.5px;font-weight:700;color:#5b4a86;margin-left:4px}
+  .blk-head .lang{margin-left:auto;font-size:11px;font-weight:800;color:#fff;
+    background:#8b5cf6;border-radius:20px;padding:3px 11px;letter-spacing:.5px}
+  .blk-body{padding:20px 18px;overflow-x:auto;
+    background:
+      radial-gradient(circle at 14px 14px,#ece6fb 1.6px,transparent 1.7px) 0 0/28px 28px,
+      #ffffff}
+  .blk{display:block;max-width:100%;height:auto;margin:0 auto}
+  .blk + .blk{margin-top:16px}
+  .blk-card .out{background:#f1ecfe;border-top:1px solid #e6e0fb;color:#5b4a86}
+  .blk-card .out b{color:#6d28d9}
+  /* 积木并排（不同角色 / 不同做法对照） */
+  .blk-row{display:flex;gap:16px;flex-wrap:wrap;justify-content:center;align-items:flex-start}
+  .blk-row > *{flex:1 1 240px;min-width:0}
+  .blk-row .blk{margin:0}
+  /* 积木旁的小标题 */
+  .blk-cap{font-size:12.5px;font-weight:800;color:#6d28d9;background:#f3efff;
+    border:1px solid #e6e0fb;border-radius:8px;padding:5px 12px;margin:14px 0 10px;
+    display:inline-block}
+</style>
+</head>
+<body>
+
+<button class="nav-toggle" onclick="document.querySelector('.sidebar-nav').classList.toggle('active')">&#9776;</button>
+
+<nav class="sidebar-nav">
+  <div class="sb-brand">
+    <a class="sb-logo" href="https://codecombat.cn/" target="_blank" rel="noopener" title="访问 CodeCombat 扣哒世界官网">
+      <img src="../assets/logo.png" alt="CodeCombat 扣哒世界">
+    </a>
+    <div><b>彩绘师</b><span>彩虹集市 · 图形化二级 第 5 单元</span></div>
+  </div>
+  <div class="nav-title">本单元目录</div>
+
+  <a href="#s0" class="nav-section">0　单元导语与目标</a>
+  <a href="#s0-1" class="nav-sub">0.1 学习目标</a>
+  <a href="#s0-2" class="nav-sub">0.2 考纲对照</a>
+  <a href="#s1" class="nav-section">1　落笔、抬笔与擦除</a>
+  <a href="#s1-1" class="nav-sub">1.1 落笔：开始留痕</a>
+  <a href="#s1-2" class="nav-sub">1.2 抬笔：走而不画</a>
+  <a href="#s1-3" class="nav-sub">1.3 擦除全部</a>
+  <a href="#s2" class="nav-section">2　画笔的三个属性</a>
+  <a href="#s2-1" class="nav-sub">2.1 颜色</a>
+  <a href="#s2-2" class="nav-sub">2.2 粗细</a>
+  <a href="#s2-3" class="nav-sub">2.3 亮度</a>
+  <a href="#s3" class="nav-section">3　图章：盖一个印</a>
+  <a href="#s4" class="nav-section">4　用循环画图案</a>
+  <a href="#s4-1" class="nav-sub">4.1 重复画同一个图形</a>
+  <a href="#s4-2" class="nav-sub">4.2 正多边形与螺旋</a>
+  <a href="#s5" class="nav-section">5　代码实战</a>
+  <a href="#s6" class="nav-section">6　常见陷阱</a>
+  <a href="#s7" class="nav-section">7　题目练习</a>
+  <a href="#s8" class="nav-section">8　本单元小结</a>
+
+  <a href="../index.html" target="_top" class="sb-back">返回考纲之路</a>
+</nav>
+
+<div class="page">
+
+<div class="hero">
+  <div class="hero-top">
+    <div class="hero-txt">
+      <div class="crumb">扣哒考级 · GESP 图形化 二级 · 第 5 单元　|　彩虹集市 RAINBOW BAZAAR</div>
+      <h1>彩绘师
+        <span class="sub">画笔</span>
+      </h1>
+      <div class="en">The Pen Extension</div>
+      <div class="tags">        <span class="tag hot">考纲 · 画笔</span>
+        <span class="tag">落笔与抬笔</span>
+        <span class="tag">图章</span>
+        <span class="tag">循环画图</span></div>
+    </div>
+    <div class="hero-card">
+      <img class="ava" src="../assets/avatars/anya.webp" alt="安雅" onerror="this.style.background='#24344a';this.src='../assets/heroes/anya.webp'">
+      <div class="nm">安雅</div>
+      <div class="ti">红发队长 · 你的旅伴</div>
+    </div>
+  </div>
+</div>
+
+<div class="container">
+
+
+<div class="lead">
+  集市的中央铺着一块巨大的白布，旁边立着一支比人还高的画笔。<br>
+  摊主把笔递给你："<b>笔尖挨着布，走哪儿画哪儿；把笔抬起来，就只是走路。</b>"<br>
+  你试着画了一条线——原来角色不光能"动"，还能"留下痕迹"。
+</div>
+
+<div class="cast anya">
+  <img class="ava" src="../assets/avatars/anya.webp" alt="安雅" onerror="this.style.display='none'">
+  <div class="bubble">
+    <div class="who">安雅 · 红发队长</div>
+    画笔是拓展模块，先去模块区左下角把它加上。<br>
+    这一单元只要记牢一件事：<b>落笔走哪儿画哪儿，抬笔只挪位置</b>；
+    再配上循环，就能画出各种规则图形——正多边形每次转 360 ÷ 边数度。
+  </div>
+</div>
+
+<!-- ============ 0 ============ -->
+<div class="section-header" id="s0">
+  <h2>0　单元导语与目标</h2>
+  <div class="en-title">Before We Start</div>
+</div>
+
+<h3 id="s0-1">0.1 学习目标</h3>
+
+<ul>
+  <li>理解<b>画笔拓展模块</b>：让角色边走边留下痕迹；</li>
+  <li>掌握<b>落笔</b>与<b>抬笔</b>的区别，会用<b>擦除全部</b>清空画布；</li>
+  <li>会设置画笔的<b>颜色、粗细、亮度</b>三个属性；</li>
+  <li>会用<b>图章</b>在画面上盖出一模一样的图案；</li>
+  <li>会用"循环 + 移动 + 转向"画出正多边形和螺旋。</li>
+</ul>
+<h3 id="s0-2">0.2 考纲对照</h3>
+
+<table class="styled">
+  <thead><tr><th>考纲知识块</th><th>考纲要求</th><th>本单元小节</th></tr></thead>
+  <tbody><tr><td>4 画笔</td><td>画笔的抬笔、落笔、擦除、大小、粗细、颜色等属性、图章工具</td><td>1.1～1.3、2.1～2.3、3</td></tr><tr><td>（知识点详述第 7 条）</td><td>掌握画笔的使用方法，熟练控制画笔的属性，掌握图章工具的使用方法</td><td>4.1～4.2</td></tr></tbody>
+</table>
+
+<p>画笔是二级新开的一个"拓展模块"，要先去模块区左下角<b>把它加上</b>才会出现。'
+'考试里最爱考<b>落笔和抬笔的区别</b>。</p>
+
+<!-- ============ 1 ============ -->
+<div class="section-header" id="s1">
+  <h2>1　落笔、抬笔与擦除</h2>
+  <div class="en-title">Pen Down, Pen Up, Erase</div>
+</div>
+
+<h3 id="s1-1">1.1 落笔：开始留痕</h3>
+
+<p>集市中央摆着一块大画布，旁边立着一支巨大的画笔。摊主说：
+"<b>笔尖碰到画布，走哪儿画哪儿。</b>"</p>
+<figure class="pic">
+  <img src="../assets/illustrations/scratch-L2-05-01_pen_up_down.webp" alt="落笔与抬笔"
+       onerror="this.closest('.pic').classList.add('missing')">
+  <div class="ph">
+    <div class="fn">assets/illustrations/scratch-L2-05-01_pen_up_down.webp</div>
+    <div class="ds">【配图位】一支画笔抬起时只在画布上留下虚线痕迹，按下后拖出浓重的彩色笔触，两者左右对照。（提示词见《GESP配图清单与AI绘图提示词》第四节 2-5）</div>
+  </div>
+  <figcaption>图 1：落笔留下笔迹，抬笔只是移动</figcaption>
+</figure>
+
+<div class="blk-card">
+  <div class="blk-head">
+    <span class="dot d1"></span><span class="dot d2"></span><span class="dot d3"></span>
+    <span class="file">重点示例：落笔之后，走到哪儿画到哪儿</span>
+    <span class="lang">图形化积木</span>
+  </div>
+  <div class="blk-body">
+<svg class="blk" viewBox="0 0 222.2 258" width="222.2" height="258" role="img" aria-label="积木脚本"><g font-family="'PingFang SC','Microsoft YaHei','Noto Sans SC',sans-serif"><g transform="translate(3,3)"><path d="M0,12 C32.96,0 131.84,0 164.8,12 V43 A5,5 0 0 1 159.8,48 H28 v4 h-12 v-4 H5 A5,5 0 0 1 0,43 Z" fill="#FFBF00" stroke="#d19c00" stroke-width="1.2"/><text x="15" y="34.8" font-size="13.4" fill="#fff">当 </text><rect x="42.6" y="18.5" width="52.8" height="23" rx="5" fill="#CC9900"/><text x="64" y="34.4" font-size="12.5" fill="#fff" text-anchor="middle">绿旗</text><path d="M84.4 27.5 l4 5 l4 -5 z" fill="#fff" opacity=".85"/><text x="102.4" y="34.8" font-size="13.4" fill="#fff"> 被点击</text></g><g transform="translate(3,55)"><path d="M0,5 A5,5 0 0 1 5,0 H16 v4 h12 v-4 H78 A5,5 0 0 1 83,5 V31 A5,5 0 0 1 78,36 H28 v4 h-12 v-4 H5 A5,5 0 0 1 0,31 Z" fill="#0FBD8C" stroke="#0c9a72" stroke-width="1.2"/><text x="15" y="22.8" font-size="13.4" fill="#fff">擦除全部</text></g><g transform="translate(3,95)"><path d="M0,5 A5,5 0 0 1 5,0 H16 v4 h12 v-4 H211 A5,5 0 0 1 216,5 V31 A5,5 0 0 1 211,36 H28 v4 h-12 v-4 H5 A5,5 0 0 1 0,31 Z" fill="#4C97FF" stroke="#3e7bd1" stroke-width="1.2"/><text x="15" y="22.8" font-size="13.4" fill="#fff">移到 x: </text><rect x="77.6" y="6.5" width="50.8" height="23" rx="11.5" fill="#fff"/><text x="103" y="22.4" font-size="12.5" fill="#575e75" text-anchor="middle">-150</text><text x="135.4" y="22.8" font-size="13.4" fill="#fff"> y: </text><rect x="171.2" y="6.5" width="30" height="23" rx="11.5" fill="#fff"/><text x="186.2" y="22.4" font-size="12.5" fill="#575e75" text-anchor="middle">0</text></g><g transform="translate(3,135)"><path d="M0,5 A5,5 0 0 1 5,0 H16 v4 h12 v-4 H71 A5,5 0 0 1 76,5 V31 A5,5 0 0 1 71,36 H28 v4 h-12 v-4 H5 A5,5 0 0 1 0,31 Z" fill="#0FBD8C" stroke="#0c9a72" stroke-width="1.2"/><text x="15" y="22.8" font-size="13.4" fill="#fff">落笔</text></g><g transform="translate(3,175)"><path d="M0,5 A5,5 0 0 1 5,0 H16 v4 h12 v-4 H137 A5,5 0 0 1 142,5 V31 A5,5 0 0 1 137,36 H28 v4 h-12 v-4 H5 A5,5 0 0 1 0,31 Z" fill="#4C97FF" stroke="#3e7bd1" stroke-width="1.2"/><text x="15" y="22.8" font-size="13.4" fill="#fff">移动 </text><rect x="56" y="6.5" width="43.6" height="23" rx="11.5" fill="#fff"/><text x="77.8" y="22.4" font-size="12.5" fill="#575e75" text-anchor="middle">300</text><text x="106.6" y="22.8" font-size="13.4" fill="#fff"> 步</text></g><g transform="translate(3,215)"><path d="M0,5 A5,5 0 0 1 5,0 H16 v4 h12 v-4 H71 A5,5 0 0 1 76,5 V31 A5,5 0 0 1 71,36 H28 v4 h-12 v-4 H5 A5,5 0 0 1 0,31 Z" fill="#0FBD8C" stroke="#0c9a72" stroke-width="1.2"/><text x="15" y="22.8" font-size="13.4" fill="#fff">抬笔</text></g></g></svg>
+  </div>
+  <div class="out"><b>读法</b>　先擦干净 → 站到起点 → <b>落笔</b> → 走一段（留下一条线）→ <b>抬笔</b>收尾</div>
+</div>
+
+<h3 id="s1-2">1.2 抬笔：走而不画</h3>
+
+<div class="box tip">
+  <span class="lb">打个比方：</span><b>落笔</b>就像把笔尖按在纸上——之后角色走到哪儿，哪里就多一道痕；<br><b>抬笔</b>就像把笔抬起来挪位置——角色照样在动，但纸上什么都不留。
+</div>
+
+<div class="blk-card">
+  <div class="blk-head">
+    <span class="dot d1"></span><span class="dot d2"></span><span class="dot d3"></span>
+    <span class="file">对照着看：抬笔和落笔</span>
+    <span class="lang">图形化积木</span>
+  </div>
+  <div class="blk-body">
+<div class="blk-row">
+    <div>
+      <div class="blk-cap">落笔后移动</div>
+<svg class="blk" viewBox="0 0 148.2 86" width="148.2" height="86" role="img" aria-label="积木脚本"><g font-family="'PingFang SC','Microsoft YaHei','Noto Sans SC',sans-serif"><g transform="translate(3,3)"><path d="M0,5 A5,5 0 0 1 5,0 H16 v4 h12 v-4 H71 A5,5 0 0 1 76,5 V31 A5,5 0 0 1 71,36 H28 v4 h-12 v-4 H5 A5,5 0 0 1 0,31 Z" fill="#0FBD8C" stroke="#0c9a72" stroke-width="1.2"/><text x="15" y="22.8" font-size="13.4" fill="#fff">落笔</text></g><g transform="translate(3,43)"><path d="M0,5 A5,5 0 0 1 5,0 H16 v4 h12 v-4 H137 A5,5 0 0 1 142,5 V31 A5,5 0 0 1 137,36 H28 v4 h-12 v-4 H5 A5,5 0 0 1 0,31 Z" fill="#4C97FF" stroke="#3e7bd1" stroke-width="1.2"/><text x="15" y="22.8" font-size="13.4" fill="#fff">移动 </text><rect x="56" y="6.5" width="43.6" height="23" rx="11.5" fill="#fff"/><text x="77.8" y="22.4" font-size="12.5" fill="#575e75" text-anchor="middle">100</text><text x="106.6" y="22.8" font-size="13.4" fill="#fff"> 步</text></g></g></svg>
+    </div>
+
+    <div>
+      <div class="blk-cap">抬笔后移动</div>
+<svg class="blk" viewBox="0 0 148.2 86" width="148.2" height="86" role="img" aria-label="积木脚本"><g font-family="'PingFang SC','Microsoft YaHei','Noto Sans SC',sans-serif"><g transform="translate(3,3)"><path d="M0,5 A5,5 0 0 1 5,0 H16 v4 h12 v-4 H71 A5,5 0 0 1 76,5 V31 A5,5 0 0 1 71,36 H28 v4 h-12 v-4 H5 A5,5 0 0 1 0,31 Z" fill="#0FBD8C" stroke="#0c9a72" stroke-width="1.2"/><text x="15" y="22.8" font-size="13.4" fill="#fff">抬笔</text></g><g transform="translate(3,43)"><path d="M0,5 A5,5 0 0 1 5,0 H16 v4 h12 v-4 H137 A5,5 0 0 1 142,5 V31 A5,5 0 0 1 137,36 H28 v4 h-12 v-4 H5 A5,5 0 0 1 0,31 Z" fill="#4C97FF" stroke="#3e7bd1" stroke-width="1.2"/><text x="15" y="22.8" font-size="13.4" fill="#fff">移动 </text><rect x="56" y="6.5" width="43.6" height="23" rx="11.5" fill="#fff"/><text x="77.8" y="22.4" font-size="12.5" fill="#575e75" text-anchor="middle">100</text><text x="106.6" y="22.8" font-size="13.4" fill="#fff"> 步</text></g></g></svg>
+    </div>
+</div>
+
+  </div>
+  <div class="out"><b>要点</b>　两块积木动作一模一样，<b>只差最开始那一块</b>——一个画出线，一个什么也不画</div>
+</div>
+
+
+<h3 id="s1-3">1.3 擦除全部</h3>
+
+<div class="blk-card">
+  <div class="blk-head">
+    <span class="dot d1"></span><span class="dot d2"></span><span class="dot d3"></span>
+    <span class="file">重点示例：把画布清干净</span>
+    <span class="lang">图形化积木</span>
+  </div>
+  <div class="blk-body">
+<svg class="blk" viewBox="0 0 89.6 86" width="89.6" height="86" role="img" aria-label="积木脚本"><g font-family="'PingFang SC','Microsoft YaHei','Noto Sans SC',sans-serif"><g transform="translate(3,3)"><path d="M0,5 A5,5 0 0 1 5,0 H16 v4 h12 v-4 H78 A5,5 0 0 1 83,5 V31 A5,5 0 0 1 78,36 H28 v4 h-12 v-4 H5 A5,5 0 0 1 0,31 Z" fill="#0FBD8C" stroke="#0c9a72" stroke-width="1.2"/><text x="15" y="22.8" font-size="13.4" fill="#fff">擦除全部</text></g><g transform="translate(3,43)"><path d="M0,5 A5,5 0 0 1 5,0 H16 v4 h12 v-4 H71 A5,5 0 0 1 76,5 V31 A5,5 0 0 1 71,36 H28 v4 h-12 v-4 H5 A5,5 0 0 1 0,31 Z" fill="#0FBD8C" stroke="#0c9a72" stroke-width="1.2"/><text x="15" y="22.8" font-size="13.4" fill="#fff">图章</text></g></g></svg>
+  </div>
+  <div class="out"><b>要点</b>　"擦除全部"会把画面上的<b>所有笔迹都清掉</b>，但不会影响角色的位置和造型</div>
+</div>
+
+<div class="box info">
+  <span class="lb">一个常见现象：</span>笔迹是<b>画在画布上</b>的，不是角色的一部分。所以角色移动、隐藏、删除克隆体，笔迹都还留在那儿——要清掉它，只能"擦除全部"（或者用画笔的"擦除"单独擦）。
+</div>
+
+<!-- ============ 2 ============ -->
+<div class="section-header" id="s2">
+  <h2>2　画笔的三个属性</h2>
+  <div class="en-title">Pen Properties</div>
+</div>
+
+<h3 id="s2-1">2.1 颜色</h3>
+
+<div class="blk-card">
+  <div class="blk-head">
+    <span class="dot d1"></span><span class="dot d2"></span><span class="dot d3"></span>
+    <span class="file">重点示例：换一支不同颜色的笔</span>
+    <span class="lang">图形化积木</span>
+  </div>
+  <div class="blk-body">
+<svg class="blk" viewBox="0 0 180.4 86" width="180.4" height="86" role="img" aria-label="积木脚本"><g font-family="'PingFang SC','Microsoft YaHei','Noto Sans SC',sans-serif"><g transform="translate(3,3)"><path d="M0,5 A5,5 0 0 1 5,0 H16 v4 h12 v-4 H159 A5,5 0 0 1 164,5 V31 A5,5 0 0 1 159,36 H28 v4 h-12 v-4 H5 A5,5 0 0 1 0,31 Z" fill="#0FBD8C" stroke="#0c9a72" stroke-width="1.2"/><text x="15" y="22.8" font-size="13.4" fill="#fff">将笔的颜色设为 </text><rect x="123" y="6.5" width="26" height="23" rx="5" fill="#ff0000" stroke="#ffffff" stroke-width="1.6"/></g><g transform="translate(3,43)"><path d="M0,5 A5,5 0 0 1 5,0 H16 v4 h12 v-4 H169 A5,5 0 0 1 174,5 V31 A5,5 0 0 1 169,36 H28 v4 h-12 v-4 H5 A5,5 0 0 1 0,31 Z" fill="#0FBD8C" stroke="#0c9a72" stroke-width="1.2"/><text x="15" y="22.8" font-size="13.4" fill="#fff">将笔的颜色增加 </text><rect x="123" y="6.5" width="36.4" height="23" rx="11.5" fill="#fff"/><text x="141.2" y="22.4" font-size="12.5" fill="#575e75" text-anchor="middle">10</text></g></g></svg>
+  </div>
+  <div class="out"><b>要点</b>　"设为"是直接换成指定颜色（点颜色方块可以吸取屏幕上的颜色）；"增加"是在色环上往后转一点，常用来做渐变彩虹线</div>
+</div>
+
+<h3 id="s2-2">2.2 粗细</h3>
+
+<div class="blk-card">
+  <div class="blk-head">
+    <span class="dot d1"></span><span class="dot d2"></span><span class="dot d3"></span>
+    <span class="file">重点示例：把笔变粗变细</span>
+    <span class="lang">图形化积木</span>
+  </div>
+  <div class="blk-body">
+<svg class="blk" viewBox="0 0 174 86" width="174" height="86" role="img" aria-label="积木脚本"><g font-family="'PingFang SC','Microsoft YaHei','Noto Sans SC',sans-serif"><g transform="translate(3,3)"><path d="M0,5 A5,5 0 0 1 5,0 H16 v4 h12 v-4 H163 A5,5 0 0 1 168,5 V31 A5,5 0 0 1 163,36 H28 v4 h-12 v-4 H5 A5,5 0 0 1 0,31 Z" fill="#0FBD8C" stroke="#0c9a72" stroke-width="1.2"/><text x="15" y="22.8" font-size="13.4" fill="#fff">将笔的粗细设为 </text><rect x="123" y="6.5" width="30" height="23" rx="11.5" fill="#fff"/><text x="138" y="22.4" font-size="12.5" fill="#575e75" text-anchor="middle">3</text></g><g transform="translate(3,43)"><path d="M0,5 A5,5 0 0 1 5,0 H16 v4 h12 v-4 H163 A5,5 0 0 1 168,5 V31 A5,5 0 0 1 163,36 H28 v4 h-12 v-4 H5 A5,5 0 0 1 0,31 Z" fill="#0FBD8C" stroke="#0c9a72" stroke-width="1.2"/><text x="15" y="22.8" font-size="13.4" fill="#fff">将笔的粗细增加 </text><rect x="123" y="6.5" width="30" height="23" rx="11.5" fill="#fff"/><text x="138" y="22.4" font-size="12.5" fill="#575e75" text-anchor="middle">1</text></g></g></svg>
+  </div>
+  <div class="out"><b>要点</b>　粗细就是"笔尖有多粗"，值是数字；数越大线越宽</div>
+</div>
+
+<h3 id="s2-3">2.3 亮度</h3>
+
+<figure class="figure">
+<svg class="diagram" viewBox="0 0 820 168" role="img" aria-label="画笔的三个属性">
+<text x="24" y="32" font-size="14" fill="#4c1d95" text-anchor="start" font-weight="bold">画笔的三个属性</text><rect x="24" y="56" width="772" height="28" rx="8" fill="#f3efff"/><text x="40" y="75" font-size="12.6" fill="#6d28d9" text-anchor="start" font-weight="bold">颜色</text><text x="192" y="75" font-size="12.2" fill="#4c1d95" text-anchor="start">这条线是什么颜色</text><rect x="24" y="90" width="772" height="28" rx="8" fill="#faf8ff"/><text x="40" y="109" font-size="12.6" fill="#6d28d9" text-anchor="start" font-weight="bold">粗细</text><text x="192" y="109" font-size="12.2" fill="#4c1d95" text-anchor="start">这条线有多宽</text><rect x="24" y="124" width="772" height="28" rx="8" fill="#f3efff"/><text x="40" y="143" font-size="12.6" fill="#6d28d9" text-anchor="start" font-weight="bold">亮度</text><text x="192" y="143" font-size="12.2" fill="#4c1d95" text-anchor="start">这条线有多亮 / 有多暗</text>
+</svg>
+  <div class="caption">图 2（SVG）：画笔的三个属性</div>
+</figure>
+
+<div class="box tip">
+  <span class="lb">打个比方：</span>画笔的属性就像一套真的绘画工具——<b>颜色</b>是你换了哪支彩笔，<b>粗细</b>是笔头的型号，<b>亮度</b>是笔迹的颜色深浅。三者可以随意搭配。
+</div>
+
+<!-- ============ 3 ============ -->
+<div class="section-header" id="s3">
+  <h2>3　图章：盖一个印</h2>
+  <div class="en-title">The Stamp Tool</div>
+</div>
+
+<h3 id="s3-1">3.1 图章是什么</h3>
+
+<p>"图章"和"落笔移动"完全不同：<b>它是在当前的位置上，把角色"印"一份下来</b>。</p>
+<figure class="pic">
+  <img src="../assets/illustrations/scratch-L2-05-02_stamp_tool.webp" alt="图章工具"
+       onerror="this.closest('.pic').classList.add('missing')">
+  <div class="ph">
+    <div class="fn">assets/illustrations/scratch-L2-05-02_stamp_tool.webp</div>
+    <div class="ds">【配图位】小猫用一枚巨大的橡皮图章在集市横幅上盖出爪印与星星图案，重复的纹样逐渐成形。（提示词见《GESP配图清单与AI绘图提示词》第四节 2-5）</div>
+  </div>
+  <figcaption>图 3：图章——在当前位置印下角色的样子</figcaption>
+</figure>
+
+<div class="blk-card">
+  <div class="blk-head">
+    <span class="dot d1"></span><span class="dot d2"></span><span class="dot d3"></span>
+    <span class="file">重点示例：走一步、盖一个印</span>
+    <span class="lang">图形化积木</span>
+  </div>
+  <div class="blk-body">
+<svg class="blk" viewBox="0 0 170.8 230" width="170.8" height="230" role="img" aria-label="积木脚本"><g font-family="'PingFang SC','Microsoft YaHei','Noto Sans SC',sans-serif"><g transform="translate(3,3)"><path d="M0,12 C32.96,0 131.84,0 164.8,12 V43 A5,5 0 0 1 159.8,48 H28 v4 h-12 v-4 H5 A5,5 0 0 1 0,43 Z" fill="#FFBF00" stroke="#d19c00" stroke-width="1.2"/><text x="15" y="34.8" font-size="13.4" fill="#fff">当 </text><rect x="42.6" y="18.5" width="52.8" height="23" rx="5" fill="#CC9900"/><text x="64" y="34.4" font-size="12.5" fill="#fff" text-anchor="middle">绿旗</text><path d="M84.4 27.5 l4 5 l4 -5 z" fill="#fff" opacity=".85"/><text x="102.4" y="34.8" font-size="13.4" fill="#fff"> 被点击</text></g><g transform="translate(3,55)"><path d="M0,5 A5,5 0 0 1 5,0 H16 v4 h12 v-4 H78 A5,5 0 0 1 83,5 V31 A5,5 0 0 1 78,36 H28 v4 h-12 v-4 H5 A5,5 0 0 1 0,31 Z" fill="#0FBD8C" stroke="#0c9a72" stroke-width="1.2"/><text x="15" y="22.8" font-size="13.4" fill="#fff">擦除全部</text></g><g transform="translate(3,95)"><path d="M0,5 A5,5 0 0 1 5,0 H16 v4 h12 v-4 H156 A5,5 0 0 1 161,5 V123 A5,5 0 0 1 156,128 H28 v4 h-12 v-4 H5 A5,5 0 0 1 0,123 V115 H16 V36 H0 Z" fill="#FFAB19" stroke="#d18c14" stroke-width="1.2"/><text x="15" y="22.8" font-size="13.4" fill="#fff">重复执行 </text><rect x="82.8" y="6.5" width="30" height="23" rx="11.5" fill="#fff"/><text x="97.8" y="22.4" font-size="12.5" fill="#575e75" text-anchor="middle">8</text><text x="119.8" y="22.8" font-size="13.4" fill="#fff"> 次</text><g transform="translate(20,38)"><path d="M0,5 A5,5 0 0 1 5,0 H16 v4 h12 v-4 H71 A5,5 0 0 1 76,5 V31 A5,5 0 0 1 71,36 H28 v4 h-12 v-4 H5 A5,5 0 0 1 0,31 Z" fill="#0FBD8C" stroke="#0c9a72" stroke-width="1.2"/><text x="15" y="22.8" font-size="13.4" fill="#fff">图章</text></g><g transform="translate(20,76)"><path d="M0,5 A5,5 0 0 1 5,0 H16 v4 h12 v-4 H130 A5,5 0 0 1 135,5 V31 A5,5 0 0 1 130,36 H28 v4 h-12 v-4 H5 A5,5 0 0 1 0,31 Z" fill="#4C97FF" stroke="#3e7bd1" stroke-width="1.2"/><text x="15" y="22.8" font-size="13.4" fill="#fff">移动 </text><rect x="56" y="6.5" width="36.4" height="23" rx="11.5" fill="#fff"/><text x="74.2" y="22.4" font-size="12.5" fill="#575e75" text-anchor="middle">40</text><text x="99.4" y="22.8" font-size="13.4" fill="#fff"> 步</text></g></g></g></svg>
+  </div>
+  <div class="out"><b>要点</b>　每走一格就"盖一个印"，于是画面上出现一排一模一样的图案</div>
+</div>
+
+<h3 id="s3-2">3.2 图章和落笔的区别</h3>
+
+<figure class="figure">
+<svg class="diagram" viewBox="0 0 820 240" role="img" aria-label="图章 vs 落笔">
+<text x="24" y="32" font-size="14" fill="#4c1d95" text-anchor="start" font-weight="bold">图章 vs 落笔</text><rect x="24" y="52" width="376" height="160" rx="12" fill="#f5f3ff" stroke="#e6e0fb" stroke-width="1.8"/><text x="212" y="82" font-size="13.5" fill="#6d28d9" text-anchor="middle" font-weight="bold">落笔</text><circle cx="40" cy="106" r="3.4" fill="#6d28d9"/><text x="52" y="110" font-size="12.2" fill="#4c1d95" text-anchor="start">画出的是"轨迹"</text><circle cx="40" cy="136" r="3.4" fill="#6d28d9"/><text x="52" y="140" font-size="12.2" fill="#4c1d95" text-anchor="start">线的形状取决于走的路线</text><circle cx="40" cy="166" r="3.4" fill="#6d28d9"/><text x="52" y="170" font-size="12.2" fill="#4c1d95" text-anchor="start">像用笔连续画</text><rect x="420" y="52" width="376" height="160" rx="12" fill="#fff7ed" stroke="#e6e0fb" stroke-width="1.8"/><text x="608" y="82" font-size="13.5" fill="#b45309" text-anchor="middle" font-weight="bold">图章</text><circle cx="436" cy="106" r="3.4" fill="#b45309"/><text x="448" y="110" font-size="12.2" fill="#4c1d95" text-anchor="start">印下的是"角色的样子"</text><circle cx="436" cy="136" r="3.4" fill="#b45309"/><text x="448" y="140" font-size="12.2" fill="#4c1d95" text-anchor="start">和角色当前的造型、大小、特效一致</text><circle cx="436" cy="166" r="3.4" fill="#b45309"/><text x="448" y="170" font-size="12.2" fill="#4c1d95" text-anchor="start">像盖橡皮章，一个一个印</text><text x="24" y="226" font-size="11.8" fill="#8d9d94" text-anchor="start">两者可以配合使用：先落笔画线，再用图章点缀</text>
+</svg>
+  <div class="caption">图 4（SVG）：图章与落笔的区别</div>
+</figure>
+
+<div class="box info">
+  <span class="lb">一个易错点：</span>图章印在<b>角色当前的位置</b>上。所以想盖出一排，得<b>盖一个、移一段、再盖一个</b>——顺序反了就全印在同一个点上。
+</div>
+
+<!-- ============ 4 ============ -->
+<div class="section-header" id="s4">
+  <h2>4　用循环画图案</h2>
+  <div class="en-title">Drawing with Loops</div>
+</div>
+
+<h3 id="s4-1">4.1 重复画同一个图形</h3>
+
+<div class="blk-card">
+  <div class="blk-head">
+    <span class="dot d1"></span><span class="dot d2"></span><span class="dot d3"></span>
+    <span class="file">重点示例：画一个正方形</span>
+    <span class="lang">图形化积木</span>
+  </div>
+  <div class="blk-body">
+<svg class="blk" viewBox="0 0 221.4 390" width="221.4" height="390" role="img" aria-label="积木脚本"><g font-family="'PingFang SC','Microsoft YaHei','Noto Sans SC',sans-serif"><g transform="translate(3,3)"><path d="M0,12 C32.96,0 131.84,0 164.8,12 V43 A5,5 0 0 1 159.8,48 H28 v4 h-12 v-4 H5 A5,5 0 0 1 0,43 Z" fill="#FFBF00" stroke="#d19c00" stroke-width="1.2"/><text x="15" y="34.8" font-size="13.4" fill="#fff">当 </text><rect x="42.6" y="18.5" width="52.8" height="23" rx="5" fill="#CC9900"/><text x="64" y="34.4" font-size="12.5" fill="#fff" text-anchor="middle">绿旗</text><path d="M84.4 27.5 l4 5 l4 -5 z" fill="#fff" opacity=".85"/><text x="102.4" y="34.8" font-size="13.4" fill="#fff"> 被点击</text></g><g transform="translate(3,55)"><path d="M0,5 A5,5 0 0 1 5,0 H16 v4 h12 v-4 H78 A5,5 0 0 1 83,5 V31 A5,5 0 0 1 78,36 H28 v4 h-12 v-4 H5 A5,5 0 0 1 0,31 Z" fill="#0FBD8C" stroke="#0c9a72" stroke-width="1.2"/><text x="15" y="22.8" font-size="13.4" fill="#fff">擦除全部</text></g><g transform="translate(3,95)"><path d="M0,5 A5,5 0 0 1 5,0 H16 v4 h12 v-4 H163 A5,5 0 0 1 168,5 V31 A5,5 0 0 1 163,36 H28 v4 h-12 v-4 H5 A5,5 0 0 1 0,31 Z" fill="#0FBD8C" stroke="#0c9a72" stroke-width="1.2"/><text x="15" y="22.8" font-size="13.4" fill="#fff">将笔的粗细设为 </text><rect x="123" y="6.5" width="30" height="23" rx="11.5" fill="#fff"/><text x="138" y="22.4" font-size="12.5" fill="#575e75" text-anchor="middle">4</text></g><g transform="translate(3,135)"><path d="M0,5 A5,5 0 0 1 5,0 H16 v4 h12 v-4 H210 A5,5 0 0 1 215,5 V31 A5,5 0 0 1 210,36 H28 v4 h-12 v-4 H5 A5,5 0 0 1 0,31 Z" fill="#4C97FF" stroke="#3e7bd1" stroke-width="1.2"/><text x="15" y="22.8" font-size="13.4" fill="#fff">移到 x: </text><rect x="77.6" y="6.5" width="43.6" height="23" rx="11.5" fill="#fff"/><text x="99.4" y="22.4" font-size="12.5" fill="#575e75" text-anchor="middle">-80</text><text x="128.2" y="22.8" font-size="13.4" fill="#fff"> y: </text><rect x="164" y="6.5" width="36.4" height="23" rx="11.5" fill="#fff"/><text x="182.2" y="22.4" font-size="12.5" fill="#575e75" text-anchor="middle">60</text></g><g transform="translate(3,175)"><path d="M0,5 A5,5 0 0 1 5,0 H16 v4 h12 v-4 H71 A5,5 0 0 1 76,5 V31 A5,5 0 0 1 71,36 H28 v4 h-12 v-4 H5 A5,5 0 0 1 0,31 Z" fill="#0FBD8C" stroke="#0c9a72" stroke-width="1.2"/><text x="15" y="22.8" font-size="13.4" fill="#fff">落笔</text></g><g transform="translate(3,215)"><path d="M0,5 A5,5 0 0 1 5,0 H16 v4 h12 v-4 H163 A5,5 0 0 1 168,5 V123 A5,5 0 0 1 163,128 H28 v4 h-12 v-4 H5 A5,5 0 0 1 0,123 V115 H16 V36 H0 Z" fill="#FFAB19" stroke="#d18c14" stroke-width="1.2"/><text x="15" y="22.8" font-size="13.4" fill="#fff">重复执行 </text><rect x="82.8" y="6.5" width="30" height="23" rx="11.5" fill="#fff"/><text x="97.8" y="22.4" font-size="12.5" fill="#575e75" text-anchor="middle">4</text><text x="119.8" y="22.8" font-size="13.4" fill="#fff"> 次</text><g transform="translate(20,38)"><path d="M0,5 A5,5 0 0 1 5,0 H16 v4 h12 v-4 H137 A5,5 0 0 1 142,5 V31 A5,5 0 0 1 137,36 H28 v4 h-12 v-4 H5 A5,5 0 0 1 0,31 Z" fill="#4C97FF" stroke="#3e7bd1" stroke-width="1.2"/><text x="15" y="22.8" font-size="13.4" fill="#fff">移动 </text><rect x="56" y="6.5" width="43.6" height="23" rx="11.5" fill="#fff"/><text x="77.8" y="22.4" font-size="12.5" fill="#575e75" text-anchor="middle">120</text><text x="106.6" y="22.8" font-size="13.4" fill="#fff"> 步</text></g><g transform="translate(20,76)"><path d="M0,5 A5,5 0 0 1 5,0 H16 v4 h12 v-4 H130 A5,5 0 0 1 135,5 V31 A5,5 0 0 1 130,36 H28 v4 h-12 v-4 H5 A5,5 0 0 1 0,31 Z" fill="#4C97FF" stroke="#3e7bd1" stroke-width="1.2"/><text x="15" y="22.8" font-size="13.4" fill="#fff">右转 </text><rect x="56" y="6.5" width="36.4" height="23" rx="11.5" fill="#fff"/><text x="74.2" y="22.4" font-size="12.5" fill="#575e75" text-anchor="middle">90</text><text x="99.4" y="22.8" font-size="13.4" fill="#fff"> 度</text></g></g><g transform="translate(3,347)"><path d="M0,5 A5,5 0 0 1 5,0 H16 v4 h12 v-4 H71 A5,5 0 0 1 76,5 V31 A5,5 0 0 1 71,36 H28 v4 h-12 v-4 H5 A5,5 0 0 1 0,31 Z" fill="#0FBD8C" stroke="#0c9a72" stroke-width="1.2"/><text x="15" y="22.8" font-size="13.4" fill="#fff">抬笔</text></g></g></svg>
+  </div>
+  <div class="out"><b>要点</b>　"擦除 → 定位 → 落笔 → 循环画 → 抬笔"是画任何图形的固定套路</div>
+</div>
+
+<h3 id="s4-2">4.2 正多边形与螺旋</h3>
+
+<figure class="figure">
+<svg class="diagram" viewBox="0 0 820 202" role="img" aria-label="常用角度速查">
+<text x="24" y="32" font-size="14" fill="#4c1d95" text-anchor="start" font-weight="bold">常用角度速查</text><rect x="24" y="56" width="772" height="28" rx="8" fill="#f3efff"/><text x="40" y="75" font-size="12.6" fill="#6d28d9" text-anchor="start" font-weight="bold">正三角形</text><text x="192" y="75" font-size="12.2" fill="#4c1d95" text-anchor="start">重复 3 次、每次转 120 度</text><rect x="24" y="90" width="772" height="28" rx="8" fill="#faf8ff"/><text x="40" y="109" font-size="12.6" fill="#6d28d9" text-anchor="start" font-weight="bold">正方形</text><text x="192" y="109" font-size="12.2" fill="#4c1d95" text-anchor="start">重复 4 次、每次转 90 度</text><rect x="24" y="124" width="772" height="28" rx="8" fill="#f3efff"/><text x="40" y="143" font-size="12.6" fill="#6d28d9" text-anchor="start" font-weight="bold">正六边形</text><text x="192" y="143" font-size="12.2" fill="#4c1d95" text-anchor="start">重复 6 次、每次转 60 度</text><rect x="24" y="158" width="772" height="28" rx="8" fill="#faf8ff"/><text x="40" y="177" font-size="12.6" fill="#6d28d9" text-anchor="start" font-weight="bold">螺旋线</text><text x="192" y="177" font-size="12.2" fill="#4c1d95" text-anchor="start">重复 N 次、每次"移动的长度+2"、转 90 度</text>
+</svg>
+  <div class="caption">图 5（SVG）：循环画图的常用参数</div>
+</figure>
+
+<div class="blk-card">
+  <div class="blk-head">
+    <span class="dot d1"></span><span class="dot d2"></span><span class="dot d3"></span>
+    <span class="file">重点示例：画一条螺旋线</span>
+    <span class="lang">图形化积木</span>
+  </div>
+  <div class="blk-body">
+<svg class="blk" viewBox="0 0 200 176" width="200" height="176" role="img" aria-label="积木脚本"><g font-family="'PingFang SC','Microsoft YaHei','Noto Sans SC',sans-serif"><g transform="translate(3,3)"><path d="M0,5 A5,5 0 0 1 5,0 H16 v4 h12 v-4 H189 A5,5 0 0 1 194,5 V161 A5,5 0 0 1 189,166 H28 v4 h-12 v-4 H5 A5,5 0 0 1 0,161 V153 H16 V36 H0 Z" fill="#FFAB19" stroke="#d18c14" stroke-width="1.2"/><text x="15" y="22.8" font-size="13.4" fill="#fff">重复执行 </text><rect x="82.8" y="6.5" width="36.4" height="23" rx="11.5" fill="#fff"/><text x="101" y="22.4" font-size="12.5" fill="#575e75" text-anchor="middle">20</text><text x="126.2" y="22.8" font-size="13.4" fill="#fff"> 次</text><g transform="translate(20,38)"><path d="M0,5 A5,5 0 0 1 5,0 H16 v4 h12 v-4 H130 A5,5 0 0 1 135,5 V31 A5,5 0 0 1 130,36 H28 v4 h-12 v-4 H5 A5,5 0 0 1 0,31 Z" fill="#4C97FF" stroke="#3e7bd1" stroke-width="1.2"/><text x="15" y="22.8" font-size="13.4" fill="#fff">移动 </text><rect x="56" y="6.5" width="36.4" height="23" rx="11.5" fill="#fff"/><text x="74.2" y="22.4" font-size="12.5" fill="#575e75" text-anchor="middle">10</text><text x="99.4" y="22.8" font-size="13.4" fill="#fff"> 步</text></g><g transform="translate(20,76)"><path d="M0,5 A5,5 0 0 1 5,0 H16 v4 h12 v-4 H130 A5,5 0 0 1 135,5 V31 A5,5 0 0 1 130,36 H28 v4 h-12 v-4 H5 A5,5 0 0 1 0,31 Z" fill="#4C97FF" stroke="#3e7bd1" stroke-width="1.2"/><text x="15" y="22.8" font-size="13.4" fill="#fff">右转 </text><rect x="56" y="6.5" width="36.4" height="23" rx="11.5" fill="#fff"/><text x="74.2" y="22.4" font-size="12.5" fill="#575e75" text-anchor="middle">90</text><text x="99.4" y="22.8" font-size="13.4" fill="#fff"> 度</text></g><g transform="translate(20,114)"><path d="M0,5 A5,5 0 0 1 5,0 H16 v4 h12 v-4 H163 A5,5 0 0 1 168,5 V31 A5,5 0 0 1 163,36 H28 v4 h-12 v-4 H5 A5,5 0 0 1 0,31 Z" fill="#0FBD8C" stroke="#0c9a72" stroke-width="1.2"/><text x="15" y="22.8" font-size="13.4" fill="#fff">将笔的颜色增加 </text><rect x="123" y="6.5" width="30" height="23" rx="11.5" fill="#fff"/><text x="138" y="22.4" font-size="12.5" fill="#575e75" text-anchor="middle">5</text></g></g></g></svg>
+  </div>
+  <div class="out"><b>要点</b>　角度固定、长度不变，出来的是正方形；<b>让长度每圈变大一点</b>（或角度小一点），就变成了螺旋</div>
+</div>
+
+<div class="box info">
+  <span class="lb">规律总在这里：</span>画正多边形时，<b>每次转的角度 = 360 ÷ 边数</b>；画螺旋时，只要让"每次走的长度"或"转的角度"<b>逐圈变化</b>，图形就不会闭合，而是向外（或向内）绕出去。
+</div>
+
+<!-- ============ 5 ============ -->
+<div class="section-header" id="s5">
+  <h2>5　代码实战</h2>
+  <div class="en-title">Level Practice</div>
+</div>
+
+<p>这一关的路线是一个"上下往复的锯齿"——<b>每三块积木构成一个重复单元</b>，'
+'走出来的形状刚好是一条方波。</p>
+<div class="level-card">
+  <div class="lc-head"><span class="n">关卡 68</span><h4>方波</h4><span class="go">进入关卡 →</span></div>
+  <div class="lc-body">
+    <div class="story">
+      <b>故事：</b>
+集市的地面被画成了一条折线：上去一格、右一格、下来一格、再右一格……
+整条路像一段锯齿。你不用一段段描，只要找出"重复的那一小段"就可以了。
+
+    </div>
+    <p><strong>思路：</strong>观察路线的重复单元：<b>上一格、右一格、下一格、右一格</b>——
+这四步走完，位置比起点向右平移了两格，形状却回到了"准备再上一格"的状态。
+把它放进循环里，锯齿就一段段长出来了。
+</p>
+<div class="blk-card">
+  <div class="blk-head">
+    <span class="dot d1"></span><span class="dot d2"></span><span class="dot d3"></span>
+    <span class="file">重点示例：找出重复单元，交给循环</span>
+    <span class="lang">图形化积木</span>
+  </div>
+  <div class="blk-body">
+<svg class="blk" viewBox="0 0 187.6 538" width="187.6" height="538" role="img" aria-label="积木脚本"><g font-family="'PingFang SC','Microsoft YaHei','Noto Sans SC',sans-serif"><g transform="translate(3,3)"><path d="M0,12 C32.96,0 131.84,0 164.8,12 V43 A5,5 0 0 1 159.8,48 H28 v4 h-12 v-4 H5 A5,5 0 0 1 0,43 Z" fill="#FFBF00" stroke="#d19c00" stroke-width="1.2"/><text x="15" y="34.8" font-size="13.4" fill="#fff">当 </text><rect x="42.6" y="18.5" width="52.8" height="23" rx="5" fill="#CC9900"/><text x="64" y="34.4" font-size="12.5" fill="#fff" text-anchor="middle">绿旗</text><path d="M84.4 27.5 l4 5 l4 -5 z" fill="#fff" opacity=".85"/><text x="102.4" y="34.8" font-size="13.4" fill="#fff"> 被点击</text></g><g transform="translate(3,55)"><path d="M0,5 A5,5 0 0 1 5,0 H16 v4 h12 v-4 H78 A5,5 0 0 1 83,5 V31 A5,5 0 0 1 78,36 H28 v4 h-12 v-4 H5 A5,5 0 0 1 0,31 Z" fill="#0FBD8C" stroke="#0c9a72" stroke-width="1.2"/><text x="15" y="22.8" font-size="13.4" fill="#fff">擦除全部</text></g><g transform="translate(3,95)"><path d="M0,5 A5,5 0 0 1 5,0 H16 v4 h12 v-4 H71 A5,5 0 0 1 76,5 V31 A5,5 0 0 1 71,36 H28 v4 h-12 v-4 H5 A5,5 0 0 1 0,31 Z" fill="#0FBD8C" stroke="#0c9a72" stroke-width="1.2"/><text x="15" y="22.8" font-size="13.4" fill="#fff">落笔</text></g><g transform="translate(3,135)"><path d="M0,5 A5,5 0 0 1 5,0 H16 v4 h12 v-4 H176 A5,5 0 0 1 181,5 V351 A5,5 0 0 1 176,356 H28 v4 h-12 v-4 H5 A5,5 0 0 1 0,351 V343 H16 V36 H0 Z" fill="#FFAB19" stroke="#d18c14" stroke-width="1.2"/><text x="15" y="22.8" font-size="13.4" fill="#fff">重复执行 </text><rect x="82.8" y="6.5" width="30" height="23" rx="11.5" fill="#fff"/><text x="97.8" y="22.4" font-size="12.5" fill="#575e75" text-anchor="middle">3</text><text x="119.8" y="22.8" font-size="13.4" fill="#fff"> 次</text><g transform="translate(20,38)"><path d="M0,5 A5,5 0 0 1 5,0 H16 v4 h12 v-4 H137 A5,5 0 0 1 142,5 V31 A5,5 0 0 1 137,36 H28 v4 h-12 v-4 H5 A5,5 0 0 1 0,31 Z" fill="#4C97FF" stroke="#3e7bd1" stroke-width="1.2"/><text x="15" y="22.8" font-size="13.4" fill="#fff">面向 </text><rect x="56" y="6.5" width="30" height="23" rx="11.5" fill="#fff"/><text x="71" y="22.4" font-size="12.5" fill="#575e75" text-anchor="middle">0</text><text x="93" y="22.8" font-size="13.4" fill="#fff"> 方向</text></g><g transform="translate(20,76)"><path d="M0,5 A5,5 0 0 1 5,0 H16 v4 h12 v-4 H123 A5,5 0 0 1 128,5 V31 A5,5 0 0 1 123,36 H28 v4 h-12 v-4 H5 A5,5 0 0 1 0,31 Z" fill="#4C97FF" stroke="#3e7bd1" stroke-width="1.2"/><text x="15" y="22.8" font-size="13.4" fill="#fff">移动 </text><rect x="56" y="6.5" width="30" height="23" rx="11.5" fill="#fff"/><text x="71" y="22.4" font-size="12.5" fill="#575e75" text-anchor="middle">1</text><text x="93" y="22.8" font-size="13.4" fill="#fff"> 步</text></g><g transform="translate(20,114)"><path d="M0,5 A5,5 0 0 1 5,0 H16 v4 h12 v-4 H143 A5,5 0 0 1 148,5 V31 A5,5 0 0 1 143,36 H28 v4 h-12 v-4 H5 A5,5 0 0 1 0,31 Z" fill="#4C97FF" stroke="#3e7bd1" stroke-width="1.2"/><text x="15" y="22.8" font-size="13.4" fill="#fff">面向 </text><rect x="56" y="6.5" width="36.4" height="23" rx="11.5" fill="#fff"/><text x="74.2" y="22.4" font-size="12.5" fill="#575e75" text-anchor="middle">90</text><text x="99.4" y="22.8" font-size="13.4" fill="#fff"> 方向</text></g><g transform="translate(20,152)"><path d="M0,5 A5,5 0 0 1 5,0 H16 v4 h12 v-4 H123 A5,5 0 0 1 128,5 V31 A5,5 0 0 1 123,36 H28 v4 h-12 v-4 H5 A5,5 0 0 1 0,31 Z" fill="#4C97FF" stroke="#3e7bd1" stroke-width="1.2"/><text x="15" y="22.8" font-size="13.4" fill="#fff">移动 </text><rect x="56" y="6.5" width="30" height="23" rx="11.5" fill="#fff"/><text x="71" y="22.4" font-size="12.5" fill="#575e75" text-anchor="middle">1</text><text x="93" y="22.8" font-size="13.4" fill="#fff"> 步</text></g><g transform="translate(20,190)"><path d="M0,5 A5,5 0 0 1 5,0 H16 v4 h12 v-4 H150 A5,5 0 0 1 155,5 V31 A5,5 0 0 1 150,36 H28 v4 h-12 v-4 H5 A5,5 0 0 1 0,31 Z" fill="#4C97FF" stroke="#3e7bd1" stroke-width="1.2"/><text x="15" y="22.8" font-size="13.4" fill="#fff">面向 </text><rect x="56" y="6.5" width="43.6" height="23" rx="11.5" fill="#fff"/><text x="77.8" y="22.4" font-size="12.5" fill="#575e75" text-anchor="middle">180</text><text x="106.6" y="22.8" font-size="13.4" fill="#fff"> 方向</text></g><g transform="translate(20,228)"><path d="M0,5 A5,5 0 0 1 5,0 H16 v4 h12 v-4 H123 A5,5 0 0 1 128,5 V31 A5,5 0 0 1 123,36 H28 v4 h-12 v-4 H5 A5,5 0 0 1 0,31 Z" fill="#4C97FF" stroke="#3e7bd1" stroke-width="1.2"/><text x="15" y="22.8" font-size="13.4" fill="#fff">移动 </text><rect x="56" y="6.5" width="30" height="23" rx="11.5" fill="#fff"/><text x="71" y="22.4" font-size="12.5" fill="#575e75" text-anchor="middle">1</text><text x="93" y="22.8" font-size="13.4" fill="#fff"> 步</text></g><g transform="translate(20,266)"><path d="M0,5 A5,5 0 0 1 5,0 H16 v4 h12 v-4 H143 A5,5 0 0 1 148,5 V31 A5,5 0 0 1 143,36 H28 v4 h-12 v-4 H5 A5,5 0 0 1 0,31 Z" fill="#4C97FF" stroke="#3e7bd1" stroke-width="1.2"/><text x="15" y="22.8" font-size="13.4" fill="#fff">面向 </text><rect x="56" y="6.5" width="36.4" height="23" rx="11.5" fill="#fff"/><text x="74.2" y="22.4" font-size="12.5" fill="#575e75" text-anchor="middle">90</text><text x="99.4" y="22.8" font-size="13.4" fill="#fff"> 方向</text></g><g transform="translate(20,304)"><path d="M0,5 A5,5 0 0 1 5,0 H16 v4 h12 v-4 H123 A5,5 0 0 1 128,5 V31 A5,5 0 0 1 123,36 H28 v4 h-12 v-4 H5 A5,5 0 0 1 0,31 Z" fill="#4C97FF" stroke="#3e7bd1" stroke-width="1.2"/><text x="15" y="22.8" font-size="13.4" fill="#fff">移动 </text><rect x="56" y="6.5" width="30" height="23" rx="11.5" fill="#fff"/><text x="71" y="22.4" font-size="12.5" fill="#575e75" text-anchor="middle">1</text><text x="93" y="22.8" font-size="13.4" fill="#fff"> 步</text></g></g><g transform="translate(3,495)"><path d="M0,5 A5,5 0 0 1 5,0 H16 v4 h12 v-4 H71 A5,5 0 0 1 76,5 V31 A5,5 0 0 1 71,36 H28 v4 h-12 v-4 H5 A5,5 0 0 1 0,31 Z" fill="#0FBD8C" stroke="#0c9a72" stroke-width="1.2"/><text x="15" y="22.8" font-size="13.4" fill="#fff">抬笔</text></g></g></svg>
+  </div>
+  <div class="out"><b>读法</b>　口里那八块 "转向 + 移动" 就是一段"上-右-下-右"的锯齿，重复 3 次得到三段</div>
+</div>
+
+    <div class="box tip">
+      <span class="lb">自己试一试：</span>把循环次数改成 6 次，锯齿会一直连下去；把"落笔"删掉再跑一次，你会发现角色照样在走，只是画面上什么都没留下。<strong>这就是落笔与抬笔的区别。</strong>
+    </div>
+    <p>这一关看起来是画图，练的其实是<b>"找重复"的眼力</b>——'
+    这也是循环结构真正的用处：<b>把长得一样的部分交给循环。</b></p>
+<div class="box info">
+  <span class="lb">画笔 + 循环 = 图案生成器：</span>一条简单的规则重复很多遍，就能长出很复杂的图案。正多边形、螺旋、雪花、分形……都是这个套路。
+</div>
+    <a class="btn-go" href="https://codecombat.cn/" target="_blank" rel="noopener">去扣哒世界闯这一关 →</a>
+  </div>
+</div>
+
+<!-- ============ 6 ============ -->
+<div class="section-header" id="s6">
+  <h2>6　常见陷阱</h2>
+  <div class="en-title">Common Traps</div>
+</div>
+
+<div class="box warn">
+  <span class="lb">陷阱 1：</span><b>忘了"落笔"。</b>角色照样在移动，但画面上什么都不出现——这是新手最常见的困惑。<br><strong>正确做法：</strong>要留痕，先"落笔"；画完记得"抬笔"。
+</div>
+
+<div class="box warn">
+  <span class="lb">陷阱 2：</span><b>以为"擦除全部"会把角色也删掉。</b>它只清笔迹，角色的位置、造型、大小都不变。<br><strong>正确理解：</strong>笔迹属于画布，角色属于舞台，两者分开。
+</div>
+
+<div class="box warn">
+  <span class="lb">陷阱 3：</span><b>把"图章"当成"落笔"。</b>图章印的是<b>角色的样子</b>，落笔画的是<b>走的轨迹</b>。<br><strong>怎么选：</strong>要连续一条线 → 落笔；要一个一个图案 → 图章。
+</div>
+
+<div class="box warn">
+  <span class="lb">陷阱 4：</span><b>忘了把画笔模块加上。</b>画笔是拓展模块，编辑器里默认可能没有这一栏。<br><strong>正确做法：</strong>在模块区左下角找到"添加拓展"，把画笔加进来。
+</div>
+
+<!-- ============ 7 ============ -->
+<div class="section-header" id="s7">
+  <h2>7　题目练习</h2>
+  <div class="en-title">Practice</div>
+</div>
+
+<p>前 2 题改编自 2026 年 6 月 · 图形化编程 二级 第 6 题、2026 年 9 月 · 图形化编程 二级 第 6 题，其余为原创练习题。</p>
+<div class="exam">
+  <div class="eh"><span class="src">改编自 2026 年 6 月 · 图形化编程 二 级 · 第 6 题</span><span class="tp">单选题</span></div>
+  <div class="eb">
+    <div class="q">默认小猫角色，要画一个边长为 100 的正五边形。脚本用"重复执行 5 次：{ 移动 100 步；右转 ？ 度 }"，红框处应该填多少（　　）。</div>
+    <div class="opt"><i>A.</i>72<br>
+      <i>B.</i>144<br>
+      <i>C.</i>100<br>
+      <i>D.</i>90</div>
+    <details><summary>查看答案与详解</summary>
+      <div class="ans"><b>答案：A</b>。画正多边形有一条固定规律：<b>每次转的角度 = 360 ÷ 边数</b>。<br>正五边形：360 ÷ 5 = <b>72 度</b>，同时循环 5 次，五次加起来正好转满 360 度，图形才闭合。<br><b>B 错：</b>144 度 × 5 会转两圈多，根本连不起来；<br><b>C 错：</b>100 是边长，不是角度；<br><b>D 错：</b>90 度对应的是正方形（重复 4 次）。<br><span class="tagline">对应小节</span>4.2 正多边形与螺旋。</div>
+    </details>
+  </div>
+</div>
+<div class="exam">
+  <div class="eh"><span class="src">改编自 2026 年 9 月 · 图形化编程 二 级 · 第 6 题</span><span class="tp">单选题</span></div>
+  <div class="eb">
+    <div class="q">角色处于"落笔"状态，执行下面这段脚本："重复执行 4 次：{ 移动 80 步；右转 90 度 }"。<br>画面上绘制出来的图形是（　　）。</div>
+    <div class="opt"><i>A.</i>一条直线<br>
+      <i>B.</i>一个正方形<br>
+      <i>C.</i>一个圆形<br>
+      <i>D.</i>一个正三角形</div>
+    <details><summary>查看答案与详解</summary>
+      <div class="ans"><b>答案：B</b>。走一段、转 90 度，重复 4 次——<b>每次转的角度 90 × 4 = 360 度</b>，正好绕一圈回到原点，画出来的是一个正方形。<br><b>A 错：</b>直线是"一直走不转弯"的结果；<br><b>C 错：</b>圆形要"每次转很小的角度、重复很多次"（比如每次转 10 度、重复 36 次）；<br><b>D 错：</b>正三角形要重复 3 次、每次转 120 度。<br><span class="tagline">对应小节</span>4.1、4.2 用循环画图。</div>
+    </details>
+  </div>
+</div>
+<div class="exam">
+  <div class="eh"><span class="src ori">原创练习题</span><span class="tp">单选题</span></div>
+  <div class="eb">
+    <div class="q">角色执行"落笔 → 移动 100 步"这一组积木后，画面上会出现（　　）。</div>
+    <div class="opt">
+      <i>A.</i>角色被复制了一份<br>
+      <i>B.</i>角色走过的路线上留下一条笔迹<br>
+      <i>C.</i>画面被清空<br>
+      <i>D.</i>角色换了造型
+    </div>
+    <details><summary>查看答案与详解</summary>
+      <div class="ans"><b>答案：B</b>。"落笔"之后，角色走到哪里，哪里就留下一条笔迹。积木要连起来读：先落笔，再移动——走出来的就是一条线。<br><b>A 错：</b>复制角色是"克隆"、"图章"干的事；<br><b>C 错：</b>清空要用"擦除全部"；<br><b>D 错：</b>换造型是外观积木。<br><span class="tagline">对应小节</span>1.1 落笔：开始留痕。</div>
+    </details>
+  </div>
+</div>
+
+<div class="exam">
+  <div class="eh"><span class="src ori">原创练习题</span><span class="tp">单选题</span></div>
+  <div class="eb">
+    <div class="q">角色要"从画布左边走到右边开始的位置，再从那里开始画"——中间这段路<b>不想留下任何痕迹</b>。应该在移动之前加上哪一块积木（　　）。</div>
+    <div class="opt">
+      <i>A.</i>落笔<br>
+      <i>B.</i>抬笔<br>
+      <i>C.</i>擦除全部<br>
+      <i>D.</i>将笔的粗细设为 0
+    </div>
+    <details><summary>查看答案与详解</summary>
+      <div class="ans"><b>答案：B</b>。"抬笔"就是"笔尖离开纸面"——角色照样在移动，但不会留下任何笔迹，正好用来"挪位置不带痕"。<br><b>A 错：</b>落笔是反过来，走了就会画线；<br><b>C 错：</b>那是把已有的笔迹全清掉；<br><b>D 错：</b>把粗细设为 0 是"取巧"，而且很多平台不允许设 0，标准做法是用抬笔。<br><span class="tagline">对应小节</span>1.2 抬笔：走而不画。</div>
+    </details>
+  </div>
+</div>
+
+<div class="exam">
+  <div class="eh"><span class="src ori">原创练习题</span><span class="tp">单选题</span></div>
+  <div class="eb">
+    <div class="q">要画一个<b>正六边形</b>，循环里每次应该右转多少度（　　）。</div>
+    <div class="opt">
+      <i>A.</i>45 度<br>
+      <i>B.</i>60 度<br>
+      <i>C.</i>90 度<br>
+      <i>D.</i>120 度
+    </div>
+    <details><summary>查看答案与详解</summary>
+      <div class="ans"><b>答案：B</b>。画正多边形：<b>每次转的角度 = 360 ÷ 边数</b>。正六边形 360 ÷ 6 = <b>60 度</b>，循环 6 次。<br><b>A 错：</b>45 度对应正八边形；<br><b>C 错：</b>90 度对应正方形；<br><b>D 错：</b>120 度对应正三角形（重复 3 次）。<br><span class="tagline">对应小节</span>4.2 正多边形与螺旋。</div>
+    </details>
+  </div>
+</div>
+
+<div class="exam">
+  <div class="eh"><span class="src ori">原创练习题</span><span class="tp">多选题</span></div>
+  <div class="eb">
+    <div class="q">下面关于"图章"的说法，哪些是<b>正确</b>的（　　）。</div>
+    <div class="opt">
+      <i>A.</i>图章在角色当前位置印下角色的样子<br>
+      <i>B.</i>印出来的图案和角色当前的造型、大小、特效有关<br>
+      <i>C.</i>图章的效果等同于"落笔后移动一段"<br>
+      <i>D.</i>连续盖多个图章时，中间通常要移动位置
+    </div>
+    <details><summary>查看答案与详解</summary>
+      <div class="ans"><b>答案：A、B、D</b>。这就是图章工具的三个要点。<br><b>C 错：</b>图章印的是"角色的样子"（一条条的图案），落笔移动画的是"走的轨迹"（一条连续的线）——两者完全不同。<br><span class="tagline">对应小节</span>3.1、3.2 图章。</div>
+    </details>
+  </div>
+</div>
+
+<div class="exam">
+  <div class="eh"><span class="src ori">原创练习题</span><span class="tp">判断题</span></div>
+  <div class="eb">
+    <div class="q">在图形化编程中，执行"擦除全部"会把画面上所有角色的画笔笔迹清掉，但不会改变角色的位置。（　　）</div>
+    <details><summary>查看答案与详解</summary>
+      <div class="ans"><b>答案：正确（√）</b>。笔迹是画在画布上的，"擦除全部"只清笔迹，<b>角色的位置、造型、大小都不受影响</b>。<br>这一点常和"停止全部脚本"混着考——后者才是把程序整个停下。<br><span class="tagline">对应小节</span>1.3 擦除全部。</div>
+    </details>
+  </div>
+</div>
+
+<!-- ============ 8 ============ -->
+<div class="section-header" id="s8">
+  <h2>8　本单元小结</h2>
+  <div class="en-title">Unit Summary</div>
+</div>
+
+<div class="cast teacher">
+  <img class="ava" src="../assets/avatars/hushbaum.webp" alt="贺舒曼" onerror="this.style.display='none'">
+  <div class="bubble">
+    <div class="who">贺舒曼 · 镜中先知</div>
+    画笔让角色"走过的地方留下东西"。记住三组：
+    <b>落笔 / 抬笔 / 擦除全部</b>、<b>颜色 / 粗细 / 亮度</b>、<b>图章</b>。<br>
+    再记住画图的固定套路：<b>擦除 → 定位 → 落笔 → 循环画 → 抬笔</b>。
+  </div>
+</div>
+
+<h3 id="s8-1">你在画布前学到了什么</h3>
+
+<ul>
+  <li><b>落笔与抬笔</b>：落笔走哪儿画哪儿，抬笔只挪位置不留痕；</li>
+  <li><b>擦除全部</b>：清空笔迹，不影响角色本身；</li>
+  <li><b>三个属性</b>：颜色、粗细、亮度，都能"设为"或"增加"；</li>
+  <li><b>图章</b>：在当前位置印下角色的样子，适合做一排排图案；</li>
+  <li><b>循环画图</b>：正 N 边形每次转 360 ÷ N 度；让长度或角度逐圈变化就得到螺旋。</li>
+</ul>
+<h3 id="s8-2">下一站：传声筒</h3>
+
+<p>画笔解决的是"看得见"的问题。下一单元解决"怎么让多个角色互相通气"——
+<b>广播能让一句话同时传到所有角色耳朵里，变量能让数字被记住。</b></p>
+
+
+<div class="pager">
+  <a href="scratch-2-04.html"><div class="k">← 上一单元</div><div class="v">分身魔术摊 · 克隆</div></a>
+  <a href="../index.html" target="_top" class="back"><div class="k">返回</div><div class="v">考纲之路 · 总目录</div></a>
+  <a href="scratch-2-06.html"><div class="k">下一单元 →</div><div class="v">传声筒 · 广播与变量</div></a>
+</div>
+<div class="cta">
+  <h3>下一站：传声筒</h3>
+  <p>画笔解决的是看得见的问题。下一单元解决"怎么让多个角色互相通气"——广播让一句话同时传到所有角色耳朵里，变量让数字被记住。</p>
+  <a class="btn-go" href="https://codecombat.cn/" target="_blank" rel="noopener">加入扣哒世界，把这条考纲之路走一遍 →</a>
+</div>
+
+</div><!-- /container -->
+</div><!-- /page -->
+
+<script>
+if (location.search.indexOf('expand') >= 0) {
+  document.querySelectorAll('details').forEach(d => d.open = true);
+}
+document.querySelectorAll('.sidebar-nav a').forEach(a => {
+  a.addEventListener('click', () => {
+    if (window.innerWidth <= 900) document.querySelector('.sidebar-nav').classList.remove('active');
+  });
+});
+</script>
+</body>
+</html>

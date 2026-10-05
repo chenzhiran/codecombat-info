@@ -1,0 +1,792 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="copyright" content="CodeCombat Inc. codecombat.cn">
+<title>算盘小铺 · 数据运算与逻辑判断 | 扣哒考级 · GESP 图形化二级</title>
+<style>
+  :root{
+    --primary:#8b5cf6; --primary-light:#a78bfa; --primary-lighter:#f3efff; --primary-dark:#6d28d9;
+    --brand:#ff6b35; --brand-dark:#e8541f; --brand-soft:#fff3ec;
+    --night:#131c2b; --night-2:#1e2a3a;
+    --gold:#f5b301;
+    --text:#2a2438; --dim:#7c7794; --dim2:#a29db8;
+    --bg:#ffffff; --bg-soft:#faf8ff; --line:#e9e4f8;
+    --sidebar:274px;
+    --code-bg:#211a33; --code-tx:#d6cfe6;
+    --code-kw:#c678dd; --code-st:#98c379; --code-nu:#d19a66; --code-cm:#7d7392; --code-fn:#61afef;
+  }
+  *{margin:0;padding:0;box-sizing:border-box}
+  html{scroll-behavior:smooth}
+  body{
+    font-family:"PingFang SC","Microsoft YaHei","Segoe UI",-apple-system,sans-serif;
+    line-height:1.9;color:var(--text);background:var(--bg);font-size:15.5px;
+  }
+
+  .sidebar-nav{
+    position:fixed;top:0;left:0;width:var(--sidebar);height:100vh;overflow-y:auto;
+    background:linear-gradient(180deg,#101a26,#182636);padding:14px 0 40px;z-index:100;
+    border-right:3px solid var(--brand);transition:transform .3s ease;
+  }
+  .sidebar-nav::-webkit-scrollbar{width:5px}
+  .sidebar-nav::-webkit-scrollbar-thumb{background:var(--brand);border-radius:4px}
+  .sb-brand{display:flex;align-items:center;gap:10px;padding:10px 13px 12px;border-bottom:1px solid #26384c;margin-bottom:8px}
+  .sidebar-nav a.sb-logo{display:flex;align-items:center;justify-content:center;flex-shrink:0;padding:0;border-left:none;transition:.2s}
+  .sb-logo:hover{transform:scale(1.08)}
+  .sb-logo img{height:34px;width:34px;display:block;object-fit:contain;border-radius:8px}
+  .sb-brand b{color:#f2f6fa;font-size:14px;letter-spacing:.5px;display:block;line-height:1.4}
+  .sb-brand span{color:#7f95ab;font-size:11.5px;display:block;line-height:1.4}
+  .nav-title{color:#ffb894;font-size:12px;font-weight:800;padding:10px 18px 6px;letter-spacing:1.2px}
+  .sidebar-nav a{
+    display:block;color:#c3d0dc;text-decoration:none;padding:6px 18px;font-size:12.5px;
+    line-height:1.55;border-left:3px solid transparent;transition:.18s;
+  }
+  .sidebar-nav a:hover{color:#fff;background:rgba(255,107,53,.16);border-left-color:var(--brand)}
+  .sidebar-nav a.nav-section{color:#ffb894;font-weight:700;font-size:13px;margin-top:11px;padding-top:10px;border-top:1px solid #26384c}
+  .sidebar-nav a.nav-section:first-of-type{border-top:none;margin-top:0;padding-top:6px}
+  .sidebar-nav a.nav-sub{padding-left:30px;color:#93a8bc;font-size:12px}
+  .sidebar-nav a.nav-sub:hover{color:#fff}
+  .sb-back{margin:16px 14px 0;display:block;text-align:center;padding:9px;border-radius:9px;background:#22344a;color:#a9c0d6 !important;font-size:12px;font-weight:700;border-left:none !important}
+  .sb-back:hover{background:var(--brand) !important;color:#fff !important}
+  .nav-toggle{display:none;position:fixed;top:14px;left:14px;z-index:120;background:var(--brand);color:#fff;border:none;border-radius:9px;padding:9px 13px;font-size:15px;cursor:pointer;box-shadow:0 4px 14px rgba(0,0,0,.25)}
+
+  .page{margin-left:var(--sidebar)}
+
+  .hero{
+    position:relative;overflow:hidden;padding:44px 52px;color:#fff;
+    background:linear-gradient(125deg,#0e1724 0%,#1b2b3f 46%,#8a3a16 132%);
+  }
+  .hero::after{content:"";position:absolute;right:-90px;top:-110px;width:400px;height:400px;border-radius:50%;background:radial-gradient(circle,rgba(245,179,1,.30),transparent 68%)}
+  .hero-top{display:flex;gap:36px;align-items:center;position:relative;z-index:2}
+  .hero-txt{flex:1;min-width:0}
+  .hero .crumb{font-size:11.5px;color:#ffb894;letter-spacing:1.5px;font-weight:700;margin-bottom:14px}
+  .hero h1{font-size:31px;font-weight:800;line-height:1.3;letter-spacing:.6px;margin-bottom:8px}
+  .hero h1 .sub{display:block;font-size:18px;font-weight:700;color:#ffd2b3;margin-top:6px;letter-spacing:.3px}
+  .hero .en{font-size:13px;color:#9db4c8;font-style:italic;margin-bottom:18px}
+  .hero .tags{display:flex;flex-wrap:wrap;gap:8px}
+  .tag{font-size:11.5px;padding:4px 12px;border-radius:20px;background:rgba(255,255,255,.12);border:1px solid rgba(255,255,255,.22);color:#e8f0f6;font-weight:600}
+  .tag.hot{background:rgba(255,107,53,.92);border-color:transparent;color:#fff}
+  .hero-card{flex-shrink:0;width:200px;text-align:center}
+  .hero-card .ava{
+    width:148px;height:148px;border-radius:50%;object-fit:cover;object-position:top center;
+    border:4px solid rgba(255,180,140,.6);box-shadow:0 14px 34px rgba(0,0,0,.45);background:#24344a;
+  }
+  .hero-card .nm{font-size:15px;font-weight:800;color:#fff;margin-top:10px}
+  .hero-card .ti{font-size:11.5px;color:#ffb894;margin-top:2px}
+
+  .container{max-width:1080px;margin:0 auto;padding:38px 52px 70px}
+
+  .lead{
+    font-size:15.5px;line-height:2.05;color:#443c58;background:linear-gradient(120deg,#fff8f3,#f7fbf8);
+    border-left:5px solid var(--brand);border-radius:0 14px 14px 0;padding:22px 26px;margin-bottom:32px;
+  }
+  .lead b{color:var(--brand-dark)}
+
+  .cast{display:flex;gap:16px;align-items:flex-start;border-radius:16px;padding:18px 22px;margin:24px 0}
+  .cast .ava{width:72px;height:72px;border-radius:50%;object-fit:cover;object-position:top center;flex-shrink:0;background:#e8eef5}
+  .cast .bubble{position:relative;font-size:14px;line-height:1.95;padding-top:2px;flex:1}
+  .cast .who{font-size:12px;font-weight:800;margin-bottom:5px;letter-spacing:.5px}
+  .cast.anya{background:var(--brand-soft);border:1px solid #ffdcc9}
+  .cast.anya .who{color:var(--brand-dark)}
+  .cast.anya .bubble{color:#5c4636}
+  .cast.duck{background:#fff5f5;border:1px solid #fbd5d5}
+  .cast.duck .who{color:#b91c1c}
+  .cast.duck .bubble{color:#5c4141}
+  .cast.teacher{background:linear-gradient(120deg,#f4f7fb,#ffffff);border:1px solid #dbe4f0}
+  .cast.teacher .who{color:#1e293b}
+  .cast.teacher .bubble{color:#3c4a5a}
+  .cast.hero{background:#f7f3ff;border:1px solid #ded1fa}
+  .cast.hero .who{color:#6d28d9}
+  .cast.hero .bubble{color:#463d5c}
+
+  .goal-grid{display:grid;grid-template-columns:1fr 1fr;gap:16px;margin-bottom:36px}
+  .goal{border:1px solid var(--line);border-radius:15px;padding:19px 21px;background:#fff;box-shadow:0 4px 16px rgba(31,122,68,.05)}
+  .goal h4{font-size:14px;font-weight:800;margin-bottom:11px;display:flex;align-items:center;gap:8px;color:var(--primary-dark)}
+  .goal h4 .ic{width:22px;height:22px;border-radius:7px;background:var(--primary-lighter);display:flex;align-items:center;justify-content:center;font-size:12px}
+  .goal ul{list-style:none}
+  .goal li{font-size:13.5px;color:#6b6480;line-height:1.9;padding-left:18px;position:relative}
+  .goal li::before{content:"▸";position:absolute;left:0;color:var(--primary);font-weight:800}
+  .goal.syllabus li::before{content:"✓"}
+
+  .section-header{margin:52px 0 24px;padding-bottom:12px;border-bottom:3px solid var(--brand);display:flex;align-items:baseline;gap:14px;flex-wrap:wrap}
+  .section-header h2{font-size:22px;font-weight:800;color:var(--night);letter-spacing:.4px}
+  .section-header .en-title{font-size:12px;color:var(--dim2);font-style:italic}
+  h3{font-size:17.5px;font-weight:800;margin:34px 0 14px;color:var(--night);display:flex;align-items:center;gap:10px}
+  h3::before{content:"";width:5px;height:17px;border-radius:3px;background:var(--brand);flex-shrink:0}
+  h4{font-size:15px;font-weight:800;margin:24px 0 10px;color:#3c2f63}
+  p{margin:12px 0;color:#463d5c;line-height:2}
+  strong{color:var(--primary-dark)}
+  code.inline{background:var(--primary-lighter);color:var(--primary-dark);padding:2px 7px;border-radius:6px;font-family:"SFMono-Regular",Consolas,Menlo,monospace;font-size:.9em;font-weight:600}
+
+  .figure{margin:24px 0;text-align:center}
+  .figure svg.diagram{max-width:100%;height:auto;background:#fff;border:1px solid var(--line);border-radius:14px;padding:10px}
+  .figure .caption{font-size:12.5px;color:var(--dim2);margin-top:9px}
+
+  .pic{margin:26px 0;text-align:center}
+  .pic img{max-width:100%;border-radius:16px;box-shadow:0 10px 28px rgba(30,60,45,.15);display:block;margin:0 auto}
+  .pic figcaption{font-size:12.5px;color:var(--dim2);margin-top:9px}
+  .pic .ph{display:none}
+  .pic.missing img{display:none}
+  .pic.missing .ph{
+    display:flex;flex-direction:column;align-items:center;justify-content:center;gap:9px;
+    border:2px dashed #c9d9e8;border-radius:16px;background:linear-gradient(135deg,#f8fbfe,#eef6ff);
+    padding:40px 26px;color:#7a8fa8;
+  }
+  .pic.missing .ph .fn{font-family:Consolas,monospace;font-size:12.5px;color:#2563eb;font-weight:700;word-break:break-all}
+  .pic.missing .ph .ds{font-size:12.5px;line-height:1.8;max-width:560px}
+
+  .box{border-radius:13px;padding:16px 20px;margin:20px 0;font-size:14px;line-height:1.95}
+  .box .lb{font-weight:800;margin-right:6px}
+  .info{background:#eef6ff;border-left:5px solid #3b82f6;color:#274768}
+  .info .lb{color:#1d4ed8}
+  .tip{background:#fff9ec;border-left:5px solid #f59e0b;color:#6b4e13}
+  .tip .lb{color:#b45309}
+  .remember{background:var(--primary-lighter);border-left:5px solid var(--primary);color:#3a2a6b}
+  .remember .lb{color:var(--primary-dark)}
+  .warn{background:#fef2f2;border-left:5px solid #ef4444;color:#7f2b2b}
+  .warn .lb{color:#b91c1c}
+
+  .code-card{margin:20px 0;border-radius:14px;overflow:hidden;box-shadow:0 10px 28px rgba(20,40,28,.20)}
+  .code-head{display:flex;align-items:center;gap:9px;background:#2c2438;padding:9px 14px}
+  .code-head .dot{width:10px;height:10px;border-radius:50%}
+  .code-head .d1{background:#ff5f57}.code-head .d2{background:#febc2e}.code-head .d3{background:#28c840}
+  .code-head .file{color:#a09ab4;font-size:11.5px;font-family:Consolas,monospace;margin-left:6px}
+  .code-head .lang{margin-left:auto;font-size:10.5px;font-weight:800;color:#150f21;background:#a78bfa;padding:2px 9px;border-radius:6px;letter-spacing:.4px}
+  .code-card pre{background:var(--code-bg);padding:18px 20px;overflow-x:auto;margin:0;font-family:"SFMono-Regular",Consolas,"Courier New",monospace;font-size:13.5px;line-height:1.85}
+  .code-card pre::-webkit-scrollbar{height:8px}
+  .code-card pre::-webkit-scrollbar-thumb{background:#433a5e;border-radius:4px}
+  .code-card code{color:var(--code-tx);white-space:pre}
+  .kw{color:var(--code-kw);font-weight:600}
+  .st{color:var(--code-st)}
+  .nu{color:var(--code-nu)}
+  .cm{color:var(--code-cm);font-style:italic}
+  .fn{color:var(--code-fn)}
+  .out{background:#1d1729;color:#c4b5fd;font-family:Consolas,monospace;font-size:13px;padding:12px 20px;border-top:1px solid #352c48}
+  .out b{color:#c9d6cd;font-weight:600;font-size:11.5px;letter-spacing:1px}
+
+  table.styled{width:100%;border-collapse:collapse;margin:20px 0;font-size:13.5px;border-radius:12px;overflow:hidden;box-shadow:0 4px 16px rgba(31,122,68,.07)}
+  table.styled thead{background:var(--brand)}
+  table.styled th{color:#fff;padding:11px 14px;text-align:left;font-weight:700;font-size:13px}
+  table.styled td{padding:10px 14px;border-bottom:1px solid var(--line);color:#57506b;vertical-align:top}
+  table.styled tbody tr:nth-child(even){background:var(--bg-soft)}
+  table.styled tbody tr:last-child td{border-bottom:none}
+
+  .level-card{border:1px solid var(--line);border-radius:16px;overflow:hidden;margin:22px 0;box-shadow:0 6px 22px rgba(31,122,68,.07)}
+  .level-card .lc-head{background:linear-gradient(100deg,#17283a,#8a3a16);color:#fff;padding:15px 22px;display:flex;align-items:center;gap:12px;flex-wrap:wrap}
+  .level-card .lc-head .n{font-size:12px;font-weight:800;background:rgba(255,255,255,.2);padding:3px 10px;border-radius:20px}
+  .level-card .lc-head h4{margin:0;color:#fff;font-size:16px}
+  .level-card .lc-head .go{margin-left:auto;font-size:11.5px;color:#ffd2b3}
+  .level-card .lc-body{padding:20px 24px;background:#fff}
+  .level-card .story{background:#f9fbfd;border-left:4px solid #93c5fd;border-radius:0 10px 10px 0;padding:13px 18px;margin:0 0 16px;font-size:14px;line-height:1.95;color:#3f5163}
+  .level-card .story b{color:#1d4ed8}
+  .btn-go{
+    display:inline-flex;align-items:center;gap:8px;background:linear-gradient(135deg,var(--brand),var(--brand-dark));
+    color:#fff;text-decoration:none;font-weight:800;font-size:13.5px;padding:10px 22px;border-radius:11px;
+    box-shadow:0 8px 20px rgba(255,107,53,.32);transition:.2s;
+  }
+  .btn-go:hover{transform:translateY(-2px);box-shadow:0 12px 26px rgba(255,107,53,.42)}
+
+  .pit{border:1px solid #f6dede;border-radius:14px;overflow:hidden;margin:16px 0;background:#fff}
+  .pit .pt{display:flex;gap:12px;padding:14px 18px;background:#fffafa;align-items:flex-start}
+  .pit .x{width:26px;height:26px;border-radius:9px;background:#fee;color:#dc2626;display:flex;align-items:center;justify-content:center;font-weight:800;flex-shrink:0;font-size:13px}
+  .pit .t{font-size:13.5px;line-height:1.9;color:#5c4a4a;flex:1}
+  .pit .t b{color:#b91c1c}
+  .pit .duck{display:flex;gap:12px;padding:13px 18px;background:#fff5f5;border-top:1px dashed #f3d0d0;align-items:flex-start}
+  .pit .duck img{width:48px;height:48px;object-fit:contain;flex-shrink:0;margin-top:2px}
+  .pit .duck .dt{font-size:13.5px;line-height:1.9;color:#7a3b3b}
+  .pit .duck .dt b{color:#b91c1c}
+  .pit .fix{padding:12px 18px;background:#f7f3ff;border-top:1px dashed #ded1fa;font-size:13.5px;color:#3a2a6b}
+  .pit .fix b{color:var(--primary-dark)}
+
+  .exam{border:1px solid #dfe7f5;border-radius:15px;margin:16px 0;overflow:hidden;background:#fff;box-shadow:0 4px 16px rgba(38,62,120,.06)}
+  .exam .eh{display:flex;align-items:center;gap:10px;padding:11px 18px;background:linear-gradient(100deg,#eef4ff,#f7faff);border-bottom:1px solid #e3ebf8;flex-wrap:wrap}
+  .exam .eh .src{font-size:11px;font-weight:800;color:#fff;background:#2563eb;padding:2.5px 10px;border-radius:20px}
+  .exam .eh .src.ori{background:#8b5cf6}
+  .exam .eh .tp{font-size:11.5px;color:#5b7ba8;font-weight:700}
+  .exam .eb{padding:16px 20px}
+  .exam .q{font-weight:700;font-size:14px;color:#38304b;line-height:1.9;margin-bottom:10px}
+  .exam .opt{font-size:13.5px;color:#6b6480;line-height:2.05;padding-left:6px}
+  .exam .opt i{font-style:normal;font-weight:800;color:var(--primary-dark);margin-right:7px}
+  .exam pre{margin:12px 0;background:#1b2a21;border-radius:10px;padding:14px 16px;overflow-x:auto;font-family:Consolas,monospace;font-size:13px;line-height:1.8;color:var(--code-tx)}
+  .exam details{margin-top:10px;border-top:1px dashed var(--line);padding-top:10px}
+  .exam summary{cursor:pointer;font-size:12.5px;font-weight:800;color:#2563eb;outline:none;user-select:none}
+  .exam details .ans{font-size:13.5px;color:#463d5c;line-height:1.95;margin-top:9px;background:var(--bg-soft);padding:13px 16px;border-radius:10px}
+  .exam details .ans b{color:var(--primary-dark)}
+  .exam details .ans .tagline{display:inline-block;font-size:11px;background:#e0f2fe;color:#0e7490;padding:1.5px 8px;border-radius:6px;font-weight:700;margin-right:6px}
+
+  .summary{margin:40px 0 20px;border-radius:18px;padding:26px 30px;background:linear-gradient(130deg,#fff8f3,#ffffff);border:1px solid #ffe0cf}
+  .summary h3{margin-top:0}
+  .summary ul{list-style:none;margin-top:10px}
+  .summary li{font-size:14px;line-height:2;color:#514a64;padding-left:24px;position:relative}
+  .summary li::before{content:"◆";position:absolute;left:0;color:var(--brand);font-size:11px;top:6px}
+
+  .pager{display:flex;gap:14px;margin-top:30px;flex-wrap:wrap}
+  .pager a{flex:1;min-width:200px;text-decoration:none;border:1px solid var(--line);border-radius:14px;padding:16px 20px;background:#fff;transition:.2s;display:block}
+  .pager a:hover{border-color:var(--brand);box-shadow:0 10px 26px rgba(255,107,53,.14);transform:translateY(-2px)}
+  .pager a .k{font-size:11px;color:var(--dim2);font-weight:700;letter-spacing:1px}
+  .pager a .v{font-size:14px;font-weight:800;color:var(--night);margin-top:5px}
+  .pager a.back{background:var(--brand-soft);border-color:transparent;text-align:center}
+  .pager a.back .v{color:var(--brand-dark)}
+
+  .cta{margin-top:26px;border-radius:20px;padding:30px 34px;color:#fff;position:relative;overflow:hidden;background:linear-gradient(120deg,#16202f,#2b3a52 46%,#a8431c 132%)}
+  .cta::after{content:"";position:absolute;right:-70px;bottom:-90px;width:280px;height:280px;border-radius:50%;background:radial-gradient(circle,rgba(255,140,80,.45),transparent 68%)}
+  .cta h3{color:#fff;margin:0 0 10px;position:relative;z-index:2}
+  .cta h3::before{background:var(--brand)}
+  .cta p{color:#d8e0ef;font-size:13.5px;margin:0 0 18px;position:relative;z-index:2;max-width:640px}
+  .cta .btn-go{position:relative;z-index:2}
+
+  @media(max-width:900px){
+    .sidebar-nav{transform:translateX(-100%)}
+    .sidebar-nav.active{transform:translateX(0)}
+    .nav-toggle{display:block}
+    .page{margin-left:0}
+    .hero{padding:70px 22px 34px}
+    .hero-top{flex-direction:column-reverse;text-align:center}
+    .hero-card{width:auto}
+    .container{padding:26px 20px 60px}
+    .goal-grid{grid-template-columns:1fr}
+  }
+
+  /* ---------- 图形化：积木卡（替代代码卡） ---------- */
+  .blk-card{background:#f8f6ff;border:1px solid #e6e0fb;border-radius:14px;
+    margin:18px 0;overflow:hidden;box-shadow:0 2px 10px rgba(109,40,217,.06)}
+  .blk-head{display:flex;align-items:center;gap:7px;padding:10px 14px;
+    background:#f1ecfe;border-bottom:1px solid #e6e0fb}
+  .blk-head .file{font-size:12.5px;font-weight:700;color:#5b4a86;margin-left:4px}
+  .blk-head .lang{margin-left:auto;font-size:11px;font-weight:800;color:#fff;
+    background:#8b5cf6;border-radius:20px;padding:3px 11px;letter-spacing:.5px}
+  .blk-body{padding:20px 18px;overflow-x:auto;
+    background:
+      radial-gradient(circle at 14px 14px,#ece6fb 1.6px,transparent 1.7px) 0 0/28px 28px,
+      #ffffff}
+  .blk{display:block;max-width:100%;height:auto;margin:0 auto}
+  .blk + .blk{margin-top:16px}
+  .blk-card .out{background:#f1ecfe;border-top:1px solid #e6e0fb;color:#5b4a86}
+  .blk-card .out b{color:#6d28d9}
+  /* 积木并排（不同角色 / 不同做法对照） */
+  .blk-row{display:flex;gap:16px;flex-wrap:wrap;justify-content:center;align-items:flex-start}
+  .blk-row > *{flex:1 1 240px;min-width:0}
+  .blk-row .blk{margin:0}
+  /* 积木旁的小标题 */
+  .blk-cap{font-size:12.5px;font-weight:800;color:#6d28d9;background:#f3efff;
+    border:1px solid #e6e0fb;border-radius:8px;padding:5px 12px;margin:14px 0 10px;
+    display:inline-block}
+</style>
+</head>
+<body>
+
+<button class="nav-toggle" onclick="document.querySelector('.sidebar-nav').classList.toggle('active')">&#9776;</button>
+
+<nav class="sidebar-nav">
+  <div class="sb-brand">
+    <a class="sb-logo" href="https://codecombat.cn/" target="_blank" rel="noopener" title="访问 CodeCombat 扣哒世界官网">
+      <img src="../assets/logo.png" alt="CodeCombat 扣哒世界">
+    </a>
+    <div><b>算盘小铺</b><span>彩虹集市 · 图形化二级 第 7 单元</span></div>
+  </div>
+  <div class="nav-title">本单元目录</div>
+
+  <a href="#s0" class="nav-section">0　单元导语与目标</a>
+  <a href="#s0-1" class="nav-sub">0.1 学习目标</a>
+  <a href="#s0-2" class="nav-sub">0.2 考纲对照</a>
+  <a href="#s1" class="nav-section">1　算术运算</a>
+  <a href="#s1-1" class="nav-sub">1.1 加减乘除</a>
+  <a href="#s1-2" class="nav-sub">1.2 取整与求余</a>
+  <a href="#s1-3" class="nav-sub">1.3 随机数</a>
+  <a href="#s2" class="nav-section">2　关系运算</a>
+  <a href="#s2-1" class="nav-sub">2.1 大于、小于、等于</a>
+  <a href="#s2-2" class="nav-sub">2.2 关系运算的结果是"成立 / 不成立"</a>
+  <a href="#s3" class="nav-section">3　逻辑运算</a>
+  <a href="#s3-1" class="nav-sub">3.1 与：两个都要</a>
+  <a href="#s3-2" class="nav-sub">3.2 或：有一个就行</a>
+  <a href="#s3-3" class="nav-sub">3.3 不成立：把结果反过来</a>
+  <a href="#s4" class="nav-section">4　写出筛选条件</a>
+  <a href="#s4-1" class="nav-sub">4.1 把中文翻译成积木</a>
+  <a href="#s4-2" class="nav-sub">4.2 组合条件</a>
+  <a href="#s5" class="nav-section">5　代码实战</a>
+  <a href="#s6" class="nav-section">6　常见陷阱</a>
+  <a href="#s7" class="nav-section">7　题目练习</a>
+  <a href="#s8" class="nav-section">8　本单元小结</a>
+
+  <a href="../index.html" target="_top" class="sb-back">返回考纲之路</a>
+</nav>
+
+<div class="page">
+
+<div class="hero">
+  <div class="hero-top">
+    <div class="hero-txt">
+      <div class="crumb">扣哒考级 · GESP 图形化 二级 · 第 7 单元　|　彩虹集市 RAINBOW BAZAAR</div>
+      <h1>算盘小铺
+        <span class="sub">数据运算与逻辑判断</span>
+      </h1>
+      <div class="en">Arithmetic and Logic</div>
+      <div class="tags">        <span class="tag hot">考纲 · 数据运算</span>
+        <span class="tag">关系运算</span>
+        <span class="tag">逻辑运算</span>
+        <span class="tag">筛选条件</span></div>
+    </div>
+    <div class="hero-card">
+      <img class="ava" src="../assets/avatars/anya.webp" alt="安雅" onerror="this.style.background='#24344a';this.src='../assets/heroes/anya.webp'">
+      <div class="nm">安雅</div>
+      <div class="ti">红发队长 · 你的旅伴</div>
+    </div>
+  </div>
+</div>
+
+<div class="container">
+
+
+<div class="lead">
+  集市最里头是一间小铺，柜台上摊着一把比人还大的算盘，珠子一碰就发光。<br>
+  摊主把算盘推到你面前："<b>加减乘除在这里，比大小也在这里，连"是不是红色的"这种话，也能算出来。</b>"<br>
+  你拨了一下珠子——原来编程里的"思考"，都是这些绿色小积木在干活。
+</div>
+
+<div class="cast anya">
+  <img class="ava" src="../assets/avatars/anya.webp" alt="安雅" onerror="this.style.display='none'">
+  <div class="bubble">
+    <div class="who">安雅 · 红发队长</div>
+    这是二级的收口章。三组运算要分清：<b>算术（算出一个数）、关系（比出对错）、逻辑（连起条件）</b>。<br>
+    考试最爱出"把一句中文翻译成条件"的题——记住口诀：<b>都→与、有一个→或、不→不成立</b>。
+  </div>
+</div>
+
+<!-- ============ 0 ============ -->
+<div class="section-header" id="s0">
+  <h2>0　单元导语与目标</h2>
+  <div class="en-title">Before We Start</div>
+</div>
+
+<h3 id="s0-1">0.1 学习目标</h3>
+
+<ul>
+  <li>掌握<b>算术运算</b>：加、减、乘、除、取整、求余、随机数；</li>
+  <li>掌握<b>关系运算</b>：大于、小于、等于，并知道它的结果是"成立 / 不成立"；</li>
+  <li>掌握<b>逻辑运算</b>：与、或、不成立，能把简单条件组合成复杂条件；</li>
+  <li>能把一句中文要求（如"数量大于 0 且不是红色的"）翻译成积木条件；</li>
+  <li>会用运算积木给角色"打分"、判断"该不该做"。 </li>
+</ul>
+<h3 id="s0-2">0.2 考纲对照</h3>
+
+<table class="styled">
+  <thead><tr><th>考纲知识块</th><th>考纲要求</th><th>本单元小节</th></tr></thead>
+  <tbody><tr><td>7 数据运算</td><td>随机数；算术运算</td><td>1.1～1.3</td></tr><tr><td>8 逻辑推理 / 编程数学</td><td>关系运算、逻辑运算；判断条件的逻辑关系、逻辑推理</td><td>2.1～2.2、3.1～3.3</td></tr><tr><td>（知识点详述第 11 条）</td><td>掌握算术运算、逻辑运算、关系运算，并能够熟练应用，可针对简单问题写出对应的筛选条件</td><td>4.1～4.2</td></tr></tbody>
+</table>
+
+<p>这一单元是二级的"收口章"：<b>把前面所有积木里"需要算一算、比一比"的部分讲透</b>。'
+'它也是逻辑推理题的题库来源。</p>
+
+<!-- ============ 1 ============ -->
+<div class="section-header" id="s1">
+  <h2>1　算术运算</h2>
+  <div class="en-title">Arithmetic</div>
+</div>
+
+<h3 id="s1-1">1.1 加减乘除</h3>
+
+<p>算盘小铺的柜台后面挂着一把超大的算盘，珠子会发光。摊主说：
+"<b>所有要算的数字，都能塞进这几把绿色的小积木里。</b>"</p>
+<figure class="pic">
+  <img src="../assets/illustrations/scratch-L2-07-01_abacus_math.webp" alt="算盘小铺"
+       onerror="this.closest('.pic').classList.add('missing')">
+  <div class="ph">
+    <div class="fn">assets/illustrations/scratch-L2-07-01_abacus_math.webp</div>
+    <div class="ds">【配图位】一把超大的商铺算盘，算珠发光，上方浮着 + - * / 与比较符号。（提示词见《GESP配图清单与AI绘图提示词》第四节 2-7）</div>
+  </div>
+  <figcaption>图 1：算盘小铺——所有运算都在这里</figcaption>
+</figure>
+
+<div class="blk-card">
+  <div class="blk-head">
+    <span class="dot d1"></span><span class="dot d2"></span><span class="dot d3"></span>
+    <span class="file">重点示例：四则运算</span>
+    <span class="lang">图形化积木</span>
+  </div>
+  <div class="blk-body">
+<svg class="blk" viewBox="0 0 138 166" width="138" height="166" role="img" aria-label="积木脚本"><g font-family="'PingFang SC','Microsoft YaHei','Noto Sans SC',sans-serif"><g transform="translate(3,3)"><path d="M0,5 A5,5 0 0 1 5,0 H16 v4 h12 v-4 H120 A5,5 0 0 1 125,5 V31 A5,5 0 0 1 120,36 H28 v4 h-12 v-4 H5 A5,5 0 0 1 0,31 Z" fill="#59C059" stroke="#489d48" stroke-width="1.2"/><rect x="15" y="6.5" width="30" height="23" rx="11.5" fill="#fff"/><text x="30" y="22.4" font-size="12.5" fill="#575e75" text-anchor="middle">3</text><text x="52" y="22.8" font-size="13.4" fill="#fff"> + </text><rect x="80.6" y="6.5" width="30" height="23" rx="11.5" fill="#fff"/><text x="95.6" y="22.4" font-size="12.5" fill="#575e75" text-anchor="middle">5</text></g><g transform="translate(3,43)"><path d="M0,5 A5,5 0 0 1 5,0 H16 v4 h12 v-4 H127 A5,5 0 0 1 132,5 V31 A5,5 0 0 1 127,36 H28 v4 h-12 v-4 H5 A5,5 0 0 1 0,31 Z" fill="#59C059" stroke="#489d48" stroke-width="1.2"/><rect x="15" y="6.5" width="36.4" height="23" rx="11.5" fill="#fff"/><text x="33.2" y="22.4" font-size="12.5" fill="#575e75" text-anchor="middle">10</text><text x="58.4" y="22.8" font-size="13.4" fill="#fff"> - </text><rect x="87" y="6.5" width="30" height="23" rx="11.5" fill="#fff"/><text x="102" y="22.4" font-size="12.5" fill="#575e75" text-anchor="middle">4</text></g><g transform="translate(3,83)"><path d="M0,5 A5,5 0 0 1 5,0 H16 v4 h12 v-4 H120 A5,5 0 0 1 125,5 V31 A5,5 0 0 1 120,36 H28 v4 h-12 v-4 H5 A5,5 0 0 1 0,31 Z" fill="#59C059" stroke="#489d48" stroke-width="1.2"/><rect x="15" y="6.5" width="30" height="23" rx="11.5" fill="#fff"/><text x="30" y="22.4" font-size="12.5" fill="#575e75" text-anchor="middle">6</text><text x="52" y="22.8" font-size="13.4" fill="#fff"> * </text><rect x="80.6" y="6.5" width="30" height="23" rx="11.5" fill="#fff"/><text x="95.6" y="22.4" font-size="12.5" fill="#575e75" text-anchor="middle">7</text></g><g transform="translate(3,123)"><path d="M0,5 A5,5 0 0 1 5,0 H16 v4 h12 v-4 H127 A5,5 0 0 1 132,5 V31 A5,5 0 0 1 127,36 H28 v4 h-12 v-4 H5 A5,5 0 0 1 0,31 Z" fill="#59C059" stroke="#489d48" stroke-width="1.2"/><rect x="15" y="6.5" width="36.4" height="23" rx="11.5" fill="#fff"/><text x="33.2" y="22.4" font-size="12.5" fill="#575e75" text-anchor="middle">20</text><text x="58.4" y="22.8" font-size="13.4" fill="#fff"> / </text><rect x="87" y="6.5" width="30" height="23" rx="11.5" fill="#fff"/><text x="102" y="22.4" font-size="12.5" fill="#575e75" text-anchor="middle">4</text></g></g></svg>
+  </div>
+  <div class="out"><b>要点</b>　运算积木是"值"——它能塞进任何白色的小框里，也能套在别的运算里算得更复杂</div>
+</div>
+
+<h3 id="s1-2">1.2 取整与求余</h3>
+
+<figure class="figure">
+<svg class="diagram" viewBox="0 0 820 134" role="img" aria-label="两块容易被忽略的运算">
+<text x="24" y="32" font-size="14" fill="#4c1d95" text-anchor="start" font-weight="bold">两块容易被忽略的运算</text><rect x="24" y="56" width="772" height="28" rx="8" fill="#f3efff"/><text x="40" y="75" font-size="12.6" fill="#6d28d9" text-anchor="start" font-weight="bold">取整（向下取整）</text><text x="192" y="75" font-size="12.2" fill="#4c1d95" text-anchor="start">把小数变成比它小的最大整数：5.7 → 5，-1.2 → -2</text><rect x="24" y="90" width="772" height="28" rx="8" fill="#faf8ff"/><text x="40" y="109" font-size="12.6" fill="#6d28d9" text-anchor="start" font-weight="bold">求余（相除的余数）</text><text x="192" y="109" font-size="12.2" fill="#4c1d95" text-anchor="start">两个数相除剩下的部分：7 ÷ 3 余 1</text>
+</svg>
+  <div class="caption">图 2（SVG）：取整与求余</div>
+</figure>
+
+<div class="box info">
+  <span class="lb">求余最常用的一个用法：</span>判断"能不能被整除"。<code class="inline">n 除以 2 的余数 = 0</code> 就说明 n 是偶数。<br>同理，"除以 3 的余数 = 0"就说明 n 能被 3 整除——这类题在考卷上出现得非常多。
+</div>
+
+
+<h3 id="s1-3">1.3 随机数</h3>
+
+<div class="blk-card">
+  <div class="blk-head">
+    <span class="dot d1"></span><span class="dot d2"></span><span class="dot d3"></span>
+    <span class="file">重点示例：随机数的两种用法</span>
+    <span class="lang">图形化积木</span>
+  </div>
+  <div class="blk-body">
+<svg class="blk" viewBox="0 0 451.8 86" width="451.8" height="86" role="img" aria-label="积木脚本"><g font-family="'PingFang SC','Microsoft YaHei','Noto Sans SC',sans-serif"><g transform="translate(3,3)"><path d="M0,5 A5,5 0 0 1 5,0 H16 v4 h12 v-4 H249 A5,5 0 0 1 254,5 V31 A5,5 0 0 1 249,36 H28 v4 h-12 v-4 H5 A5,5 0 0 1 0,31 Z" fill="#59C059" stroke="#489d48" stroke-width="1.2"/><text x="15" y="22.8" font-size="13.4" fill="#fff">在 </text><rect x="42.6" y="6.5" width="30" height="23" rx="11.5" fill="#fff"/><text x="57.6" y="22.4" font-size="12.5" fill="#575e75" text-anchor="middle">1</text><text x="79.6" y="22.8" font-size="13.4" fill="#fff"> 和 </text><rect x="114.4" y="6.5" width="30" height="23" rx="11.5" fill="#fff"/><text x="129.4" y="22.4" font-size="12.5" fill="#575e75" text-anchor="middle">6</text><text x="151.4" y="22.8" font-size="13.4" fill="#fff"> 之间取随机数</text></g><g transform="translate(3,43)"><path d="M0,5 A5,5 0 0 1 5,0 H16 v4 h12 v-4 H440 A5,5 0 0 1 445,5 V31 A5,5 0 0 1 440,36 H28 v4 h-12 v-4 H5 A5,5 0 0 1 0,31 Z" fill="#4C97FF" stroke="#3e7bd1" stroke-width="1.2"/><text x="15" y="22.8" font-size="13.4" fill="#fff">移到 x: </text><polygon points="89.1,6.5 346.5,6.5 352.825,18 346.5,29.5 89.1,29.5 82.775,18" fill="#fff" stroke="#4C97FF" stroke-width="1.4"/><text x="88.6" y="22.8" font-size="13.4" fill="#575e75">在 </text><rect x="116.2" y="6.5" width="50.8" height="23" rx="11.5" fill="#fff" stroke="#cfd6e4" stroke-width="1"/><text x="141.6" y="22.4" font-size="12.5" fill="#575e75" text-anchor="middle">-200</text><text x="174" y="22.8" font-size="13.4" fill="#575e75"> 和 </text><rect x="208.8" y="6.5" width="43.6" height="23" rx="11.5" fill="#fff" stroke="#cfd6e4" stroke-width="1"/><text x="230.6" y="22.4" font-size="12.5" fill="#575e75" text-anchor="middle">200</text><text x="259.4" y="22.8" font-size="13.4" fill="#575e75"> 之间取随机数</text><text x="365" y="22.8" font-size="13.4" fill="#fff"> y: </text><rect x="400.8" y="6.5" width="30" height="23" rx="11.5" fill="#fff"/><text x="415.8" y="22.4" font-size="12.5" fill="#575e75" text-anchor="middle">0</text></g></g></svg>
+  </div>
+  <div class="out"><b>要点</b>　随机数会返回范围内<b>任意一个整数</b>（两个端点都可能被抽到）；范围可以填负数</div>
+</div>
+
+<div class="box tip">
+  <span class="lb">打个比方：</span>随机数就像掷骰子——<b>"在 1 和 6 之间取随机数"就是扔一枚六面骰</b>。每次结果不同，程序就有了"变化"的味道。
+</div>
+
+<!-- ============ 2 ============ -->
+<div class="section-header" id="s2">
+  <h2>2　关系运算</h2>
+  <div class="en-title">Comparison</div>
+</div>
+
+<h3 id="s2-1">2.1 大于、小于、等于</h3>
+
+<div class="blk-card">
+  <div class="blk-head">
+    <span class="dot d1"></span><span class="dot d2"></span><span class="dot d3"></span>
+    <span class="file">重点示例：三块比较积木</span>
+    <span class="lang">图形化积木</span>
+  </div>
+  <div class="blk-body">
+<svg class="blk" viewBox="0 0 131.6 126" width="131.6" height="126" role="img" aria-label="积木脚本"><g font-family="'PingFang SC','Microsoft YaHei','Noto Sans SC',sans-serif"><g transform="translate(3,3)"><path d="M0,5 A5,5 0 0 1 5,0 H16 v4 h12 v-4 H120 A5,5 0 0 1 125,5 V31 A5,5 0 0 1 120,36 H28 v4 h-12 v-4 H5 A5,5 0 0 1 0,31 Z" fill="#59C059" stroke="#489d48" stroke-width="1.2"/><rect x="15" y="6.5" width="30" height="23" rx="11.5" fill="#fff"/><text x="30" y="22.4" font-size="12.5" fill="#575e75" text-anchor="middle">x</text><text x="52" y="22.8" font-size="13.4" fill="#fff"> &gt; </text><rect x="80.6" y="6.5" width="30" height="23" rx="11.5" fill="#fff"/><text x="95.6" y="22.4" font-size="12.5" fill="#575e75" text-anchor="middle">y</text></g><g transform="translate(3,43)"><path d="M0,5 A5,5 0 0 1 5,0 H16 v4 h12 v-4 H120 A5,5 0 0 1 125,5 V31 A5,5 0 0 1 120,36 H28 v4 h-12 v-4 H5 A5,5 0 0 1 0,31 Z" fill="#59C059" stroke="#489d48" stroke-width="1.2"/><rect x="15" y="6.5" width="30" height="23" rx="11.5" fill="#fff"/><text x="30" y="22.4" font-size="12.5" fill="#575e75" text-anchor="middle">x</text><text x="52" y="22.8" font-size="13.4" fill="#fff"> &lt; </text><rect x="80.6" y="6.5" width="30" height="23" rx="11.5" fill="#fff"/><text x="95.6" y="22.4" font-size="12.5" fill="#575e75" text-anchor="middle">y</text></g><g transform="translate(3,83)"><path d="M0,5 A5,5 0 0 1 5,0 H16 v4 h12 v-4 H120 A5,5 0 0 1 125,5 V31 A5,5 0 0 1 120,36 H28 v4 h-12 v-4 H5 A5,5 0 0 1 0,31 Z" fill="#59C059" stroke="#489d48" stroke-width="1.2"/><rect x="15" y="6.5" width="30" height="23" rx="11.5" fill="#fff"/><text x="30" y="22.4" font-size="12.5" fill="#575e75" text-anchor="middle">x</text><text x="52" y="22.8" font-size="13.4" fill="#fff"> = </text><rect x="80.6" y="6.5" width="30" height="23" rx="11.5" fill="#fff"/><text x="95.6" y="22.4" font-size="12.5" fill="#575e75" text-anchor="middle">y</text></g></g></svg>
+  </div>
+  <div class="out"><b>要点</b>　两边可以放数字、变量、随机数，甚至别的运算结果；它们都是<b>六边形</b></div>
+</div>
+
+<h3 id="s2-2">2.2 关系运算的结果是"成立 / 不成立"</h3>
+
+<figure class="figure">
+<svg class="diagram" viewBox="0 0 820 210" role="img" aria-label="算出来的是"值"，比出来的是"对错"">
+<text x="24" y="32" font-size="14" fill="#4c1d95" text-anchor="start" font-weight="bold">算出来的是"值"，比出来的是"对错"</text><rect x="24" y="52" width="376" height="130" rx="12" fill="#f5f3ff" stroke="#e6e0fb" stroke-width="1.8"/><text x="212" y="82" font-size="13.5" fill="#6d28d9" text-anchor="middle" font-weight="bold">算术运算（绿色椭圆）</text><circle cx="40" cy="106" r="3.4" fill="#6d28d9"/><text x="52" y="110" font-size="12.2" fill="#4c1d95" text-anchor="start">算出来是一个数：3 + 5 = 8</text><circle cx="40" cy="136" r="3.4" fill="#6d28d9"/><text x="52" y="140" font-size="12.2" fill="#4c1d95" text-anchor="start">能塞进任何"要填数字"的地方</text><rect x="420" y="52" width="376" height="130" rx="12" fill="#fff7ed" stroke="#e6e0fb" stroke-width="1.8"/><text x="608" y="82" font-size="13.5" fill="#b45309" text-anchor="middle" font-weight="bold">关系运算（绿色六边形）</text><circle cx="436" cy="106" r="3.4" fill="#b45309"/><text x="448" y="110" font-size="12.2" fill="#4c1d95" text-anchor="start">比出来是"成立 / 不成立"</text><circle cx="436" cy="136" r="3.4" fill="#b45309"/><text x="448" y="140" font-size="12.2" fill="#4c1d95" text-anchor="start">只能塞进六边形的条件槽</text><text x="24" y="196" font-size="11.8" fill="#8d9d94" text-anchor="start">形状不一样，能去的地方就不一样——还是那条老规矩</text>
+</svg>
+  <div class="caption">图 3（SVG）：两种运算的区别</div>
+</figure>
+
+<div class="box info">
+  <span class="lb">一句话记住：</span><b>算术运算的结果是"一个数"，关系运算的结果是"一句话"</b>（成立或不成立）。所以关系运算天生就是用来当条件的。
+</div>
+
+<!-- ============ 3 ============ -->
+<div class="section-header" id="s3">
+  <h2>3　逻辑运算</h2>
+  <div class="en-title">Logic</div>
+</div>
+
+<h3 id="s3-1">3.1 与：两个都要</h3>
+
+<div class="blk-card">
+  <div class="blk-head">
+    <span class="dot d1"></span><span class="dot d2"></span><span class="dot d3"></span>
+    <span class="file">重点示例：价格合适而且我还买得起</span>
+    <span class="lang">图形化积木</span>
+  </div>
+  <div class="blk-body">
+<svg class="blk" viewBox="0 0 383 46" width="383" height="46" role="img" aria-label="积木脚本"><g font-family="'PingFang SC','Microsoft YaHei','Noto Sans SC',sans-serif"><g transform="translate(3,3)"><path d="M0,5 A5,5 0 0 1 5,0 H16 v4 h12 v-4 H372 A5,5 0 0 1 377,5 V31 A5,5 0 0 1 372,36 H28 v4 h-12 v-4 H5 A5,5 0 0 1 0,31 Z" fill="#59C059" stroke="#489d48" stroke-width="1.2"/><polygon points="26.5,6.5 153.5,6.5 159.825,18 153.5,29.5 26.5,29.5 20.175,18" fill="#fff" stroke="#59C059" stroke-width="1.4"/><rect x="26" y="6.5" width="48.8" height="23" rx="11.5" fill="#fff" stroke="#cfd6e4" stroke-width="1"/><text x="50.4" y="22.4" font-size="12.5" fill="#575e75" text-anchor="middle">价格</text><text x="81.8" y="22.8" font-size="13.4" fill="#575e75"> &lt; </text><rect x="110.4" y="6.5" width="43.6" height="23" rx="11.5" fill="#fff" stroke="#cfd6e4" stroke-width="1"/><text x="132.2" y="22.4" font-size="12.5" fill="#575e75" text-anchor="middle">100</text><text x="172" y="22.8" font-size="13.4" fill="#fff"> 且 </text><polygon points="218.3,6.5 350.5,6.5 356.825,18 350.5,29.5 218.3,29.5 211.975,18" fill="#fff" stroke="#59C059" stroke-width="1.4"/><rect x="217.8" y="6.5" width="48.8" height="23" rx="11.5" fill="#fff" stroke="#cfd6e4" stroke-width="1"/><text x="242.2" y="22.4" font-size="12.5" fill="#575e75" text-anchor="middle">钱包</text><text x="273.6" y="22.8" font-size="13.4" fill="#575e75"> &gt; </text><rect x="302.2" y="6.5" width="48.8" height="23" rx="11.5" fill="#fff" stroke="#cfd6e4" stroke-width="1"/><text x="326.6" y="22.4" font-size="12.5" fill="#575e75" text-anchor="middle">价格</text></g></g></svg>
+  </div>
+  <div class="out"><b>要点</b>　"与"两边必须<b>同时成立</b>，整个条件才成立；只要有一边不成立，结果就不成立</div>
+</div>
+
+<h3 id="s3-2">3.2 或：有一个就行</h3>
+
+<div class="blk-card">
+  <div class="blk-head">
+    <span class="dot d1"></span><span class="dot d2"></span><span class="dot d3"></span>
+    <span class="file">重点示例：现金或者刷卡都行</span>
+    <span class="lang">图形化积木</span>
+  </div>
+  <div class="blk-body">
+<svg class="blk" viewBox="0 0 404.6 46" width="404.6" height="46" role="img" aria-label="积木脚本"><g font-family="'PingFang SC','Microsoft YaHei','Noto Sans SC',sans-serif"><g transform="translate(3,3)"><path d="M0,5 A5,5 0 0 1 5,0 H16 v4 h12 v-4 H393 A5,5 0 0 1 398,5 V31 A5,5 0 0 1 393,36 H28 v4 h-12 v-4 H5 A5,5 0 0 1 0,31 Z" fill="#59C059" stroke="#489d48" stroke-width="1.2"/><polygon points="26.5,6.5 153.5,6.5 159.825,18 153.5,29.5 26.5,29.5 20.175,18" fill="#fff" stroke="#59C059" stroke-width="1.4"/><rect x="26" y="6.5" width="48.8" height="23" rx="11.5" fill="#fff" stroke="#cfd6e4" stroke-width="1"/><text x="50.4" y="22.4" font-size="12.5" fill="#575e75" text-anchor="middle">现金</text><text x="81.8" y="22.8" font-size="13.4" fill="#575e75"> &gt; </text><rect x="110.4" y="6.5" width="43.6" height="23" rx="11.5" fill="#fff" stroke="#cfd6e4" stroke-width="1"/><text x="132.2" y="22.4" font-size="12.5" fill="#575e75" text-anchor="middle">100</text><text x="172" y="22.8" font-size="13.4" fill="#fff"> 或 </text><polygon points="218.3,6.5 372.1,6.5 378.425,18 372.1,29.5 218.3,29.5 211.975,18" fill="#fff" stroke="#59C059" stroke-width="1.4"/><rect x="217.8" y="6.5" width="75.6" height="23" rx="11.5" fill="#fff" stroke="#cfd6e4" stroke-width="1"/><text x="255.6" y="22.4" font-size="12.5" fill="#575e75" text-anchor="middle">卡里余额</text><text x="300.4" y="22.8" font-size="13.4" fill="#575e75"> &gt; </text><rect x="329" y="6.5" width="43.6" height="23" rx="11.5" fill="#fff" stroke="#cfd6e4" stroke-width="1"/><text x="350.8" y="22.4" font-size="12.5" fill="#575e75" text-anchor="middle">100</text></g></g></svg>
+  </div>
+  <div class="out"><b>要点</b>　"或"两边<b>只要有一边成立</b>，整个条件就成立；两边都不成立时才不成立</div>
+</div>
+
+<h3 id="s3-3">3.3 不成立：把结果反过来</h3>
+
+<div class="blk-card">
+  <div class="blk-head">
+    <span class="dot d1"></span><span class="dot d2"></span><span class="dot d3"></span>
+    <span class="file">重点示例：不是红色的就要</span>
+    <span class="lang">图形化积木</span>
+  </div>
+  <div class="blk-body">
+<svg class="blk" viewBox="0 0 227.6 86" width="227.6" height="86" role="img" aria-label="积木脚本"><g font-family="'PingFang SC','Microsoft YaHei','Noto Sans SC',sans-serif"><g transform="translate(3,3)"><path d="M0,5 A5,5 0 0 1 5,0 H16 v4 h12 v-4 H216 A5,5 0 0 1 221,5 V31 A5,5 0 0 1 216,36 H28 v4 h-12 v-4 H5 A5,5 0 0 1 0,31 Z" fill="#59C059" stroke="#489d48" stroke-width="1.2"/><text x="15" y="22.8" font-size="13.4" fill="#fff">不成立 </text><polygon points="80.9,6.5 195.1,6.5 201.425,18 195.1,29.5 80.9,29.5 74.575,18" fill="#fff" stroke="#59C059" stroke-width="1.4"/><text x="80.4" y="22.8" font-size="13.4" fill="#575e75">碰到颜色 </text><rect x="148.2" y="6.5" width="26" height="23" rx="5" fill="#ff0000" stroke="#ffffff" stroke-width="1.6"/><text x="181.2" y="22.8" font-size="13.4" fill="#575e75"> ?</text></g><g transform="translate(3,43)"><path d="M0,5 A5,5 0 0 1 5,0 H16 v4 h12 v-4 H215 A5,5 0 0 1 220,5 V31 A5,5 0 0 1 215,36 H28 v4 h-12 v-4 H5 A5,5 0 0 1 0,31 Z" fill="#59C059" stroke="#489d48" stroke-width="1.2"/><text x="15" y="22.8" font-size="13.4" fill="#fff">不成立 </text><polygon points="80.9,6.5 194.3,6.5 200.625,18 194.3,29.5 80.9,29.5 74.575,18" fill="#fff" stroke="#59C059" stroke-width="1.4"/><rect x="80.4" y="6.5" width="48.8" height="23" rx="11.5" fill="#fff" stroke="#cfd6e4" stroke-width="1"/><text x="104.8" y="22.4" font-size="12.5" fill="#575e75" text-anchor="middle">数量</text><text x="136.2" y="22.8" font-size="13.4" fill="#575e75"> = </text><rect x="164.8" y="6.5" width="30" height="23" rx="11.5" fill="#fff" stroke="#cfd6e4" stroke-width="1"/><text x="179.8" y="22.4" font-size="12.5" fill="#575e75" text-anchor="middle">0</text></g></g></svg>
+  </div>
+  <div class="out"><b>要点</b>　"不成立"只接一个条件，把它反过来：成立变不成立，不成立变成立</div>
+</div>
+
+<div class="box tip">
+  <span class="lb">打个比方：</span><b>与</b>像"两把锁都开才进门"；<b>或</b>像"带哪把钥匙都能进"；<b>不成立</b>像"把牌子翻个面"——正面写"是"，反面就写"否"。
+</div>
+
+<!-- ============ 4 ============ -->
+<div class="section-header" id="s4">
+  <h2>4　写出筛选条件</h2>
+  <div class="en-title">Writing Conditions</div>
+</div>
+
+<h3 id="s4-1">4.1 把中文翻译成积木</h3>
+
+<figure class="pic">
+  <img src="../assets/illustrations/scratch-L2-07-02_logic_gates_stall.webp" alt="三道逻辑关卡"
+       onerror="this.closest('.pic').classList.add('missing')">
+  <div class="ph">
+    <div class="fn">assets/illustrations/scratch-L2-07-02_logic_gates_stall.webp</div>
+    <div class="ds">【配图位】集市的三个关卡——一个要两把锁都开才通过（与）、一个任一把开就通过（或）、一个要牌子没被翻面才通过（非），一只猫逐个试。（提示词见《GESP配图清单与AI绘图提示词》第四节 2-7）</div>
+  </div>
+  <figcaption>图 4：与、或、非三道关卡</figcaption>
+</figure>
+
+<figure class="figure">
+<svg class="diagram" viewBox="0 0 820 236" role="img" aria-label="中文到积木的翻译表">
+<text x="24" y="32" font-size="14" fill="#4c1d95" text-anchor="start" font-weight="bold">中文到积木的翻译表</text><rect x="24" y="56" width="772" height="28" rx="8" fill="#f3efff"/><text x="40" y="75" font-size="12.6" fill="#6d28d9" text-anchor="start" font-weight="bold">"A 和 B 都要满足"</text><text x="192" y="75" font-size="12.2" fill="#4c1d95" text-anchor="start">A 且 B</text><rect x="24" y="90" width="772" height="28" rx="8" fill="#faf8ff"/><text x="40" y="109" font-size="12.6" fill="#6d28d9" text-anchor="start" font-weight="bold">"A 或者 B 满足一个就行"</text><text x="192" y="109" font-size="12.2" fill="#4c1d95" text-anchor="start">A 或 B</text><rect x="24" y="124" width="772" height="28" rx="8" fill="#f3efff"/><text x="40" y="143" font-size="12.6" fill="#6d28d9" text-anchor="start" font-weight="bold">"不能是 A"</text><text x="192" y="143" font-size="12.2" fill="#4c1d95" text-anchor="start">不成立 A</text><rect x="24" y="158" width="772" height="28" rx="8" fill="#faf8ff"/><text x="40" y="177" font-size="12.6" fill="#6d28d9" text-anchor="start" font-weight="bold">"数字比 10 大"</text><text x="192" y="177" font-size="12.2" fill="#4c1d95" text-anchor="start">数字 &gt; 10</text><rect x="24" y="192" width="772" height="28" rx="8" fill="#f3efff"/><text x="40" y="211" font-size="12.6" fill="#6d28d9" text-anchor="start" font-weight="bold">"不是 0"</text><text x="192" y="211" font-size="12.2" fill="#4c1d95" text-anchor="start">数字 ≠ 0（或用"不成立 数字 = 0"）</text>
+</svg>
+  <div class="caption">图 5（SVG）：中文条件的翻译表</div>
+</figure>
+
+<h3 id="s4-2">4.2 组合条件</h3>
+
+<div class="blk-card">
+  <div class="blk-head">
+    <span class="dot d1"></span><span class="dot d2"></span><span class="dot d3"></span>
+    <span class="file">重点示例：一个稍微复杂的筛选条件</span>
+    <span class="lang">图形化积木</span>
+  </div>
+  <div class="blk-body">
+<svg class="blk" viewBox="0 0 441.8 46" width="441.8" height="46" role="img" aria-label="积木脚本"><g font-family="'PingFang SC','Microsoft YaHei','Noto Sans SC',sans-serif"><g transform="translate(3,3)"><path d="M0,5 A5,5 0 0 1 5,0 H16 v4 h12 v-4 H430 A5,5 0 0 1 435,5 V31 A5,5 0 0 1 430,36 H28 v4 h-12 v-4 H5 A5,5 0 0 1 0,31 Z" fill="#59C059" stroke="#489d48" stroke-width="1.2"/><polygon points="26.5,6.5 139.9,6.5 146.225,18 139.9,29.5 26.5,29.5 20.175,18" fill="#fff" stroke="#59C059" stroke-width="1.4"/><rect x="26" y="6.5" width="48.8" height="23" rx="11.5" fill="#fff" stroke="#cfd6e4" stroke-width="1"/><text x="50.4" y="22.4" font-size="12.5" fill="#575e75" text-anchor="middle">数量</text><text x="81.8" y="22.8" font-size="13.4" fill="#575e75"> &gt; </text><rect x="110.4" y="6.5" width="30" height="23" rx="11.5" fill="#fff" stroke="#cfd6e4" stroke-width="1"/><text x="125.4" y="22.4" font-size="12.5" fill="#575e75" text-anchor="middle">0</text><text x="158.4" y="22.8" font-size="13.4" fill="#fff"> 且 </text><polygon points="204.7,6.5 409.3,6.5 415.625,18 409.3,29.5 204.7,29.5 198.375,18" fill="#fff" stroke="#59C059" stroke-width="1.4"/><text x="204.2" y="22.8" font-size="13.4" fill="#575e75">不成立 </text><polygon points="270.1,6.5 398.3,6.5 404.625,18 398.3,29.5 270.1,29.5 263.775,18" fill="#fff" stroke="#59C059" stroke-width="1.4"/><rect x="269.6" y="6.5" width="48.8" height="23" rx="11.5" fill="#fff" stroke="#cfd6e4" stroke-width="1"/><text x="294" y="22.4" font-size="12.5" fill="#575e75" text-anchor="middle">颜色</text><text x="325.4" y="22.8" font-size="13.4" fill="#575e75"> = </text><rect x="354" y="6.5" width="44.8" height="23" rx="5" fill="#fff" stroke="#cfd6e4" stroke-width="1"/><text x="376.4" y="22.4" font-size="12.5" fill="#575e75" text-anchor="middle">红色</text></g></g></svg>
+  </div>
+  <div class="out"><b>读法</b>　中文是"数量大于 0，而且颜色不是红色"——外层用"与"，里面套一个"不成立"</div>
+</div>
+
+<div class="box info">
+  <span class="lb">逻辑推理题的做题顺序：</span>① 把中文拆成几个小条件；<br>② 判断这几个小条件之间是"都要"还是"有一个就行"；<br>③ 分别是"都要"就用<b>与</b>，是"有一个就行"就用<b>或</b>；<br>④ 有"不"字的，用<b>不成立</b>包起来。
+</div>
+
+<!-- ============ 5 ============ -->
+<div class="section-header" id="s5">
+  <h2>5　代码实战</h2>
+  <div class="en-title">Level Practice</div>
+</div>
+
+<p>这一关要靠"比较"来决定做什么：<b>左右两边的东西一样不一样？</b>'
+'——这正是关系运算最典型的用法。</p>
+<div class="level-card">
+  <div class="lc-head"><span class="n">关卡 110</span><h4>等于（Equals）</h4><span class="go">进入关卡 →</span></div>
+  <div class="lc-body">
+    <div class="story">
+      <b>故事：</b>
+集市两边各有一排货架，上面的东西有时候是货、有时候是空位。
+你要一路往上走，每走一格就<b>左右各看一眼</b>：
+左边是货就处理左边，右边是货就处理右边，两边都没有就继续往上。
+
+    </div>
+    <p><strong>思路：</strong>每一格做三件事：<b>比较左边是什么、比较右边是什么、往上走一格</b>。
+"是什么"用关系运算判断，"要不要处理"用分支决定。
+</p>
+<div class="blk-card">
+  <div class="blk-head">
+    <span class="dot d1"></span><span class="dot d2"></span><span class="dot d3"></span>
+    <span class="file">重点示例：先比较，再决定</span>
+    <span class="lang">图形化积木</span>
+  </div>
+  <div class="blk-body">
+<svg class="blk" viewBox="0 0 293 390" width="293" height="390" role="img" aria-label="积木脚本"><g font-family="'PingFang SC','Microsoft YaHei','Noto Sans SC',sans-serif"><g transform="translate(3,3)"><path d="M0,12 C32.96,0 131.84,0 164.8,12 V43 A5,5 0 0 1 159.8,48 H28 v4 h-12 v-4 H5 A5,5 0 0 1 0,43 Z" fill="#FFBF00" stroke="#d19c00" stroke-width="1.2"/><text x="15" y="34.8" font-size="13.4" fill="#fff">当 </text><rect x="42.6" y="18.5" width="52.8" height="23" rx="5" fill="#CC9900"/><text x="64" y="34.4" font-size="12.5" fill="#fff" text-anchor="middle">绿旗</text><path d="M84.4 27.5 l4 5 l4 -5 z" fill="#fff" opacity=".85"/><text x="102.4" y="34.8" font-size="13.4" fill="#fff"> 被点击</text></g><g transform="translate(3,55)"><path d="M0,5 A5,5 0 0 1 5,0 H16 v4 h12 v-4 H282 A5,5 0 0 1 287,5 V323 A5,5 0 0 1 282,328 H28 v4 h-12 v-4 H5 A5,5 0 0 1 0,323 V315 H16 V36 H0 Z" fill="#FFAB19" stroke="#d18c14" stroke-width="1.2"/><text x="15" y="22.8" font-size="13.4" fill="#fff">重复执行 </text><rect x="82.8" y="6.5" width="30" height="23" rx="11.5" fill="#fff"/><text x="97.8" y="22.4" font-size="12.5" fill="#575e75" text-anchor="middle">5</text><text x="119.8" y="22.8" font-size="13.4" fill="#fff"> 次</text><g transform="translate(20,38)"><path d="M0,5 A5,5 0 0 1 5,0 H16 v4 h12 v-4 H244 A5,5 0 0 1 249,5 V85 A5,5 0 0 1 244,90 H28 v4 h-12 v-4 H5 A5,5 0 0 1 0,85 V77 H16 V36 H0 Z" fill="#FFAB19" stroke="#d18c14" stroke-width="1.2"/><text x="15" y="22.8" font-size="13.4" fill="#fff">如果 </text><polygon points="67.5,6.5 182.3,6.5 188.625,18 182.3,29.5 67.5,29.5 61.175,18" fill="#fff" stroke="#FFAB19" stroke-width="1.4"/><rect x="67" y="6.5" width="48.8" height="23" rx="11.5" fill="#fff" stroke="#cfd6e4" stroke-width="1"/><text x="91.4" y="22.4" font-size="12.5" fill="#575e75" text-anchor="middle">左边</text><text x="122.8" y="22.8" font-size="13.4" fill="#575e75"> = </text><rect x="151.4" y="6.5" width="31.4" height="23" rx="5" fill="#fff" stroke="#cfd6e4" stroke-width="1"/><text x="167.1" y="22.4" font-size="12.5" fill="#575e75" text-anchor="middle">货</text><text x="200.8" y="22.8" font-size="13.4" fill="#fff"> 那么</text><g transform="translate(20,38)"><path d="M0,5 A5,5 0 0 1 5,0 H16 v4 h12 v-4 H169 A5,5 0 0 1 174,5 V31 A5,5 0 0 1 169,36 H28 v4 h-12 v-4 H5 A5,5 0 0 1 0,31 Z" fill="#9966FF" stroke="#7d53d1" stroke-width="1.2"/><text x="15" y="22.8" font-size="13.4" fill="#fff">将颜色特效增加 </text><rect x="123" y="6.5" width="36.4" height="23" rx="11.5" fill="#fff"/><text x="141.2" y="22.4" font-size="12.5" fill="#575e75" text-anchor="middle">20</text></g></g><g transform="translate(20,130)"><path d="M0,5 A5,5 0 0 1 5,0 H16 v4 h12 v-4 H256 A5,5 0 0 1 261,5 V126 A5,5 0 0 1 256,131 H28 v4 h-12 v-4 H5 A5,5 0 0 1 0,126 V90 H16 V77 H0 Z" fill="#FFAB19" stroke="#d18c14" stroke-width="1.2"/><text x="15" y="22.8" font-size="13.4" fill="#fff">如果 </text><polygon points="67.5,6.5 182.3,6.5 188.625,18 182.3,29.5 67.5,29.5 61.175,18" fill="#fff" stroke="#FFAB19" stroke-width="1.4"/><rect x="67" y="6.5" width="48.8" height="23" rx="11.5" fill="#fff" stroke="#cfd6e4" stroke-width="1"/><text x="91.4" y="22.4" font-size="12.5" fill="#575e75" text-anchor="middle">右边</text><text x="122.8" y="22.8" font-size="13.4" fill="#575e75"> = </text><rect x="151.4" y="6.5" width="31.4" height="23" rx="5" fill="#fff" stroke="#cfd6e4" stroke-width="1"/><text x="167.1" y="22.4" font-size="12.5" fill="#575e75" text-anchor="middle">货</text><text x="200.8" y="22.8" font-size="13.4" fill="#fff"> 那么</text><g transform="translate(20,38)"><path d="M0,5 A5,5 0 0 1 5,0 H16 v4 h12 v-4 H230 A5,5 0 0 1 235,5 V31 A5,5 0 0 1 230,36 H28 v4 h-12 v-4 H5 A5,5 0 0 1 0,31 Z" fill="#9966FF" stroke="#7d53d1" stroke-width="1.2"/><text x="15" y="22.8" font-size="13.4" fill="#fff">说 </text><rect x="42.6" y="6.5" width="85" height="23" rx="5" fill="#fff"/><text x="85.1" y="22.4" font-size="12.5" fill="#575e75" text-anchor="middle">右边有货！</text><text x="134.6" y="22.8" font-size="13.4" fill="#fff"> </text><rect x="148.8" y="6.5" width="43.6" height="23" rx="11.5" fill="#fff"/><text x="170.6" y="22.4" font-size="12.5" fill="#575e75" text-anchor="middle">0.5</text><text x="199.4" y="22.8" font-size="13.4" fill="#fff"> 秒</text></g><g transform="translate(20,92)"><path d="M0,5 A5,5 0 0 1 5,0 H16 v4 h12 v-4 H230 A5,5 0 0 1 235,5 V31 A5,5 0 0 1 230,36 H28 v4 h-12 v-4 H5 A5,5 0 0 1 0,31 Z" fill="#9966FF" stroke="#7d53d1" stroke-width="1.2"/><text x="15" y="22.8" font-size="13.4" fill="#fff">说 </text><rect x="42.6" y="6.5" width="85" height="23" rx="5" fill="#fff"/><text x="85.1" y="22.4" font-size="12.5" fill="#575e75" text-anchor="middle">右边是空位</text><text x="134.6" y="22.8" font-size="13.4" fill="#fff"> </text><rect x="148.8" y="6.5" width="43.6" height="23" rx="11.5" fill="#fff"/><text x="170.6" y="22.4" font-size="12.5" fill="#575e75" text-anchor="middle">0.5</text><text x="199.4" y="22.8" font-size="13.4" fill="#fff"> 秒</text></g></g><g transform="translate(20,276)"><path d="M0,5 A5,5 0 0 1 5,0 H16 v4 h12 v-4 H123 A5,5 0 0 1 128,5 V31 A5,5 0 0 1 123,36 H28 v4 h-12 v-4 H5 A5,5 0 0 1 0,31 Z" fill="#4C97FF" stroke="#3e7bd1" stroke-width="1.2"/><text x="15" y="22.8" font-size="13.4" fill="#fff">移动 </text><rect x="56" y="6.5" width="30" height="23" rx="11.5" fill="#fff"/><text x="71" y="22.4" font-size="12.5" fill="#575e75" text-anchor="middle">1</text><text x="93" y="22.8" font-size="13.4" fill="#fff"> 步</text></g></g></g></svg>
+  </div>
+  <div class="out"><b>读法</b>　"如果……等于……那么"——关系运算给出"成立 / 不成立"，分支积木据此决定做不做</div>
+</div>
+
+    <div class="box tip">
+      <span class="lb">自己试一试：</span>把第二个"如果……那么……否则"换成"如果……那么"，你会发现"空位"那句提示不见了。<strong>这就是"否则"的用处：两种情况都要说话时，才需要它。</strong>
+    </div>
+    <p>这一关的骨架是二级综合题的标准写法：'
+    <b>循环负责走，关系运算负责比，分支负责选</b>。</p>
+<div class="box info">
+  <span class="lb">回头看一眼“算盘”这个词：</span>算盘上每一次拨珠，都相当于一次算术或关系运算。把运算结果当条件用，程序才真正有了"判断力"。
+</div>
+    <a class="btn-go" href="https://codecombat.cn/" target="_blank" rel="noopener">去扣哒世界闯这一关 →</a>
+  </div>
+</div>
+
+<!-- ============ 6 ============ -->
+<div class="section-header" id="s6">
+  <h2>6　常见陷阱</h2>
+  <div class="en-title">Common Traps</div>
+</div>
+
+<div class="box warn">
+  <span class="lb">陷阱 1：</span><b>把"关系运算"的结果当成一个数。</b>它给出的是"成立 / 不成立"，不能拿去加减。<br><strong>正确做法：</strong>要算数就用算术运算（椭圆），要比大小就用关系运算（六边形）。
+</div>
+
+<div class="box warn">
+  <span class="lb">陷阱 2：</span><b>把"与"和"或"用反。</b>"两个人都会游泳"是"与"，"两个人有一个会游泳"是"或"。<br><strong>判断方法：</strong>读中文时圈出"都"还是"有一个"——圈对了就不会用错。
+</div>
+
+<div class="box warn">
+  <span class="lb">陷阱 3：</span><b>求余和除法混着用。</b>9 ÷ 2 的商是 4、余数是 1，这两个结果来自不同积木。<br><strong>正确做法：</strong>要"能不能整除"用<b>求余</b>（余数为 0 就是整除）。
+</div>
+
+<div class="box warn">
+  <span class="lb">陷阱 4：</span><b>漏掉乘法除法的优先级。</b>虽然积木嵌套本身已经把顺序"画"出来了，但读题时"先乘除后加减"这条规则仍然要自己判断。<br><strong>正确做法：</strong>拿不准就先算，再往积木里填。
+</div>
+
+<!-- ============ 7 ============ -->
+<div class="section-header" id="s7">
+  <h2>7　题目练习</h2>
+  <div class="en-title">Practice</div>
+</div>
+
+<p>第 1 题改编自 2026 年 9 月 · 图形化编程 二级 第 9 题，其余为原创练习题。</p>
+<div class="exam">
+  <div class="eh"><span class="src">改编自 2026 年 9 月 · 图形化编程 二 级 · 第 9 题</span><span class="tp">单选题</span></div>
+  <div class="eb">
+    <div class="q">按照 2、4、8、16、32 的规律，32 后面的数字应该是（　　）。</div>
+    <div class="opt"><i>A.</i>48<br>
+      <i>B.</i>64<br>
+      <i>C.</i>96<br>
+      <i>D.</i>128</div>
+    <details><summary>查看答案与详解</summary>
+      <div class="ans"><b>答案：B</b>。看相邻两项的<b>倍数关系</b>：4 ÷ 2 = 2、8 ÷ 4 = 2、16 ÷ 8 = 2……每一项都是前一项的 2 倍，所以 32 后面是 32 × 2 = <b>64</b>。<br><b>A 错：</b>48 是按"+16"猜的，看不出倍数规律；<br><b>C 错：</b>96 = 32 × 3，倍数对不上；<br><b>D 错：</b>128 是 64 × 2，跳了一格。<br><b>用积木算：</b>把"重复执行"里的"将数字设为 数字 × 2"跑几遍，就能得到同一串数——规律题也能用程序验证。<br><span class="tagline">对应小节</span>1.1 算术运算。</div>
+    </details>
+  </div>
+</div>
+<div class="exam">
+  <div class="eh"><span class="src ori">原创练习题</span><span class="tp">单选题</span></div>
+  <div class="eb">
+    <div class="q">小铺要判断一个数 n 是不是偶数，下面哪种条件写法最合适（　　）。</div>
+    <div class="opt">
+      <i>A.</i>n ÷ 2 的余数 = 0<br>
+      <i>B.</i>n + 2 &gt; 0<br>
+      <i>C.</i>n × 2 = 0<br>
+      <i>D.</i>取整 n = 0
+    </div>
+    <details><summary>查看答案与详解</summary>
+      <div class="ans"><b>答案：A</b>。偶数就是"能被 2 整除"，而"能整除"用<b>求余</b>判断：余数为 0 就说明整除。<br><b>B 错：</b>n + 2 大于 0 只说明 n 大于 -2，和奇偶无关；<br><b>C 错：</b>n × 2 = 0 只有 n = 0 才成立；<br><b>D 错：</b>取整不会改变整数本身。<br><span class="tagline">对应小节</span>1.2 取整与求余。</div>
+    </details>
+  </div>
+</div>
+
+<div class="exam">
+  <div class="eh"><span class="src ori">原创练习题</span><span class="tp">单选题</span></div>
+  <div class="eb">
+    <div class="q">要表达"价格低于 100，<b>而且</b>我买得起"，六边形槽里最合适的写法是（　　）。</div>
+    <div class="opt">
+      <i>A.</i>{价格 &lt; 100} 或 {钱包 &gt; 价格}<br>
+      <i>B.</i>{价格 &lt; 100} 且 {钱包 &gt; 价格}<br>
+      <i>C.</i>不成立 {价格 &lt; 100}<br>
+      <i>D.</i>{价格 &lt; 100} + {钱包 &gt; 价格}
+    </div>
+    <details><summary>查看答案与详解</summary>
+      <div class="ans"><b>答案：B</b>。"而且"两个字就是提示——需要<b>两个条件同时成立</b>，所以用<b>与</b>。<br><b>A 错：</b>"或"是"有一个就行"，比题目要求宽松了；<br><b>C 错：</b>"不成立"是把条件反过来；<br><b>D 错：</b>两个六边形不能相加——运算要同类形状（椭圆）才行。<br><span class="tagline">对应小节</span>3.1 与：两个都要。</div>
+    </details>
+  </div>
+</div>
+
+<div class="exam">
+  <div class="eh"><span class="src ori">原创练习题</span><span class="tp">单选题</span></div>
+  <div class="eb">
+    <div class="q">下面哪个积木的运算结果是"成立 / 不成立"，只能放进六边形的条件槽（　　）。</div>
+    <div class="opt">
+      <i>A.</i>3 + 5<br>
+      <i>B.</i>在 1 和 6 之间取随机数<br>
+      <i>C.</i>x &gt; y<br>
+      <i>D.</i>7 × 8
+    </div>
+    <details><summary>查看答案与详解</summary>
+      <div class="ans"><b>答案：C</b>。只有"比较大小"这类<b>关系运算</b>才会给出"成立 / 不成立"，形状也因此是六边形。<br><b>A、B、D 错：</b>这三个算出来的都是<b>一个数</b>，形状是绿色椭圆，要放进白色的小圆框里。<br><span class="tagline">对应小节</span>2.2 关系运算的结果。</div>
+    </details>
+  </div>
+</div>
+
+<div class="exam">
+  <div class="eh"><span class="src ori">原创练习题</span><span class="tp">多选题</span></div>
+  <div class="eb">
+    <div class="q">关于"与、或、不成立"三个逻辑运算，下面说法哪些是<b>正确</b>的（　　）。</div>
+    <div class="opt">
+      <i>A.</i>"与"要求两边都成立<br>
+      <i>B.</i>"或"只要有一边成立就成立<br>
+      <i>C.</i>"不成立"可以把一个条件反过来<br>
+      <i>D.</i>三个逻辑运算可以用来组合出更复杂的条件
+    </div>
+    <details><summary>查看答案与详解</summary>
+      <div class="ans"><b>答案：A、B、C、D</b>。这四条正是逻辑运算的全部要点——它们可以互相嵌套，把简单的条件拼成复杂的筛选条件。<br><b>记忆口诀：</b>都与、或一、非反。<br><span class="tagline">对应小节</span>3.1～3.3 逻辑运算。</div>
+    </details>
+  </div>
+</div>
+
+<div class="exam">
+  <div class="eh"><span class="src ori">原创练习题</span><span class="tp">判断题</span></div>
+  <div class="eb">
+    <div class="q">在图形化编程中，"在 1 和 6 之间取随机数"执行后，结果可能是 1 到 6 之间的任意整数，但不可能是 7。（　　）</div>
+    <details><summary>查看答案与详解</summary>
+      <div class="ans"><b>答案：正确（√）</b>。随机数的取值范围就是两个参数之间（含端点），所以"1 和 6"只会给出 1、2、3、4、5、6 这六种结果。<br>要得到更大的数，就得把范围写大——比如"在 1 和 10 之间取随机数"。<br><span class="tagline">对应小节</span>1.3、2.1 随机数。</div>
+    </details>
+  </div>
+</div>
+
+<!-- ============ 8 ============ -->
+<div class="section-header" id="s8">
+  <h2>8　本单元小结</h2>
+  <div class="en-title">Unit Summary</div>
+</div>
+
+<div class="cast teacher">
+  <img class="ava" src="../assets/avatars/hushbaum.webp" alt="贺舒曼" onerror="this.style.display='none'">
+  <div class="bubble">
+    <div class="who">贺舒曼 · 镜中先知</div>
+    到这儿，二级的全部知识块就齐了。这一单元记住三句话：
+    <b>算术算出一个数、关系比出对与错、逻辑把条件连起来</b>。<br>
+    中文里的"都"要用与、"有一个"要用或、"不"要用不成立——
+    这三条就是逻辑推理题的解题口诀。
+  </div>
+</div>
+
+<h3 id="s8-1">你在算盘小铺里学到了什么</h3>
+
+<ul>
+  <li><b>算术运算</b>：加、减、乘、除、取整、求余、随机数，结果是"一个数"；</li>
+  <li><b>求余的妙用</b>：余数为 0 就是整除，用来判断奇偶、倍数；</li>
+  <li><b>关系运算</b>：大于、小于、等于，结果是"成立 / 不成立"，是六边形；</li>
+  <li><b>逻辑运算</b>：与（都要）、或（有一个就行）、不成立（反过来）；</li>
+  <li><b>翻译口诀</b>：中文的"都"→与、"有一个"→或、"不"→不成立。</li>
+</ul>
+<h3 id="s8-2">二级通关，下一站三级</h3>
+
+<p>二级的知识全部学完了：网络、流程图、循环与分支的进阶、克隆、画笔、广播与变量、数据运算。<br>
+再往上是<b>三级 · 魔法绘本馆</b>——那里有字符串、列表、嵌套结构和枚举法，
+故事会把你们带进一座会自己翻页的图书馆。</p>
+
+
+<div class="pager">
+  <a href="scratch-2-06.html"><div class="k">← 上一单元</div><div class="v">传声筒 · 广播与变量</div></a>
+  <a href="../index.html" target="_top" class="back"><div class="k">返回</div><div class="v">考纲之路 · 总目录</div></a>
+  <a style="pointer-events:none;opacity:.55"><div class="k">下一单元 →</div><div class="v">本级已做完</div></a>
+</div>
+<div class="cta">
+  <h3>二级通关，下一站三级</h3>
+  <p>二级的知识全部学完了。再往上是三级 · 魔法绘本馆——那里有字符串、列表、嵌套结构和枚举法，故事会把你们带进一座会自己翻页的图书馆。</p>
+  <a class="btn-go" href="https://codecombat.cn/" target="_blank" rel="noopener">加入扣哒世界，把这条考纲之路走一遍 →</a>
+</div>
+
+</div><!-- /container -->
+</div><!-- /page -->
+
+<script>
+if (location.search.indexOf('expand') >= 0) {
+  document.querySelectorAll('details').forEach(d => d.open = true);
+}
+document.querySelectorAll('.sidebar-nav a').forEach(a => {
+  a.addEventListener('click', () => {
+    if (window.innerWidth <= 900) document.querySelector('.sidebar-nav').classList.remove('active');
+  });
+});
+</script>
+</body>
+</html>
