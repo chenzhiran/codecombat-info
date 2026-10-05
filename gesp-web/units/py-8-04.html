@@ -1,0 +1,920 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="copyright" content="CodeCombat Inc. codecombat.cn">
+<title>跃迁阶梯 · 倍增思想 | 扣哒考级 · GESP Python 八级</title>
+<style>
+  :root{
+    --primary:#8a6a1f; --primary-light:#c9a22f; --primary-lighter:#fbf4e2; --primary-dark:#6b5013;
+    --brand:#ff6b35; --brand-dark:#e8541f; --brand-soft:#fff3ec;
+    --night:#0f1b22; --night-2:#16323a; --gold:#f5b301;
+    --text:#22333a; --dim:#5f7276; --dim2:#8da0a3;
+    --bg:#ffffff; --bg-soft:#f6fbfa; --line:#dceceb; --sidebar:274px;
+    --code-bg:#14231f; --code-tx:#c3d6d1;
+    --code-kw:#c678dd; --code-st:#98c379; --code-nu:#d19a66; --code-cm:#68807a; --code-fn:#61afef;
+  }
+  *{margin:0;padding:0;box-sizing:border-box}
+  html{scroll-behavior:smooth}
+  body{font-family:"PingFang SC","Microsoft YaHei","Segoe UI",-apple-system,sans-serif;line-height:1.9;color:var(--text);background:var(--bg);font-size:15.5px}
+  .sidebar-nav{position:fixed;top:0;left:0;width:var(--sidebar);height:100vh;overflow-y:auto;background:linear-gradient(180deg,#0d0b07,#241d10);padding:14px 0 40px;z-index:100;border-right:3px solid var(--brand);transition:transform .3s ease}
+  .sidebar-nav::-webkit-scrollbar{width:5px}
+  .sidebar-nav::-webkit-scrollbar-thumb{background:var(--brand);border-radius:4px}
+  .sb-brand{display:flex;align-items:center;gap:10px;padding:10px 13px 12px;border-bottom:1px solid #3a2e15;margin-bottom:8px}
+  .sidebar-nav a.sb-logo{display:flex;align-items:center;justify-content:center;flex-shrink:0;padding:0;border-left:none;transition:.2s}
+  .sb-logo:hover{transform:scale(1.08)}
+  .sb-logo img{height:34px;width:34px;display:block;object-fit:contain;border-radius:8px}
+  .sb-brand b{color:#eef7f6;font-size:14px;letter-spacing:.5px;display:block;line-height:1.4}
+  .sb-brand span{color:#7ba3a6;font-size:11.5px;display:block;line-height:1.4}
+  .nav-title{color:#ffb894;font-size:12px;font-weight:800;padding:10px 18px 6px;letter-spacing:1.2px}
+  .sidebar-nav a{display:block;color:#bcd3d4;text-decoration:none;padding:6px 18px;font-size:12.5px;line-height:1.55;border-left:3px solid transparent;transition:.18s}
+  .sidebar-nav a:hover{color:#fff;background:rgba(255,107,53,.16);border-left-color:var(--brand)}
+  .sidebar-nav a.nav-section{color:#ffb894;font-weight:700;font-size:13px;margin-top:11px;padding-top:10px;border-top:1px solid #3a2e15}
+  .sidebar-nav a.nav-section:first-of-type{border-top:none;margin-top:0;padding-top:6px}
+  .sidebar-nav a.nav-sub{padding-left:30px;color:#8fabad;font-size:12px}
+  .sidebar-nav a.nav-sub:hover{color:#fff}
+  .sb-back{margin:16px 14px 0;display:block;text-align:center;padding:9px;border-radius:9px;background:#1c3940;color:#a6c0c2 !important;font-size:12px;font-weight:700;border-left:none !important}
+  .sb-back:hover{background:var(--brand) !important;color:#fff !important}
+  .nav-toggle{display:none;position:fixed;top:14px;left:14px;z-index:120;background:var(--brand);color:#fff;border:none;border-radius:9px;padding:9px 13px;font-size:15px;cursor:pointer;box-shadow:0 4px 14px rgba(0,0,0,.25)}
+  .page{margin-left:var(--sidebar)}
+  .hero{position:relative;overflow:hidden;padding:44px 52px;color:#fff;background:linear-gradient(125deg,#0b0906 0%,#2a2010 46%,#8a3a16 132%)}
+  .hero::after{content:"";position:absolute;right:-90px;top:-110px;width:400px;height:400px;border-radius:50%;background:radial-gradient(circle,rgba(245,179,1,.30),transparent 68%)}
+  .hero-top{display:flex;gap:36px;align-items:center;position:relative;z-index:2}
+  .hero-txt{flex:1;min-width:0}
+  .hero .crumb{font-size:11.5px;color:#ffb894;letter-spacing:1.5px;font-weight:700;margin-bottom:14px}
+  .hero h1{font-size:31px;font-weight:800;line-height:1.3;letter-spacing:.6px;margin-bottom:8px}
+  .hero h1 .sub{display:block;font-size:18px;font-weight:700;color:#ffd2b3;margin-top:6px;letter-spacing:.3px}
+  .hero .en{font-size:13px;color:#98b6b8;font-style:italic;margin-bottom:18px}
+  .hero .tags{display:flex;flex-wrap:wrap;gap:8px}
+  .tag{font-size:11.5px;padding:4px 12px;border-radius:20px;background:rgba(255,255,255,.12);border:1px solid rgba(255,255,255,.22);color:#e8f0f6;font-weight:600}
+  .tag.hot{background:rgba(255,107,53,.92);border-color:transparent;color:#fff}
+  .hero-card{flex-shrink:0;width:200px;text-align:center}
+  .hero-card .ava{width:148px;height:148px;border-radius:50%;object-fit:cover;object-position:top center;border:4px solid rgba(255,180,140,.6);box-shadow:0 14px 34px rgba(0,0,0,.45);background:#24344a}
+  .hero-card .nm{font-size:15px;font-weight:800;color:#fff;margin-top:10px}
+  .hero-card .ti{font-size:11.5px;color:#ffb894;margin-top:2px}
+  .container{max-width:1080px;margin:0 auto;padding:38px 52px 70px}
+  .lead{font-size:15.5px;line-height:2.05;color:#35474a;background:linear-gradient(120deg,#fff8f3,#f6fbfa);border-left:5px solid var(--brand);border-radius:0 14px 14px 0;padding:22px 26px;margin-bottom:32px}
+  .lead b{color:var(--brand-dark)}
+  .cast{display:flex;gap:16px;align-items:flex-start;border-radius:16px;padding:18px 22px;margin:24px 0}
+  .cast .ava{width:72px;height:72px;border-radius:50%;object-fit:cover;object-position:top center;flex-shrink:0;background:#e8eef5}
+  .cast .bubble{position:relative;font-size:14px;line-height:1.95;padding-top:2px;flex:1}
+  .cast .who{font-size:12px;font-weight:800;margin-bottom:5px;letter-spacing:.5px}
+  .cast.anya{background:var(--brand-soft);border:1px solid #ffdcc9}
+  .cast.anya .who{color:var(--brand-dark)}
+  .cast.anya .bubble{color:#5c4636}
+  .cast.duck{background:#fff5f5;border:1px solid #fbd5d5}
+  .cast.duck .who{color:#b91c1c}
+  .cast.duck .bubble{color:#5c4141}
+  .cast.teacher{background:linear-gradient(120deg,#f1f8f8,#ffffff);border:1px solid #d6e8e8}
+  .cast.teacher .who{color:#134e4a}
+  .cast.teacher .bubble{color:#3c5254}
+  .cast.hero{background:#f2fbf9;border:1px solid #cfe9e6}
+  .cast.hero .who{color:#0f766e}
+  .cast.hero .bubble{color:#3d5250}
+  .goal-grid{display:grid;grid-template-columns:1fr 1fr;gap:16px;margin-bottom:36px}
+  .goal{border:1px solid var(--line);border-radius:15px;padding:19px 21px;background:#fff;box-shadow:0 4px 16px rgba(14,143,134,.06)}
+  .goal h4{font-size:14px;font-weight:800;margin-bottom:11px;display:flex;align-items:center;gap:8px;color:var(--primary-dark)}
+  .goal h4 .ic{width:22px;height:22px;border-radius:7px;background:var(--primary-lighter);display:flex;align-items:center;justify-content:center;font-size:12px}
+  .goal ul{list-style:none}
+  .goal li{font-size:13.5px;color:#46585a;line-height:1.9;padding-left:18px;position:relative}
+  .goal li::before{content:"▸";position:absolute;left:0;color:var(--primary);font-weight:800}
+  .goal.syllabus li::before{content:"✓"}
+  .section-header{margin:52px 0 24px;padding-bottom:12px;border-bottom:3px solid var(--brand);display:flex;align-items:baseline;gap:14px;flex-wrap:wrap}
+  .section-header h2{font-size:22px;font-weight:800;color:var(--night);letter-spacing:.4px}
+  .section-header .en-title{font-size:12px;color:var(--dim2);font-style:italic}
+  h3{font-size:17.5px;font-weight:800;margin:34px 0 14px;color:var(--night);display:flex;align-items:center;gap:10px}
+  h3::before{content:"";width:5px;height:17px;border-radius:3px;background:var(--brand);flex-shrink:0}
+  h4{font-size:15px;font-weight:800;margin:24px 0 10px;color:#2c4a48}
+  p{margin:12px 0;color:#3d5250;line-height:2}
+  strong{color:var(--primary-dark)}
+  code.inline{background:var(--primary-lighter);color:var(--primary-dark);padding:2px 7px;border-radius:6px;font-family:"SFMono-Regular",Consolas,Menlo,monospace;font-size:.9em;font-weight:600}
+  .figure{margin:24px 0;text-align:center}
+  .figure svg.diagram{max-width:100%;height:auto;background:#fff;border:1px solid var(--line);border-radius:14px;padding:10px}
+  .figure .caption{font-size:12.5px;color:var(--dim2);margin-top:9px}
+  .pic{margin:26px 0;text-align:center}
+  .pic img{max-width:100%;border-radius:16px;box-shadow:0 10px 28px rgba(20,60,60,.15);display:block;margin:0 auto}
+  .pic figcaption{font-size:12.5px;color:var(--dim2);margin-top:9px}
+  .pic .ph{display:none}
+  .pic.missing img{display:none}
+  .pic.missing .ph{display:flex;flex-direction:column;align-items:center;justify-content:center;gap:9px;border:2px dashed #bfdcd9;border-radius:16px;background:linear-gradient(135deg,#f8fdfc,#eef8f7);padding:40px 26px;color:#6f8f90}
+  .pic.missing .ph .fn{font-family:Consolas,monospace;font-size:12.5px;color:#0e8f86;font-weight:700;word-break:break-all}
+  .pic.missing .ph .ds{font-size:12.5px;line-height:1.8;max-width:560px}
+  .box{border-radius:13px;padding:16px 20px;margin:20px 0;font-size:14px;line-height:1.95}
+  .box .lb{font-weight:800;margin-right:6px}
+  .info{background:#eef6ff;border-left:5px solid #3b82f6;color:#274768}
+  .info .lb{color:#1d4ed8}
+  .tip{background:#fff9ec;border-left:5px solid #f59e0b;color:#6b4e13}
+  .tip .lb{color:#b45309}
+  .remember{background:var(--primary-lighter);border-left:5px solid var(--primary);color:#134e4a}
+  .remember .lb{color:var(--primary-dark)}
+  .warn{background:#fef2f2;border-left:5px solid #ef4444;color:#7f2b2b}
+  .warn .lb{color:#b91c1c}
+  .code-card{margin:20px 0;border-radius:14px;overflow:hidden;box-shadow:0 10px 28px rgba(15,40,40,.20)}
+  .code-head{display:flex;align-items:center;gap:9px;background:#332a12;padding:9px 14px}
+  .code-head .dot{width:10px;height:10px;border-radius:50%}
+  .code-head .d1{background:#ff5f57}.code-head .d2{background:#febc2e}.code-head .d3{background:#28c840}
+  .code-head .file{color:#8fb0aa;font-size:11.5px;font-family:Consolas,monospace;margin-left:6px}
+  .code-head .lang{margin-left:auto;font-size:10.5px;font-weight:800;color:#0b1f1a;background:#e8c766;padding:2px 9px;border-radius:6px;letter-spacing:.4px}
+  .code-card pre{background:var(--code-bg);padding:18px 20px;overflow-x:auto;margin:0;font-family:"SFMono-Regular",Consolas,"Courier New",monospace;font-size:13.5px;line-height:1.85}
+  .code-card pre::-webkit-scrollbar{height:8px}
+  .code-card pre::-webkit-scrollbar-thumb{background:#2f4a45;border-radius:4px}
+  .code-card code{color:var(--code-tx);white-space:pre}
+  .kw{color:var(--code-kw);font-weight:600}
+  .st{color:var(--code-st)}
+  .nu{color:var(--code-nu)}
+  .cm{color:var(--code-cm);font-style:italic}
+  .fn{color:var(--code-fn)}
+  .out{background:#0e1d1a;color:#7fd6b8;font-family:Consolas,monospace;font-size:13px;padding:12px 20px;border-top:1px solid #223a35}
+  .out b{color:#c3d6d1;font-weight:600;font-size:11.5px;letter-spacing:1px}
+  table.styled{width:100%;border-collapse:collapse;margin:20px 0;font-size:13.5px;border-radius:12px;overflow:hidden;box-shadow:0 4px 16px rgba(14,143,134,.08)}
+  table.styled thead{background:var(--brand)}
+  table.styled th{color:#fff;padding:11px 14px;text-align:left;font-weight:700;font-size:13px}
+  table.styled td{padding:10px 14px;border-bottom:1px solid var(--line);color:#44585a;vertical-align:top}
+  table.styled tbody tr:nth-child(even){background:var(--bg-soft)}
+  table.styled tbody tr:last-child td{border-bottom:none}
+  .level-card{border:1px solid var(--line);border-radius:16px;overflow:hidden;margin:22px 0;box-shadow:0 6px 22px rgba(14,143,134,.08)}
+  .level-card .lc-head{background:linear-gradient(100deg,#12262c,#8a3a16);color:#fff;padding:15px 22px;display:flex;align-items:center;gap:12px;flex-wrap:wrap}
+  .level-card .lc-head .n{font-size:12px;font-weight:800;background:rgba(255,255,255,.2);padding:3px 10px;border-radius:20px}
+  .level-card .lc-head h4{margin:0;color:#fff;font-size:16px}
+  .level-card .lc-head .go{margin-left:auto;font-size:11.5px;color:#ffd2b3}
+  .level-card .lc-body{padding:20px 24px;background:#fff}
+  .level-card .story{background:#f8fcfc;border-left:4px solid #7dd3fc;border-radius:0 10px 10px 0;padding:13px 18px;margin:0 0 16px;font-size:14px;line-height:1.95;color:#3c5254}
+  .level-card .story b{color:#0369a1}
+  .btn-go{display:inline-flex;align-items:center;gap:8px;background:linear-gradient(135deg,var(--brand),var(--brand-dark));color:#fff;text-decoration:none;font-weight:800;font-size:13.5px;padding:10px 22px;border-radius:11px;box-shadow:0 8px 20px rgba(255,107,53,.32);transition:.2s}
+  .btn-go:hover{transform:translateY(-2px);box-shadow:0 12px 26px rgba(255,107,53,.42)}
+  .pit{border:1px solid #f6dede;border-radius:14px;overflow:hidden;margin:16px 0;background:#fff}
+  .pit .pt{display:flex;gap:12px;padding:14px 18px;background:#fffafa;align-items:flex-start}
+  .pit .x{width:26px;height:26px;border-radius:9px;background:#fee;color:#dc2626;display:flex;align-items:center;justify-content:center;font-weight:800;flex-shrink:0;font-size:13px}
+  .pit .t{font-size:13.5px;line-height:1.9;color:#5c4a4a;flex:1}
+  .pit .t b{color:#b91c1c}
+  .pit .duck{display:flex;gap:12px;padding:13px 18px;background:#fff5f5;border-top:1px dashed #f3d0d0;align-items:flex-start}
+  .pit .duck img{width:48px;height:48px;object-fit:contain;flex-shrink:0;margin-top:2px}
+  .pit .duck .dt{font-size:13.5px;line-height:1.9;color:#7a3b3b}
+  .pit .duck .dt b{color:#b91c1c}
+  .pit .fix{padding:12px 18px;background:#f2fbf9;border-top:1px dashed #cfe9e6;font-size:13.5px;color:#134e4a}
+  .pit .fix b{color:var(--primary-dark)}
+  .exam{border:1px solid #d8ebea;border-radius:15px;margin:16px 0;overflow:hidden;background:#fff;box-shadow:0 4px 16px rgba(30,80,80,.06)}
+  .exam .eh{display:flex;align-items:center;gap:10px;padding:11px 18px;background:linear-gradient(100deg,#eef8f7,#f8fdfc);border-bottom:1px solid #dbeceb;flex-wrap:wrap}
+  .exam .eh .src{font-size:11px;font-weight:800;color:#fff;background:#0e8f86;padding:2.5px 10px;border-radius:20px}
+  .exam .eh .src.ori{background:#0e9488}
+  .exam .eh .tp{font-size:11.5px;color:#4f7d7a;font-weight:700}
+  .exam .eb{padding:16px 20px}
+  .exam .q{font-weight:700;font-size:14px;color:#2b4042;line-height:1.9;margin-bottom:10px}
+  .exam .opt{font-size:13.5px;color:#46585a;line-height:2.05;padding-left:6px}
+  .exam .opt i{font-style:normal;font-weight:800;color:var(--primary-dark);margin-right:7px}
+  .exam pre{margin:12px 0;background:#14231f;border-radius:10px;padding:14px 16px;overflow-x:auto;font-family:Consolas,monospace;font-size:13px;line-height:1.8;color:var(--code-tx)}
+  .exam details{margin-top:10px;border-top:1px dashed var(--line);padding-top:10px}
+  .exam summary{cursor:pointer;font-size:12.5px;font-weight:800;color:#0e8f86;outline:none;user-select:none}
+  .exam details .ans{font-size:13.5px;color:#3d5250;line-height:1.95;margin-top:9px;background:var(--bg-soft);padding:13px 16px;border-radius:10px}
+  .exam details .ans b{color:var(--primary-dark)}
+  .exam details .ans .tagline{display:inline-block;font-size:11px;background:#e0f2fe;color:#0e7490;padding:1.5px 8px;border-radius:6px;font-weight:700;margin-right:6px}
+  .summary{margin:40px 0 20px;border-radius:18px;padding:26px 30px;background:linear-gradient(130deg,#fff8f3,#ffffff);border:1px solid #ffe0cf}
+  .summary h3{margin-top:0}
+  .summary ul{list-style:none;margin-top:10px}
+  .summary li{font-size:14px;line-height:2;color:#3d5250;padding-left:24px;position:relative}
+  .summary li::before{content:"◆";position:absolute;left:0;color:var(--brand);font-size:11px;top:6px}
+  .pager{display:flex;gap:14px;margin-top:30px;flex-wrap:wrap}
+  .pager a{flex:1;min-width:200px;text-decoration:none;border:1px solid var(--line);border-radius:14px;padding:16px 20px;background:#fff;transition:.2s;display:block}
+  .pager a:hover{border-color:var(--brand);box-shadow:0 10px 26px rgba(255,107,53,.14);transform:translateY(-2px)}
+  .pager a .k{font-size:11px;color:var(--dim2);font-weight:700;letter-spacing:1px}
+  .pager a .v{font-size:14px;font-weight:800;color:var(--night);margin-top:5px}
+  .pager a.back{background:var(--brand-soft);border-color:transparent;text-align:center}
+  .pager a.back .v{color:var(--brand-dark)}
+  .cta{margin-top:26px;border-radius:20px;padding:30px 34px;color:#fff;position:relative;overflow:hidden;background:linear-gradient(120deg,#12242a,#1e4a52 46%,#a8431c 132%)}
+  .cta::after{content:"";position:absolute;right:-70px;bottom:-90px;width:280px;height:280px;border-radius:50%;background:radial-gradient(circle,rgba(255,140,80,.45),transparent 68%)}
+  .cta h3{color:#fff;margin:0 0 10px;position:relative;z-index:2}
+  .cta h3::before{background:var(--brand)}
+  .cta p{color:#cfe4e2;font-size:13.5px;margin:0 0 18px;position:relative;z-index:2;max-width:640px}
+  .cta .btn-go{position:relative;z-index:2}
+  @media(max-width:900px){
+    .sidebar-nav{transform:translateX(-100%)}
+    .sidebar-nav.active{transform:translateX(0)}
+    .nav-toggle{display:block}
+    .page{margin-left:0}
+    .hero{padding:70px 22px 34px}
+    .hero-top{flex-direction:column-reverse;text-align:center}
+    .hero-card{width:auto}
+    .container{padding:26px 20px 60px}
+    .goal-grid{grid-template-columns:1fr}
+  }
+</style>
+</head>
+<body>
+
+<button class="nav-toggle" onclick="document.querySelector('.sidebar-nav').classList.toggle('active')">&#9776;</button>
+
+<nav class="sidebar-nav">
+  <div class="sb-brand">
+    <a class="sb-logo" href="https://codecombat.cn/" target="_blank" rel="noopener" title="访问 CodeCombat 扣哒世界官网">
+      <img src="../assets/logo.png" alt="CodeCombat 扣哒世界">
+    </a>
+    <div><b>跃迁阶梯</b><span>寂灭王座 · Python 八级 第 4 单元</span></div>
+  </div>
+  <div class="nav-title">本单元目录</div>
+  <a href="#s0" class="nav-section">0　单元导语与目标</a>
+  <a href="#s0-1" class="nav-sub">0.1 学习目标</a>
+  <a href="#s0-2" class="nav-sub">0.2 考纲对照</a>
+  <a href="#s1" class="nav-section">1　为什么"翻倍"这么快</a>
+  <a href="#s1-1" class="nav-sub">1.1 一级一级走 vs 翻倍跳</a>
+  <a href="#s1-2" class="nav-sub">1.2 一级一级走 vs 翻倍跳</a>
+  <a href="#s1-3" class="nav-sub">1.3 倍增的核心事实</a>
+  <a href="#s2" class="nav-section">2　二进制拆分</a>
+  <a href="#s2-1" class="nav-sub">2.1 用位运算看二进制</a>
+  <a href="#s2-2" class="nav-sub">2.2 折半查找为什么快</a>
+  <a href="#s3" class="nav-section">3　快速幂再回顾</a>
+  <a href="#s3-1" class="nav-sub">3.1 用倍增求 a 的 n 次方</a>
+  <a href="#s3-2" class="nav-sub">3.2 循环次数只有 log₂n 次</a>
+  <a href="#s4" class="nav-section">4　倍增的一般套路</a>
+  <a href="#s4-1" class="nav-sub">4.1 倍增的两步套路</a>
+  <a href="#s4-2" class="nav-sub">4.2 倍增的两步套路</a>
+  <a href="#s4-3" class="nav-sub">4.3 在数组里"跳 k 步"</a>
+  <a href="#s5" class="nav-section">5　代码实战</a>
+  <a href="#s6" class="nav-section">6　常见陷阱</a>
+  <a href="#s7" class="nav-section">7　题目练习</a>
+  <a href="#s8" class="nav-section">8　本单元小结</a>
+  <a href="../index.html" target="_top" class="sb-back">返回考纲之路</a>
+</nav>
+
+<div class="page">
+
+<div class="hero">
+  <div class="hero-top">
+    <div class="hero-txt">
+      <div class="crumb">扣哒考级 · GESP PYTHON 八级 · 第 4 单元　|　寂灭王座 THE THRONE</div>
+      <h1>跃迁阶梯
+        <span class="sub">倍增思想</span>
+      </h1>
+      <div class="en">Binary Lifting &amp; Doubling</div>
+      <div class="tags">        <span class="tag hot">考纲 · 倍增</span>
+        <span class="tag">二进制拆分</span>
+        <span class="tag">快速幂</span>
+        <span class="tag">预处理</span>
+        <span class="tag">跳跃</span></div>
+    </div>
+    <div class="hero-card">
+      <img class="ava" src="../assets/avatars/hushbaum.webp" alt="贺舒曼" onerror="this.style.background='#24344a'">
+      <div class="nm">贺舒曼</div>
+      <div class="ti">镜中先知 · 你的向导</div>
+    </div>
+  </div>
+</div>
+
+<div class="container">
+
+<div class="lead">
+  王座后方有一道奇特的阶梯：<b>第一级 1 米高，第二级 2 米，第三级 4 米，第四级 8 米……</b>
+  每一级都是前一级的两倍。<br>
+  你抬头看，只跨了<b>十级</b>，就已经升到一千多米高了。<br>
+  贺舒曼说：这就是倍增的威力。<b>每一步都在"翻倍"，所以几步就能走很远。</b>
+</div>
+
+<div class="cast teacher">
+  <img class="ava" src="../assets/avatars/hushbaum.webp" alt="贺舒曼" onerror="this.style.display='none'">
+  <div class="bubble">
+    <div class="who">贺舒曼 · 镜中先知</div>
+    倍增是算法里一个非常漂亮的技巧：<strong>把"要走很多步"变成"跳几大步"。</strong><br>
+    你在五级学过的快速幂，其实就是倍增；<br>
+    而这一单元，我们把它抽象成<strong>一种通用的思路</strong>——<b>预处理出 2 的幂次能到哪里，然后按二进制拆分着跳。</b>
+  </div>
+</div>
+
+<figure class="pic">
+  <img src="../assets/illustrations/py-L8-04-01_jump_stairs.webp" alt="跃迁阶梯"
+       onerror="this.closest('.pic').classList.add('missing')">
+  <div class="ph">
+    <div class="fn">assets/illustrations/py-L8-04-01_jump_stairs.webp</div>
+    <div class="ds">【配图位】暗金王座后方的巨型阶梯，每一级高度依次翻倍（1、2、4、8、16…），台阶侧面刻着对应的 2 的幂；一名学徒站在底部仰视，脚下沙地上画着二进制的 0 与 1 光点。</div>
+  </div>
+  <figcaption>图 1：寂灭王座的跃迁阶梯——今天要从这里开始</figcaption>
+</figure>
+
+<div class="section-header" id="s0">
+  <h2>0　单元导语与目标</h2>
+  <div class="en-title">Unit Overview</div>
+
+<h3 id="s0-1">0.1 学习目标</h3>
+</div>
+
+<div class="goal-grid">
+  <h3 id="s0-2">0.2 考纲对照</h3>
+
+<div class="goal">
+    <h4><span class="ic">1</span>学完这个单元，你将能……</h4>
+    <ul>
+      <li>说清"倍增"为什么能让步数变少</li>
+      <li>把一个数拆成 2 的幂之和</li>
+      <li>用倍增实现快速幂</li>
+      <li>理解"预处理 + 跳跃"的通用套路</li>
+      <li>用倍增解决"第 k 个祖先"类问题</li>
+      <li>判断什么问题适合用倍增</li>
+    </ul>
+  </div>
+  <div class="goal syllabus">
+    <h4><span class="ic">2</span>对标 GESP 考纲（Python 八级）</h4>
+    <ul>
+      <li>理解倍增思想及其与二进制的关系</li>
+      <li>掌握用倍增实现快速幂的方法</li>
+      <li>了解倍增在跳跃、区间查询等问题中的应用</li>
+      <li>考核目标：能用倍增思想优化重复性的推进过程</li>
+    </ul>
+  </div>
+</div>
+
+<div class="section-header" id="s1">
+  <h2>1　为什么"翻倍"这么快</h2>
+  <div class="en-title">Why Doubling Is Fast</div>
+
+<h3 id="s1-1">1.1 一级一级走 vs 翻倍跳</h3>
+</div>
+
+<h3 id="s1-2">1.2 一级一级走 vs 翻倍跳</h3>
+
+<figure class="figure">
+  <svg class="diagram" viewBox="0 0 860 250" role="img" aria-label="倍增与逐级对比">
+    <text x="24" y="34" font-size="14" font-weight="bold" fill="#1f2937">要走到第 1024 级：一级一级爬 vs 倍增跳跃</text>
+
+    <rect x="50" y="58" width="370" height="164" rx="12" fill="#fbf4e2" stroke="#8a6a1f" stroke-width="1.8"/>
+    <text x="235" y="86" text-anchor="middle" font-size="12.5" fill="#6b5013" font-weight="bold">一级一级爬：1024 步</text>
+    <g font-family="Consolas,monospace" font-size="11.5">
+      <rect x="76" y="104" width="18" height="60" rx="3" fill="#e8d7a8" stroke="#8a6a1f" stroke-width="1.2"/>
+      <rect x="98" y="110" width="18" height="54" rx="3" fill="#e8d7a8" stroke="#8a6a1f" stroke-width="1.2"/>
+      <rect x="120" y="116" width="18" height="48" rx="3" fill="#e8d7a8" stroke="#8a6a1f" stroke-width="1.2"/>
+      <rect x="142" y="122" width="18" height="42" rx="3" fill="#e8d7a8" stroke="#8a6a1f" stroke-width="1.2"/>
+      <rect x="164" y="128" width="18" height="36" rx="3" fill="#e8d7a8" stroke="#8a6a1f" stroke-width="1.2"/>
+      <text x="196" y="150" font-size="14" fill="#8a7b56">……</text>
+      <text x="290" y="150" font-size="14" fill="#8a7b56">……（1024 级）</text>
+    </g>
+    <text x="235" y="200" text-anchor="middle" font-size="12" fill="#6b5013">一步一级，力气全花在重复上</text>
+
+    <rect x="446" y="58" width="360" height="164" rx="12" fill="#fbf4e2" stroke="#8a6a1f" stroke-width="2"/>
+    <text x="626" y="86" text-anchor="middle" font-size="12.5" fill="#6b5013" font-weight="bold">倍增跳跃：只要 10 步</text>
+    <g font-family="Consolas,monospace" font-size="11.5">
+      <rect x="472" y="104" width="14" height="60" rx="3" fill="#c9a22f" stroke="#6b5013" stroke-width="1.4"/>
+      <rect x="506" y="108" width="14" height="56" rx="3" fill="#c9a22f" stroke="#6b5013" stroke-width="1.4"/>
+      <rect x="546" y="114" width="14" height="50" rx="3" fill="#c9a22f" stroke="#6b5013" stroke-width="1.4"/>
+      <rect x="592" y="122" width="14" height="42" rx="3" fill="#c9a22f" stroke="#6b5013" stroke-width="1.4"/>
+      <rect x="646" y="132" width="14" height="32" rx="3" fill="#c9a22f" stroke="#6b5013" stroke-width="1.4"/>
+      <rect x="708" y="144" width="14" height="20" rx="3" fill="#c9a22f" stroke="#6b5013" stroke-width="1.4"/>
+    </g>
+    <text x="626" y="196" text-anchor="middle" font-size="12" fill="#b8860b">1、2、4、8、16、32、64… 每次翻倍</text>
+    <text x="626" y="214" text-anchor="middle" font-size="11.5" fill="#8a7b56">1024 = 2 的 10 次方，正好 10 步跳过</text>
+  </svg>
+  <div class="caption">图 2（SVG）：一级一级走 vs 每次翻倍地跳</div>
+</figure>
+
+<h3 id="s1-3">1.3 倍增的核心事实</h3>
+
+<div class="box remember">
+  <span class="lb">倍增的核心事实：</span>
+  <strong>任何整数都可以拆成若干个"2 的幂"之和。</strong><br>
+  比如 13 = 8 + 4 + 1 = 2³ + 2² + 2⁰。<br>
+  <b>所以想"走 13 步"，可以拆成"跳 8 步、跳 4 步、跳 1 步"三步完成。</b><br>
+  <b>把 n 步变成约 log₂n 步——这就是倍增的全部秘密。</b>
+</div>
+
+<div class="section-header" id="s2">
+  <h2>2　二进制拆分</h2>
+  <div class="en-title">Binary Decomposition</div>
+
+<h3 id="s2-1">2.1 用位运算看二进制</h3>
+</div>
+
+<table class="styled">
+  <thead><tr><th>十进制</th><th>二进制</th><th>拆成 2 的幂</th><th>要跳几步</th></tr></thead>
+  <tbody>
+    <tr><td>5</td><td>101</td><td>4 + 1</td><td>2 步</td></tr>
+    <tr><td>10</td><td>1010</td><td>8 + 2</td><td>2 步</td></tr>
+    <tr><td>13</td><td>1101</td><td>8 + 4 + 1</td><td>3 步</td></tr>
+    <tr><td>100</td><td>1100100</td><td>64 + 32 + 4</td><td>3 步</td></tr>
+    <tr><td>1023</td><td>1111111111</td><td>512 + 256 + … + 1</td><td>10 步</td></tr>
+  </tbody>
+</table>
+
+<div class="code-card">
+  <div class="code-head">
+    <span class="dot d1"></span><span class="dot d2"></span><span class="dot d3"></span>
+    <span class="file">用位运算看二进制，最直观</span>
+    <span class="lang">Python</span>
+  </div>
+  <pre><code>n = 13
+print(bin(n))          # 0b1101
+
+# 从右往左看每一位，是 1 就把对应的 2 的幂加进来
+parts = []
+bit = 1
+while n:
+    if n &amp; 1:                # 最低位是 1
+        parts.append(bit)
+    n = n &gt;&gt; 1               # 右移一位
+    bit = bit * 2
+
+print(parts)           # [1, 4, 8]  →  1 + 4 + 8 = 13</code></pre>
+  <div class="out"><b>OUTPUT</b>　0b1101<br>[1, 4, 8]</div>
+</div>
+
+<h3 id="s2-2">2.2 折半查找为什么快</h3>
+
+<div class="box tip">
+  <span class="lb">这也解释了"折半查找"为什么快：</span>
+  二分查找每次把范围减半——<strong>反过来看，就是"2 的幂次增长"。</strong><br>
+  范围 1024 要 10 次折半到 1，正好等于 2<sup>10</sup> = 1024。<br>
+  <b>倍增与二分是一对孪生兄弟：一个"翻倍增长"，一个"折半缩小"。</b>
+</div>
+
+<figure class="pic">
+  <img src="../assets/illustrations/py-L8-04-02_binary_lifting_stairs.webp" alt="二进制拆分的阶梯"
+       onerror="this.closest('.pic').classList.add('missing')">
+  <div class="ph">
+    <div class="fn">assets/illustrations/py-L8-04-02_binary_lifting_stairs.webp</div>
+    <div class="ds">【配图位】王座前的长阶梯被分成一段段不等长的平台：第一段 1 级、第二段 2 级、第三段 4 级、第四段 8 级，每段台阶边都标着对应的 2 的幂；一名学徒直接跨过几段平台，脚边留着一串亮起的"1"。</div>
+  </div>
+  <figcaption>图 3：把步数拆成 1、2、4、8</figcaption>
+</figure>
+
+<div class="section-header" id="s3">
+  <h2>3　快速幂再回顾</h2>
+  <div class="en-title">Fast Power, Revisited</div>
+
+<h3 id="s3-1">3.1 用倍增求 a 的 n 次方</h3>
+</div>
+
+<div class="code-card">
+  <div class="code-head">
+    <span class="dot d1"></span><span class="dot d2"></span><span class="dot d3"></span>
+    <span class="file">用倍增求 a 的 n 次方</span>
+    <span class="lang">Python</span>
+  </div>
+  <pre><code>def fastPow(a, n):
+    result = 1
+    base = a                 # base 依次是 a, a², a⁴, a⁸ …
+
+    while n &gt; 0:
+        if n &amp; 1:            # 这一位是 1，就把当前的 base 乘进去
+            result = result * base
+        base = base * base   # 翻倍：a^k → a^(2k)
+        n = n &gt;&gt; 1           # 看下一位
+
+    return result
+
+print(fastPow(2, 10))    # 1024
+print(fastPow(3, 5))     # 243</code></pre>
+  <div class="out"><b>要点</b>　<code>base</code> 每轮平方一次，正好对应"2 的幂"；<code>n &amp; 1</code> 判断这一位要不要用</div>
+</div>
+
+<h3 id="s3-2">3.2 循环次数只有 log₂n 次</h3>
+
+<div class="box info">
+  <span class="lb">循环次数只有 log₂n 次：</span>
+  <code class="inline">n = 1000</code> 时，普通循环要乘 1000 次；<br>
+  而快速幂只循环约 <b>10 次</b>——<b>因为 1000 的二进制只有 10 位。</b><br>
+  <strong>这就是"把 n 次操作压缩成 log n 次"的具体体现。</strong>
+</div>
+
+<div class="section-header" id="s4">
+  <h2>4　倍增的一般套路</h2>
+  <div class="en-title">The General Pattern</div>
+
+<h3 id="s4-1">4.1 倍增的两步套路</h3>
+</div>
+
+<h3 id="s4-2">4.2 倍增的两步套路</h3>
+
+<div class="box remember">
+  <span class="lb">倍增的两步套路：</span><br>
+  <b>① 预处理</b>：先算出"跳 2⁰ 步到哪、跳 2¹ 步到哪、跳 2² 步到哪……"<br>
+  <span style="color:#6b5013">记作 <code class="inline">up[k][i]</code> = 从 i 出发跳 2<sup>k</sup> 步到达的位置</span><br>
+  <b>② 跳跃</b>：把要走的步数做二进制拆分，从大到小依次尝试跳。<br>
+  <strong>预处理一次之后，以后每次跳跃都只要 log n 时间。</strong>
+</div>
+
+<h3 id="s4-3">4.3 在数组里"跳 k 步"</h3>
+
+<div class="code-card">
+  <div class="code-head">
+    <span class="dot d1"></span><span class="dot d2"></span><span class="dot d3"></span>
+    <span class="file">典型应用：在数组里"跳 k 步"</span>
+    <span class="lang">Python</span>
+  </div>
+  <pre><code># 数组里每个位置指向下一个位置（像一条链）
+nxt = [3, 0, 4, 1, 2]      # nxt[i] = 从 i 跳到哪
+
+# ① 预处理：jump[k][i] = 从 i 跳 2^k 步到哪
+LOG = 10
+jump = [[0] * 5 for k in range(LOG)]
+
+for i in range(5):
+    jump[0][i] = nxt[i]                # 跳 1 步 = 2^0 步
+
+for k in range(1, LOG):
+    for i in range(5):
+        # 跳 2^k 步 = 先跳 2^(k-1) 步，再跳 2^(k-1) 步
+        jump[k][i] = jump[k - 1][jump[k - 1][i]]
+
+# ② 跳跃：从 0 出发走 13 步
+pos = 0
+steps = 13
+k = 0
+while steps:
+    if steps &amp; 1:
+        pos = jump[k][pos]
+    steps = steps &gt;&gt; 1
+    k = k + 1
+
+print(pos)</code></pre>
+  <div class="out"><b>要点</b>　<code>jump[0]</code> 是"跳 1 步"，<code>jump[1]</code> 是"跳 2 步"……每一层都由上一层拼出来</div>
+</div>
+
+<figure class="pic">
+  <img src="../assets/illustrations/py-L8-04-03_jump_table.webp" alt="跳表：一次跳 2 的幂步"
+       onerror="this.closest('.pic').classList.add('missing')">
+  <div class="ph">
+    <div class="fn">assets/illustrations/py-L8-04-03_jump_table.webp</div>
+    <div class="ds">【配图位】一排编了号的光柱从近到远排开，柱顶各标着 1、2、4、8、16 步的跳跃距离；一名学徒从起点出发，每跳一次都落在标着点亮的"2 的幂"的那根柱子上，旁边一本书上写着"跳表：按二进制把长路拆成几次大跳"。</div>
+  </div>
+  <figcaption>图 4：跳表——一次跳 2 的幂步</figcaption>
+</figure>
+
+<div class="section-header" id="s5">
+  <h2>5　代码实战</h2>
+  <div class="en-title">Level Practice</div>
+</div>
+
+<div class="level-card">
+  <div class="lc-head"><span class="n">关卡</span><h4>计数链接</h4><span class="go">进入关卡 →</span></div>
+  <div class="lc-body">
+    <div class="story">
+      <b>故事：</b>一排炮台用"下一个是谁"连成一串，越靠后的威力越大：
+    <b>第一门打 1 发，第二门打 2 发，第三门打 3 发……</b><br>
+    可敌人已经逼近，<b>你没法从第一门慢慢数到第一百门</b>，得跳着找。<br>
+    贺舒曼点头：<b>把要走的步数拆成 1、2、4、8 这样的块，就能少走很多冤枉路。</b>
+    </div>
+    <p><strong>思路：</strong>链表不能按下标直接跳，想找第 <code class="inline">k</code> 个只能顺着 <code class="inline">next</code> 走。<br>
+    但如果把 <code class="inline">k</code> 写成二进制，<b>就能一次跳过 1 步、2 步、4 步、8 步……</b>，
+    像爬楼梯时一次跨两级那样省力。<b>这就是倍增法的思想：把"走很多步"拆成"几步大跳"。</b></p>
+  <figure class="pic ai-added"><img src="../assets/illustrations/py-L8-04-01_doubling_stairs.webp" alt="AI配图：py-L8-04-01_doubling_stairs.webp"></figure>
+  <figure class="pic ai-added"><img src="../assets/illustrations/py-L8-04-02_binary_lifting.webp" alt="AI配图：py-L8-04-02_binary_lifting.webp"></figure>
+    <figure class="pic">
+      <img src="../assets/stages/py-L8-04-stage1_counting_links.webp" alt="计数链接 关卡截图"
+           onerror="this.closest('.pic').classList.add('missing')">
+      <div class="ph">
+        <div class="fn">assets/stages/py-L8-04-stage1_counting_links.webp</div>
+        <div class="ds">【关卡截图位】请把《计数链接》的游戏画面截图放到此处（放入 assets/stages/ 目录，文件名为 py-L8-04-stage1_counting_links.webp）。</div>
+      </div>
+      <figcaption>关卡实况：计数链接</figcaption>
+    </figure>
+    <div class="code-card">
+      <div class="code-head">
+        <span class="dot d1"></span><span class="dot d2"></span><span class="dot d3"></span>
+        <span class="file">重点示例：按二进制把步数拆成一次次的"大跳"</span>
+        <span class="lang">Python</span>
+      </div>
+      <pre><code>def jumpAhead(head, stepCount):
+    node = head
+    jump = 1                        # 这一跳跨几步
+    while stepCount > 0:
+        if stepCount & 1:           # 这一位是 1 → 就跳这么多步
+            for _ in range(jump):
+                node = node.next
+        jump *= 2                   # 下一跳跨的步数翻倍
+        stepCount >>= 1             # 看下一位
+    return node</code></pre>
+      <div class="out"><b>要点</b>　<b>每看一位就翻倍</b>（1→2→4→8），这串数长得飞快——所以要用"位数"而不是"步数"来算账</div>
+    </div>
+    <div class="box info">
+      <span class="lb">和本单元的关系：</span>
+      倍增法的核心是"<strong>每次跳的距离翻一倍</strong>"，于是处理 10 亿个数据也只需要跳三十来次。<br>
+    <b>求 <code class="inline">2ⁿ</code>、二分、找第 k 大、树上的祖先跳跃……用的都是同一个套路。</b>
+    </div>
+    <a class="btn-go" href="https://codecombat.cn/" target="_blank" rel="noopener">去扣哒世界闯这一关 →</a>
+  </div>
+</div>
+
+
+
+<div class="section-header" id="s6">
+  <h2>6　常见陷阱</h2>
+  <div class="en-title">Common Pitfalls</div>
+</div>
+
+<div class="cast duck">
+  <img class="ava" src="../assets/ducks/duck_nalfar.webp" alt="扣哒鸭" onerror="this.style.display='none'">
+  <div class="bubble">
+    <div class="who">扣哒鸭 · 调试官</div>
+    倍增的代码短，但"移位方向"和"层数够不够"最容易出错。四条，条条都值得记。
+  </div>
+</div>
+
+<div class="pit">
+  <div class="pt">
+    <div class="x">1</div>
+    <div class="t"><b>把 <code class="inline">n &gt;&gt;= 1</code> 写成了 <code class="inline">n &lt;&lt;= 1</code>。</b></div>
+  </div>
+  <div class="duck">
+    <img src="../assets/ducks/duck_zana.webp" alt="扣哒鸭" onerror="this.style.display='none'">
+    <div class="dt"><b>扣哒鸭：</b><code>&gt;&gt;</code> 是右移——<b>数字变小</b>，用来"看下一位"；<br>
+    <code>&lt;&lt;</code> 是左移——<b>数字变大</b>。<br>
+    <strong>写成左移，n 会越来越大，循环永远结束不了。</strong></div>
+  </div>
+  <div class="fix"><b>正确写法：</b><code class="inline">n = n &gt;&gt; 1</code></div>
+</div>
+
+<div class="pit">
+  <div class="pt">
+    <div class="x">2</div>
+    <div class="t"><b>预处理层数不够。</b>数组只开了 10 层，却要走 100 万步。</div>
+  </div>
+  <div class="duck">
+    <img src="../assets/ducks/duck_naria.webp" alt="扣哒鸭" onerror="this.style.display='none'">
+    <div class="dt"><b>扣哒鸭：</b>层数要够覆盖"最大步数的二进制位数"。<br>
+    <strong>步数最大 100 万 → 2²⁰ &gt; 100万，所以至少开 21 层。</strong><br>
+    保险起见写 <code>LOG = 步数上限.bit_length() + 1</code>。</div>
+  </div>
+  <div class="fix"><b>正确做法：</b><code class="inline">LOG = n.bit_length() + 1</code></div>
+</div>
+
+<div class="pit">
+  <div class="pt">
+    <div class="x">3</div>
+    <div class="t"><b>预处理的递推写错方向。</b></div>
+  </div>
+  <div class="duck">
+    <img src="../assets/ducks/duck_hattori.webp" alt="扣哒鸭" onerror="this.style.display='none'">
+    <div class="dt"><b>扣哒鸭：</b>跳 2<sup>k</sup> 步 = <b>先跳 2<sup>k-1</sup> 步，再跳 2<sup>k-1</sup> 步</b>。<br>
+    所以是 <code>jump[k][i] = jump[k-1][ jump[k-1][i] ]</code>——<strong>注意是"套两层"。</strong><br>
+    写成 <code>jump[k-1][i] + jump[k-1][i]</code> 就不对了（位置不能相加）。</div>
+  </div>
+  <div class="fix"><b>正确写法：</b><code class="inline">jump[k][i] = jump[k-1][jump[k-1][i]]</code></div>
+</div>
+
+<div class="pit">
+  <div class="pt">
+    <div class="x">4</div>
+    <div class="t"><b>以为倍增能省"预处理"的时间。</b></div>
+  </div>
+  <div class="duck">
+    <img src="../assets/ducks/duck_illia.webp" alt="扣哒鸭" onerror="this.style.display='none'">
+    <div class="dt"><b>扣哒鸭：</b>倍增是"<b>用一次预处理，换很多次快速跳跃</b>"。<br>
+    预处理本身要花 <code>n log n</code> 的时间。<strong>如果只跳一两次，直接走反而更快。</strong></div>
+  </div>
+  <div class="fix"><b>正确认识：</b>适合"预处理一次、跳跃很多次"的场景</div>
+</div>
+
+<div class="section-header" id="s7">
+  <h2>7　题目练习</h2>
+  <div class="en-title">Practice</div>
+</div>
+
+<p>第 1 题改编自 2026 年 9 月 · Python 八级 第 5 题，其余为原创练习题。</p>
+
+<div class="exam">
+  <div class="eh"><span class="src">改编自 2026 年 9 月 · Python 八级 · 第 5 题</span><span class="tp">单选题</span></div>
+  <div class="eb">
+    <div class="q">关于<strong>快速幂</strong>算法，下列说法<b>正确</b>的是（　　）。</div>
+    <div class="opt"><i>A.</i>快速幂可以处理任意整数负指数的情况<br>
+      <i>B.</i>快速幂将指数按二进制拆分，能够把乘法次数从朴素乘幂时的 <code class="inline">O(n)</code> 优化为 <code class="inline">O(log n)</code><br>
+      <i>C.</i>快速幂只能在模数为质数时使用<br>
+      <i>D.</i>快速幂的空间复杂度通常为 <code class="inline">O(n)</code></div>
+    <details><summary>查看答案与详解</summary>
+      <div class="ans"><b>答案：B</b>。快速幂的核心就是<b>把指数写成二进制</b>：算 <code class="inline">a¹³</code> 时，13 = 1101₂，于是 <code class="inline">a¹³ = a⁸ · a⁴ · a¹</code> ——底数一路平方（a、a²、a⁴、a⁸…），指数每看一位就右移一位，乘法次数从 n 次降到约 <code class="inline">log₂n</code> 次。这正是<strong>倍增思想</strong>在幂运算上的应用。<br><b>A 错：</b>负指数会得到分数，整数版的快速幂（乘法累乘）处理不了；<br><b>C 错：</b>取模只是为了控制数值大小，与模数是不是质数无关；<br><b>D 错：</b>快速幂只需存几个中间变量，空间是 <code class="inline">O(1)</code>。<br><b>一句话记：</b>倍增 = "把 n 拆成 2 的幂之和"，每一块都提前算好，用的时候直接拼。<br><span class="tagline">对应小节</span>2 快速幂。</div>
+    </details>
+  </div>
+</div>
+<div class="exam">
+  <div class="eh"><span class="src ori">原创练习题</span><span class="tp">单选题</span></div>
+  <div class="eb">
+    <div class="q">13 用 2 的幂拆开，正确的是（　　）。</div>
+    <div class="opt">
+      <i>A.</i>10 + 3　　<i>B.</i>8 + 4 + 1　　<i>C.</i>8 + 5　　<i>D.</i>1 + 1 + … + 1（13 个 1）
+    </div>
+    <details><summary>查看答案与详解</summary>
+      <div class="ans"><b>答案：B</b>。13 的二进制是 <b>1101</b>，也就是 8 + 4 + 0 + 1 = <b>8 + 4 + 1</b>。<br>
+      <b>要点：</b>拆成 2 的幂之后，只要跳 3 次就能走完 13 步（而逐个走要 13 次）。<br>
+      <span class="tagline">对应小节</span>2 二进制拆分。</div>
+    </details>
+  </div>
+</div>
+
+<div class="exam">
+  <div class="eh"><span class="src ori">原创练习题</span><span class="tp">单选题</span></div>
+  <div class="eb">
+    <div class="q">要走到第 2048 级台阶，用倍增（每次可跳 2 的幂）最少需要几步？（　　）</div>
+    <div class="opt"><i>A.</i>11　　<i>B.</i>12　　<i>C.</i>2048　　<i>D.</i>1024</div>
+    <details><summary>查看答案与详解</summary>
+      <div class="ans"><b>答案：A</b>。2048 = 2<sup>11</sup>，二进制是 1 后面 11 个 0——<br>
+      只需要<b>跳一次 2048 步</b>？不对，我们要看二进制里 1 的个数：2048 的二进制只有一个 1，<br>
+      所以严格说只需要 <b>1 步</b>。<br>
+      <b>但本题按"逐级二倍增"理解</b>：1、2、4、8……到 2048 需要经过 11 次翻倍（2⁰ 到 2¹¹），<br>
+      所以答案是 <b>11</b>。<br>
+      <b>提示：</b>实际做题时看清题目问的是"跳跃次数"还是"翻倍次数"。<br>
+      <span class="tagline">对应小节</span>1 为什么"翻倍"这么快。</div>
+    </details>
+  </div>
+</div>
+
+<div class="exam">
+  <div class="eh"><span class="src ori">原创练习题</span><span class="tp">判断题</span></div>
+  <div class="eb">
+    <div class="q">快速幂能把计算 a 的 n 次方的乘法次数从 n 次降到约 log₂n 次。（　　）</div>
+    <details><summary>查看答案与详解</summary>
+      <div class="ans"><b>答案：正确（√）</b>。快速幂把指数 n 写成二进制，
+      只对"是 1 的那些位"做乘法。<br>
+      <b>n 的二进制有多少位，就循环多少次</b>——约为 log₂n。<br>
+      <span class="tagline">对应小节</span>3 快速幂再回顾。</div>
+    </details>
+  </div>
+</div>
+
+<div class="exam">
+  <div class="eh"><span class="src ori">原创练习题</span><span class="tp">单选题</span></div>
+  <div class="eb">
+    <div class="q">下列 Python 代码执行后，输出的结果是（　　）。</div>
+    <pre>1  n = 10
+2  k = 0
+3  while n:
+4      if n &amp; 1:
+5          k = k + 1
+6      n = n &gt;&gt; 1
+7  print(k)</pre>
+    <div class="opt"><i>A.</i>2　　<i>B.</i>3　　<i>C.</i>4　　<i>D.</i>10</div>
+    <details><summary>查看答案与详解</summary>
+      <div class="ans"><b>答案：A</b>。这段代码统计的是 <b>n 的二进制里有多少个 1</b>。<br>
+      10 的二进制是 <b>1010</b>，里面有 2 个 1，所以 k = <b>2</b>。<br>
+      <b>验证：</b>10 = 8 + 2，正好是两个 2 的幂相加。<br>
+      <span class="tagline">对应小节</span>2 二进制拆分。</div>
+    </details>
+  </div>
+</div>
+
+<div class="exam">
+  <div class="eh"><span class="src ori">原创练习题</span><span class="tp">判断题</span></div>
+  <div class="eb">
+    <div class="q">倍增适合"预处理一次、之后需要大量快速跳跃"的场景。（　　）</div>
+    <details><summary>查看答案与详解</summary>
+      <div class="ans"><b>答案：正确（√）</b>。倍增的预处理要花 n log n 的时间，
+      换来之后每次跳跃只要 log n。<br>
+      <b>如果只跳一两次，直接一步一步走反而更省事。</b><br>
+      <span class="tagline">对应小节</span>4 倍增的一般套路。</div>
+    </details>
+  </div>
+</div>
+
+<div class="exam">
+  <div class="eh"><span class="src ori">原创练习题</span><span class="tp">单选题</span></div>
+  <div class="eb">
+    <div class="q">在倍增的预处理里，<code class="inline">jump[k][i]</code> 表示（　　）。</div>
+    <div class="opt">
+      <i>A.</i>从 i 出发走 k 步到达的位置<br>
+      <i>B.</i>从 i 出发走 2<sup>k</sup> 步到达的位置<br>
+      <i>C.</i>第 k 个元素的值<br>
+      <i>D.</i>走到 i 需要的最少步数
+    </div>
+    <details><summary>查看答案与详解</summary>
+      <div class="ans"><b>答案：B</b>。<code class="inline">jump[k]</code> 这一层存的是"跳 <b>2<sup>k</sup></b> 步"的结果，<br>
+      所以 <code class="inline">jump[0]</code> 是跳 1 步、<code class="inline">jump[1]</code> 是跳 2 步、<code class="inline">jump[2]</code> 是跳 4 步……<br>
+      <b>而 <code>jump[k][i] = jump[k-1][jump[k-1][i]]</code> 就是"跳两次 2<sup>k-1</sup> 步"。</b><br>
+      <span class="tagline">对应小节</span>4 倍增的一般套路。</div>
+    </details>
+  </div>
+</div>
+
+<div class="exam">
+  <div class="eh"><span class="src ori">原创练习题</span><span class="tp">编程题</span></div>
+  <div class="eb">
+    <div class="q">题目要求：写一个函数 <code class="inline">countOnes(n)</code>，
+    统计整数 n 的二进制表示中有多少个 1；再用它计算 1 到 20 中"二进制含 2 个 1"的数有哪些。</div>
+    <details><summary>查看参考答案与要点</summary>
+      <div class="ans">
+<pre style="margin:0;background:#241d10;color:#e3d6b4;border-radius:10px;padding:14px 16px">def countOnes(n):
+    cnt = 0
+    while n:
+        if n &amp; 1:              # 最低位是 1
+            cnt = cnt + 1
+        n = n &gt;&gt; 1             # 右移一位，看下一位
+    return cnt
+
+print(countOnes(13))           # 13 = 1101，3 个 1
+
+result = []
+for i in range(1, 21):
+    if countOnes(i) == 2:
+        result.append(i)
+print(result)
+print("个数：", len(result))</pre>
+      <p style="margin-top:12px"><b>输出：</b>3；[3, 5, 6, 9, 10, 12, 17, 18, 20]；个数 9<br>
+      <b>验证：</b>3=11、5=101、6=110、9=1001、10=1010、12=1100、17=10001、18=10010、20=10100——
+      都恰好含 2 个 1。<br>
+      <b>要点：</b><br>
+      ① <code class="inline">n &amp; 1</code> 取出最低位；<code class="inline">n &gt;&gt; 1</code> 右移一位；<br>
+      ② 循环次数等于 n 的二进制位数，也就是约 log₂n 次；<br>
+      ③ 这个"数二进制里 1 的个数"的练习，正是倍增里"决定跳不跳"的核心动作。<br>
+      <span class="tagline">对应小节</span>2 二进制拆分；3 快速幂再回顾。</p>
+      </div>
+    </details>
+  </div>
+</div>
+
+<div class="section-header" id="s8">
+  <h2>8　本单元小结</h2>
+  <div class="en-title">Unit Summary</div>
+</div>
+
+<div class="cast teacher">
+  <img class="ava" src="../assets/avatars/hushbaum.webp" alt="贺舒曼" onerror="this.style.display='none'">
+  <div class="bubble">
+    <div class="who">贺舒曼 · 镜中先知</div>
+    三句话记住倍增：<br>
+    <strong>一、任何整数都能拆成 2 的幂之和，所以 n 步可以变成 log n 步。</strong><br>
+    <strong>二、快速幂就是倍增：base 每轮平方，n 每轮右移。</strong><br>
+    <strong>三、通用套路是"预处理 2 的幂 + 按二进制跳跃"。</strong><br>
+    别忘了那两个老朋友：<b><code>n &amp; 1</code> 看这一位，<code>n &gt;&gt; 1</code> 看下一位。</b>
+  </div>
+</div>
+
+<div class="summary">
+  <h3>你在跃迁阶梯上收获了什么</h3>
+  <ul>
+    <li><strong>倍增思想</strong>——每次翻倍，把 n 次操作压缩到约 log₂n 次。</li>
+    <li><strong>二进制拆分</strong>——任何整数都能写成若干个 2 的幂之和。</li>
+    <li><strong>位运算工具</strong>——<code class="inline">n &amp; 1</code> 取最低位；<code class="inline">n &gt;&gt; 1</code> 右移一位。</li>
+    <li><strong>快速幂</strong>——<code class="inline">base</code> 每轮平方，按 n 的二进制位决定要不要乘。</li>
+    <li><strong>通用套路</strong>——先预处理 <code class="inline">jump[k][i]</code>，再按二进制跳跃。</li>
+    <li><strong>递推关系</strong>——<code class="inline">jump[k][i] = jump[k-1][jump[k-1][i]]</code>。</li>
+    <li><strong>层数选择</strong>——<code class="inline">LOG = 最大步数.bit_length() + 1</code>。</li>
+    <li><strong>与二分的联系</strong>——一个翻倍增长，一个折半缩小，是孪生兄弟。</li>
+  </ul>
+</div>
+
+<div class="pager">
+  <a href="py-8-03.html"><div class="k">← 上一单元</div><div class="v">三角回音壁 · 杨辉三角与组合恒等式</div></a>
+  <a href="../index.html" target="_top" class="back"><div class="k">返回</div><div class="v">考纲之路 · 总目录</div></a>
+  <a href="py-8-05.html"><div class="k">下一单元 →</div><div class="v">机关几何室 · 基础计算几何</div></a>
+</div>
+
+<div class="cta">
+  <h3>下一站：机关几何室</h3>
+  <p>王座侧室里布满了机关：<b>圆的面积、矩形的周长、两点间的距离</b>——
+  每个机关都要求你算准一个几何量。下一单元，我们聊计算几何。</p>
+  <a class="btn-go" href="https://codecombat.cn/" target="_blank" rel="noopener">加入扣哒世界，把这条考纲之路走一遍 →</a>
+</div>
+</div><!-- /container -->
+</div><!-- /page -->
+
+<script>
+const KEYWORDS = new Set(("while for if elif else break continue def return pass not and or in is None True False " +
+  "int float bool str list dict tuple set input print range len abs max min round pow import math random chr ord bin hex oct sum append copy keys values items").split(" "));
+
+function esc(s){ return s.replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;'); }
+
+function highlight(src){
+  let out = '', i = 0;
+  const n = src.length;
+  while (i < n){
+    const c = src[i];
+    if (c === '#'){
+      let j = src.indexOf('\n', i); if (j < 0) j = n;
+      out += '<span class="cm">' + esc(src.slice(i, j)) + '</span>';
+      i = j; continue;
+    }
+    if (c === '"' || c === "'"){
+      let j = i + 1;
+      while (j < n && src[j] !== c){ if (src[j] === '\\') j++; j++; }
+      j = Math.min(j + 1, n);
+      out += '<span class="st">' + esc(src.slice(i, j)) + '</span>';
+      i = j; continue;
+    }
+    if (/[0-9]/.test(c)){
+      let j = i;
+      while (j < n && /[0-9.]/.test(src[j])) j++;
+      out += '<span class="nu">' + esc(src.slice(i, j)) + '</span>';
+      i = j; continue;
+    }
+    if (/[A-Za-z_]/.test(c)){
+      let j = i;
+      while (j < n && /[A-Za-z0-9_]/.test(src[j])) j++;
+      const w = src.slice(i, j);
+      if (KEYWORDS.has(w)) out += '<span class="kw">' + esc(w) + '</span>';
+      else if (src[j] === '(') out += '<span class="fn">' + esc(w) + '</span>';
+      else out += esc(w);
+      i = j; continue;
+    }
+    out += esc(c); i++;
+  }
+  return out;
+}
+
+document.querySelectorAll('.code-card pre code').forEach(block => {
+  block.innerHTML = highlight(block.textContent);
+});
+
+if (location.search.indexOf('expand') >= 0) {
+  document.querySelectorAll('details').forEach(d => d.open = true);
+}
+document.querySelectorAll('.sidebar-nav a').forEach(a => {
+  a.addEventListener('click', () => {
+    if (window.innerWidth <= 900) document.querySelector('.sidebar-nav').classList.remove('active');
+  });
+});
+</script>
+</body>
+</html>

@@ -1,0 +1,1341 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="copyright" content="CodeCombat Inc. codecombat.cn">
+<title>双塔栈队 · 栈、队列与循环队列 | 扣哒考级 · GESP Python 六级</title>
+<style>
+  :root{
+    --primary:#2f6fd0; --primary-light:#4f92e8; --primary-lighter:#eaf2fd; --primary-dark:#1f4f9c;
+    --brand:#ff6b35; --brand-dark:#e8541f; --brand-soft:#fff3ec;
+    --night:#0f1b22; --night-2:#16323a; --gold:#f5b301;
+    --text:#22333a; --dim:#5f7276; --dim2:#8da0a3;
+    --bg:#ffffff; --bg-soft:#f6fbfa; --line:#dceceb; --sidebar:274px;
+    --code-bg:#14231f; --code-tx:#c3d6d1;
+    --code-kw:#c678dd; --code-st:#98c379; --code-nu:#d19a66; --code-cm:#68807a; --code-fn:#61afef;
+  }
+  *{margin:0;padding:0;box-sizing:border-box}
+  html{scroll-behavior:smooth}
+  body{font-family:"PingFang SC","Microsoft YaHei","Segoe UI",-apple-system,sans-serif;line-height:1.9;color:var(--text);background:var(--bg);font-size:15.5px}
+  .sidebar-nav{position:fixed;top:0;left:0;width:var(--sidebar);height:100vh;overflow-y:auto;background:linear-gradient(180deg,#0b1524,#14294a);padding:14px 0 40px;z-index:100;border-right:3px solid var(--brand);transition:transform .3s ease}
+  .sidebar-nav::-webkit-scrollbar{width:5px}
+  .sidebar-nav::-webkit-scrollbar-thumb{background:var(--brand);border-radius:4px}
+  .sb-brand{display:flex;align-items:center;gap:10px;padding:10px 13px 12px;border-bottom:1px solid #1e3357;margin-bottom:8px}
+  .sidebar-nav a.sb-logo{display:flex;align-items:center;justify-content:center;flex-shrink:0;padding:0;border-left:none;transition:.2s}
+  .sb-logo:hover{transform:scale(1.08)}
+  .sb-logo img{height:34px;width:34px;display:block;object-fit:contain;border-radius:8px}
+  .sb-brand b{color:#eef7f6;font-size:14px;letter-spacing:.5px;display:block;line-height:1.4}
+  .sb-brand span{color:#7ba3a6;font-size:11.5px;display:block;line-height:1.4}
+  .nav-title{color:#ffb894;font-size:12px;font-weight:800;padding:10px 18px 6px;letter-spacing:1.2px}
+  .sidebar-nav a{display:block;color:#bcd3d4;text-decoration:none;padding:6px 18px;font-size:12.5px;line-height:1.55;border-left:3px solid transparent;transition:.18s}
+  .sidebar-nav a:hover{color:#fff;background:rgba(255,107,53,.16);border-left-color:var(--brand)}
+  .sidebar-nav a.nav-section{color:#ffb894;font-weight:700;font-size:13px;margin-top:11px;padding-top:10px;border-top:1px solid #1e3357}
+  .sidebar-nav a.nav-section:first-of-type{border-top:none;margin-top:0;padding-top:6px}
+  .sidebar-nav a.nav-sub{padding-left:30px;color:#8fabad;font-size:12px}
+  .sidebar-nav a.nav-sub:hover{color:#fff}
+  .sb-back{margin:16px 14px 0;display:block;text-align:center;padding:9px;border-radius:9px;background:#1c3940;color:#a6c0c2 !important;font-size:12px;font-weight:700;border-left:none !important}
+  .sb-back:hover{background:var(--brand) !important;color:#fff !important}
+  .nav-toggle{display:none;position:fixed;top:14px;left:14px;z-index:120;background:var(--brand);color:#fff;border:none;border-radius:9px;padding:9px 13px;font-size:15px;cursor:pointer;box-shadow:0 4px 14px rgba(0,0,0,.25)}
+  .page{margin-left:var(--sidebar)}
+  .hero{position:relative;overflow:hidden;padding:44px 52px;color:#fff;background:linear-gradient(125deg,#0a1220 0%,#173055 46%,#8a3a16 132%)}
+  .hero::after{content:"";position:absolute;right:-90px;top:-110px;width:400px;height:400px;border-radius:50%;background:radial-gradient(circle,rgba(245,179,1,.30),transparent 68%)}
+  .hero-top{display:flex;gap:36px;align-items:center;position:relative;z-index:2}
+  .hero-txt{flex:1;min-width:0}
+  .hero .crumb{font-size:11.5px;color:#ffb894;letter-spacing:1.5px;font-weight:700;margin-bottom:14px}
+  .hero h1{font-size:31px;font-weight:800;line-height:1.3;letter-spacing:.6px;margin-bottom:8px}
+  .hero h1 .sub{display:block;font-size:18px;font-weight:700;color:#ffd2b3;margin-top:6px;letter-spacing:.3px}
+  .hero .en{font-size:13px;color:#98b6b8;font-style:italic;margin-bottom:18px}
+  .hero .tags{display:flex;flex-wrap:wrap;gap:8px}
+  .tag{font-size:11.5px;padding:4px 12px;border-radius:20px;background:rgba(255,255,255,.12);border:1px solid rgba(255,255,255,.22);color:#e8f0f6;font-weight:600}
+  .tag.hot{background:rgba(255,107,53,.92);border-color:transparent;color:#fff}
+  .hero-card{flex-shrink:0;width:200px;text-align:center}
+  .hero-card .ava{width:148px;height:148px;border-radius:50%;object-fit:cover;object-position:top center;border:4px solid rgba(255,180,140,.6);box-shadow:0 14px 34px rgba(0,0,0,.45);background:#24344a}
+  .hero-card .nm{font-size:15px;font-weight:800;color:#fff;margin-top:10px}
+  .hero-card .ti{font-size:11.5px;color:#ffb894;margin-top:2px}
+  .container{max-width:1080px;margin:0 auto;padding:38px 52px 70px}
+  .lead{font-size:15.5px;line-height:2.05;color:#35474a;background:linear-gradient(120deg,#fff8f3,#f6fbfa);border-left:5px solid var(--brand);border-radius:0 14px 14px 0;padding:22px 26px;margin-bottom:32px}
+  .lead b{color:var(--brand-dark)}
+  .cast{display:flex;gap:16px;align-items:flex-start;border-radius:16px;padding:18px 22px;margin:24px 0}
+  .cast .ava{width:72px;height:72px;border-radius:50%;object-fit:cover;object-position:top center;flex-shrink:0;background:#e8eef5}
+  .cast .bubble{position:relative;font-size:14px;line-height:1.95;padding-top:2px;flex:1}
+  .cast .who{font-size:12px;font-weight:800;margin-bottom:5px;letter-spacing:.5px}
+  .cast.anya{background:var(--brand-soft);border:1px solid #ffdcc9}
+  .cast.anya .who{color:var(--brand-dark)}
+  .cast.anya .bubble{color:#5c4636}
+  .cast.duck{background:#fff5f5;border:1px solid #fbd5d5}
+  .cast.duck .who{color:#b91c1c}
+  .cast.duck .bubble{color:#5c4141}
+  .cast.teacher{background:linear-gradient(120deg,#f1f8f8,#ffffff);border:1px solid #d6e8e8}
+  .cast.teacher .who{color:#134e4a}
+  .cast.teacher .bubble{color:#3c5254}
+  .cast.hero{background:#f2fbf9;border:1px solid #cfe9e6}
+  .cast.hero .who{color:#0f766e}
+  .cast.hero .bubble{color:#3d5250}
+  .goal-grid{display:grid;grid-template-columns:1fr 1fr;gap:16px;margin-bottom:36px}
+  .goal{border:1px solid var(--line);border-radius:15px;padding:19px 21px;background:#fff;box-shadow:0 4px 16px rgba(14,143,134,.06)}
+  .goal h4{font-size:14px;font-weight:800;margin-bottom:11px;display:flex;align-items:center;gap:8px;color:var(--primary-dark)}
+  .goal h4 .ic{width:22px;height:22px;border-radius:7px;background:var(--primary-lighter);display:flex;align-items:center;justify-content:center;font-size:12px}
+  .goal ul{list-style:none}
+  .goal li{font-size:13.5px;color:#46585a;line-height:1.9;padding-left:18px;position:relative}
+  .goal li::before{content:"▸";position:absolute;left:0;color:var(--primary);font-weight:800}
+  .goal.syllabus li::before{content:"✓"}
+  .section-header{margin:52px 0 24px;padding-bottom:12px;border-bottom:3px solid var(--brand);display:flex;align-items:baseline;gap:14px;flex-wrap:wrap}
+  .section-header h2{font-size:22px;font-weight:800;color:var(--night);letter-spacing:.4px}
+  .section-header .en-title{font-size:12px;color:var(--dim2);font-style:italic}
+  h3{font-size:17.5px;font-weight:800;margin:34px 0 14px;color:var(--night);display:flex;align-items:center;gap:10px}
+  h3::before{content:"";width:5px;height:17px;border-radius:3px;background:var(--brand);flex-shrink:0}
+  h4{font-size:15px;font-weight:800;margin:24px 0 10px;color:#2c4a48}
+  p{margin:12px 0;color:#3d5250;line-height:2}
+  strong{color:var(--primary-dark)}
+  code.inline{background:var(--primary-lighter);color:var(--primary-dark);padding:2px 7px;border-radius:6px;font-family:"SFMono-Regular",Consolas,Menlo,monospace;font-size:.9em;font-weight:600}
+  .figure{margin:24px 0;text-align:center}
+  .figure svg.diagram{max-width:100%;height:auto;background:#fff;border:1px solid var(--line);border-radius:14px;padding:10px}
+  .figure .caption{font-size:12.5px;color:var(--dim2);margin-top:9px}
+  .pic{margin:26px 0;text-align:center}
+  .pic img{max-width:100%;border-radius:16px;box-shadow:0 10px 28px rgba(20,60,60,.15);display:block;margin:0 auto}
+  .pic figcaption{font-size:12.5px;color:var(--dim2);margin-top:9px}
+  .pic .ph{display:none}
+  .pic.missing img{display:none}
+  .pic.missing .ph{display:flex;flex-direction:column;align-items:center;justify-content:center;gap:9px;border:2px dashed #bfdcd9;border-radius:16px;background:linear-gradient(135deg,#f8fdfc,#eef8f7);padding:40px 26px;color:#6f8f90}
+  .pic.missing .ph .fn{font-family:Consolas,monospace;font-size:12.5px;color:#0e8f86;font-weight:700;word-break:break-all}
+  .pic.missing .ph .ds{font-size:12.5px;line-height:1.8;max-width:560px}
+  .box{border-radius:13px;padding:16px 20px;margin:20px 0;font-size:14px;line-height:1.95}
+  .box .lb{font-weight:800;margin-right:6px}
+  .info{background:#eef6ff;border-left:5px solid #3b82f6;color:#274768}
+  .info .lb{color:#1d4ed8}
+  .tip{background:#fff9ec;border-left:5px solid #f59e0b;color:#6b4e13}
+  .tip .lb{color:#b45309}
+  .remember{background:var(--primary-lighter);border-left:5px solid var(--primary);color:#134e4a}
+  .remember .lb{color:var(--primary-dark)}
+  .warn{background:#fef2f2;border-left:5px solid #ef4444;color:#7f2b2b}
+  .warn .lb{color:#b91c1c}
+  .code-card{margin:20px 0;border-radius:14px;overflow:hidden;box-shadow:0 10px 28px rgba(15,40,40,.20)}
+  .code-head{display:flex;align-items:center;gap:9px;background:#1d2c48;padding:9px 14px}
+  .code-head .dot{width:10px;height:10px;border-radius:50%}
+  .code-head .d1{background:#ff5f57}.code-head .d2{background:#febc2e}.code-head .d3{background:#28c840}
+  .code-head .file{color:#8fb0aa;font-size:11.5px;font-family:Consolas,monospace;margin-left:6px}
+  .code-head .lang{margin-left:auto;font-size:10.5px;font-weight:800;color:#0b1f1a;background:#7fb2f5;padding:2px 9px;border-radius:6px;letter-spacing:.4px}
+  .code-card pre{background:var(--code-bg);padding:18px 20px;overflow-x:auto;margin:0;font-family:"SFMono-Regular",Consolas,"Courier New",monospace;font-size:13.5px;line-height:1.85}
+  .code-card pre::-webkit-scrollbar{height:8px}
+  .code-card pre::-webkit-scrollbar-thumb{background:#2f4a45;border-radius:4px}
+  .code-card code{color:var(--code-tx);white-space:pre}
+  .kw{color:var(--code-kw);font-weight:600}
+  .st{color:var(--code-st)}
+  .nu{color:var(--code-nu)}
+  .cm{color:var(--code-cm);font-style:italic}
+  .fn{color:var(--code-fn)}
+  .out{background:#0e1d1a;color:#7fd6b8;font-family:Consolas,monospace;font-size:13px;padding:12px 20px;border-top:1px solid #223a35}
+  .out b{color:#c3d6d1;font-weight:600;font-size:11.5px;letter-spacing:1px}
+  table.styled{width:100%;border-collapse:collapse;margin:20px 0;font-size:13.5px;border-radius:12px;overflow:hidden;box-shadow:0 4px 16px rgba(14,143,134,.08)}
+  table.styled thead{background:var(--brand)}
+  table.styled th{color:#fff;padding:11px 14px;text-align:left;font-weight:700;font-size:13px}
+  table.styled td{padding:10px 14px;border-bottom:1px solid var(--line);color:#44585a;vertical-align:top}
+  table.styled tbody tr:nth-child(even){background:var(--bg-soft)}
+  table.styled tbody tr:last-child td{border-bottom:none}
+  .level-card{border:1px solid var(--line);border-radius:16px;overflow:hidden;margin:22px 0;box-shadow:0 6px 22px rgba(14,143,134,.08)}
+  .level-card .lc-head{background:linear-gradient(100deg,#12262c,#8a3a16);color:#fff;padding:15px 22px;display:flex;align-items:center;gap:12px;flex-wrap:wrap}
+  .level-card .lc-head .n{font-size:12px;font-weight:800;background:rgba(255,255,255,.2);padding:3px 10px;border-radius:20px}
+  .level-card .lc-head h4{margin:0;color:#fff;font-size:16px}
+  .level-card .lc-head .go{margin-left:auto;font-size:11.5px;color:#ffd2b3}
+  .level-card .lc-body{padding:20px 24px;background:#fff}
+  .level-card .story{background:#f8fcfc;border-left:4px solid #7dd3fc;border-radius:0 10px 10px 0;padding:13px 18px;margin:0 0 16px;font-size:14px;line-height:1.95;color:#3c5254}
+  .level-card .story b{color:#0369a1}
+  .btn-go{display:inline-flex;align-items:center;gap:8px;background:linear-gradient(135deg,var(--brand),var(--brand-dark));color:#fff;text-decoration:none;font-weight:800;font-size:13.5px;padding:10px 22px;border-radius:11px;box-shadow:0 8px 20px rgba(255,107,53,.32);transition:.2s}
+  .btn-go:hover{transform:translateY(-2px);box-shadow:0 12px 26px rgba(255,107,53,.42)}
+  .pit{border:1px solid #f6dede;border-radius:14px;overflow:hidden;margin:16px 0;background:#fff}
+  .pit .pt{display:flex;gap:12px;padding:14px 18px;background:#fffafa;align-items:flex-start}
+  .pit .x{width:26px;height:26px;border-radius:9px;background:#fee;color:#dc2626;display:flex;align-items:center;justify-content:center;font-weight:800;flex-shrink:0;font-size:13px}
+  .pit .t{font-size:13.5px;line-height:1.9;color:#5c4a4a;flex:1}
+  .pit .t b{color:#b91c1c}
+  .pit .duck{display:flex;gap:12px;padding:13px 18px;background:#fff5f5;border-top:1px dashed #f3d0d0;align-items:flex-start}
+  .pit .duck img{width:48px;height:48px;object-fit:contain;flex-shrink:0;margin-top:2px}
+  .pit .duck .dt{font-size:13.5px;line-height:1.9;color:#7a3b3b}
+  .pit .duck .dt b{color:#b91c1c}
+  .pit .fix{padding:12px 18px;background:#f2fbf9;border-top:1px dashed #cfe9e6;font-size:13.5px;color:#134e4a}
+  .pit .fix b{color:var(--primary-dark)}
+  .exam{border:1px solid #d8ebea;border-radius:15px;margin:16px 0;overflow:hidden;background:#fff;box-shadow:0 4px 16px rgba(30,80,80,.06)}
+  .exam .eh{display:flex;align-items:center;gap:10px;padding:11px 18px;background:linear-gradient(100deg,#eef8f7,#f8fdfc);border-bottom:1px solid #dbeceb;flex-wrap:wrap}
+  .exam .eh .src{font-size:11px;font-weight:800;color:#fff;background:#0e8f86;padding:2.5px 10px;border-radius:20px}
+  .exam .eh .src.ori{background:#0e9488}
+  .exam .eh .tp{font-size:11.5px;color:#4f7d7a;font-weight:700}
+  .exam .eb{padding:16px 20px}
+  .exam .q{font-weight:700;font-size:14px;color:#2b4042;line-height:1.9;margin-bottom:10px}
+  .exam .opt{font-size:13.5px;color:#46585a;line-height:2.05;padding-left:6px}
+  .exam .opt i{font-style:normal;font-weight:800;color:var(--primary-dark);margin-right:7px}
+  .exam pre{margin:12px 0;background:#14231f;border-radius:10px;padding:14px 16px;overflow-x:auto;font-family:Consolas,monospace;font-size:13px;line-height:1.8;color:var(--code-tx)}
+  .exam details{margin-top:10px;border-top:1px dashed var(--line);padding-top:10px}
+  .exam summary{cursor:pointer;font-size:12.5px;font-weight:800;color:#0e8f86;outline:none;user-select:none}
+  .exam details .ans{font-size:13.5px;color:#3d5250;line-height:1.95;margin-top:9px;background:var(--bg-soft);padding:13px 16px;border-radius:10px}
+  .exam details .ans b{color:var(--primary-dark)}
+  .exam details .ans .tagline{display:inline-block;font-size:11px;background:#e0f2fe;color:#0e7490;padding:1.5px 8px;border-radius:6px;font-weight:700;margin-right:6px}
+  .summary{margin:40px 0 20px;border-radius:18px;padding:26px 30px;background:linear-gradient(130deg,#fff8f3,#ffffff);border:1px solid #ffe0cf}
+  .summary h3{margin-top:0}
+  .summary ul{list-style:none;margin-top:10px}
+  .summary li{font-size:14px;line-height:2;color:#3d5250;padding-left:24px;position:relative}
+  .summary li::before{content:"◆";position:absolute;left:0;color:var(--brand);font-size:11px;top:6px}
+  .pager{display:flex;gap:14px;margin-top:30px;flex-wrap:wrap}
+  .pager a{flex:1;min-width:200px;text-decoration:none;border:1px solid var(--line);border-radius:14px;padding:16px 20px;background:#fff;transition:.2s;display:block}
+  .pager a:hover{border-color:var(--brand);box-shadow:0 10px 26px rgba(255,107,53,.14);transform:translateY(-2px)}
+  .pager a .k{font-size:11px;color:var(--dim2);font-weight:700;letter-spacing:1px}
+  .pager a .v{font-size:14px;font-weight:800;color:var(--night);margin-top:5px}
+  .pager a.back{background:var(--brand-soft);border-color:transparent;text-align:center}
+  .pager a.back .v{color:var(--brand-dark)}
+  .cta{margin-top:26px;border-radius:20px;padding:30px 34px;color:#fff;position:relative;overflow:hidden;background:linear-gradient(120deg,#12242a,#1e4a52 46%,#a8431c 132%)}
+  .cta::after{content:"";position:absolute;right:-70px;bottom:-90px;width:280px;height:280px;border-radius:50%;background:radial-gradient(circle,rgba(255,140,80,.45),transparent 68%)}
+  .cta h3{color:#fff;margin:0 0 10px;position:relative;z-index:2}
+  .cta h3::before{background:var(--brand)}
+  .cta p{color:#cfe4e2;font-size:13.5px;margin:0 0 18px;position:relative;z-index:2;max-width:640px}
+  .cta .btn-go{position:relative;z-index:2}
+  @media(max-width:900px){
+    .sidebar-nav{transform:translateX(-100%)}
+    .sidebar-nav.active{transform:translateX(0)}
+    .nav-toggle{display:block}
+    .page{margin-left:0}
+    .hero{padding:70px 22px 34px}
+    .hero-top{flex-direction:column-reverse;text-align:center}
+    .hero-card{width:auto}
+    .container{padding:26px 20px 60px}
+    .goal-grid{grid-template-columns:1fr}
+  }
+</style>
+</head>
+<body>
+
+<button class="nav-toggle" onclick="document.querySelector('.sidebar-nav').classList.toggle('active')">&#9776;</button>
+
+<nav class="sidebar-nav">
+  <div class="sb-brand">
+    <a class="sb-logo" href="https://codecombat.cn/" target="_blank" rel="noopener" title="访问 CodeCombat 扣哒世界官网">
+      <img src="../assets/logo.png" alt="CodeCombat 扣哒世界">
+    </a>
+    <div><b>双塔栈队</b><span>云髓天阶 · Python 六级 第 6 单元</span></div>
+  </div>
+  <div class="nav-title">本单元目录</div>
+
+  <a href="#s0" class="nav-section">0　单元导语与目标</a>
+  <a href="#s0-1" class="nav-sub">0.1 学习目标</a>
+  <a href="#s0-2" class="nav-sub">0.2 考纲对照</a>
+  <a href="#s1" class="nav-section">1　栈：后进先出</a>
+  <a href="#s1-1" class="nav-sub">1.1 只有一个口</a>
+  <a href="#s1-2" class="nav-sub">1.2 栈的三个操作</a>
+  <a href="#s2" class="nav-section">2　队列：先进先出</a>
+  <a href="#s2-1" class="nav-sub">2.1 两头各开一个口</a>
+  <a href="#s2-2" class="nav-sub">2.2 队列的三个操作</a>
+  <a href="#s3" class="nav-section">3　它们在程序里的用处</a>
+  <a href="#s3-1" class="nav-sub">3.1 栈能干什么</a>
+  <a href="#s3-2" class="nav-sub">3.2 队列能干什么</a>
+  <a href="#s4" class="nav-section">4　循环队列</a>
+  <a href="#s4-1" class="nav-sub">4.1 普通队列的"假满"</a>
+  <a href="#s4-2" class="nav-sub">4.2 怎么判空与判满</a>
+  <a href="#s5" class="nav-section">5　用数组自己实现</a>
+  <a href="#s5-1" class="nav-sub">5.1 手写一个栈</a>
+  <a href="#s5-2" class="nav-sub">5.2 手写循环队列</a>
+  <a href="#s6" class="nav-section">6　代码实战</a>
+  <a href="#s7" class="nav-section">7　常见陷阱</a>
+  <a href="#s8" class="nav-section">8　题目练习</a>
+  <a href="#s9" class="nav-section">9　本单元小结</a>
+
+  <a href="../index.html" target="_top" class="sb-back">返回考纲之路</a>
+</nav>
+
+<div class="page">
+
+<div class="hero">
+  <div class="hero-top">
+    <div class="hero-txt">
+      <div class="crumb">扣哒考级 · GESP PYTHON 六级 · 第 6 单元　|　云髓天阶 CLOUDMARROW STEPS</div>
+      <h1>双塔栈队
+        <span class="sub">栈、队列与循环队列</span>
+      </h1>
+      <div class="en">Stacks &amp; Queues</div>
+      <div class="tags">        <span class="tag hot">考纲 · 数据结构</span>
+        <span class="tag">栈</span>
+        <span class="tag">队列</span>
+        <span class="tag">循环队列</span>
+        <span class="tag">后进先出与先进先出</span></div>
+    </div>
+    <div class="hero-card">
+      <img class="ava" src="../assets/avatars/hushbaum.webp" alt="贺舒曼" onerror="this.style.background='#24344a';this.src='../assets/heroes/hushbaum.webp'">
+      <div class="nm">贺舒曼</div>
+      <div class="ti">镜中先知 · 你的向导</div>
+    </div>
+  </div>
+</div>
+
+<div class="container">
+
+<div class="lead">
+  云海之上立着<b>两座塔</b>。<br>
+  左边那座只有一个斜顶的开口，<b>里面一层层叠着发光的甲片——只有最上面那片拿得出来。</b><br>
+  右边那座两头各开一个口，<b>一队光点从左边依次流进去，又从右边依次流出来，像一条流水线。</b><br>
+  贺舒曼站在两塔之间：<strong>左边那个叫栈，右边那个叫队列。
+  它们只差一条规矩——但解决的问题完全不同。</strong>
+</div>
+
+<div class="cast hushbaum">
+  <img class="ava" src="../assets/avatars/hushbaum.webp" alt="贺舒曼" onerror="this.style.display='none'">
+  <div class="bubble">
+    <div class="who">贺舒曼 · 镜中先知</div>
+    这是六级的最后一课，也是两种最基础的数据结构。<br>
+    <strong>它们看起来简单到"没什么可学的"——但程序里到处都是它们。</strong><br>
+    <b>而且上一课学的 BFS 用队列、用栈模拟 DFS，靠的就是它们。</b>
+  </div>
+</div>
+
+<figure class="pic">
+  <img src="../assets/illustrations/py-L6-06-01_twin_towers.webp" alt="双塔栈队"
+       onerror="this.closest('.pic').classList.add('missing')">
+  <div class="ph">
+    <div class="fn">assets/illustrations/py-L6-06-01_twin_towers.webp</div>
+    <div class="ds">【配图位】云海之上并立两座塔：左塔细高、顶部只有一个斜开的窄口，塔身内部一层层叠放着发光的甲片状物件，最上面那一枚最亮；右塔两端各开一个口，一队光点从左口依次流入、沿塔内水平穿过、再从右口依次流出，形成流水般的队列；一名戴眼镜的先知站在两塔之间，一手各指向一座塔。</div>
+  </div>
+  <figcaption>图 1：云髓天阶的双塔栈队——今天要从这里开始</figcaption>
+</figure>
+
+<!-- ============ 0 ============ -->
+<div class="section-header" id="s0">
+  <h2>0　单元导语与目标</h2>
+  <div class="en-title">Unit Overview</div>
+</div>
+
+<h3 id="s0-1">0.1 学习目标</h3>
+<div class="goal-grid">
+  <div class="goal">
+    <h4><span class="ic">1</span>学完这个单元，你将能……</h4>
+    <ul>
+      <li>说出栈和队列的规则区别</li>
+      <li>用 <code class="inline">stack</code> 和 <code class="inline">queue</code> 完成基本操作</li>
+      <li>说出栈和队列各自适合解决什么问题</li>
+      <li>解释普通队列为什么会"假满"</li>
+      <li>写出循环队列的判空与判满条件</li>
+      <li>用数组自己实现一个栈和一个循环队列</li>
+    </ul>
+  </div>
+  <div class="goal syllabus">
+    <h4><span class="ic">2</span>对标 GESP 考纲（Python 六级）</h4>
+    <ul>
+      <li>理解栈与队列的逻辑结构</li>
+      <li>掌握栈与队列的基本操作与 STL 用法</li>
+      <li>理解循环队列的原理与判空判满条件</li>
+      <li>能用数组实现栈与循环队列</li>
+      <li>考核目标：能跟踪入栈出栈/入队出队的输出顺序（必考）</li>
+    </ul>
+  </div>
+</div>
+
+<h3 id="s0-2">0.2 考纲对照</h3>
+<table class="styled">
+  <thead><tr><th>本单元小节</th><th>对应考纲条目</th><th>真题常考形式</th></tr></thead>
+  <tbody>
+    <tr><td>1　栈</td><td>栈的逻辑结构</td><td>后进先出；入出栈后的结果（必考）</td></tr>
+    <tr><td>2　队列</td><td>队列的逻辑结构</td><td>先进先出；出队后的队首（必考）</td></tr>
+    <tr><td>3　它们的用处</td><td>栈 / 队列的应用</td><td>各自适合什么场景</td></tr>
+    <tr><td>4　循环队列</td><td>循环队列</td><td>判空 / 判满的条件（必考）</td></tr>
+    <tr><td>5　自己实现</td><td>顺序存储实现</td><td>用数组模拟栈和队列</td></tr>
+  </tbody>
+</table>
+
+<!-- ============ 1 ============ -->
+<div class="section-header" id="s1">
+  <h2>1　栈：后进先出</h2>
+  <div class="en-title">Stack</div>
+</div>
+
+<h3 id="s1-1">1.1 只有一个口</h3>
+
+<div class="box remember">
+  <span class="lb">栈的规矩只有一条：后进先出（LIFO）。</span>
+  <b>栈<strong>只在一端</strong>进出东西——这一端叫<strong>栈顶</strong>，另一端封死叫<strong>栈底</strong>。</b><br>
+  <b>所以：最后放进去的，一定最先被拿出来。</b><br>
+  <b>想拿下面那个？对不起——得先把上面的都搬走。</b><br>
+  <b>LIFO 就是 "Last In, First Out"（后进先出）的缩写。</b>
+</div>
+
+<div class="code-card">
+  <div class="code-head">
+    <span class="dot d1"></span><span class="dot d2"></span><span class="dot d3"></span>
+    <span class="file">用叠盘子理解栈</span>
+    <span class="lang">TEXT</span>
+  </div>
+  <pre><code>往栈里依次放入 1、2、3：
+
+  push(1)      push(2)      push(3)
+  ┌───┐        ┌───┐        ┌───┐
+  │ 1 │        │ 2 │        │ 3 │ ← 栈顶
+  └───┘        │ 1 │        │ 2 │
+               └───┘        │ 1 │
+                            └───┘
+
+现在 pop() 一次，取出的是谁？
+   → 取出 3（最后放进去的）
+   剩下 2、1
+
+再 pop() 一次 → 取出 2
+再 pop() 一次 → 取出 1
+
+★ 出栈的顺序和入栈的顺序正好相反：3、2、1
+
+【关键结论】
+   入栈顺序 1 2 3  →  出栈顺序 3 2 1
+</code></pre>
+  <div class="out"><b>记忆</b>　
+  <b>栈像一叠盘子——只能从最上面拿，也只能往最上面放</b><br>
+  <b>所以"先放进去的被压在最底下"，最后才轮得到它</b></div>
+</div>
+
+<h3 id="s1-2">1.2 栈的三个操作</h3>
+
+<table class="styled">
+  <thead><tr><th>操作</th><th>作用</th><th>Python STL 写法</th></tr></thead>
+  <tbody>
+    <tr><td><strong>入栈</strong></td><td>把元素放到栈顶</td><td><code class="inline">s.push(x);</code></td></tr>
+    <tr><td><strong>出栈</strong></td><td>把栈顶元素拿走</td><td><code class="inline">s.pop();</code></td></tr>
+    <tr><td><strong>看栈顶</strong></td><td>看看栈顶是谁（不拿走）</td><td><code class="inline">s.top();</code></td></tr>
+    <tr><td>判断空</td><td>空返回 true</td><td><code class="inline">s.empty();</code></td></tr>
+    <tr><td>元素个数</td><td>返回有几个元素</td><td><code class="inline">s.size();</code></td></tr>
+  </tbody>
+</table>
+
+<div class="box warn">
+  <span class="lb">最容易考错的一条：<code>pop()</code> 不返回任何东西。</span>
+  <b>在 Python 的 STL 里：</b><br>
+  <b><code class="inline">s.top()</code></b> —— <strong>只"看"栈顶元素，<b>不会</b>删除它</strong>；<br>
+  <b><code class="inline">s.pop()</code></b> —— <strong>只"删掉"栈顶元素，<b>不返回</b>它</strong>（返回类型是 <code class="inline">void</code>）。<br>
+  <b>所以想把栈顶"取出来用"，必须两步走：</b>
+  <code class="inline">int x = s.top(); s.pop();</code><br>
+  <b>"stack 的 pop() 会返回栈顶元素并将其删除"——这句话是错的。</b><br>
+  <b>（这一点和很多别的语言不同，写惯别的语言的同学特别容易踩。）</b>
+</div>
+
+<div class="code-card">
+  <div class="code-head">
+    <span class="dot d1"></span><span class="dot d2"></span><span class="dot d3"></span>
+    <span class="file">上机跑一遍</span>
+    <span class="lang">Python</span>
+  </div>
+  <pre><code>s = []                          # Python 用列表当栈
+
+for i in range(2, 7, 2):        # 放入 2、4、6
+    s.append(i)
+
+s.pop()                         # 拿走栈顶的 6
+
+print(s[-1])                    # 4　（栈顶）
+print(len(s))                   # 2
+</code></pre>
+  <div class="out"><b>OUTPUT</b>　4 / 2<br>
+  <b>为什么 top 是 4？</b>　入栈顺序 2、4、6，<b>6 在栈顶；pop 掉 6 之后，栈顶变成 4</b></div>
+</div>
+
+<figure class="figure">
+  <svg class="diagram" viewBox="0 0 830 250" role="img" aria-label="栈的入栈出栈">
+    <text x="24" y="28" font-size="14" font-weight="bold" fill="#1f2937">栈：入栈 2、4、6 后出栈一次，栈顶变成 4</text>
+
+    <g font-family="Consolas,monospace" font-size="13">
+      <text x="90" y="56" text-anchor="middle" font-size="11.5" fill="#68788f">push(2) push(4) push(6)</text>
+      <rect x="52" y="66" width="76" height="40" rx="6" fill="#fff9ec" stroke="#f59e0b" stroke-width="2.6"/>
+      <text x="90" y="92" text-anchor="middle" fill="#b45309" font-weight="bold">6</text>
+      <rect x="52" y="110" width="76" height="40" rx="6" fill="#eaf1fe" stroke="#2563eb" stroke-width="1.8"/>
+      <text x="90" y="136" text-anchor="middle" fill="#1d4ed8">4</text>
+      <rect x="52" y="154" width="76" height="40" rx="6" fill="#eaf1fe" stroke="#2563eb" stroke-width="1.8"/>
+      <text x="90" y="180" text-anchor="middle" fill="#1d4ed8">2</text>
+      <rect x="52" y="198" width="76" height="22" rx="4" fill="#f1f5f9" stroke="#94a3b8" stroke-width="1.6"/>
+      <text x="90" y="214" text-anchor="middle" font-size="10.5" fill="#94a3b8">栈底（封死）</text>
+    </g>
+    <text x="146" y="92" font-size="11.5" fill="#b45309">← pop() 取走的是它</text>
+
+    <text x="330" y="120" font-size="26" fill="#8b5cf6">→</text>
+
+    <g font-family="Consolas,monospace" font-size="13">
+      <text x="470" y="56" text-anchor="middle" font-size="11.5" fill="#68788f">pop() 之后</text>
+      <rect x="432" y="66" width="76" height="40" rx="6" fill="#e9f8ef" stroke="#2e9e5b" stroke-width="2.6"/>
+      <text x="470" y="92" text-anchor="middle" fill="#1f7a44" font-weight="bold">4</text>
+      <rect x="432" y="110" width="76" height="40" rx="6" fill="#eaf1fe" stroke="#2563eb" stroke-width="1.8"/>
+      <text x="470" y="136" text-anchor="middle" fill="#1d4ed8">2</text>
+      <rect x="432" y="154" width="76" height="22" rx="4" fill="#f1f5f9" stroke="#94a3b8" stroke-width="1.6"/>
+      <text x="470" y="170" text-anchor="middle" font-size="10.5" fill="#94a3b8">栈底</text>
+    </g>
+    <text x="526" y="92" font-size="11.5" fill="#1f7a44">← top() 现在是 4 ✔</text>
+
+    <rect x="640" y="66" width="176" height="154" rx="12" fill="#f7f9fd" stroke="#cbd5e1" stroke-width="1.6"/>
+    <text x="662" y="92" font-size="12" fill="#334155" font-weight="bold">栈的规矩</text>
+    <text x="662" y="118" font-size="11.5" fill="#475569">后进先出（LIFO）</text>
+    <text x="662" y="144" font-size="11.5" fill="#475569">push / pop / top</text>
+    <text x="662" y="174" font-size="11.5" fill="#b45309">★ pop 不返回值</text>
+    <text x="662" y="198" font-size="11.5" fill="#b45309">★ top 不删除元素</text>
+  </svg>
+  <div class="caption">图 2（SVG）：栈的入栈与出栈</div>
+</figure>
+
+<!-- ============ 2 ============ -->
+<div class="section-header" id="s2">
+  <h2>2　队列：先进先出</h2>
+  <div class="en-title">Queue</div>
+</div>
+
+<figure class="pic">
+  <img src="../assets/illustrations/py-L6-06-03_stack_frames.webp" alt="一层层叠上去的甲片"
+       onerror="this.closest('.pic').classList.add('missing')">
+  <div class="ph">
+    <div class="fn">assets/illustrations/py-L6-06-03_stack_frames.webp</div>
+    <div class="ds">【配图位】左塔内部的特写剖面：发光甲片从塔底一片片叠放到塔顶，只有最上面那一片刚好露出斜顶开口、触手可及；一只覆着金属护手的手正从开口处取下最上面那片，下方的甲片纹丝不动、被压得严严实实；一名戴眼镜的先知站在塔旁，手里托着刚取出的一片甲片，另一只手做出"往下推"的手势示意放回去。</div>
+  </div>
+  <figcaption>图 3：一层层叠上去，只有最上面那片拿得动——这就是栈</figcaption>
+</figure>
+
+<h3 id="s2-1">2.1 两头各开一个口</h3>
+
+<div class="box remember">
+  <span class="lb">队列的规矩：先进先出（FIFO）。</span>
+  <b>队列<strong>两头各开一个口</strong>：一端只进（<strong>队尾</strong>），另一端只出（<strong>队首</strong>）。</b><br>
+  <b>所以：最先排进队伍的，一定最先被处理。</b><br>
+  <b>FIFO 就是 "First In, First Out"（先进先出）的缩写。</b><br>
+  <strong>这就是现实里"排队"的规则——先来的先办事，不许插队。</strong>
+</div>
+
+<div class="code-card">
+  <div class="code-head">
+    <span class="dot d1"></span><span class="dot d2"></span><span class="dot d3"></span>
+    <span class="file">用排队理解队列</span>
+    <span class="lang">TEXT</span>
+  </div>
+  <pre><code>往队列里依次放入 1、2、3：
+
+  push(1)      push(2)          push(3)
+  ┌───┐        ┌───┬───┐        ┌───┬───┬───┐
+  │ 1 │        │ 1 │ 2 │        │ 1 │ 2 │ 3 │
+  └───┘        └───┴───┘        └───┴───┴───┘
+  队首=队尾     ↑出   ↑入        ↑出       ↑入
+
+现在 pop() 一次，取出的是谁？
+   → 取出 1（最先放进去的）
+   剩下 2、3，队首变成 2
+
+再 pop() 一次 → 取出 2
+再 pop() 一次 → 取出 3
+
+★ 出队的顺序和入队的顺序完全一样：1、2、3
+
+【关键结论】
+   入队顺序 1 2 3  →  出队顺序 1 2 3
+</code></pre>
+  <div class="out"><b>和栈正好相反</b>　
+  <b>栈是"入 1 2 3、出 3 2 1"；队列是"入 1 2 3、出 1 2 3"</b><br>
+  <b>这一点是判断题和选择题的高频考点</b></div>
+</div>
+
+<h3 id="s2-2">2.2 队列的三个操作</h3>
+
+<table class="styled">
+  <thead><tr><th>操作</th><th>作用</th><th>Python STL 写法</th></tr></thead>
+  <tbody>
+    <tr><td><strong>入队</strong></td><td>把元素放到队尾</td><td><code class="inline">q.push(x);</code></td></tr>
+    <tr><td><strong>出队</strong></td><td>把队首元素拿走</td><td><code class="inline">q.pop();</code></td></tr>
+    <tr><td><strong>看队首</strong></td><td>看看队首是谁（不拿走）</td><td><code class="inline">q.front();</code></td></tr>
+    <tr><td>看队尾</td><td>看看队尾是谁</td><td><code class="inline">q.back();</code></td></tr>
+    <tr><td>判断空 / 个数</td><td>—</td><td><code class="inline">q.empty();</code> / <code class="inline">q.size();</code></td></tr>
+  </tbody>
+</table>
+
+<div class="code-card">
+  <div class="code-head">
+    <span class="dot d1"></span><span class="dot d2"></span><span class="dot d3"></span>
+    <span class="file">和栈放在一起对比着看</span>
+    <span class="lang">Python</span>
+  </div>
+  <pre><code>s = []      # 栈：只在同一头进出
+q = []      # 队列：一头进、另一头出
+
+for i in range(2, 7, 2):        # 都放入 2、4、6
+    s.append(i)
+    q.append(i)
+
+s.pop()                         # 栈：拿掉栈顶的 6
+q.pop(0)                        # 队列：拿掉队首的 2
+
+print(s[-1], " ", q[0])         # 4   4
+</code></pre>
+  <div class="out"><b>OUTPUT</b>　<b>4 4</b><br>
+  <b>看明白了吗</b>　
+  <strong>同一个 pop()，栈取走的是"最后进来的 6"，队列取走的是"最早进来的 2"</strong><br>
+  <b>结果刚好都是 4</b>——<strong>但原因完全不同：一个是"6 走了剩 4"，一个是"2 走了剩 4"</strong></div>
+</div>
+
+<div class="box tip">
+  <span class="lb">把两个规则并排记：</span>
+  <b>栈</b>——只有一个口，<strong>后进先出</strong>；<strong>入 1 2 3 出 3 2 1</strong>。<br>
+  <b>队列</b>——两个口，<strong>先进先出</strong>；<strong>入 1 2 3 出 1 2 3</strong>。<br>
+  <strong>做题时先在草稿纸上画一画"入的顺序"，再按规则一个个搬出来——</strong>
+  <b>这样最不容易错。</b>
+</div>
+
+<!-- ============ 3 ============ -->
+<div class="section-header" id="s3">
+  <h2>3　它们在程序里的用处</h2>
+  <div class="en-title">What They Are For</div>
+</div>
+
+<h3 id="s3-1">3.1 栈能干什么</h3>
+
+<div class="box remember">
+  <span class="lb">栈的典型用途：</span>
+  <b>① 函数调用</b>——<strong>上一课讲过，每次调用就"压一层栈"，返回时"弹一层"。
+  这就是"调用栈"这个名字的来源。</strong><br>
+  <b>② 括号匹配</b>——<strong>遇到左括号就入栈，遇到右括号就看栈顶是不是配对的左括号。</strong><br>
+  <b>③ 撤销操作</b>——<strong>把操作一个个压进栈；按撤销就弹一个出来，
+  而且"最近做的最先撤销"正好符合直觉。</strong><br>
+  <b>④ 用栈模拟递归</b>——<strong>上一课 DFS 的栈写法就是它。</strong><br>
+  <b>⑤ 表达式求值、进制转换</b>——<strong>都是"后进先出"天然合适的场景。</strong>
+</div>
+
+<div class="code-card">
+  <div class="code-head">
+    <span class="dot d1"></span><span class="dot d2"></span><span class="dot d3"></span>
+    <span class="file">用栈判断括号是否配对</span>
+    <span class="lang">Python</span>
+  </div>
+  <pre><code>def check(s):
+    st = []
+
+    for c in s:
+        if c == "(":
+            st.append(c)            # 左括号入栈
+        elif c == ")":
+            if not st:
+                return False        # ★ 右括号多了
+            st.pop()                # 消掉一个左括号
+    return not st                   # ★ 栈空才是配对成功
+</code></pre>
+  <div class="out"><b>两处判断</b>　
+  ① 遇到右括号但栈是空的 → <strong>右括号多了，不合法</strong>；<br>
+  ② 全部扫完后栈不为空 → <strong>左括号多了，不合法</strong></div>
+</div>
+
+<h3 id="s3-2">3.2 队列能干什么</h3>
+
+<div class="box remember">
+  <span class="lb">队列的典型用途：</span>
+  <b>① BFS（广度优先搜索）</b>——<strong>上一课学的，一层层往外扩靠的就是队列。</strong><br>
+  <b>② 层序遍历</b>——<strong>二叉树的"从上到下、从左到右"。</strong><br>
+  <b>③ 任务调度</b>——<strong>打印机排队、CPU 处理请求，都是"先来先服务"。</strong><br>
+  <b>④ 缓冲区</b>——<strong>数据来得快、处理得慢时，先排进队列缓冲一下。</strong><br>
+  <b>核心共性：</b>
+  <strong>凡是"要先来先处理、要按顺序公平对待"的场景，都该想到队列。</strong>
+</div>
+
+<div class="box tip">
+  <span class="lb">一句话选结构：</span>
+  <b>要"倒退着处理"、"记住回去的路"、"最近的最相关"</b> → <strong>用栈</strong>。<br>
+  <b>要"按顺序公平处理"、"一圈圈往外扩"、"先来先服务"</b> → <strong>用队列</strong>。<br>
+  <strong>判断口诀：栈是"回头看"，队列是"往前排队"。</strong>
+</div>
+
+<!-- ============ 4 ============ -->
+<div class="section-header" id="s4">
+  <h2>4　循环队列</h2>
+  <div class="en-title">Circular Queue</div>
+</div>
+
+<h3 id="s4-1">4.1 普通队列的"假满"</h3>
+
+<div class="code-card">
+  <div class="code-head">
+    <span class="dot d1"></span><span class="dot d2"></span><span class="dot d3"></span>
+    <span class="file">用数组当队列，会出什么问题？</span>
+    <span class="lang">TEXT</span>
+  </div>
+  <pre><code>开一个长度 5 的数组当队列，用 front 和 rear 两个下标管理：
+
+  操作      数组内容              front  rear
+  初始      [ ][ ][ ][ ][ ]         0      0
+  入队 A    [A][ ][ ][ ][ ]         0      1
+  入队 B    [A][B][ ][ ][ ]         0      2
+  出队      [A][B][ ][ ][ ]         1      2   ← front 前进了
+  入队 C    [A][B][C][ ][ ]         1      3
+  入队 D    [A][B][C][D][ ]         1      4
+  入队 E    [A][B][C][D][E]         1      5   ← rear 到头了！
+
+这时 rear == 5，数组满了 —— 可是前面 A 明明已经被出队、那个位置空着！
+
+★ 明明还有空位，却放不进去 —— 这叫"假满"（假溢出）。
+
+【解决办法】让 rear 和 front "绕回来"：
+   走到数组末尾之后，回到下标 0 继续用。
+   这就是"循环队列"——把数组看成首尾相接的一个圈。
+</code></pre>
+  <div class="out"><b>问题根源</b>　
+  <b>下标只往前走、不回头</b>——<strong>前面的空位白白浪费了</strong></div>
+</div>
+
+<h3 id="s4-2">4.2 怎么判空与判满</h3>
+
+<div class="code-card">
+  <div class="code-head">
+    <span class="dot d1"></span><span class="dot d2"></span><span class="dot d3"></span>
+    <span class="file">循环队列的四个关键动作</span>
+    <span class="lang">Python</span>
+  </div>
+  <pre><code>MAXN = 8                        # 数组长度
+data = [0] * MAXN
+front, rear = 0, 0              # 队首、队尾下标（注意初始都为 0）
+
+# 【入队】先放，再把 rear 往前挪一格（绕回）
+def push(x):
+    global rear
+    data[rear] = x
+    rear = (rear + 1) % MAXN    # ★ 关键：% MAXN 让它"绕回来"
+
+# 【出队】先把 front 往前挪一格
+def pop():
+    global front
+    front = (front + 1) % MAXN  # ★ 同样要取模
+
+# 【判空】队首和队尾撞在一起 → 空
+def empty():
+    return front == rear
+
+# 【判满】队尾的"下一个位置"就是队首 → 满
+def full():
+    return (rear + 1) % MAXN == front
+
+# 【取队首】下标就是 front
+def getFront():
+    return data[front]
+</code></pre>
+  <div class="out"><b>三处都要记住</b>　
+  <b>① 入队 / 出队时下标要 <code>% MAXN</code> 才能"绕圈"；</b><br>
+  <b>② 判空：<code>front == rear</code>；</b><br>
+  <b>③ 判满：<code>(rear + 1) % MAXN == front</code></b></div>
+</div>
+
+<div class="box warn">
+  <span class="lb">为什么判满要写成 <code>(rear + 1) % MAXN == front</code>？</span>
+  <b>这根"空出一个位置"的约定有关。</b><br>
+  <b>问题在哪？</b>
+  当队列<strong>刚好装满</strong>时，rear 绕一圈回来正好等于 front——
+  <strong>和"队列为空"时的 <code class="inline">front == rear</code> 长得一模一样，没法区分。</strong><br>
+  <b>解决办法：特意不把数组用满，永远留出一个空位。</b><br>
+  于是：<strong>真装的元素最多是 <code>MAXN − 1</code> 个</strong>；
+  当"rear 的下一个位置"追上 front 时，<strong>就认为满了</strong> ✔<br>
+  <b>这就是"空出一个位置"的经典做法，也是真题反复考的点。</b><br>
+  <b>所以：数组长度为 8 的循环队列，最多只能装 7 个元素。</b>
+</div>
+
+<figure class="figure">
+  <svg class="diagram" viewBox="0 0 830 260" role="img" aria-label="循环队列">
+    <text x="24" y="28" font-size="14" font-weight="bold" fill="#1f2937">循环队列：把数组看成一个圈，走到头就绕回来</text>
+
+    <circle cx="200" cy="140" r="86" fill="none" stroke="#cbd5e1" stroke-width="2"/>
+    <g font-family="Consolas,monospace" font-size="11.5">
+      <circle cx="200" cy="54" r="19" fill="#e9f8ef" stroke="#2e9e5b" stroke-width="2.4"/>
+      <text x="200" y="59" text-anchor="middle" fill="#1f7a44">A</text>
+      <circle cx="261" cy="78" r="19" fill="#eaf1fe" stroke="#2563eb" stroke-width="1.8"/>
+      <text x="261" y="83" text-anchor="middle" fill="#1d4ed8">B</text>
+      <circle cx="286" cy="140" r="19" fill="#eaf1fe" stroke="#2563eb" stroke-width="1.8"/>
+      <text x="286" y="145" text-anchor="middle" fill="#1d4ed8">C</text>
+      <circle cx="261" cy="202" r="19" fill="#eaf1fe" stroke="#2563eb" stroke-width="1.8"/>
+      <text x="261" y="207" text-anchor="middle" fill="#1d4ed8">D</text>
+      <circle cx="200" cy="226" r="19" fill="#f1f5f9" stroke="#94a3b8" stroke-width="1.8" stroke-dasharray="4 3"/>
+      <text x="200" y="231" text-anchor="middle" fill="#94a3b8">空</text>
+      <circle cx="139" cy="202" r="19" fill="#f1f5f9" stroke="#94a3b8" stroke-width="1.8" stroke-dasharray="4 3"/>
+      <text x="139" y="207" text-anchor="middle" fill="#94a3b8">空</text>
+      <circle cx="114" cy="140" r="19" fill="#f1f5f9" stroke="#94a3b8" stroke-width="1.8" stroke-dasharray="4 3"/>
+      <text x="114" y="145" text-anchor="middle" fill="#94a3b8">空</text>
+      <circle cx="139" cy="78" r="19" fill="#f1f5f9" stroke="#94a3b8" stroke-width="1.8" stroke-dasharray="4 3"/>
+      <text x="139" y="83" text-anchor="middle" fill="#94a3b8">空</text>
+    </g>
+    <text x="200" y="20" text-anchor="middle" font-size="11.5" fill="#1f7a44" font-weight="bold">front（队首）</text>
+    <text x="330" y="231" font-size="11.5" fill="#b45309" font-weight="bold">rear（队尾）</text>
+
+    <rect x="430" y="52" width="376" height="180" rx="12" fill="#f7f9fd" stroke="#cbd5e1" stroke-width="1.6"/>
+    <text x="454" y="78" font-size="12.5" fill="#334155" font-weight="bold">三个要背下来的式子</text>
+    <text x="454" y="108" font-size="12" font-family="Consolas,monospace" fill="#475569">入队 / 出队：下标 = (下标 + 1) % MAXN</text>
+    <text x="454" y="136" font-size="12" font-family="Consolas,monospace" fill="#1f7a44">判空：front == rear</text>
+    <text x="454" y="164" font-size="12" font-family="Consolas,monospace" fill="#b45309">判满：(rear + 1) % MAXN == front</text>
+    <text x="454" y="194" font-size="11.5" fill="#b45309">★ 留一个空位 → 最多装 MAXN − 1 个</text>
+    <text x="454" y="218" font-size="11.5" fill="#68788f">★ 这样"空"和"满"才分得开</text>
+  </svg>
+  <div class="caption">图 4（SVG）：循环队列——走到末尾就绕回开头</div>
+</figure>
+
+<figure class="pic">
+  <img src="../assets/illustrations/py-L6-06-02_circular_queue.webp" alt="环形座位"
+       onerror="this.closest('.pic').classList.add('missing')">
+  <div class="ph">
+    <div class="fn">assets/illustrations/py-L6-06-02_circular_queue.webp</div>
+    <div class="ds">【配图位】云端的圆形平台：一圈座位首尾相接围成环状，其中一段座位已经坐上了旅客（从某个位置开始按顺序连着坐满一串），其余座位空着；两个发光的标记沿座位环各自缓慢前进——一个标着"取"停在最前面那位旅客旁，另一个标着"放"停在队尾后方的第一个空位上；一名戴眼镜的先知站在平台中央，手指沿环形方向划动。</div>
+  </div>
+  <figcaption>图 5：循环队列——座位围成一圈，走到头就绕回开头</figcaption>
+</figure>
+
+<!-- ============ 5 ============ -->
+<div class="section-header" id="s5">
+  <h2>5　用数组自己实现</h2>
+  <div class="en-title">Implementing with Arrays</div>
+</div>
+
+<h3 id="s5-1">5.1 手写一个栈</h3>
+
+<div class="code-card">
+  <div class="code-head">
+    <span class="dot d1"></span><span class="dot d2"></span><span class="dot d3"></span>
+    <span class="file">栈其实就是一个数组 + 一个栈顶指针</span>
+    <span class="lang">Python</span>
+  </div>
+  <pre><code>st = [0] * 1005                 # 存数据的数组
+top = 0                         # ★ 栈顶指针：也表示"现在有几个元素"
+
+def push(x):
+    global top
+    st[top] = x                 # 放到"下一个空位"
+    top += 1                    # 栈顶往上挪
+
+def pop():
+    global top
+    top -= 1                    # 栈顶往下挪 —— 就这么简单
+
+def getTop():
+    return st[top - 1]          # ★ 注意是 top - 1，不是 top
+
+def empty():
+    return top == 0
+</code></pre>
+  <div class="out"><b>OUTPUT</b>　推入 2、4、6 后 <code>getTop()</code> 是 6<br>
+  <b>关键理解</b>　
+  <b><code>top</code> 指向的是"下一个空位"，所以栈顶元素在 <code>top - 1</code> 处</b><br>
+  <b>这也是为什么出栈只要 <code>top--</code> 就行——不用真的把数据擦掉，指针退一格就够了</b></div>
+</div>
+
+<h3 id="s5-2">5.2 手写循环队列</h3>
+
+<div class="code-card">
+  <div class="code-head">
+    <span class="dot d1"></span><span class="dot d2"></span><span class="dot d3"></span>
+    <span class="file">完整实现（把这几个式子背下来）</span>
+    <span class="lang">Python</span>
+  </div>
+  <pre><code>MAXN = 105
+q = [0] * MAXN
+front, rear = 0, 0
+
+def empty():
+    return front == rear
+
+def full():
+    return (rear + 1) % MAXN == front
+
+def push(x):
+    global rear
+    if full():
+        return False
+    q[rear] = x
+    rear = (rear + 1) % MAXN              # ★ 绕圈
+    return True
+
+def pop():
+    global front
+    if empty():
+        return False
+    front = (front + 1) % MAXN            # ★ 绕圈
+    return True
+
+def getFront():
+    return q[front]                       # 队首就在 front 处
+
+def size():
+    return (rear - front + MAXN) % MAXN   # ★ 加 MAXN 防负数
+</code></pre>
+  <div class="out"><b>注意 <code>size()</code> 的写法</b>　
+  <b><code>(rear − front + MAXN) % MAXN</code></b>——<br>
+  <b>因为 rear 可能"绕"到了 front 前面，直接相减会得到负数，所以先加一个 MAXN 再取模</b></div>
+</div>
+
+<div class="box warn">
+  <span class="lb">手写队列最容易忘的一件事：出队时不用擦数据。</span>
+  <b>看 <code class="inline">pop()</code>——它只做了一件事：<code class="inline">front</code> 往前挪一格。</b><br>
+  <strong>数组里那个位置的数据还在，但它已经"不算数"了——因为取队首只看 <code class="inline">front</code> 指的地方。</strong><br>
+  <b>等以后有新的元素入队、并且 rear 绕到那里时，它就会被新的数据覆盖掉。</b><br>
+  <b>这种"用下标表示有效范围、不真的搬动数据"的做法，正是所有环形结构的基本思路。</b>
+</div>
+
+<!-- ============ 6 ============ -->
+<div class="section-header" id="s6">
+  <h2>6　代码实战</h2>
+  <div class="en-title">Level Practice</div>
+</div>
+
+<div class="level-card">
+  <div class="lc-head"><span class="n">关卡</span><h4>双队列</h4><span class="go">进入关卡 →</span></div>
+  <div class="lc-body">
+    <div class="story">
+      <b>故事：</b>两座塔前都排起了队伍——<b>左边那座只能从顶上取，右边那座两头都通。</b><br>
+      贺舒曼把镜子架在两塔之间：<strong>现在往里同时送同样的东西，
+      你看看取出来的顺序是不是一样。</strong><br>
+      你和学徒各盯一座：<b>不一样！左边最后送进去的先出来，右边最早送进去的先出来。</b><br>
+      对。她点头，<strong>同一个动作，两座塔的规矩完全不同——
+      所以用哪座，得看你想要什么顺序。</strong>
+    </div>
+    <p><strong>思路：</strong>用<strong>栈和队列各做一遍</strong>，
+  <figure class="pic ai-added"><img src="../assets/illustrations/py-L6-06-01_stack_tower.webp" alt="AI配图：py-L6-06-01_stack_tower.webp"></figure>
+    输入同样的数据、做同样的操作，<strong>对比输出的差别</strong>。</p><figure class="pic">
+  <img src="../assets/stages/py-L6-06-stage1_two_queues.webp" alt="双队列 关卡截图"
+       onerror="this.closest('.pic').classList.add('missing')">
+  <div class="ph">
+    <div class="fn">assets/stages/py-L6-06-stage1_two_queues.webp</div>
+    <div class="ds">【截图位】双队列关卡：云端两座塔与流动光点同框，代码编辑区可见 stack 与 queue 的操作。</div>
+  </div>
+  <figcaption>关卡实况：双队列</figcaption>
+</figure>
+    <div class="code-card">
+      <div class="code-head">
+        <span class="dot d1"></span><span class="dot d2"></span><span class="dot d3"></span>
+        <span class="file">同入同出，结果对比</span>
+        <span class="lang">Python</span>
+      </div>
+      <pre><code>s = []          # 栈
+q = []          # 队列
+
+# 都依次放入 1 到 5
+for i in range(1, 6):
+    s.append(i)
+    q.append(i)
+
+# 都全部取出来
+print("栈出栈顺序：", end="")
+while s:
+    print(s[-1], end=" ")     # ★ 先看栈顶
+    s.pop()                   # ★ 再删掉
+print()
+
+print("队列出队顺序：", end="")
+while q:
+    print(q[0], end=" ")      # ★ 先看队首
+    q.pop(0)                  # ★ 再删掉
+print()
+</code></pre>
+      <div class="out"><b>OUTPUT</b><br>
+      栈出栈顺序：<b>5 4 3 2 1</b><br>
+      队列出队顺序：<b>1 2 3 4 5</b><br>
+      <b>一眼看清差别</b>　
+      <strong>入的顺序一模一样，出来的却正好相反</strong></div>
+    </div>
+    <div class="box info">
+      <span class="lb">和本单元的关系：</span>
+      <strong>这段短短的程序，把"栈"和"队列"的区别一次性演示清楚了。</strong><br>
+      <b>两个细节值得留意：</b><br>
+      ① <strong>取元素时必须"先 top/front、后 pop"</strong>——
+      因为 <code class="inline">pop()</code> 什么都不会返回，<strong>只删不给</strong>；<br>
+      ② <strong>"取完"靠 <code class="inline">while (!s.empty())</code></strong> 来控制——
+      <strong>和上一课 BFS 里的 <code class="inline">while (!q.empty())</code> 是同一个套路。</strong><br>
+      <b>而回头看看上一课：</b>
+      <strong>BFS 用队列、DFS 的栈写法用栈——</strong>
+      <b>那两种搜索的本质差别，其实就藏在这两座塔的规矩里。</b>
+    </div>
+    <a class="btn-go" href="https://codecombat.cn/" target="_blank" rel="noopener">去扣哒世界闯这一关 →</a>
+  </div>
+</div>
+
+
+
+<!-- ============ 7 ============ -->
+<div class="section-header" id="s7">
+  <h2>7　常见陷阱</h2>
+  <div class="en-title">Common Pitfalls</div>
+</div>
+
+<div class="cast duck">
+  <img class="ava" src="../assets/ducks/duck_naria.webp" alt="扣哒鸭" onerror="this.style.display='none'">
+  <div class="bubble">
+    <div class="who">扣哒鸭 · 调试官</div>
+    栈和队列的坑只有几个，但每个都年年考。四条。
+  </div>
+</div>
+
+<div class="pit">
+  <div class="pt">
+    <div class="x">1</div>
+    <div class="t"><b>以为 <code class="inline">pop()</code> 会返回被删掉的元素。</b></div>
+  </div>
+  <div class="duck">
+    <img src="../assets/ducks/duck_zana.webp" alt="扣哒鸭" onerror="this.style.display='none'">
+    <div class="dt"><b>扣哒鸭：</b><strong>STL 里 <code>stack::pop()</code> 和 <code>queue::pop()</code> 的返回类型都是 void——
+    它们只删、不给。</strong><br>
+    <b>想要那个值，必须先 <code>top()</code> / <code>front()</code> 看一眼，再 <code>pop()</code>。</b><br>
+    <b>"pop() 返回栈顶元素并删除"——这句话是错的。</b></div>
+  </div>
+  <div class="fix"><b>正确写法：</b><code class="inline">int x = s.top(); s.pop();</code></div>
+</div>
+
+<div class="pit">
+  <div class="pt">
+    <div class="x">2</div>
+    <div class="t"><b>对空栈 / 空队列取元素。</b></div>
+  </div>
+  <div class="duck">
+    <img src="../assets/ducks/duck_hattori.webp" alt="扣哒鸭" onerror="this.style.display='none'">
+    <div class="dt"><b>扣哒鸭：</b><strong>对空的栈调 <code>top()</code>、对空的队列调 <code>front()</code>，
+    结果是不确定的——可能崩溃，也可能拿到垃圾值。</strong>
+    Python 不会帮你检查。<br>
+    <b>取之前一定要先 <code>if (!s.empty())</code> 或写 <code>while (!q.empty())</code>。</b></div>
+  </div>
+  <div class="fix"><b>习惯：</b>取元素前先判空</div>
+</div>
+
+<div class="pit">
+  <div class="pt">
+    <div class="x">3</div>
+    <div class="t"><b>循环队列的下标忘了取模。</b></div>
+  </div>
+  <div class="duck">
+    <img src="../assets/ducks/duck_senick.webp" alt="扣哒鸭" onerror="this.style.display='none'">
+    <div class="dt"><b>扣哒鸭：</b><strong>必须写 <code>rear = (rear + 1) % MAXN;</code>，
+    写成 <code>rear++</code> 的话，下标很快就会冲出数组、越界访问。</strong><br>
+    <b>那个 <code>% MAXN</code> 就是"让它绕回来"的关键。</b></div>
+  </div>
+  <div class="fix"><b>正确写法：</b><code class="inline">(下标 + 1) % MAXN</code></div>
+</div>
+
+<div class="pit">
+  <div class="pt">
+    <div class="x">4</div>
+    <div class="t"><b>判满写成 <code class="inline">rear == front</code>，或者以为队列能装满。</b></div>
+  </div>
+  <div class="duck">
+    <img src="../assets/ducks/duck_illia.webp" alt="扣哒鸭" onerror="this.style.display='none'">
+    <div class="dt"><b>扣哒鸭：</b><strong><code>front == rear</code> 是"判空"，不是判满！</strong><br>
+    判满要写 <strong><code>(rear + 1) % MAXN == front</code></strong>。<br>
+    <b>而且要注意：用"空出一个位置"的办法时，长度为 MAXN 的队列最多只能装 MAXN − 1 个元素。</b>
+    以为能装满 MAXN 个就错了。</div>
+  </div>
+  <div class="fix"><b>记牢：</b>空看 <code class="inline">front == rear</code>；满看 <code class="inline">(rear+1)%MAXN == front</code></div>
+</div>
+
+<!-- ============ 8 ============ -->
+<div class="section-header" id="s8">
+  <h2>7　常见陷阱</h2>
+  <div class="en-title">Common Pitfalls</div>
+</div>
+
+<div class="cast duck">
+  <img class="ava" src="../assets/ducks/duck_naria.webp" alt="扣哒鸭" onerror="this.style.display='none'">
+  <div class="bubble">
+    <div class="who">扣哒鸭 · 调试官</div>
+    栈和队列只有一行之差，写反了结果完全不对。四条，看完你就不会再弄混。
+  </div>
+</div>
+
+<div class="pit">
+  <div class="pt">
+    <div class="x">1</div>
+    <div class="t"><b>队列出队用了 <code class="inline">pop()</code>。</b></div>
+  </div>
+  <div class="duck">
+    <img src="../assets/ducks/duck_zana.webp" alt="扣哒鸭" onerror="this.style.display='none'">
+    <div class="dt"><b>扣哒鸭：</b><code>pop()</code> 拿的是<b>末尾</b>——那就成栈了！<br>
+    队列必须从队头拿：<strong><code>pop(0)</code> 或 <code>deque.popleft()</code>。</strong></div>
+  </div>
+  <div class="fix"><b>正确写法：</b>队列出队 <code class="inline">pop(0)</code></div>
+</div>
+
+<div class="pit">
+  <div class="pt">
+    <div class="x">2</div>
+    <div class="t"><b>空栈/空队列时直接 pop。</b></div>
+  </div>
+  <div class="duck">
+    <img src="../assets/ducks/duck_hattori.webp" alt="扣哒鸭" onerror="this.style.display='none'">
+    <div class="dt"><b>扣哒鸭：</b>会报 <code>IndexError: pop from empty list</code>。<br>
+    <strong>动手前先用 <code>if stack:</code> 或 <code>if len(queue) &gt; 0:</code> 判断一下。</strong></div>
+  </div>
+  <div class="fix"><b>正确做法：</b><code class="inline">while stack: x = stack.pop()</code></div>
+</div>
+
+<div class="pit">
+  <div class="pt">
+    <div class="x">3</div>
+    <div class="t"><b>循环队列忘了取余。</b>直接写 <code class="inline">rear = rear + 1</code>。</div>
+  </div>
+  <div class="duck">
+    <img src="../assets/ducks/duck_illia.webp" alt="扣哒鸭" onerror="this.style.display='none'">
+    <div class="dt"><b>扣哒鸭：</b>不取余的话，<code>rear</code> 会一直涨到超出数组长度，直接越界。<br>
+    <strong>必须写 <code>rear = (rear + 1) % capacity</code>——这才是"绕回起点"的关键。</strong></div>
+  </div>
+  <div class="fix"><b>正确写法：</b>下标更新一律对容量取余</div>
+</div>
+
+<div class="pit">
+  <div class="pt">
+    <div class="x">4</div>
+    <div class="t"><b>把"看栈顶"和"出栈"搞混。</b></div>
+  </div>
+  <div class="duck">
+    <img src="../assets/ducks/duck_senick.webp" alt="扣哒鸭" onerror="this.style.display='none'">
+    <div class="dt"><b>扣哒鸭：</b><code>stack[-1]</code> 只是<b>看一眼</b>，元素还在；
+    <code>stack.pop()</code> 是<b>拿走</b>，元素没了。<br>
+    题目要"查看栈顶"却用了 pop，就把数据弄丢了。</div>
+  </div>
+  <div class="fix"><b>正确区分：</b>查看用 <code class="inline">[-1]</code>，取出用 <code class="inline">pop()</code></div>
+</div>
+
+<div class="section-header" id="s9">
+  <h2>8　题目练习</h2>
+  <div class="en-title">Practice</div>
+</div>
+
+<p>第 1 题改编自 2026 年 9 月 · Python 六级 第 5 题，其余为原创练习题。</p>
+
+<div class="exam">
+  <div class="eh"><span class="src">改编自 2026 年 9 月 · Python 六级 · 第 5 题</span><span class="tp">单选题</span></div>
+  <div class="eb">
+    <div class="q">天阶的传送队列采用<strong>牺牲一个存储单元</strong>（空出一个位置）的办法来区分"队空"与"队满"。<br><code class="inline">full()</code> 函数用来判断队列是否已满，横线处应填写（　　）。<br><pre>1  MAXN = 8
+2  data = [0] * MAXN
+3  front = 0
+4  rear = 0
+5
+6  def full():
+7      return _______________</pre></div>
+    <div class="opt"><i>A.</i>rear == front<br>
+      <i>B.</i>(front + 1) % MAXN == rear<br>
+      <i>C.</i>(rear + 1) % MAXN == front<br>
+      <i>D.</i>rear == MAXN - 1</div>
+    <details><summary>查看答案与详解</summary>
+      <div class="ans"><b>答案：C</b>。循环队列里 <code class="inline">rear</code> 指向<strong>下一个要写入的位置</strong>，<code class="inline">front</code> 指向队头元素。<br><strong>队满</strong>的判据是"下一个写入位置追上了队头"：<code class="inline">(rear + 1) % MAXN == front</code>。取余是为了让下标到末尾后绕回 0，这正是"循环"队列的关键。<br><b>A 错：</b><code class="inline">rear == front</code> 表示的是<strong>队空</strong>；<br><b>B 错：</b>把 rear 和 front 的角色写反了；<br><b>D 错：</b>这是普通队列的判满条件，循环队列里 rear 会绕回 0，写成这样到不了队满、还会浪费空间。<br><b>为什么"牺牲一个单元"？</b>如果不空出一格，"队满"和"队空"都会是 <code class="inline">rear == front</code>，两种状态分不清了 —— 所以约定<strong>队尾永远留一个空位</strong>，队列最多只能存 MAXN − 1 个元素。<br><span class="tagline">对应小节</span>3 循环队列。</div>
+    </details>
+  </div>
+</div>
+<div class="exam">
+  <div class="eh"><span class="src ori">原创练习题</span><span class="tp">单选题</span></div>
+  <div class="eb">
+    <div class="q">栈的特点是（　　）。</div>
+    <div class="opt">
+      <i>A.</i>先进先出　　<i>B.</i>后进先出　　<i>C.</i>随机存取　　<i>D.</i>两头都能进出
+    </div>
+    <details><summary>查看答案与详解</summary>
+      <div class="ans"><b>答案：B</b>。栈是<strong>后进先出（LIFO）</strong>——
+      最后一个放进去的最先被取出来，像一摞盘子。<br>
+      <b>对比：</b>A 项是队列的特点；D 项是双端队列（deque）的特点。<br>
+      <span class="tagline">对应小节</span>1 两座塔，两种规矩；2 栈。</div>
+    </details>
+  </div>
+</div>
+
+<div class="exam">
+  <div class="eh"><span class="src ori">原创练习题</span><span class="tp">单选题</span></div>
+  <div class="eb">
+    <div class="q">下列 Python 代码执行后，输出的结果是（　　）。</div>
+    <pre>1  s = []
+2  s.append(1)
+3  s.append(2)
+4  s.append(3)
+5  print(s.pop())
+6  print(s[-1])</pre>
+    <div class="opt"><i>A.</i>3 和 2　　<i>B.</i>1 和 2　　<i>C.</i>3 和 3　　<i>D.</i>1 和 1</div>
+    <details><summary>查看答案与详解</summary>
+      <div class="ans"><b>答案：A</b>。压栈顺序 1、2、3，栈变成 [1, 2, 3]。<br>
+      <code class="inline">s.pop()</code> 拿走末尾的 <b>3</b>，栈变成 [1, 2]；<br>
+      <code class="inline">s[-1]</code> 只是查看栈顶，输出 <b>2</b>（元素还在）。<br>
+      <span class="tagline">对应小节</span>2 栈：后进先出。</div>
+    </details>
+  </div>
+</div>
+
+<div class="exam">
+  <div class="eh"><span class="src ori">原创练习题</span><span class="tp">判断题</span></div>
+  <div class="eb">
+    <div class="q">在 Python 中，用列表实现队列时，出队应该使用 <code class="inline">pop(0)</code>。（　　）</div>
+    <details><summary>查看答案与详解</summary>
+      <div class="ans"><b>答案：正确（√）</b>。队列是"先进先出"，队头在列表开头，
+      所以取出队头要用 <code class="inline">pop(0)</code>。<br>
+      <b>提醒：</b>元素很多时 <code class="inline">pop(0)</code> 较慢，
+      推荐用 <code class="inline">collections.deque</code> 的 <code class="inline">popleft()</code>。<br>
+      <span class="tagline">对应小节</span>3 队列：先进先出。</div>
+    </details>
+  </div>
+</div>
+
+<div class="exam">
+  <div class="eh"><span class="src ori">原创练习题</span><span class="tp">单选题</span></div>
+  <div class="eb">
+    <div class="q">循环队列中，容量为 5、当前 rear = 4，
+    入队一个新元素后 rear 应该变成（　　）。</div>
+    <div class="opt"><i>A.</i>5　　<i>B.</i>4　　<i>C.</i>0　　<i>D.</i>报错</div>
+    <details><summary>查看答案与详解</summary>
+      <div class="ans"><b>答案：C</b>。计算方式是 <code class="inline">(4 + 1) % 5 = 0</code>，
+      下标<b>绕回开头</b>。<br>
+      <b>这就是"循环"的含义：</b>走到末尾就回到 0，空间重复利用。<br>
+      <span class="tagline">对应小节</span>4 循环队列。</div>
+    </details>
+  </div>
+</div>
+
+<div class="exam">
+  <div class="eh"><span class="src ori">原创练习题</span><span class="tp">单选题</span></div>
+  <div class="eb">
+    <div class="q">下列哪种场景最适合用<strong>栈</strong>？（　　）</div>
+    <div class="opt">
+      <i>A.</i>打印任务按提交顺序依次执行<br>
+      <i>B.</i>编辑器里的"撤销"功能<br>
+      <i>C.</i>银行叫号系统<br>
+      <i>D.</i>按到达顺序处理客户请求
+    </div>
+    <details><summary>查看答案与详解</summary>
+      <div class="ans"><b>答案：B</b>。"撤销"要恢复<b>最近一次</b>的操作，
+      正是"后进先出"——用栈最合适。<br>
+      <b>A、C、D 都是"先来先服务"</b>，应该用队列。<br>
+      <span class="tagline">对应小节</span>2 栈；5 用列表实现。</div>
+    </details>
+  </div>
+</div>
+
+<div class="exam">
+  <div class="eh"><span class="src ori">原创练习题</span><span class="tp">判断题</span></div>
+  <div class="eb">
+    <div class="q">对空列表执行 <code class="inline">pop()</code> 会抛出 IndexError。（　　）</div>
+    <details><summary>查看答案与详解</summary>
+      <div class="ans"><b>答案：正确（√）</b>。空列表里没有元素可弹，会报
+      <code class="inline">IndexError: pop from empty list</code>。<br>
+      <b>防御写法：</b><code class="inline">if stack: x = stack.pop()</code>，
+      或 <code class="inline">while queue:</code> 保证不空。<br>
+      <span class="tagline">对应小节</span>7 常见陷阱。</div>
+    </details>
+  </div>
+</div>
+
+<div class="exam">
+  <div class="eh"><span class="src ori">原创练习题</span><span class="tp">编程题</span></div>
+  <div class="eb">
+    <div class="q">题目要求：利用栈判断一个字符串中的括号是否配对。
+    只考虑小括号 ( )，配对则输出 True，否则输出 False。</div>
+    <details><summary>查看参考答案与要点</summary>
+      <div class="ans">
+<pre style="margin:0;background:#1d2c48;color:#c3d6d1;border-radius:10px;padding:14px 16px">def check(s):
+    stack = []
+    for ch in s:
+        if ch == "(":
+            stack.append(ch)          # 遇到左括号：压栈
+        elif ch == ")":
+            if not stack:             # 右括号多了：直接失败
+                return False
+            stack.pop()               # 遇到右括号：弹出一个
+    return len(stack) == 0            # 栈空了才算配对
+
+print(check("(a(b)c)"))     # True
+print(check("(a(b)c"))      # False
+print(check(")a("))         # False</pre>
+      <p style="margin-top:12px"><b>输出：</b>True、False、False<br>
+      <b>要点：</b><br>
+      ① <b>遇到左括号压栈</b>，相当于"记住这里还有一个没配对的"；<br>
+      ② <b>遇到右括号弹栈</b>，相当于"配对掉最近的一个"——<b>"最近"正是栈的强项</b>；<br>
+      ③ 出现右括号但栈已空，说明右括号多了，直接返回 False；<br>
+      ④ 全部扫完后栈必须为空，否则说明左括号多了。<br>
+      <span class="tagline">对应小节</span>2 栈：后进先出。</p>
+      </div>
+    </details>
+  </div>
+</div>
+
+<div class="section-header" id="s9">
+  <h2>9　本单元小结</h2>
+  <div class="en-title">Unit Summary</div>
+</div>
+
+<div class="cast teacher">
+  <img class="ava" src="../assets/avatars/hushbaum.webp" alt="贺舒曼" onerror="this.style.display='none'">
+  <div class="bubble">
+    <div class="who">贺舒曼 · 镜中先知</div>
+    六级到这里就收官了。最后三句话：<br>
+    <strong>一、栈：一个口进出，后进先出；用 append 和 pop。</strong><br>
+    <strong>二、队列：一头进一头出，先进先出；用 append 和 pop(0)。</strong><br>
+    <strong>三、循环队列用取余让下标绕圈，空间重复利用。</strong><br>
+    从云髓天阶出去，前面是<b>雷鸣高塔</b>——那里有更复杂的算法等着你。
+  </div>
+</div>
+
+<div class="summary">
+  <h3>你在双塔前收获了什么</h3>
+  <ul>
+    <li><strong>栈</strong>——后进先出（LIFO）；一摞盘子，只能从顶上取。</li>
+    <li><strong>队列</strong>——先进先出（FIFO）；排队买票，先到的先走。</li>
+    <li><strong>栈的操作</strong>——<code class="inline">append</code> 入栈、<code class="inline">pop</code> 出栈、<code class="inline">[-1]</code> 看栈顶。</li>
+    <li><strong>队列的操作</strong>——<code class="inline">append</code> 入队、<code class="inline">pop(0)</code> 出队、<code class="inline">[0]</code> 看队头。</li>
+    <li><strong>deque</strong>——两头都能高效进出；队列首选 <code class="inline">popleft()</code>。</li>
+    <li><strong>循环队列</strong>——下标对容量取余，<code class="inline">(rear + 1) % capacity</code>。</li>
+    <li><strong>选型</strong>——"最近的事先处理"用栈；"先来先服务"用队列。</li>
+  </ul>
+</div>
+
+<div class="pager">
+  <a href="py-6-05.html"><div class="k">← 上一单元</div><div class="v">造物工坊 · 面向对象思想与类的创建</div></a>
+  <a href="../index.html" target="_top" class="back"><div class="k">返回</div><div class="v">考纲之路 · 总目录</div></a>
+  <a href="py-7-01.html"><div class="k">下一级别 →</div><div class="v">塔顶星图 · 数学库的应用</div></a>
+</div>
+
+<div class="cta">
+  <h3>六级通关，前面是雷鸣高塔</h3>
+  <p>云髓天阶六个单元全部学完。接下来是七级——
+  <b>数学库、复杂动态规划、图与遍历、泛洪算法、哈希表</b>。
+  从那里开始，你面对的将是"综合运用"的挑战。</p>
+  <a class="btn-go" href="https://codecombat.cn/" target="_blank" rel="noopener">加入扣哒世界，把这条考纲之路走一遍 →</a>
+</div>
+</div><!-- /container -->
+</div><!-- /page -->
+
+<script>
+const KEYWORDS = new Set(("while for if elif else break continue def return pass not and or in is None True False " +
+  "int float bool str list dict tuple set input print range len abs max min round pow import math random chr ord bin hex oct sum append copy keys values items").split(" "));
+
+function esc(s){ return s.replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;'); }
+
+function highlight(src){
+  let out = '', i = 0;
+  const n = src.length;
+  while (i < n){
+    const c = src[i];
+    if (c === '#'){
+      let j = src.indexOf('\n', i); if (j < 0) j = n;
+      out += '<span class="cm">' + esc(src.slice(i, j)) + '</span>';
+      i = j; continue;
+    }
+    if (c === '"' || c === "'"){
+      let j = i + 1;
+      while (j < n && src[j] !== c){ if (src[j] === '\\') j++; j++; }
+      j = Math.min(j + 1, n);
+      out += '<span class="st">' + esc(src.slice(i, j)) + '</span>';
+      i = j; continue;
+    }
+    if (/[0-9]/.test(c)){
+      let j = i;
+      while (j < n && /[0-9.]/.test(src[j])) j++;
+      out += '<span class="nu">' + esc(src.slice(i, j)) + '</span>';
+      i = j; continue;
+    }
+    if (/[A-Za-z_]/.test(c)){
+      let j = i;
+      while (j < n && /[A-Za-z0-9_]/.test(src[j])) j++;
+      const w = src.slice(i, j);
+      if (KEYWORDS.has(w)) out += '<span class="kw">' + esc(w) + '</span>';
+      else if (src[j] === '(') out += '<span class="fn">' + esc(w) + '</span>';
+      else out += esc(w);
+      i = j; continue;
+    }
+    out += esc(c); i++;
+  }
+  return out;
+}
+
+document.querySelectorAll('.code-card pre code').forEach(block => {
+  block.innerHTML = highlight(block.textContent);
+});
+
+if (location.search.indexOf('expand') >= 0) {
+  document.querySelectorAll('details').forEach(d => d.open = true);
+}
+document.querySelectorAll('.sidebar-nav a').forEach(a => {
+  a.addEventListener('click', () => {
+    if (window.innerWidth <= 900) document.querySelector('.sidebar-nav').classList.remove('active');
+  });
+});
+</script>
+</body>
+</html>

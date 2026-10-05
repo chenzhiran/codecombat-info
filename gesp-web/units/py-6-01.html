@@ -1,0 +1,1431 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="copyright" content="CodeCombat Inc. codecombat.cn">
+<title>天阶枝桠 · 树的基础与遍历 | 扣哒考级 · GESP Python 六级</title>
+<style>
+  :root{
+    --primary:#2f6fd0; --primary-light:#4f92e8; --primary-lighter:#eaf2fd; --primary-dark:#1f4f9c;
+    --brand:#ff6b35; --brand-dark:#e8541f; --brand-soft:#fff3ec;
+    --night:#0f1b22; --night-2:#16323a; --gold:#f5b301;
+    --text:#22333a; --dim:#5f7276; --dim2:#8da0a3;
+    --bg:#ffffff; --bg-soft:#f6fbfa; --line:#dceceb; --sidebar:274px;
+    --code-bg:#14231f; --code-tx:#c3d6d1;
+    --code-kw:#c678dd; --code-st:#98c379; --code-nu:#d19a66; --code-cm:#68807a; --code-fn:#61afef;
+  }
+  *{margin:0;padding:0;box-sizing:border-box}
+  html{scroll-behavior:smooth}
+  body{font-family:"PingFang SC","Microsoft YaHei","Segoe UI",-apple-system,sans-serif;line-height:1.9;color:var(--text);background:var(--bg);font-size:15.5px}
+  .sidebar-nav{position:fixed;top:0;left:0;width:var(--sidebar);height:100vh;overflow-y:auto;background:linear-gradient(180deg,#0b1524,#14294a);padding:14px 0 40px;z-index:100;border-right:3px solid var(--brand);transition:transform .3s ease}
+  .sidebar-nav::-webkit-scrollbar{width:5px}
+  .sidebar-nav::-webkit-scrollbar-thumb{background:var(--brand);border-radius:4px}
+  .sb-brand{display:flex;align-items:center;gap:10px;padding:10px 13px 12px;border-bottom:1px solid #1e3357;margin-bottom:8px}
+  .sidebar-nav a.sb-logo{display:flex;align-items:center;justify-content:center;flex-shrink:0;padding:0;border-left:none;transition:.2s}
+  .sb-logo:hover{transform:scale(1.08)}
+  .sb-logo img{height:34px;width:34px;display:block;object-fit:contain;border-radius:8px}
+  .sb-brand b{color:#eef7f6;font-size:14px;letter-spacing:.5px;display:block;line-height:1.4}
+  .sb-brand span{color:#7ba3a6;font-size:11.5px;display:block;line-height:1.4}
+  .nav-title{color:#ffb894;font-size:12px;font-weight:800;padding:10px 18px 6px;letter-spacing:1.2px}
+  .sidebar-nav a{display:block;color:#bcd3d4;text-decoration:none;padding:6px 18px;font-size:12.5px;line-height:1.55;border-left:3px solid transparent;transition:.18s}
+  .sidebar-nav a:hover{color:#fff;background:rgba(255,107,53,.16);border-left-color:var(--brand)}
+  .sidebar-nav a.nav-section{color:#ffb894;font-weight:700;font-size:13px;margin-top:11px;padding-top:10px;border-top:1px solid #1e3357}
+  .sidebar-nav a.nav-section:first-of-type{border-top:none;margin-top:0;padding-top:6px}
+  .sidebar-nav a.nav-sub{padding-left:30px;color:#8fabad;font-size:12px}
+  .sidebar-nav a.nav-sub:hover{color:#fff}
+  .sb-back{margin:16px 14px 0;display:block;text-align:center;padding:9px;border-radius:9px;background:#1c3940;color:#a6c0c2 !important;font-size:12px;font-weight:700;border-left:none !important}
+  .sb-back:hover{background:var(--brand) !important;color:#fff !important}
+  .nav-toggle{display:none;position:fixed;top:14px;left:14px;z-index:120;background:var(--brand);color:#fff;border:none;border-radius:9px;padding:9px 13px;font-size:15px;cursor:pointer;box-shadow:0 4px 14px rgba(0,0,0,.25)}
+  .page{margin-left:var(--sidebar)}
+  .hero{position:relative;overflow:hidden;padding:44px 52px;color:#fff;background:linear-gradient(125deg,#0a1220 0%,#173055 46%,#8a3a16 132%)}
+  .hero::after{content:"";position:absolute;right:-90px;top:-110px;width:400px;height:400px;border-radius:50%;background:radial-gradient(circle,rgba(245,179,1,.30),transparent 68%)}
+  .hero-top{display:flex;gap:36px;align-items:center;position:relative;z-index:2}
+  .hero-txt{flex:1;min-width:0}
+  .hero .crumb{font-size:11.5px;color:#ffb894;letter-spacing:1.5px;font-weight:700;margin-bottom:14px}
+  .hero h1{font-size:31px;font-weight:800;line-height:1.3;letter-spacing:.6px;margin-bottom:8px}
+  .hero h1 .sub{display:block;font-size:18px;font-weight:700;color:#ffd2b3;margin-top:6px;letter-spacing:.3px}
+  .hero .en{font-size:13px;color:#98b6b8;font-style:italic;margin-bottom:18px}
+  .hero .tags{display:flex;flex-wrap:wrap;gap:8px}
+  .tag{font-size:11.5px;padding:4px 12px;border-radius:20px;background:rgba(255,255,255,.12);border:1px solid rgba(255,255,255,.22);color:#e8f0f6;font-weight:600}
+  .tag.hot{background:rgba(255,107,53,.92);border-color:transparent;color:#fff}
+  .hero-card{flex-shrink:0;width:200px;text-align:center}
+  .hero-card .ava{width:148px;height:148px;border-radius:50%;object-fit:cover;object-position:top center;border:4px solid rgba(255,180,140,.6);box-shadow:0 14px 34px rgba(0,0,0,.45);background:#24344a}
+  .hero-card .nm{font-size:15px;font-weight:800;color:#fff;margin-top:10px}
+  .hero-card .ti{font-size:11.5px;color:#ffb894;margin-top:2px}
+  .container{max-width:1080px;margin:0 auto;padding:38px 52px 70px}
+  .lead{font-size:15.5px;line-height:2.05;color:#35474a;background:linear-gradient(120deg,#fff8f3,#f6fbfa);border-left:5px solid var(--brand);border-radius:0 14px 14px 0;padding:22px 26px;margin-bottom:32px}
+  .lead b{color:var(--brand-dark)}
+  .cast{display:flex;gap:16px;align-items:flex-start;border-radius:16px;padding:18px 22px;margin:24px 0}
+  .cast .ava{width:72px;height:72px;border-radius:50%;object-fit:cover;object-position:top center;flex-shrink:0;background:#e8eef5}
+  .cast .bubble{position:relative;font-size:14px;line-height:1.95;padding-top:2px;flex:1}
+  .cast .who{font-size:12px;font-weight:800;margin-bottom:5px;letter-spacing:.5px}
+  .cast.anya{background:var(--brand-soft);border:1px solid #ffdcc9}
+  .cast.anya .who{color:var(--brand-dark)}
+  .cast.anya .bubble{color:#5c4636}
+  .cast.duck{background:#fff5f5;border:1px solid #fbd5d5}
+  .cast.duck .who{color:#b91c1c}
+  .cast.duck .bubble{color:#5c4141}
+  .cast.teacher{background:linear-gradient(120deg,#f1f8f8,#ffffff);border:1px solid #d6e8e8}
+  .cast.teacher .who{color:#134e4a}
+  .cast.teacher .bubble{color:#3c5254}
+  .cast.hero{background:#f2fbf9;border:1px solid #cfe9e6}
+  .cast.hero .who{color:#0f766e}
+  .cast.hero .bubble{color:#3d5250}
+  .goal-grid{display:grid;grid-template-columns:1fr 1fr;gap:16px;margin-bottom:36px}
+  .goal{border:1px solid var(--line);border-radius:15px;padding:19px 21px;background:#fff;box-shadow:0 4px 16px rgba(14,143,134,.06)}
+  .goal h4{font-size:14px;font-weight:800;margin-bottom:11px;display:flex;align-items:center;gap:8px;color:var(--primary-dark)}
+  .goal h4 .ic{width:22px;height:22px;border-radius:7px;background:var(--primary-lighter);display:flex;align-items:center;justify-content:center;font-size:12px}
+  .goal ul{list-style:none}
+  .goal li{font-size:13.5px;color:#46585a;line-height:1.9;padding-left:18px;position:relative}
+  .goal li::before{content:"▸";position:absolute;left:0;color:var(--primary);font-weight:800}
+  .goal.syllabus li::before{content:"✓"}
+  .section-header{margin:52px 0 24px;padding-bottom:12px;border-bottom:3px solid var(--brand);display:flex;align-items:baseline;gap:14px;flex-wrap:wrap}
+  .section-header h2{font-size:22px;font-weight:800;color:var(--night);letter-spacing:.4px}
+  .section-header .en-title{font-size:12px;color:var(--dim2);font-style:italic}
+  h3{font-size:17.5px;font-weight:800;margin:34px 0 14px;color:var(--night);display:flex;align-items:center;gap:10px}
+  h3::before{content:"";width:5px;height:17px;border-radius:3px;background:var(--brand);flex-shrink:0}
+  h4{font-size:15px;font-weight:800;margin:24px 0 10px;color:#2c4a48}
+  p{margin:12px 0;color:#3d5250;line-height:2}
+  strong{color:var(--primary-dark)}
+  code.inline{background:var(--primary-lighter);color:var(--primary-dark);padding:2px 7px;border-radius:6px;font-family:"SFMono-Regular",Consolas,Menlo,monospace;font-size:.9em;font-weight:600}
+  .figure{margin:24px 0;text-align:center}
+  .figure svg.diagram{max-width:100%;height:auto;background:#fff;border:1px solid var(--line);border-radius:14px;padding:10px}
+  .figure .caption{font-size:12.5px;color:var(--dim2);margin-top:9px}
+  .pic{margin:26px 0;text-align:center}
+  .pic img{max-width:100%;border-radius:16px;box-shadow:0 10px 28px rgba(20,60,60,.15);display:block;margin:0 auto}
+  .pic figcaption{font-size:12.5px;color:var(--dim2);margin-top:9px}
+  .pic .ph{display:none}
+  .pic.missing img{display:none}
+  .pic.missing .ph{display:flex;flex-direction:column;align-items:center;justify-content:center;gap:9px;border:2px dashed #bfdcd9;border-radius:16px;background:linear-gradient(135deg,#f8fdfc,#eef8f7);padding:40px 26px;color:#6f8f90}
+  .pic.missing .ph .fn{font-family:Consolas,monospace;font-size:12.5px;color:#0e8f86;font-weight:700;word-break:break-all}
+  .pic.missing .ph .ds{font-size:12.5px;line-height:1.8;max-width:560px}
+  .box{border-radius:13px;padding:16px 20px;margin:20px 0;font-size:14px;line-height:1.95}
+  .box .lb{font-weight:800;margin-right:6px}
+  .info{background:#eef6ff;border-left:5px solid #3b82f6;color:#274768}
+  .info .lb{color:#1d4ed8}
+  .tip{background:#fff9ec;border-left:5px solid #f59e0b;color:#6b4e13}
+  .tip .lb{color:#b45309}
+  .remember{background:var(--primary-lighter);border-left:5px solid var(--primary);color:#134e4a}
+  .remember .lb{color:var(--primary-dark)}
+  .warn{background:#fef2f2;border-left:5px solid #ef4444;color:#7f2b2b}
+  .warn .lb{color:#b91c1c}
+  .code-card{margin:20px 0;border-radius:14px;overflow:hidden;box-shadow:0 10px 28px rgba(15,40,40,.20)}
+  .code-head{display:flex;align-items:center;gap:9px;background:#1d2c48;padding:9px 14px}
+  .code-head .dot{width:10px;height:10px;border-radius:50%}
+  .code-head .d1{background:#ff5f57}.code-head .d2{background:#febc2e}.code-head .d3{background:#28c840}
+  .code-head .file{color:#8fb0aa;font-size:11.5px;font-family:Consolas,monospace;margin-left:6px}
+  .code-head .lang{margin-left:auto;font-size:10.5px;font-weight:800;color:#0b1f1a;background:#7fb2f5;padding:2px 9px;border-radius:6px;letter-spacing:.4px}
+  .code-card pre{background:var(--code-bg);padding:18px 20px;overflow-x:auto;margin:0;font-family:"SFMono-Regular",Consolas,"Courier New",monospace;font-size:13.5px;line-height:1.85}
+  .code-card pre::-webkit-scrollbar{height:8px}
+  .code-card pre::-webkit-scrollbar-thumb{background:#2f4a45;border-radius:4px}
+  .code-card code{color:var(--code-tx);white-space:pre}
+  .kw{color:var(--code-kw);font-weight:600}
+  .st{color:var(--code-st)}
+  .nu{color:var(--code-nu)}
+  .cm{color:var(--code-cm);font-style:italic}
+  .fn{color:var(--code-fn)}
+  .out{background:#0e1d1a;color:#7fd6b8;font-family:Consolas,monospace;font-size:13px;padding:12px 20px;border-top:1px solid #223a35}
+  .out b{color:#c3d6d1;font-weight:600;font-size:11.5px;letter-spacing:1px}
+  table.styled{width:100%;border-collapse:collapse;margin:20px 0;font-size:13.5px;border-radius:12px;overflow:hidden;box-shadow:0 4px 16px rgba(14,143,134,.08)}
+  table.styled thead{background:var(--brand)}
+  table.styled th{color:#fff;padding:11px 14px;text-align:left;font-weight:700;font-size:13px}
+  table.styled td{padding:10px 14px;border-bottom:1px solid var(--line);color:#44585a;vertical-align:top}
+  table.styled tbody tr:nth-child(even){background:var(--bg-soft)}
+  table.styled tbody tr:last-child td{border-bottom:none}
+  .level-card{border:1px solid var(--line);border-radius:16px;overflow:hidden;margin:22px 0;box-shadow:0 6px 22px rgba(14,143,134,.08)}
+  .level-card .lc-head{background:linear-gradient(100deg,#12262c,#8a3a16);color:#fff;padding:15px 22px;display:flex;align-items:center;gap:12px;flex-wrap:wrap}
+  .level-card .lc-head .n{font-size:12px;font-weight:800;background:rgba(255,255,255,.2);padding:3px 10px;border-radius:20px}
+  .level-card .lc-head h4{margin:0;color:#fff;font-size:16px}
+  .level-card .lc-head .go{margin-left:auto;font-size:11.5px;color:#ffd2b3}
+  .level-card .lc-body{padding:20px 24px;background:#fff}
+  .level-card .story{background:#f8fcfc;border-left:4px solid #7dd3fc;border-radius:0 10px 10px 0;padding:13px 18px;margin:0 0 16px;font-size:14px;line-height:1.95;color:#3c5254}
+  .level-card .story b{color:#0369a1}
+  .btn-go{display:inline-flex;align-items:center;gap:8px;background:linear-gradient(135deg,var(--brand),var(--brand-dark));color:#fff;text-decoration:none;font-weight:800;font-size:13.5px;padding:10px 22px;border-radius:11px;box-shadow:0 8px 20px rgba(255,107,53,.32);transition:.2s}
+  .btn-go:hover{transform:translateY(-2px);box-shadow:0 12px 26px rgba(255,107,53,.42)}
+  .pit{border:1px solid #f6dede;border-radius:14px;overflow:hidden;margin:16px 0;background:#fff}
+  .pit .pt{display:flex;gap:12px;padding:14px 18px;background:#fffafa;align-items:flex-start}
+  .pit .x{width:26px;height:26px;border-radius:9px;background:#fee;color:#dc2626;display:flex;align-items:center;justify-content:center;font-weight:800;flex-shrink:0;font-size:13px}
+  .pit .t{font-size:13.5px;line-height:1.9;color:#5c4a4a;flex:1}
+  .pit .t b{color:#b91c1c}
+  .pit .duck{display:flex;gap:12px;padding:13px 18px;background:#fff5f5;border-top:1px dashed #f3d0d0;align-items:flex-start}
+  .pit .duck img{width:48px;height:48px;object-fit:contain;flex-shrink:0;margin-top:2px}
+  .pit .duck .dt{font-size:13.5px;line-height:1.9;color:#7a3b3b}
+  .pit .duck .dt b{color:#b91c1c}
+  .pit .fix{padding:12px 18px;background:#f2fbf9;border-top:1px dashed #cfe9e6;font-size:13.5px;color:#134e4a}
+  .pit .fix b{color:var(--primary-dark)}
+  .exam{border:1px solid #d8ebea;border-radius:15px;margin:16px 0;overflow:hidden;background:#fff;box-shadow:0 4px 16px rgba(30,80,80,.06)}
+  .exam .eh{display:flex;align-items:center;gap:10px;padding:11px 18px;background:linear-gradient(100deg,#eef8f7,#f8fdfc);border-bottom:1px solid #dbeceb;flex-wrap:wrap}
+  .exam .eh .src{font-size:11px;font-weight:800;color:#fff;background:#0e8f86;padding:2.5px 10px;border-radius:20px}
+  .exam .eh .src.ori{background:#0e9488}
+  .exam .eh .tp{font-size:11.5px;color:#4f7d7a;font-weight:700}
+  .exam .eb{padding:16px 20px}
+  .exam .q{font-weight:700;font-size:14px;color:#2b4042;line-height:1.9;margin-bottom:10px}
+  .exam .opt{font-size:13.5px;color:#46585a;line-height:2.05;padding-left:6px}
+  .exam .opt i{font-style:normal;font-weight:800;color:var(--primary-dark);margin-right:7px}
+  .exam pre{margin:12px 0;background:#14231f;border-radius:10px;padding:14px 16px;overflow-x:auto;font-family:Consolas,monospace;font-size:13px;line-height:1.8;color:var(--code-tx)}
+  .exam details{margin-top:10px;border-top:1px dashed var(--line);padding-top:10px}
+  .exam summary{cursor:pointer;font-size:12.5px;font-weight:800;color:#0e8f86;outline:none;user-select:none}
+  .exam details .ans{font-size:13.5px;color:#3d5250;line-height:1.95;margin-top:9px;background:var(--bg-soft);padding:13px 16px;border-radius:10px}
+  .exam details .ans b{color:var(--primary-dark)}
+  .exam details .ans .tagline{display:inline-block;font-size:11px;background:#e0f2fe;color:#0e7490;padding:1.5px 8px;border-radius:6px;font-weight:700;margin-right:6px}
+  .summary{margin:40px 0 20px;border-radius:18px;padding:26px 30px;background:linear-gradient(130deg,#fff8f3,#ffffff);border:1px solid #ffe0cf}
+  .summary h3{margin-top:0}
+  .summary ul{list-style:none;margin-top:10px}
+  .summary li{font-size:14px;line-height:2;color:#3d5250;padding-left:24px;position:relative}
+  .summary li::before{content:"◆";position:absolute;left:0;color:var(--brand);font-size:11px;top:6px}
+  .pager{display:flex;gap:14px;margin-top:30px;flex-wrap:wrap}
+  .pager a{flex:1;min-width:200px;text-decoration:none;border:1px solid var(--line);border-radius:14px;padding:16px 20px;background:#fff;transition:.2s;display:block}
+  .pager a:hover{border-color:var(--brand);box-shadow:0 10px 26px rgba(255,107,53,.14);transform:translateY(-2px)}
+  .pager a .k{font-size:11px;color:var(--dim2);font-weight:700;letter-spacing:1px}
+  .pager a .v{font-size:14px;font-weight:800;color:var(--night);margin-top:5px}
+  .pager a.back{background:var(--brand-soft);border-color:transparent;text-align:center}
+  .pager a.back .v{color:var(--brand-dark)}
+  .cta{margin-top:26px;border-radius:20px;padding:30px 34px;color:#fff;position:relative;overflow:hidden;background:linear-gradient(120deg,#12242a,#1e4a52 46%,#a8431c 132%)}
+  .cta::after{content:"";position:absolute;right:-70px;bottom:-90px;width:280px;height:280px;border-radius:50%;background:radial-gradient(circle,rgba(255,140,80,.45),transparent 68%)}
+  .cta h3{color:#fff;margin:0 0 10px;position:relative;z-index:2}
+  .cta h3::before{background:var(--brand)}
+  .cta p{color:#cfe4e2;font-size:13.5px;margin:0 0 18px;position:relative;z-index:2;max-width:640px}
+  .cta .btn-go{position:relative;z-index:2}
+  @media(max-width:900px){
+    .sidebar-nav{transform:translateX(-100%)}
+    .sidebar-nav.active{transform:translateX(0)}
+    .nav-toggle{display:block}
+    .page{margin-left:0}
+    .hero{padding:70px 22px 34px}
+    .hero-top{flex-direction:column-reverse;text-align:center}
+    .hero-card{width:auto}
+    .container{padding:26px 20px 60px}
+    .goal-grid{grid-template-columns:1fr}
+  }
+</style>
+</head>
+<body>
+
+<button class="nav-toggle" onclick="document.querySelector('.sidebar-nav').classList.toggle('active')">&#9776;</button>
+
+<nav class="sidebar-nav">
+  <div class="sb-brand">
+    <a class="sb-logo" href="https://codecombat.cn/" target="_blank" rel="noopener" title="访问 CodeCombat 扣哒世界官网">
+      <img src="../assets/logo.png" alt="CodeCombat 扣哒世界">
+    </a>
+    <div><b>天阶枝桠</b><span>云髓天阶 · Python 六级 第 1 单元</span></div>
+  </div>
+  <div class="nav-title">本单元目录</div>
+
+  <a href="#s0" class="nav-section">0　单元导语与目标</a>
+  <a href="#s0-1" class="nav-sub">0.1 学习目标</a>
+  <a href="#s0-2" class="nav-sub">0.2 考纲对照</a>
+  <a href="#s1" class="nav-section">1　什么是树</a>
+  <a href="#s1-1" class="nav-sub">1.1 从"一对多"说起</a>
+  <a href="#s1-2" class="nav-sub">1.2 树的常用术语</a>
+  <a href="#s2" class="nav-section">2　二叉树</a>
+  <a href="#s2-1" class="nav-sub">2.1 每个结点最多两个孩子</a>
+  <a href="#s2-2" class="nav-sub">2.2 完全二叉树与数组存储</a>
+  <a href="#s2-3" class="nav-sub">2.3 二叉排序树：左边全小，右边全大</a>
+  <a href="#s3" class="nav-section">3　三种遍历</a>
+  <a href="#s3-1" class="nav-sub">3.1 先序、中序、后序</a>
+  <a href="#s3-2" class="nav-sub">3.2 遍历的代码</a>
+  <a href="#s4" class="nav-section">4　由遍历序列还原</a>
+  <a href="#s4-1" class="nav-sub">4.1 先序 + 中序 → 后序</a>
+  <a href="#s4-2" class="nav-sub">4.2 一步步推的方法</a>
+  <a href="#s5" class="nav-section">5　树的程序表示</a>
+  <a href="#s5-1" class="nav-sub">5.1 结构体 + 指针</a>
+  <a href="#s5-2" class="nav-sub">5.2 数组表示法</a>
+  <a href="#s6" class="nav-section">6　代码实战</a>
+  <a href="#s7" class="nav-section">7　常见陷阱</a>
+  <a href="#s8" class="nav-section">8　题目练习</a>
+  <a href="#s9" class="nav-section">9　本单元小结</a>
+
+  <a href="../index.html" target="_top" class="sb-back">返回考纲之路</a>
+</nav>
+
+<div class="page">
+
+<div class="hero">
+  <div class="hero-top">
+    <div class="hero-txt">
+      <div class="crumb">扣哒考级 · GESP PYTHON 六级 · 第 1 单元　|　云髓天阶 CLOUDMARROW STEPS</div>
+      <h1>天阶枝桠
+        <span class="sub">树的基础与遍历</span>
+      </h1>
+      <div class="en">Trees &amp; Traversal</div>
+      <div class="tags">        <span class="tag hot">考纲 · 树</span>
+        <span class="tag">二叉树</span>
+        <span class="tag">三种遍历</span>
+        <span class="tag">完全二叉树</span>
+        <span class="tag">结点与边</span></div>
+    </div>
+    <div class="hero-card">
+      <img class="ava" src="../assets/avatars/hushbaum.webp" alt="贺舒曼" onerror="this.style.background='#24344a';this.src='../assets/heroes/hushbaum.webp'">
+      <div class="nm">贺舒曼</div>
+      <div class="ti">镜中先知 · 你的向导</div>
+    </div>
+  </div>
+</div>
+
+<div class="container">
+
+<div class="lead">
+  石阶一路向上，渐渐没入云海。<br>
+  云层之上，一株<b>发光的巨树从台阶缝隙里长出来</b>——
+  <b>主干分成两条枝，两条枝又各分成两条，一路向天空分叉。</b><br>
+  贺舒曼站在树根旁，镜片后映着无数分叉的影子：<strong>你看，
+  它每一层的规矩都一样，可越往上越密。</strong><br>
+  你抬头望了很久：<b>……原来"分叉"本身，就是一种结构。</b>
+</div>
+
+<div class="cast hushbaum">
+  <img class="ava" src="../assets/avatars/hushbaum.webp" alt="贺舒曼" onerror="this.style.display='none'">
+  <div class="bubble">
+    <div class="who">贺舒曼 · 镜中先知</div>
+    一级到五级，你打交道的都是"一条线"上的数据——数组是一排，链表是一条。<br>
+    <strong>从这一级开始，我们要处理"会分叉"的数据：树。</strong><br>
+    <b>它看起来复杂，其实规则只有一条：每个结点往下连几个孩子。</b>
+  </div>
+</div>
+
+<figure class="pic">
+  <img src="../assets/illustrations/py-L6-01-01_sky_tree.webp" alt="天阶枝桠"
+       onerror="this.closest('.pic').classList.add('missing')">
+  <div class="ph">
+    <div class="fn">assets/illustrations/py-L6-01-01_sky_tree.webp</div>
+    <div class="ds">【配图位】云海之上的石阶旁，一株发光的巨树自台阶缝隙中长出，主干向上不断分叉，每一层都按"一分二、二分四"的规律展开；每个枝梢挂着颜色不同的小灯笼；一名戴眼镜、手持镜子的先知站在树根处仰头张望，手里拿着一本写着遍历顺序的册子，云朵在树腰处流过。</div>
+  </div>
+  <figcaption>图 1：云髓天阶的天阶枝桠——今天要从这里开始</figcaption>
+</figure>
+
+<!-- ============ 0 ============ -->
+<div class="section-header" id="s0">
+  <h2>0　单元导语与目标</h2>
+  <div class="en-title">Unit Overview</div>
+</div>
+
+<h3 id="s0-1">0.1 学习目标</h3>
+<div class="goal-grid">
+  <div class="goal">
+    <h4><span class="ic">1</span>学完这个单元，你将能……</h4>
+    <ul>
+      <li>说出树和链表的根本区别</li>
+      <li>认全树的基本术语（根、叶子、深度……）</li>
+      <li>说出二叉树的特点，并能区分完全二叉树与二叉排序树</li>
+      <li>写出三种遍历的递归代码</li>
+      <li>由先序和中序推出后序</li>
+      <li>用两种方式在程序里表示一棵树</li>
+    </ul>
+  </div>
+  <div class="goal syllabus">
+    <h4><span class="ic">2</span>对标 GESP 考纲（Python 六级）</h4>
+    <ul>
+      <li>理解树的概念与基本术语</li>
+      <li>掌握二叉排序树（BST）的构造与中序遍历性质</li>
+      <li>掌握二叉树的性质与数组存储方式</li>
+      <li>掌握先序、中序、后序遍历</li>
+      <li>能由两种遍历序列推出第三种</li>
+      <li>考核目标：能跟踪遍历顺序、能进行遍历序列的相互推导</li>
+    </ul>
+  </div>
+</div>
+
+<h3 id="s0-2">0.2 考纲对照</h3>
+<table class="styled">
+  <thead><tr><th>本单元小节</th><th>对应考纲条目</th><th>真题常考形式</th></tr></thead>
+  <tbody>
+    <tr><td>1　什么是树</td><td>树的概念与术语</td><td>根、叶子、父结点、深度各指什么</td></tr>
+    <tr><td>2　二叉树</td><td>二叉树的定义与存储</td><td>数组存法：左孩子下标是多少（必考）</td></tr>
+    <tr><td>3　三种遍历</td><td>遍历方式</td><td>给代码问是哪种遍历（必考）</td></tr>
+    <tr><td>4　由遍历序列还原</td><td>遍历序列的推导</td><td>先序 + 中序 → 后序（必考）</td></tr>
+    <tr><td>5　树的程序表示</td><td>树的存储结构</td><td>结构体表示与数组表示的区别</td></tr>
+  </tbody>
+</table>
+
+<!-- ============ 1 ============ -->
+<div class="section-header" id="s1">
+  <h2>1　什么是树</h2>
+  <div class="en-title">What Is a Tree</div>
+</div>
+
+<h3 id="s1-1">1.1 从"一对多"说起</h3>
+
+<div class="box remember">
+  <span class="lb">树和链表的根本区别：</span>
+  <b>链表是"一对一"</b>——<strong>每个结点最多只有一个后继，连起来是一条线。</strong><br>
+  <b>树是"一对多"</b>——<strong>每个结点可以往下连好几个"孩子"，
+  于是一条线就展开成了一片。</strong><br>
+  <b>但有一条规矩必须守：</b>
+  <strong>除了最上面那个"根"，每个结点只能有一个"父亲"——不允许有两条路通向同一个结点，
+  否则就成"图"了，不是树。</strong>
+</div>
+
+<div class="code-card">
+  <div class="code-head">
+    <span class="dot d1"></span><span class="dot d2"></span><span class="dot d3"></span>
+    <span class="file">一棵树的形状</span>
+    <span class="lang">TEXT</span>
+  </div>
+  <pre><code>A ← 根结点（没有父亲）
+/ \
+B C ← A 的孩子
+/ \ \
+D E F ← 叶子：D、E、F（没有孩子）
+/ \
+G H
+
+A 是 B、C 的父亲；B、C 是 A 的孩子
+B、C 互为兄弟
+D 是 A 的"孙子"（A 是 D 的祖先）
+这棵树一共 8 个结点
+
+★ 关键：每个结点往下可以有多个孩子，
+但除了 A 之外，每个结点都只有一个父亲。
+</code></pre>
+  <div class="out"><b>两个必须成立的规矩</b>　
+  ① 除了根，每个结点<strong>恰好一个父亲</strong>；<br>
+  ② 从根到任何结点，<strong>路径只有一条</strong>（没有环）</div>
+</div>
+
+<h3 id="s1-2">1.2 树的常用术语</h3>
+
+<table class="styled">
+  <thead><tr><th>术语</th><th>含义</th><th>在上面那棵树里</th></tr></thead>
+  <tbody>
+    <tr><td><strong>根（root）</strong></td><td>最上面那个结点，唯一没有父亲的</td><td>A</td></tr>
+    <tr><td><strong>叶子（leaf）</strong></td><td>没有孩子的结点</td><td>D、E、F、G、H</td></tr>
+    <tr><td><strong>父结点 / 子结点</strong></td><td>上下相邻的两个结点</td><td>A 是 B 的父，B 是 A 的子</td></tr>
+    <tr><td><strong>兄弟</strong></td><td>同一个父亲的孩子</td><td>B 和 C</td></tr>
+    <tr><td><strong>子树</strong></td><td>某个结点连同它下面的全部后代</td><td>以 B 为根的子树含 B、D、E、G、H</td></tr>
+    <tr><td><strong>深度 / 层数</strong></td><td>从根往下数，根在第 0 层（或第 1 层）</td><td>A 是第 0 层，B、C 是第 1 层</td></tr>
+    <tr><td><strong>高度</strong></td><td>从最深的叶子往上数到根的层数</td><td>这棵树的高度是 3</td></tr>
+  </tbody>
+</table>
+
+<div class="box tip">
+  <span class="lb">打个比方：</span>
+  树就像<b>家谱</b>——<strong>最上面是老祖宗，往下是儿子、孙子、重孙。</strong><br>
+  <b>每个人只能有一个父亲（这是"树"的规矩），但可以有多个孩子。</b><br>
+  <strong>"深度"就是这个人往下数第几代，"叶子"就是没有后代的人。</strong>
+</div>
+
+<!-- ============ 2 ============ -->
+<div class="section-header" id="s2">
+  <h2>2　二叉树</h2>
+  <div class="en-title">Binary Trees</div>
+</div>
+
+<h3 id="s2-1">2.1 每个结点最多两个孩子</h3>
+
+<div class="box remember">
+  <span class="lb">二叉树的定义：</span>
+  <b>每个结点<strong>最多有两个孩子</strong>的树。这两个孩子分得很清楚——
+  <strong>一个叫左孩子，一个叫右孩子，位置不能颠倒。</strong></b><br>
+  <b>注意："最多两个"意味着可以只有 0 个或 1 个——
+  一个结点只有一个孩子时，还得说清是左孩子还是右孩子。</b><br>
+  <strong>为什么专门研究二叉树？因为它规则简单、性质漂亮，而且
+  任何一棵树都能改造成二叉树来存。</strong>
+</div>
+
+<figure class="figure">
+  <svg class="diagram" viewBox="0 0 830 250" role="img" aria-label="树与二叉树">
+    <text x="24" y="30" font-size="14" font-weight="bold" fill="#1f2937">树可以有多叉，二叉树最多两叉</text>
+
+    <text x="180" y="54" text-anchor="middle" font-size="12.5" fill="#1d4ed8" font-weight="bold">普通树：孩子数不限</text>
+    <g font-family="Consolas,monospace" font-size="12.5">
+      <circle cx="180" cy="82" r="17" fill="#eaf1fe" stroke="#2563eb" stroke-width="1.8"/>
+      <text x="180" y="87" text-anchor="middle" fill="#1d4ed8">A</text>
+      <circle cx="120" cy="140" r="17" fill="#eaf1fe" stroke="#2563eb" stroke-width="1.8"/>
+      <text x="120" y="145" text-anchor="middle" fill="#1d4ed8">B</text>
+      <circle cx="180" cy="140" r="17" fill="#eaf1fe" stroke="#2563eb" stroke-width="1.8"/>
+      <text x="180" y="145" text-anchor="middle" fill="#1d4ed8">C</text>
+      <circle cx="240" cy="140" r="17" fill="#eaf1fe" stroke="#2563eb" stroke-width="1.8"/>
+      <text x="240" y="145" text-anchor="middle" fill="#1d4ed8">D</text>
+      <circle cx="90" cy="196" r="17" fill="#eaf1fe" stroke="#2563eb" stroke-width="1.8"/>
+      <text x="90" y="201" text-anchor="middle" fill="#1d4ed8">E</text>
+    </g>
+    <line x1="170" y1="97" x2="126" y2="126" stroke="#94a3b8" stroke-width="1.6"/>
+    <line x1="180" y1="99" x2="180" y2="123" stroke="#94a3b8" stroke-width="1.6"/>
+    <line x1="190" y1="97" x2="234" y2="126" stroke="#94a3b8" stroke-width="1.6"/>
+    <line x1="112" y1="155" x2="95" y2="182" stroke="#94a3b8" stroke-width="1.6"/>
+
+    <text x="600" y="54" text-anchor="middle" font-size="12.5" fill="#1f7a44" font-weight="bold">二叉树：最多左右两个孩子</text>
+    <g font-family="Consolas,monospace" font-size="12.5">
+      <circle cx="600" cy="82" r="17" fill="#e9f8ef" stroke="#2e9e5b" stroke-width="1.8"/>
+      <text x="600" y="87" text-anchor="middle" fill="#1f7a44">A</text>
+      <circle cx="540" cy="140" r="17" fill="#e9f8ef" stroke="#2e9e5b" stroke-width="1.8"/>
+      <text x="540" y="145" text-anchor="middle" fill="#1f7a44">B</text>
+      <circle cx="660" cy="140" r="17" fill="#e9f8ef" stroke="#2e9e5b" stroke-width="1.8"/>
+      <text x="660" y="145" text-anchor="middle" fill="#1f7a44">C</text>
+      <circle cx="510" cy="196" r="17" fill="#e9f8ef" stroke="#2e9e5b" stroke-width="1.8"/>
+      <text x="510" y="201" text-anchor="middle" fill="#1f7a44">D</text>
+      <circle cx="570" cy="196" r="17" fill="#e9f8ef" stroke="#2e9e5b" stroke-width="1.8"/>
+      <text x="570" y="201" text-anchor="middle" fill="#1f7a44">E</text>
+    </g>
+    <line x1="590" y1="97" x2="546" y2="126" stroke="#94a3b8" stroke-width="1.6"/>
+    <line x1="610" y1="97" x2="654" y2="126" stroke="#94a3b8" stroke-width="1.6"/>
+    <line x1="530" y1="155" x2="515" y2="182" stroke="#94a3b8" stroke-width="1.6"/>
+    <line x1="548" y1="152" x2="564" y2="182" stroke="#94a3b8" stroke-width="1.6"/>
+    <text x="540" y="160" font-size="10.5" fill="#3b7c5b">左</text>
+    <text x="662" y="160" font-size="10.5" fill="#3b7c5b">右</text>
+
+    <rect x="60" y="216" width="710" height="26" rx="8" fill="#f7f9fd" stroke="#cbd5e1" stroke-width="1.4"/>
+    <text x="82" y="234" font-size="11.5" fill="#334155">★ 二叉树里的"左孩子"和"右孩子"是<b>有区别的</b>——只有一个孩子时，也必须说清它在左边还是右边</text>
+  </svg>
+  <div class="caption">图 2（SVG）：普通树与二叉树</div>
+</figure>
+
+<h3 id="s2-2">2.2 完全二叉树与数组存储</h3>
+
+<div class="box remember">
+  <span class="lb">完全二叉树：只有最下面一层可能不满，而且缺的都在右边。</span>
+  <b>换句话说：</b><strong>从上到下、从左到右，一个空位都不许有，直到最后一个结点为止。</strong><br>
+  <b>它的最大好处是"能用数组存"——</b><strong>不用指针，直接按下标就能找到父结点和孩子。</strong>
+</div>
+
+<div class="code-card">
+  <div class="code-head">
+    <span class="dot d1"></span><span class="dot d2"></span><span class="dot d3"></span>
+    <span class="file">完全二叉树的数组存储规律</span>
+    <span class="lang">TEXT</span>
+  </div>
+  <pre><code>【方案一：根放在下标 1】（更常用）
+结点 i 的左孩子 → 2 * i
+结点 i 的右孩子 → 2 * i + 1
+结点 i 的父亲 → i # 2
+（下标 0 空着不用）
+
+【方案二：根放在下标 0】
+结点 i 的左孩子 → 2 * i + 1
+结点 i 的右孩子 → 2 * i + 2
+结点 i 的父亲 → (i - 1) / 2
+
+★ 两种都常见，看清楚题目用的是哪一种。
+
+举例（根在下标 1）：
+下标： 1 2 3 4 5 6 7
+内容： A B C D E F G
+1 的孩子是 2、3
+2 的孩子是 4、5
+3 的孩子是 6、7
+</code></pre>
+  <div class="out"><b>记牢</b>　
+  <b>根在 1：左孩子 <code>2i</code>、右孩子 <code>2i+1</code>；根在 0：左孩子 <code>2i+1</code>、右孩子 <code>2i+2</code></b></div>
+</div>
+
+<div class="box tip">
+  <span class="lb">为什么"完全"二叉树才方便用数组存？</span>
+  因为数组要求<strong>"一个挨着一个，中间不能有空位"</strong>。<br>
+  <b>如果树的形状是"歪"的——比如每层只有一个孩子，
+  数组里就会出现大片空位，浪费得厉害。</b><br>
+  <strong>而完全二叉树正好没有空洞，从上到下、从左到右一格不差地填满，
+  所以下标和位置能一一对应上。</strong>
+</div>
+
+<figure class="figure">
+  <svg class="diagram" viewBox="0 0 830 250" role="img" aria-label="完全二叉树与数组">
+    <text x="24" y="30" font-size="14" font-weight="bold" fill="#1f2937">完全二叉树用数组存：下标之间就是父子关系</text>
+
+    <g font-family="Consolas,monospace" font-size="12.5">
+      <circle cx="180" cy="76" r="18" fill="#e9f8ef" stroke="#2e9e5b" stroke-width="2"/>
+      <text x="180" y="81" text-anchor="middle" fill="#1f7a44">A</text>
+      <circle cx="120" cy="132" r="18" fill="#e9f8ef" stroke="#2e9e5b" stroke-width="1.8"/>
+      <text x="120" y="137" text-anchor="middle" fill="#1f7a44">B</text>
+      <circle cx="240" cy="132" r="18" fill="#e9f8ef" stroke="#2e9e5b" stroke-width="1.8"/>
+      <text x="240" y="137" text-anchor="middle" fill="#1f7a44">C</text>
+      <circle cx="90" cy="188" r="18" fill="#e9f8ef" stroke="#2e9e5b" stroke-width="1.8"/>
+      <text x="90" y="193" text-anchor="middle" fill="#1f7a44">D</text>
+      <circle cx="150" cy="188" r="18" fill="#e9f8ef" stroke="#2e9e5b" stroke-width="1.8"/>
+      <text x="150" y="193" text-anchor="middle" fill="#1f7a44">E</text>
+      <circle cx="210" cy="188" r="18" fill="#e9f8ef" stroke="#2e9e5b" stroke-width="1.8"/>
+      <text x="210" y="193" text-anchor="middle" fill="#1f7a44">F</text>
+    </g>
+    <line x1="170" y1="90" x2="128" y2="118" stroke="#94a3b8" stroke-width="1.6"/>
+    <line x1="190" y1="90" x2="232" y2="118" stroke="#94a3b8" stroke-width="1.6"/>
+    <line x1="112" y1="147" x2="96" y2="174" stroke="#94a3b8" stroke-width="1.6"/>
+    <line x1="128" y1="147" x2="144" y2="174" stroke="#94a3b8" stroke-width="1.6"/>
+    <line x1="232" y1="147" x2="214" y2="174" stroke="#94a3b8" stroke-width="1.6"/>
+
+    <g font-family="Consolas,monospace" font-size="12.5">
+      <rect x="360" y="100" width="60" height="36" rx="6" fill="#fff9ec" stroke="#f59e0b" stroke-width="1.6"/>
+      <text x="390" y="124" text-anchor="middle" font-size="10.5" fill="#b45309">下标 0</text>
+      <rect x="424" y="100" width="56" height="36" rx="6" fill="#e9f8ef" stroke="#2e9e5b" stroke-width="1.8"/>
+      <text x="452" y="124" text-anchor="middle" fill="#1f7a44">A</text>
+      <rect x="484" y="100" width="56" height="36" rx="6" fill="#e9f8ef" stroke="#2e9e5b" stroke-width="1.8"/>
+      <text x="512" y="124" text-anchor="middle" fill="#1f7a44">B</text>
+      <rect x="544" y="100" width="56" height="36" rx="6" fill="#e9f8ef" stroke="#2e9e5b" stroke-width="1.8"/>
+      <text x="572" y="124" text-anchor="middle" fill="#1f7a44">C</text>
+      <rect x="604" y="100" width="56" height="36" rx="6" fill="#e9f8ef" stroke="#2e9e5b" stroke-width="1.8"/>
+      <text x="632" y="124" text-anchor="middle" fill="#1f7a44">D</text>
+      <rect x="664" y="100" width="56" height="36" rx="6" fill="#e9f8ef" stroke="#2e9e5b" stroke-width="1.8"/>
+      <text x="692" y="124" text-anchor="middle" fill="#1f7a44">E</text>
+      <rect x="724" y="100" width="56" height="36" rx="6" fill="#e9f8ef" stroke="#2e9e5b" stroke-width="1.8"/>
+      <text x="752" y="124" text-anchor="middle" fill="#1f7a44">F</text>
+    </g>
+    <g font-size="10.5" fill="#68788f">
+      <text x="452" y="150" text-anchor="middle">1</text>
+      <text x="512" y="150" text-anchor="middle">2</text>
+      <text x="572" y="150" text-anchor="middle">3</text>
+      <text x="632" y="150" text-anchor="middle">4</text>
+      <text x="692" y="150" text-anchor="middle">5</text>
+      <text x="752" y="150" text-anchor="middle">6</text>
+    </g>
+
+    <rect x="360" y="170" width="420" height="66" rx="10" fill="#f7f9fd" stroke="#cbd5e1" stroke-width="1.6"/>
+    <text x="384" y="194" font-size="12" fill="#334155">根在下标 1：结点 i 的左孩子是 <tspan font-family="Consolas,monospace" font-weight="bold">2*i</tspan>，右孩子是 <tspan font-family="Consolas,monospace" font-weight="bold">2*i+1</tspan></text>
+    <text x="384" y="220" font-size="12" fill="#b45309">例：B 在下标 2 → 孩子在下标 4、5，正好是 D、E ✔</text>
+
+    <text x="60" y="222" font-size="11.5" fill="#68788f">★ 完全二叉树</text>
+    <text x="60" y="240" font-size="11.5" fill="#68788f">  没有空洞</text>
+  </svg>
+  <div class="caption">图 3（SVG）：完全二叉树的数组存储</div>
+</figure>
+
+<!-- ============ 3 ============ -->
+<h3 id="s2-3">2.3 二叉排序树：左边全小，右边全大</h3>
+
+<figure class="pic">
+  <img src="../assets/illustrations/py-L6-01-04_bst.webp" alt="二叉排序树"
+       onerror="this.closest('.pic').classList.add('missing')">
+  <div class="ph">
+    <div class="fn">assets/illustrations/py-L6-01-04_bst.webp</div>
+    <div class="ds">【配图位】云髓天阶的"索引浮雕"是一棵刻在石壁上的树：根结点刻着 8，左边分叉全是比 8 小的数（3、1、6），右边分叉全是比 8 大的数（10、14）；一条金色的小径从左下的 1 一路向右上延伸，沿途的石牌依次亮起 1、3、6、8、10、14——正是中序遍历的顺序</div>
+  </div>
+  <figcaption>图 4（PNG）：二叉排序树——查找时每一步都能砍掉一半</figcaption>
+</figure>
+
+<p>普通的二叉树只是"每个结点最多两个孩子"；如果再加一条规矩——<b>左子树的所有值都比根小、右子树的都比根大</b>——它就成了<b>二叉排序树</b>（也叫二叉搜索树，BST）。</p>
+
+<figure class="figure">
+  <svg class="diagram" viewBox="0 0 860 250" role="img" aria-label="二叉排序树">
+    <text x="24" y="30" font-size="14" font-weight="bold" fill="#1f2937">二叉排序树：每个结点都满足"左边全小、右边全大"</text>
+    <g font-family="Consolas,monospace" font-size="12.5">
+      <circle cx="430" cy="76" r="22" fill="#2563eb" stroke="#1b47a8" stroke-width="2"/>
+      <text x="430" y="81" text-anchor="middle" fill="#fff" font-weight="bold">8</text>
+      <line x1="412" y1="94" x2="310" y2="128" stroke="#94a3b8" stroke-width="2"/>
+      <line x1="448" y1="94" x2="550" y2="128" stroke="#94a3b8" stroke-width="2"/>
+      <circle cx="290" cy="148" r="22" fill="#4f8ff0" stroke="#2563eb" stroke-width="2"/>
+      <text x="290" y="153" text-anchor="middle" fill="#fff" font-weight="bold">3</text>
+      <circle cx="570" cy="148" r="22" fill="#4f8ff0" stroke="#2563eb" stroke-width="2"/>
+      <text x="570" y="153" text-anchor="middle" fill="#fff" font-weight="bold">10</text>
+      <line x1="274" y1="166" x2="200" y2="200" stroke="#94a3b8" stroke-width="2"/>
+      <line x1="306" y1="166" x2="380" y2="200" stroke="#94a3b8" stroke-width="2"/>
+      <line x1="554" y1="166" x2="480" y2="200" stroke="#94a3b8" stroke-width="2"/>
+      <line x1="586" y1="166" x2="660" y2="200" stroke="#94a3b8" stroke-width="2"/>
+      <circle cx="180" cy="216" r="22" fill="#cfe0f5" stroke="#2563eb" stroke-width="1.8"/>
+      <text x="180" y="221" text-anchor="middle" fill="#1d4ed8" font-weight="bold">1</text>
+      <circle cx="400" cy="216" r="22" fill="#cfe0f5" stroke="#2563eb" stroke-width="1.8"/>
+      <text x="400" y="221" text-anchor="middle" fill="#1d4ed8" font-weight="bold">6</text>
+      <circle cx="460" cy="216" r="22" fill="#f1f5f9" stroke="#94a3b8" stroke-width="1.6" stroke-dasharray="4 3"/>
+      <text x="460" y="221" text-anchor="middle" fill="#68788f">—</text>
+      <circle cx="680" cy="216" r="22" fill="#cfe0f5" stroke="#2563eb" stroke-width="1.8"/>
+      <text x="680" y="221" text-anchor="middle" fill="#1d4ed8" font-weight="bold">14</text>
+    </g>
+    <text x="24" y="60" font-size="12" fill="#b45309">查找 6：8 → 左到 3 → 右到 6，三步就到</text>
+  </svg>
+  <div class="caption">图解：二叉排序树——查找时每一步都能砍掉一半，平均 O(log n)</div>
+</figure>
+
+<div class="code-card">
+  <div class="code-head">
+    <span class="dot d1"></span><span class="dot d2"></span><span class="dot d3"></span>
+    <span class="file">二叉排序树的插入与中序遍历</span>
+    <span class="lang">Python</span>
+  </div>
+<pre><code># 二叉排序树（也叫二叉搜索树）的插入
+class Node:
+    def __init__(self, val):
+        self.val = val
+        self.left = None
+        self.right = None
+
+def insert(root, val):
+    if root is None:
+        return Node(val)
+    if val &lt; root.val:                      # 比根小 → 去左边
+        root.left = insert(root.left, val)
+    elif val &gt; root.val:                    # 比根大 → 去右边
+        root.right = insert(root.right, val)
+    return root                             # 相等就不插入（不存重复值）
+
+root = None
+for v in [8, 3, 10, 1, 6, 14]:
+    root = insert(root, v)
+
+# 中序遍历 → 一定是"从小到大"
+def inorder(p, out):
+    if p is None:
+        return
+    inorder(p.left, out)
+    out.append(p.val)
+    inorder(p.right, out)
+
+res = []
+inorder(root, res)
+print(res)          # [1, 3, 6, 8, 10, 14]</code></pre>
+  <div class="out"><b>要点</b> 小的往左走、大的往右走；中序遍历出来就是升序</div>
+</div>
+
+<div class="box info">
+  <span class="lb">真题演练（2026 年 9 月 · C++ 六级 · 判断题）：</span><br>
+"对任意一棵二叉排序树执行<b>中序遍历</b>，得到的关键字序列一定是<b>非递减</b>的。"—— 这句话是<b>正确</b>的。<br>
+  <b>为什么？</b>中序遍历的顺序是"左 → 根 → 右"，而二叉排序树规定了"左边全小、右边全大"，所以按这个顺序读出来，自然就是从小到大。<br>
+  <b>反过来也常考：</b>如果中序遍历得到的序列不是递增的，那这棵树就一定不是二叉排序树。
+</div>
+
+<div class="box remember">
+  <span class="lb">三条要记牢的性质：</span><br>
+  <b>① 中序遍历 = 升序</b>（最常考）；<br>
+  <b>② 查找平均 O(log n)</b>——每走一步就砍掉一半，和二分查找一个道理；<br>
+  <b>③ 最坏会退化成链表</b>——如果按 1、2、3、4、5 的顺序插入，树就歪成一条链，查找变成 O(n)。<b>打个比方：</b>二叉排序树像一本按目录排好的字典，但如果一直往同一侧加词条，目录就掉成一串了。
+</div>
+
+<div class="section-header" id="s3">
+  <h2>3　三种遍历</h2>
+  <div class="en-title">Traversal</div>
+</div>
+
+<h3 id="s3-1">3.1 先序、中序、后序</h3>
+
+<div class="box remember">
+  <span class="lb">三种遍历的区别，只在"根"什么时候被访问。</span>
+  <b>先序遍历</b>——<strong>根 → 左 → 右</strong>（先访问根）<br>
+  <b>中序遍历</b>——<strong>左 → 根 → 右</strong>（根在中间）<br>
+  <b>后序遍历</b>——<strong>左 → 右 → 根</strong>（根在最后）<br>
+  <strong>注意：这三种都是"递归"定义的——</strong>
+  "访问左子树"时，也是按同一套规则去访问的。<br>
+  <strong>还有第四种"层序遍历"——</strong>
+  <strong>从上到下、从左到右一层层访问，它靠"队列"实现（下一课会讲）。</strong>
+</div>
+
+<div class="code-card">
+  <div class="code-head">
+    <span class="dot d1"></span><span class="dot d2"></span><span class="dot d3"></span>
+    <span class="file">拿同一棵树走一遍</span>
+    <span class="lang">TEXT</span>
+  </div>
+  <pre><code>A
+/ \
+B C
+/ \ \
+D E F
+
+【先序】根 左 右：A → (B 为根的子树) → (C 为根的子树)
+A, B, D, E, C, F
+
+【中序】左 根 右：先走完 B 的子树，再 A，再 C 的子树
+D, B, E, A, C, F
+← 注意：A 排在 B 的左子树之后、右子树之前
+
+【后序】左 右 根：先走完两棵子树，最后才轮到 A
+D, E, B, F, C, A
+← 注意：根 A 排在最后
+
+★ 三个序列的第一个元素：
+先序是 A（根最先）、中序是 D（最左）、后序是 D（最左）
+</code></pre>
+  <div class="out"><b>一句话记法</b>　
+  <b>先序"根在前"、中序"根在中"、后序"根在后"</b>——
+  <strong>左右两个子树的相对顺序，三种遍历里都是一样的：先左后右。</strong>
+</div>
+</div>
+
+<h3 id="s3-2">3.2 遍历的代码</h3>
+
+<div class="code-card">
+  <div class="code-head">
+    <span class="dot d1"></span><span class="dot d2"></span><span class="dot d3"></span>
+    <span class="file">三段代码只差一句话的位置</span>
+    <span class="lang">Python</span>
+  </div>
+  <pre><code>class TreeNode:
+    def __init__(self, val=0, left=None, right=None):
+        self.val = val
+        self.left = left
+        self.right = right
+
+# 【先序】根 → 左 → 右
+def preOrder(root):
+    if root is None:
+        return                     # 出口
+    print(root.val, end=" ")       # ★ 先输出根
+    preOrder(root.left)
+    preOrder(root.right)
+
+# 【中序】左 → 根 → 右
+def inOrder(root):
+    if root is None:
+        return
+    inOrder(root.left)
+    print(root.val, end=" ")       # ★ 输出在中间
+    inOrder(root.right)
+
+# 【后序】左 → 右 → 根
+def postOrder(root):
+    if root is None:
+        return
+    postOrder(root.left)
+    postOrder(root.right)
+    print(root.val, end=" ")       # ★ 输出在最后
+</code></pre>
+  <div class="out"><b>看代码认遍历</b>　
+  <b>看那句 <code>print</code> 在哪两次递归调用的中间、前面还是后面</b>——<br>
+  <b>两次递归之前 = 先序；夹在中间 = 中序；两次之后 = 后序</b></div>
+</div>
+
+<div class="box tip">
+  <span class="lb">为什么这三段代码几乎一模一样？</span>
+  因为它们做的是同一件事：<strong>按某个顺序"走遍"一棵树。</strong><br>
+  <b>差别只在于：<b>这个结点本身，是在两个子结点之前、之间、还是之后被处理的。</b></b><br>
+  <strong>而"走遍左子树"和"走遍右子树"这两个动作，三种遍历里完全一样。</strong><br>
+  <b>所以写遍历代码时，先写好"左、右"两次递归，
+  再想想"我这个结点该插在哪儿"就行了。</b>
+</div>
+
+<figure class="figure">
+  <svg class="diagram" viewBox="0 0 830 300" role="img" aria-label="三种遍历的顺序">
+    <text x="24" y="28" font-size="14" font-weight="bold" fill="#1f2937">同一棵树，三条不同的走法</text>
+
+    <g font-family="Consolas,monospace" font-size="12.5">
+      <circle cx="150" cy="60" r="16" fill="#eaf1fe" stroke="#2563eb" stroke-width="1.8"/>
+      <text x="150" y="65" text-anchor="middle" fill="#1d4ed8">A</text>
+      <circle cx="100" cy="112" r="16" fill="#eaf1fe" stroke="#2563eb" stroke-width="1.8"/>
+      <text x="100" y="117" text-anchor="middle" fill="#1d4ed8">B</text>
+      <circle cx="200" cy="112" r="16" fill="#eaf1fe" stroke="#2563eb" stroke-width="1.8"/>
+      <text x="200" y="117" text-anchor="middle" fill="#1d4ed8">C</text>
+      <circle cx="70" cy="164" r="16" fill="#eaf1fe" stroke="#2563eb" stroke-width="1.8"/>
+      <text x="70" y="169" text-anchor="middle" fill="#1d4ed8">D</text>
+      <circle cx="130" cy="164" r="16" fill="#eaf1fe" stroke="#2563eb" stroke-width="1.8"/>
+      <text x="130" y="169" text-anchor="middle" fill="#1d4ed8">E</text>
+      <circle cx="230" cy="164" r="16" fill="#eaf1fe" stroke="#2563eb" stroke-width="1.8"/>
+      <text x="230" y="169" text-anchor="middle" fill="#1d4ed8">F</text>
+    </g>
+    <line x1="140" y1="74" x2="108" y2="99" stroke="#94a3b8" stroke-width="1.6"/>
+    <line x1="160" y1="74" x2="192" y2="99" stroke="#94a3b8" stroke-width="1.6"/>
+    <line x1="93" y1="127" x2="76" y2="151" stroke="#94a3b8" stroke-width="1.6"/>
+    <line x1="107" y1="127" x2="124" y2="151" stroke="#94a3b8" stroke-width="1.6"/>
+    <line x1="207" y1="127" x2="224" y2="151" stroke="#94a3b8" stroke-width="1.6"/>
+
+    <rect x="320" y="46" width="480" height="66" rx="10" fill="#eaf1fe" stroke="#2563eb" stroke-width="1.8"/>
+    <text x="342" y="70" font-size="12.5" fill="#1d4ed8" font-weight="bold">先序（根 左 右）</text>
+    <text x="342" y="96" font-size="13" font-family="Consolas,monospace" fill="#1d4ed8">A　B　D　E　C　F</text>
+
+    <rect x="320" y="122" width="480" height="66" rx="10" fill="#e9f8ef" stroke="#2e9e5b" stroke-width="1.8"/>
+    <text x="342" y="146" font-size="12.5" fill="#1f7a44" font-weight="bold">中序（左 根 右）</text>
+    <text x="342" y="172" font-size="13" font-family="Consolas,monospace" fill="#1f7a44">D　B　E　A　C　F</text>
+
+    <rect x="320" y="198" width="480" height="66" rx="10" fill="#fff9ec" stroke="#f59e0b" stroke-width="1.8"/>
+    <text x="342" y="222" font-size="12.5" fill="#b45309" font-weight="bold">后序（左 右 根）</text>
+    <text x="342" y="248" font-size="13" font-family="Consolas,monospace" fill="#b45309">D　E　B　F　C　A</text>
+
+    <text x="60" y="200" font-size="11.5" fill="#68788f">★ 三者的区别</text>
+    <text x="60" y="220" font-size="11.5" fill="#68788f">  只在"根"的位置</text>
+    <text x="60" y="246" font-size="11.5" fill="#b45309">★ 左右子树</text>
+    <text x="60" y="264" font-size="11.5" fill="#b45309">  总是先左后右</text>
+  </svg>
+  <div class="caption">图 4（SVG）：三种遍历——根的位置不同</div>
+</figure>
+
+<figure class="pic">
+  <img src="../assets/illustrations/py-L6-01-02_traversal_orders.webp" alt="三条不同的走法"
+       onerror="this.closest('.pic').classList.add('missing')">
+  <div class="ph">
+    <div class="fn">assets/illustrations/py-L6-01-02_traversal_orders.webp</div>
+    <div class="ds">【配图位】三棵一模一样、并排而立的发光云树；每棵树上都有一条带数字标注的发光路径蜿蜒穿过全部结点，但三条路径的绕行顺序各不相同（第一条从树顶开始、第二条从最左的枝梢开始、第三条从枝梢绕回树顶结束）；一名戴眼镜的先知站在三棵树前，手持镜子依次照看每条路径。</div>
+  </div>
+  <figcaption>图 5：三棵相同的树，三条不同的走法</figcaption>
+</figure>
+
+<!-- ============ 4 ============ -->
+<div class="section-header" id="s4">
+  <h2>4　由遍历序列还原</h2>
+  <div class="en-title">Reconstructing</div>
+</div>
+
+<h3 id="s4-1">4.1 先序 + 中序 → 后序</h3>
+
+<div class="box remember">
+  <span class="lb">两条线索要抓住：</span>
+  <b>① 先序遍历的<strong>第一个元素，一定是根</strong>；<br>
+  ② 在中序遍历里找到这个根，<strong>它左边全是左子树、右边全是右子树</strong>。</b><br>
+  <strong>有了这两条，就能一层层"切"下去，把整棵树的形状还原出来。</strong><br>
+  <b>注意：只有"先序+中序"或"后序+中序"才能唯一确定一棵树。</b>
+  <strong>先序 + 后序在很多情况下是不够的。</strong>
+</div>
+
+<h3 id="s4-2">4.2 一步步推的方法</h3>
+
+<div class="code-card">
+  <div class="code-head">
+    <span class="dot d1"></span><span class="dot d2"></span><span class="dot d3"></span>
+    <span class="file">完整推导一遍</span>
+    <span class="lang">TEXT</span>
+  </div>
+  <pre><code>已知：先序 = A B D E C F，中序 = D B E A C F，求后序。
+
+【第 1 步】先序第一个是 A → 根是 A
+在中序里找 A：D B E 【A】 C F
+→ A 左边 D B E 是左子树，右边 C F 是右子树
+
+【第 2 步】看左子树
+先序里 A 之后紧跟 3 个（左子树的大小是 3）：B D E
+中序里左子树是：D B E
+先序第一个 B → 左子树的根是 B
+在中序" D B E "里找 B：D 【B】 E
+→ B 左边 D，右边 E
+所以 B 的左孩子 D、右孩子 E
+
+【第 3 步】看右子树
+剩下的先序是 C F，中序也是 C F
+先序第一个 C → 右子树的根是 C
+在中序" C F "里找 C：【C】 F
+→ C 左边空，右边 F
+所以 C 没有左孩子，右孩子是 F
+
+【还原出来的树】
+A
+/ \
+B C
+/ \ \
+D E F
+
+【第 4 步】对这棵树求后序：左 右 根
+左子树（B 为根）：D E B
+右子树（C 为根）：F C
+根：A
+→ 后序 = D E B F C A ✔
+</code></pre>
+  <div class="out"><b>答案</b>　<b>D E B F C A</b><br>
+  <b>推法口诀</b>　
+  <b>先序找根 → 中序切左右 → 递归下去</b></div>
+</div>
+
+<div class="box tip">
+  <span class="lb">怎么找"左子树有几个人"？</span>
+  <b>关键看中序：</b>
+  <strong>在中序序列里，根左边有几个元素，左子树就有几个结点。</strong><br>
+  <b>然后回到先序序列：</b>
+  <strong>紧跟在根后面的那几个元素，就是左子树的先序。</strong>
+  剩下的就是右子树。<br>
+  <b>这两处一对照，就能把"左子树"从两条序列里同时切出来——</b>
+  <strong>然后对左子树、右子树重复同样的动作。</strong>
+</div>
+
+<!-- ============ 5 ============ -->
+<div class="section-header" id="s5">
+  <h2>5　树的程序表示</h2>
+  <div class="en-title">Representing Trees</div>
+</div>
+
+<h3 id="s5-1">5.1 结构体 + 指针</h3>
+
+<div class="code-card">
+  <div class="code-head">
+    <span class="dot d1"></span><span class="dot d2"></span><span class="dot d3"></span>
+    <span class="file">最直观的方式：和链表几乎一样</span>
+    <span class="lang">Python</span>
+  </div>
+  <pre><code>class TreeNode:
+    def __init__(self, val=0, left=None, right=None):
+        self.val = val             # 数据
+        self.left = left           # 指向左孩子
+        self.right = right         # 指向右孩子
+
+# 新建一个结点
+p = TreeNode(10)
+
+# 看看它的左孩子
+print(p.left)          # None —— 还没有挂上左孩子
+</code></pre>
+  <div class="out"><b>和链表结点的区别</b>　
+  <b>链表结点只有一个 <code>next</code>，树结点有两个：<code>left</code> 和 <code>right</code></b><br>
+  <b>就多了这一个指针，"线"就变成了"树"</b></div>
+</div>
+
+<h3 id="s5-2">5.2 数组表示法</h3>
+
+<div class="code-card">
+  <div class="code-head">
+    <span class="dot d1"></span><span class="dot d2"></span><span class="dot d3"></span>
+    <span class="file">完全二叉树：用数组更省事</span>
+    <span class="lang">Python</span>
+  </div>
+  <pre><code># 根放在下标 1
+tree = [0] * 1005
+
+# 左孩子
+leftChild = 2 * i
+# 右孩子
+rightChild = 2 * i + 1
+# 父亲
+parent = i // 2
+
+# 判断是不是叶子（没有左孩子就是叶子）
+if 2 * i &gt; n:
+    # i 是叶子
+
+# 用数组做中序遍历也很方便
+def inOrder(i):
+    if i &gt; n:
+        return                 # 越界就是空结点
+    inOrder(2 * i)             # 左孩子
+    print(tree[i], end=" ")    # 根
+    inOrder(2 * i + 1)         # 右孩子
+</code></pre>
+  <div class="out"><b>两种方式的取舍</b>　
+  <b>数组法<strong>省内存、没有指针、写起来快</strong>，但<strong>只适合完全二叉树</strong></b><br>
+  <b>指针法<strong>什么形状都能存</strong>，代价是<strong>每个结点多两个指针、要管内存</strong></b></div>
+</div>
+
+<div class="box warn">
+  <span class="lb">数组法只适合"形状规整"的树。</span>
+  因为数组法的<strong>下标和位置是硬绑定</strong>的：<strong>左孩子必须是 <code class="inline">2i</code>。</strong><br>
+  <b>如果树长得很歪——比如一条链那样，每层只有一个孩子——</b>
+  <strong>那么下标会飞快地翻倍，数组要开到 <code class="inline">2ⁿ</code> 那么大，根本开不起。</strong><br>
+  <b>所以：</b>
+  <strong>完全二叉树用数组；普通的、形状任意的树用指针。</strong><br>
+  <b>考试里给数组下标的话，千万先看清"根是从 0 开始还是从 1 开始"。</b>
+</div>
+
+<!-- ============ 6 ============ -->
+<div class="section-header" id="s6">
+  <h2>6　代码实战</h2>
+  <div class="en-title">Level Practice</div>
+</div>
+
+<div class="level-card">
+  <div class="lc-head"><span class="n">关卡</span><h4>雪人食人族</h4><span class="go">进入关卡 →</span></div>
+  <div class="lc-body">
+    <div class="story">
+      <b>故事：</b>云海之上有一片营地，<b>入口的哨位像树枝一样向两侧分派巡逻。</b><br>
+      贺舒曼把镜子转向哨位的分布图：<strong>你看，每个哨位只管自己的两个下家，
+      谁也不用管别人的事。</strong><br>
+      你顺着图看下去：<b>所以从最上面那个开始走一遍，就能把所有人都数到。</b><br>
+      对，而且走法有三种。她合上镜子，<strong>区别只在于——你是先看这个哨位、中间看、还是最后看。</strong>
+    </div>
+    <p><strong>思路：</strong>用<strong>指针建一棵二叉树</strong>，再用三种遍历分别走一遍，
+  <figure class="pic ai-added"><img src="../assets/illustrations/py-L6-01-01_cloud_tree.webp" alt="AI配图：py-L6-01-01_cloud_tree.webp"></figure>
+    顺便<strong>求出树的高度</strong>。</p><figure class="pic">
+  <img src="../assets/stages/py-L6-01-stage1_yeti_cannibals.webp" alt="雪人食人族 关卡截图"
+       onerror="this.closest('.pic').classList.add('missing')">
+  <div class="ph">
+    <div class="fn">assets/stages/py-L6-01-stage1_yeti_cannibals.webp</div>
+    <div class="ds">【截图位】雪人食人族关卡：云海营地与哨位分支同框，代码编辑区可见二叉树递归遍历。</div>
+  </div>
+  <figcaption>关卡实况：雪人食人族</figcaption>
+</figure>
+    <div class="code-card">
+      <div class="code-head">
+        <span class="dot d1"></span><span class="dot d2"></span><span class="dot d3"></span>
+        <span class="file">建树 + 三种遍历 + 求高度</span>
+        <span class="lang">Python</span>
+      </div>
+      <pre><code>
+class TreeNode:
+    def __init__(self, val=0, left=None, right=None):
+        self.val = val
+        self.left = left
+        self.right = right
+
+def build(x):
+    if x == 0:
+        return None                # 0 表示这个位置是空的
+    return TreeNode(x)
+
+def preOrder(root):
+    if root is None:
+        return
+    print(root.val, end=" ")
+    preOrder(root.left)
+    preOrder(root.right)
+
+def height(root):
+    if root is None:
+        return 0                   # ★ 空结点高度是 0
+    leftH = height(root.left)
+    rightH = height(root.right)
+    return max(leftH, rightH) + 1  # ★ 取高的那边再加 1
+
+# 手工搭一棵：1 为根，左 2、右 3，2 的左是 4
+root = build(1)
+root.left = build(2)
+root.right = build(3)
+root.left.left = build(4)
+
+preOrder(root)
+print()                   # 1 2 4 3
+
+print(height(root))       # 3
+</code></pre>
+      <div class="out"><b>OUTPUT</b>　1 2 4 3　/　3<br>
+      <b>高度为什么是 3？</b>　
+      最长的路径是 1 → 2 → 4，<strong>一共 3 个结点，所以高度是 3</strong></div>
+    </div>
+    <div class="box info">
+      <span class="lb">和本单元的关系：</span>
+      <strong>求二叉树高度是递归在树上的经典用法，也是真题原题。</strong><br>
+      <b>思路一句话：</b>
+      <strong>一棵树的高度 = 左右两棵子树里较高的那个高度 + 1。</strong><br>
+      <b>而"空结点的高度是 0"就是递归的出口</b>——
+      <strong>一个空结点都没有，当然高度是 0。</strong><br>
+      <b>这类"对每个结点做同样的事"的问题，用递归写总是最短的：</b>
+      <strong>因为树的定义本身就是递归的——"一棵树由一个根和两棵子树组成"。</strong>
+    </div>
+    <a class="btn-go" href="https://codecombat.cn/" target="_blank" rel="noopener">去扣哒世界闯这一关 →</a>
+  </div>
+</div>
+
+<figure class="pic">
+  <img src="../assets/illustrations/py-L6-01-03_array_tree.webp" alt="用数组存的树"
+       onerror="this.closest('.pic').classList.add('missing')">
+  <div class="ph">
+    <div class="fn">assets/illustrations/py-L6-01-03_array_tree.webp</div>
+    <div class="ds">【配图位】云海上一排依次编号的石制台阶（下标 1、2、3、4、5、6），台阶上各刻着一个发光符号；台阶之间用发光的弧线两两相连，标出"下一级在哪儿"的关系——1 号连着 2、3 号，2 号连着 4、5 号，3 号连着 6 号；一名戴眼镜的先知站在台阶前，手里拿着一面镜子反射出这些连线的图案。</div>
+  </div>
+  <figcaption>图 6：把树摊平到一排台阶上——数组存储法</figcaption>
+</figure>
+
+
+
+<!-- ============ 7 ============ -->
+<div class="section-header" id="s7">
+  <h2>7　常见陷阱</h2>
+  <div class="en-title">Common Pitfalls</div>
+</div>
+
+<div class="cast duck">
+  <img class="ava" src="../assets/ducks/duck_naria.webp" alt="扣哒鸭" onerror="this.style.display='none'">
+  <div class="bubble">
+    <div class="who">扣哒鸭 · 调试官</div>
+    树的坑集中在"顺序"和"边界"上。四条。
+  </div>
+</div>
+
+<div class="pit">
+  <div class="pt">
+    <div class="x">1</div>
+    <div class="t"><b>遍历时忘了判空。</b></div>
+  </div>
+  <div class="duck">
+    <img src="../assets/ducks/duck_zana.webp" alt="扣哒鸭" onerror="this.style.display='none'">
+    <div class="dt"><b>扣哒鸭：</b>递归的第一行必须是
+    <code>if (root == nullptr) return;</code> ——<br>
+    <strong>走到叶子的"空孩子"时，必须停下来。</strong>
+    <b>少了这句，就会在空指针上取成员，程序直接崩溃。</b></div>
+  </div>
+  <div class="fix"><b>正确做法：</b>遍历函数第一行先判空</div>
+</div>
+
+<div class="pit">
+  <div class="pt">
+    <div class="x">2</div>
+    <div class="t"><b>把三种遍历的"根的位置"记混了。</b></div>
+  </div>
+  <div class="duck">
+    <div class="dt"><b>扣哒鸭：</b><b>先序：根在最前；中序：根在中间；后序：根在最后。</b><br>
+    <strong>而"左、右"两个子树的先后顺序，三种遍历里都一样——永远先左后右。</strong><br>
+    <b>记不住就想名字："先"序先见根、"后"序最后见根。</b></div>
+  </div>
+  <div class="fix"><b>口诀：</b>先序根前、中序根中、后序根后；左右永远先左后右</div>
+</div>
+
+<div class="pit">
+  <div class="pt">
+    <div class="x">3</div>
+    <div class="t"><b>以为"先序 + 后序"也能唯一确定一棵树。</b></div>
+  </div>
+  <div class="duck">
+    <img src="../assets/ducks/duck_hattori.webp" alt="扣哒鸭" onerror="this.style.display='none'">
+    <div class="dt"><b>扣哒鸭：</b><strong>不行。</strong>
+    先序和后序都只能告诉你"根是谁"和"子树的大小"，<strong>却分不清左右。</strong><br>
+    <b>必须有一条"中序"，才能唯一确定树的形状。</b></div>
+  </div>
+  <div class="fix"><b>记牢：</b>先序+中序 ✅；后序+中序 ✅；先序+后序 ❌</div>
+</div>
+
+<div class="pit">
+  <div class="pt">
+    <div class="x">4</div>
+    <div class="t"><b>数组存树时把下标公式记反了。</b></div>
+  </div>
+  <div class="duck">
+    <img src="../assets/ducks/duck_senick.webp" alt="扣哒鸭" onerror="this.style.display='none'">
+    <div class="dt"><b>扣哒鸭：</b><b>根在 1：左孩子 <code>2i</code>、右孩子 <code>2i+1</code>；<br>
+    根在 0：左孩子 <code>2i+1</code>、右孩子 <code>2i+2</code>。</b><br>
+    <strong>两组只差 1，但用错了整棵树的位置就全乱了。</strong></div>
+  </div>
+  <div class="fix"><b>做法：</b>先看清题目里根的下标是 0 还是 1</div>
+</div>
+
+<!-- ============ 8 ============ -->
+<div class="section-header" id="s8">
+  <h2>8　题目练习</h2>
+  <div class="en-title">Practice</div>
+</div>
+
+<p>第 1 题改编自 2026 年 9 月 · Python 六级 第 7 题，其余为原创练习题。</p>
+
+<div class="exam">
+  <div class="eh"><span class="src">改编自 2026 年 9 月 · Python 六级 · 第 7 题</span><span class="tp">单选题</span></div>
+  <div class="eb">
+    <div class="q">云髓天阶的一棵二叉树上刻着字母。已知它的<strong>先序遍历</strong>序列为 <code class="inline">A B D E C F</code>，<strong>中序遍历</strong>序列为 <code class="inline">D B E A C F</code>，则它的<strong>后序遍历</strong>序列是（　　）。</div>
+    <div class="opt"><i>A.</i>D E B F C A　　<i>B.</i>D B E F C A　　<i>C.</i>E D B F C A　　<i>D.</i>D E B C F A</div>
+    <details><summary>查看答案与详解</summary>
+      <div class="ans"><b>答案：A</b>。还原二叉树的固定套路：<strong>先序的第一个一定是根，中序里根左边是左子树、右边是右子树</strong>。<br>① 先序第一个 A 是根；中序里 A 左侧 <code class="inline">D B E</code> 是左子树、右侧 <code class="inline">C F</code> 是右子树；<br>② 左子树：先序里对应 <code class="inline">B D E</code>，根是 B；中序 <code class="inline">D B E</code> 里 B 左侧 D、右侧 E，所以 B 的左孩子 D、右孩子 E；<br>③ 右子树：先序 <code class="inline">C F</code>，根是 C；中序 <code class="inline">C F</code> 里 F 在 C 右侧，所以 F 是 C 的右孩子。<br>树还原出来后按"左 → 右 → 根"读出后序：D、E、B、F、C、A → 选 <b>A</b>。<br><b>口诀：</b>先序定根、中序分左右，后序最后读根。<br><span class="tagline">对应小节</span>4 由遍历序列还原。</div>
+    </details>
+  </div>
+</div>
+<div class="exam">
+  <div class="eh"><span class="src ori">原创练习题</span><span class="tp">单选题</span></div>
+  <div class="eb">
+    <div class="q">在树中，"没有子节点的节点"叫做（　　）。</div>
+    <div class="opt"><i>A.</i>根节点　　<i>B.</i>父节点　　<i>C.</i>叶子节点　　<i>D.</i>子树</div>
+    <details><summary>查看答案与详解</summary>
+      <div class="ans"><b>答案：C</b>。没有子节点的节点就是<b>叶子</b>（度数为 0）。<br>
+      <b>对比：</b>根节点是最上面那个；父节点是相对概念；子树是"某节点 + 它的后代"。<br>
+      <span class="tagline">对应小节</span>2 树的术语。</div>
+    </details>
+  </div>
+</div>
+
+<div class="exam">
+  <div class="eh"><span class="src ori">原创练习题</span><span class="tp">单选题</span></div>
+  <div class="eb">
+    <div class="q">一棵二叉树的根为 A，左孩子是 B，右孩子是 C；B 有左右孩子 D、E；
+    C 只有左孩子 F。它的<strong>前序</strong>遍历序列是（　　）。</div>
+    <div class="opt">
+      <i>A.</i>A B D E C F　　<i>B.</i>D B E A C F　　<i>C.</i>D E B F C A　　<i>D.</i>A B C D E F
+    </div>
+    <details><summary>查看答案与详解</summary>
+      <div class="ans"><b>答案：A</b>。前序规则是"自己 → 左 → 右"：<br>
+      先记 A；进左子树 B，记 B；再进 B 的左 D，记 D；D 无孩子，回来进 B 的右 E，记 E；
+      B 的子树走完，回到 A，进右子树 C，记 C；再进 C 的左 F，记 F。<br>
+      结果：<b>A B D E C F</b>。<br>
+      <b>对比：</b>B 项是中序，C 项是后序。<br>
+      <span class="tagline">对应小节</span>3 三种遍历。</div>
+    </details>
+  </div>
+</div>
+
+<div class="exam">
+  <div class="eh"><span class="src ori">原创练习题</span><span class="tp">判断题</span></div>
+  <div class="eb">
+    <div class="q">在二叉树的三种遍历中，右孩子都在左孩子之后被访问。（　　）</div>
+    <details><summary>查看答案与详解</summary>
+      <div class="ans"><b>答案：正确（√）</b>。无论是前序、中序还是后序，
+      <b>"先左后右"这个顺序始终不变</b>。<br>
+      三种遍历的差别只在于"什么时候访问自己"。<br>
+      <span class="tagline">对应小节</span>3 三种遍历。</div>
+    </details>
+  </div>
+</div>
+
+<div class="exam">
+  <div class="eh"><span class="src ori">原创练习题</span><span class="tp">单选题</span></div>
+  <div class="eb">
+    <div class="q">一棵深度为 3 的二叉树，最多有多少个节点？（　　）</div>
+    <div class="opt"><i>A.</i>3　　<i>B.</i>6　　<i>C.</i>7　　<i>D.</i>8</div>
+    <details><summary>查看答案与详解</summary>
+      <div class="ans"><b>答案：C</b>。公式是 <b>2<sup>k</sup> - 1</b>，k = 3 时即 2³ - 1 = <b>7</b>。<br>
+      <b>推导：</b>第 1 层 1 个、第 2 层最多 2 个、第 3 层最多 4 个，共 1+2+4 = 7 个。<br>
+      <span class="tagline">对应小节</span>2 树的术语。</div>
+    </details>
+  </div>
+</div>
+
+<div class="exam">
+  <div class="eh"><span class="src ori">原创练习题</span><span class="tp">单选题</span></div>
+  <div class="eb">
+    <div class="q">已知一棵二叉树的中序遍历是 D B E A F C，前序遍历是 A B D E C F，
+    那么它的<strong>后序</strong>遍历是（　　）。</div>
+    <div class="opt">
+      <i>A.</i>D E B F C A　　<i>B.</i>D E B C F A　　<i>C.</i>A B C D E F　　<i>D.</i>F C A D E B
+    </div>
+    <details><summary>查看答案与详解</summary>
+      <div class="ans"><b>答案：A</b>。思路：<br>
+      ① 前序的第一个 <b>A</b> 是根；<br>
+      ② 在中序里找到 A，左边 D B E 是左子树，右边 F C 是右子树；<br>
+      ③ 左子树：前序是 B D E，所以 B 是左子树的根；中序 D B E 中 B 左边是 D、右边是 E；<br>
+      ④ 右子树：前序 C F，C 是根；中序 F C 里 F 在 C 左边，所以 F 是 C 的左孩子；<br>
+      ⑤ 后序按"左 → 右 → 自己"：D E B、F C、最后 A。<br>
+      结果：<b>D E B F C A</b>。<br>
+      <span class="tagline">对应小节</span>3 三种遍历。</div>
+    </details>
+  </div>
+</div>
+
+<div class="exam">
+  <div class="eh"><span class="src ori">原创练习题</span><span class="tp">判断题</span></div>
+  <div class="eb">
+    <div class="q">在二叉树的<strong>后序</strong>遍历序列中，根节点一定排在最后。（　　）</div>
+    <details><summary>查看答案与详解</summary>
+      <div class="ans"><b>答案：正确（√）</b>。后序的顺序是"左 → 右 → 自己"，
+      根节点是最后才被访问的。<br>
+      <b>实用价值：</b>所以只要看到后序序列，<b>最后一个一定是整棵树的根</b>——
+      这是解"已知两种遍历求第三种"题目的关键突破口。<br>
+      <span class="tagline">对应小节</span>3 三种遍历。</div>
+    </details>
+  </div>
+</div>
+
+<div class="exam">
+  <div class="eh"><span class="src ori">原创练习题</span><span class="tp">编程题</span></div>
+  <div class="eb">
+    <div class="q">题目要求：已知一棵用字典表示的二叉树（结构同本单元图示），
+    编程输出它的前序、中序、后序遍历序列，并统计节点总数与叶子节点数。</div>
+    <details><summary>查看参考答案与要点</summary>
+      <div class="ans">
+<pre style="margin:0;background:#1d2c48;color:#c3d6d1;border-radius:10px;padding:14px 16px">tree = {
+    "val": "A",
+    "left": {"val": "B",
+             "left":  {"val": "D", "left": None, "right": None},
+             "right": {"val": "E", "left": None, "right": None}},
+    "right": {"val": "C",
+              "left":  {"val": "F", "left": None, "right": None},
+              "right": None}
+}
+
+def preorder(n):
+    if n is None: return
+    print(n["val"], end=" ")
+    preorder(n["left"]); preorder(n["right"])
+
+def inorder(n):
+    if n is None: return
+    inorder(n["left"])
+    print(n["val"], end=" ")
+    inorder(n["right"])
+
+def postorder(n):
+    if n is None: return
+    postorder(n["left"]); postorder(n["right"])
+    print(n["val"], end=" ")
+
+def countAll(n):
+    if n is None: return 0
+    return 1 + countAll(n["left"]) + countAll(n["right"])
+
+def countLeaf(n):
+    if n is None: return 0
+    if n["left"] is None and n["right"] is None:
+        return 1
+    return countLeaf(n["left"]) + countLeaf(n["right"])
+
+preorder(tree);  print()
+inorder(tree);   print()
+postorder(tree); print()
+print("节点数：", countAll(tree))
+print("叶子数：", countLeaf(tree))</pre>
+      <p style="margin-top:12px"><b>输出：</b>A B D E C F / D B E A C F / D E B F C A / 节点数 6 / 叶子数 3<br>
+      <b>要点：</b><br>
+      ① 三个遍历函数只是"处理自己"那一行的位置不同；<br>
+      ② 统计节点数用 <code class="inline">1 + 左子树 + 右子树</code>；<br>
+      ③ 叶子判断是"左右都为空"，注意要先判空再判断孩子；<br>
+      ④ 这种"用递归统计树的属性"的写法，考试里出现频率非常高。<br>
+      <span class="tagline">对应小节</span>3 三种遍历；4 树的程序表示。</p>
+      </div>
+    </details>
+  </div>
+</div>
+
+<div class="section-header" id="s9">
+  <h2>9　本单元小结</h2>
+  <div class="en-title">Unit Summary</div>
+</div>
+
+<div class="cast teacher">
+  <img class="ava" src="../assets/avatars/hushbaum.webp" alt="贺舒曼" onerror="this.style.display='none'">
+  <div class="bubble">
+    <div class="who">贺舒曼 · 镜中先知</div>
+    三句话记住树：<br>
+    <strong>一、树是有层次的结构，一个节点可以有多个孩子。</strong><br>
+    <strong>二、前中后序的区别只在"自己什么时候被访问"，左右顺序永远不变。</strong><br>
+    <strong>三、树的遍历用递归写最自然：空就返回，否则按顺序走。</strong><br>
+    再送你一句：<b>后序的最后一个一定是根；前序的第一个也一定是根。</b>
+  </div>
+</div>
+
+<div class="summary">
+  <h3>你在天阶枝桠下收获了什么</h3>
+  <ul>
+    <li><strong>树</strong>——有层次的结构；一个节点可以有多个孩子。</li>
+    <li><strong>术语</strong>——根、父节点、子节点、叶子、度、深度、子树。</li>
+    <li><strong>二叉树</strong>——每个节点<strong>最多</strong>两个孩子；第 i 层最多 2<sup>i-1</sup> 个，深度 k 最多 2<sup>k</sup>-1 个。</li>
+    <li><strong>前序</strong>——自己 → 左 → 右；根在最前。</li>
+    <li><strong>中序</strong>——左 → 自己 → 右；根在中间。</li>
+    <li><strong>后序</strong>——左 → 右 → 自己；根在最后。</li>
+    <li><strong>程序表示</strong>——字典（val/left/right）或嵌套列表都行。</li>
+    <li><strong>递归模板</strong>——先判空返回，再按顺序处理自己与两个孩子。</li>
+  </ul>
+</div>
+
+<div class="pager">
+  <a href="py-5-08.html"><div class="k">← 上一级别</div><div class="v">最省水的路线 · Python 五级第 8 单元</div></a>
+  <a href="../index.html" target="_top" class="back"><div class="k">返回</div><div class="v">考纲之路 · 总目录</div></a>
+  <a href="py-6-02.html"><div class="k">下一单元 →</div><div class="v">云叶密钥 · 哈夫曼树与基于树的编码</div></a>
+</div>
+
+<div class="cta">
+  <h3>下一站：云叶密钥</h3>
+  <p>云层里的每一片叶子上都刻着一串 0 和 1。常出现的叶子刻得短，少见的刻得长——
+  <b>这样整段消息就更短了。</b>下一单元，我们学哈夫曼编码。</p>
+  <a class="btn-go" href="https://codecombat.cn/" target="_blank" rel="noopener">加入扣哒世界，把这条考纲之路走一遍 →</a>
+</div>
+</div><!-- /container -->
+</div><!-- /page -->
+
+<script>
+const KEYWORDS = new Set(("while for if elif else break continue def return pass not and or in is None True False " +
+  "int float bool str list dict tuple set input print range len abs max min round pow import math random chr ord bin hex oct sum append copy keys values items").split(" "));
+
+function esc(s){ return s.replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;'); }
+
+function highlight(src){
+  let out = '', i = 0;
+  const n = src.length;
+  while (i < n){
+    const c = src[i];
+    if (c === '#'){
+      let j = src.indexOf('\n', i); if (j < 0) j = n;
+      out += '<span class="cm">' + esc(src.slice(i, j)) + '</span>';
+      i = j; continue;
+    }
+    if (c === '"' || c === "'"){
+      let j = i + 1;
+      while (j < n && src[j] !== c){ if (src[j] === '\\') j++; j++; }
+      j = Math.min(j + 1, n);
+      out += '<span class="st">' + esc(src.slice(i, j)) + '</span>';
+      i = j; continue;
+    }
+    if (/[0-9]/.test(c)){
+      let j = i;
+      while (j < n && /[0-9.]/.test(src[j])) j++;
+      out += '<span class="nu">' + esc(src.slice(i, j)) + '</span>';
+      i = j; continue;
+    }
+    if (/[A-Za-z_]/.test(c)){
+      let j = i;
+      while (j < n && /[A-Za-z0-9_]/.test(src[j])) j++;
+      const w = src.slice(i, j);
+      if (KEYWORDS.has(w)) out += '<span class="kw">' + esc(w) + '</span>';
+      else if (src[j] === '(') out += '<span class="fn">' + esc(w) + '</span>';
+      else out += esc(w);
+      i = j; continue;
+    }
+    out += esc(c); i++;
+  }
+  return out;
+}
+
+document.querySelectorAll('.code-card pre code').forEach(block => {
+  block.innerHTML = highlight(block.textContent);
+});
+
+if (location.search.indexOf('expand') >= 0) {
+  document.querySelectorAll('details').forEach(d => d.open = true);
+}
+document.querySelectorAll('.sidebar-nav a').forEach(a => {
+  a.addEventListener('click', () => {
+    if (window.innerWidth <= 900) document.querySelector('.sidebar-nav').classList.remove('active');
+  });
+});
+</script>
+</body>
+</html>

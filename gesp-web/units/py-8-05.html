@@ -1,0 +1,1057 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="copyright" content="CodeCombat Inc. codecombat.cn">
+<title>机关几何室 · 基础计算几何 | 扣哒考级 · GESP Python 八级</title>
+<style>
+  :root{
+    --primary:#8a6a1f; --primary-light:#c9a22f; --primary-lighter:#fbf4e2; --primary-dark:#6b5013;
+    --brand:#ff6b35; --brand-dark:#e8541f; --brand-soft:#fff3ec;
+    --night:#0f1b22; --night-2:#16323a; --gold:#f5b301;
+    --text:#22333a; --dim:#5f7276; --dim2:#8da0a3;
+    --bg:#ffffff; --bg-soft:#f6fbfa; --line:#dceceb; --sidebar:274px;
+    --code-bg:#14231f; --code-tx:#c3d6d1;
+    --code-kw:#c678dd; --code-st:#98c379; --code-nu:#d19a66; --code-cm:#68807a; --code-fn:#61afef;
+  }
+  *{margin:0;padding:0;box-sizing:border-box}
+  html{scroll-behavior:smooth}
+  body{font-family:"PingFang SC","Microsoft YaHei","Segoe UI",-apple-system,sans-serif;line-height:1.9;color:var(--text);background:var(--bg);font-size:15.5px}
+  .sidebar-nav{position:fixed;top:0;left:0;width:var(--sidebar);height:100vh;overflow-y:auto;background:linear-gradient(180deg,#0d0b07,#241d10);padding:14px 0 40px;z-index:100;border-right:3px solid var(--brand);transition:transform .3s ease}
+  .sidebar-nav::-webkit-scrollbar{width:5px}
+  .sidebar-nav::-webkit-scrollbar-thumb{background:var(--brand);border-radius:4px}
+  .sb-brand{display:flex;align-items:center;gap:10px;padding:10px 13px 12px;border-bottom:1px solid #3a2e15;margin-bottom:8px}
+  .sidebar-nav a.sb-logo{display:flex;align-items:center;justify-content:center;flex-shrink:0;padding:0;border-left:none;transition:.2s}
+  .sb-logo:hover{transform:scale(1.08)}
+  .sb-logo img{height:34px;width:34px;display:block;object-fit:contain;border-radius:8px}
+  .sb-brand b{color:#eef7f6;font-size:14px;letter-spacing:.5px;display:block;line-height:1.4}
+  .sb-brand span{color:#7ba3a6;font-size:11.5px;display:block;line-height:1.4}
+  .nav-title{color:#ffb894;font-size:12px;font-weight:800;padding:10px 18px 6px;letter-spacing:1.2px}
+  .sidebar-nav a{display:block;color:#bcd3d4;text-decoration:none;padding:6px 18px;font-size:12.5px;line-height:1.55;border-left:3px solid transparent;transition:.18s}
+  .sidebar-nav a:hover{color:#fff;background:rgba(255,107,53,.16);border-left-color:var(--brand)}
+  .sidebar-nav a.nav-section{color:#ffb894;font-weight:700;font-size:13px;margin-top:11px;padding-top:10px;border-top:1px solid #3a2e15}
+  .sidebar-nav a.nav-section:first-of-type{border-top:none;margin-top:0;padding-top:6px}
+  .sidebar-nav a.nav-sub{padding-left:30px;color:#8fabad;font-size:12px}
+  .sidebar-nav a.nav-sub:hover{color:#fff}
+  .sb-back{margin:16px 14px 0;display:block;text-align:center;padding:9px;border-radius:9px;background:#1c3940;color:#a6c0c2 !important;font-size:12px;font-weight:700;border-left:none !important}
+  .sb-back:hover{background:var(--brand) !important;color:#fff !important}
+  .nav-toggle{display:none;position:fixed;top:14px;left:14px;z-index:120;background:var(--brand);color:#fff;border:none;border-radius:9px;padding:9px 13px;font-size:15px;cursor:pointer;box-shadow:0 4px 14px rgba(0,0,0,.25)}
+  .page{margin-left:var(--sidebar)}
+  .hero{position:relative;overflow:hidden;padding:44px 52px;color:#fff;background:linear-gradient(125deg,#0b0906 0%,#2a2010 46%,#8a3a16 132%)}
+  .hero::after{content:"";position:absolute;right:-90px;top:-110px;width:400px;height:400px;border-radius:50%;background:radial-gradient(circle,rgba(245,179,1,.30),transparent 68%)}
+  .hero-top{display:flex;gap:36px;align-items:center;position:relative;z-index:2}
+  .hero-txt{flex:1;min-width:0}
+  .hero .crumb{font-size:11.5px;color:#ffb894;letter-spacing:1.5px;font-weight:700;margin-bottom:14px}
+  .hero h1{font-size:31px;font-weight:800;line-height:1.3;letter-spacing:.6px;margin-bottom:8px}
+  .hero h1 .sub{display:block;font-size:18px;font-weight:700;color:#ffd2b3;margin-top:6px;letter-spacing:.3px}
+  .hero .en{font-size:13px;color:#98b6b8;font-style:italic;margin-bottom:18px}
+  .hero .tags{display:flex;flex-wrap:wrap;gap:8px}
+  .tag{font-size:11.5px;padding:4px 12px;border-radius:20px;background:rgba(255,255,255,.12);border:1px solid rgba(255,255,255,.22);color:#e8f0f6;font-weight:600}
+  .tag.hot{background:rgba(255,107,53,.92);border-color:transparent;color:#fff}
+  .hero-card{flex-shrink:0;width:200px;text-align:center}
+  .hero-card .ava{width:148px;height:148px;border-radius:50%;object-fit:cover;object-position:top center;border:4px solid rgba(255,180,140,.6);box-shadow:0 14px 34px rgba(0,0,0,.45);background:#24344a}
+  .hero-card .nm{font-size:15px;font-weight:800;color:#fff;margin-top:10px}
+  .hero-card .ti{font-size:11.5px;color:#ffb894;margin-top:2px}
+  .container{max-width:1080px;margin:0 auto;padding:38px 52px 70px}
+  .lead{font-size:15.5px;line-height:2.05;color:#35474a;background:linear-gradient(120deg,#fff8f3,#f6fbfa);border-left:5px solid var(--brand);border-radius:0 14px 14px 0;padding:22px 26px;margin-bottom:32px}
+  .lead b{color:var(--brand-dark)}
+  .cast{display:flex;gap:16px;align-items:flex-start;border-radius:16px;padding:18px 22px;margin:24px 0}
+  .cast .ava{width:72px;height:72px;border-radius:50%;object-fit:cover;object-position:top center;flex-shrink:0;background:#e8eef5}
+  .cast .bubble{position:relative;font-size:14px;line-height:1.95;padding-top:2px;flex:1}
+  .cast .who{font-size:12px;font-weight:800;margin-bottom:5px;letter-spacing:.5px}
+  .cast.anya{background:var(--brand-soft);border:1px solid #ffdcc9}
+  .cast.anya .who{color:var(--brand-dark)}
+  .cast.anya .bubble{color:#5c4636}
+  .cast.duck{background:#fff5f5;border:1px solid #fbd5d5}
+  .cast.duck .who{color:#b91c1c}
+  .cast.duck .bubble{color:#5c4141}
+  .cast.teacher{background:linear-gradient(120deg,#f1f8f8,#ffffff);border:1px solid #d6e8e8}
+  .cast.teacher .who{color:#134e4a}
+  .cast.teacher .bubble{color:#3c5254}
+  .cast.hero{background:#f2fbf9;border:1px solid #cfe9e6}
+  .cast.hero .who{color:#0f766e}
+  .cast.hero .bubble{color:#3d5250}
+  .goal-grid{display:grid;grid-template-columns:1fr 1fr;gap:16px;margin-bottom:36px}
+  .goal{border:1px solid var(--line);border-radius:15px;padding:19px 21px;background:#fff;box-shadow:0 4px 16px rgba(14,143,134,.06)}
+  .goal h4{font-size:14px;font-weight:800;margin-bottom:11px;display:flex;align-items:center;gap:8px;color:var(--primary-dark)}
+  .goal h4 .ic{width:22px;height:22px;border-radius:7px;background:var(--primary-lighter);display:flex;align-items:center;justify-content:center;font-size:12px}
+  .goal ul{list-style:none}
+  .goal li{font-size:13.5px;color:#46585a;line-height:1.9;padding-left:18px;position:relative}
+  .goal li::before{content:"▸";position:absolute;left:0;color:var(--primary);font-weight:800}
+  .goal.syllabus li::before{content:"✓"}
+  .section-header{margin:52px 0 24px;padding-bottom:12px;border-bottom:3px solid var(--brand);display:flex;align-items:baseline;gap:14px;flex-wrap:wrap}
+  .section-header h2{font-size:22px;font-weight:800;color:var(--night);letter-spacing:.4px}
+  .section-header .en-title{font-size:12px;color:var(--dim2);font-style:italic}
+  h3{font-size:17.5px;font-weight:800;margin:34px 0 14px;color:var(--night);display:flex;align-items:center;gap:10px}
+  h3::before{content:"";width:5px;height:17px;border-radius:3px;background:var(--brand);flex-shrink:0}
+  h4{font-size:15px;font-weight:800;margin:24px 0 10px;color:#2c4a48}
+  p{margin:12px 0;color:#3d5250;line-height:2}
+  strong{color:var(--primary-dark)}
+  code.inline{background:var(--primary-lighter);color:var(--primary-dark);padding:2px 7px;border-radius:6px;font-family:"SFMono-Regular",Consolas,Menlo,monospace;font-size:.9em;font-weight:600}
+  .figure{margin:24px 0;text-align:center}
+  .figure svg.diagram{max-width:100%;height:auto;background:#fff;border:1px solid var(--line);border-radius:14px;padding:10px}
+  .figure .caption{font-size:12.5px;color:var(--dim2);margin-top:9px}
+  .pic{margin:26px 0;text-align:center}
+  .pic img{max-width:100%;border-radius:16px;box-shadow:0 10px 28px rgba(20,60,60,.15);display:block;margin:0 auto}
+  .pic figcaption{font-size:12.5px;color:var(--dim2);margin-top:9px}
+  .pic .ph{display:none}
+  .pic.missing img{display:none}
+  .pic.missing .ph{display:flex;flex-direction:column;align-items:center;justify-content:center;gap:9px;border:2px dashed #bfdcd9;border-radius:16px;background:linear-gradient(135deg,#f8fdfc,#eef8f7);padding:40px 26px;color:#6f8f90}
+  .pic.missing .ph .fn{font-family:Consolas,monospace;font-size:12.5px;color:#0e8f86;font-weight:700;word-break:break-all}
+  .pic.missing .ph .ds{font-size:12.5px;line-height:1.8;max-width:560px}
+  .box{border-radius:13px;padding:16px 20px;margin:20px 0;font-size:14px;line-height:1.95}
+  .box .lb{font-weight:800;margin-right:6px}
+  .info{background:#eef6ff;border-left:5px solid #3b82f6;color:#274768}
+  .info .lb{color:#1d4ed8}
+  .tip{background:#fff9ec;border-left:5px solid #f59e0b;color:#6b4e13}
+  .tip .lb{color:#b45309}
+  .remember{background:var(--primary-lighter);border-left:5px solid var(--primary);color:#134e4a}
+  .remember .lb{color:var(--primary-dark)}
+  .warn{background:#fef2f2;border-left:5px solid #ef4444;color:#7f2b2b}
+  .warn .lb{color:#b91c1c}
+  .code-card{margin:20px 0;border-radius:14px;overflow:hidden;box-shadow:0 10px 28px rgba(15,40,40,.20)}
+  .code-head{display:flex;align-items:center;gap:9px;background:#332a12;padding:9px 14px}
+  .code-head .dot{width:10px;height:10px;border-radius:50%}
+  .code-head .d1{background:#ff5f57}.code-head .d2{background:#febc2e}.code-head .d3{background:#28c840}
+  .code-head .file{color:#8fb0aa;font-size:11.5px;font-family:Consolas,monospace;margin-left:6px}
+  .code-head .lang{margin-left:auto;font-size:10.5px;font-weight:800;color:#0b1f1a;background:#e8c766;padding:2px 9px;border-radius:6px;letter-spacing:.4px}
+  .code-card pre{background:var(--code-bg);padding:18px 20px;overflow-x:auto;margin:0;font-family:"SFMono-Regular",Consolas,"Courier New",monospace;font-size:13.5px;line-height:1.85}
+  .code-card pre::-webkit-scrollbar{height:8px}
+  .code-card pre::-webkit-scrollbar-thumb{background:#2f4a45;border-radius:4px}
+  .code-card code{color:var(--code-tx);white-space:pre}
+  .kw{color:var(--code-kw);font-weight:600}
+  .st{color:var(--code-st)}
+  .nu{color:var(--code-nu)}
+  .cm{color:var(--code-cm);font-style:italic}
+  .fn{color:var(--code-fn)}
+  .out{background:#0e1d1a;color:#7fd6b8;font-family:Consolas,monospace;font-size:13px;padding:12px 20px;border-top:1px solid #223a35}
+  .out b{color:#c3d6d1;font-weight:600;font-size:11.5px;letter-spacing:1px}
+  table.styled{width:100%;border-collapse:collapse;margin:20px 0;font-size:13.5px;border-radius:12px;overflow:hidden;box-shadow:0 4px 16px rgba(14,143,134,.08)}
+  table.styled thead{background:var(--brand)}
+  table.styled th{color:#fff;padding:11px 14px;text-align:left;font-weight:700;font-size:13px}
+  table.styled td{padding:10px 14px;border-bottom:1px solid var(--line);color:#44585a;vertical-align:top}
+  table.styled tbody tr:nth-child(even){background:var(--bg-soft)}
+  table.styled tbody tr:last-child td{border-bottom:none}
+  .level-card{border:1px solid var(--line);border-radius:16px;overflow:hidden;margin:22px 0;box-shadow:0 6px 22px rgba(14,143,134,.08)}
+  .level-card .lc-head{background:linear-gradient(100deg,#12262c,#8a3a16);color:#fff;padding:15px 22px;display:flex;align-items:center;gap:12px;flex-wrap:wrap}
+  .level-card .lc-head .n{font-size:12px;font-weight:800;background:rgba(255,255,255,.2);padding:3px 10px;border-radius:20px}
+  .level-card .lc-head h4{margin:0;color:#fff;font-size:16px}
+  .level-card .lc-head .go{margin-left:auto;font-size:11.5px;color:#ffd2b3}
+  .level-card .lc-body{padding:20px 24px;background:#fff}
+  .level-card .story{background:#f8fcfc;border-left:4px solid #7dd3fc;border-radius:0 10px 10px 0;padding:13px 18px;margin:0 0 16px;font-size:14px;line-height:1.95;color:#3c5254}
+  .level-card .story b{color:#0369a1}
+  .btn-go{display:inline-flex;align-items:center;gap:8px;background:linear-gradient(135deg,var(--brand),var(--brand-dark));color:#fff;text-decoration:none;font-weight:800;font-size:13.5px;padding:10px 22px;border-radius:11px;box-shadow:0 8px 20px rgba(255,107,53,.32);transition:.2s}
+  .btn-go:hover{transform:translateY(-2px);box-shadow:0 12px 26px rgba(255,107,53,.42)}
+  .pit{border:1px solid #f6dede;border-radius:14px;overflow:hidden;margin:16px 0;background:#fff}
+  .pit .pt{display:flex;gap:12px;padding:14px 18px;background:#fffafa;align-items:flex-start}
+  .pit .x{width:26px;height:26px;border-radius:9px;background:#fee;color:#dc2626;display:flex;align-items:center;justify-content:center;font-weight:800;flex-shrink:0;font-size:13px}
+  .pit .t{font-size:13.5px;line-height:1.9;color:#5c4a4a;flex:1}
+  .pit .t b{color:#b91c1c}
+  .pit .duck{display:flex;gap:12px;padding:13px 18px;background:#fff5f5;border-top:1px dashed #f3d0d0;align-items:flex-start}
+  .pit .duck img{width:48px;height:48px;object-fit:contain;flex-shrink:0;margin-top:2px}
+  .pit .duck .dt{font-size:13.5px;line-height:1.9;color:#7a3b3b}
+  .pit .duck .dt b{color:#b91c1c}
+  .pit .fix{padding:12px 18px;background:#f2fbf9;border-top:1px dashed #cfe9e6;font-size:13.5px;color:#134e4a}
+  .pit .fix b{color:var(--primary-dark)}
+  .exam{border:1px solid #d8ebea;border-radius:15px;margin:16px 0;overflow:hidden;background:#fff;box-shadow:0 4px 16px rgba(30,80,80,.06)}
+  .exam .eh{display:flex;align-items:center;gap:10px;padding:11px 18px;background:linear-gradient(100deg,#eef8f7,#f8fdfc);border-bottom:1px solid #dbeceb;flex-wrap:wrap}
+  .exam .eh .src{font-size:11px;font-weight:800;color:#fff;background:#0e8f86;padding:2.5px 10px;border-radius:20px}
+  .exam .eh .src.ori{background:#0e9488}
+  .exam .eh .tp{font-size:11.5px;color:#4f7d7a;font-weight:700}
+  .exam .eb{padding:16px 20px}
+  .exam .q{font-weight:700;font-size:14px;color:#2b4042;line-height:1.9;margin-bottom:10px}
+  .exam .opt{font-size:13.5px;color:#46585a;line-height:2.05;padding-left:6px}
+  .exam .opt i{font-style:normal;font-weight:800;color:var(--primary-dark);margin-right:7px}
+  .exam pre{margin:12px 0;background:#14231f;border-radius:10px;padding:14px 16px;overflow-x:auto;font-family:Consolas,monospace;font-size:13px;line-height:1.8;color:var(--code-tx)}
+  .exam details{margin-top:10px;border-top:1px dashed var(--line);padding-top:10px}
+  .exam summary{cursor:pointer;font-size:12.5px;font-weight:800;color:#0e8f86;outline:none;user-select:none}
+  .exam details .ans{font-size:13.5px;color:#3d5250;line-height:1.95;margin-top:9px;background:var(--bg-soft);padding:13px 16px;border-radius:10px}
+  .exam details .ans b{color:var(--primary-dark)}
+  .exam details .ans .tagline{display:inline-block;font-size:11px;background:#e0f2fe;color:#0e7490;padding:1.5px 8px;border-radius:6px;font-weight:700;margin-right:6px}
+  .summary{margin:40px 0 20px;border-radius:18px;padding:26px 30px;background:linear-gradient(130deg,#fff8f3,#ffffff);border:1px solid #ffe0cf}
+  .summary h3{margin-top:0}
+  .summary ul{list-style:none;margin-top:10px}
+  .summary li{font-size:14px;line-height:2;color:#3d5250;padding-left:24px;position:relative}
+  .summary li::before{content:"◆";position:absolute;left:0;color:var(--brand);font-size:11px;top:6px}
+  .pager{display:flex;gap:14px;margin-top:30px;flex-wrap:wrap}
+  .pager a{flex:1;min-width:200px;text-decoration:none;border:1px solid var(--line);border-radius:14px;padding:16px 20px;background:#fff;transition:.2s;display:block}
+  .pager a:hover{border-color:var(--brand);box-shadow:0 10px 26px rgba(255,107,53,.14);transform:translateY(-2px)}
+  .pager a .k{font-size:11px;color:var(--dim2);font-weight:700;letter-spacing:1px}
+  .pager a .v{font-size:14px;font-weight:800;color:var(--night);margin-top:5px}
+  .pager a.back{background:var(--brand-soft);border-color:transparent;text-align:center}
+  .pager a.back .v{color:var(--brand-dark)}
+  .cta{margin-top:26px;border-radius:20px;padding:30px 34px;color:#fff;position:relative;overflow:hidden;background:linear-gradient(120deg,#12242a,#1e4a52 46%,#a8431c 132%)}
+  .cta::after{content:"";position:absolute;right:-70px;bottom:-90px;width:280px;height:280px;border-radius:50%;background:radial-gradient(circle,rgba(255,140,80,.45),transparent 68%)}
+  .cta h3{color:#fff;margin:0 0 10px;position:relative;z-index:2}
+  .cta h3::before{background:var(--brand)}
+  .cta p{color:#cfe4e2;font-size:13.5px;margin:0 0 18px;position:relative;z-index:2;max-width:640px}
+  .cta .btn-go{position:relative;z-index:2}
+  @media(max-width:900px){
+    .sidebar-nav{transform:translateX(-100%)}
+    .sidebar-nav.active{transform:translateX(0)}
+    .nav-toggle{display:block}
+    .page{margin-left:0}
+    .hero{padding:70px 22px 34px}
+    .hero-top{flex-direction:column-reverse;text-align:center}
+    .hero-card{width:auto}
+    .container{padding:26px 20px 60px}
+    .goal-grid{grid-template-columns:1fr}
+  }
+</style>
+</head>
+<body>
+
+<button class="nav-toggle" onclick="document.querySelector('.sidebar-nav').classList.toggle('active')">&#9776;</button>
+
+<nav class="sidebar-nav">
+  <div class="sb-brand">
+    <a class="sb-logo" href="https://codecombat.cn/" target="_blank" rel="noopener" title="访问 CodeCombat 扣哒世界官网">
+      <img src="../assets/logo.png" alt="CodeCombat 扣哒世界">
+    </a>
+    <div><b>机关几何室</b><span>寂灭王座 · Python 八级 第 5 单元</span></div>
+  </div>
+  <div class="nav-title">本单元目录</div>
+  <a href="#s0" class="nav-section">0　单元导语与目标</a>
+  <a href="#s0-1" class="nav-sub">0.1 学习目标</a>
+  <a href="#s0-2" class="nav-sub">0.2 考纲对照</a>
+  <a href="#s1" class="nav-section">1　几何室要算什么</a>
+  <a href="#s1-1" class="nav-sub">1.1 几何室要算的三件事</a>
+  <a href="#s1-2" class="nav-sub">1.2 三条最容易被记混的</a>
+  <a href="#s2" class="nav-section">2　距离公式</a>
+  <a href="#s2-1" class="nav-sub">2.1 距离计算的两种需求</a>
+  <a href="#s2-2" class="nav-sub">2.2 曼哈顿距离</a>
+  <a href="#s3" class="nav-section">3　周长与面积</a>
+  <a href="#s3-1" class="nav-sub">3.1 三种基本图形的公式</a>
+  <a href="#s3-2" class="nav-sub">3.2 三角形面积的两种算法</a>
+  <a href="#s4" class="nav-section">4　判断点在哪一侧</a>
+  <a href="#s4-1" class="nav-sub">4.1 点是否在矩形内 / 圆内</a>
+  <a href="#s4-2" class="nav-sub">4.2 三个包含判断的写法</a>
+  <a href="#s5" class="nav-section">5　精度问题</a>
+  <a href="#s5-1" class="nav-sub">5.1 浮点数不是"精确"的</a>
+  <a href="#s5-2" class="nav-sub">5.2 什么时候要警惕精度</a>
+  <a href="#s6" class="nav-section">6　代数：一元一次方程与二元一次方程</a>
+  <a href="#s6-1" class="nav-sub">6.1 一元一次方程</a>
+  <a href="#s6-2" class="nav-sub">6.2 二元一次方程组</a>
+  <a href="#s7" class="nav-section">7　代码实战</a>
+  <a href="#s8" class="nav-section">8　常见陷阱</a>
+  <a href="#s9" class="nav-section">9　题目练习</a>
+  <a href="#s10" class="nav-section">10　本单元小结</a>
+  <a href="../index.html" target="_top" class="sb-back">返回考纲之路</a>
+</nav>
+
+<div class="page">
+
+<div class="hero">
+  <div class="hero-top">
+    <div class="hero-txt">
+      <div class="crumb">扣哒考级 · GESP PYTHON 八级 · 第 5 单元　|　寂灭王座 THE THRONE</div>
+      <h1>机关几何室
+        <span class="sub">基础计算几何</span>
+      </h1>
+      <div class="en">Basic Computational Geometry</div>
+      <div class="tags">        <span class="tag hot">考纲 · 计算几何</span>
+        <span class="tag">距离公式</span>
+        <span class="tag">周长与面积</span>
+        <span class="tag">点在区域内</span>
+        <span class="tag">精度处理</span></div>
+    </div>
+    <div class="hero-card">
+      <img class="ava" src="../assets/avatars/hushbaum.webp" alt="贺舒曼" onerror="this.style.background='#24344a'">
+      <div class="nm">贺舒曼</div>
+      <div class="ti">镜中先知 · 你的向导</div>
+    </div>
+  </div>
+</div>
+
+<div class="container">
+
+<div class="lead">
+  王座侧室是一座机关室，四壁刻着各种图形：<b>圆、矩形、三角、还有散落的点。</b><br>
+  每个图形旁边都有一行小字：<b>说出我的周长，门就开一道。</b>
+  <b>算出我的面积，齿轮就转一圈。</b><br>
+  贺舒曼递给你一把尺子：别慌。<b>这些量，全都有公式。你要做的只是别记混。</b>
+</div>
+
+<div class="cast teacher">
+  <img class="ava" src="../assets/avatars/hushbaum.webp" alt="贺舒曼" onerror="this.style.display='none'">
+  <div class="bubble">
+    <div class="who">贺舒曼 · 镜中先知</div>
+    计算几何听起来难，其实八级只考<strong>最基础的那几样</strong>：距离、周长、面积、点在不在区域内。<br>
+    难点不在公式，而在<b>两件事：公式别记混、小数别算错。</b><br>
+    这一单元我们把它们一个个过清楚。
+  </div>
+</div>
+
+<figure class="pic">
+  <img src="../assets/illustrations/py-L8-05-01_geometry_chamber.webp" alt="机关几何室"
+       onerror="this.closest('.pic').classList.add('missing')">
+  <div class="ph">
+    <div class="fn">assets/illustrations/py-L8-05-01_geometry_chamber.webp</div>
+    <div class="ds">【配图位】暗金侧室四壁刻着圆、矩形、三角形的凹槽，每道凹槽边缘浮出发光的尺寸标注与公式符号；地面中央是一块可旋转的方形地砖，砖面映出一名学徒与手中卷尺的影子。</div>
+  </div>
+  <figcaption>图 1：寂灭王座的机关几何室——今天要从这里开始</figcaption>
+</figure>
+
+<div class="section-header" id="s0">
+  <h2>0　单元导语与目标</h2>
+  <div class="en-title">Unit Overview</div>
+
+<h3 id="s0-1">0.1 学习目标</h3>
+</div>
+
+<div class="goal-grid">
+  <h3 id="s0-2">0.2 考纲对照</h3>
+
+<div class="goal">
+    <h4><span class="ic">1</span>学完这个单元，你将能……</h4>
+    <ul>
+      <li>熟练计算两点之间的距离</li>
+      <li>计算矩形、三角形、圆的周长与面积</li>
+      <li>判断一个点是否落在矩形或圆内</li>
+      <li>处理浮点数的比较与四舍五入</li>
+      <li>把几何公式翻译成程序</li>
+      <li>避开"精度"带来的坑</li>
+      <li>会解一元一次方程与二元一次方程组</li>
+    </ul>
+  </div>
+  <div class="goal syllabus">
+    <h4><span class="ic">2</span>对标 GESP 考纲（Python 八级）</h4>
+    <ul>
+      <li>掌握常用几何量的计算公式与程序实现</li>
+      <li>掌握两点距离、矩形周长面积、圆周长面积的计算</li>
+      <li>掌握一元一次方程、二元一次方程的基本求解技巧</li>
+      <li>了解浮点数运算的精度问题与比较方法</li>
+      <li>考核目标：能编写基础几何计算程序并正确处理小数</li>
+    </ul>
+  </div>
+</div>
+
+<div class="section-header" id="s1">
+  <h2>1　几何室要算什么</h2>
+  <div class="en-title">What to Compute</div>
+
+<h3 id="s1-1">1.1 几何室要算的三件事</h3>
+</div>
+
+<table class="styled">
+  <thead><tr><th>要算的量</th><th>公式</th><th>写进程序</th></tr></thead>
+  <tbody>
+    <tr><td>两点距离</td><td>√(dx² + dy²)</td><td><code class="inline">math.sqrt(dx*dx + dy*dy)</code></td></tr>
+    <tr><td>矩形周长</td><td>2 × (宽 + 高)</td><td><code class="inline">2 * (w + h)</code></td></tr>
+    <tr><td>矩形面积</td><td>宽 × 高</td><td><code class="inline">w * h</code></td></tr>
+    <tr><td>三角形面积</td><td>底 × 高 ÷ 2</td><td><code class="inline">base * height / 2</code></td></tr>
+    <tr><td>圆周长</td><td>2 × π × r</td><td><code class="inline">2 * math.pi * r</code></td></tr>
+    <tr><td>圆面积</td><td>π × r²</td><td><code class="inline">math.pi * r * r</code></td></tr>
+  </tbody>
+</table>
+
+<h3 id="s1-2">1.2 三条最容易被记混的</h3>
+
+<div class="box remember">
+  <span class="lb">三条最容易被记混的：</span><br>
+  <b>周长 vs 面积</b>——周长是"围一圈的长度"，面积是"里面铺满的大小"。<br>
+  <b>圆的周长有 2，圆面积没有</b>：周长 = 2πr，面积 = πr²。<br>
+  <b>三角形一定要除以 2</b>，矩形不用。<br>
+  <strong>记忆法：周长是"线"，量的是长度；面积是"面"，量的是平方。</strong>
+</div>
+
+<div class="section-header" id="s2">
+  <h2>2　距离公式</h2>
+  <div class="en-title">Distance</div>
+
+<h3 id="s2-1">2.1 距离计算的两种需求</h3>
+</div>
+
+<p>七级已经学过，这里再强调两个实用点：</p>
+
+<div class="code-card">
+  <div class="code-head">
+    <span class="dot d1"></span><span class="dot d2"></span><span class="dot d3"></span>
+    <span class="file">距离计算的两种需求</span>
+    <span class="lang">Python</span>
+  </div>
+  <pre><code>import math
+
+# ① 需要真实的距离值（要开方）
+def dist(x1, y1, x2, y2):
+    dx = x2 - x1
+    dy = y2 - y1
+    return math.sqrt(dx * dx + dy * dy)
+
+# ② 只需要比较远近（不用开方，更快也更精确）
+def distSq(x1, y1, x2, y2):
+    dx = x2 - x1
+    dy = y2 - y1
+    return dx * dx + dy * dy
+
+print(dist(0, 0, 3, 4))       # 5.0
+print(distSq(0, 0, 3, 4))     # 25</code></pre>
+  <div class="out"><b>要点</b>　要具体数值用 <code>dist</code>；只比谁近用 <code>distSq</code></div>
+</div>
+
+<h3 id="s2-2">2.2 曼哈顿距离</h3>
+
+<div class="box tip">
+  <span class="lb">曼哈顿距离：另一种"距离"</span>
+  在只能横竖走的格子里，"要走多少步"是 <code class="inline">|dx| + |dy|</code>，
+  这叫<strong>曼哈顿距离</strong>（因为像在曼哈顿的方格街道上走）。<br>
+  而 <code class="inline">√(dx²+dy²)</code> 叫<strong>欧几里得距离</strong>（直线距离）。<br>
+  <b>看题目说"走"还是"直线"，别用错。</b>
+</div>
+
+<div class="section-header" id="s3">
+  <h2>3　周长与面积</h2>
+  <div class="en-title">Perimeter &amp; Area</div>
+</div>
+
+<h3 id="s3-1">3.1 三种基本图形的公式</h3>
+
+<figure class="figure">
+  <svg class="diagram" viewBox="0 0 860 260" role="img" aria-label="三种图形的周长与面积">
+    <text x="24" y="34" font-size="14" font-weight="bold" fill="#1f2937">周长看"边"，面积看"面"</text>
+
+    <rect x="60" y="58" width="230" height="180" rx="12" fill="#fbf4e2" stroke="#8a6a1f" stroke-width="1.8"/>
+    <text x="175" y="86" text-anchor="middle" font-size="12.5" fill="#6b5013" font-weight="bold">矩形</text>
+    <rect x="102" y="110" width="146" height="80" rx="4" fill="#fff" stroke="#c9a22f" stroke-width="2.2"/>
+    <text x="175" y="146" text-anchor="middle" font-size="11.5" fill="#8a7b56">宽 w</text>
+    <text x="175" y="176" text-anchor="middle" font-size="11.5" fill="#8a7b56">高 h</text>
+    <text x="175" y="212" text-anchor="middle" font-size="11.5" fill="#6b5013">周长 = 2(w+h)　面积 = w×h</text>
+
+    <rect x="316" y="58" width="230" height="180" rx="12" fill="#fbf4e2" stroke="#8a6a1f" stroke-width="1.8"/>
+    <text x="431" y="86" text-anchor="middle" font-size="12.5" fill="#6b5013" font-weight="bold">三角形</text>
+    <polygon points="431,110 355,190 507,190" fill="#fff" stroke="#c9a22f" stroke-width="2.2"/>
+    <line x1="431" y1="110" x2="431" y2="190" stroke="#b8860b" stroke-width="1.6" stroke-dasharray="5 4"/>
+    <text x="440" y="152" font-size="11.5" fill="#8a7b56">高</text>
+    <text x="431" y="212" text-anchor="middle" font-size="11.5" fill="#6b5013">面积 = 底 × 高 ÷ 2</text>
+
+    <rect x="572" y="58" width="230" height="180" rx="12" fill="#fbf4e2" stroke="#8a6a1f" stroke-width="1.8"/>
+    <text x="687" y="86" text-anchor="middle" font-size="12.5" fill="#6b5013" font-weight="bold">圆</text>
+    <circle cx="687" cy="150" r="42" fill="#fff" stroke="#c9a22f" stroke-width="2.2"/>
+    <line x1="687" y1="150" x2="729" y2="150" stroke="#b8860b" stroke-width="1.6"/>
+    <text x="706" y="144" font-size="11.5" fill="#8a7b56">r</text>
+    <text x="687" y="212" text-anchor="middle" font-size="11.5" fill="#6b5013">周长 = 2πr　面积 = πr²</text>
+  </svg>
+  <div class="caption">图 2（SVG）：三种基本图形的公式</div>
+</figure>
+
+<h3 id="s3-2">3.2 三角形面积的两种算法</h3>
+
+<div class="code-card">
+  <div class="code-head">
+    <span class="dot d1"></span><span class="dot d2"></span><span class="dot d3"></span>
+    <span class="file">三角形面积的两种算法</span>
+    <span class="lang">Python</span>
+  </div>
+  <pre><code>import math
+
+# ① 知道底和高
+def triArea1(base, height):
+    return base * height / 2
+
+# ② 只知道三条边（海伦公式）
+def triArea2(a, b, c):
+    p = (a + b + c) / 2          # 半周长
+    return math.sqrt(p * (p - a) * (p - b) * (p - c))
+
+print(triArea1(6, 4))            # 12.0
+print(triArea2(3, 4, 5))         # 6.0</code></pre>
+  <div class="out"><b>要点</b>　海伦公式适合"只给三边"的情况；给底和高就直接乘除</div>
+</div>
+
+<figure class="pic">
+  <img src="../assets/illustrations/py-L8-05-02_geometry_formulas.webp" alt="三种基本图形的公式"
+       onerror="this.closest('.pic').classList.add('missing')">
+  <div class="ph">
+    <div class="fn">assets/illustrations/py-L8-05-02_geometry_formulas.webp</div>
+    <div class="ds">【配图位】机关几何室的石桌上摊着三块石板：一块画着长方形与它的长宽标注，一块画着圆与半径标记，一块画着三角形与底和高；每块石板的一角都刻着对应的周长与面积公式。</div>
+  </div>
+  <figcaption>图 3：三种基本图形的公式</figcaption>
+</figure>
+
+<div class="section-header" id="s4">
+  <h2>4　判断点在哪一侧</h2>
+  <div class="en-title">Which Side</div>
+
+<h3 id="s4-1">4.1 点是否在矩形内 / 圆内</h3>
+</div>
+
+<div class="code-card">
+  <div class="code-head">
+    <span class="dot d1"></span><span class="dot d2"></span><span class="dot d3"></span>
+    <span class="file">点是否在矩形内 / 圆内</span>
+    <span class="lang">Python</span>
+  </div>
+  <pre><code>import math
+
+# ① 点在矩形内：横纵坐标都在范围内
+def inRect(px, py, x1, y1, x2, y2):
+    return x1 &lt;= px &lt;= x2 and y1 &lt;= py &lt;= y2
+
+# ② 点在圆内：到圆心的距离不超过半径
+def inCircle(px, py, cx, cy, r):
+    dx = px - cx
+    dy = py - cy
+    return dx * dx + dy * dy &lt;= r * r     # 比平方，避免开方
+
+print(inRect(3, 4, 0, 0, 5, 5))           # True
+print(inCircle(3, 4, 0, 0, 5))            # True</code></pre>
+  <div class="out"><b>要点</b>　判断"在内"用<b>比较平方</b>，既快又避免小数误差</div>
+</div>
+
+<h3 id="s4-2">4.2 三个包含判断的写法</h3>
+
+<div class="box remember">
+  <span class="lb">三个"包含判断"的写法：</span><br>
+  <b>矩形内</b>：<code class="inline">x1 &lt;= px &lt;= x2 and y1 &lt;= py &lt;= y2</code><br>
+  <b>圆内</b>：<code class="inline">dx*dx + dy*dy &lt;= r*r</code><br>
+  <b>线段上</b>：先判断是否共线（用叉积），再判断是否在端点之间。<br>
+  <strong>这三种判断，是计算几何里最常考的基础。</strong>
+</div>
+
+<div class="section-header" id="s5">
+  <h2>5　精度问题</h2>
+  <div class="en-title">Floating-Point Precision</div>
+
+<h3 id="s5-1">5.1 浮点数不是"精确"的</h3>
+</div>
+
+<div class="code-card">
+  <div class="code-head">
+    <span class="dot d1"></span><span class="dot d2"></span><span class="dot d3"></span>
+    <span class="file">浮点数不是"精确"的</span>
+    <span class="lang">Python</span>
+  </div>
+  <pre><code>print(0.1 + 0.2)                # 0.30000000000000004
+print(0.1 + 0.2 == 0.3)         # False！居然不相等
+
+# 正确做法：判断"足够接近"而不是"完全相等"
+a = 0.1 + 0.2
+b = 0.3
+print(abs(a - b) &lt; 1e-9)        # True</code></pre>
+  <div class="out"><b>结论</b>　浮点数比较不能用 <code>==</code>，要用"差值小于某个很小的数"</div>
+</div>
+
+<h3 id="s5-2">5.2 什么时候要警惕精度</h3>
+
+<div class="box warn">
+  <span class="lb">什么时候要警惕精度？</span><br>
+  <b>① 比较两个浮点数是否相等</b>——改用 <code class="inline">abs(a-b) &lt; 1e-9</code>；<br>
+  <b>② 判断点是否"恰好在"边界上</b>——留一点误差余量；<br>
+  <b>③ 输出要保留几位小数</b>——用 <code class="inline">round(x, n)</code> 或格式化。<br>
+  <strong>而"只需要比较远近"时，干脆用平方比较，从根上避开浮点数。</strong>
+</div>
+
+<figure class="pic">
+  <img src="../assets/illustrations/py-L8-05-03_point_test_scene.webp" alt="点到底在不在里面"
+       onerror="this.closest('.pic').classList.add('missing')">
+  <div class="ph">
+    <div class="fn">assets/illustrations/py-L8-05-03_point_test_scene.webp</div>
+    <div class="ds">【配图位】地面上画着一个发光矩形与一个发光圆，几个光点分别落在里、外、以及贴边的位置：里面的点泛绿、外面的泛红、贴边的点闪着黄光并标着"要小心"；一名学徒拿着尺子逐个核对。</div>
+  </div>
+  <figcaption>图 4：点到底在不在里面</figcaption>
+</figure>
+
+<div class="section-header" id="s6">
+  <h2>6　代数：一元一次方程与二元一次方程</h2>
+  <div class="en-title">Linear Equations</div>
+</div>
+
+<h3 id="s6-1">6.1 一元一次方程：移项就是"两边同时做"</h3>
+
+<figure class="pic">
+  <img src="../assets/illustrations/py-L8-05-04_algebra_equations.webp" alt="一元一次方程与二元一次方程"
+       onerror="this.closest('.pic').classList.add('missing')">
+  <div class="ph">
+    <div class="fn">assets/illustrations/py-L8-05-04_algebra_equations.webp</div>
+    <div class="ds">【配图位】寂灭王座的机关几何室中央立着一座巨大的金属天平：左盘放着"3x + 5"、右盘放着"20"；旁边两条刻痕分别写着"两边同时减 5"和"两边同时除以 3"；天平的指针在最后停在正中，左盘剩下一个发光的"x"，刻度显示答案 5</div>
+  </div>
+  <figcaption>图 4（PNG）：解方程就像摆平一座天平</figcaption>
+</figure>
+
+<p>八级考纲把这一块叫"<b>代数与平面几何</b>"，前面讲了几何，这一节补上<b>代数</b>——用方程求未知的量。</p>
+
+<figure class="figure">
+  <svg class="diagram" viewBox="0 0 860 230" role="img" aria-label="一元一次方程就像天平">
+    <text x="24" y="30" font-size="14" font-weight="bold" fill="#1f2937">解方程就像摆平一座天平：两边同时做同一件事</text>
+    <line x1="120" y1="90" x2="700" y2="90" stroke="#94a3b8" stroke-width="3"/>
+    <line x1="410" y1="66" x2="410" y2="150" stroke="#94a3b8" stroke-width="3"/>
+    <path d="M370 150 L450 150 L410 186 Z" fill="#cfe0f5" stroke="#2563eb" stroke-width="1.6"/>
+    <rect x="150" y="60" width="180" height="30" rx="8" fill="#eaf1fe" stroke="#2563eb" stroke-width="1.6"/>
+    <text x="240" y="81" text-anchor="middle" font-size="12.5" fill="#1d4ed8" font-weight="bold">3x + 5</text>
+    <rect x="500" y="60" width="150" height="30" rx="8" fill="#eaf1fe" stroke="#2563eb" stroke-width="1.6"/>
+    <text x="575" y="81" text-anchor="middle" font-size="12.5" fill="#1d4ed8" font-weight="bold">20</text>
+    <text x="120" y="216" font-size="12" fill="#1f2937">两边同时 −5：3x = 15</text>
+    <text x="330" y="216" font-size="12" fill="#1f2937">两边同时 ÷3：x = 5</text>
+    <text x="560" y="216" font-size="12" fill="#b45309">程序里就是 (c − b) ÷ a</text>
+  </svg>
+  <div class="caption">图解：一元一次方程的"天平"思路——程序里就是一步减、一步除</div>
+</figure>
+
+<div class="code-card">
+  <div class="code-head">
+    <span class="dot d1"></span><span class="dot d2"></span><span class="dot d3"></span>
+    <span class="file">一元一次、二元一次方程</span>
+    <span class="lang">Python</span>
+  </div>
+<pre><code># 一元一次方程：3x + 5 = 20
+a, b, c = 3, 5, 20          # a·x + b = c
+x = (c - b) / a
+print(x)                    # 5.0
+
+# 二元一次方程：用代入法
+# 2x + y = 10
+# x - y = 2
+# 由第二式得 y = x - 2，代入第一式：2x + (x - 2) = 10  →  3x = 12
+x = 12 / 3
+y = x - 2
+print(x, y)                 # 4.0 2.0
+
+# 直接用消元公式（行列式）
+def solve(a1, b1, c1, a2, b2, c2):
+    d = a1 * b2 - a2 * b1               # 系数行列式
+    if d == 0:
+        return None                     # 无解或无数解
+    return (c1 * b2 - c2 * b1) / d, (a1 * c2 - a2 * c1) / d
+
+print(solve(2, 1, 10, 1, -1, 2))        # (4.0, 2.0)</code></pre>
+  <div class="out"><b>要点</b> 移项就是"两边同时做同一件事"</div>
+</div>
+
+<div class="box warn">
+  <span class="lb">最容易错的两点：</span><br>
+  <b>① 除数为 0 要单独判断</b>——二元一次方程组的系数行列式 <code class="inline">d = a₁b₂ − a₂b₁</code> 等于 0 时，<b>方程组无解或有无穷多解</b>，不能直接除。<br>
+  <b>② 整数除法会把答案抹掉小数</b>——Python 写 <code class="inline">/</code> 得小数，写 <code class="inline">//</code> 才是整除；解方程默认用小数。<br>
+  <b>打个比方：</b>解方程就像"把未知数一个人留在等号左边"，移项、合并、约分，每一步都要两边同样对待。
+</div>
+
+<div class="box info">
+  <span class="lb">真题里怎么考（2026 年 6 月 / 9 月 · C++ 八级）：</span><br>
+  八级的几何题几乎都是"<b>先列式、再算数</b>"：给出三角形三个顶点坐标求面积，先用坐标算边长、再代入公式；给出一条边和一个角，往往要先解方程求出另一条边。<br>
+  <b>所以方程不是单独一道题，而是后面所有几何题的"第一步"。</b>
+</div>
+
+<h3 id="s6-2">6.2 二元一次方程组：代入或消元</h3>
+
+<div class="box remember">
+  <span class="lb">两种解法，程序里都能写：</span><br>
+  <b>代入法</b>——从一个式子里解出一个未知数，代进另一个式子；<br>
+  <b>消元法</b>——把两式相加或相减，消掉一个未知数。<br>
+  <b>写程序时更省事的是"公式法"</b>：直接算出系数行列式 <code class="inline">d = a₁b₂ − a₂b₁</code>，再按公式求 x、y（见上面的代码）。
+</div>
+
+<div class="section-header" id="s7">
+  <h2>7　代码实战</h2>
+  <div class="en-title">Level Practice</div>
+</div>
+
+<div class="level-card">
+  <div class="lc-head"><span class="n">关卡</span><h4>矩形仪式</h4><span class="go">进入关卡 →</span></div>
+  <div class="lc-body">
+    <div class="story">
+      <b>故事：</b>机关室中央有一块方形地砖，上面写着：<b>给出两条边，算出面积。</b><br>
+      你随手一乘，地砖毫无反应。<br>
+      贺舒曼说：看清楚了——<b>它要的是一个函数，不是一个数。</b>
+      你得把"怎么算"封装起来。
+    </div>
+    
+    <p><strong>思路：</strong>定义一个函数，接收两条边、返回面积。主程序只要调用它。
+  <figure class="pic ai-added"><img src="../assets/illustrations/py-L8-05-02_linear_equation.webp" alt="AI配图：py-L8-05-02_linear_equation.webp"></figure>
+    <b>把公式封装成函数，是用好几何公式的第一步。</b></p><figure class="pic">
+      <img src="../assets/stages/py-L8-05-stage1_rect_ritual.webp" alt="矩形仪式 关卡截图"
+           onerror="this.closest('.pic').classList.add('missing')">
+      <div class="ph">
+        <div class="fn">assets/stages/py-L8-05-stage1_rect_ritual.webp</div>
+        <div class="ds">【关卡截图位】请把《矩形仪式》的游戏画面截图放到此处（放入 assets/stages/ 目录，文件名为 py-L8-05-stage1_rect_ritual.webp）。</div>
+      </div>
+      <figcaption>关卡实况：矩形仪式</figcaption>
+    </figure>
+    <div class="code-card">
+      <div class="code-head">
+        <span class="dot d1"></span><span class="dot d2"></span><span class="dot d3"></span>
+        <span class="file">重点示例：把公式封装成函数</span>
+        <span class="lang">Python</span>
+      </div>
+      <pre><code>def area(sideA, sideB):
+    # 返回两条边围成的矩形面积
+    return sideA * sideB
+
+def perimeter(sideA, sideB):
+    # 返回矩形周长
+    return 2 * (sideA + sideB)
+
+print(area(5, 3))            # 15
+print(perimeter(5, 3))       # 16</code></pre>
+      <div class="out"><b>要点</b>　函数名说明"算的是什么"；公式写在里面，调用处只关心结果</div>
+    </div>
+    <div class="box info">
+      <span class="lb">为什么要封装？</span>
+      因为几何题里同一个公式往往要用好几次。<br>
+      <strong>写成函数之后，改公式只需改一处；调用处也不必关心细节。</strong><br>
+      <b>而且函数名本身就像"注释"，让代码一眼看懂。</b>
+    </div>
+    <a class="btn-go" href="https://codecombat.cn/" target="_blank" rel="noopener">去扣哒世界闯这一关 →</a>
+  </div>
+</div>
+
+<div class="level-card">
+  <div class="lc-head"><span class="n">关卡</span><h4>雪人面积</h4><span class="go">进入关卡 →</span></div>
+  <div class="lc-body">
+    <div class="story">
+      <b>故事：</b>雪人用雪球垒了三个圆，要求你算出总面积，
+      <b>算对了它才肯让路。</b><br>
+      圆的面积是 π 乘半径的平方。贺舒曼提醒，
+      <b>注意是半径的平方，不是直径，也不是乘 2。</b>
+    </div>
+    <div class="code-card">
+      <div class="code-head">
+        <span class="dot d1"></span><span class="dot d2"></span><span class="dot d3"></span>
+        <span class="file">重点示例：圆的面积</span>
+        <span class="lang">Python</span>
+      </div>
+      <pre><code>import math
+
+radius = 5
+area = math.pi * radius * radius     # π r²
+print(round(area, 2))                # 78.54
+
+# 也可以用平方写法
+area2 = math.pi * (radius ** 2)</code></pre>
+      <div class="out"><b>要点</b>　<code>math.pi * r * r</code> 或 <code>math.pi * r ** 2</code> 都行；别写成 <code>2 * math.pi * r</code>（那是周长）</div>
+    </div>
+    <div class="box warn">
+      <span class="lb">最经典的一个错：</span>
+      <strong>把 <code class="inline">πr²</code> 写成 <code class="inline">(πr)²</code> 或 <code class="inline">2πr</code>。</strong><br>
+      · <code class="inline">2πr</code> 是<b>周长</b>；<br>
+      · <code class="inline">(πr)²</code> 就更离谱了，等于 π²r²；<br>
+      · 正确的是 <code class="inline">π × (r²)</code>——<b>先算平方，再乘 π</b>。<br>
+      <b>建议写成 <code class="inline">math.pi * r * r</code>，一眼就能看出是"平方"。</b>
+    </div>
+    <a class="btn-go" href="https://codecombat.cn/" target="_blank" rel="noopener">去扣哒世界闯这一关 →</a>
+  </div>
+</div>
+
+
+
+<div class="section-header" id="s8">
+  <h2>8　常见陷阱</h2>
+  <div class="en-title">Common Pitfalls</div>
+</div>
+
+<div class="cast duck">
+  <img class="ava" src="../assets/ducks/duck_house.png" alt="扣哒鸭" onerror="this.style.display='none'">
+  <div class="bubble">
+    <div class="who">扣哒鸭 · 调试官</div>
+    几何的错，一半是公式记混，一半是精度没处理。四条，条条都能让答案差得离谱。
+  </div>
+</div>
+
+<div class="pit">
+  <div class="pt">
+    <div class="x">1</div>
+    <div class="t"><b>把周长公式当面积用。</b>圆面积写成 <code class="inline">2 * math.pi * r</code>。</div>
+  </div>
+  <div class="duck">
+    <img src="../assets/ducks/duck_zana.webp" alt="扣哒鸭" onerror="this.style.display='none'">
+    <div class="dt"><b>扣哒鸭：</b><code>2 * pi * r</code> 是<b>周长</b>；面积是 <code>pi * r * r</code>。<br>
+    <strong>记法：面积量的是"面"，所以要乘两次半径。</strong></div>
+  </div>
+  <div class="fix"><b>正确写法：</b><code class="inline">math.pi * r * r</code></div>
+</div>
+
+<div class="pit">
+  <div class="pt">
+    <div class="x">2</div>
+    <div class="t"><b>用 <code class="inline">/</code> 做几何计算，结果带长小数。</b></div>
+  </div>
+  <div class="duck">
+    <img src="../assets/ducks/duck_naria.webp" alt="扣哒鸭" onerror="this.style.display='none'">
+    <div class="dt"><b>扣哒鸭：</b>几何量本来就可能不是整数，<code>/</code> 是正确的选择。<br>
+    <strong>但如果题目要求"输出整数"，就得用 <code>//</code> 或者 <code>round()</code>/<code>int()</code> 转换——看清要求再写。</strong></div>
+  </div>
+  <div class="fix"><b>正确做法：</b>按题目要求决定用 <code class="inline">/</code> 还是取整</div>
+</div>
+
+<div class="pit">
+  <div class="pt">
+    <div class="x">3</div>
+    <div class="t"><b>两个浮点数直接用 <code class="inline">==</code> 比较。</b></div>
+  </div>
+  <div class="duck">
+    <img src="../assets/ducks/duck_hattori.webp" alt="扣哒鸭" onerror="this.style.display='none'">
+    <div class="dt"><b>扣哒鸭：</b><code>0.1 + 0.2 == 0.3</code> 居然是 <b>False</b>！<br>
+    <strong>浮点数比较要写 <code>abs(a - b) &lt; 1e-9</code>。</strong></div>
+  </div>
+  <div class="fix"><b>正确写法：</b><code class="inline">abs(a - b) &lt; 1e-9</code></div>
+</div>
+
+<div class="pit">
+  <div class="pt">
+    <div class="x">4</div>
+    <div class="t"><b>判断"点在圆内"时先开方再比较。</b></div>
+  </div>
+  <div class="duck">
+    <img src="../assets/ducks/duck_senick.webp" alt="扣哒鸭" onerror="this.style.display='none'">
+    <div class="dt"><b>扣哒鸭：</b>开方之后是小数，比较容易出错。<br>
+    <strong>直接比平方：<code>dx*dx + dy*dy &lt;= r*r</code>，又准又快。</strong></div>
+  </div>
+  <div class="fix"><b>正确做法：</b>比较平方，避免开方</div>
+</div>
+
+<div class="section-header" id="s9">
+  <h2>9　题目练习</h2>
+  <div class="en-title">Practice</div>
+</div>
+
+<p>前 2 题改编自 2026 年 9 月 · Python 八级 第 7、8 题，其余为原创练习题。</p>
+
+<div class="exam">
+  <div class="eh"><span class="src">改编自 2026 年 9 月 · Python 八级 · 第 7 题</span><span class="tp">单选题</span></div>
+  <div class="eb">
+    <div class="q">机关几何室里有一个长方形机关，它的<strong>长是宽的 3 倍</strong>，<strong>周长为 48</strong>。<br>这个长方形的面积是（　　）。</div>
+    <div class="opt"><i>A.</i>72　　<i>B.</i>96　　<i>C.</i>108　　<i>D.</i>144</div>
+    <details><summary>查看答案与详解</summary>
+      <div class="ans"><b>答案：C</b>。这是一道"<strong>先列方程、再算几何量</strong>"的题：<br>设宽为 <code class="inline">x</code>，则长为 <code class="inline">3x</code>，由周长公式 <code class="inline">2 × (长 + 宽) = 48</code> 得：<br><code class="inline">2 × (3x + x) = 48</code> → <code class="inline">8x = 48</code> → <code class="inline">x = 6</code>。<br>所以宽 6、长 18，面积 = 6 × 18 = <b>108</b>。<br><b>八级的常见套路：</b>几何量（长宽、边长）常常不是直接给的，而是要用<strong>一元一次方程</strong>解出来 ——这正是本单元"代数与计算几何"连在一起考的原因。<br><b>检查：</b>6 + 18 = 24，24 × 2 = 48 ✓ 周长对上了再往下算面积。<br><span class="tagline">对应小节</span>6.1 一元一次方程。</div>
+    </details>
+  </div>
+</div>
+<div class="exam">
+  <div class="eh"><span class="src">改编自 2026 年 9 月 · Python 八级 · 第 8 题</span><span class="tp">单选题</span></div>
+  <div class="eb">
+    <div class="q">若 <code class="inline">x + y = 7</code>，<code class="inline">x − y = 1</code>，则 <code class="inline">x × y</code> 的值为（　　）。</div>
+    <div class="opt"><i>A.</i>7　　<i>B.</i>8　　<i>C.</i>10　　<i>D.</i>12</div>
+    <details><summary>查看答案与详解</summary>
+      <div class="ans"><b>答案：D</b>。这是最简单的<strong>二元一次方程组</strong>，用"消元法"两步就出来：<br>① 两式<strong>相加</strong>消掉 y：<code class="inline">(x + y) + (x − y) = 7 + 1</code> → <code class="inline">2x = 8</code> → <code class="inline">x = 4</code>；<br>② 把 x = 4 代回第一式：<code class="inline">4 + y = 7</code> → <code class="inline">y = 3</code>。<br>所以 <code class="inline">x × y = 4 × 3 = 12</code>。<br><b>为什么"相加"能消元？</b>因为两个式子里 y 的系数正好是 +1 和 −1，相加后互相抵消 —— 这就是<strong>系数互为相反数时用加法消元</strong>；如果系数相同，就改用减法。<br><b>写完必验：</b>4 + 3 = 7 ✓、4 − 3 = 1 ✓，两个式子都成立才算对。<br><span class="tagline">对应小节</span>6.2 二元一次方程组。</div>
+    </details>
+  </div>
+</div>
+<div class="exam">
+  <div class="eh"><span class="src ori">原创练习题</span><span class="tp">单选题</span></div>
+  <div class="eb">
+    <div class="q">半径为 3 的圆，面积是（　　）。（π 取 3.14）</div>
+    <div class="opt"><i>A.</i>18.84　　<i>B.</i>28.26　　<i>C.</i>9.42　　<i>D.</i>6.28</div>
+    <details><summary>查看答案与详解</summary>
+      <div class="ans"><b>答案：B</b>。圆面积 = πr² = 3.14 × 3 × 3 = <b>28.26</b>。<br>
+      <b>易错点：</b>A 项 18.84 = 2 × 3.14 × 3，那是<b>周长</b>；D 项 6.28 = 2 × 3.14，算错了次数。<br>
+      <span class="tagline">对应小节</span>3 周长与面积。</div>
+    </details>
+  </div>
+</div>
+
+<div class="exam">
+  <div class="eh"><span class="src ori">原创练习题</span><span class="tp">单选题</span></div>
+  <div class="eb">
+    <div class="q">长方形的长是 8、宽是 5，它的周长和面积分别是（　　）。</div>
+    <div class="opt">
+      <i>A.</i>13 和 40　　<i>B.</i>26 和 40　　<i>C.</i>40 和 26　　<i>D.</i>26 和 13
+    </div>
+    <details><summary>查看答案与详解</summary>
+      <div class="ans"><b>答案：B</b>。周长 = 2 × (8 + 5) = <b>26</b>；面积 = 8 × 5 = <b>40</b>。<br>
+      <b>易错点：</b>A 项 13 是"长+宽"，忘了乘 2；C 项把两者写反了。<br>
+      <span class="tagline">对应小节</span>3 周长与面积。</div>
+    </details>
+  </div>
+</div>
+
+<div class="exam">
+  <div class="eh"><span class="src ori">原创练习题</span><span class="tp">判断题</span></div>
+  <div class="eb">
+    <div class="q">在 Python 中，<code class="inline">0.1 + 0.2 == 0.3</code> 的结果是 True。（　　）</div>
+    <details><summary>查看答案与详解</summary>
+      <div class="ans"><b>答案：错误（×）</b>。由于浮点数的存储方式，
+      <code class="inline">0.1 + 0.2</code> 得到的是 <code class="inline">0.30000000000000004</code>，<b>并不等于 0.3</b>。<br>
+      <b>正确写法：</b><code class="inline">abs(0.1 + 0.2 - 0.3) &lt; 1e-9</code>。<br>
+      <span class="tagline">对应小节</span>5 精度问题。</div>
+    </details>
+  </div>
+</div>
+
+<div class="exam">
+  <div class="eh"><span class="src ori">原创练习题</span><span class="tp">单选题</span></div>
+  <div class="eb">
+    <div class="q">三角形三边为 6、8、10，它的面积是（　　）。</div>
+    <div class="opt"><i>A.</i>24　　<i>B.</i>48　　<i>C.</i>30　　<i>D.</i>12</div>
+    <details><summary>查看答案与详解</summary>
+      <div class="ans"><b>答案：A</b>。用海伦公式：半周长 p = (6+8+10)/2 = 12，<br>
+      面积 = √(12 × 6 × 4 × 2) = √576 = <b>24</b>。<br>
+      <b>更快的方法：</b>6、8、10 是直角三角形（6² + 8² = 10²），所以面积 = 6 × 8 ÷ 2 = <b>24</b>。<br>
+      <span class="tagline">对应小节</span>3 周长与面积。</div>
+    </details>
+  </div>
+</div>
+
+<div class="exam">
+  <div class="eh"><span class="src ori">原创练习题</span><span class="tp">判断题</span></div>
+  <div class="eb">
+    <div class="q">判断点 (3, 4) 是否在以原点为圆心、半径 5 的圆内，可以比较
+    <code class="inline">3*3 + 4*4</code> 与 <code class="inline">5*5</code> 的大小，而不必开方。（　　）</div>
+    <details><summary>查看答案与详解</summary>
+      <div class="ans"><b>答案：正确（√）</b>。因为开方是单调运算，
+      <b>距离 ≤ 半径 等价于 距离² ≤ 半径²</b>。<br>
+      本题：3² + 4² = 25 = 5²，所以点正好<b>落在圆上</b>（属于"圆内"的边界情况）。<br>
+      <b>用平方比较，既快又避免小数误差。</b><br>
+      <span class="tagline">对应小节</span>4 判断点在哪一侧。</div>
+    </details>
+  </div>
+</div>
+
+<div class="exam">
+  <div class="eh"><span class="src ori">原创练习题</span><span class="tp">单选题</span></div>
+  <div class="eb">
+    <div class="q">半径为 2 的圆，它的周长与面积分别是（　　）。（π 取 3.14，保留 1 位小数）</div>
+    <div class="opt">
+      <i>A.</i>12.6 和 12.6　　<i>B.</i>12.6 和 6.3　　<i>C.</i>6.3 和 12.6　　<i>D.</i>25.1 和 12.6
+    </div>
+    <details><summary>查看答案与详解</summary>
+      <div class="ans"><b>答案：A</b>。周长 = 2πr = 2 × 3.14 × 2 = 12.56 ≈ <b>12.6</b>；<br>
+      面积 = πr² = 3.14 × 2 × 2 = 12.56 ≈ <b>12.6</b>。<br>
+      <b>有趣之处：</b>当 r = 2 时，周长 2πr = 4π，面积 πr² = 4π——<b>两者数值恰好相等</b>。<br>
+      <b>但这只是巧合！</b>r = 3 时周长 ≈ 18.8、面积 ≈ 28.3，完全不同了。<br>
+      <b>所以千万别用这个特例去记公式。</b><br>
+      <span class="tagline">对应小节</span>3 周长与面积。</div>
+    </details>
+  </div>
+</div>
+
+<div class="exam">
+  <div class="eh"><span class="src ori">原创练习题</span><span class="tp">编程题</span></div>
+  <div class="eb">
+    <div class="q">题目要求：定义函数计算圆、矩形、三角形的周长与面积，
+    并输出半径为 5 的圆、边长 4×6 的矩形、底 8 高 3 的三角形的各项结果（保留 2 位小数）。</div>
+    <details><summary>查看参考答案与要点</summary>
+      <div class="ans">
+<pre style="margin:0;background:#241d10;color:#e3d6b4;border-radius:10px;padding:14px 16px">import math
+
+def circle(r):
+    return round(2 * math.pi * r, 2), round(math.pi * r * r, 2)
+
+def rect(w, h):
+    return round(2 * (w + h), 2), round(w * h, 2)
+
+def triangle(base, height):
+    # 只有面积需要底和高；周长需要三边，这里只返回面积
+    return round(base * height / 2, 2)
+
+cPerimeter, cArea = circle(5)
+print("圆：周长", cPerimeter, "面积", cArea)
+
+rPerimeter, rArea = rect(4, 6)
+print("矩形：周长", rPerimeter, "面积", rArea)
+
+print("三角形面积：", triangle(8, 3))</pre>
+      <p style="margin-top:12px"><b>输出：</b>圆 周长 31.42 面积 78.54；矩形 周长 20 面积 24；三角形面积 12.0<br>
+      <b>要点：</b><br>
+      ① 圆周长 = 2πr，圆面积 = πr²——<b>两者都要用到 π，别混</b>；<br>
+      ② 矩形的两个公式都用到"长和宽"，但一个乘 2、一个是乘积；<br>
+      ③ 三角形面积别忘了 <code class="inline">/ 2</code>；<br>
+      ④ 用 <code class="inline">round(x, 2)</code> 控制输出精度，避免出现一长串小数。<br>
+      <span class="tagline">对应小节</span>3 周长与面积；6 代码实战。</p>
+      </div>
+    </details>
+  </div>
+</div>
+
+<div class="section-header" id="s10">
+  <h2>10　本单元小结</h2>
+  <div class="en-title">Unit Summary</div>
+</div>
+
+<div class="cast teacher">
+  <img class="ava" src="../assets/avatars/hushbaum.webp" alt="贺舒曼" onerror="this.style.display='none'">
+  <div class="bubble">
+    <div class="who">贺舒曼 · 镜中先知</div>
+    三句话记住计算几何：<br>
+    <strong>一、距离 √(dx²+dy²)；矩形 2(w+h) 与 w×h；圆 2πr 与 πr²；三角形要除以 2。</strong><br>
+    <strong>二、判断"在内"用比较平方，别开方。</strong><br>
+    <strong>三、浮点数不能用 == 比较，要写成 abs(a-b) &lt; 1e-9。</strong><br>
+    还有个好习惯：<b>把公式封成函数，名字写清楚——以后就不会记混了。</b>
+  </div>
+</div>
+
+<div class="summary">
+  <h3>你在机关几何室收获了什么</h3>
+  <ul>
+    <li><strong>两点距离</strong>——<code class="inline">math.sqrt(dx*dx + dy*dy)</code>；只比远近时用距离平方。</li>
+    <li><strong>曼哈顿距离</strong>——<code class="inline">|dx| + |dy|</code>，适用于只能横竖走的情况。</li>
+    <li><strong>矩形</strong>——周长 <code class="inline">2(w+h)</code>，面积 <code class="inline">w×h</code>。</li>
+    <li><strong>三角形</strong>——面积 = 底 × 高 ÷ 2；只知道三边就用海伦公式。</li>
+    <li><strong>圆</strong>——周长 <code class="inline">2πr</code>，面积 <code class="inline">πr²</code>；别把两者写反。</li>
+    <li><strong>包含判断</strong>——矩形用区间比较，圆用"距离平方 ≤ 半径平方"。</li>
+    <li><strong>精度处理</strong>——浮点数比较用 <code class="inline">abs(a-b) &lt; 1e-9</code>；输出用 <code class="inline">round()</code>。</li>
+    <li><strong>封装公式</strong>——把每个公式写成函数，名字表明含义。</li>
+  </ul>
+</div>
+
+<div class="pager">
+  <a href="py-8-04.html"><div class="k">← 上一单元</div><div class="v">跃迁阶梯 · 倍增思想</div></a>
+  <a href="../index.html" target="_top" class="back"><div class="k">返回</div><div class="v">考纲之路 · 总目录</div></a>
+  <a href="py-8-06.html"><div class="k">下一单元 →</div><div class="v">王国交通网 · 树与图的进阶应用</div></a>
+</div>
+
+<div class="cta">
+  <h3>下一站：王国交通网</h3>
+  <p>王国的道路连成一张大网：<b>城与城之间有路相连，有的还绕成了圈。</b>
+  怎么规划才能让所有城都通、又不多修一条路？下一单元，我们聊树与图的进阶应用。</p>
+  <a class="btn-go" href="https://codecombat.cn/" target="_blank" rel="noopener">加入扣哒世界，把这条考纲之路走一遍 →</a>
+</div>
+</div><!-- /container -->
+</div><!-- /page -->
+
+<script>
+const KEYWORDS = new Set(("while for if elif else break continue def return pass not and or in is None True False " +
+  "int float bool str list dict tuple set input print range len abs max min round pow import math random chr ord bin hex oct sum append copy keys values items").split(" "));
+
+function esc(s){ return s.replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;'); }
+
+function highlight(src){
+  let out = '', i = 0;
+  const n = src.length;
+  while (i < n){
+    const c = src[i];
+    if (c === '#'){
+      let j = src.indexOf('\n', i); if (j < 0) j = n;
+      out += '<span class="cm">' + esc(src.slice(i, j)) + '</span>';
+      i = j; continue;
+    }
+    if (c === '"' || c === "'"){
+      let j = i + 1;
+      while (j < n && src[j] !== c){ if (src[j] === '\\') j++; j++; }
+      j = Math.min(j + 1, n);
+      out += '<span class="st">' + esc(src.slice(i, j)) + '</span>';
+      i = j; continue;
+    }
+    if (/[0-9]/.test(c)){
+      let j = i;
+      while (j < n && /[0-9.]/.test(src[j])) j++;
+      out += '<span class="nu">' + esc(src.slice(i, j)) + '</span>';
+      i = j; continue;
+    }
+    if (/[A-Za-z_]/.test(c)){
+      let j = i;
+      while (j < n && /[A-Za-z0-9_]/.test(src[j])) j++;
+      const w = src.slice(i, j);
+      if (KEYWORDS.has(w)) out += '<span class="kw">' + esc(w) + '</span>';
+      else if (src[j] === '(') out += '<span class="fn">' + esc(w) + '</span>';
+      else out += esc(w);
+      i = j; continue;
+    }
+    out += esc(c); i++;
+  }
+  return out;
+}
+
+document.querySelectorAll('.code-card pre code').forEach(block => {
+  block.innerHTML = highlight(block.textContent);
+});
+
+if (location.search.indexOf('expand') >= 0) {
+  document.querySelectorAll('details').forEach(d => d.open = true);
+}
+document.querySelectorAll('.sidebar-nav a').forEach(a => {
+  a.addEventListener('click', () => {
+    if (window.innerWidth <= 900) document.querySelector('.sidebar-nav').classList.remove('active');
+  });
+});
+</script>
+</body>
+</html>

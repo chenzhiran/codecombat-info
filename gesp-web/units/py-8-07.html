@@ -1,0 +1,980 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="copyright" content="CodeCombat Inc. codecombat.cn">
+<title>秤与沙漏 · 算法效率分析 | 扣哒考级 · GESP Python 八级</title>
+<style>
+  :root{
+    --primary:#8a6a1f; --primary-light:#c9a22f; --primary-lighter:#fbf4e2; --primary-dark:#6b5013;
+    --brand:#ff6b35; --brand-dark:#e8541f; --brand-soft:#fff3ec;
+    --night:#0f1b22; --night-2:#16323a; --gold:#f5b301;
+    --text:#22333a; --dim:#5f7276; --dim2:#8da0a3;
+    --bg:#ffffff; --bg-soft:#f6fbfa; --line:#dceceb; --sidebar:274px;
+    --code-bg:#14231f; --code-tx:#c3d6d1;
+    --code-kw:#c678dd; --code-st:#98c379; --code-nu:#d19a66; --code-cm:#68807a; --code-fn:#61afef;
+  }
+  *{margin:0;padding:0;box-sizing:border-box}
+  html{scroll-behavior:smooth}
+  body{font-family:"PingFang SC","Microsoft YaHei","Segoe UI",-apple-system,sans-serif;line-height:1.9;color:var(--text);background:var(--bg);font-size:15.5px}
+  .sidebar-nav{position:fixed;top:0;left:0;width:var(--sidebar);height:100vh;overflow-y:auto;background:linear-gradient(180deg,#0d0b07,#241d10);padding:14px 0 40px;z-index:100;border-right:3px solid var(--brand);transition:transform .3s ease}
+  .sidebar-nav::-webkit-scrollbar{width:5px}
+  .sidebar-nav::-webkit-scrollbar-thumb{background:var(--brand);border-radius:4px}
+  .sb-brand{display:flex;align-items:center;gap:10px;padding:10px 13px 12px;border-bottom:1px solid #3a2e15;margin-bottom:8px}
+  .sidebar-nav a.sb-logo{display:flex;align-items:center;justify-content:center;flex-shrink:0;padding:0;border-left:none;transition:.2s}
+  .sb-logo:hover{transform:scale(1.08)}
+  .sb-logo img{height:34px;width:34px;display:block;object-fit:contain;border-radius:8px}
+  .sb-brand b{color:#eef7f6;font-size:14px;letter-spacing:.5px;display:block;line-height:1.4}
+  .sb-brand span{color:#7ba3a6;font-size:11.5px;display:block;line-height:1.4}
+  .nav-title{color:#ffb894;font-size:12px;font-weight:800;padding:10px 18px 6px;letter-spacing:1.2px}
+  .sidebar-nav a{display:block;color:#bcd3d4;text-decoration:none;padding:6px 18px;font-size:12.5px;line-height:1.55;border-left:3px solid transparent;transition:.18s}
+  .sidebar-nav a:hover{color:#fff;background:rgba(255,107,53,.16);border-left-color:var(--brand)}
+  .sidebar-nav a.nav-section{color:#ffb894;font-weight:700;font-size:13px;margin-top:11px;padding-top:10px;border-top:1px solid #3a2e15}
+  .sidebar-nav a.nav-section:first-of-type{border-top:none;margin-top:0;padding-top:6px}
+  .sidebar-nav a.nav-sub{padding-left:30px;color:#8fabad;font-size:12px}
+  .sidebar-nav a.nav-sub:hover{color:#fff}
+  .sb-back{margin:16px 14px 0;display:block;text-align:center;padding:9px;border-radius:9px;background:#1c3940;color:#a6c0c2 !important;font-size:12px;font-weight:700;border-left:none !important}
+  .sb-back:hover{background:var(--brand) !important;color:#fff !important}
+  .nav-toggle{display:none;position:fixed;top:14px;left:14px;z-index:120;background:var(--brand);color:#fff;border:none;border-radius:9px;padding:9px 13px;font-size:15px;cursor:pointer;box-shadow:0 4px 14px rgba(0,0,0,.25)}
+  .page{margin-left:var(--sidebar)}
+  .hero{position:relative;overflow:hidden;padding:44px 52px;color:#fff;background:linear-gradient(125deg,#0b0906 0%,#2a2010 46%,#8a3a16 132%)}
+  .hero::after{content:"";position:absolute;right:-90px;top:-110px;width:400px;height:400px;border-radius:50%;background:radial-gradient(circle,rgba(245,179,1,.30),transparent 68%)}
+  .hero-top{display:flex;gap:36px;align-items:center;position:relative;z-index:2}
+  .hero-txt{flex:1;min-width:0}
+  .hero .crumb{font-size:11.5px;color:#ffb894;letter-spacing:1.5px;font-weight:700;margin-bottom:14px}
+  .hero h1{font-size:31px;font-weight:800;line-height:1.3;letter-spacing:.6px;margin-bottom:8px}
+  .hero h1 .sub{display:block;font-size:18px;font-weight:700;color:#ffd2b3;margin-top:6px;letter-spacing:.3px}
+  .hero .en{font-size:13px;color:#98b6b8;font-style:italic;margin-bottom:18px}
+  .hero .tags{display:flex;flex-wrap:wrap;gap:8px}
+  .tag{font-size:11.5px;padding:4px 12px;border-radius:20px;background:rgba(255,255,255,.12);border:1px solid rgba(255,255,255,.22);color:#e8f0f6;font-weight:600}
+  .tag.hot{background:rgba(255,107,53,.92);border-color:transparent;color:#fff}
+  .hero-card{flex-shrink:0;width:200px;text-align:center}
+  .hero-card .ava{width:148px;height:148px;border-radius:50%;object-fit:cover;object-position:top center;border:4px solid rgba(255,180,140,.6);box-shadow:0 14px 34px rgba(0,0,0,.45);background:#24344a}
+  .hero-card .nm{font-size:15px;font-weight:800;color:#fff;margin-top:10px}
+  .hero-card .ti{font-size:11.5px;color:#ffb894;margin-top:2px}
+  .container{max-width:1080px;margin:0 auto;padding:38px 52px 70px}
+  .lead{font-size:15.5px;line-height:2.05;color:#35474a;background:linear-gradient(120deg,#fff8f3,#f6fbfa);border-left:5px solid var(--brand);border-radius:0 14px 14px 0;padding:22px 26px;margin-bottom:32px}
+  .lead b{color:var(--brand-dark)}
+  .cast{display:flex;gap:16px;align-items:flex-start;border-radius:16px;padding:18px 22px;margin:24px 0}
+  .cast .ava{width:72px;height:72px;border-radius:50%;object-fit:cover;object-position:top center;flex-shrink:0;background:#e8eef5}
+  .cast .bubble{position:relative;font-size:14px;line-height:1.95;padding-top:2px;flex:1}
+  .cast .who{font-size:12px;font-weight:800;margin-bottom:5px;letter-spacing:.5px}
+  .cast.anya{background:var(--brand-soft);border:1px solid #ffdcc9}
+  .cast.anya .who{color:var(--brand-dark)}
+  .cast.anya .bubble{color:#5c4636}
+  .cast.duck{background:#fff5f5;border:1px solid #fbd5d5}
+  .cast.duck .who{color:#b91c1c}
+  .cast.duck .bubble{color:#5c4141}
+  .cast.teacher{background:linear-gradient(120deg,#f1f8f8,#ffffff);border:1px solid #d6e8e8}
+  .cast.teacher .who{color:#134e4a}
+  .cast.teacher .bubble{color:#3c5254}
+  .cast.hero{background:#f2fbf9;border:1px solid #cfe9e6}
+  .cast.hero .who{color:#0f766e}
+  .cast.hero .bubble{color:#3d5250}
+  .goal-grid{display:grid;grid-template-columns:1fr 1fr;gap:16px;margin-bottom:36px}
+  .goal{border:1px solid var(--line);border-radius:15px;padding:19px 21px;background:#fff;box-shadow:0 4px 16px rgba(14,143,134,.06)}
+  .goal h4{font-size:14px;font-weight:800;margin-bottom:11px;display:flex;align-items:center;gap:8px;color:var(--primary-dark)}
+  .goal h4 .ic{width:22px;height:22px;border-radius:7px;background:var(--primary-lighter);display:flex;align-items:center;justify-content:center;font-size:12px}
+  .goal ul{list-style:none}
+  .goal li{font-size:13.5px;color:#46585a;line-height:1.9;padding-left:18px;position:relative}
+  .goal li::before{content:"▸";position:absolute;left:0;color:var(--primary);font-weight:800}
+  .goal.syllabus li::before{content:"✓"}
+  .section-header{margin:52px 0 24px;padding-bottom:12px;border-bottom:3px solid var(--brand);display:flex;align-items:baseline;gap:14px;flex-wrap:wrap}
+  .section-header h2{font-size:22px;font-weight:800;color:var(--night);letter-spacing:.4px}
+  .section-header .en-title{font-size:12px;color:var(--dim2);font-style:italic}
+  h3{font-size:17.5px;font-weight:800;margin:34px 0 14px;color:var(--night);display:flex;align-items:center;gap:10px}
+  h3::before{content:"";width:5px;height:17px;border-radius:3px;background:var(--brand);flex-shrink:0}
+  h4{font-size:15px;font-weight:800;margin:24px 0 10px;color:#2c4a48}
+  p{margin:12px 0;color:#3d5250;line-height:2}
+  strong{color:var(--primary-dark)}
+  code.inline{background:var(--primary-lighter);color:var(--primary-dark);padding:2px 7px;border-radius:6px;font-family:"SFMono-Regular",Consolas,Menlo,monospace;font-size:.9em;font-weight:600}
+  .figure{margin:24px 0;text-align:center}
+  .figure svg.diagram{max-width:100%;height:auto;background:#fff;border:1px solid var(--line);border-radius:14px;padding:10px}
+  .figure .caption{font-size:12.5px;color:var(--dim2);margin-top:9px}
+  .pic{margin:26px 0;text-align:center}
+  .pic img{max-width:100%;border-radius:16px;box-shadow:0 10px 28px rgba(20,60,60,.15);display:block;margin:0 auto}
+  .pic figcaption{font-size:12.5px;color:var(--dim2);margin-top:9px}
+  .pic .ph{display:none}
+  .pic.missing img{display:none}
+  .pic.missing .ph{display:flex;flex-direction:column;align-items:center;justify-content:center;gap:9px;border:2px dashed #bfdcd9;border-radius:16px;background:linear-gradient(135deg,#f8fdfc,#eef8f7);padding:40px 26px;color:#6f8f90}
+  .pic.missing .ph .fn{font-family:Consolas,monospace;font-size:12.5px;color:#0e8f86;font-weight:700;word-break:break-all}
+  .pic.missing .ph .ds{font-size:12.5px;line-height:1.8;max-width:560px}
+  .box{border-radius:13px;padding:16px 20px;margin:20px 0;font-size:14px;line-height:1.95}
+  .box .lb{font-weight:800;margin-right:6px}
+  .info{background:#eef6ff;border-left:5px solid #3b82f6;color:#274768}
+  .info .lb{color:#1d4ed8}
+  .tip{background:#fff9ec;border-left:5px solid #f59e0b;color:#6b4e13}
+  .tip .lb{color:#b45309}
+  .remember{background:var(--primary-lighter);border-left:5px solid var(--primary);color:#134e4a}
+  .remember .lb{color:var(--primary-dark)}
+  .warn{background:#fef2f2;border-left:5px solid #ef4444;color:#7f2b2b}
+  .warn .lb{color:#b91c1c}
+  .code-card{margin:20px 0;border-radius:14px;overflow:hidden;box-shadow:0 10px 28px rgba(15,40,40,.20)}
+  .code-head{display:flex;align-items:center;gap:9px;background:#332a12;padding:9px 14px}
+  .code-head .dot{width:10px;height:10px;border-radius:50%}
+  .code-head .d1{background:#ff5f57}.code-head .d2{background:#febc2e}.code-head .d3{background:#28c840}
+  .code-head .file{color:#8fb0aa;font-size:11.5px;font-family:Consolas,monospace;margin-left:6px}
+  .code-head .lang{margin-left:auto;font-size:10.5px;font-weight:800;color:#0b1f1a;background:#e8c766;padding:2px 9px;border-radius:6px;letter-spacing:.4px}
+  .code-card pre{background:var(--code-bg);padding:18px 20px;overflow-x:auto;margin:0;font-family:"SFMono-Regular",Consolas,"Courier New",monospace;font-size:13.5px;line-height:1.85}
+  .code-card pre::-webkit-scrollbar{height:8px}
+  .code-card pre::-webkit-scrollbar-thumb{background:#2f4a45;border-radius:4px}
+  .code-card code{color:var(--code-tx);white-space:pre}
+  .kw{color:var(--code-kw);font-weight:600}
+  .st{color:var(--code-st)}
+  .nu{color:var(--code-nu)}
+  .cm{color:var(--code-cm);font-style:italic}
+  .fn{color:var(--code-fn)}
+  .out{background:#0e1d1a;color:#7fd6b8;font-family:Consolas,monospace;font-size:13px;padding:12px 20px;border-top:1px solid #223a35}
+  .out b{color:#c3d6d1;font-weight:600;font-size:11.5px;letter-spacing:1px}
+  table.styled{width:100%;border-collapse:collapse;margin:20px 0;font-size:13.5px;border-radius:12px;overflow:hidden;box-shadow:0 4px 16px rgba(14,143,134,.08)}
+  table.styled thead{background:var(--brand)}
+  table.styled th{color:#fff;padding:11px 14px;text-align:left;font-weight:700;font-size:13px}
+  table.styled td{padding:10px 14px;border-bottom:1px solid var(--line);color:#44585a;vertical-align:top}
+  table.styled tbody tr:nth-child(even){background:var(--bg-soft)}
+  table.styled tbody tr:last-child td{border-bottom:none}
+  .level-card{border:1px solid var(--line);border-radius:16px;overflow:hidden;margin:22px 0;box-shadow:0 6px 22px rgba(14,143,134,.08)}
+  .level-card .lc-head{background:linear-gradient(100deg,#12262c,#8a3a16);color:#fff;padding:15px 22px;display:flex;align-items:center;gap:12px;flex-wrap:wrap}
+  .level-card .lc-head .n{font-size:12px;font-weight:800;background:rgba(255,255,255,.2);padding:3px 10px;border-radius:20px}
+  .level-card .lc-head h4{margin:0;color:#fff;font-size:16px}
+  .level-card .lc-head .go{margin-left:auto;font-size:11.5px;color:#ffd2b3}
+  .level-card .lc-body{padding:20px 24px;background:#fff}
+  .level-card .story{background:#f8fcfc;border-left:4px solid #7dd3fc;border-radius:0 10px 10px 0;padding:13px 18px;margin:0 0 16px;font-size:14px;line-height:1.95;color:#3c5254}
+  .level-card .story b{color:#0369a1}
+  .btn-go{display:inline-flex;align-items:center;gap:8px;background:linear-gradient(135deg,var(--brand),var(--brand-dark));color:#fff;text-decoration:none;font-weight:800;font-size:13.5px;padding:10px 22px;border-radius:11px;box-shadow:0 8px 20px rgba(255,107,53,.32);transition:.2s}
+  .btn-go:hover{transform:translateY(-2px);box-shadow:0 12px 26px rgba(255,107,53,.42)}
+  .pit{border:1px solid #f6dede;border-radius:14px;overflow:hidden;margin:16px 0;background:#fff}
+  .pit .pt{display:flex;gap:12px;padding:14px 18px;background:#fffafa;align-items:flex-start}
+  .pit .x{width:26px;height:26px;border-radius:9px;background:#fee;color:#dc2626;display:flex;align-items:center;justify-content:center;font-weight:800;flex-shrink:0;font-size:13px}
+  .pit .t{font-size:13.5px;line-height:1.9;color:#5c4a4a;flex:1}
+  .pit .t b{color:#b91c1c}
+  .pit .duck{display:flex;gap:12px;padding:13px 18px;background:#fff5f5;border-top:1px dashed #f3d0d0;align-items:flex-start}
+  .pit .duck img{width:48px;height:48px;object-fit:contain;flex-shrink:0;margin-top:2px}
+  .pit .duck .dt{font-size:13.5px;line-height:1.9;color:#7a3b3b}
+  .pit .duck .dt b{color:#b91c1c}
+  .pit .fix{padding:12px 18px;background:#f2fbf9;border-top:1px dashed #cfe9e6;font-size:13.5px;color:#134e4a}
+  .pit .fix b{color:var(--primary-dark)}
+  .exam{border:1px solid #d8ebea;border-radius:15px;margin:16px 0;overflow:hidden;background:#fff;box-shadow:0 4px 16px rgba(30,80,80,.06)}
+  .exam .eh{display:flex;align-items:center;gap:10px;padding:11px 18px;background:linear-gradient(100deg,#eef8f7,#f8fdfc);border-bottom:1px solid #dbeceb;flex-wrap:wrap}
+  .exam .eh .src{font-size:11px;font-weight:800;color:#fff;background:#0e8f86;padding:2.5px 10px;border-radius:20px}
+  .exam .eh .src.ori{background:#0e9488}
+  .exam .eh .tp{font-size:11.5px;color:#4f7d7a;font-weight:700}
+  .exam .eb{padding:16px 20px}
+  .exam .q{font-weight:700;font-size:14px;color:#2b4042;line-height:1.9;margin-bottom:10px}
+  .exam .opt{font-size:13.5px;color:#46585a;line-height:2.05;padding-left:6px}
+  .exam .opt i{font-style:normal;font-weight:800;color:var(--primary-dark);margin-right:7px}
+  .exam pre{margin:12px 0;background:#14231f;border-radius:10px;padding:14px 16px;overflow-x:auto;font-family:Consolas,monospace;font-size:13px;line-height:1.8;color:var(--code-tx)}
+  .exam details{margin-top:10px;border-top:1px dashed var(--line);padding-top:10px}
+  .exam summary{cursor:pointer;font-size:12.5px;font-weight:800;color:#0e8f86;outline:none;user-select:none}
+  .exam details .ans{font-size:13.5px;color:#3d5250;line-height:1.95;margin-top:9px;background:var(--bg-soft);padding:13px 16px;border-radius:10px}
+  .exam details .ans b{color:var(--primary-dark)}
+  .exam details .ans .tagline{display:inline-block;font-size:11px;background:#e0f2fe;color:#0e7490;padding:1.5px 8px;border-radius:6px;font-weight:700;margin-right:6px}
+  .summary{margin:40px 0 20px;border-radius:18px;padding:26px 30px;background:linear-gradient(130deg,#fff8f3,#ffffff);border:1px solid #ffe0cf}
+  .summary h3{margin-top:0}
+  .summary ul{list-style:none;margin-top:10px}
+  .summary li{font-size:14px;line-height:2;color:#3d5250;padding-left:24px;position:relative}
+  .summary li::before{content:"◆";position:absolute;left:0;color:var(--brand);font-size:11px;top:6px}
+  .pager{display:flex;gap:14px;margin-top:30px;flex-wrap:wrap}
+  .pager a{flex:1;min-width:200px;text-decoration:none;border:1px solid var(--line);border-radius:14px;padding:16px 20px;background:#fff;transition:.2s;display:block}
+  .pager a:hover{border-color:var(--brand);box-shadow:0 10px 26px rgba(255,107,53,.14);transform:translateY(-2px)}
+  .pager a .k{font-size:11px;color:var(--dim2);font-weight:700;letter-spacing:1px}
+  .pager a .v{font-size:14px;font-weight:800;color:var(--night);margin-top:5px}
+  .pager a.back{background:var(--brand-soft);border-color:transparent;text-align:center}
+  .pager a.back .v{color:var(--brand-dark)}
+  .cta{margin-top:26px;border-radius:20px;padding:30px 34px;color:#fff;position:relative;overflow:hidden;background:linear-gradient(120deg,#12242a,#1e4a52 46%,#a8431c 132%)}
+  .cta::after{content:"";position:absolute;right:-70px;bottom:-90px;width:280px;height:280px;border-radius:50%;background:radial-gradient(circle,rgba(255,140,80,.45),transparent 68%)}
+  .cta h3{color:#fff;margin:0 0 10px;position:relative;z-index:2}
+  .cta h3::before{background:var(--brand)}
+  .cta p{color:#cfe4e2;font-size:13.5px;margin:0 0 18px;position:relative;z-index:2;max-width:640px}
+  .cta .btn-go{position:relative;z-index:2}
+  @media(max-width:900px){
+    .sidebar-nav{transform:translateX(-100%)}
+    .sidebar-nav.active{transform:translateX(0)}
+    .nav-toggle{display:block}
+    .page{margin-left:0}
+    .hero{padding:70px 22px 34px}
+    .hero-top{flex-direction:column-reverse;text-align:center}
+    .hero-card{width:auto}
+    .container{padding:26px 20px 60px}
+    .goal-grid{grid-template-columns:1fr}
+  }
+</style>
+</head>
+<body>
+
+<button class="nav-toggle" onclick="document.querySelector('.sidebar-nav').classList.toggle('active')">&#9776;</button>
+
+<nav class="sidebar-nav">
+  <div class="sb-brand">
+    <a class="sb-logo" href="https://codecombat.cn/" target="_blank" rel="noopener" title="访问 CodeCombat 扣哒世界官网">
+      <img src="../assets/logo.png" alt="CodeCombat 扣哒世界">
+    </a>
+    <div><b>秤与沙漏</b><span>寂灭王座 · Python 八级 第 7 单元</span></div>
+  </div>
+  <div class="nav-title">本单元目录</div>
+  <a href="#s0" class="nav-section">0　单元导语与目标</a>
+  <a href="#s0-1" class="nav-sub">0.1 学习目标</a>
+  <a href="#s0-2" class="nav-sub">0.2 考纲对照</a>
+  <a href="#s1" class="nav-section">1　为什么要称一称</a>
+  <a href="#s1-1" class="nav-sub">1.1 求 1 到 n 的和两种做法</a>
+  <a href="#s1-2" class="nav-sub">1.2 为什么要提前估算</a>
+  <a href="#s2" class="nav-section">2　大 O 记法</a>
+  <a href="#s2-1" class="nav-sub">2.1 为什么可以忽略常数</a>
+  <a href="#s2-2" class="nav-sub">2.2 三条化简规则</a>
+  <a href="#s3" class="nav-section">3　常见复杂度排行</a>
+  <a href="#s3-1" class="nav-sub">3.1 复杂度增长曲线</a>
+  <a href="#s3-2" class="nav-sub">3.2 一条必须记住的分界线</a>
+  <a href="#s4" class="nav-section">4　怎么快速估算</a>
+  <a href="#s4-1" class="nav-sub">4.1 三道小题辨一辨</a>
+  <a href="#s5" class="nav-section">5　数据规模对照表</a>
+  <a href="#s5-1" class="nav-sub">5.1 数据规模对照表</a>
+  <a href="#s5-2" class="nav-sub">5.2 做题的实用技巧</a>
+  <a href="#s6" class="nav-section">6　空间也要算</a>
+  <a href="#s6-1" class="nav-sub">6.1 空间也要算</a>
+  <a href="#s6-2" class="nav-sub">6.2 两个容易忽略的点</a>
+  <a href="#s7" class="nav-section">7　代码实战</a>
+  <a href="#s8" class="nav-section">8　常见陷阱</a>
+  <a href="#s9" class="nav-section">9　题目练习</a>
+  <a href="#s10" class="nav-section">10　本单元小结</a>
+  <a href="../index.html" target="_top" class="sb-back">返回考纲之路</a>
+</nav>
+
+<div class="page">
+
+<div class="hero">
+  <div class="hero-top">
+    <div class="hero-txt">
+      <div class="crumb">扣哒考级 · GESP PYTHON 八级 · 第 7 单元　|　寂灭王座 THE THRONE</div>
+      <h1>秤与沙漏
+        <span class="sub">算法效率分析</span>
+      </h1>
+      <div class="en">Algorithm Efficiency Analysis</div>
+      <div class="tags">        <span class="tag hot">考纲 · 效率分析</span>
+        <span class="tag">大 O 记法</span>
+        <span class="tag">数据规模</span>
+        <span class="tag">空间复杂度</span>
+        <span class="tag">取舍</span></div>
+    </div>
+    <div class="hero-card">
+      <img class="ava" src="../assets/avatars/hushbaum.webp" alt="贺舒曼" onerror="this.style.background='#24344a'">
+      <div class="nm">贺舒曼</div>
+      <div class="ti">镜中先知 · 你的向导</div>
+    </div>
+  </div>
+</div>
+
+<div class="container">
+
+<div class="lead">
+  王座旁的石桌上放着一杆铜秤和一只沙漏。<br>
+  守门人指着两段程序：这两段都能算出答案。<b>但一个用了一刻钟，一个只用了三息。</b><br>
+  你问怎么才能提前知道快慢。<br>
+  贺舒曼说：不用真跑。<b>数一数它要循环多少次，心里就有数了。</b>
+</div>
+
+<div class="cast teacher">
+  <img class="ava" src="../assets/avatars/hushbaum.webp" alt="贺舒曼" onerror="this.style.display='none'">
+  <div class="bubble">
+    <div class="who">贺舒曼 · 镜中先知</div>
+    我们从五级开始就在说"这个算法快、那个慢"。这一单元，<strong>把这件事讲成一套可操作的方法。</strong><br>
+    它不会教你写新算法，但会让你<strong>在动手之前就知道：这个做法，数据一大还能不能跑得动。</strong><br>
+    <b>这是八级最实用的一课。</b>
+  </div>
+</div>
+
+<figure class="pic">
+  <img src="../assets/illustrations/py-L8-07-00_scale_hourglass.webp" alt="开篇场景图：秤与沙漏的王座前厅"
+       onerror="this.closest('.pic').classList.add('missing')">
+  <div class="ph">
+    <div class="fn">assets/illustrations/py-L8-07-00_scale_hourglass.webp</div>
+    <div class="ds">【配图位】寂灭王座前的巨大前厅：一座青铜天平悬在半空，两端的托盘上各站着一名守卫，旁边立着一只和一人高的沙漏，金沙正缓缓落下；厅顶的赤金纹章把阴影投在地面上，英雄站在天平正下方仰头观察。</div>
+  </div>
+  <figcaption>图 1：寂灭王座·秤与沙漏——今天要从这里开始</figcaption>
+</figure>
+
+<div class="section-header" id="s0">
+  <h2>0　单元导语与目标</h2>
+  <div class="en-title">Unit Overview</div>
+
+<h3 id="s0-1">0.1 学习目标</h3>
+</div>
+
+<div class="goal-grid">
+  <h3 id="s0-2">0.2 考纲对照</h3>
+
+<div class="goal">
+    <h4><span class="ic">1</span>学完这个单元，你将能……</h4>
+    <ul>
+      <li>说出大 O 记法的含义</li>
+      <li>快速估算一段代码的时间复杂度</li>
+      <li>记住常见复杂度的快慢排行</li>
+      <li>根据数据规模判断算法是否可行</li>
+      <li>初步估算空间复杂度</li>
+      <li>在"更快的算法"和"更简单的写法"之间做取舍</li>
+    </ul>
+  </div>
+  <div class="goal syllabus">
+    <h4><span class="ic">2</span>对标 GESP 考纲（Python 八级）</h4>
+    <ul>
+      <li>理解时间复杂度与空间复杂度的基本概念</li>
+      <li>掌握常见复杂度量级的比较与估算方法</li>
+      <li>能根据数据规模选择合适复杂度的算法</li>
+      <li>考核目标：能分析给定程序的时间复杂度并判断是否可行</li>
+    </ul>
+  </div>
+</div>
+
+<div class="section-header" id="s1">
+  <h2>1　为什么要称一称</h2>
+  <div class="en-title">Why Measure</div>
+
+<h3 id="s1-1">1.1 求 1 到 n 的和两种做法</h3>
+</div>
+
+<p>同样一个问题，两种做法可能差<b>几千倍</b>。看一个具体例子：</p>
+
+<div class="code-card">
+  <div class="code-head">
+    <span class="dot d1"></span><span class="dot d2"></span><span class="dot d3"></span>
+    <span class="file">求 1 到 n 的和，两种做法</span>
+    <span class="lang">Python</span>
+  </div>
+  <pre><code># 做法一：循环累加
+total = 0
+for i in range(1, n + 1):
+    total = total + i
+# n = 1 亿时，要循环 1 亿次 → 大概几秒钟
+
+# 做法二：公式
+total = (1 + n) * n // 2
+# 不管 n 多大，都是一次乘除 → 瞬间完成</code></pre>
+  <div class="out"><b>差距</b>　n = 1 亿时，做法一约 100000000 次操作，做法二只有 3 次</div>
+</div>
+
+<h3 id="s1-2">1.2 为什么要提前估算</h3>
+
+<div class="box remember">
+  <span class="lb">为什么要"提前估算"？</span>
+  因为程序写完再测已经晚了——<strong>如果算法选错，数据一大就必然超时。</strong><br>
+  而估算只需要<strong>看代码结构</strong>：数一数循环嵌套的层数、看看每层大概跑多少次。<br>
+  <b>这份"心算能力"，是八级考试最看重的能力之一。</b>
+</div>
+
+<div class="section-header" id="s2">
+  <h2>2　大 O 记法</h2>
+  <div class="en-title">Big-O Notation</div>
+
+<h3 id="s2-1">2.1 为什么可以忽略常数</h3>
+</div>
+
+<p>大 O 记法只关心<strong>"随着数据量 n 变大，运算量增长得有多快"</strong>，忽略常数和低次项。</p>
+
+<div class="code-card">
+  <div class="code-head">
+    <span class="dot d1"></span><span class="dot d2"></span><span class="dot d3"></span>
+    <span class="file">为什么可以忽略常数？</span>
+    <span class="lang">Python</span>
+  </div>
+  <pre><code># 两段代码都是"循环 n 次"
+for i in range(n):
+    pass                    # 1 次操作
+
+for i in range(n):
+    a = a + 1               # 3 次操作
+    b = b * 2
+    c = c - 1
+
+# 前者 1n 次，后者 3n 次
+# 但大 O 都记作 O(n) —— 因为 n 变大时，3 这个倍数根本不算什么</code></pre>
+  <div class="out"><b>结论</b>　大 O 看的是"趋势"，不是"具体几次"</div>
+</div>
+
+<h3 id="s2-2">2.2 三条化简规则</h3>
+
+<div class="box tip">
+  <span class="lb">三条化简规则：</span><br>
+  <b>① 去掉常系数</b>：<code class="inline">3n</code> → <code class="inline">O(n)</code>；<br>
+  <b>② 只保留最高次项</b>：<code class="inline">n² + n + 5</code> → <code class="inline">O(n²)</code>；<br>
+  <b>③ 常数就是常数</b>：<code class="inline">100</code> 次操作 → <code class="inline">O(1)</code>。<br>
+  <strong>因为 n 足够大时，起决定作用的一定是增长最快的那一项。</strong>
+</div>
+
+<div class="section-header" id="s3">
+  <h2>3　常见复杂度排行</h2>
+  <div class="en-title">Complexity Ranking</div>
+</div>
+
+<h3 id="s3-1">3.1 复杂度增长曲线</h3>
+
+<figure class="figure">
+  <svg class="diagram" viewBox="0 0 860 300" role="img" aria-label="复杂度增长曲线">
+    <text x="24" y="34" font-size="14" font-weight="bold" fill="#1f2937">n 变大时，运算量增长得快不快？</text>
+
+    <line x1="80" y1="250" x2="800" y2="250" stroke="#94a3b8" stroke-width="2"/>
+    <line x1="80" y1="250" x2="80" y2="66" stroke="#94a3b8" stroke-width="2"/>
+    <text x="806" y="256" font-size="11.5" fill="#64748b">n</text>
+    <text x="66" y="60" font-size="11.5" fill="#64748b">运算量</text>
+
+    <line x1="80" y1="240" x2="800" y2="240" stroke="#c9a22f" stroke-width="2.4"/>
+    <text x="700" y="232" font-size="11.5" fill="#b8860b">O(1)　常数</text>
+
+    <path d="M80 250 Q300 236 800 214" fill="none" stroke="#a89878" stroke-width="2.4"/>
+    <text x="700" y="206" font-size="11.5" fill="#8a7b56">O(log n)</text>
+
+    <path d="M80 250 L800 140" fill="none" stroke="#8a6a1f" stroke-width="2.4"/>
+    <text x="700" y="132" font-size="11.5" fill="#6b5013">O(n)</text>
+
+    <path d="M80 250 Q400 180 800 96" fill="none" stroke="#b45309" stroke-width="2.4"/>
+    <text x="672" y="88" font-size="11.5" fill="#b45309">O(n log n)</text>
+
+    <path d="M80 250 Q500 226 640 74" fill="none" stroke="#dc2626" stroke-width="2.6"/>
+    <text x="520" y="146" font-size="11.5" fill="#dc2626">O(n²)</text>
+
+    <path d="M80 250 Q220 240 300 68" fill="none" stroke="#7f1d1d" stroke-width="2.6" stroke-dasharray="6 4"/>
+    <text x="290" y="60" font-size="11.5" fill="#7f1d1d">O(2ⁿ)　指数级</text>
+  </svg>
+  <div class="caption">图 2（SVG）：复杂度增长曲线——越往右上的越危险</div>
+</figure>
+
+<table class="styled">
+  <thead><tr><th>复杂度</th><th>名字</th><th>典型算法</th><th>n = 10 万时</th></tr></thead>
+  <tbody>
+    <tr><td><strong>O(1)</strong></td><td>常数级</td><td>数组按下标取值、哈希查找</td><td>1 次</td></tr>
+    <tr><td><strong>O(log n)</strong></td><td>对数级</td><td>二分查找、快速幂</td><td>约 17 次</td></tr>
+    <tr><td><strong>O(n)</strong></td><td>线性级</td><td>一次遍历、求和</td><td>10 万次</td></tr>
+    <tr><td><strong>O(n log n)</strong></td><td>线性对数级</td><td>归并排序、快速排序</td><td>约 170 万次</td></tr>
+    <tr><td><strong>O(n²)</strong></td><td>平方级</td><td>冒泡、选择排序、双重循环</td><td><strong>100 亿次</strong></td></tr>
+    <tr><td><strong>O(2ⁿ)</strong></td><td>指数级</td><td>枚举所有子集</td><td>天文数字</td></tr>
+  </tbody>
+</table>
+
+<h3 id="s3-2">3.2 一条必须记住的分界线</h3>
+
+<div class="box warn">
+  <span class="lb">一条必须记住的分界线：</span>
+  <strong>O(n²) 是"能不能用"的分水岭。</strong><br>
+  · n ≤ 5000 时，O(n²) 还能勉强接受；<br>
+  · n = 10 万时，O(n²) 大约需要 <b>100 亿次操作</b>——按每秒 1 亿次算，
+  要跑 <b>100 秒以上，必然超时</b>。<br>
+  <b>这时候就必须换成 O(n log n) 或 O(n)。</b>
+</div>
+
+<figure class="pic">
+  <img src="../assets/illustrations/py-L8-07-02_growth_curves.webp" alt="复杂度增长曲线"
+       onerror="this.closest('.pic').classList.add('missing')">
+  <div class="ph">
+    <div class="fn">assets/illustrations/py-L8-07-02_growth_curves.webp</div>
+    <div class="ds">【配图位】王座前厅里立着一座巨大的天平，两侧托盘分别堆着发光的石珠：左边几颗、右边堆成小山；天平旁的石壁上刻着几条上升的曲线，最陡的那条被标红；一名学徒指着曲线比较两条路线的代价。</div>
+  </div>
+  <figcaption>图 3：越往右上越危险</figcaption>
+</figure>
+
+<div class="section-header" id="s4">
+  <h2>4　怎么快速估算</h2>
+  <div class="en-title">How to Estimate</div>
+
+<h3 id="s4-1">4.1 三道小题辨一辨</h3>
+</div>
+
+<table class="styled">
+  <thead><tr><th>代码长什么样</th><th>复杂度</th><th>怎么看</th></tr></thead>
+  <tbody>
+    <tr><td>没有循环，几行语句</td><td>O(1)</td><td>不管 n 多大，都是固定的几步</td></tr>
+    <tr><td>一层循环，跑 n 次</td><td>O(n)</td><td>数一层</td></tr>
+    <tr><td>两层嵌套循环，各 n 次</td><td>O(n²)</td><td>数两层</td></tr>
+    <tr><td>三层嵌套</td><td>O(n³)</td><td>数三层</td></tr>
+    <tr><td>循环里每次都<b>减半</b></td><td>O(log n)</td><td>看循环变量是"除以 2"还是"减 1"</td></tr>
+    <tr><td>外层 n 次，内层 <b>log n</b> 次</td><td>O(n log n)</td><td>常见于排序</td></tr>
+    <tr><td>两层循环但<b>总数有限</b></td><td>看总次数</td><td>不能只看层数，要看真的跑多少次</td></tr>
+  </tbody>
+</table>
+
+<div class="code-card">
+  <div class="code-head">
+    <span class="dot d1"></span><span class="dot d2"></span><span class="dot d3"></span>
+    <span class="file">三道小题，辨一辨</span>
+    <span class="lang">Python</span>
+  </div>
+  <pre><code># ① 一层循环 → O(n)
+for i in range(n):
+    print(i)
+
+# ② 每次折半 → O(log n)
+i = n
+while i &gt; 0:
+    print(i)
+    i = i // 2          # 每次都除以 2
+
+# ③ 外层 n 次，内层也只跑 n 次 → O(n²)
+for i in range(n):
+    for j in range(n):
+        pass
+
+# ④ 外层 n 次，内层从 i 开始 → 总次数 n(n+1)/2 → 还是 O(n²)
+for i in range(n):
+    for j in range(i, n):
+        pass</code></pre>
+  <div class="out"><b>要点</b>　关键是<b>看总的执行次数随 n 怎么变</b>，不是机械地数循环层数</div>
+</div>
+
+<div class="section-header" id="s5">
+  <h2>5　数据规模对照表</h2>
+  <div class="en-title">Scale vs Complexity</div>
+</div>
+
+<h3 id="s5-1">5.1 数据规模对照表</h3>
+
+<figure class="figure">
+  <svg class="diagram" viewBox="0 0 860 280" role="img" aria-label="数据规模与可行算法">
+    <text x="24" y="34" font-size="14" font-weight="bold" fill="#1f2937">看到数据规模，就能反推该用哪种复杂度</text>
+
+    <rect x="50" y="58" width="370" height="200" rx="12" fill="#fbf4e2" stroke="#8a6a1f" stroke-width="1.8"/>
+    <text x="235" y="86" text-anchor="middle" font-size="12.5" fill="#6b5013" font-weight="bold">数据规模 → 可选复杂度</text>
+    <text x="76" y="120" font-family="Consolas,monospace" font-size="12" fill="#6b5013">n ≤ 20　　　→　O(2ⁿ) 也行</text>
+    <text x="76" y="150" font-family="Consolas,monospace" font-size="12" fill="#6b5013">n ≤ 5000　 →　O(n²) 勉强</text>
+    <text x="76" y="180" font-family="Consolas,monospace" font-size="12" fill="#6b5013">n ≤ 10⁶ 　 →　O(n log n) 可以</text>
+    <text x="76" y="210" font-family="Consolas,monospace" font-size="12" fill="#6b5013">n ≤ 10⁸ 　 →　只能 O(n) 或更好</text>
+    <text x="76" y="240" font-size="11.5" fill="#8a7b56">（按"每秒约 1 亿次操作"估算）</text>
+
+    <rect x="446" y="58" width="360" height="200" rx="12" fill="#241d10"/>
+    <text x="626" y="86" text-anchor="middle" font-size="12.5" fill="#e8c766">反过来用：看到规模猜算法</text>
+    <text x="470" y="120" font-family="Consolas,monospace" font-size="12" fill="#e3d6b4">n ≤ 20 → 多半是"枚举/回溯"</text>
+    <text x="470" y="150" font-family="Consolas,monospace" font-size="12" fill="#e3d6b4">n ≤ 5000 → 可能是"双重循环"</text>
+    <text x="470" y="180" font-family="Consolas,monospace" font-size="12" fill="#e3d6b4">n ≤ 10⁶ → 排序、二分、贪心</text>
+    <text x="470" y="210" font-family="Consolas,monospace" font-size="12" fill="#7fd6b8">n 很大 → 一定有一遍扫描的做法</text>
+    <text x="470" y="240" font-family="Consolas,monospace" font-size="11.5" fill="#a89878">这是做题时非常实用的"猜法"</text>
+  </svg>
+  <div class="caption">图 4（SVG）：数据规模与算法复杂度的对应关系</div>
+</figure>
+
+<h3 id="s5-2">5.2 做题的实用技巧</h3>
+
+<div class="box remember">
+  <span class="lb">做题的实用技巧：</span>
+  题目里给出的数据范围，其实是在<strong>暗示你该用什么算法</strong>。<br>
+  · 看到 n ≤ 20，八成要枚举或回溯；<br>
+  · 看到 n ≤ 10⁵，别写 O(n²)，要往 O(n log n)、O(n) 上想；<br>
+  · 看到 n ≤ 10³，O(n²) 完全够用，不用想太复杂。<br>
+  <b>先看数据范围，再想算法——能少走很多弯路。</b>
+</div>
+
+<div class="section-header" id="s6">
+  <h2>6　空间也要算</h2>
+  <div class="en-title">Space Complexity</div>
+
+<h3 id="s6-1">6.1 空间也要算</h3>
+</div>
+
+<table class="styled">
+  <thead><tr><th>写法</th><th>空间复杂度</th><th>说明</th></tr></thead>
+  <tbody>
+    <tr><td>只用了几个变量</td><td>O(1)</td><td>和 n 无关</td></tr>
+    <tr><td>开了一个长度 n 的列表</td><td>O(n)</td><td>最常见的情况</td></tr>
+    <tr><td>开了 n×n 的二维表</td><td>O(n²)</td><td>n 大时会爆内存</td></tr>
+    <tr><td>递归深度为 n</td><td>O(n)</td><td>每一层都要占栈空间</td></tr>
+    <tr><td>哈希表存 n 个元素</td><td>O(n)</td><td>用空间换时间</td></tr>
+  </tbody>
+</table>
+
+<h3 id="s6-2">6.2 两个容易忽略的点</h3>
+
+<div class="box warn">
+  <span class="lb">两个容易忽略的点：</span><br>
+  <b>① 递归也占空间</b>——递归深度 n 就要 n 份栈空间；
+  深度太大（比如 10 万层）会直接报 RecursionError。<br>
+  <b>② 二维表很占地方</b>——<code class="inline">n = 10000</code> 时，
+  <code class="inline">n × n</code> 的表有 1 亿个格子，<b>内存根本放不下。</b><br>
+  <strong>所以七级学二维 DP 时，我们才提到"滚动数组"这种省空间的技巧。</strong>
+</div>
+
+<figure class="pic">
+  <img src="../assets/illustrations/py-L8-07-03_space_cells.webp" alt="空间也要算"
+       onerror="this.closest('.pic').classList.add('missing')">
+  <div class="ph">
+    <div class="fn">assets/illustrations/py-L8-07-03_space_cells.webp</div>
+    <div class="ds">【配图位】一排整齐的石格表示内存：浅蓝的格子装着程序正在用的数据、灰色的格子空着；旁边另一方案只占用两个格子、却要反复搬运同一块石子；一名学徒在两块石板之间来回比对。</div>
+  </div>
+  <figcaption>图 5：空间也要算</figcaption>
+</figure>
+
+<div class="section-header" id="s7">
+  <h2>7　代码实战</h2>
+  <div class="en-title">Level Practice</div>
+</div>
+
+<div class="level-card">
+  <div class="lc-head"><span class="n">关卡</span><h4>炼金堆</h4><span class="go">进入关卡 →</span></div>
+  <div class="lc-body">
+    <div class="story">
+      <b>故事：</b>炼金台上堆着一摞材料，<b>顺序不能乱</b>：
+      下面的必须先处理，上面的才能拿。<br>
+      贺舒曼看了看：这不就是栈吗？<b>但你要注意一件事——
+      每一轮都从头扫一遍整摞，效率会很低。</b>
+    </div>
+    
+    <p><strong>思路：</strong>用栈来管理这摞材料，<b>每次只看栈顶</b>。
+  <figure class="pic ai-added"><img src="../assets/illustrations/py-L8-07-01_scale_and_hourglass.webp" alt="AI配图：py-L8-07-01_scale_and_hourglass.webp"></figure>
+    这样的好处是：<b>不需要每次扫描整摞，取用都是 O(1)。</b></p><figure class="pic">
+  <figure class="pic ai-added"><img src="../assets/illustrations/py-L8-07-02_complexity_growth.webp" alt="AI配图：py-L8-07-02_complexity_growth.webp"></figure>
+      <img src="../assets/stages/py-L8-07-stage1_alchemy_pile.webp" alt="炼金堆 关卡截图"
+           onerror="this.closest('.pic').classList.add('missing')">
+      <div class="ph">
+        <div class="fn">assets/stages/py-L8-07-stage1_alchemy_pile.webp</div>
+        <div class="ds">【关卡截图位】请把《炼金堆》的游戏画面截图放到此处（放入 assets/stages/ 目录，文件名为 py-L8-07-stage1_alchemy_pile.webp）。</div>
+      </div>
+      <figcaption>关卡实况：炼金堆</figcaption>
+    </figure>
+    <div class="code-card">
+      <div class="code-head">
+        <span class="dot d1"></span><span class="dot d2"></span><span class="dot d3"></span>
+        <span class="file">重点示例：只操作栈顶，效率最高</span>
+        <span class="lang">Python</span>
+      </div>
+      <pre><code>stack = []
+
+# 压入材料
+for mat in materials:
+    stack.append(mat)        # O(1)
+
+# 逐层处理（只看栈顶）
+while stack:
+    top = stack.pop()        # O(1)，不用扫描整摞
+    process(top)</code></pre>
+      <div class="out"><b>要点</b>　<code>append</code> 和 <code>pop</code> 都是 O(1)；<b>总复杂度 O(n)</b></div>
+    </div>
+    <div class="box info">
+      <span class="lb">对比一下两种写法：</span>
+      <b>写法 A（差）</b>：每一轮都从头扫描找该处理的材料 → 总共 O(n²)；<br>
+      <b>写法 B（好）</b>：用栈，每轮只动栈顶 → 总共 O(n)。<br>
+      <strong>同样一件事，选对结构，效率能差一个量级。</strong>
+      这就是"效率分析"在实战中的价值。
+    </div>
+    <a class="btn-go" href="https://codecombat.cn/" target="_blank" rel="noopener">去扣哒世界闯这一关 →</a>
+  </div>
+</div>
+
+<div class="section-header" id="s8">
+  <h2>8　常见陷阱</h2>
+  <div class="en-title">Common Pitfalls</div>
+</div>
+
+<div class="cast duck">
+  <img class="ava" src="../assets/ducks/duck_house.png" alt="扣哒鸭" onerror="this.style.display='none'">
+  <div class="bubble">
+    <div class="who">扣哒鸭 · 调试官</div>
+    复杂度估算的错，全在"数错层数"和"忽略隐藏开销"上。四条，条条都值得记。
+  </div>
+</div>
+
+<div class="pit">
+  <div class="pt">
+    <div class="x">1</div>
+    <div class="t"><b>机械地数循环层数，不看实际次数。</b></div>
+  </div>
+  <div class="duck">
+    <img src="../assets/ducks/duck_zana.webp" alt="扣哒鸭" onerror="this.style.display='none'">
+    <div class="dt"><b>扣哒鸭：</b>两层循环不一定是 O(n²)。<br>
+    比如 <code>for i in range(10): for j in range(n):</code>——
+    <strong>内层跑 n 次，但外层固定 10 次，总次数是 10n，复杂度是 O(n)。</strong><br>
+    关键是<b>算总的执行次数</b>。</div>
+  </div>
+  <div class="fix"><b>正确做法：</b>估算总操作次数随 n 的增长趋势</div>
+</div>
+
+<div class="pit">
+  <div class="pt">
+    <div class="x">2</div>
+    <div class="t"><b>忘了循环里的"隐藏循环"。</b></div>
+  </div>
+  <div class="duck">
+    <img src="../assets/ducks/duck_naria.webp" alt="扣哒鸭" onerror="this.style.display='none'">
+    <div class="dt"><b>扣哒鸭：</b><code>x in list</code> 看起来是一行，但它内部要<b>遍历整个列表</b>，
+    是 O(n)。<br>
+    <strong>写在循环里就成了 O(n²)。</strong>换成 <code>x in set</code> 才是 O(1)。</div>
+  </div>
+  <div class="fix"><b>常见陷阱：</b>列表的 <code class="inline">in</code> 是 O(n)，集合/字典的是 O(1)</div>
+</div>
+
+<div class="pit">
+  <div class="pt">
+    <div class="x">3</div>
+    <div class="t"><b>只看时间，忘了空间。</b></div>
+  </div>
+  <div class="duck">
+    <img src="../assets/ducks/duck_hattori.webp" alt="扣哒鸭" onerror="this.style.display='none'">
+    <div class="dt"><b>扣哒鸭：</b><code>n = 10 万</code> 时开一个 <code>n × n</code> 的二维表，
+    就是 <b>100 亿个格子</b>——内存直接爆掉。<br>
+    <strong>时间复杂度过了，空间可能不过。</strong></div>
+  </div>
+  <div class="fix"><b>正确做法：</b>两种复杂度都要估</div>
+</div>
+
+<div class="pit">
+  <div class="pt">
+    <div class="x">4</div>
+    <div class="t"><b>以为"跑得快"就等于"复杂度低"。</b></div>
+  </div>
+  <div class="duck">
+    <img src="../assets/ducks/duck_senick.webp" alt="扣哒鸭" onerror="this.style.display='none'">
+    <div class="dt"><b>扣哒鸭：</b>数据小的时候，O(n²) 可能比 O(n log n) 跑得还快——
+    因为后者常数大。<br>
+    <strong>但数据一大，复杂度低的必胜。</strong>
+    我们要看的是"趋势"，不是"小数据的表现"。</div>
+  </div>
+  <div class="fix"><b>正确认识：</b>复杂度衡量的是"增长趋势"</div>
+</div>
+
+<div class="section-header" id="s9">
+  <h2>9　题目练习</h2>
+  <div class="en-title">Practice</div>
+</div>
+
+<p>第 1 题改编自 2026 年 9 月 · Python 八级 第 12 题，其余为原创练习题。</p>
+
+<div class="exam">
+  <div class="eh"><span class="src">改编自 2026 年 9 月 · Python 八级 · 第 12 题</span><span class="tp">单选题</span></div>
+  <div class="eb">
+    <div class="q">把下列复杂度按<strong>渐近增长速度从慢到快</strong>排列，正确的是（　　）。</div>
+    <div class="opt"><i>A.</i>O(n²)、O(n log n)、O(n)、O(log n)<br>
+      <i>B.</i>O(log n)、O(n)、O(n²)、O(n log n)<br>
+      <i>C.</i>O(log n)、O(n)、O(n log n)、O(n²)<br>
+      <i>D.</i>O(n log n)、O(log n)、O(n)、O(n²)</div>
+    <details><summary>查看答案与详解</summary>
+      <div class="ans"><b>答案：C</b>。记住这张"速度排行榜"（n → ∞ 时）：<br><code class="inline">O(1)</code> &lt; <code class="inline">O(log n)</code> &lt; <code class="inline">O(n)</code> &lt; <code class="inline">O(n log n)</code> &lt; <code class="inline">O(n²)</code> &lt; <code class="inline">O(2ⁿ)</code> &lt; <code class="inline">O(n!)</code><br>所以题目这四个的正确顺序是 <b>log n → n → n log n → n²</b>，选 C。<br><b>怎么记最省事？</b>把 n 代几个值试一下：n = 1024 时，<code class="inline">log n = 10</code>、<code class="inline">n = 1024</code>、<code class="inline">n log n ≈ 10240</code>、<code class="inline">n² ≈ 100 万</code> —— 差距一目了然。<br><b>A、B、D 错：</b>都把某两项的顺序弄反了，最常见的是把 <code class="inline">n log n</code> 放到了 <code class="inline">n</code> 前面或后面记混。<br><b>意义：</b>看到 n 最大到 10⁵，就知道 O(n²) 会超时，必须换 O(n log n) 的算法 —— 这就是"复杂度估算"的用处。<br><span class="tagline">对应小节</span>2 增长速度的比较。</div>
+    </details>
+  </div>
+</div>
+<div class="exam">
+  <div class="eh"><span class="src ori">原创练习题</span><span class="tp">单选题</span></div>
+  <div class="eb">
+    <div class="q">下列代码段的时间复杂度是（　　）。</div>
+    <pre>for i in range(n):
+    total = total + a[i]</pre>
+    <div class="opt"><i>A.</i>O(1)　　<i>B.</i>O(log n)　　<i>C.</i>O(n)　　<i>D.</i>O(n²)</div>
+    <details><summary>查看答案与详解</summary>
+      <div class="ans"><b>答案：C</b>。一层循环，执行 n 次，<b>O(n)</b>。<br>
+      <b>记忆：</b>一层循环就是 O(n)。<br>
+      <span class="tagline">对应小节</span>4 怎么快速估算。</div>
+    </details>
+  </div>
+</div>
+
+<div class="exam">
+  <div class="eh"><span class="src ori">原创练习题</span><span class="tp">单选题</span></div>
+  <div class="eb">
+    <div class="q">下列代码段的时间复杂度是（　　）。</div>
+    <pre>i = n
+while i &gt; 0:
+    print(i)
+    i = i // 2</pre>
+    <div class="opt"><i>A.</i>O(1)　　<i>B.</i>O(log n)　　<i>C.</i>O(n)　　<i>D.</i>O(n²)</div>
+    <details><summary>查看答案与详解</summary>
+      <div class="ans"><b>答案：B</b>。每循环一次，i 就<b>除以 2</b>，<br>
+      所以循环次数约为 log₂n——这是典型的 <b>O(log n)</b>。<br>
+      <b>判断标志：</b>循环变量是"乘 2"或"除以 2"，就是对数级。<br>
+      <span class="tagline">对应小节</span>4 怎么快速估算。</div>
+    </details>
+  </div>
+</div>
+
+<div class="exam">
+  <div class="eh"><span class="src ori">原创练习题</span><span class="tp">判断题</span></div>
+  <div class="eb">
+    <div class="q">时间复杂度 O(n log n) 的算法一定比 O(n²) 的算法快。（　　）</div>
+    <details><summary>查看答案与详解</summary>
+      <div class="ans"><b>答案：错误（×）</b>。当 n 很小的时候，
+      O(n log n) 的算法因为常数较大，<b>可能反而更慢</b>。<br>
+      复杂度比较的是"<b>n 变大时的增长趋势</b>"——
+      <b>只有当 n 足够大时，O(n log n) 才必胜。</b><br>
+      <span class="tagline">对应小节</span>2 大 O 记法；8 常见陷阱。</div>
+    </details>
+  </div>
+</div>
+
+<div class="exam">
+  <div class="eh"><span class="src ori">原创练习题</span><span class="tp">单选题</span></div>
+  <div class="eb">
+    <div class="q">如果 n = 100000，下面哪种复杂度的算法最可能超时？（　　）</div>
+    <div class="opt"><i>A.</i>O(n)　　<i>B.</i>O(n log n)　　<i>C.</i>O(n²)　　<i>D.</i>O(log n)</div>
+    <details><summary>查看答案与详解</summary>
+      <div class="ans"><b>答案：C</b>。n = 10 万时，O(n²) 需要约 <b>100 亿次操作</b>，
+      按每秒 1 亿次算要 100 秒以上，<b>必然超时</b>。<br>
+      <b>其余三种都在"完全没问题"的范围内</b>（O(n) 只要 10 万次）。<br>
+      <span class="tagline">对应小节</span>3 常见复杂度排行；5 数据规模对照表。</div>
+    </details>
+  </div>
+</div>
+
+<div class="exam">
+  <div class="eh"><span class="src ori">原创练习题</span><span class="tp">判断题</span></div>
+  <div class="eb">
+    <div class="q">表达式 <code class="inline">3n² + 5n + 100</code> 的大 O 记法是 O(n²)。（　　）</div>
+    <details><summary>查看答案与详解</summary>
+      <div class="ans"><b>答案：正确（√）</b>。大 O 只保留<b>最高次项</b>，并去掉常系数。<br>
+      n 足够大时，<code class="inline">3n²</code> 会远远超过 <code class="inline">5n</code> 和 100，
+      所以是 <b>O(n²)</b>。<br>
+      <span class="tagline">对应小节</span>2 大 O 记法。</div>
+    </details>
+  </div>
+</div>
+
+<div class="exam">
+  <div class="eh"><span class="src ori">原创练习题</span><span class="tp">单选题</span></div>
+  <div class="eb">
+    <div class="q">下列代码段的时间复杂度是（　　）。</div>
+    <pre>for i in range(10):
+    for j in range(n):
+        print(i, j)</pre>
+    <div class="opt"><i>A.</i>O(1)　　<i>B.</i>O(n)　　<i>C.</i>O(n²)　　<i>D.</i>O(log n)</div>
+    <details><summary>查看答案与详解</summary>
+      <div class="ans"><b>答案：B</b>。<b>不能只看层数！</b><br>
+      外层固定 10 次，内层每次 n 次，总次数 = <b>10n</b>——<br>
+      去掉常系数后是 <b>O(n)</b>。<br>
+      <b>这是"机械数层数"最容易出错的地方。</b><br>
+      <span class="tagline">对应小节</span>4 怎么快速估算；8 常见陷阱。</div>
+    </details>
+  </div>
+</div>
+
+<div class="exam">
+  <div class="eh"><span class="src ori">原创练习题</span><span class="tp">编程题</span></div>
+  <div class="eb">
+    <div class="q">题目要求：下面这段"找重复元素"的代码是 O(n²) 的，请把它改写成 O(n) 的版本，
+    并说明优化思路。</div>
+    <pre>def hasDuplicate(a):
+    for i in range(len(a)):
+        for j in range(i + 1, len(a)):
+            if a[i] == a[j]:
+                return True
+    return False</pre>
+    <details><summary>查看参考答案与要点</summary>
+      <div class="ans">
+<pre style="margin:0;background:#241d10;color:#e3d6b4;border-radius:10px;padding:14px 16px">def hasDuplicate(a):
+    seen = set()              # 用哈希集合记录"见过的元素"
+    for x in a:
+        if x in seen:         # 集合的 in 是 O(1)
+            return True
+        seen.add(x)
+    return False
+
+# 测试
+print(hasDuplicate([1, 2, 3, 2]))    # True
+print(hasDuplicate([1, 2, 3, 4]))    # False</pre>
+      <p style="margin-top:12px"><b>优化思路：</b><br>
+      ① <b>原版的瓶颈</b>：内层用 <code class="inline">a[j]</code> 逐个比较，
+      总次数约 n²/2，是 <b>O(n²)</b>；<br>
+      ② <b>改进的关键</b>：把"找过没有"这件事从"遍历比较"换成"哈希查找"——
+      <b>集合的 <code class="inline">in</code> 是 O(1)</b>；<br>
+      ③ <b>代价</b>：多用了一个长度最多为 n 的集合，<b>空间复杂度从 O(1) 升到 O(n)</b>；<br>
+      ④ 这就是典型的<b>"用空间换时间"</b>——<b>算法优化里最常见的取舍。</b><br>
+      <span class="tagline">对应小节</span>3 常见复杂度排行；6 空间也要算。</p>
+      </div>
+    </details>
+  </div>
+</div>
+
+<div class="section-header" id="s10">
+  <h2>10　本单元小结</h2>
+  <div class="en-title">Unit Summary</div>
+</div>
+
+<div class="cast teacher">
+  <img class="ava" src="../assets/avatars/hushbaum.webp" alt="贺舒曼" onerror="this.style.display='none'">
+  <div class="bubble">
+    <div class="who">贺舒曼 · 镜中先知</div>
+    三句话记住效率分析：<br>
+    <strong>一、大 O 只看趋势：去常系数、留最高次项。</strong><br>
+    <strong>二、快慢排行：O(1) &lt; O(log n) &lt; O(n) &lt; O(n log n) &lt; O(n²) &lt; O(2ⁿ)。</strong><br>
+    <strong>三、看到数据范围就能反推该用什么算法——n ≤ 5000 可以用 O(n²)；n ≤ 10⁵ 必须 O(n log n) 或更好。</strong><br>
+    还有一句：<b>别忘了空间。二维表开大了，一样会"跑不动"。</b>
+  </div>
+</div>
+
+<div class="summary">
+  <h3>你在铜秤与沙漏前收获了什么</h3>
+  <ul>
+    <li><strong>为什么估算</strong>——算法选错，数据一大必然超时；提前看代码结构就能预判。</li>
+    <li><strong>大 O 记法</strong>——去掉常系数、只留最高次项，衡量的是增长趋势。</li>
+    <li><strong>复杂度排行</strong>——O(1) &lt; O(log n) &lt; O(n) &lt; O(n log n) &lt; O(n²) &lt; O(2ⁿ)。</li>
+    <li><strong>估算方法</strong>——数总执行次数；循环变量折半是 O(log n)；固定次数不随 n 变。</li>
+    <li><strong>分界线</strong>——O(n²) 是分水岭；n = 10 万时 O(n²) 不可行。</li>
+    <li><strong>数据规模反推</strong>——n ≤ 20 可枚举；n ≤ 5000 可 O(n²)；n ≤ 10⁵ 要 O(n log n) 以上。</li>
+    <li><strong>空间复杂度</strong>——数组 O(n)、二维表 O(n²)、递归深度 O(n)。</li>
+    <li><strong>隐藏开销</strong>——<code class="inline">in list</code> 是 O(n)，<code class="inline">in set</code> 才是 O(1)。</li>
+  </ul>
+</div>
+
+<div class="pager">
+  <a href="py-8-06.html"><div class="k">← 上一单元</div><div class="v">王国交通网 · 树与图的进阶应用</div></a>
+  <a href="../index.html" target="_top" class="back"><div class="k">返回</div><div class="v">考纲之路 · 总目录</div></a>
+  <a href="py-8-08.html"><div class="k">下一单元 →</div><div class="v">王座终试 · 综合算法优化</div></a>
+</div>
+
+<div class="cta">
+  <h3>下一站：王座终试</h3>
+  <p>最后一关了。守门人把整条考纲之路的知识全摆了上来：
+  <b>数论、进制、位运算、数据结构、搜索、动态规划、图论、几何、效率分析……</b>
+  这一关，考的正是"把它们串起来用"。</p>
+  <a class="btn-go" href="https://codecombat.cn/" target="_blank" rel="noopener">加入扣哒世界，把这条考纲之路走一遍 →</a>
+</div>
+</div><!-- /container -->
+</div><!-- /page -->
+
+<script>
+const KEYWORDS = new Set(("while for if elif else break continue def return pass not and or in is None True False " +
+  "int float bool str list dict tuple set input print range len abs max min round pow import math random chr ord bin hex oct sum append copy keys values items").split(" "));
+
+function esc(s){ return s.replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;'); }
+
+function highlight(src){
+  let out = '', i = 0;
+  const n = src.length;
+  while (i < n){
+    const c = src[i];
+    if (c === '#'){
+      let j = src.indexOf('\n', i); if (j < 0) j = n;
+      out += '<span class="cm">' + esc(src.slice(i, j)) + '</span>';
+      i = j; continue;
+    }
+    if (c === '"' || c === "'"){
+      let j = i + 1;
+      while (j < n && src[j] !== c){ if (src[j] === '\\') j++; j++; }
+      j = Math.min(j + 1, n);
+      out += '<span class="st">' + esc(src.slice(i, j)) + '</span>';
+      i = j; continue;
+    }
+    if (/[0-9]/.test(c)){
+      let j = i;
+      while (j < n && /[0-9.]/.test(src[j])) j++;
+      out += '<span class="nu">' + esc(src.slice(i, j)) + '</span>';
+      i = j; continue;
+    }
+    if (/[A-Za-z_]/.test(c)){
+      let j = i;
+      while (j < n && /[A-Za-z0-9_]/.test(src[j])) j++;
+      const w = src.slice(i, j);
+      if (KEYWORDS.has(w)) out += '<span class="kw">' + esc(w) + '</span>';
+      else if (src[j] === '(') out += '<span class="fn">' + esc(w) + '</span>';
+      else out += esc(w);
+      i = j; continue;
+    }
+    out += esc(c); i++;
+  }
+  return out;
+}
+
+document.querySelectorAll('.code-card pre code').forEach(block => {
+  block.innerHTML = highlight(block.textContent);
+});
+
+if (location.search.indexOf('expand') >= 0) {
+  document.querySelectorAll('details').forEach(d => d.open = true);
+}
+document.querySelectorAll('.sidebar-nav a').forEach(a => {
+  a.addEventListener('click', () => {
+    if (window.innerWidth <= 900) document.querySelector('.sidebar-nav').classList.remove('active');
+  });
+});
+</script>
+</body>
+</html>

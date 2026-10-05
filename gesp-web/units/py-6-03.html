@@ -1,0 +1,1251 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="copyright" content="CodeCombat Inc. codecombat.cn">
+<title>双路侦骑 · 搜索算法：DFS 与 BFS | 扣哒考级 · GESP Python 六级</title>
+<style>
+  :root{
+    --primary:#2f6fd0; --primary-light:#4f92e8; --primary-lighter:#eaf2fd; --primary-dark:#1f4f9c;
+    --brand:#ff6b35; --brand-dark:#e8541f; --brand-soft:#fff3ec;
+    --night:#0f1b22; --night-2:#16323a; --gold:#f5b301;
+    --text:#22333a; --dim:#5f7276; --dim2:#8da0a3;
+    --bg:#ffffff; --bg-soft:#f6fbfa; --line:#dceceb; --sidebar:274px;
+    --code-bg:#14231f; --code-tx:#c3d6d1;
+    --code-kw:#c678dd; --code-st:#98c379; --code-nu:#d19a66; --code-cm:#68807a; --code-fn:#61afef;
+  }
+  *{margin:0;padding:0;box-sizing:border-box}
+  html{scroll-behavior:smooth}
+  body{font-family:"PingFang SC","Microsoft YaHei","Segoe UI",-apple-system,sans-serif;line-height:1.9;color:var(--text);background:var(--bg);font-size:15.5px}
+  .sidebar-nav{position:fixed;top:0;left:0;width:var(--sidebar);height:100vh;overflow-y:auto;background:linear-gradient(180deg,#0b1524,#14294a);padding:14px 0 40px;z-index:100;border-right:3px solid var(--brand);transition:transform .3s ease}
+  .sidebar-nav::-webkit-scrollbar{width:5px}
+  .sidebar-nav::-webkit-scrollbar-thumb{background:var(--brand);border-radius:4px}
+  .sb-brand{display:flex;align-items:center;gap:10px;padding:10px 13px 12px;border-bottom:1px solid #1e3357;margin-bottom:8px}
+  .sidebar-nav a.sb-logo{display:flex;align-items:center;justify-content:center;flex-shrink:0;padding:0;border-left:none;transition:.2s}
+  .sb-logo:hover{transform:scale(1.08)}
+  .sb-logo img{height:34px;width:34px;display:block;object-fit:contain;border-radius:8px}
+  .sb-brand b{color:#eef7f6;font-size:14px;letter-spacing:.5px;display:block;line-height:1.4}
+  .sb-brand span{color:#7ba3a6;font-size:11.5px;display:block;line-height:1.4}
+  .nav-title{color:#ffb894;font-size:12px;font-weight:800;padding:10px 18px 6px;letter-spacing:1.2px}
+  .sidebar-nav a{display:block;color:#bcd3d4;text-decoration:none;padding:6px 18px;font-size:12.5px;line-height:1.55;border-left:3px solid transparent;transition:.18s}
+  .sidebar-nav a:hover{color:#fff;background:rgba(255,107,53,.16);border-left-color:var(--brand)}
+  .sidebar-nav a.nav-section{color:#ffb894;font-weight:700;font-size:13px;margin-top:11px;padding-top:10px;border-top:1px solid #1e3357}
+  .sidebar-nav a.nav-section:first-of-type{border-top:none;margin-top:0;padding-top:6px}
+  .sidebar-nav a.nav-sub{padding-left:30px;color:#8fabad;font-size:12px}
+  .sidebar-nav a.nav-sub:hover{color:#fff}
+  .sb-back{margin:16px 14px 0;display:block;text-align:center;padding:9px;border-radius:9px;background:#1c3940;color:#a6c0c2 !important;font-size:12px;font-weight:700;border-left:none !important}
+  .sb-back:hover{background:var(--brand) !important;color:#fff !important}
+  .nav-toggle{display:none;position:fixed;top:14px;left:14px;z-index:120;background:var(--brand);color:#fff;border:none;border-radius:9px;padding:9px 13px;font-size:15px;cursor:pointer;box-shadow:0 4px 14px rgba(0,0,0,.25)}
+  .page{margin-left:var(--sidebar)}
+  .hero{position:relative;overflow:hidden;padding:44px 52px;color:#fff;background:linear-gradient(125deg,#0a1220 0%,#173055 46%,#8a3a16 132%)}
+  .hero::after{content:"";position:absolute;right:-90px;top:-110px;width:400px;height:400px;border-radius:50%;background:radial-gradient(circle,rgba(245,179,1,.30),transparent 68%)}
+  .hero-top{display:flex;gap:36px;align-items:center;position:relative;z-index:2}
+  .hero-txt{flex:1;min-width:0}
+  .hero .crumb{font-size:11.5px;color:#ffb894;letter-spacing:1.5px;font-weight:700;margin-bottom:14px}
+  .hero h1{font-size:31px;font-weight:800;line-height:1.3;letter-spacing:.6px;margin-bottom:8px}
+  .hero h1 .sub{display:block;font-size:18px;font-weight:700;color:#ffd2b3;margin-top:6px;letter-spacing:.3px}
+  .hero .en{font-size:13px;color:#98b6b8;font-style:italic;margin-bottom:18px}
+  .hero .tags{display:flex;flex-wrap:wrap;gap:8px}
+  .tag{font-size:11.5px;padding:4px 12px;border-radius:20px;background:rgba(255,255,255,.12);border:1px solid rgba(255,255,255,.22);color:#e8f0f6;font-weight:600}
+  .tag.hot{background:rgba(255,107,53,.92);border-color:transparent;color:#fff}
+  .hero-card{flex-shrink:0;width:200px;text-align:center}
+  .hero-card .ava{width:148px;height:148px;border-radius:50%;object-fit:cover;object-position:top center;border:4px solid rgba(255,180,140,.6);box-shadow:0 14px 34px rgba(0,0,0,.45);background:#24344a}
+  .hero-card .nm{font-size:15px;font-weight:800;color:#fff;margin-top:10px}
+  .hero-card .ti{font-size:11.5px;color:#ffb894;margin-top:2px}
+  .container{max-width:1080px;margin:0 auto;padding:38px 52px 70px}
+  .lead{font-size:15.5px;line-height:2.05;color:#35474a;background:linear-gradient(120deg,#fff8f3,#f6fbfa);border-left:5px solid var(--brand);border-radius:0 14px 14px 0;padding:22px 26px;margin-bottom:32px}
+  .lead b{color:var(--brand-dark)}
+  .cast{display:flex;gap:16px;align-items:flex-start;border-radius:16px;padding:18px 22px;margin:24px 0}
+  .cast .ava{width:72px;height:72px;border-radius:50%;object-fit:cover;object-position:top center;flex-shrink:0;background:#e8eef5}
+  .cast .bubble{position:relative;font-size:14px;line-height:1.95;padding-top:2px;flex:1}
+  .cast .who{font-size:12px;font-weight:800;margin-bottom:5px;letter-spacing:.5px}
+  .cast.anya{background:var(--brand-soft);border:1px solid #ffdcc9}
+  .cast.anya .who{color:var(--brand-dark)}
+  .cast.anya .bubble{color:#5c4636}
+  .cast.duck{background:#fff5f5;border:1px solid #fbd5d5}
+  .cast.duck .who{color:#b91c1c}
+  .cast.duck .bubble{color:#5c4141}
+  .cast.teacher{background:linear-gradient(120deg,#f1f8f8,#ffffff);border:1px solid #d6e8e8}
+  .cast.teacher .who{color:#134e4a}
+  .cast.teacher .bubble{color:#3c5254}
+  .cast.hero{background:#f2fbf9;border:1px solid #cfe9e6}
+  .cast.hero .who{color:#0f766e}
+  .cast.hero .bubble{color:#3d5250}
+  .goal-grid{display:grid;grid-template-columns:1fr 1fr;gap:16px;margin-bottom:36px}
+  .goal{border:1px solid var(--line);border-radius:15px;padding:19px 21px;background:#fff;box-shadow:0 4px 16px rgba(14,143,134,.06)}
+  .goal h4{font-size:14px;font-weight:800;margin-bottom:11px;display:flex;align-items:center;gap:8px;color:var(--primary-dark)}
+  .goal h4 .ic{width:22px;height:22px;border-radius:7px;background:var(--primary-lighter);display:flex;align-items:center;justify-content:center;font-size:12px}
+  .goal ul{list-style:none}
+  .goal li{font-size:13.5px;color:#46585a;line-height:1.9;padding-left:18px;position:relative}
+  .goal li::before{content:"▸";position:absolute;left:0;color:var(--primary);font-weight:800}
+  .goal.syllabus li::before{content:"✓"}
+  .section-header{margin:52px 0 24px;padding-bottom:12px;border-bottom:3px solid var(--brand);display:flex;align-items:baseline;gap:14px;flex-wrap:wrap}
+  .section-header h2{font-size:22px;font-weight:800;color:var(--night);letter-spacing:.4px}
+  .section-header .en-title{font-size:12px;color:var(--dim2);font-style:italic}
+  h3{font-size:17.5px;font-weight:800;margin:34px 0 14px;color:var(--night);display:flex;align-items:center;gap:10px}
+  h3::before{content:"";width:5px;height:17px;border-radius:3px;background:var(--brand);flex-shrink:0}
+  h4{font-size:15px;font-weight:800;margin:24px 0 10px;color:#2c4a48}
+  p{margin:12px 0;color:#3d5250;line-height:2}
+  strong{color:var(--primary-dark)}
+  code.inline{background:var(--primary-lighter);color:var(--primary-dark);padding:2px 7px;border-radius:6px;font-family:"SFMono-Regular",Consolas,Menlo,monospace;font-size:.9em;font-weight:600}
+  .figure{margin:24px 0;text-align:center}
+  .figure svg.diagram{max-width:100%;height:auto;background:#fff;border:1px solid var(--line);border-radius:14px;padding:10px}
+  .figure .caption{font-size:12.5px;color:var(--dim2);margin-top:9px}
+  .pic{margin:26px 0;text-align:center}
+  .pic img{max-width:100%;border-radius:16px;box-shadow:0 10px 28px rgba(20,60,60,.15);display:block;margin:0 auto}
+  .pic figcaption{font-size:12.5px;color:var(--dim2);margin-top:9px}
+  .pic .ph{display:none}
+  .pic.missing img{display:none}
+  .pic.missing .ph{display:flex;flex-direction:column;align-items:center;justify-content:center;gap:9px;border:2px dashed #bfdcd9;border-radius:16px;background:linear-gradient(135deg,#f8fdfc,#eef8f7);padding:40px 26px;color:#6f8f90}
+  .pic.missing .ph .fn{font-family:Consolas,monospace;font-size:12.5px;color:#0e8f86;font-weight:700;word-break:break-all}
+  .pic.missing .ph .ds{font-size:12.5px;line-height:1.8;max-width:560px}
+  .box{border-radius:13px;padding:16px 20px;margin:20px 0;font-size:14px;line-height:1.95}
+  .box .lb{font-weight:800;margin-right:6px}
+  .info{background:#eef6ff;border-left:5px solid #3b82f6;color:#274768}
+  .info .lb{color:#1d4ed8}
+  .tip{background:#fff9ec;border-left:5px solid #f59e0b;color:#6b4e13}
+  .tip .lb{color:#b45309}
+  .remember{background:var(--primary-lighter);border-left:5px solid var(--primary);color:#134e4a}
+  .remember .lb{color:var(--primary-dark)}
+  .warn{background:#fef2f2;border-left:5px solid #ef4444;color:#7f2b2b}
+  .warn .lb{color:#b91c1c}
+  .code-card{margin:20px 0;border-radius:14px;overflow:hidden;box-shadow:0 10px 28px rgba(15,40,40,.20)}
+  .code-head{display:flex;align-items:center;gap:9px;background:#1d2c48;padding:9px 14px}
+  .code-head .dot{width:10px;height:10px;border-radius:50%}
+  .code-head .d1{background:#ff5f57}.code-head .d2{background:#febc2e}.code-head .d3{background:#28c840}
+  .code-head .file{color:#8fb0aa;font-size:11.5px;font-family:Consolas,monospace;margin-left:6px}
+  .code-head .lang{margin-left:auto;font-size:10.5px;font-weight:800;color:#0b1f1a;background:#7fb2f5;padding:2px 9px;border-radius:6px;letter-spacing:.4px}
+  .code-card pre{background:var(--code-bg);padding:18px 20px;overflow-x:auto;margin:0;font-family:"SFMono-Regular",Consolas,"Courier New",monospace;font-size:13.5px;line-height:1.85}
+  .code-card pre::-webkit-scrollbar{height:8px}
+  .code-card pre::-webkit-scrollbar-thumb{background:#2f4a45;border-radius:4px}
+  .code-card code{color:var(--code-tx);white-space:pre}
+  .kw{color:var(--code-kw);font-weight:600}
+  .st{color:var(--code-st)}
+  .nu{color:var(--code-nu)}
+  .cm{color:var(--code-cm);font-style:italic}
+  .fn{color:var(--code-fn)}
+  .out{background:#0e1d1a;color:#7fd6b8;font-family:Consolas,monospace;font-size:13px;padding:12px 20px;border-top:1px solid #223a35}
+  .out b{color:#c3d6d1;font-weight:600;font-size:11.5px;letter-spacing:1px}
+  table.styled{width:100%;border-collapse:collapse;margin:20px 0;font-size:13.5px;border-radius:12px;overflow:hidden;box-shadow:0 4px 16px rgba(14,143,134,.08)}
+  table.styled thead{background:var(--brand)}
+  table.styled th{color:#fff;padding:11px 14px;text-align:left;font-weight:700;font-size:13px}
+  table.styled td{padding:10px 14px;border-bottom:1px solid var(--line);color:#44585a;vertical-align:top}
+  table.styled tbody tr:nth-child(even){background:var(--bg-soft)}
+  table.styled tbody tr:last-child td{border-bottom:none}
+  .level-card{border:1px solid var(--line);border-radius:16px;overflow:hidden;margin:22px 0;box-shadow:0 6px 22px rgba(14,143,134,.08)}
+  .level-card .lc-head{background:linear-gradient(100deg,#12262c,#8a3a16);color:#fff;padding:15px 22px;display:flex;align-items:center;gap:12px;flex-wrap:wrap}
+  .level-card .lc-head .n{font-size:12px;font-weight:800;background:rgba(255,255,255,.2);padding:3px 10px;border-radius:20px}
+  .level-card .lc-head h4{margin:0;color:#fff;font-size:16px}
+  .level-card .lc-head .go{margin-left:auto;font-size:11.5px;color:#ffd2b3}
+  .level-card .lc-body{padding:20px 24px;background:#fff}
+  .level-card .story{background:#f8fcfc;border-left:4px solid #7dd3fc;border-radius:0 10px 10px 0;padding:13px 18px;margin:0 0 16px;font-size:14px;line-height:1.95;color:#3c5254}
+  .level-card .story b{color:#0369a1}
+  .btn-go{display:inline-flex;align-items:center;gap:8px;background:linear-gradient(135deg,var(--brand),var(--brand-dark));color:#fff;text-decoration:none;font-weight:800;font-size:13.5px;padding:10px 22px;border-radius:11px;box-shadow:0 8px 20px rgba(255,107,53,.32);transition:.2s}
+  .btn-go:hover{transform:translateY(-2px);box-shadow:0 12px 26px rgba(255,107,53,.42)}
+  .pit{border:1px solid #f6dede;border-radius:14px;overflow:hidden;margin:16px 0;background:#fff}
+  .pit .pt{display:flex;gap:12px;padding:14px 18px;background:#fffafa;align-items:flex-start}
+  .pit .x{width:26px;height:26px;border-radius:9px;background:#fee;color:#dc2626;display:flex;align-items:center;justify-content:center;font-weight:800;flex-shrink:0;font-size:13px}
+  .pit .t{font-size:13.5px;line-height:1.9;color:#5c4a4a;flex:1}
+  .pit .t b{color:#b91c1c}
+  .pit .duck{display:flex;gap:12px;padding:13px 18px;background:#fff5f5;border-top:1px dashed #f3d0d0;align-items:flex-start}
+  .pit .duck img{width:48px;height:48px;object-fit:contain;flex-shrink:0;margin-top:2px}
+  .pit .duck .dt{font-size:13.5px;line-height:1.9;color:#7a3b3b}
+  .pit .duck .dt b{color:#b91c1c}
+  .pit .fix{padding:12px 18px;background:#f2fbf9;border-top:1px dashed #cfe9e6;font-size:13.5px;color:#134e4a}
+  .pit .fix b{color:var(--primary-dark)}
+  .exam{border:1px solid #d8ebea;border-radius:15px;margin:16px 0;overflow:hidden;background:#fff;box-shadow:0 4px 16px rgba(30,80,80,.06)}
+  .exam .eh{display:flex;align-items:center;gap:10px;padding:11px 18px;background:linear-gradient(100deg,#eef8f7,#f8fdfc);border-bottom:1px solid #dbeceb;flex-wrap:wrap}
+  .exam .eh .src{font-size:11px;font-weight:800;color:#fff;background:#0e8f86;padding:2.5px 10px;border-radius:20px}
+  .exam .eh .src.ori{background:#0e9488}
+  .exam .eh .tp{font-size:11.5px;color:#4f7d7a;font-weight:700}
+  .exam .eb{padding:16px 20px}
+  .exam .q{font-weight:700;font-size:14px;color:#2b4042;line-height:1.9;margin-bottom:10px}
+  .exam .opt{font-size:13.5px;color:#46585a;line-height:2.05;padding-left:6px}
+  .exam .opt i{font-style:normal;font-weight:800;color:var(--primary-dark);margin-right:7px}
+  .exam pre{margin:12px 0;background:#14231f;border-radius:10px;padding:14px 16px;overflow-x:auto;font-family:Consolas,monospace;font-size:13px;line-height:1.8;color:var(--code-tx)}
+  .exam details{margin-top:10px;border-top:1px dashed var(--line);padding-top:10px}
+  .exam summary{cursor:pointer;font-size:12.5px;font-weight:800;color:#0e8f86;outline:none;user-select:none}
+  .exam details .ans{font-size:13.5px;color:#3d5250;line-height:1.95;margin-top:9px;background:var(--bg-soft);padding:13px 16px;border-radius:10px}
+  .exam details .ans b{color:var(--primary-dark)}
+  .exam details .ans .tagline{display:inline-block;font-size:11px;background:#e0f2fe;color:#0e7490;padding:1.5px 8px;border-radius:6px;font-weight:700;margin-right:6px}
+  .summary{margin:40px 0 20px;border-radius:18px;padding:26px 30px;background:linear-gradient(130deg,#fff8f3,#ffffff);border:1px solid #ffe0cf}
+  .summary h3{margin-top:0}
+  .summary ul{list-style:none;margin-top:10px}
+  .summary li{font-size:14px;line-height:2;color:#3d5250;padding-left:24px;position:relative}
+  .summary li::before{content:"◆";position:absolute;left:0;color:var(--brand);font-size:11px;top:6px}
+  .pager{display:flex;gap:14px;margin-top:30px;flex-wrap:wrap}
+  .pager a{flex:1;min-width:200px;text-decoration:none;border:1px solid var(--line);border-radius:14px;padding:16px 20px;background:#fff;transition:.2s;display:block}
+  .pager a:hover{border-color:var(--brand);box-shadow:0 10px 26px rgba(255,107,53,.14);transform:translateY(-2px)}
+  .pager a .k{font-size:11px;color:var(--dim2);font-weight:700;letter-spacing:1px}
+  .pager a .v{font-size:14px;font-weight:800;color:var(--night);margin-top:5px}
+  .pager a.back{background:var(--brand-soft);border-color:transparent;text-align:center}
+  .pager a.back .v{color:var(--brand-dark)}
+  .cta{margin-top:26px;border-radius:20px;padding:30px 34px;color:#fff;position:relative;overflow:hidden;background:linear-gradient(120deg,#12242a,#1e4a52 46%,#a8431c 132%)}
+  .cta::after{content:"";position:absolute;right:-70px;bottom:-90px;width:280px;height:280px;border-radius:50%;background:radial-gradient(circle,rgba(255,140,80,.45),transparent 68%)}
+  .cta h3{color:#fff;margin:0 0 10px;position:relative;z-index:2}
+  .cta h3::before{background:var(--brand)}
+  .cta p{color:#cfe4e2;font-size:13.5px;margin:0 0 18px;position:relative;z-index:2;max-width:640px}
+  .cta .btn-go{position:relative;z-index:2}
+  @media(max-width:900px){
+    .sidebar-nav{transform:translateX(-100%)}
+    .sidebar-nav.active{transform:translateX(0)}
+    .nav-toggle{display:block}
+    .page{margin-left:0}
+    .hero{padding:70px 22px 34px}
+    .hero-top{flex-direction:column-reverse;text-align:center}
+    .hero-card{width:auto}
+    .container{padding:26px 20px 60px}
+    .goal-grid{grid-template-columns:1fr}
+  }
+</style>
+</head>
+<body>
+
+<button class="nav-toggle" onclick="document.querySelector('.sidebar-nav').classList.toggle('active')">&#9776;</button>
+
+<nav class="sidebar-nav">
+  <div class="sb-brand">
+    <a class="sb-logo" href="https://codecombat.cn/" target="_blank" rel="noopener" title="访问 CodeCombat 扣哒世界官网">
+      <img src="../assets/logo.png" alt="CodeCombat 扣哒世界">
+    </a>
+    <div><b>双路侦骑</b><span>云髓天阶 · Python 六级 第 3 单元</span></div>
+  </div>
+  <div class="nav-title">本单元目录</div>
+
+  <a href="#s0" class="nav-section">0　单元导语与目标</a>
+  <a href="#s0-1" class="nav-sub">0.1 学习目标</a>
+  <a href="#s0-2" class="nav-sub">0.2 考纲对照</a>
+  <a href="#s1" class="nav-section">1　两条侦察路线</a>
+  <a href="#s1-1" class="nav-sub">1.1 一个往深里钻，一个往外扩</a>
+  <a href="#s1-2" class="nav-sub">1.2 它们要解决什么问题</a>
+  <a href="#s2" class="nav-section">2　DFS：一路走到黑</a>
+  <a href="#s2-1" class="nav-sub">2.1 递归实现</a>
+  <a href="#s2-2" class="nav-sub">2.2 用栈实现：先压右、后压左</a>
+  <a href="#s3" class="nav-section">3　BFS：一圈一圈往外扩</a>
+  <a href="#s3-1" class="nav-sub">3.1 用队列实现</a>
+  <a href="#s3-2" class="nav-sub">3.2 层序与"最少边数"</a>
+  <a href="#s4" class="nav-section">4　两种搜索的对比</a>
+  <a href="#s4-1" class="nav-sub">4.1 各自适合什么</a>
+  <a href="#s4-2" class="nav-sub">4.2 复杂度与空间</a>
+  <a href="#s5" class="nav-section">5　在树上搜索</a>
+  <a href="#s5-1" class="nav-sub">5.1 树的 DFS 与 BFS</a>
+  <a href="#s5-2" class="nav-sub">5.2 求深度与右视图</a>
+  <a href="#s6" class="nav-section">6　代码实战</a>
+  <a href="#s7" class="nav-section">7　常见陷阱</a>
+  <a href="#s8" class="nav-section">8　题目练习</a>
+  <a href="#s9" class="nav-section">9　本单元小结</a>
+
+  <a href="../index.html" target="_top" class="sb-back">返回考纲之路</a>
+</nav>
+
+<div class="page">
+
+<div class="hero">
+  <div class="hero-top">
+    <div class="hero-txt">
+      <div class="crumb">扣哒考级 · GESP PYTHON 六级 · 第 3 单元　|　云髓天阶 CLOUDMARROW STEPS</div>
+      <h1>双路侦骑
+        <span class="sub">搜索算法：DFS 与 BFS</span>
+      </h1>
+      <div class="en">DFS &amp; BFS</div>
+      <div class="tags">        <span class="tag hot">考纲 · 搜索</span>
+        <span class="tag">深度优先 DFS</span>
+        <span class="tag">广度优先 BFS</span>
+        <span class="tag">栈与队列</span>
+        <span class="tag">最短边数</span></div>
+    </div>
+    <div class="hero-card">
+      <img class="ava" src="../assets/avatars/hushbaum.webp" alt="贺舒曼" onerror="this.style.background='#24344a';this.src='../assets/heroes/hushbaum.webp'">
+      <div class="nm">贺舒曼</div>
+      <div class="ti">镜中先知 · 你的向导</div>
+    </div>
+  </div>
+</div>
+
+<div class="container">
+
+<div class="lead">
+  云海迷宫的入口处，站着<b>两名侦察兵</b>。<br>
+  贺舒曼把镜子一分为二，镜面里映出两条截然不同的路线——<br>
+  <b>左边那位沿窄巷一路直下，走到最底才回头；</b>
+  <b>右边那位从云台向外一圈圈扩散，探完一圈才探下一圈。</b><br>
+  你看着这两条路：<strong>……原来把一张地图走遍，可以是两种完全不同的走法。</strong>
+</div>
+
+<div class="cast hushbaum">
+  <img class="ava" src="../assets/avatars/hushbaum.webp" alt="贺舒曼" onerror="this.style.display='none'">
+  <div class="bubble">
+    <div class="who">贺舒曼 · 镜中先知</div>
+    上一课我们学会了"遍历一棵树"。<br>
+    这一课把范围放大：<strong>如果对象是一张地图、一个迷宫，怎么把它走遍？</strong><br>
+    <b>答案就是这两种搜索：DFS（深度优先）和 BFS（广度优先）。
+    它们各有各的脾气，也各有各的用处。</b>
+  </div>
+</div>
+
+<figure class="pic">
+  <img src="../assets/illustrations/py-L6-03-01_two_scouts.webp" alt="双路侦骑"
+       onerror="this.closest('.pic').classList.add('missing')">
+  <div class="ph">
+    <div class="fn">assets/illustrations/py-L6-03-01_two_scouts.webp</div>
+    <div class="ds">【配图位】云海迷宫俯瞰图：两名侦察兵从同一个入口出发——左边一人沿窄巷一路深入、留下一串笔直向下的紫色发光脚印；右边一人从入口平台向外扩散、留下浅蓝色的同心波纹；两条路径最终在迷宫中央的宝箱处交错；一名戴眼镜的先知站在入口高台上举镜观望。</div>
+  </div>
+  <figcaption>图 1：云髓天阶的双路侦骑——今天要从这里开始</figcaption>
+</figure>
+
+<!-- ============ 0 ============ -->
+<div class="section-header" id="s0">
+  <h2>0　单元导语与目标</h2>
+  <div class="en-title">Unit Overview</div>
+</div>
+
+<h3 id="s0-1">0.1 学习目标</h3>
+<div class="goal-grid">
+  <div class="goal">
+    <h4><span class="ic">1</span>学完这个单元，你将能……</h4>
+    <ul>
+      <li>说清 DFS 和 BFS 的走法区别</li>
+      <li>用递归和栈两种方式写 DFS</li>
+      <li>用队列写 BFS</li>
+      <li>说出 BFS 为什么能求"最少边数"</li>
+      <li>根据题目选对搜索方式</li>
+      <li>说出两种搜索的复杂度</li>
+    </ul>
+  </div>
+  <div class="goal syllabus">
+    <h4><span class="ic">2</span>对标 GESP 考纲（Python 六级）</h4>
+    <ul>
+      <li>理解深度优先搜索与广度优先搜索的思想</li>
+      <li>掌握用递归 / 栈实现 DFS</li>
+      <li>掌握用队列实现 BFS</li>
+      <li>理解 BFS 求最短路径（最少边数）的原理</li>
+      <li>考核目标：能判断搜索顺序、能补全压栈/入队语句</li>
+    </ul>
+  </div>
+</div>
+
+<h3 id="s0-2">0.2 考纲对照</h3>
+<table class="styled">
+  <thead><tr><th>本单元小节</th><th>对应考纲条目</th><th>真题常考形式</th></tr></thead>
+  <tbody>
+    <tr><td>1　两条侦察路线</td><td>两种搜索的思想</td><td>DFS 与 BFS 的走法区别</td></tr>
+    <tr><td>2　DFS</td><td>深度优先搜索</td><td>递归写法；栈写法里"先压谁"（必考）</td></tr>
+    <tr><td>3　BFS</td><td>广度优先搜索</td><td>用队列实现；层序与最短边数（必考）</td></tr>
+    <tr><td>4　两种搜索的对比</td><td>适用场景</td><td>什么题该用哪个</td></tr>
+    <tr><td>5　在树上搜索</td><td>树上的搜索</td><td>求深度；右视图</td></tr>
+  </tbody>
+</table>
+
+<!-- ============ 1 ============ -->
+<div class="section-header" id="s1">
+  <h2>1　两条侦察路线</h2>
+  <div class="en-title">Two Ways to Explore</div>
+</div>
+
+<h3 id="s1-1">1.1 一个往深里钻，一个往外扩</h3>
+
+<div class="box remember">
+  <span class="lb">两种搜索，一句话说清区别：</span>
+  <b>DFS（深度优先搜索，Depth-First Search）</b>——
+  <strong>沿着一条路一直往下走，走不通了才回头，回到上一个岔口换一条路。</strong><br>
+  <b>BFS（广度优先搜索，Breadth-First Search）</b>——
+  <strong>先把"离起点一步能到的地方"全部走完，再走"两步能到的"，一圈圈往外扩。</strong><br>
+  <b>打个比方：</b><strong>DFS 像一个人走迷宫——一头扎进去，撞墙了才退回来。</strong>
+  <b>BFS 像往水里丢石子——波纹一圈套一圈，均匀地向外扩散。</b>
+</div>
+
+<div class="code-card">
+  <div class="code-head">
+    <span class="dot d1"></span><span class="dot d2"></span><span class="dot d3"></span>
+    <span class="file">同一张地图，两条路线的顺序完全不同</span>
+    <span class="lang">TEXT</span>
+  </div>
+  <pre><code>地图（起点是 A）：
+   A
+  / \
+ B   C
+/ \   \
+D E   F
+
+【DFS 的顺序】一路走到黑
+   A → B → D → （D 没有下一步，退回 B）
+     → E → （E 没有下一步，退回 B，B 也没了，退回 A）
+     → C → F
+   结果：A B D E C F
+
+【BFS 的顺序】一圈圈往外
+   第 0 圈：A
+   第 1 圈：B、C
+   第 2 圈：D、E、F
+   结果：A B C D E F
+
+★ 注意两者"访问顺序"的差别：
+   DFS 把 A 的一整支子树走完了，才回到 A 的第二个孩子；
+   BFS 则是"同一层的，先一起走完"。
+</code></pre>
+  <div class="out"><b>一句话区分</b>　
+  <b>DFS：<b>竖着</b>走（先把一条路走到底）；BFS：<b>横着</b>走（先把一层走完）</b></div>
+</div>
+
+<h3 id="s1-2">1.2 它们要解决什么问题</h3>
+
+<div class="box remember">
+  <span class="lb">两种搜索，各自擅长什么：</span>
+  <b>DFS 适合：</b><br>
+  · <strong>问"有没有一条路能到"</strong>（连通性判断）；<br>
+  · <strong>列举所有可能的方案</strong>（比如全排列、走迷宫的所有走法等）；<br>
+  · <strong>和递归结构天然契合的问题</strong>（树、图、回溯）。<br>
+  <b>BFS 适合：</b><br>
+  · <strong>问"最少几步能到"</strong>——这是 BFS 的看家本领；<br>
+  · <strong>按层处理</strong>的问题（层序遍历、右视图）；<br>
+  · 在<strong>"每一步代价相同"</strong>的情况下求最短路径。<br>
+  <strong>最需要记住的一条：求"最少步数 / 最短路径"，用 BFS。</strong>
+</div>
+
+<div class="box tip">
+  <span class="lb">为什么"最少步数"必须用 BFS？</span>
+  <b>因为 BFS 的扩散顺序是"按距离由近到远"的：</b>
+  <strong>它一定先访问完所有"1 步能到"的、再访问"2 步能到"的……</strong><br>
+  <b>所以第一次碰到目标时，走的一定是最短的路线——</b>
+  <strong>那些更短的路线早就被访问过了。</strong><br>
+  <b>而 DFS 是一个方向猛冲到底——</b>
+  <strong>它可能用 100 步绕到目标，可明明有 3 步的路。</strong>
+  <b>所以找最短路径不能用 DFS。</b>
+</div>
+
+<!-- ============ 2 ============ -->
+<div class="section-header" id="s2">
+  <h2>2　DFS：一路走到黑</h2>
+  <div class="en-title">Depth-First Search</div>
+</div>
+
+<h3 id="s2-1">2.1 递归实现</h3>
+
+<div class="code-card">
+  <div class="code-head">
+    <span class="dot d1"></span><span class="dot d2"></span><span class="dot d3"></span>
+    <span class="file">DFS 的递归写法：最自然的形式</span>
+    <span class="lang">Python</span>
+  </div>
+  <pre><code>def dfs(u):
+    visited[u] = True          # ★ 标记"我来过了"
+    print(u, end=" ")
+
+    for v in adj[u]:           # 看看 u 能走到哪些地方
+        if not visited[v]:     # 没去过才去
+            dfs(v)             # ★ 一路往下钻
+</code></pre>
+  <div class="out"><b>三行核心</b>　
+  ① 标记自己已访问；② 处理自己；③ 对每个没去过的邻居，递归地钻下去<br>
+  <b>为什么它天然是递归？</b>　
+  因为"把从 u 出发的整片区域走一遍"这件事，<b>可以拆成"对每个邻居做同样的事"</b></div>
+</div>
+
+<div class="box warn">
+  <span class="lb">visited 数组是 DFS 的命根子。</span>
+  <b>如果一张图里有环（A 能到 B，B 又能回到 A），没有 visited 会怎样？</b><br>
+  <strong>dfs(A) 会调用 dfs(B)，dfs(B) 又调用 dfs(A)，dfs(A) 再调用 dfs(B)……
+  无限循环，直到栈溢出崩溃。</strong><br>
+  <b>所以：进入一个结点就立刻标记它，之后再也不进去。</b><br>
+  <b>注意树上可以不写 visited</b>——因为树没有环，从父结点下来就不可能再绕回去。
+  <strong>但图必须写。</strong>
+</div>
+
+<h3 id="s2-2">2.2 用栈实现：先压右、后压左</h3>
+
+<div class="code-card">
+  <div class="code-head">
+    <span class="dot d1"></span><span class="dot d2"></span><span class="dot d3"></span>
+    <span class="file">用栈模拟递归——把"系统的栈"搬到手里</span>
+    <span class="lang">Python</span>
+  </div>
+  <pre><code>def dfs(root):
+    if root is None:
+        return
+
+    stack = [root]
+
+    while stack:
+        node = stack.pop()             # 弹出栈顶
+        print(node.value, end=" ")
+
+        # ★ 希望先访问左子树 → 就要让左孩子先出栈
+        # 栈是"后进先出" → 所以先压右、后压左
+        if node.right:
+            stack.append(node.right)
+        if node.left:
+            stack.append(node.left)
+</code></pre>
+  <div class="out"><b>横线上该填什么</b>　
+  <b>要"左子树优先"，就得<code>先压右孩子、后压左孩子</code></b><br>
+  <b>原因</b>　<strong>栈是后进先出——后压进去的会先被取出来</strong></div>
+</div>
+
+<div class="box tip">
+  <span class="lb">记牢这句口诀：</span>
+  <b>"想先访问谁，就后压谁。"</b><br>
+  <b>想先访问左孩子</b> → 左孩子要最后压 → <strong>压的顺序是"先右后左"。</strong><br>
+  <b>想先访问右孩子</b> → <strong>就"先左后右"。</strong><br>
+  <strong>这句话能解决所有"用栈模拟遍历"的填空题。</strong>
+</div>
+
+<div class="box remember">
+  <span class="lb">递归和栈，其实是同一件事。</span>
+  <b>递归的时候，"现在走到哪儿了""回来之后该做哪一步"这些信息，
+  都被系统记在一个叫"调用栈"的地方。</b><br>
+  <b>用栈自己写，就是把这个栈搬到明面上：</b>
+  <strong>手动 <code class="inline">push</code>、手动 <code class="inline">pop</code>，一步一步自己安排。</strong><br>
+  <b>所以：递归能写的遍历，用栈也一定能写；反过来也一样。</b>
+  <strong>只是"递归"写起来短，"栈"写起来更可控（不怕递归太深）。</strong>
+</div>
+
+<figure class="figure">
+  <svg class="diagram" viewBox="0 0 830 260" role="img" aria-label="DFS 的压栈顺序">
+    <text x="24" y="28" font-size="14" font-weight="bold" fill="#1f2937">用栈做 DFS：想先访问左子树，就后压左孩子</text>
+
+    <g font-family="Consolas,monospace" font-size="12.5">
+      <circle cx="120" cy="72" r="18" fill="#eaf1fe" stroke="#2563eb" stroke-width="1.8"/>
+      <text x="120" y="77" text-anchor="middle" fill="#1d4ed8">A</text>
+      <circle cx="70" cy="130" r="18" fill="#eaf1fe" stroke="#2563eb" stroke-width="1.8"/>
+      <text x="70" y="135" text-anchor="middle" fill="#1d4ed8">B</text>
+      <circle cx="170" cy="130" r="18" fill="#eaf1fe" stroke="#2563eb" stroke-width="1.8"/>
+      <text x="170" y="135" text-anchor="middle" fill="#1d4ed8">C</text>
+    </g>
+    <line x1="110" y1="86" x2="80" y2="116" stroke="#94a3b8" stroke-width="1.6"/>
+    <line x1="130" y1="86" x2="160" y2="116" stroke="#94a3b8" stroke-width="1.6"/>
+    <text x="82" y="105" font-size="10.5" fill="#3b6ea8">左</text>
+    <text x="150" y="105" font-size="10.5" fill="#3b6ea8">右</text>
+
+    <rect x="260" y="52" width="200" height="182" rx="10" fill="#fff9ec" stroke="#f59e0b" stroke-width="1.8"/>
+    <text x="360" y="76" text-anchor="middle" font-size="12" fill="#b45309" font-weight="bold">栈（后进先出）</text>
+    <rect x="300" y="88" width="120" height="30" rx="6" fill="#e9f8ef" stroke="#2e9e5b" stroke-width="2"/>
+    <text x="360" y="108" text-anchor="middle" font-size="12" font-family="Consolas,monospace" fill="#1f7a44">← 栈顶：左孩子 B</text>
+    <rect x="300" y="124" width="120" height="30" rx="6" fill="#eaf1fe" stroke="#2563eb" stroke-width="1.6"/>
+    <text x="360" y="144" text-anchor="middle" font-size="12" font-family="Consolas,monospace" fill="#1d4ed8">　右孩子 C</text>
+    <text x="360" y="180" text-anchor="middle" font-size="11.5" fill="#68788f">① 先 push(C)</text>
+    <text x="360" y="202" text-anchor="middle" font-size="11.5" fill="#68788f">② 再 push(B)</text>
+    <text x="360" y="224" text-anchor="middle" font-size="11.5" fill="#b45309">③ 弹出时先拿到 B ✔</text>
+
+    <rect x="496" y="52" width="290" height="182" rx="10" fill="#f7f9fd" stroke="#cbd5e1" stroke-width="1.6"/>
+    <text x="520" y="78" font-size="12.5" fill="#334155" font-weight="bold">为什么顺序要反着来？</text>
+    <text x="520" y="106" font-size="12" fill="#475569">栈是"后进先出"——最后压进去的，</text>
+    <text x="520" y="130" font-size="12" fill="#475569">会最先被取出。</text>
+    <text x="520" y="158" font-size="12" fill="#475569">所以要"想先访问谁，就后压谁"。</text>
+    <text x="520" y="186" font-size="11.5" fill="#b45309">★ 忘记判空 → 空指针崩溃</text>
+    <text x="520" y="210" font-size="11.5" fill="#b45309">★ 记住判 null：if (node-&gt;left)</text>
+  </svg>
+  <div class="caption">图 2（SVG）：DFS 的压栈顺序——想先访问谁，就后压谁</div>
+</figure>
+
+<!-- ============ 3 ============ -->
+<div class="section-header" id="s3">
+  <h2>3　BFS：一圈一圈往外扩</h2>
+  <div class="en-title">Breadth-First Search</div>
+</div>
+
+<h3 id="s3-1">3.1 用队列实现</h3>
+
+<div class="code-card">
+  <div class="code-head">
+    <span class="dot d1"></span><span class="dot d2"></span><span class="dot d3"></span>
+    <span class="file">BFS 的骨架：队列不能少</span>
+    <span class="lang">Python</span>
+  </div>
+  <pre><code>def bfs(start):
+    q = [start]
+    visited[start] = True      # ★ 入队时就标记，不要等到出队
+
+    while q:
+        u = q.pop(0)           # 从队首取
+        print(u, end=" ")      # 处理这个结点
+
+        for v in adj[u]:
+            if not visited[v]:
+                visited[v] = True   # ★ 立刻标记并入队
+                q.append(v)
+</code></pre>
+  <div class="out"><b>为什么用队列？</b>　
+  <strong>队列是"先进先出"——先入队的结点先被处理</strong><br>
+  <b>于是"先发现的一层"自然就"先被处理完"，一圈圈往外扩就是这么来的</b></div>
+</div>
+
+<div class="box warn">
+  <span class="lb">BFS 里"什么时候标记 visited"，和 DFS 不一样。</span>
+  <b>DFS 里可以在"进入结点时"标记</b>——因为它是一条路走到底，每层只来一次。<br>
+  <b>BFS 里必须在"入队时就标记"</b>——<strong>如果等到出队才标记，同一个结点可能被好几个邻居重复入队，
+  队列里塞进一堆重复元素。</strong><br>
+  <b>虽然最后结果可能还对，但会白白多跑很多次、甚至超时。</b><br>
+  <b>记法："BFS 入队即标记"。</b>
+</div>
+
+<h3 id="s3-2">3.2 层序与"最少边数"</h3>
+
+<div class="code-card">
+  <div class="code-head">
+    <span class="dot d1"></span><span class="dot d2"></span><span class="dot d3"></span>
+    <span class="file">记录"到起点的距离"：BFS 的看家本领</span>
+    <span class="lang">Python</span>
+  </div>
+  <pre><code>def bfs(start):
+    q = [start]
+    dist[start] = 0            # ★ 起点到自己，距离是 0
+    visited[start] = True
+
+    while q:
+        u = q.pop(0)
+
+        for v in adj[u]:
+            if not visited[v]:
+                visited[v] = True
+                dist[v] = dist[u] + 1   # ★ 距离 = 上一个结点的距离 + 1
+                q.append(v)
+</code></pre>
+  <div class="out"><b>关键在一句 <code>dist[v] = dist[u] + 1;</code></b>　
+  <b>因为 BFS 是"按距离由近到远"访问的——第一次到达 v 时，走的必然是最少边数的那条路</b></div>
+</div>
+
+<div class="box remember">
+  <span class="lb">"BFS 第一次到达某个结点时，走的边数一定是最少的。"</span>
+  <b>为什么？</b>
+  <b>因为 BFS 是"一层一层"地扩散的：先访问完所有距离 0 的（只有起点），
+  再访问完所有距离 1 的，再距离 2 的……</b><br>
+  <strong>所以当 v 第一次被访问到时，它一定是"在距离 k 的那一层被发现的"——
+  而所有距离小于 k 的可能位置，早就被访问过了。</strong><br>
+  <b>结论：</b><strong>第一次到达 v 走的边数，就是最少边数。</strong>
+  <b>这就是 BFS 能求最短路径（每步代价相同时）的根本原因。</b>
+</div>
+
+<figure class="figure">
+  <svg class="diagram" viewBox="0 0 830 250" role="img" aria-label="BFS 的同心扩散">
+    <text x="24" y="28" font-size="14" font-weight="bold" fill="#1f2937">BFS：从起点一圈圈往外，距离相等的先一起处理</text>
+
+    <circle cx="200" cy="140" r="26" fill="#e9f8ef" stroke="#2e9e5b" stroke-width="2.4"/>
+    <text x="200" y="146" text-anchor="middle" font-size="13" font-family="Consolas,monospace" fill="#1f7a44">A</text>
+    <circle cx="200" cy="140" r="62" fill="none" stroke="#2563eb" stroke-width="1.8" stroke-dasharray="6 4"/>
+    <circle cx="200" cy="140" r="100" fill="none" stroke="#8b5cf6" stroke-width="1.8" stroke-dasharray="6 4"/>
+
+    <g font-family="Consolas,monospace" font-size="12">
+      <circle cx="200" cy="78" r="16" fill="#eaf1fe" stroke="#2563eb" stroke-width="1.6"/>
+      <text x="200" y="83" text-anchor="middle" fill="#1d4ed8">B</text>
+      <circle cx="252" cy="178" r="16" fill="#eaf1fe" stroke="#2563eb" stroke-width="1.6"/>
+      <text x="252" y="183" text-anchor="middle" fill="#1d4ed8">C</text>
+      <circle cx="140" cy="180" r="16" fill="#eaf1fe" stroke="#2563eb" stroke-width="1.6"/>
+      <text x="140" y="185" text-anchor="middle" fill="#1d4ed8">D</text>
+
+      <circle cx="200" cy="40" r="15" fill="#f5f3ff" stroke="#8b5cf6" stroke-width="1.6"/>
+      <text x="200" y="45" text-anchor="middle" fill="#6d28d9">E</text>
+      <circle cx="262" cy="115" r="15" fill="#f5f3ff" stroke="#8b5cf6" stroke-width="1.6"/>
+      <text x="262" y="120" text-anchor="middle" fill="#6d28d9">F</text>
+      <circle cx="290" cy="196" r="15" fill="#f5f3ff" stroke="#8b5cf6" stroke-width="1.6"/>
+      <text x="290" y="201" text-anchor="middle" fill="#6d28d9">G</text>
+    </g>
+    <line x1="196" y1="114" x2="200" y2="94" stroke="#94a3b8" stroke-width="1.4"/>
+    <line x1="219" y1="157" x2="238" y2="170" stroke="#94a3b8" stroke-width="1.4"/>
+    <line x1="181" y1="157" x2="156" y2="170" stroke="#94a3b8" stroke-width="1.4"/>
+
+    <rect x="390" y="52" width="400" height="170" rx="12" fill="#f7f9fd" stroke="#cbd5e1" stroke-width="1.6"/>
+    <text x="414" y="78" font-size="12.5" fill="#334155" font-weight="bold">访问顺序</text>
+    <text x="414" y="106" font-size="12" fill="#1f7a44">第 0 层：A（距离 0）</text>
+    <text x="414" y="132" font-size="12" fill="#1d4ed8">第 1 层：B、C、D（距离 1）</text>
+    <text x="414" y="158" font-size="12" fill="#6d28d9">第 2 层：E、F、G（距离 2）</text>
+    <text x="414" y="188" font-size="11.5" fill="#b45309">★ 第一次到达时，距离一定是最少的</text>
+    <text x="414" y="210" font-size="11.5" fill="#b45309">★ 所以求"最少几步"就用 BFS</text>
+  </svg>
+  <div class="caption">图 3（SVG）：BFS 的同心扩散——按距离由近到远</div>
+</figure>
+
+<figure class="pic">
+  <img src="../assets/illustrations/py-L6-03-03_bfs_rings.webp" alt="一圈圈扩散的侦察兵"
+       onerror="this.closest('.pic').classList.add('missing')">
+  <div class="ph">
+    <div class="fn">assets/illustrations/py-L6-03-03_bfs_rings.webp</div>
+    <div class="ds">【配图位】云海上一座圆形平台的俯视图，一名侦察兵站在正中；从他脚下向外扩散出一圈圈发光的同心波纹，每一圈上均匀分布着若干侦察兵的身影（表示同一层同时探索）；内圈的身影明亮、外圈略暗，暗示"探完一圈才探下一圈"；一名戴眼镜的先知站在平台边缘俯视这片波纹。</div>
+  </div>
+  <figcaption>图 4：BFS 的同心波纹——同一层的先一起探完</figcaption>
+</figure>
+
+<!-- ============ 4 ============ -->
+<div class="section-header" id="s4">
+  <h2>4　两种搜索的对比</h2>
+  <div class="en-title">Comparing</div>
+</div>
+
+<h3 id="s4-1">4.1 各自适合什么</h3>
+
+<table class="styled">
+  <thead><tr><th>问题</th><th>该用哪个</th><th>原因</th></tr></thead>
+  <tbody>
+    <tr><td>从起点能不能走到终点？</td><td><strong>都行</strong></td><td>只要能走遍就行，看哪个好写</td></tr>
+    <tr><td>最少要走几步？</td><td><strong>BFS</strong></td><td><strong>只有 BFS 是按距离由近到远访问的</strong></td></tr>
+    <tr><td>列举所有可能的走法</td><td><strong>DFS</strong></td><td>一条路走到底，天然适合"枚举方案"</td></tr>
+    <tr><td>按层输出（层序、右视图）</td><td><strong>BFS</strong></td><td>它本来就是一层层处理的</td></tr>
+    <tr><td>求连通块 / 判断几片区域</td><td><strong>都行</strong></td><td>两者都能把一片区域走遍</td></tr>
+    <tr><td>数据规模很大、怕递归太深</td><td><strong>BFS</strong> 或 <strong>手写栈的 DFS</strong></td><td>递归层数太深会栈溢出</td></tr>
+    <tr><td>需要"回溯"（走错了要退回来换路）</td><td><strong>DFS</strong></td><td>它天然就有"退回来"这个动作</td></tr>
+  </tbody>
+</table>
+
+<h3 id="s4-2">4.2 复杂度与空间</h3>
+
+<div class="box remember">
+  <span class="lb">复杂度：两者是一样的。</span>
+  <b>设图的点数是 <code class="inline">V</code>、边数是 <code class="inline">E</code>：</b><br>
+  <b>时间复杂度：都是 <code class="inline">O(V + E)</code></b>——
+  <strong>因为每个点最多被访问一次、每条边最多被看两次（两个端点各看一次）。</strong><br>
+  <b>空间复杂度：都是 <code class="inline">O(V)</code></b>——
+  <strong>visited 数组要 V 个位置。</strong><br>
+  <b>额外的空间用在哪里，两者不同：</b><br>
+  <b>DFS</b>——用<strong>递归栈</strong>，最大深度等于"最长路径上的点数"；<br>
+  <b>BFS</b>——用<strong>队列</strong>，最多同时存"一整层"的点。<br>
+  <strong>所以在"很宽很浅"的图上，BFS 的队列可能很大；
+  在"很窄很深"的图上，DFS 的递归可能很深。</strong>
+</div>
+
+<div class="box tip">
+  <span class="lb">再强调一遍最常考的那句话：</span>
+  <b>"在每一步代价都相同的情况下，BFS 第一次到达目标结点时，走的边数一定是最少的。"</b><br>
+  <strong>这句话是 BFS 求最短路的理论基础，也是判断题的常客。</strong><br>
+  <b>而对应地：</b>
+  <strong>"DFS 第一次到达目标结点时，走的边数一定是最少的"——这句话是错的。</strong><br>
+  <b>因为 DFS 是一头猛冲，它可能绕了很远才碰到目标。</b>
+</div>
+
+<!-- ============ 5 ============ -->
+<div class="section-header" id="s5">
+  <h2>5　在树上搜索</h2>
+  <div class="en-title">Searching Trees</div>
+</div>
+
+<h3 id="s5-1">5.1 树的 DFS 与 BFS</h3>
+
+<div class="code-card">
+  <div class="code-head">
+    <span class="dot d1"></span><span class="dot d2"></span><span class="dot d3"></span>
+    <span class="file">树是搜索最常用的舞台</span>
+    <span class="lang">Python</span>
+  </div>
+  <pre><code># 树上的 DFS：就是上一课的"三种遍历"之一
+def dfs(root):
+    if root is None:
+        return
+    print(root.val, end=" ")       # 前序
+    dfs(root.left)
+    dfs(root.right)
+
+# 树上的 BFS：就是"层序遍历"
+def bfs(root):
+    if root is None:
+        return
+    q = [root]
+
+    while q:
+        node = q.pop(0)
+        print(node.val, end=" ")
+
+        if node.left:
+            q.append(node.left)    # 左孩子先入队
+        if node.right:
+            q.append(node.right)   # 右孩子后入队
+
+★ 对比一下压栈和入队的顺序：
+   DFS 用栈   → 先压右、后压左（因为要"后进先出"）
+   BFS 用队列 → 先入左、后入右（因为要"先进先出"）
+   同样的"左优先"，在两个结构里写法正好相反！
+</code></pre>
+  <div class="out"><b>核心对照</b>　
+  <b>DFS 用栈（后进先出），所以要"反着压"；<br>
+  BFS 用队列（先进先出），所以要"顺着放"</b></div>
+</div>
+
+<h3 id="s5-2">5.2 求深度与右视图</h3>
+
+<div class="code-card">
+  <div class="code-head">
+    <span class="dot d1"></span><span class="dot d2"></span><span class="dot d3"></span>
+    <span class="file">BFS 按层处理：求右视图</span>
+    <span class="lang">Python</span>
+  </div>
+  <pre><code># 右视图：每一层最右边那个结点
+def rightView(root):
+    if root is None:
+        return
+    q = [root]
+
+    while q:
+        sz = len(q)                # ★ 先记下"这一层有几个"
+
+        for i in range(sz):
+            node = q.pop(0)
+
+            if i == sz - 1:        # ★ 这一层的最后一个
+                print(node.val, end=" ")
+            if node.left:
+                q.append(node.left)
+            if node.right:
+                q.append(node.right)
+</code></pre>
+  <div class="out"><b>关键技巧</b>　
+  <b>循环开始前先 <code>sz = q.size()</code>，把"这一层有几个"记下来</b><br>
+  <b>然后只循环 <code>sz</code> 次——这样就把"一层"和"下一层"干净地分开了</b></div>
+</div>
+
+<div class="box remember">
+  <span class="lb">"按层处理"是 BFS 最常用的技巧。</span>
+  <b>固定套路：</b>
+  <strong>① 进入 while 循环，先 <code class="inline">sz = q.size()</code>；<br>
+  ② 然后 <code class="inline">for (i = 0; i &lt; sz; i++)</code> 只处理这一层的结点；<br>
+  ③ 循环体里把下一层的结点入队。</strong><br>
+  <b>这样每一轮 while 刚好处理"一整层"——</b>
+  <strong>层序输出、求每层最大值、求右视图、求树的宽度，全都能用这个套路。</strong><br>
+  <b>注意：<code class="inline">sz</code> 必须在循环前存下来。</b>
+  <strong>如果直接用 <code class="inline">q.size()</code> 当条件，
+  循环里入队的元素会让 size 不断变大，就分不清层了。</strong>
+</div>
+
+<!-- ============ 6 ============ -->
+<div class="section-header" id="s6">
+  <h2>6　代码实战</h2>
+  <div class="en-title">Level Practice</div>
+</div>
+
+<div class="level-card">
+  <div class="lc-head"><span class="n">关卡</span><h4>脆弱的迷宫</h4><span class="go">进入关卡 →</span></div>
+  <div class="lc-body">
+    <div class="story">
+      <b>故事：</b>云海迷宫的地面很脆，<b>踩过的格子会塌——所以每个格子只能踩一次。</b><br>
+      贺舒曼把镜子铺在迷宫上方：<strong>两名侦察兵已经进去了。
+      一个往深里钻，一个往外扩——你自己看，哪条路更快到中心。</strong><br>
+      你盯着看了一会儿：<b>向外扩的那个先到了……因为它是一层层逼近的。</b><br>
+      对。她收起镜子，<strong>找最短的路，就用那个往外扩的。</strong>
+    </div>
+    <p><strong>思路：</strong>用 <strong>BFS</strong> 从起点开始一层层扩散，
+  <figure class="pic ai-added"><img src="../assets/illustrations/py-L6-03-01_dfs_dive.webp" alt="AI配图：py-L6-03-01_dfs_dive.webp"></figure>
+    顺便<strong>记录每个格子到起点的最少步数</strong>。</p><figure class="pic">
+  <figure class="pic ai-added"><img src="../assets/illustrations/py-L6-03-02_bfs_spread.webp" alt="AI配图：py-L6-03-02_bfs_spread.webp"></figure>
+  <img src="../assets/stages/py-L6-03-stage1_fragile_maze.webp" alt="脆弱的迷宫 关卡截图"
+       onerror="this.closest('.pic').classList.add('missing')">
+  <div class="ph">
+    <div class="fn">assets/stages/py-L6-03-stage1_fragile_maze.webp</div>
+    <div class="ds">【截图位】脆弱的迷宫关卡：云海迷宫格子与探索路径同框，代码编辑区可见队列与 BFS 循环。</div>
+  </div>
+  <figcaption>关卡实况：脆弱的迷宫</figcaption>
+</figure>
+    <div class="code-card">
+      <div class="code-head">
+        <span class="dot d1"></span><span class="dot d2"></span><span class="dot d3"></span>
+        <span class="file">BFS 求最少步数：完整实现</span>
+        <span class="lang">Python</span>
+      </div>
+      <pre><code># 输入：第一行 n m s t（n 个点、m 条边、起点 s、终点 t），接下来 m 行每行一条边
+n, m, s, t = map(int, input().split())
+
+adj = [[] for _ in range(n + 1)]
+visited = [False] * (n + 1)
+dist = [0] * (n + 1)
+
+for _ in range(m):
+    u, v = map(int, input().split())
+    adj[u].append(v)               # 无向图：两边都要连
+    adj[v].append(u)
+
+q = [s]
+visited[s] = True
+dist[s] = 0
+
+while q:
+    u = q.pop(0)
+
+    for v in adj[u]:
+        if not visited[v]:
+            visited[v] = True      # ★ 入队时就标记
+            dist[v] = dist[u] + 1  # ★ 距离加一
+            q.append(v)
+
+if visited[t]:
+    print(dist[t])                 # 最短要几步
+else:
+    print(-1)                      # 走不到
+</code></pre>
+      <div class="out"><b>输入</b>　6 6 1 6　/　1 2　/　1 3　/　2 4　/　3 4　/　4 5　/　5 6<br>
+      <b>输出</b>　<b>4</b>——<strong>最短路线 1 → 3 → 4 → 5 → 6，一共 4 步</strong></div>
+    </div>
+    <div class="box info">
+      <span class="lb">和本单元的关系：</span>
+      <strong>这段代码是"BFS 求最短路径"的标准模板，值得记下来。</strong><br>
+      <b>三个要点：</b><br>
+      ① <strong>用邻接表 <code>vector&lt;int&gt; adj[]</code> 存图</strong>——
+      每个点存一个"能通向谁"的列表；<br>
+      ② <strong>无向图要连两次</strong>（<code>adj[u].push_back(v)</code> 和
+      <code>adj[v].push_back(u)</code>），<b>有向图只连一次；</b><br>
+      ③ <strong><code>visited</code> 在入队时就标记</strong>、
+      <strong><code>dist[v] = dist[u] + 1</code></strong>——这两句是 BFS 的灵魂。<br>
+      <strong>还学到一个常见收尾：</strong>
+      <strong>如果终点根本没被访问到，说明"走不通"，按题目要求输出 −1。</strong>
+    </div>
+    <a class="btn-go" href="https://codecombat.cn/" target="_blank" rel="noopener">去扣哒世界闯这一关 →</a>
+  </div>
+</div>
+
+<figure class="pic">
+  <img src="../assets/illustrations/py-L6-03-02_dfs_stack.webp" alt="一路直下再回头"
+       onerror="this.closest('.pic').classList.add('missing')">
+  <div class="ph">
+    <div class="fn">assets/illustrations/py-L6-03-02_dfs_stack.webp</div>
+    <div class="ds">【配图位】云峡的剖面图：一条狭窄的通道笔直向下延伸到峡底，一名翠羽女射手侦察兵正沿通道一路深入，身后留下一道笔直向下的紫色发光轨迹；到了峡底之后轨迹折返、向上爬回，途中在岔口处转向另一条支巷（留下第二条折返的痕迹）；一名戴眼镜的先知站在峡口俯视，冷蓝色光线打在岩壁上。</div>
+  </div>
+  <figcaption>图 5：DFS——一路直下，走到谷底才回头</figcaption>
+</figure>
+
+
+
+<!-- ============ 7 ============ -->
+<div class="section-header" id="s7">
+  <h2>7　常见陷阱</h2>
+  <div class="en-title">Common Pitfalls</div>
+</div>
+
+<div class="cast duck">
+  <img class="ava" src="../assets/ducks/duck_senick.webp" alt="扣哒鸭" onerror="this.style.display='none'">
+  <div class="bubble">
+    <div class="who">扣哒鸭 · 调试官</div>
+    搜索的坑全是"顺序"和"标记"上的。四条，前两条真题都考过。
+  </div>
+</div>
+
+<div class="pit">
+  <div class="pt">
+    <div class="x">1</div>
+    <div class="t"><b>用栈做 DFS 时，把"先压谁"搞反了。</b></div>
+  </div>
+  <div class="duck">
+    <img src="../assets/ducks/duck_zana.webp" alt="扣哒鸭" onerror="this.style.display='none'">
+    <div class="dt"><b>扣哒鸭：</b>栈是<b>后进先出</b>——
+    <strong>后压进去的会先被取出来。</strong><br>
+    <b>所以要"想先访问谁，就后压谁"。</b><br>
+    想先访问左子树 → <code>先 push 右、后 push 左</code>。<b>反了就成了右子树优先。</b></div>
+  </div>
+  <div class="fix"><b>口诀：</b>想先访问谁，就后压谁</div>
+</div>
+
+<div class="pit">
+  <div class="pt">
+    <div class="x">2</div>
+    <div class="t"><b>以为"DFS 也能求最短路径"。</b></div>
+  </div>
+  <div class="duck">
+    <img src="../assets/ducks/duck_naria.webp" alt="扣哒鸭" onerror="this.style.display='none'">
+    <div class="dt"><b>扣哒鸭：</b><strong>只有 BFS 第一次到达时走的边数最少。</strong>
+    DFS 是一头猛冲的——<b>它可能绕了很远才碰到目标，明明旁边有近路。</b><br>
+    <b>所以求"最少几步"的题，一律用 BFS。</b></div>
+  </div>
+  <div class="fix"><b>记牢：</b>求最短（每步代价相同）→ BFS</div>
+</div>
+
+<div class="pit">
+  <div class="pt">
+    <div class="x">3</div>
+    <div class="t"><b>BFS 里等到出队才标记 visited。</b></div>
+  </div>
+  <div class="duck">
+    <img src="../assets/ducks/duck_hattori.webp" alt="扣哒鸭" onerror="this.style.display='none'">
+    <div class="dt"><b>扣哒鸭：</b><strong>必须在"入队时就标记"。</strong><br>
+    如果等到出队才标记，<b>同一个结点会被好几个邻居重复入队</b>——
+    队列里塞满重复元素，白白多跑很多次，甚至超时。</div>
+  </div>
+  <div class="fix"><b>正确做法：</b>BFS 入队即标记</div>
+</div>
+
+<div class="pit">
+  <div class="pt">
+    <div class="x">4</div>
+    <div class="t"><b>用栈 / 队列时忘了判空。</b></div>
+  </div>
+  <div class="duck">
+    <img src="../assets/ducks/duck_illia.webp" alt="扣哒鸭" onerror="this.style.display='none'">
+    <div class="dt"><b>扣哒鸭：</b>往栈里压结点之前，
+    <strong>先看看这个孩子是不是空（<code>if (node-&gt;left)</code>）。</strong><br>
+    <b>把空指针压进去，后面取出时一取成员就崩溃了。</b><br>
+    <b>递归版之所以不用判，是因为开头那行 <code>if (root == nullptr) return;</code> 已经挡住了。</b></div>
+  </div>
+  <div class="fix"><b>正确做法：</b><code class="inline">if (node-&gt;left) s.push(node-&gt;left);</code></div>
+</div>
+
+<!-- ============ 8 ============ -->
+<div class="section-header" id="s8">
+  <h2>8　题目练习</h2>
+  <div class="en-title">Practice</div>
+</div>
+
+<p>第 1 题改编自 2026 年 9 月 · Python 六级 第 9 题，其余为原创练习题。</p>
+
+<div class="exam">
+  <div class="eh"><span class="src">改编自 2026 年 9 月 · Python 六级 · 第 9 题</span><span class="tp">单选题</span></div>
+  <div class="eb">
+    <div class="q">下面的代码用<strong>栈</strong>实现二叉树的深度优先搜索（迭代版前序遍历），横线处应当填写（　　）。<br><pre>1  class TreeNode:
+2      def __init__(self, val):
+3          self.value = val
+4          self.left = None
+5          self.right = None
+6
+7  def dfs(root):
+8      if root is None:
+9          return
+10     s = []
+11     s.append(root)
+12     while len(s) > 0:
+13         node = s.pop()
+14         print(node.value, end=" ")
+15         # --------此处填空--------</pre></div>
+    <div class="opt"><i>A.</i>先 append(node.right)、再 append(node.left)<br>
+      <i>B.</i>先 append(node.left)、再 append(node.right)<br>
+      <i>C.</i>先 append(node.right)、再 append(node.left)，且各自加 None 判断<br>
+      <i>D.</i>先 append(node.left)、再 append(node.right)，且各自加 None 判断</div>
+    <details><summary>查看答案与详解</summary>
+      <div class="ans"><b>答案：C</b>。栈是<strong>后进先出</strong>的，所以"想先访问谁，就要后把它压进去"。<br>前序遍历要求顺序是 <strong>根 → 左 → 右</strong>，那么出栈顺序必须先是左、再是右 —— 于是压栈时要<strong>先压右孩子、再压左孩子</strong>。<br><b>为什么还要加 None 判断？</b>叶子结点的 <code class="inline">left</code>／<code class="inline">right</code> 是 <code class="inline">None</code>，不加判断就会把 None 也压进栈，下一轮 <code class="inline">node.value</code> 直接报错。所以 C 才完整。<br><b>A、B 错：</b>少了空判断，遇到叶子就崩；<br><b>D 错：</b>压栈顺序反了，输出会变成"根 → 右 → 左"。<br><b>一句话记：</b>递归版前序是"根、左、右"，迭代版用栈时 —— <strong>压栈反着来</strong>。<br><span class="tagline">对应小节</span>1 深度优先 DFS。</div>
+    </details>
+  </div>
+</div>
+<div class="exam">
+  <div class="eh"><span class="src ori">原创练习题</span><span class="tp">单选题</span></div>
+  <div class="eb">
+    <div class="q">深度优先搜索（DFS）通常借助哪种数据结构实现？（　　）</div>
+    <div class="opt"><i>A.</i>队列　　<i>B.</i>栈（或递归）　　<i>C.</i>树　　<i>D.</i>字典</div>
+    <details><summary>查看答案与详解</summary>
+      <div class="ans"><b>答案：B</b>。DFS 是"一路走到黑再回头"，
+      需要<strong>后进先出</strong>——正好是栈的特性；递归本身就利用了系统的调用栈。<br>
+      <b>对比：</b>BFS 用<b>队列</b>（先进先出），才能实现层层扩散。<br>
+      <span class="tagline">对应小节</span>2 DFS：一路走到黑；4 两种搜索的对比。</div>
+    </details>
+  </div>
+</div>
+
+<div class="exam">
+  <div class="eh"><span class="src ori">原创练习题</span><span class="tp">单选题</span></div>
+  <div class="eb">
+    <div class="q">在一个无权（每步代价相同）的图上，要找从 A 到 B 的<strong>最少步数</strong>，
+    应该用（　　）。</div>
+    <div class="opt">
+      <i>A.</i>DFS　　<i>B.</i>BFS　　<i>C.</i>两种都行　　<i>D.</i>两种都不行
+    </div>
+    <details><summary>查看答案与详解</summary>
+      <div class="ans"><b>答案：B</b>。BFS 按"一层一层"的顺序访问，
+      <b>第一次遇见目标时，走过的层数一定是最少的</b>。<br>
+      DFS 则可能一头扎进很深的岔路，找到的路径可能绕远。<br>
+      <b>这是搜索算法里最重要的一条结论。</b><br>
+      <span class="tagline">对应小节</span>4 两种搜索的对比。</div>
+    </details>
+  </div>
+</div>
+
+<div class="exam">
+  <div class="eh"><span class="src ori">原创练习题</span><span class="tp">判断题</span></div>
+  <div class="eb">
+    <div class="q">搜索时如果不对访问过的节点做标记，在含有环的图中可能会导致程序无法结束。（　　）</div>
+    <details><summary>查看答案与详解</summary>
+      <div class="ans"><b>答案：正确（√）</b>。有环的话，程序会在环里来回打转，永远不会停。<br>
+      <b>做法：</b>用一个集合 <code class="inline">visited</code> 记录到过的点，
+      每次进入前先判断"是否已经来过"。<br>
+      <span class="tagline">对应小节</span>6 常见陷阱。</div>
+    </details>
+  </div>
+</div>
+
+<div class="exam">
+  <div class="eh"><span class="src ori">原创练习题</span><span class="tp">单选题</span></div>
+  <div class="eb">
+    <div class="q">下面关于 BFS 中"标记时机"的说法，正确的是（　　）。</div>
+    <div class="opt">
+      <i>A.</i>应该在节点出队时标记<br>
+      <i>B.</i>应该在节点入队时标记<br>
+      <i>C.</i>不需要标记<br>
+      <i>D.</i>应该在访问完它的所有邻居后再标记
+    </div>
+    <details><summary>查看答案与详解</summary>
+      <div class="ans"><b>答案：B</b>。要在<b>入队的同时</b>就标记为"已访问"。<br>
+      如果等出队才标记，同一个节点可能被多个邻居重复加入队列，
+      导致队列里出现大量重复项。<br>
+      <span class="tagline">对应小节</span>3 BFS：一圈一圈往外扩；6 常见陷阱。</div>
+    </details>
+  </div>
+</div>
+
+<div class="exam">
+  <div class="eh"><span class="src ori">原创练习题</span><span class="tp">单选题</span></div>
+  <div class="eb">
+    <div class="q">用 BFS 遍历下图：起点为 1，1 的邻居是 2、3，2 的邻居是 4，3 的邻居是 5。
+    访问顺序是（　　）。</div>
+    <div class="opt">
+      <i>A.</i>1 2 4 3 5　　<i>B.</i>1 2 3 4 5　　<i>C.</i>1 3 5 2 4　　<i>D.</i>4 2 1 3 5
+    </div>
+    <details><summary>查看答案与详解</summary>
+      <div class="ans"><b>答案：B</b>。BFS 按层访问：<br>
+      第 1 层：1；第 2 层：2、3；第 3 层：4、5。<br>
+      所以是 <b>1 2 3 4 5</b>。<br>
+      <b>对比：</b>A 项 <code class="inline">1 2 4 3 5</code> 是 DFS 的顺序（先深入 2 的子树）。<br>
+      <span class="tagline">对应小节</span>1 两条侦察路线。</div>
+    </details>
+  </div>
+</div>
+
+<div class="exam">
+  <div class="eh"><span class="src ori">原创练习题</span><span class="tp">判断题</span></div>
+  <div class="eb">
+    <div class="q">在无权图中，DFS 也能保证找到从起点到终点的最短路径。（　　）</div>
+    <details><summary>查看答案与详解</summary>
+      <div class="ans"><b>答案：错误（×）</b>。DFS 只保证"能找到一条路"，
+      但那条路可能是绕远的。<br>
+      <b>要最短路径必须用 BFS。</b>这是搜索部分最爱考的判断点之一。<br>
+      <span class="tagline">对应小节</span>4 两种搜索的对比。</div>
+    </details>
+  </div>
+</div>
+
+<div class="exam">
+  <div class="eh"><span class="src ori">原创练习题</span><span class="tp">编程题</span></div>
+  <div class="eb">
+    <div class="q">题目要求：用一个字典表示无向图，用 BFS 求从起点到终点的最短步数。</div>
+    <details><summary>查看参考答案与要点</summary>
+      <div class="ans">
+<pre style="margin:0;background:#1d2c48;color:#c3d6d1;border-radius:10px;padding:14px 16px">from collections import deque
+
+graph = {
+    "A": ["B", "C"],
+    "B": ["A", "D"],
+    "C": ["A", "D", "E"],
+    "D": ["B", "C", "F"],
+    "E": ["C", "F"],
+    "F": ["D", "E"]
+}
+
+def bfsSteps(start, target):
+    visited = set([start])
+    queue = deque([[start, 0]])        # 队列里存 [节点, 已走步数]
+
+    while queue:
+        node, step = queue.popleft()
+        if node == target:             # 第一次碰到就是最短
+            return step
+
+        for nxt in graph[node]:
+            if nxt not in visited:
+                visited.add(nxt)       # 入队时就标记
+                queue.append([nxt, step + 1])
+    return -1
+
+print(bfsSteps("A", "F"))              # 3</pre>
+      <p style="margin-top:12px"><b>输出：</b>3（A → C → E → F）<br>
+      <b>要点：</b><br>
+      ① 队列里同时存"节点"和"步数"，用列表打包；<br>
+      ② 出队时立即判断是否命中目标——<b>第一次命中一定最短</b>；<br>
+      ③ 入队时就要标记 visited，避免重复入队；<br>
+      ④ 遍历不到时返回 -1 表示"走不通"。<br>
+      <span class="tagline">对应小节</span>3 BFS：一圈一圈往外扩。</p>
+      </div>
+    </details>
+  </div>
+</div>
+
+<div class="section-header" id="s9">
+  <h2>9　本单元小结</h2>
+  <div class="en-title">Unit Summary</div>
+</div>
+
+<div class="cast teacher">
+  <img class="ava" src="../assets/avatars/hushbaum.webp" alt="贺舒曼" onerror="this.style.display='none'">
+  <div class="bubble">
+    <div class="who">贺舒曼 · 镜中先知</div>
+    三句话记住搜索：<br>
+    <strong>一、DFS 一条路走到黑，用栈或递归。</strong><br>
+    <strong>二、BFS 一圈一圈往外扩，用队列。</strong><br>
+    <strong>三、问"能不能到"用 DFS，问"最少几步"用 BFS。</strong><br>
+    还有一个通用要求：<b>无论哪种搜索，都要记得做访问标记。</b>
+  </div>
+</div>
+
+<div class="summary">
+  <h3>你在云海迷宫中收获了什么</h3>
+  <ul>
+    <li><strong>DFS（深度优先）</strong>——一条路走到黑，走不通再回头；用栈或递归实现。</li>
+    <li><strong>BFS（广度优先）</strong>——一圈走完再走外面一圈；用队列实现。</li>
+    <li><strong>访问标记</strong>——用 visited 记录到过的点，防止在环里死循环。</li>
+    <li><strong>标记时机</strong>——BFS 要<strong>入队时</strong>就标记。</li>
+    <li><strong>最短路径</strong>——无权图上必须用 BFS，第一次命中即最短。</li>
+    <li><strong>内存差异</strong>——DFS 省内存，BFS 需要存一整层。</li>
+    <li><strong>选型口诀</strong>——问"能不能"，用 DFS；问"多少步"，用 BFS。</li>
+  </ul>
+</div>
+
+<div class="pager">
+  <a href="py-6-02.html"><div class="k">← 上一单元</div><div class="v">云叶密钥 · 哈夫曼树与基于树的编码</div></a>
+  <a href="../index.html" target="_top" class="back"><div class="k">返回</div><div class="v">考纲之路 · 总目录</div></a>
+  <a href="py-6-04.html"><div class="k">下一单元 →</div><div class="v">云梯补给 · 简单动态规划</div></a>
+</div>
+
+<div class="cta">
+  <h3>下一站：云梯补给</h3>
+  <p>补给队要把物资一级一级运上云梯。每一级的最优方案，都能由下面几级推出来——
+  <b>不用重算，记住就行。</b>下一单元，我们聊动态规划。</p>
+  <a class="btn-go" href="https://codecombat.cn/" target="_blank" rel="noopener">加入扣哒世界，把这条考纲之路走一遍 →</a>
+</div>
+</div><!-- /container -->
+</div><!-- /page -->
+
+<script>
+const KEYWORDS = new Set(("while for if elif else break continue def return pass not and or in is None True False " +
+  "int float bool str list dict tuple set input print range len abs max min round pow import math random chr ord bin hex oct sum append copy keys values items").split(" "));
+
+function esc(s){ return s.replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;'); }
+
+function highlight(src){
+  let out = '', i = 0;
+  const n = src.length;
+  while (i < n){
+    const c = src[i];
+    if (c === '#'){
+      let j = src.indexOf('\n', i); if (j < 0) j = n;
+      out += '<span class="cm">' + esc(src.slice(i, j)) + '</span>';
+      i = j; continue;
+    }
+    if (c === '"' || c === "'"){
+      let j = i + 1;
+      while (j < n && src[j] !== c){ if (src[j] === '\\') j++; j++; }
+      j = Math.min(j + 1, n);
+      out += '<span class="st">' + esc(src.slice(i, j)) + '</span>';
+      i = j; continue;
+    }
+    if (/[0-9]/.test(c)){
+      let j = i;
+      while (j < n && /[0-9.]/.test(src[j])) j++;
+      out += '<span class="nu">' + esc(src.slice(i, j)) + '</span>';
+      i = j; continue;
+    }
+    if (/[A-Za-z_]/.test(c)){
+      let j = i;
+      while (j < n && /[A-Za-z0-9_]/.test(src[j])) j++;
+      const w = src.slice(i, j);
+      if (KEYWORDS.has(w)) out += '<span class="kw">' + esc(w) + '</span>';
+      else if (src[j] === '(') out += '<span class="fn">' + esc(w) + '</span>';
+      else out += esc(w);
+      i = j; continue;
+    }
+    out += esc(c); i++;
+  }
+  return out;
+}
+
+document.querySelectorAll('.code-card pre code').forEach(block => {
+  block.innerHTML = highlight(block.textContent);
+});
+
+if (location.search.indexOf('expand') >= 0) {
+  document.querySelectorAll('details').forEach(d => d.open = true);
+}
+document.querySelectorAll('.sidebar-nav a').forEach(a => {
+  a.addEventListener('click', () => {
+    if (window.innerWidth <= 900) document.querySelector('.sidebar-nav').classList.remove('active');
+  });
+});
+</script>
+</body>
+</html>

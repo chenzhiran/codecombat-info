@@ -1,0 +1,1154 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="copyright" content="CodeCombat Inc. codecombat.cn">
+<title>交织雷网 · 复杂动态规划 | 扣哒考级 · GESP Python 七级</title>
+<style>
+  :root{
+    --primary:#6d3fd4; --primary-light:#8f66ea; --primary-lighter:#f1ebfe; --primary-dark:#5227a8;
+    --brand:#ff6b35; --brand-dark:#e8541f; --brand-soft:#fff3ec;
+    --night:#0f1b22; --night-2:#16323a; --gold:#f5b301;
+    --text:#22333a; --dim:#5f7276; --dim2:#8da0a3;
+    --bg:#ffffff; --bg-soft:#f6fbfa; --line:#dceceb; --sidebar:274px;
+    --code-bg:#14231f; --code-tx:#c3d6d1;
+    --code-kw:#c678dd; --code-st:#98c379; --code-nu:#d19a66; --code-cm:#68807a; --code-fn:#61afef;
+  }
+  *{margin:0;padding:0;box-sizing:border-box}
+  html{scroll-behavior:smooth}
+  body{font-family:"PingFang SC","Microsoft YaHei","Segoe UI",-apple-system,sans-serif;line-height:1.9;color:var(--text);background:var(--bg);font-size:15.5px}
+  .sidebar-nav{position:fixed;top:0;left:0;width:var(--sidebar);height:100vh;overflow-y:auto;background:linear-gradient(180deg,#120d20,#241a44);padding:14px 0 40px;z-index:100;border-right:3px solid var(--brand);transition:transform .3s ease}
+  .sidebar-nav::-webkit-scrollbar{width:5px}
+  .sidebar-nav::-webkit-scrollbar-thumb{background:var(--brand);border-radius:4px}
+  .sb-brand{display:flex;align-items:center;gap:10px;padding:10px 13px 12px;border-bottom:1px solid #2f2456;margin-bottom:8px}
+  .sidebar-nav a.sb-logo{display:flex;align-items:center;justify-content:center;flex-shrink:0;padding:0;border-left:none;transition:.2s}
+  .sb-logo:hover{transform:scale(1.08)}
+  .sb-logo img{height:34px;width:34px;display:block;object-fit:contain;border-radius:8px}
+  .sb-brand b{color:#eef7f6;font-size:14px;letter-spacing:.5px;display:block;line-height:1.4}
+  .sb-brand span{color:#7ba3a6;font-size:11.5px;display:block;line-height:1.4}
+  .nav-title{color:#ffb894;font-size:12px;font-weight:800;padding:10px 18px 6px;letter-spacing:1.2px}
+  .sidebar-nav a{display:block;color:#bcd3d4;text-decoration:none;padding:6px 18px;font-size:12.5px;line-height:1.55;border-left:3px solid transparent;transition:.18s}
+  .sidebar-nav a:hover{color:#fff;background:rgba(255,107,53,.16);border-left-color:var(--brand)}
+  .sidebar-nav a.nav-section{color:#ffb894;font-weight:700;font-size:13px;margin-top:11px;padding-top:10px;border-top:1px solid #2f2456}
+  .sidebar-nav a.nav-section:first-of-type{border-top:none;margin-top:0;padding-top:6px}
+  .sidebar-nav a.nav-sub{padding-left:30px;color:#8fabad;font-size:12px}
+  .sidebar-nav a.nav-sub:hover{color:#fff}
+  .sb-back{margin:16px 14px 0;display:block;text-align:center;padding:9px;border-radius:9px;background:#1c3940;color:#a6c0c2 !important;font-size:12px;font-weight:700;border-left:none !important}
+  .sb-back:hover{background:var(--brand) !important;color:#fff !important}
+  .nav-toggle{display:none;position:fixed;top:14px;left:14px;z-index:120;background:var(--brand);color:#fff;border:none;border-radius:9px;padding:9px 13px;font-size:15px;cursor:pointer;box-shadow:0 4px 14px rgba(0,0,0,.25)}
+  .page{margin-left:var(--sidebar)}
+  .hero{position:relative;overflow:hidden;padding:44px 52px;color:#fff;background:linear-gradient(125deg,#0f0a1c 0%,#251a48 46%,#8a3a16 132%)}
+  .hero::after{content:"";position:absolute;right:-90px;top:-110px;width:400px;height:400px;border-radius:50%;background:radial-gradient(circle,rgba(245,179,1,.30),transparent 68%)}
+  .hero-top{display:flex;gap:36px;align-items:center;position:relative;z-index:2}
+  .hero-txt{flex:1;min-width:0}
+  .hero .crumb{font-size:11.5px;color:#ffb894;letter-spacing:1.5px;font-weight:700;margin-bottom:14px}
+  .hero h1{font-size:31px;font-weight:800;line-height:1.3;letter-spacing:.6px;margin-bottom:8px}
+  .hero h1 .sub{display:block;font-size:18px;font-weight:700;color:#ffd2b3;margin-top:6px;letter-spacing:.3px}
+  .hero .en{font-size:13px;color:#98b6b8;font-style:italic;margin-bottom:18px}
+  .hero .tags{display:flex;flex-wrap:wrap;gap:8px}
+  .tag{font-size:11.5px;padding:4px 12px;border-radius:20px;background:rgba(255,255,255,.12);border:1px solid rgba(255,255,255,.22);color:#e8f0f6;font-weight:600}
+  .tag.hot{background:rgba(255,107,53,.92);border-color:transparent;color:#fff}
+  .hero-card{flex-shrink:0;width:200px;text-align:center}
+  .hero-card .ava{width:148px;height:148px;border-radius:50%;object-fit:cover;object-position:top center;border:4px solid rgba(255,180,140,.6);box-shadow:0 14px 34px rgba(0,0,0,.45);background:#24344a}
+  .hero-card .nm{font-size:15px;font-weight:800;color:#fff;margin-top:10px}
+  .hero-card .ti{font-size:11.5px;color:#ffb894;margin-top:2px}
+  .container{max-width:1080px;margin:0 auto;padding:38px 52px 70px}
+  .lead{font-size:15.5px;line-height:2.05;color:#35474a;background:linear-gradient(120deg,#fff8f3,#f6fbfa);border-left:5px solid var(--brand);border-radius:0 14px 14px 0;padding:22px 26px;margin-bottom:32px}
+  .lead b{color:var(--brand-dark)}
+  .cast{display:flex;gap:16px;align-items:flex-start;border-radius:16px;padding:18px 22px;margin:24px 0}
+  .cast .ava{width:72px;height:72px;border-radius:50%;object-fit:cover;object-position:top center;flex-shrink:0;background:#e8eef5}
+  .cast .bubble{position:relative;font-size:14px;line-height:1.95;padding-top:2px;flex:1}
+  .cast .who{font-size:12px;font-weight:800;margin-bottom:5px;letter-spacing:.5px}
+  .cast.anya{background:var(--brand-soft);border:1px solid #ffdcc9}
+  .cast.anya .who{color:var(--brand-dark)}
+  .cast.anya .bubble{color:#5c4636}
+  .cast.duck{background:#fff5f5;border:1px solid #fbd5d5}
+  .cast.duck .who{color:#b91c1c}
+  .cast.duck .bubble{color:#5c4141}
+  .cast.teacher{background:linear-gradient(120deg,#f1f8f8,#ffffff);border:1px solid #d6e8e8}
+  .cast.teacher .who{color:#134e4a}
+  .cast.teacher .bubble{color:#3c5254}
+  .cast.hero{background:#f2fbf9;border:1px solid #cfe9e6}
+  .cast.hero .who{color:#0f766e}
+  .cast.hero .bubble{color:#3d5250}
+  .goal-grid{display:grid;grid-template-columns:1fr 1fr;gap:16px;margin-bottom:36px}
+  .goal{border:1px solid var(--line);border-radius:15px;padding:19px 21px;background:#fff;box-shadow:0 4px 16px rgba(14,143,134,.06)}
+  .goal h4{font-size:14px;font-weight:800;margin-bottom:11px;display:flex;align-items:center;gap:8px;color:var(--primary-dark)}
+  .goal h4 .ic{width:22px;height:22px;border-radius:7px;background:var(--primary-lighter);display:flex;align-items:center;justify-content:center;font-size:12px}
+  .goal ul{list-style:none}
+  .goal li{font-size:13.5px;color:#46585a;line-height:1.9;padding-left:18px;position:relative}
+  .goal li::before{content:"▸";position:absolute;left:0;color:var(--primary);font-weight:800}
+  .goal.syllabus li::before{content:"✓"}
+  .section-header{margin:52px 0 24px;padding-bottom:12px;border-bottom:3px solid var(--brand);display:flex;align-items:baseline;gap:14px;flex-wrap:wrap}
+  .section-header h2{font-size:22px;font-weight:800;color:var(--night);letter-spacing:.4px}
+  .section-header .en-title{font-size:12px;color:var(--dim2);font-style:italic}
+  h3{font-size:17.5px;font-weight:800;margin:34px 0 14px;color:var(--night);display:flex;align-items:center;gap:10px}
+  h3::before{content:"";width:5px;height:17px;border-radius:3px;background:var(--brand);flex-shrink:0}
+  h4{font-size:15px;font-weight:800;margin:24px 0 10px;color:#2c4a48}
+  p{margin:12px 0;color:#3d5250;line-height:2}
+  strong{color:var(--primary-dark)}
+  code.inline{background:var(--primary-lighter);color:var(--primary-dark);padding:2px 7px;border-radius:6px;font-family:"SFMono-Regular",Consolas,Menlo,monospace;font-size:.9em;font-weight:600}
+  .figure{margin:24px 0;text-align:center}
+  .figure svg.diagram{max-width:100%;height:auto;background:#fff;border:1px solid var(--line);border-radius:14px;padding:10px}
+  .figure .caption{font-size:12.5px;color:var(--dim2);margin-top:9px}
+  .pic{margin:26px 0;text-align:center}
+  .pic img{max-width:100%;border-radius:16px;box-shadow:0 10px 28px rgba(20,60,60,.15);display:block;margin:0 auto}
+  .pic figcaption{font-size:12.5px;color:var(--dim2);margin-top:9px}
+  .pic .ph{display:none}
+  .pic.missing img{display:none}
+  .pic.missing .ph{display:flex;flex-direction:column;align-items:center;justify-content:center;gap:9px;border:2px dashed #bfdcd9;border-radius:16px;background:linear-gradient(135deg,#f8fdfc,#eef8f7);padding:40px 26px;color:#6f8f90}
+  .pic.missing .ph .fn{font-family:Consolas,monospace;font-size:12.5px;color:#0e8f86;font-weight:700;word-break:break-all}
+  .pic.missing .ph .ds{font-size:12.5px;line-height:1.8;max-width:560px}
+  .box{border-radius:13px;padding:16px 20px;margin:20px 0;font-size:14px;line-height:1.95}
+  .box .lb{font-weight:800;margin-right:6px}
+  .info{background:#eef6ff;border-left:5px solid #3b82f6;color:#274768}
+  .info .lb{color:#1d4ed8}
+  .tip{background:#fff9ec;border-left:5px solid #f59e0b;color:#6b4e13}
+  .tip .lb{color:#b45309}
+  .remember{background:var(--primary-lighter);border-left:5px solid var(--primary);color:#134e4a}
+  .remember .lb{color:var(--primary-dark)}
+  .warn{background:#fef2f2;border-left:5px solid #ef4444;color:#7f2b2b}
+  .warn .lb{color:#b91c1c}
+  .code-card{margin:20px 0;border-radius:14px;overflow:hidden;box-shadow:0 10px 28px rgba(15,40,40,.20)}
+  .code-head{display:flex;align-items:center;gap:9px;background:#291f48;padding:9px 14px}
+  .code-head .dot{width:10px;height:10px;border-radius:50%}
+  .code-head .d1{background:#ff5f57}.code-head .d2{background:#febc2e}.code-head .d3{background:#28c840}
+  .code-head .file{color:#8fb0aa;font-size:11.5px;font-family:Consolas,monospace;margin-left:6px}
+  .code-head .lang{margin-left:auto;font-size:10.5px;font-weight:800;color:#0b1f1a;background:#b18cf5;padding:2px 9px;border-radius:6px;letter-spacing:.4px}
+  .code-card pre{background:var(--code-bg);padding:18px 20px;overflow-x:auto;margin:0;font-family:"SFMono-Regular",Consolas,"Courier New",monospace;font-size:13.5px;line-height:1.85}
+  .code-card pre::-webkit-scrollbar{height:8px}
+  .code-card pre::-webkit-scrollbar-thumb{background:#2f4a45;border-radius:4px}
+  .code-card code{color:var(--code-tx);white-space:pre}
+  .kw{color:var(--code-kw);font-weight:600}
+  .st{color:var(--code-st)}
+  .nu{color:var(--code-nu)}
+  .cm{color:var(--code-cm);font-style:italic}
+  .fn{color:var(--code-fn)}
+  .out{background:#0e1d1a;color:#7fd6b8;font-family:Consolas,monospace;font-size:13px;padding:12px 20px;border-top:1px solid #223a35}
+  .out b{color:#c3d6d1;font-weight:600;font-size:11.5px;letter-spacing:1px}
+  table.styled{width:100%;border-collapse:collapse;margin:20px 0;font-size:13.5px;border-radius:12px;overflow:hidden;box-shadow:0 4px 16px rgba(14,143,134,.08)}
+  table.styled thead{background:var(--brand)}
+  table.styled th{color:#fff;padding:11px 14px;text-align:left;font-weight:700;font-size:13px}
+  table.styled td{padding:10px 14px;border-bottom:1px solid var(--line);color:#44585a;vertical-align:top}
+  table.styled tbody tr:nth-child(even){background:var(--bg-soft)}
+  table.styled tbody tr:last-child td{border-bottom:none}
+  .level-card{border:1px solid var(--line);border-radius:16px;overflow:hidden;margin:22px 0;box-shadow:0 6px 22px rgba(14,143,134,.08)}
+  .level-card .lc-head{background:linear-gradient(100deg,#12262c,#8a3a16);color:#fff;padding:15px 22px;display:flex;align-items:center;gap:12px;flex-wrap:wrap}
+  .level-card .lc-head .n{font-size:12px;font-weight:800;background:rgba(255,255,255,.2);padding:3px 10px;border-radius:20px}
+  .level-card .lc-head h4{margin:0;color:#fff;font-size:16px}
+  .level-card .lc-head .go{margin-left:auto;font-size:11.5px;color:#ffd2b3}
+  .level-card .lc-body{padding:20px 24px;background:#fff}
+  .level-card .story{background:#f8fcfc;border-left:4px solid #7dd3fc;border-radius:0 10px 10px 0;padding:13px 18px;margin:0 0 16px;font-size:14px;line-height:1.95;color:#3c5254}
+  .level-card .story b{color:#0369a1}
+  .btn-go{display:inline-flex;align-items:center;gap:8px;background:linear-gradient(135deg,var(--brand),var(--brand-dark));color:#fff;text-decoration:none;font-weight:800;font-size:13.5px;padding:10px 22px;border-radius:11px;box-shadow:0 8px 20px rgba(255,107,53,.32);transition:.2s}
+  .btn-go:hover{transform:translateY(-2px);box-shadow:0 12px 26px rgba(255,107,53,.42)}
+  .pit{border:1px solid #f6dede;border-radius:14px;overflow:hidden;margin:16px 0;background:#fff}
+  .pit .pt{display:flex;gap:12px;padding:14px 18px;background:#fffafa;align-items:flex-start}
+  .pit .x{width:26px;height:26px;border-radius:9px;background:#fee;color:#dc2626;display:flex;align-items:center;justify-content:center;font-weight:800;flex-shrink:0;font-size:13px}
+  .pit .t{font-size:13.5px;line-height:1.9;color:#5c4a4a;flex:1}
+  .pit .t b{color:#b91c1c}
+  .pit .duck{display:flex;gap:12px;padding:13px 18px;background:#fff5f5;border-top:1px dashed #f3d0d0;align-items:flex-start}
+  .pit .duck img{width:48px;height:48px;object-fit:contain;flex-shrink:0;margin-top:2px}
+  .pit .duck .dt{font-size:13.5px;line-height:1.9;color:#7a3b3b}
+  .pit .duck .dt b{color:#b91c1c}
+  .pit .fix{padding:12px 18px;background:#f2fbf9;border-top:1px dashed #cfe9e6;font-size:13.5px;color:#134e4a}
+  .pit .fix b{color:var(--primary-dark)}
+  .exam{border:1px solid #d8ebea;border-radius:15px;margin:16px 0;overflow:hidden;background:#fff;box-shadow:0 4px 16px rgba(30,80,80,.06)}
+  .exam .eh{display:flex;align-items:center;gap:10px;padding:11px 18px;background:linear-gradient(100deg,#eef8f7,#f8fdfc);border-bottom:1px solid #dbeceb;flex-wrap:wrap}
+  .exam .eh .src{font-size:11px;font-weight:800;color:#fff;background:#0e8f86;padding:2.5px 10px;border-radius:20px}
+  .exam .eh .src.ori{background:#0e9488}
+  .exam .eh .tp{font-size:11.5px;color:#4f7d7a;font-weight:700}
+  .exam .eb{padding:16px 20px}
+  .exam .q{font-weight:700;font-size:14px;color:#2b4042;line-height:1.9;margin-bottom:10px}
+  .exam .opt{font-size:13.5px;color:#46585a;line-height:2.05;padding-left:6px}
+  .exam .opt i{font-style:normal;font-weight:800;color:var(--primary-dark);margin-right:7px}
+  .exam pre{margin:12px 0;background:#14231f;border-radius:10px;padding:14px 16px;overflow-x:auto;font-family:Consolas,monospace;font-size:13px;line-height:1.8;color:var(--code-tx)}
+  .exam details{margin-top:10px;border-top:1px dashed var(--line);padding-top:10px}
+  .exam summary{cursor:pointer;font-size:12.5px;font-weight:800;color:#0e8f86;outline:none;user-select:none}
+  .exam details .ans{font-size:13.5px;color:#3d5250;line-height:1.95;margin-top:9px;background:var(--bg-soft);padding:13px 16px;border-radius:10px}
+  .exam details .ans b{color:var(--primary-dark)}
+  .exam details .ans .tagline{display:inline-block;font-size:11px;background:#e0f2fe;color:#0e7490;padding:1.5px 8px;border-radius:6px;font-weight:700;margin-right:6px}
+  .summary{margin:40px 0 20px;border-radius:18px;padding:26px 30px;background:linear-gradient(130deg,#fff8f3,#ffffff);border:1px solid #ffe0cf}
+  .summary h3{margin-top:0}
+  .summary ul{list-style:none;margin-top:10px}
+  .summary li{font-size:14px;line-height:2;color:#3d5250;padding-left:24px;position:relative}
+  .summary li::before{content:"◆";position:absolute;left:0;color:var(--brand);font-size:11px;top:6px}
+  .pager{display:flex;gap:14px;margin-top:30px;flex-wrap:wrap}
+  .pager a{flex:1;min-width:200px;text-decoration:none;border:1px solid var(--line);border-radius:14px;padding:16px 20px;background:#fff;transition:.2s;display:block}
+  .pager a:hover{border-color:var(--brand);box-shadow:0 10px 26px rgba(255,107,53,.14);transform:translateY(-2px)}
+  .pager a .k{font-size:11px;color:var(--dim2);font-weight:700;letter-spacing:1px}
+  .pager a .v{font-size:14px;font-weight:800;color:var(--night);margin-top:5px}
+  .pager a.back{background:var(--brand-soft);border-color:transparent;text-align:center}
+  .pager a.back .v{color:var(--brand-dark)}
+  .cta{margin-top:26px;border-radius:20px;padding:30px 34px;color:#fff;position:relative;overflow:hidden;background:linear-gradient(120deg,#12242a,#1e4a52 46%,#a8431c 132%)}
+  .cta::after{content:"";position:absolute;right:-70px;bottom:-90px;width:280px;height:280px;border-radius:50%;background:radial-gradient(circle,rgba(255,140,80,.45),transparent 68%)}
+  .cta h3{color:#fff;margin:0 0 10px;position:relative;z-index:2}
+  .cta h3::before{background:var(--brand)}
+  .cta p{color:#cfe4e2;font-size:13.5px;margin:0 0 18px;position:relative;z-index:2;max-width:640px}
+  .cta .btn-go{position:relative;z-index:2}
+  @media(max-width:900px){
+    .sidebar-nav{transform:translateX(-100%)}
+    .sidebar-nav.active{transform:translateX(0)}
+    .nav-toggle{display:block}
+    .page{margin-left:0}
+    .hero{padding:70px 22px 34px}
+    .hero-top{flex-direction:column-reverse;text-align:center}
+    .hero-card{width:auto}
+    .container{padding:26px 20px 60px}
+    .goal-grid{grid-template-columns:1fr}
+  }
+</style>
+</head>
+<body>
+
+<button class="nav-toggle" onclick="document.querySelector('.sidebar-nav').classList.toggle('active')">&#9776;</button>
+
+<nav class="sidebar-nav">
+  <div class="sb-brand">
+    <a class="sb-logo" href="https://codecombat.cn/" target="_blank" rel="noopener" title="访问 CodeCombat 扣哒世界官网">
+      <img src="../assets/logo.png" alt="CodeCombat 扣哒世界">
+    </a>
+    <div><b>交织雷网</b><span>雷鸣高塔 · Python 七级 第 2 单元</span></div>
+  </div>
+  <div class="nav-title">本单元目录</div>
+  <a href="#s0" class="nav-section">0　单元导语与目标</a>
+  <a href="#s0-1" class="nav-sub">0.1 学习目标</a>
+  <a href="#s0-2" class="nav-sub">0.2 考纲对照</a>
+  <a href="#s1" class="nav-section">1　从一维到二维</a>
+  <a href="#s1-1" class="nav-sub">1.1 从一行到一张表</a>
+  <a href="#s1-2" class="nav-sub">1.2 二维 DP 的通用模板</a>
+  <a href="#s2" class="nav-section">2　网格路径问题</a>
+  <a href="#s2-1" class="nav-sub">2.1 每格等于上面加左边</a>
+  <a href="#s2-2" class="nav-sub">2.2 边界为什么要单独处理</a>
+  <a href="#s3" class="nav-section">3　最小路径和</a>
+  <a href="#s3-1" class="nav-sub">3.1 只改一行转移</a>
+  <a href="#s3-2" class="nav-sub">3.2 两个问题的对比</a>
+  <a href="#s4" class="nav-section">4　四个经典 DP 模型</a>
+  <a href="#s4-1" class="nav-sub">4.1 行列各代表一个串</a>
+  <a href="#s4-2" class="nav-sub">4.2 为什么多开一行一列</a>
+  <a href="#s4-3" class="nav-sub">4.3 最长上升子序列（LIS）</a>
+  <a href="#s4-4" class="nav-sub">4.4 区间动态规划</a>
+  <a href="#s4-5" class="nav-sub">4.5 滚动数组：把二维压成一维</a>
+  <a href="#s5" class="nav-section">5　代码实战</a>
+  <a href="#s6" class="nav-section">6　常见陷阱</a>
+  <a href="#s7" class="nav-section">7　题目练习</a>
+  <a href="#s8" class="nav-section">8　本单元小结</a>
+  <a href="../index.html" target="_top" class="sb-back">返回考纲之路</a>
+</nav>
+
+<div class="page">
+
+<div class="hero">
+  <div class="hero-top">
+    <div class="hero-txt">
+      <div class="crumb">扣哒考级 · GESP PYTHON 七级 · 第 2 单元　|　雷鸣高塔 THUNDERSPIRE</div>
+      <h1>交织雷网
+        <span class="sub">复杂动态规划</span>
+      </h1>
+      <div class="en">Advanced Dynamic Programming</div>
+      <div class="tags">        <span class="tag hot">考纲 · 二维DP</span>
+        <span class="tag">状态设计</span>
+        <span class="tag">转移方程</span>
+        <span class="tag">路径问题</span>
+        <span class="tag">字符串DP</span></div>
+    </div>
+    <div class="hero-card">
+      <img class="ava" src="../assets/avatars/senick.webp" alt="塞尼克" onerror="this.style.background='#24344a'">
+      <div class="nm">塞尼克</div>
+      <div class="ti">沙海向导 · 你的向导</div>
+    </div>
+  </div>
+</div>
+
+<div class="container">
+
+<div class="lead">
+  高塔内部的雷网密密麻麻，<b>电流能从很多条路走到塔底</b>。
+  每条线上的损耗都不一样，你想找一条最省力的路线。<br>
+  塞尼克摊开图纸：看，这张图就是一张表格。<br>
+  <b>每一格的最优解，都由它上面和左边那两格决定。</b>
+</div>
+
+<div class="cast teacher">
+  <img class="ava" src="../assets/avatars/senick.webp" alt="塞尼克" onerror="this.style.display='none'">
+  <div class="bubble">
+    <div class="who">塞尼克 · 沙海向导</div>
+    上一级别我们学了"一格一格填"的动态规划。<br>
+    <strong>这一单元，表格变成两维的——用 dp[i][j] 表示"走到第 i 行第 j 列时的最优结果"。</strong><br>
+    别怕，<b>思路和填充一维表格完全一样，只是多了一层循环。</b>
+  </div>
+</div>
+
+<figure class="pic">
+  <img src="../assets/illustrations/py-L7-02-01_thunder_mesh.webp" alt="交织雷网"
+       onerror="this.closest('.pic').classList.add('missing')">
+  <div class="ph">
+    <div class="fn">assets/illustrations/py-L7-02-01_thunder_mesh.webp</div>
+    <div class="ds">【配图位】塔内纵横交错的雷电网格俯视图，每个交叉点闪着不同亮度的电光并标有损耗数值；一条较亮的路径从左上角延伸到右下角，沿途的节点依次被点亮，其余线路暗淡。</div>
+  </div>
+  <figcaption>图 1：雷鸣高塔的交织雷网——今天要从这里开始</figcaption>
+</figure>
+
+<div class="section-header" id="s0">
+  <h2>0　单元导语与目标</h2>
+  <div class="en-title">Unit Overview</div>
+
+<h3 id="s0-1">0.1 学习目标</h3>
+</div>
+
+<div class="goal-grid">
+  <h3 id="s0-2">0.2 考纲对照</h3>
+
+<div class="goal">
+    <h4><span class="ic">1</span>学完这个单元，你将能……</h4>
+    <ul>
+      <li>把一维表格扩展成二维表格</li>
+      <li>为网格类问题定义状态与转移方程</li>
+      <li>解决"路径条数""最小路径和"问题</li>
+      <li>正确处理表格的边界（第一行、第一列）</li>
+      <li>理解字符串 DP 的基本思路</li>
+      <li>读懂二维 DP 的程序并预测结果</li>
+      <li>能写出区间 DP、最长上升子序列与滚动数组优化</li>
+    </ul>
+  </div>
+  <div class="goal syllabus">
+    <h4><span class="ic">2</span>对标 GESP 考纲（Python 七级）</h4>
+    <ul>
+      <li>掌握二维数组上的动态规划：状态定义与转移方程</li>
+      <li>掌握网格路径计数、最小路径和等典型问题</li>
+      <li>了解序列型动态规划的思想（如最长公共子序列）</li>
+      <li>掌握区间动态规划、最长上升子序列（LIS）、最长公共子序列（LCS）与滚动数组优化</li>
+      <li>考核目标：能独立写出中等难度的动态规划程序</li>
+    </ul>
+  </div>
+</div>
+
+<div class="section-header" id="s1">
+  <h2>1　从一维到二维</h2>
+  <div class="en-title">From 1D to 2D</div>
+
+<h3 id="s1-1">1.1 从一行到一张表</h3>
+</div>
+
+<table class="styled">
+  <thead><tr><th>对比项</th><th>一维 DP（六级）</th><th>二维 DP（七级）</th></tr></thead>
+  <tbody>
+    <tr><td>状态写法</td><td><code class="inline">dp[i]</code></td><td><code class="inline">dp[i][j]</code></td></tr>
+    <tr><td>表格形状</td><td>一行</td><td>一张表格</td></tr>
+    <tr><td>填表顺序</td><td>一层循环</td><td><b>两层循环</b>（先枚举行，再枚举列）</td></tr>
+    <tr><td>依赖谁</td><td>前面一格或几格</td><td><b>上面一格、左边一格</b></td></tr>
+    <tr><td>典型问题</td><td>爬楼梯、找零钱</td><td>网格路径、最小路径和</td></tr>
+  </tbody>
+</table>
+
+<h3 id="s1-2">1.2 二维 DP 的通用模板</h3>
+
+<div class="box remember">
+  <span class="lb">二维 DP 的通用模板：</span>
+<pre style="margin:10px 0 0;background:#241a44;color:#c3d6d1;border-radius:10px;padding:14px 16px;font-size:13px;overflow-x:auto">dp = [[0] * m for i in range(n)]     # n 行 m 列的表格
+
+for i in range(n):                   # 枚举行
+    for j in range(m):               # 枚举列
+        dp[i][j] = 由 dp[i-1][j] 和 dp[i][j-1] 推出来的值</pre>
+</div>
+
+<div class="section-header" id="s2">
+  <h2>2　网格路径问题</h2>
+  <div class="en-title">Grid Paths</div>
+
+<h3 id="s2-1">2.1 每格等于上面加左边</h3>
+</div>
+
+<p>经典问题：<strong>从左上角走到右下角，每次只能向右或向下走一步，一共有多少条路？</strong></p>
+
+<figure class="figure">
+  <svg class="diagram" viewBox="0 0 860 280" role="img" aria-label="网格路径计数">
+    <text x="24" y="34" font-size="14" font-weight="bold" fill="#1f2937">dp[i][j] = 走到第 i 行第 j 列的路径条数</text>
+
+    <g font-family="Consolas,monospace" font-size="11.5">
+      <rect x="110" y="62" width="76" height="42" rx="8" fill="#f1ebfe" stroke="#8f66ea" stroke-width="1.8"/>
+      <text x="148" y="88" text-anchor="middle" fill="#5227a8">1</text>
+      <rect x="194" y="62" width="76" height="42" rx="8" fill="#f1ebfe" stroke="#8f66ea" stroke-width="1.8"/>
+      <text x="232" y="88" text-anchor="middle" fill="#5227a8">1</text>
+      <rect x="278" y="62" width="76" height="42" rx="8" fill="#f1ebfe" stroke="#8f66ea" stroke-width="1.8"/>
+      <text x="316" y="88" text-anchor="middle" fill="#5227a8">1</text>
+      <rect x="362" y="62" width="76" height="42" rx="8" fill="#f1ebfe" stroke="#8f66ea" stroke-width="1.8"/>
+      <text x="400" y="88" text-anchor="middle" fill="#5227a8">1</text>
+
+      <rect x="110" y="112" width="76" height="42" rx="8" fill="#f1ebfe" stroke="#8f66ea" stroke-width="1.8"/>
+      <text x="148" y="138" text-anchor="middle" fill="#5227a8">1</text>
+      <rect x="194" y="112" width="76" height="42" rx="8" fill="#b18cf5" stroke="#6d3fd4" stroke-width="2"/>
+      <text x="232" y="138" text-anchor="middle" fill="#fff" font-weight="bold">2</text>
+      <rect x="278" y="112" width="76" height="42" rx="8" fill="#d9c8fb" stroke="#8f66ea" stroke-width="1.8"/>
+      <text x="316" y="138" text-anchor="middle" fill="#5227a8">3</text>
+      <rect x="362" y="112" width="76" height="42" rx="8" fill="#d9c8fb" stroke="#8f66ea" stroke-width="1.8"/>
+      <text x="400" y="138" text-anchor="middle" fill="#5227a8">4</text>
+
+      <rect x="110" y="162" width="76" height="42" rx="8" fill="#f1ebfe" stroke="#8f66ea" stroke-width="1.8"/>
+      <text x="148" y="188" text-anchor="middle" fill="#5227a8">1</text>
+      <rect x="194" y="162" width="76" height="42" rx="8" fill="#d9c8fb" stroke="#8f66ea" stroke-width="1.8"/>
+      <text x="232" y="188" text-anchor="middle" fill="#5227a8">3</text>
+      <rect x="278" y="162" width="76" height="42" rx="8" fill="#d9c8fb" stroke="#8f66ea" stroke-width="1.8"/>
+      <text x="316" y="188" text-anchor="middle" fill="#5227a8">6</text>
+      <rect x="362" y="162" width="76" height="42" rx="8" fill="#6d3fd4" stroke="#5227a8" stroke-width="2.4"/>
+      <text x="400" y="188" text-anchor="middle" fill="#fff" font-weight="bold">10</text>
+    </g>
+
+    <rect x="480" y="62" width="350" height="146" rx="12" fill="#241a44"/>
+    <text x="504" y="90" font-family="Consolas,monospace" font-size="12.5" fill="#d9c8fb">起点（0,0）只有 1 条路</text>
+    <text x="504" y="120" font-family="Consolas,monospace" font-size="12.5" fill="#d9c8fb">第一行只能一路向右 → 全是 1</text>
+    <text x="504" y="150" font-family="Consolas,monospace" font-size="12.5" fill="#d9c8fb">第一列只能一路向下 → 全是 1</text>
+    <text x="504" y="180" font-family="Consolas,monospace" font-size="12.5" fill="#e8c766">其余每一格 = 上面 + 左边</text>
+    <text x="504" y="200" font-family="Consolas,monospace" font-size="11.5" fill="#b18cf5">dp[i][j] = dp[i-1][j] + dp[i][j-1]</text>
+  </svg>
+  <div class="caption">图 2（SVG）：路径计数——每格等于"上面 + 左边"</div>
+</figure>
+
+<div class="code-card">
+  <div class="code-head">
+    <span class="dot d1"></span><span class="dot d2"></span><span class="dot d3"></span>
+    <span class="file">路径计数的完整代码</span>
+    <span class="lang">Python</span>
+  </div>
+  <pre><code>n, m = 4, 4
+
+dp = [[0] * m for i in range(n)]
+
+# 边界：第一行、第一列都只有一种走法
+for j in range(m):
+    dp[0][j] = 1
+for i in range(n):
+    dp[i][0] = 1
+
+# 其余格子 = 上面 + 左边
+for i in range(1, n):
+    for j in range(1, m):
+        dp[i][j] = dp[i - 1][j] + dp[i][j - 1]
+
+print(dp[n - 1][m - 1])    # 20</code></pre>
+  <div class="out"><b>OUTPUT</b>　20</div>
+</div>
+
+<h3 id="s2-2">2.2 边界为什么要单独处理</h3>
+
+<div class="box tip">
+  <span class="lb">边界为什么要单独处理？</span>
+  因为 <code class="inline">dp[i-1][j]</code> 在第一行时没有"上面"，
+  <code class="inline">dp[i][j-1]</code> 在第一列时没有"左边"。<br>
+  <strong>先把这些"缺胳膊少腿"的格子填好，后面的循环就能放心写了。</strong>
+</div>
+
+<figure class="pic">
+  <img src="../assets/illustrations/py-L7-02-02_grid_path_scene.webp" alt="雷网上的路径计数"
+       onerror="this.closest('.pic').classList.add('missing')">
+  <div class="ph">
+    <div class="fn">assets/illustrations/py-L7-02-02_grid_path_scene.webp</div>
+    <div class="ds">【配图位】高塔大厅里悬着一张发光的方格雷网，每个交叉点上都浮着一个数字：左上角的起点写着 1，越往右下数字越大；一名学徒用手指点着某一格，从它正上方和正左方各引出一条细光带汇进这一格。</div>
+  </div>
+  <figcaption>图 3：雷网上的路径——每格等于上面加左边</figcaption>
+</figure>
+
+<div class="section-header" id="s3">
+  <h2>3　最小路径和</h2>
+  <div class="en-title">Minimum Path Sum</div>
+
+<h3 id="s3-1">3.1 只改一行转移</h3>
+</div>
+
+<p>换成另一个问题：<strong>每个格子上有个数字，从左上走到右下，让经过的数字之和最小。</strong></p>
+
+<div class="code-card">
+  <div class="code-head">
+    <span class="dot d1"></span><span class="dot d2"></span><span class="dot d3"></span>
+    <span class="file">代码结构和路径计数几乎一样，只改了转移那一行</span>
+    <span class="lang">Python</span>
+  </div>
+  <pre><code>grid = [[1, 3, 1],
+        [1, 5, 1],
+        [4, 2, 1]]
+
+n = len(grid)
+m = len(grid[0])
+dp = [[0] * m for i in range(n)]
+
+dp[0][0] = grid[0][0]                     # 起点
+
+for j in range(1, m):                     # 第一行：只能从左边来
+    dp[0][j] = dp[0][j - 1] + grid[0][j]
+
+for i in range(1, n):                     # 第一列：只能从上边来
+    dp[i][0] = dp[i - 1][0] + grid[i][0]
+
+for i in range(1, n):
+    for j in range(1, m):
+        # 从"上面来"和"左边来"里挑更省的那条
+        dp[i][j] = min(dp[i - 1][j], dp[i][j - 1]) + grid[i][j]
+
+print(dp[n - 1][m - 1])    # 7</code></pre>
+  <div class="out"><b>OUTPUT</b>　7　（路线：1 → 1 → 1 → 1 → 1 → 2 → 1）</div>
+</div>
+
+<h3 id="s3-2">3.2 两个问题的对比</h3>
+
+<div class="box remember">
+  <span class="lb">两个问题的对比：</span><br>
+  <b>路径计数</b>：<code class="inline">dp[i][j] = dp[i-1][j] + dp[i][j-1]</code>（把两条路加起来）<br>
+  <b>最小路径和</b>：<code class="inline">dp[i][j] = min(dp[i-1][j], dp[i][j-1]) + grid[i][j]</code>（挑更省的一条）<br>
+  <b>最大路径和</b>：把 min 换成 max 就行。<br>
+  <strong>看！同一套框架，换个"小动作"就能解决不同的问题。这就是 DP 的好处。</strong>
+</div>
+
+<div class="section-header" id="s4">
+  <h2>4　两个字符串的 DP</h2>
+  <div class="en-title">DP on Two Strings</div>
+
+<h3 id="s4-1">4.1 行列各代表一个串</h3>
+</div>
+
+<p>二维 DP 还有一个重要应用：<strong>比较两个字符串</strong>。比如求最长公共子序列（LCS）。</p>
+
+<figure class="figure">
+  <svg class="diagram" viewBox="0 0 860 300" role="img" aria-label="最长公共子序列">
+    <text x="24" y="34" font-size="14" font-weight="bold" fill="#1f2937">求 "ABCD" 与 "ACBD" 的最长公共子序列</text>
+
+    <g font-family="Consolas,monospace" font-size="11.5" fill="#64748b">
+      <text x="96" y="70">""</text><text x="152" y="70">A</text><text x="208" y="70">C</text>
+      <text x="264" y="70">B</text><text x="320" y="70">D</text>
+      <text x="42" y="106">""</text><text x="42" y="142">A</text><text x="42" y="178">B</text>
+      <text x="42" y="214">C</text><text x="42" y="250">D</text>
+    </g>
+
+    <g font-family="Consolas,monospace" font-size="11">
+      <rect x="122" y="78" width="40" height="28" rx="5" fill="#f1ebfe" stroke="#8f66ea" stroke-width="1.3"/><text x="142" y="97" text-anchor="middle" fill="#5227a8">0</text>
+      <rect x="168" y="78" width="40" height="28" rx="5" fill="#f1ebfe" stroke="#8f66ea" stroke-width="1.3"/><text x="188" y="97" text-anchor="middle" fill="#5227a8">0</text>
+      <rect x="214" y="78" width="40" height="28" rx="5" fill="#f1ebfe" stroke="#8f66ea" stroke-width="1.3"/><text x="234" y="97" text-anchor="middle" fill="#5227a8">0</text>
+      <rect x="260" y="78" width="40" height="28" rx="5" fill="#f1ebfe" stroke="#8f66ea" stroke-width="1.3"/><text x="280" y="97" text-anchor="middle" fill="#5227a8">0</text>
+      <rect x="306" y="78" width="40" height="28" rx="5" fill="#f1ebfe" stroke="#8f66ea" stroke-width="1.3"/><text x="326" y="97" text-anchor="middle" fill="#5227a8">0</text>
+
+      <rect x="122" y="112" width="40" height="28" rx="5" fill="#f1ebfe" stroke="#8f66ea" stroke-width="1.3"/><text x="142" y="131" text-anchor="middle" fill="#5227a8">0</text>
+      <rect x="168" y="112" width="40" height="28" rx="5" fill="#b18cf5" stroke="#6d3fd4" stroke-width="1.8"/><text x="188" y="131" text-anchor="middle" fill="#fff">1</text>
+      <rect x="214" y="112" width="40" height="28" rx="5" fill="#d9c8fb" stroke="#8f66ea" stroke-width="1.3"/><text x="234" y="131" text-anchor="middle" fill="#5227a8">1</text>
+      <rect x="260" y="112" width="40" height="28" rx="5" fill="#d9c8fb" stroke="#8f66ea" stroke-width="1.3"/><text x="280" y="131" text-anchor="middle" fill="#5227a8">1</text>
+      <rect x="306" y="112" width="40" height="28" rx="5" fill="#d9c8fb" stroke="#8f66ea" stroke-width="1.3"/><text x="326" y="131" text-anchor="middle" fill="#5227a8">1</text>
+
+      <rect x="122" y="146" width="40" height="28" rx="5" fill="#f1ebfe" stroke="#8f66ea" stroke-width="1.3"/><text x="142" y="165" text-anchor="middle" fill="#5227a8">0</text>
+      <rect x="168" y="146" width="40" height="28" rx="5" fill="#d9c8fb" stroke="#8f66ea" stroke-width="1.3"/><text x="188" y="165" text-anchor="middle" fill="#5227a8">1</text>
+      <rect x="214" y="146" width="40" height="28" rx="5" fill="#d9c8fb" stroke="#8f66ea" stroke-width="1.3"/><text x="234" y="165" text-anchor="middle" fill="#5227a8">1</text>
+      <rect x="260" y="146" width="40" height="28" rx="5" fill="#b18cf5" stroke="#6d3fd4" stroke-width="1.8"/><text x="280" y="165" text-anchor="middle" fill="#fff">2</text>
+      <rect x="306" y="146" width="40" height="28" rx="5" fill="#d9c8fb" stroke="#8f66ea" stroke-width="1.3"/><text x="326" y="165" text-anchor="middle" fill="#5227a8">2</text>
+
+      <rect x="122" y="180" width="40" height="28" rx="5" fill="#f1ebfe" stroke="#8f66ea" stroke-width="1.3"/><text x="142" y="199" text-anchor="middle" fill="#5227a8">0</text>
+      <rect x="168" y="180" width="40" height="28" rx="5" fill="#d9c8fb" stroke="#8f66ea" stroke-width="1.3"/><text x="188" y="199" text-anchor="middle" fill="#5227a8">1</text>
+      <rect x="214" y="180" width="40" height="28" rx="5" fill="#b18cf5" stroke="#6d3fd4" stroke-width="1.8"/><text x="234" y="199" text-anchor="middle" fill="#fff">2</text>
+      <rect x="260" y="180" width="40" height="28" rx="5" fill="#d9c8fb" stroke="#8f66ea" stroke-width="1.3"/><text x="280" y="199" text-anchor="middle" fill="#5227a8">2</text>
+      <rect x="306" y="180" width="40" height="28" rx="5" fill="#d9c8fb" stroke="#8f66ea" stroke-width="1.3"/><text x="326" y="199" text-anchor="middle" fill="#5227a8">2</text>
+
+      <rect x="122" y="214" width="40" height="28" rx="5" fill="#f1ebfe" stroke="#8f66ea" stroke-width="1.3"/><text x="142" y="233" text-anchor="middle" fill="#5227a8">0</text>
+      <rect x="168" y="214" width="40" height="28" rx="5" fill="#d9c8fb" stroke="#8f66ea" stroke-width="1.3"/><text x="188" y="233" text-anchor="middle" fill="#5227a8">1</text>
+      <rect x="214" y="214" width="40" height="28" rx="5" fill="#d9c8fb" stroke="#8f66ea" stroke-width="1.3"/><text x="234" y="233" text-anchor="middle" fill="#5227a8">2</text>
+      <rect x="260" y="214" width="40" height="28" rx="5" fill="#d9c8fb" stroke="#8f66ea" stroke-width="1.3"/><text x="280" y="233" text-anchor="middle" fill="#5227a8">2</text>
+      <rect x="306" y="214" width="40" height="28" rx="5" fill="#6d3fd4" stroke="#5227a8" stroke-width="2"/><text x="326" y="233" text-anchor="middle" fill="#fff">3</text>
+    </g>
+
+    <rect x="404" y="78" width="428" height="196" rx="12" fill="#241a44"/>
+    <text x="428" y="106" font-family="Consolas,monospace" font-size="12.5" fill="#d9c8fb">dp[i][j] 表示</text>
+    <text x="428" y="132" font-family="Consolas,monospace" font-size="12.5" fill="#d9c8fb">s1 前 i 个字符 与 s2 前 j 个字符</text>
+    <text x="428" y="158" font-family="Consolas,monospace" font-size="12.5" fill="#d9c8fb">的最长公共子序列长度</text>
+    <text x="428" y="194" font-family="Consolas,monospace" font-size="12.5" fill="#e8c766">字符相同 → 左上角 + 1</text>
+    <text x="428" y="222" font-family="Consolas,monospace" font-size="12.5" fill="#e8c766">字符不同 → 上面与左边的较大者</text>
+    <text x="428" y="254" font-family="Consolas,monospace" font-size="12.5" fill="#b18cf5">答案 = 右下角 = 3</text>
+  </svg>
+  <div class="caption">图 4（SVG）：两个字符串的 DP 表——行列各代表一个串</div>
+</figure>
+
+<div class="code-card">
+  <div class="code-head">
+    <span class="dot d1"></span><span class="dot d2"></span><span class="dot d3"></span>
+    <span class="file">最长公共子序列</span>
+    <span class="lang">Python</span>
+  </div>
+  <pre><code>s1 = "ABCD"
+s2 = "ACBD"
+n, m = len(s1), len(s2)
+
+dp = [[0] * (m + 1) for i in range(n + 1)]   # 多开一行一列放"空串"
+
+for i in range(1, n + 1):
+    for j in range(1, m + 1):
+        if s1[i - 1] == s2[j - 1]:           # 字符相同
+            dp[i][j] = dp[i - 1][j - 1] + 1
+        else:                                 # 字符不同
+            dp[i][j] = max(dp[i - 1][j], dp[i][j - 1])
+
+print(dp[n][m])    # 3</code></pre>
+  <div class="out"><b>OUTPUT</b>　3</div>
+</div>
+
+<h3 id="s4-2">4.2 为什么多开一行一列</h3>
+
+<div class="box tip">
+  <span class="lb">为什么多开一行一列？</span>
+  因为要表示"空字符串"这种状态——<strong>空串和任何串的公共子序列长度都是 0</strong>。<br>
+  下标 0 那一行/列全填 0，后面的循环就不用再操心边界了。<br>
+  <b>这种"多开一圈"的技巧，在二维 DP 里很常见。</b>
+</div>
+
+<figure class="pic">
+  <img src="../assets/illustrations/py-L7-02-03_lcs_scene.webp" alt="两张名册对格子"
+       onerror="this.closest('.pic').classList.add('missing')">
+  <div class="ph">
+    <div class="fn">assets/illustrations/py-L7-02-03_lcs_scene.webp</div>
+    <div class="ds">【配图位】塔内的长桌上摊开两张发光的名册，一张横放、一张竖放，两张纸的每一行每一列在交点上形成一小格，格子里亮着数字；一名学徒拿笔在两串名字之间逐一对照，把相同的字用光点连起来。</div>
+  </div>
+  <figcaption>图 5：两个字符串的 DP——两张名册对格子</figcaption>
+</figure>
+
+<h3 id="s4-3">4.3 最长上升子序列（LIS）：只看"自己结尾能有多长"</h3>
+
+<p>给定一串数，<b>从左往右挑，数值必须一个比一个大</b>，最多能挑几个？这就是<b>最长上升子序列</b>。</p>
+
+<div class="box remember">
+  <span class="lb">状态设计：</span><br>
+  <code class="inline">dp[i]</code> 表示<b>以 a[i] 结尾</b>的最长上升子序列长度。<br>
+  <b>转移：</b>往前找所有比 a[i] 小的 a[j]，挑其中 dp 最大的，再加 1——<code class="inline">dp[i] = max(dp[j]) + 1</code>。<br>
+  <b>答案：</b>不是 dp[n-1]，而是 <code class="inline">max(dp)</code>！因为最长的那条不一定以最后一个数结尾。
+</div>
+
+<figure class="pic">
+  <img src="../assets/illustrations/py-L7-02-04_dp_models.webp" alt="四个经典 DP 模型"
+       onerror="this.closest('.pic').classList.add('missing')">
+  <div class="ph">
+    <div class="fn">assets/illustrations/py-L7-02-04_dp_models.webp</div>
+    <div class="ds">【配图位】雷塔的"算法沙盘"上摆着四块牌子：一块画着网格（路径 DP）、一块画着上下两串字符（LCS）、一块画着一条阶梯状的折线（LIS）、一块画着一小段被尺子量住的区间（区间 DP）；四块牌子的共同点是都写着"dp"两个字</div>
+  </div>
+  <figcaption>图 4（PNG）：二维 DP 的四个经典模型——状态不同，套路相同</figcaption>
+</figure>
+
+<div class="box warn">
+  <span class="lb">最容易错的地方：</span>把答案写成 <code class="inline">dp[n-1]</code>。
+  <b>打个比方：</b>班里最高的同学不一定坐在最后一排——要整列扫一遍才知道谁最高。
+</div>
+
+<div class="code-card">
+  <div class="code-head">
+    <span class="dot d1"></span><span class="dot d2"></span><span class="dot d3"></span>
+    <span class="file">最长上升子序列：O(n²) 的写法</span>
+    <span class="lang">Python</span>
+  </div>
+<pre><code>n = 5
+a = [3, 1, 4, 1, 5]
+
+dp = [1] * n                     # dp[i]：以 a[i] 结尾的最长上升子序列长度
+
+for i in range(n):
+    for j in range(i):           # 看前面每个更小的数
+        if a[j] &lt; a[i]:
+            dp[i] = max(dp[i], dp[j] + 1)
+
+print(max(dp))                   # 3 —— 1 4 5 或者 3 4 5</code></pre>
+  <div class="out"><b>要点</b> 只看"以自己结尾"，答案取整列最大值</div>
+</div>
+
+<h3 id="s4-4">4.4 区间动态规划：状态是"一段区间"</h3>
+
+<p>还有一类题，答案和<b>"哪一段"</b>有关：石子合并、删数字得分、括号匹配……
+状态写成 <code class="inline">f[l][r]</code>，表示<b>区间 [l, r] 的答案</b>。</p>
+
+<div class="code-card">
+  <div class="code-head">
+    <span class="dot d1"></span><span class="dot d2"></span><span class="dot d3"></span>
+    <span class="file">区间 DP 的填表骨架</span>
+    <span class="lang">Python</span>
+  </div>
+<pre><code>n = 6
+a = [4, 1, 7, 3, 9, 2]
+f = [[0] * n for _ in range(n)]
+
+for i in range(n):
+    f[i][i] = a[i]                       # 长度 1：只有自己
+
+for length in range(2, n + 1):           # ① 区间长度从小到大
+    for l in range(0, n - length + 1):   # ② 左端点
+        r = l + length - 1               # 右端点
+        f[l][r] = max(
+            f[l + 1][r] + a[l],          # ③ 枚举"最后一次合并"
+            f[l][r - 1] + a[r]
+        )
+
+print(f[0][n - 1])</code></pre>
+  <div class="out"><b>要点</b> 先枚举区间长度，再枚举左端点，最后枚举分界点</div>
+</div>
+
+<figure class="figure">
+  <svg class="diagram" viewBox="0 0 860 240" role="img" aria-label="区间 DP 的填表顺序">
+    <text x="24" y="30" font-size="14" font-weight="bold" fill="#1f2937">区间 DP 的填表顺序：先算短区间，再算长区间</text>
+    <g font-family="Consolas,monospace" font-size="11">
+      <rect x="60" y="70" width="46" height="30" rx="6" fill="#eaf1fe" stroke="#2563eb" stroke-width="1.4"/>
+      <text x="83" y="90" text-anchor="middle" fill="#1d4ed8">f[i][i]</text>
+      <rect x="118" y="70" width="60" height="30" rx="6" fill="#cfe0f5" stroke="#2563eb" stroke-width="1.6"/>
+      <text x="148" y="90" text-anchor="middle" fill="#1d4ed8">长度 2</text>
+      <rect x="190" y="70" width="60" height="30" rx="6" fill="#93b4f0" stroke="#2563eb" stroke-width="1.6"/>
+      <text x="220" y="90" text-anchor="middle" fill="#fff">长度 3</text>
+      <rect x="262" y="70" width="60" height="30" rx="6" fill="#4f8ff0" stroke="#2563eb" stroke-width="1.6"/>
+      <text x="292" y="90" text-anchor="middle" fill="#fff">长度 4</text>
+      <rect x="334" y="70" width="60" height="30" rx="6" fill="#2563eb" stroke="#1b47a8" stroke-width="1.6"/>
+      <text x="364" y="90" text-anchor="middle" fill="#fff">长度 n</text>
+    </g>
+    <text x="430" y="90" font-size="12.5" fill="#1d4ed8" font-weight="bold">← 答案在最后一个格子里</text>
+    <rect x="60" y="126" width="740" height="88" rx="12" fill="#eaf1fe" stroke="#2563eb" stroke-width="1.6"/>
+    <text x="80" y="154" font-size="12.5" fill="#1d4ed8" font-weight="bold">三层循环的顺序不能换：</text>
+    <text x="80" y="180" font-size="12" fill="#1f2937">① for 长度 len → ② for 左端点 l（右端点 r = l + len - 1）→ ③ for 分界点 k</text>
+    <text x="80" y="204" font-size="12" fill="#b45309">一句话：短区间必须先算完，长区间才能从它推出来</text>
+  </svg>
+  <div class="caption">图解：区间 DP 的填表顺序——按区间长度递增</div>
+</figure>
+
+<div class="box info">
+  <span class="lb">真题演练（2026 年 6 月 · Python 七级 · 编程题）：</span><br>
+  题目给出一排数，每删掉一个数就能得分，得分等于它<b>左右邻居</b>的乘积。官方参考解法的注释写得很清楚：<br>
+  <code class="inline">f[l][r]</code> 表示区间 <code class="inline">[l, r]</code> 内所有元素被删完时能获得的最大分数，枚举的正是<b>区间内最后一个被删除的元素</b>——这就是区间 DP 的标准姿势。<br>
+  <b>所以七级考区间 DP，不是"会不会背模板"，而是"能不能想到用区间当状态"。</b>
+</div>
+
+<h3 id="s4-5">4.5 滚动数组：把二维压成一维</h3>
+
+<p>当 <code class="inline">dp[i][j]</code> 只由 <code class="inline">dp[i-1][...]</code> 推出来时，
+<b>i 这一维可以"滚动"掉</b>，只留 <code class="inline">dp[j]</code> 一行数组。</p>
+
+<div class="code-card">
+  <div class="code-head">
+    <span class="dot d1"></span><span class="dot d2"></span><span class="dot d3"></span>
+    <span class="file">0/1 背包的一维写法（从大到小枚举）</span>
+    <span class="lang">Python</span>
+  </div>
+<pre><code># 二维写法：dp[i][j]，i 是"前 i 件物品"
+# 一维写法：把 i 这一维"滚动"掉，只用 dp[j]
+
+n, W = 4, 6
+w = [0, 2, 3, 4, 5]
+v = [0, 3, 4, 5, 6]
+
+dp = [0] * (W + 1)
+
+for i in range(1, n + 1):
+    for j in range(W, w[i] - 1, -1):     # 关键：从大到小！
+        dp[j] = max(dp[j], dp[j - w[i]] + v[i])
+
+print(dp[W])</code></pre>
+  <div class="out"><b>要点</b> 内层必须从大到小！从小到大就变成"每件物品可以拿多次"了</div>
+</div>
+
+<div class="box remember">
+  <span class="lb">真题对照（2026 年 9 月 · C++ 八级 · 判断题 第 9 题）：</span><br>
+"使用滚动数组优化动态规划时，<b>通常只能降低空间复杂度，不能降低时间复杂度</b>。"—— 这句话是<b>正确</b>的。<br>
+  滚动数组省的是"表格的维度"，枚举的次数一个都没少。<b>想降时间，得从状态或转移上想办法。</b>
+</div>
+
+<p><b>要不要滚动，看数据规模：</b>n = 1000、容量 1000 时，二维表格要 100 万个数；
+压成一维只要 1000 个数——<b>空间从 MB 级降到 KB 级，这就是它的价值。</b></p>
+
+<div class="section-header" id="s5">
+  <h2>5　代码实战</h2>
+  <div class="en-title">Level Practice</div>
+</div>
+
+<div class="level-card">
+  <div class="lc-head"><span class="n">关卡</span><h4>驯鹿观察者</h4><span class="go">进入关卡 →</span></div>
+  <div class="lc-body">
+    <div class="story">
+      <b>故事：</b>一群驯鹿散落在草原上。指挥官要你<b>依次报出每一只的方位</b>，
+      好安排巡逻。<br>
+      你一只只看着，越看越乱。塞尼克说：别慌。<b>列表里已经装好了它们的位置，
+      你只要按顺序走一遍就行。</b>
+    </div>
+    
+    <p><strong>思路：</strong>拿到数组后顺序遍历，逐个处理。
+  <figure class="pic ai-added"><img src="../assets/illustrations/py-L7-02-01_thunder_lattice.webp" alt="AI配图：py-L7-02-01_thunder_lattice.webp"></figure>
+    <b>这正是"按行枚举"的思路——先看第 0 行，再看第 1 行……</b></p><figure class="pic">
+  <figure class="pic ai-added"><img src="../assets/illustrations/py-L7-02-02_rolling_array.webp" alt="AI配图：py-L7-02-02_rolling_array.webp"></figure>
+      <img src="../assets/stages/py-L7-02-stage1_reindeer_observer.webp" alt="驯鹿观察者 关卡截图"
+           onerror="this.closest('.pic').classList.add('missing')">
+      <div class="ph">
+        <div class="fn">assets/stages/py-L7-02-stage1_reindeer_observer.webp</div>
+        <div class="ds">【关卡截图位】请把《驯鹿观察者》的游戏画面截图放到此处（放入 assets/stages/ 目录，文件名为 py-L7-02-stage1_reindeer_observer.webp）。</div>
+      </div>
+      <figcaption>关卡实况：驯鹿观察者</figcaption>
+    </figure>
+    <div class="code-card">
+      <div class="code-head">
+        <span class="dot d1"></span><span class="dot d2"></span><span class="dot d3"></span>
+        <span class="file">重点示例：按下标顺序逐个处理</span>
+        <span class="lang">Python</span>
+      </div>
+      <pre><code>enemies = hero.findEnemies()
+
+for i in range(len(enemies)):
+    enemy = enemies[i]
+    hero.say(i)                       # 报出它的序号
+    hero.say(enemy.pos)               # 报出它的位置</code></pre>
+      <div class="out"><b>要点</b>　<code>range(len(...))</code> 保证每个元素都被"按顺序"处理一次</div>
+    </div>
+    <div class="box info">
+      <span class="lb">和二维 DP 的关联：</span>
+      二维 DP 的填表顺序就是"<strong>外层枚举行 i，内层枚举列 j</strong>"——<br>
+      和这里 <code class="inline">for i in range(len(...))</code> 是同一个骨架。<br>
+      <b>先把这个骨架写熟，再加一层循环就变成二维 DP 了。</b>
+    </div>
+    <a class="btn-go" href="https://codecombat.cn/" target="_blank" rel="noopener">去扣哒世界闯这一关 →</a>
+  </div>
+</div>
+
+
+
+<div class="section-header" id="s6">
+  <h2>6　常见陷阱</h2>
+  <div class="en-title">Common Pitfalls</div>
+</div>
+
+<div class="cast duck">
+  <img class="ava" src="../assets/ducks/duck_naria.webp" alt="扣哒鸭" onerror="this.style.display='none'">
+  <div class="bubble">
+    <div class="who">扣哒鸭 · 调试官</div>
+    二维 DP 的错，八个里有五个是"表格建错了"。四条，重点看前两条。
+  </div>
+</div>
+
+<div class="pit">
+  <div class="pt">
+    <div class="x">1</div>
+    <div class="t"><b>用 <code class="inline">[[0]*m]*n</code> 建表格。</b>改一格，整列都跟着变。</div>
+  </div>
+  <div class="duck">
+    <img src="../assets/ducks/duck_zana.webp" alt="扣哒鸭" onerror="this.style.display='none'">
+    <div class="dt"><b>扣哒鸭：</b>这是四级就强调过的坑：外层乘会把<b>同一个列表引用</b>复制 n 份。<br>
+    <strong>必须用推导式：<code>[[0] * m for i in range(n)]</code>。</strong></div>
+  </div>
+  <div class="fix"><b>正确写法：</b><code class="inline">dp = [[0] * m for i in range(n)]</code></div>
+</div>
+
+<div class="pit">
+  <div class="pt">
+    <div class="x">2</div>
+    <div class="t"><b>忘记处理第一行和第一列。</b>直接进双重循环。</div>
+  </div>
+  <div class="duck">
+    <img src="../assets/ducks/duck_hattori.webp" alt="扣哒鸭" onerror="this.style.display='none'">
+    <div class="dt"><b>扣哒鸭：</b>第一行的格子没有上面，第一列没有左边。<br>
+    <strong>要么先单独填好这两条边，要么给表格多开一圈全 0 的边界。</strong>
+    否则会用到不该用的格子。</div>
+  </div>
+  <div class="fix"><b>两种做法：</b>单独初始化边界；或多开一行一列放在下标 0</div>
+</div>
+
+<div class="pit">
+  <div class="pt">
+    <div class="x">3</div>
+    <div class="t"><b>行列下标和实际坐标对不上。</b>搞混了 <code class="inline">dp[i][j]</code> 里哪个是行。</div>
+  </div>
+  <div class="duck">
+    <img src="../assets/ducks/duck_illia.webp" alt="扣哒鸭" onerror="this.style.display='none'">
+    <div class="dt"><b>扣哒鸭：</b>和四级一样：<strong><code>dp[i][j]</code> 里 i 是行，j 是列。</strong><br>
+    而 <code>len(grid)</code> 是行数、<code>len(grid[0])</code> 是列数。<br>
+    统一"外层行、内层列"就不容易乱。</div>
+  </div>
+  <div class="fix"><b>建议：</b>用 n、m 分别表示行数与列数，别混着用</div>
+</div>
+
+<div class="pit">
+  <div class="pt">
+    <div class="x">4</div>
+    <div class="t"><b>字符串 DP 时下标忘记减 1。</b></div>
+  </div>
+  <div class="duck">
+    <img src="../assets/ducks/duck_senick.webp" alt="扣哒鸭" onerror="this.style.display='none'">
+    <div class="dt"><b>扣哒鸭：</b>因为我们多开了一圈，<code>dp[i][j]</code> 对应前 i 个字符，
+    所以比较的是 <code>s1[i-1]</code> 和 <code>s2[j-1]</code>。<br>
+    <strong>这个减 1 千万别忘。</strong></div>
+  </div>
+  <div class="fix"><b>正确写法：</b><code class="inline">if s1[i-1] == s2[j-1]:</code></div>
+</div>
+
+<div class="section-header" id="s7">
+  <h2>7　题目练习</h2>
+  <div class="en-title">Practice</div>
+</div>
+
+<p>前 2 题改编自 2026 年 6 月 · Python 七级 第 5、7 题，其余为原创练习题。</p>
+
+<div class="exam">
+  <div class="eh"><span class="src">改编自 2026 年 6 月 · Python 七级 · 第 5 题</span><span class="tp">单选题</span></div>
+  <div class="eb">
+    <div class="q">雷塔的网格上写着数字。若 <code class="inline">dp[i][j]</code> 表示从左上角走到第 i 行第 j 列时能取得的<strong>最大数字和</strong>，且每次只能向右或向下移动，那么对于 <code class="inline">i &gt; 1</code> 且 <code class="inline">j &gt; 1</code> 的位置，正确的状态转移方程是（　　）。</div>
+    <div class="opt"><i>A.</i>dp[i][j] = a[i][j] + min(dp[i-1][j], dp[i][j-1])<br>
+      <i>B.</i>dp[i][j] = max(dp[i-1][j-1], dp[i][j])<br>
+      <i>C.</i>dp[i][j] = a[i][j] + max(dp[i-1][j], dp[i][j-1])<br>
+      <i>D.</i>dp[i][j] = a[i][j] + dp[i-1][j-1]</div>
+    <details><summary>查看答案与详解</summary>
+      <div class="ans"><b>答案：C</b>。先问一句"能走到 (i, j) 的来路有哪几条？"只能向右或向下走，所以只能<strong>从上面 (i−1, j) 或从左面 (i, j−1)</strong> 过来，两种可能。<br>要求的是<strong>最大</strong>数字和，所以在两条来路里挑较大的那条，再加上当前格子的数字 <code class="inline">a[i][j]</code> → 选 C。<br><b>A 错：</b>用了 <code class="inline">min</code>，那是在求"最小路径和"（第 3 单元的内容）；<br><b>B 错：</b>既忘了加当前格子，又取了左上角这个走不到的来路；<br><b>D 错：</b>只考虑左上角，等于只允许走斜线。<br><b>口诀：</b>网格 DP 里"向右或向下"对应"上、左两个方向"，<strong>求最大用 max、求最小用 min，最后别忘了加自己</strong>。<br><span class="tagline">对应小节</span>3.1 只改一行转移。</div>
+    </details>
+  </div>
+</div>
+<div class="exam">
+  <div class="eh"><span class="src">改编自 2026 年 6 月 · Python 七级 · 第 7 题</span><span class="tp">单选题</span></div>
+  <div class="eb">
+    <div class="q">下面是一维数组优化 0/1 背包的核心片段，横线处应填入（　　）。<br><pre>1  for i in range(1, n + 1):
+2      for c in range(W, w[i] - 1, -1):
+3          __________</pre></div>
+    <div class="opt"><i>A.</i>dp[c] = max(dp[c], dp[c + w[i]] + v[i])<br>
+      <i>B.</i>dp[c] = min(dp[c], dp[c - w[i]] + v[i])<br>
+      <i>C.</i>dp[c] = dp[c - w[i]] + v[i]<br>
+      <i>D.</i>dp[c] = max(dp[c], dp[c - w[i]] + v[i])</div>
+    <details><summary>查看答案与详解</summary>
+      <div class="ans"><b>答案：D</b>。<code class="inline">dp[c]</code> 表示"容量为 c 时能装的最大价值"，面对第 i 件物品只有两种选择：<br>① <strong>不拿</strong> → 价值还是 <code class="inline">dp[c]</code>；<br>② <strong>拿</strong> → 要先腾出 <code class="inline">w[i]</code> 的空间，所以是 <code class="inline">dp[c - w[i]] + v[i]</code>。<br>两者取较大值，于是 <code class="inline">dp[c] = max(dp[c], dp[c - w[i]] + v[i])</code>。<br><b>A 错：</b><code class="inline">dp[c + w[i]]</code> 越界，方向也反了；<br><b>B 错：</b>求的是最大价值，不该用 min；<br><b>C 错：</b>少了和 <code class="inline">dp[c]</code> 的比较，等于"强行每件都拿"，会丢掉不拿更优的情况。<br><b>为什么容量要倒着枚举？</b>这样取到的 <code class="inline">dp[c - w[i]]</code> 还是上一轮的旧值，从而保证<strong>每件物品最多拿一次</strong>。<br><span class="tagline">对应小节</span>4.5 滚动数组：把二维压成一维。</div>
+    </details>
+  </div>
+</div>
+<div class="exam">
+  <div class="eh"><span class="src ori">原创练习题</span><span class="tp">单选题</span></div>
+  <div class="eb">
+    <div class="q">在 2 行 3 列的网格中（从左上角只能向右或向下走），从 (0,0) 到 (1,2)
+    共有多少条路径？（　　）</div>
+    <div class="opt"><i>A.</i>2　　<i>B.</i>3　　<i>C.</i>4　　<i>D.</i>5</div>
+    <details><summary>查看答案与详解</summary>
+      <div class="ans"><b>答案：B</b>。用 dp[i][j] = dp[i-1][j] + dp[i][j-1]：<br>
+      第一行全为 1：dp[0] = [1, 1, 1]；<br>
+      第二行：dp[1][0] = 1、dp[1][1] = 1+1 = 2、dp[1][2] = 1+2 = 3。<br>
+      所以是 <b>3</b> 条。<br>
+      <b>列举验证：</b>右右下、右下右、下右右——正好 3 条。<br>
+      <span class="tagline">对应小节</span>2 网格路径问题。</div>
+    </details>
+  </div>
+</div>
+
+<div class="exam">
+  <div class="eh"><span class="src ori">原创练习题</span><span class="tp">单选题</span></div>
+  <div class="eb">
+    <div class="q">在 Python 中，创建 3 行 4 列、初始全为 0 的二维列表，正确写法是（　　）。</div>
+    <div class="opt">
+      <i>A.</i><code class="inline">[[0] * 4] * 3</code><br>
+      <i>B.</i><code class="inline">[[0] * 4 for i in range(3)]</code><br>
+      <i>C.</i><code class="inline">[0] * 12</code><br>
+      <i>D.</i><code class="inline">[[0] * 3 for i in range(4)]</code>
+    </div>
+    <details><summary>查看答案与详解</summary>
+      <div class="ans"><b>答案：B</b>。要用推导式，让每一行都是<b>独立创建</b>的。<br>
+      <b>A 错：</b>三个行是同一个列表的引用；<br>
+      <b>C 错：</b>那是一个 12 个元素的一维列表；<br>
+      <b>D 错：</b>那是 4 行 3 列。<br>
+      <span class="tagline">对应小节</span>6 常见陷阱。</div>
+    </details>
+  </div>
+</div>
+
+<div class="exam">
+  <div class="eh"><span class="src ori">原创练习题</span><span class="tp">判断题</span></div>
+  <div class="eb">
+    <div class="q">在二维 DP 中，<code class="inline">dp[i][j]</code> 里 i 通常表示行、j 表示列。（　　）</div>
+    <details><summary>查看答案与详解</summary>
+      <div class="ans"><b>答案：正确（√）</b>。这是通用约定，和二维数组的访问方式一致。<br>
+      <b>注意：</b><code class="inline">dp[i]</code> 是整行，<code class="inline">dp[i][j]</code> 才是某一格。<br>
+      <span class="tagline">对应小节</span>1 从一维到二维。</div>
+    </details>
+  </div>
+</div>
+
+<div class="exam">
+  <div class="eh"><span class="src ori">原创练习题</span><span class="tp">单选题</span></div>
+  <div class="eb">
+    <div class="q">网格 <code class="inline">grid = [[1, 3, 1], [1, 5, 1], [4, 2, 1]]</code>，
+    从左上走到右下（只能向右或向下），经过数字之和最小为（　　）。</div>
+    <div class="opt"><i>A.</i>7　　<i>B.</i>8　　<i>C.</i>9　　<i>D.</i>10</div>
+    <details><summary>查看答案与详解</summary>
+      <div class="ans"><b>答案：A</b>。最优路线是 <b>1 → 1 → 1 → 1 → 1 → 2 → 1</b>，
+      合计 = <b>7</b>。<br>
+      <b>对应走法：</b>下、右、右、下、右、下（避开数值较大的 3 和 5）。<br>
+      <span class="tagline">对应小节</span>3 最小路径和。</div>
+    </details>
+  </div>
+</div>
+
+<div class="exam">
+  <div class="eh"><span class="src ori">原创练习题</span><span class="tp">判断题</span></div>
+  <div class="eb">
+    <div class="q">求"最大路径和"时，只需把最小路径和里的 <code class="inline">min</code> 换成 <code class="inline">max</code>，
+    其余结构不变。（　　）</div>
+    <details><summary>查看答案与详解</summary>
+      <div class="ans"><b>答案：正确（√）</b>。这就是 DP 的魅力——
+      <strong>同一套框架，改一个"小动作"就能解不同的问题</strong>。<br>
+      <span class="tagline">对应小节</span>3 最小路径和。</div>
+    </details>
+  </div>
+</div>
+
+<div class="exam">
+  <div class="eh"><span class="src ori">原创练习题</span><span class="tp">单选题</span></div>
+  <div class="eb">
+    <div class="q">求两个字符串的最长公共子序列时，若 <code class="inline">s1[i-1] != s2[j-1]</code>，
+    则 <code class="inline">dp[i][j]</code> 应等于（　　）。</div>
+    <div class="opt">
+      <i>A.</i><code class="inline">dp[i-1][j-1] + 1</code><br>
+      <i>B.</i><code class="inline">dp[i-1][j-1]</code><br>
+      <i>C.</i><code class="inline">max(dp[i-1][j], dp[i][j-1])</code><br>
+      <i>D.</i><code class="inline">dp[i-1][j] + dp[i][j-1]</code>
+    </div>
+    <details><summary>查看答案与详解</summary>
+      <div class="ans"><b>答案：C</b>。字符不同时无法"同时用上这两个字符"，
+      只能在"放弃 s1 的这个字符"和"放弃 s2 的这个字符"之间<b>取较大者</b>。<br>
+      <b>A 项</b>是字符<b>相同</b>时的做法。<br>
+      <span class="tagline">对应小节</span>4 两个字符串的 DP。</div>
+    </details>
+  </div>
+</div>
+
+<div class="exam">
+  <div class="eh"><span class="src ori">原创练习题</span><span class="tp">编程题</span></div>
+  <div class="eb">
+    <div class="q">题目要求：用动态规划求从网格左上角到右下角的<strong>最小路径和</strong>，
+    网格为 <code class="inline">[[2, 4, 1], [3, 1, 5], [6, 2, 1]]</code>（只能向右或向下），
+    并输出 dp 表格帮助核对。</div>
+    <details><summary>查看参考答案与要点</summary>
+      <div class="ans">
+<pre style="margin:0;background:#241a44;color:#c3d6d1;border-radius:10px;padding:14px 16px">grid = [[2, 4, 1],
+        [3, 1, 5],
+        [6, 2, 1]]
+
+n = len(grid)
+m = len(grid[0])
+dp = [[0] * m for i in range(n)]
+
+dp[0][0] = grid[0][0]
+
+for j in range(1, m):                       # 第一行
+    dp[0][j] = dp[0][j - 1] + grid[0][j]
+
+for i in range(1, n):                       # 第一列
+    dp[i][0] = dp[i - 1][0] + grid[i][0]
+
+for i in range(1, n):
+    for j in range(1, m):
+        dp[i][j] = min(dp[i - 1][j], dp[i][j - 1]) + grid[i][j]
+
+for row in dp:
+    print(row)
+print("最小路径和：", dp[n - 1][m - 1])</pre>
+      <p style="margin-top:12px"><b>输出：</b>dp 表格为<br>
+      [2, 6, 7]<br>
+      [5, 6, 11]<br>
+      [11, 8, 9]<br>
+      最小路径和 = <b>9</b><br>
+      <b>最优路线：</b>2 → 3 → 1 → 2 → 1（下、右、下、右），合计 9。<br>
+      <b>要点：</b><br>
+      ① 边界（第一行、第一列）必须单独初始化；<br>
+      ② 转移方程 <code class="inline">dp[i][j] = min(上, 左) + grid[i][j]</code>；<br>
+      ③ 最后答案是 <code class="inline">dp[n-1][m-1]</code>，不是 <code class="inline">dp[n][m]</code>；<br>
+      ④ 把 dp 表格打印出来核对，是考试时最稳妥的做法。<br>
+      <span class="tagline">对应小节</span>3 最小路径和。</p>
+      </div>
+    </details>
+  </div>
+</div>
+
+<div class="section-header" id="s8">
+  <h2>8　本单元小结</h2>
+  <div class="en-title">Unit Summary</div>
+</div>
+
+<div class="cast teacher">
+  <img class="ava" src="../assets/avatars/senick.webp" alt="塞尼克" onerror="this.style.display='none'">
+  <div class="bubble">
+    <div class="who">塞尼克 · 沙海向导</div>
+    三句话记住二维 DP：<br>
+    <strong>一、状态是 dp[i][j]，表示"走到第 i 行第 j 列时的最优值"。</strong><br>
+    <strong>二、转移通常来自"上面一格"和"左边一格"。</strong><br>
+    <strong>三、第一行和第一列要单独处理（或给表格多开一圈）。</strong><br>
+    建表格千万别用 <code>[[0]*m]*n</code>——这是四级就要记住的事。
+  </div>
+</div>
+
+<div class="summary">
+  <h3>你在雷网中收获了什么</h3>
+  <ul>
+    <li><strong>二维 DP</strong>——用 <code class="inline">dp[i][j]</code> 表示二维状态，两层循环填表。</li>
+    <li><strong>表格创建</strong>——<code class="inline">[[0] * m for i in range(n)]</code>，不要用 <code class="inline">[[0]*m]*n</code>。</li>
+    <li><strong>路径计数</strong>——<code class="inline">dp[i][j] = dp[i-1][j] + dp[i][j-1]</code>。</li>
+    <li><strong>最小路径和</strong>——<code class="inline">dp[i][j] = min(上, 左) + grid[i][j]</code>；求最大就把 min 换成 max。</li>
+    <li><strong>边界处理</strong>——第一行只能从左边来，第一列只能从上边来。</li>
+    <li><strong>字符串 DP</strong>——多开一行一列表示空串；相同取左上+1，不同取上面与左边的较大者。</li>
+    <li><strong>下标对应</strong>——多开一圈时，比较的是 <code class="inline">s1[i-1]</code> 与 <code class="inline">s2[j-1]</code>。</li>
+  </ul>
+</div>
+
+<div class="pager">
+  <a href="py-7-01.html"><div class="k">← 上一单元</div><div class="v">塔顶星图 · 数学库的应用</div></a>
+  <a href="../index.html" target="_top" class="back"><div class="k">返回</div><div class="v">考纲之路 · 总目录</div></a>
+  <a href="py-7-03.html"><div class="k">下一单元 →</div><div class="v">塔身回廊 · 图与图的遍历</div></a>
+</div>
+
+<div class="cta">
+  <h3>下一站：塔身回廊</h3>
+  <p>高塔内部是一圈圈回廊，岔口互相连通，<b>有的还绕回了原处</b>。
+  这样的结构叫"图"。下一单元，我们看怎么在图上走。</p>
+  <a class="btn-go" href="https://codecombat.cn/" target="_blank" rel="noopener">加入扣哒世界，把这条考纲之路走一遍 →</a>
+</div>
+</div><!-- /container -->
+</div><!-- /page -->
+
+<script>
+const KEYWORDS = new Set(("while for if elif else break continue def return pass not and or in is None True False " +
+  "int float bool str list dict tuple set input print range len abs max min round pow import math random chr ord bin hex oct sum append copy keys values items").split(" "));
+
+function esc(s){ return s.replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;'); }
+
+function highlight(src){
+  let out = '', i = 0;
+  const n = src.length;
+  while (i < n){
+    const c = src[i];
+    if (c === '#'){
+      let j = src.indexOf('\n', i); if (j < 0) j = n;
+      out += '<span class="cm">' + esc(src.slice(i, j)) + '</span>';
+      i = j; continue;
+    }
+    if (c === '"' || c === "'"){
+      let j = i + 1;
+      while (j < n && src[j] !== c){ if (src[j] === '\\') j++; j++; }
+      j = Math.min(j + 1, n);
+      out += '<span class="st">' + esc(src.slice(i, j)) + '</span>';
+      i = j; continue;
+    }
+    if (/[0-9]/.test(c)){
+      let j = i;
+      while (j < n && /[0-9.]/.test(src[j])) j++;
+      out += '<span class="nu">' + esc(src.slice(i, j)) + '</span>';
+      i = j; continue;
+    }
+    if (/[A-Za-z_]/.test(c)){
+      let j = i;
+      while (j < n && /[A-Za-z0-9_]/.test(src[j])) j++;
+      const w = src.slice(i, j);
+      if (KEYWORDS.has(w)) out += '<span class="kw">' + esc(w) + '</span>';
+      else if (src[j] === '(') out += '<span class="fn">' + esc(w) + '</span>';
+      else out += esc(w);
+      i = j; continue;
+    }
+    out += esc(c); i++;
+  }
+  return out;
+}
+
+document.querySelectorAll('.code-card pre code').forEach(block => {
+  block.innerHTML = highlight(block.textContent);
+});
+
+if (location.search.indexOf('expand') >= 0) {
+  document.querySelectorAll('details').forEach(d => d.open = true);
+}
+document.querySelectorAll('.sidebar-nav a').forEach(a => {
+  a.addEventListener('click', () => {
+    if (window.innerWidth <= 900) document.querySelector('.sidebar-nav').classList.remove('active');
+  });
+});
+</script>
+</body>
+</html>
