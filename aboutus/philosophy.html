@@ -1,197 +1,54 @@
 <!DOCTYPE html>
 <html lang="zh-CN">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>产品哲学 | CodeCombat 扣哒世界</title>
-    <style>
-        /* ================= 品牌色彩体系 ================= */
-        :root {
-            --bg-body: #f8fafc;
-            --bg-white: #ffffff;
-            
-            --text-heading: #1e293b; 
-            --text-main: #334155;    
-            --text-muted: #64748b;   
-            
-            --brand-indigo: #4338ca; /* 品牌蓝 */
-            --brand-indigo-light: #e0e7ff;
-            --brand-gold: #F2BE22;   /* 荣耀金 */
-            --brand-gold-text: #000000;
-            
-            --font-main: "Noto Sans SC", -apple-system, BlinkMacSystemFont, sans-serif;
-            --font-serif: "Noto Serif SC", serif;
-            
-            --shadow-sm: 0 4px 6px -1px rgba(0, 0, 0, 0.05);
-            --shadow-md: 0 10px 30px -10px rgba(0, 0, 0, 0.1);
-            --shadow-lg: 0 20px 40px -10px rgba(0, 0, 0, 0.15);
-        }
-
-        * { margin: 0; padding: 0; box-sizing: border-box; }
-        
-        body {
-            background: var(--bg-body);
-            color: var(--text-main);
-            font-family: var(--font-main);
-            line-height: 1.8;
-            -webkit-font-smoothing: antialiased;
-            overflow-x: hidden;
-        }
-
-        /* ================= 极简导航栏 ================= */
-        header {
-            position: fixed; top: 0; width: 100%; z-index: 1000;
-            background: rgba(255, 255, 255, 0.95); backdrop-filter: blur(12px);
-            border-bottom: 1px solid rgba(0,0,0,0.05);
-            display: flex; justify-content: space-between; align-items: center;
-            padding: 15px 40px;
-        }
-        .logo img { height: 36px; display: block; }
-        nav ul { display: flex; gap: 30px; list-style: none; }
-        nav ul li a { font-size: 0.95rem; font-weight: 600; color: var(--text-muted); text-decoration: none; transition: color 0.3s; }
-        nav ul li a:hover { color: var(--brand-indigo); }
-
-        /* ================= 全局动画 ================= */
-        .reveal { opacity: 0; transform: translateY(40px); transition: all 1s cubic-bezier(0.2, 0.8, 0.2, 1); }
-        .reveal.active { opacity: 1; transform: translateY(0); }
-
-        /* ================= 页面头部区域 ================= */
-        .page-header {
-            padding: 180px 20px 100px;
-            text-align: center;
-            background: linear-gradient(180deg, #f0f4f8 0%, var(--bg-body) 100%);
-            position: relative;
-            overflow: hidden;
-        }
-        .page-header::before {
-            content: ''; position: absolute; top: -50%; left: -50%; width: 200%; height: 200%;
-            background: radial-gradient(circle at center, rgba(242, 190, 34, 0.05) 0%, transparent 50%); /* 略带荣耀金的光晕 */
-            animation: rotate 60s linear infinite; z-index: 0;
-        }
-        @keyframes rotate { 100% { transform: rotate(360deg); } }
-
-        .page-header-content { position: relative; z-index: 1; max-width: 900px; margin: 0 auto; }
-        .page-header h1 { font-size: 4rem; font-weight: 900; color: var(--text-heading); margin-bottom: 20px; line-height: 1.2; letter-spacing: -1px; }
-        .page-header p.subtitle { font-size: 1.5rem; color: var(--brand-indigo); font-weight: 800; margin-bottom: 50px; }
-
-        .header-quote {
-            font-family: var(--font-serif); font-size: 1.6rem; line-height: 1.8; color: var(--text-heading);
-            background: var(--bg-white); padding: 50px; border-radius: 24px; box-shadow: var(--shadow-lg);
-            position: relative; border-top: 6px solid var(--brand-indigo); text-align: left;
-        }
-        .header-quote::before {
-            content: "“"; position: absolute; top: -20px; left: 30px; font-size: 8rem; color: var(--brand-indigo-light);
-            font-family: var(--font-main); line-height: 1; font-weight: 900; opacity: 0.5;
-        }
-
-        /* ================= 博客排版内容区 ================= */
-        .blog-container {
-            max-width: 800px; margin: 0 auto; padding: 60px 20px 120px;
-            font-size: 1.15rem; line-height: 2; color: var(--text-main);
-        }
-
-        .blog-container h2 {
-            font-size: 2.2rem; font-weight: 900; color: var(--text-heading);
-            margin: 80px 0 30px; position: relative; padding-bottom: 15px; line-height: 1.4;
-        }
-        .blog-container h2::after {
-            content: ''; position: absolute; left: 0; bottom: 0; width: 60px; height: 4px; background: var(--brand-gold); border-radius: 2px;
-        }
-        
-        .blog-container h3 {
-            font-size: 1.5rem; font-weight: 800; color: var(--brand-indigo);
-            margin: 50px 0 20px;
-        }
-
-        .blog-container p { margin-bottom: 25px; }
-
-        /* 特殊高亮语法 (黄色荧光笔半遮盖) */
-        .highlight-marker {
-            background: linear-gradient(180deg, transparent 55%, rgba(242, 190, 34, 0.8) 55%);
-            padding: 0 4px; font-weight: 900; color: var(--text-heading); display: inline;
-        }
-        
-        /* 次重点加粗显示 */
-        .strong-text { font-weight: 800; color: var(--text-heading); }
-
-        /* 引用块设计 */
-        .blockquote {
-            border-left: 5px solid var(--brand-indigo); background: var(--brand-indigo-light);
-            padding: 30px; margin: 40px 0; border-radius: 0 16px 16px 0;
-            font-size: 1.25rem; font-weight: 800; color: var(--brand-indigo); line-height: 1.6;
-        }
-        
-        /* 针对 AI 对比的特殊设计块 */
-        .compare-box {
-            background: #fffbeb; border: 1px solid #fde68a; border-radius: 16px; padding: 30px;
-            margin: 30px 0; font-size: 1.1rem; color: #92400e; font-weight: 600;
-        }
-        .compare-box .label { font-weight: 900; color: #b45309; display: block; margin-bottom: 10px; font-size: 1.2rem; }
-
-        /* 列表设计 */
-        .blog-container ul { margin: 0 0 30px 20px; padding-left: 20px; }
-        .blog-container ul li { margin-bottom: 10px; position: relative; list-style-type: none; }
-        .blog-container ul li::before {
-            content: "•"; color: var(--brand-gold); font-size: 1.5rem; font-weight: 900;
-            position: absolute; left: -25px; top: -5px;
-        }
-
-        /* 强调段落卡片 */
-        .emphasis-card {
-            background: var(--bg-white); border-radius: 24px; padding: 50px; text-align: center;
-            box-shadow: var(--shadow-lg); border: 2px solid var(--brand-indigo-light); margin: 80px 0;
-        }
-        .emphasis-card p { font-size: 1.4rem; font-weight: 900; color: var(--text-heading); margin-bottom: 0; line-height: 1.6; }
-
-        /* ================= 页脚 ================= */
-        footer { text-align: center; padding: 40px 20px; font-size: 0.95rem; color: var(--text-muted); background: var(--bg-white); border-top: 1px solid var(--border-light); }
-
-        /* 响应式 */
-        @media (max-width: 768px) {
-            header { padding: 15px 20px; }
-            .page-header h1 { font-size: 2.8rem; }
-            .header-quote { font-size: 1.3rem; padding: 30px; }
-            .blog-container { padding: 40px 20px 80px; font-size: 1.05rem; }
-            .blog-container h2 { font-size: 1.6rem; margin-top: 50px; }
-            .blog-container h3 { font-size: 1.3rem; }
-            .emphasis-card { padding: 30px; }
-            .emphasis-card p { font-size: 1.2rem; }
-            nav ul { display: none; }
-        }
-    </style>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>产品哲学与 CODE 深度学习模型 | CodeCombat 扣哒世界</title>
+<meta name="description" content="了解 CodeCombat 的产品哲学与 CODE 深度学习模型：以挑战驱动、动手实践、反馈纠错、持续进阶四个环节，连接六项学习科学原理，让编程知识转化为独立解决问题的能力。">
+<style>
+:root{--bg:#f8fafc;--paper:#fff;--ink:#1e293b;--text:#334155;--muted:#64748b;--line:#e2e8f0;--brand:#4f46e5;--soft:#eef2ff;--gold:#f2be22;--brand-indigo:#4338ca;--brand-indigo-light:#eef2ff;--text-heading:#1e293b;--text-muted:#64748b;--brand-gold:#f2be22;--brand-gold-text:#713f12}
+*{box-sizing:border-box;margin:0;padding:0}html{scroll-behavior:smooth;scroll-padding-top:100px}body{font-family:"Noto Sans SC","Microsoft YaHei",-apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif;background:var(--bg);color:var(--text);line-height:1.85;-webkit-font-smoothing:antialiased}a{color:var(--brand);text-decoration:none}a:hover{text-decoration:underline}a:focus-visible,summary:focus-visible{outline:3px solid var(--brand);outline-offset:5px;border-radius:4px}::selection{background:#ddd9ff;color:#1e1b4b}.skip-link{position:fixed;left:20px;top:-100px;z-index:100;background:white;padding:10px 20px}.skip-link:focus{top:12px}
+.site-header{position:sticky;top:0;z-index:30;height:72px;background:rgba(255,255,255,.96);border-bottom:1px solid var(--line);backdrop-filter:blur(12px)}.nav-inner{max-width:1240px;height:100%;margin:auto;padding:0 32px;display:flex;align-items:center;justify-content:space-between;gap:20px}.brand{display:flex;align-items:center;gap:12px;color:var(--ink);font-size:15px;font-weight:700}.brand img{display:block;width:122px;height:34px;object-fit:contain}.brand span{border-left:1px solid var(--line);padding-left:14px}.header-links{display:flex;gap:26px;font-size:14px;font-weight:600}.header-links a:first-child{color:var(--muted)}
+.hero{max-width:1240px;margin:auto;padding:38px 32px 0}.breadcrumbs{display:flex;gap:10px;font-size:13px;color:var(--muted);margin-bottom:46px}.breadcrumbs a{color:var(--muted)}.hero-content{max-width:900px}.eyebrow{display:block;font-size:12px;letter-spacing:.13em;font-weight:700;color:var(--brand);margin-bottom:14px}.hero-label{font-size:15px;font-weight:700;color:var(--brand);display:flex;align-items:center;gap:10px;margin-bottom:16px}.hero-label:before{content:"";width:26px;height:3px;background:var(--gold)}h1{font-size:clamp(36px,4.4vw,58px);line-height:1.3;letter-spacing:-.04em;color:var(--ink);font-weight:800;margin-bottom:24px}h1 span{color:var(--brand)}.hero-lead{font-size:18px;max-width:760px;line-height:1.95;color:#475569}.hero-lead strong{font-weight:650;color:var(--ink)}.hero-bottom{display:flex;flex-wrap:wrap;gap:12px 24px;align-items:center;margin-top:24px;font-size:13px;color:var(--muted)}.hero-bottom a{font-weight:650}.hero-bottom>span{display:flex;align-items:center;gap:8px}.hero-bottom>span:before{content:"";width:6px;height:6px;background:var(--gold);border-radius:50%}
+.model-overview{margin-top:38px;background:var(--paper);border:1px solid var(--line);border-radius:18px;overflow:hidden;box-shadow:0 8px 28px rgba(30,41,59,.035)}.overview-heading{display:flex;align-items:baseline;flex-wrap:wrap;gap:6px 18px;padding:22px 28px;border-bottom:1px solid var(--line)}.overview-heading h2{color:var(--ink);font-size:19px}.overview-heading p{font-size:13px;color:var(--muted)}.code-grid{display:grid;grid-template-columns:repeat(4,minmax(0,1fr))}.code-card{position:relative;padding:26px 28px 28px;color:var(--text);transition:background .18s}.code-card+.code-card{border-left:1px solid var(--line)}.code-card:hover{background:#f7f8ff;text-decoration:none}.code-card-top{display:flex;align-items:baseline;gap:12px}.code-letter{font-size:40px;font-weight:800;color:var(--brand);line-height:1.2}.code-en{font-size:12px;color:var(--muted);letter-spacing:.02em}.code-card h3{font-size:18px;color:var(--ink);margin:13px 0 5px}.code-card p{font-size:14px;color:#475569}.card-arrow{position:absolute;right:22px;top:30px;color:#94a3b8}.overview-foot{padding:13px 28px;background:#fafbff;border-top:1px solid var(--line);font-size:13px;color:var(--muted)}
+.reading-layout{max-width:1240px;margin:64px auto 0;padding:0 32px;display:grid;grid-template-columns:218px minmax(0,1fr);gap:48px;align-items:start}.contents{position:sticky;top:104px;max-height:calc(100vh - 124px);overflow:auto;padding:4px 0 20px}.contents-title{font-size:12px;letter-spacing:.12em;color:var(--muted);font-weight:700;margin-bottom:14px;padding-left:14px}.contents ol{list-style:none;border-left:1px solid var(--line)}.contents a{display:flex;align-items:baseline;gap:10px;padding:8px 12px;font-size:13px;line-height:1.65;color:#475569;border-left:2px solid transparent;margin-left:-1px}.contents a span{font-size:10px;font-variant-numeric:tabular-nums;color:#94a3b8}.contents a:hover,.contents a[aria-current="location"]{background:var(--soft);border-left-color:var(--brand);color:var(--brand);text-decoration:none}.contents-note{font-size:12px;line-height:1.9;color:var(--muted);padding:20px 14px 0}.mobile-contents{display:none}
+.article{background:var(--paper);border:1px solid var(--line);border-radius:18px;padding:0 48px;min-width:0;font-size:16px;line-height:2}.article-section{padding:48px 0;scroll-margin-top:24px}.article-section+.article-section{border-top:1px solid var(--line)}.section-heading{margin-bottom:24px}.section-number{display:block;color:var(--brand);font-weight:700;font-size:12px;line-height:1;margin-bottom:14px;letter-spacing:.12em}.article h2{font-size:27px;font-weight:750;color:var(--ink);line-height:1.5;letter-spacing:-.025em;text-wrap:pretty}.article h3{font-size:19px;line-height:1.7;color:var(--ink);margin:32px 0 14px}.article p{margin-bottom:20px;overflow-wrap:break-word}.article p:last-child{margin-bottom:0}.article strong,.strong-text{font-weight:700;color:var(--ink)}.highlight-marker{font-weight:650;color:var(--ink);background:linear-gradient(transparent 68%,#fef0b0 68%);padding-bottom:2px}.section-intro{font-size:20px;line-height:1.8;color:var(--brand);font-weight:650}.article .model-note{font-size:13px;line-height:1.8;color:var(--muted);padding-left:14px;border-left:2px solid #c7d2fe}.article code{font-family:Consolas,"SFMono-Regular",monospace;background:#f1f5f9;padding:3px 7px;border-radius:4px;font-size:.9em;color:#4338ca;overflow-wrap:anywhere}.blockquote{margin:28px 0;padding:24px 26px;border-left:3px solid var(--brand);background:var(--soft);border-radius:0 10px 10px 0;font-size:17px;color:#3730a3}.emphasis-card{margin:32px 0;padding:26px 28px;background:#f8faff;border:1px solid #e0e7ff;border-radius:12px}.emphasis-card p{font-size:20px;font-weight:700;line-height:1.85;color:var(--ink);margin:0}.compare-box{margin:22px 0;padding:24px;border:1px solid #fde68a;background:#fffbeb;border-radius:12px;font-size:15px;color:#713f12}.compare-box .label{display:block;font-weight:700;margin-bottom:10px;color:#92400e}.article ul{padding-left:22px;margin:22px 0}.article li{padding-left:4px;margin-bottom:14px}.article li::marker{color:var(--brand)}
+.model-details{display:grid;gap:20px;margin:30px 0}.model-step{border:1px solid var(--line);border-radius:12px;padding:26px;scroll-margin-top:100px}.step-heading{display:flex;align-items:center;gap:18px;margin-bottom:20px}.step-letter{display:flex;align-items:center;justify-content:center;flex:0 0 52px;height:60px;background:var(--soft);color:var(--brand);border-radius:10px;font-size:35px;font-weight:800;line-height:1}.step-en{font-size:12px;color:var(--brand);font-weight:650;letter-spacing:.02em}.article .model-step h3{font-size:21px;line-height:1.5;margin:3px 0 0}.model-step p{font-size:15px;line-height:1.95;margin-bottom:16px}.step-result{font-size:14px;line-height:1.9;border-top:1px solid var(--line);padding-top:15px;color:var(--ink)}.step-result span{display:block;font-size:11px;font-weight:650;color:var(--muted);margin-bottom:3px}.learning-loop{border-radius:12px;background:#eef2ff;border:1px solid #dce1fd;text-align:center;padding:26px 20px;margin:28px 0}.learning-loop .eyebrow{margin-bottom:10px}.learning-loop p{font-size:17px;font-weight:700;color:#3730a3;margin-bottom:10px}.learning-loop>span:last-child{font-size:13px;color:#5753a3}.growth-path{list-style:none;counter-reset:stage;margin:28px 0 0}.growth-path li{counter-increment:stage;position:relative;padding:0 0 24px 49px;margin:0;border-left:1px solid #dce1fd;margin-left:16px}.growth-path li:last-child{border-left-color:transparent;padding-bottom:0}.growth-path li:before{content:counter(stage,decimal-leading-zero);position:absolute;left:-17px;top:0;display:grid;place-items:center;width:34px;height:34px;border-radius:50%;background:var(--soft);border:1px solid #dce1fd;color:var(--brand);font-size:11px;font-weight:700}.growth-path strong{font-size:17px}.growth-path p{font-size:15px;margin:8px 0 0;color:#475569}
+.closing{max-width:1176px;margin:56px auto;background:#1e1b4b;color:#fff;border-radius:18px;padding:40px 46px;display:flex;justify-content:space-between;align-items:center;gap:30px}.closing .eyebrow{color:#c7d2fe}.closing h2{font-size:26px;line-height:1.6;margin-bottom:10px}.closing p{color:#cbd5e1;font-size:15px}.closing a{flex-shrink:0;border:1px solid #7773af;border-radius:8px;padding:10px 18px;color:#fff;font-size:14px}.closing a:hover{background:#312e81;text-decoration:none}.site-footer{border-top:1px solid var(--line);padding:28px 24px;text-align:center;color:var(--muted);font-size:12px;background:white}.site-footer p+p{margin-top:8px}.site-footer a{color:var(--muted)}
+@media(min-width:1500px){.article{font-size:17px}}
+@media(max-width:1050px){.reading-layout{grid-template-columns:184px minmax(0,1fr);gap:28px}.article{padding:0 32px}.code-card{padding:24px 20px}.card-arrow{right:16px}.code-card-top{gap:8px}.closing{margin-left:32px;margin-right:32px}}
+@media(max-width:800px){.nav-inner{padding:0 22px}.hero{padding:24px 22px 0}.breadcrumbs{margin-bottom:30px}.hero-lead{font-size:16px}.code-grid{grid-template-columns:repeat(2,minmax(0,1fr))}.code-card:nth-child(3){border-left:0}.code-card:nth-child(n+3){border-top:1px solid var(--line)}.reading-layout{display:block;margin-top:32px;padding:0 22px}.contents{display:none}.mobile-contents{display:block;background:white;border:1px solid var(--line);border-radius:12px;margin-bottom:20px;padding:14px 20px;font-size:14px}.mobile-contents summary{color:var(--ink);font-weight:650;cursor:pointer}.mobile-contents ol{list-style:none;display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:10px 16px;margin-top:16px;padding-top:16px;border-top:1px solid var(--line)}.mobile-contents a{font-size:13px;display:block}.mobile-contents a span{color:var(--muted);font-size:11px;margin-right:7px}.article{padding:0 28px}.article-section{padding:36px 0}.article h2{font-size:25px}.closing{margin:32px 22px;padding:30px;display:block}.closing h2{font-size:23px}.closing a{display:inline-block;margin-top:22px}.header-links{gap:18px}}
+@media(max-width:480px){.site-header{height:64px}.nav-inner{padding:0 18px;gap:10px}.brand img{width:104px;height:30px}.brand span{font-size:13px;padding-left:10px}.brand{gap:8px}.header-links{font-size:12px}.header-links a:first-child{display:none}.hero{padding:22px 18px 0}h1{font-size:clamp(26px,7.8vw,35px);letter-spacing:-.035em}.hero-lead{line-height:1.9}.hero-bottom{gap:8px 18px}.overview-heading{padding:18px}.overview-heading h2{font-size:17px}.code-card{padding:20px 18px}.code-letter{font-size:34px}.code-en{font-size:10px}.code-card h3{font-size:16px}.code-card p{font-size:13px}.card-arrow{display:none}.overview-foot{padding:14px 18px;line-height:1.9;font-size:12px}.reading-layout{padding:0 14px}.article{padding:0 22px;font-size:15px}.article h2{font-size:23px}.article h3{font-size:18px}.section-intro{font-size:18px}.model-step{padding:20px 17px}.step-heading{gap:12px}.article .model-step h3{font-size:19px}.step-letter{flex-basis:42px;height:52px;font-size:29px}.step-en{font-size:11px}.learning-loop p{font-size:15px}.blockquote,.compare-box{padding:20px}.emphasis-card{padding:22px}.emphasis-card p{font-size:18px}.closing{margin:28px 14px;padding:28px 24px}.closing h2{font-size:21px}.mobile-contents ol{grid-template-columns:1fr}}
+@media(prefers-reduced-motion:reduce){html{scroll-behavior:auto}*{transition:none!important}}
+@media print{.site-header,.contents,.mobile-contents,.closing,.hero-bottom,.skip-link{display:none}.hero{padding-top:0}.breadcrumbs{margin-bottom:15px}.reading-layout{display:block;padding:0;margin-top:30px}.article{border:0;padding:0}.article-section{padding:25px 0}.model-step,.emphasis-card,.code-card{break-inside:avoid}body{background:white;color:black}.site-footer{margin-top:24px}.hero,.reading-layout{max-width:none}.model-overview{box-shadow:none}a{color:inherit}}
+</style>
 </head>
 <body>
-
-    <header>
-        <div class="logo">
-            <a href="index.html">
-                <img src="https://assets.koudashijie.com/creator-center/logo-creator-center.png" alt="CodeCombat 扣哒世界">
-            </a>
-        </div>
-            </header>
-
-    <section class="page-header">
-        <div class="page-header-content reveal">
-            <h1>产品哲学</h1>
-            <p class="subtitle">CodeCombat 的不同之处</p>
-            <div class="header-quote">
-                以前，我们让编程不再无聊。<br>
-                今天，我们让你在 AI 时代真正拥有<span class="highlight-marker">"会用代码"</span>的能力。
-            </div>
-        </div>
-    </section>
-
-    <main class="blog-container">
-
-        <section class="reveal">
-            <h2>先回答一个问题</h2>
+<a class="skip-link" href="#main-content">跳转到正文</a>
+<header class="site-header"><div class="nav-inner">
+<a class="brand" href="../index.html" aria-label="CodeCombat 探索地图首页"><img src="https://codecombat.cn/images/pages/base/logo.webp" alt="CodeCombat"><span>探索地图</span></a>
+<nav class="header-links" aria-label="主导航"><a href="index.html">关于我们</a><a href="../index.html">返回探索地图 <span aria-hidden="true">↗</span></a></nav>
+</div></header>
+<main id="main-content">
+<div class="hero">
+<nav class="breadcrumbs" aria-label="面包屑"><a href="../index.html">探索地图</a><span aria-hidden="true">/</span><a href="index.html">关于我们</a><span aria-hidden="true">/</span><span aria-current="page">产品哲学</span></nav>
+<div class="hero-content"><p class="hero-label">产品哲学 · CodeCombat 的不同之处</p>
+<h1>让每一次编程挑战，<br>都成为<span>真正的能力成长。</span></h1>
+<p class="hero-lead">以前，我们让编程不再无聊。今天，我们让你在 AI 时代真正拥有<strong>「会用代码」的能力</strong>。从愿意学，到真正理解，再到独立解决问题——这是 CodeCombat 对学习的思考，也是 CODE 深度学习模型的出发点。</p>
+<div class="hero-bottom"><a href="#code-model">了解 CODE 深度学习模型 <span aria-hidden="true">↓</span></a><span>为孩子的主动学习，也为每一位从零出发的你</span></div></div>
+<section class="model-overview" aria-labelledby="overview-title"><div class="overview-heading"><h2 id="overview-title">CODE：让真正的学习发生</h2><p>四个学习环节，一个持续成长的闭环</p></div><div class="code-grid"><a class="code-card" href="#challenge"><div class="code-card-top"><span class="code-letter">C</span><span class="code-en">Challenge</span></div><span class="card-arrow" aria-hidden="true">↗</span><h3>挑战驱动</h3><p>让孩子愿意学</p></a><a class="code-card" href="#operate"><div class="code-card-top"><span class="code-letter">O</span><span class="code-en">Operate</span></div><span class="card-arrow" aria-hidden="true">↗</span><h3>动手实践</h3><p>在探索中真正理解</p></a><a class="code-card" href="#debug"><div class="code-card-top"><span class="code-letter">D</span><span class="code-en">Debug</span></div><span class="card-arrow" aria-hidden="true">↗</span><h3>反馈纠错</h3><p>在试错中学会思考</p></a><a class="code-card" href="#evolve"><div class="code-card-top"><span class="code-letter">E</span><span class="code-en">Evolve</span></div><span class="card-arrow" aria-hidden="true">↗</span><h3>持续进阶</h3><p>把知识转化为能力</p></a></div><p class="overview-foot">学习科学的启发：心流理论 · 最近发展区 · 建构主义「做中学」 · 主动检索 · 自我决定理论 · 合意困难</p></section>
+</div>
+<div class="reading-layout">
+<aside class="contents"><nav aria-label="文章目录"><p class="contents-title">阅读导览</p><ol><li><a href="#why-code"><span>01</span>AI 时代的编程价值</a></li><li><a href="#learning-barriers"><span>02</span>学习的三个障碍</a></li><li><a href="#learn-by-doing"><span>03</span>在实践中理解</a></li><li><a href="#code-model"><span>04</span>CODE 深度学习模型</a></li><li><a href="#learning-science"><span>05</span>六项学习科学原理</a></li><li><a href="#adult-learning"><span>06</span>成年人的学习体验</a></li><li><a href="#ai-collaboration"><span>07</span>与 AI 协作</a></li><li><a href="#learning-system"><span>08</span>学习系统的设计</a></li><li><a href="#growth-path"><span>09</span>完整成长路径</a></li><li><a href="#beyond-code"><span>10</span>可以迁移的能力</a></li><li><a href="#our-belief"><span>11</span>我们的长期信念</a></li></ol></nav><p class="contents-note">从学习的动力，到能力的形成。<br>理解我们如何设计每一步。</p></aside>
+<div><details class="mobile-contents"><summary>阅读导览 · 11 个章节</summary><nav aria-label="移动端文章目录"><ol><li><a href="#why-code"><span>01</span>AI 时代的编程价值</a></li><li><a href="#learning-barriers"><span>02</span>学习的三个障碍</a></li><li><a href="#learn-by-doing"><span>03</span>在实践中理解</a></li><li><a href="#code-model"><span>04</span>CODE 深度学习模型</a></li><li><a href="#learning-science"><span>05</span>六项学习科学原理</a></li><li><a href="#adult-learning"><span>06</span>成年人的学习体验</a></li><li><a href="#ai-collaboration"><span>07</span>与 AI 协作</a></li><li><a href="#learning-system"><span>08</span>学习系统的设计</a></li><li><a href="#growth-path"><span>09</span>完整成长路径</a></li><li><a href="#beyond-code"><span>10</span>可以迁移的能力</a></li><li><a href="#our-belief"><span>11</span>我们的长期信念</a></li></ol></nav></details><article class="article" aria-label="CodeCombat 产品哲学"><section class="article-section" id="why-code" aria-labelledby="heading-why-code">
+            <div class="section-heading"><span class="section-number">01</span><h2 id="heading-why-code">AI 时代，为什么仍要学编程？</h2></div>
             <p>很多人今天都会问：“AI 都会写代码了，我为什么还要学编程？”</p>
             <p>这个问题看起来很合理。但真正该问的，其实是——<br>
             <span class="strong-text">AI 都会写代码了，你难道不更应该学会怎么指挥它、判断它、修改它吗？</span></p>
             
             <p>2025 年初，前特斯拉 AI 总监、前 OpenAI 核心研究员 Andrej Karpathy 提出了一个新概念：<strong style="color: var(--brand-indigo);">Vibe Coding</strong>——用自然语言描述你想要什么，让 AI 帮你生成代码。</p>
-            <p>很多人把它理解成"不用学代码了"。但 Karpathy 本身是全球顶尖的技术专家，他之所以能实现高效的 Vibe Coding，恰恰是因为他对代码逻辑、执行规则、潜在风险有着极其深刻的理解。</p>
-            <p><span class="highlight-marker">Vibe Coding 的本质，不是不需要懂代码，而是把代码能力从"手动逐行编写"升级为"精确指挥 AI 编写"。</span></p>
+            <p>很多人把它理解成"不用学代码了"。但当我们希望把 AI 生成的代码用于真实任务时，仍需要理解代码逻辑、执行规则与潜在风险，才能判断结果、修改方案。</p>
+            <p><span class="highlight-marker">在 AI 辅助编程中，代码能力的价值也延伸到了：清楚地表达需求、指挥 AI，并验证它的输出。</span></p>
             
             <p>AI 可以帮你生成代码，但它不会自动知道：你真正想解决的问题是什么、这个问题应该怎么拆、哪一步该自动化、哪一步必须人工判断、它生成的结果有没有逻辑漏洞、这段代码能不能真的用在你的项目里。</p>
             <p>换句话说，AI 能写，但"知道该让它写什么"的人，仍然是你。</p>
@@ -199,28 +56,24 @@
             <div class="emphasis-card">
                 <p>AI 越强大，具备编程思维的人，越能更好地驾驭 AI 工具、放大个人能力。</p>
             </div>
-        </section>
-
-        <section class="reveal">
-            <h2>一、传统编程学习，为什么总让人半途而废？</h2>
+        </section><section class="article-section" id="learning-barriers" aria-labelledby="heading-learning-barriers">
+            <div class="section-heading"><span class="section-number">02</span><h2 id="heading-learning-barriers">学不下去，往往是学习方式出了问题</h2></div>
             <p>很多人都有过类似经历：先看视频，觉得自己懂了。再看老师讲变量、循环、函数，也觉得"能理解"。可真正打开编辑器时，却不知道第一行该写什么。就算勉强写出来，也不知道这段代码到底能干嘛。</p>
             <p>于是你开始怀疑：是不是我不适合学编程？是不是我逻辑不好？是不是我不是那块料？</p>
-            <p>其实，大多数时候，问题不在你。问题在于——你被放进了一套非常不符合人脑学习规律的方法里。传统编程教学普遍存在三个结构性痛点，而每一个都有对应的学习科学理论，解释其为何极易导致学习者半途而废：</p>
+            <p>其实，大多数时候，问题不在你。问题在于——学习方式可能没有为你提供足够的情境、实践和支持。当编程教学过于依赖讲解与记忆时，容易出现三个学习障碍。学习科学也为改进这些体验提供了启发：</p>
 
-            <h3>第一个缺陷：知识先于场景。</h3>
-            <p>你先学概念，再找用途。但大脑恰恰是反过来工作的。认知科学家 Jean Lave 和 Etienne Wenger 在 1991 年出版的《情境学习：合法的边缘性参与》中提出的<span class="strong-text">"情境学习理论"（Situated Learning Theory）</span>，早已揭示了这一学习规律：人不是先掌握抽象知识再去应用，而是在具体的、有意义的情境中，知识才真正被理解和内化。一个概念如果脱离了使用场景，它在大脑里就只是一段即将被遗忘的文字。</p>
+            <h3>第一个障碍：知识先于场景。</h3>
+            <p>你先学概念，再找用途。对初学者来说，先看到用途，往往更容易理解概念。认知科学家 Jean Lave 和 Etienne Wenger 在 1991 年出版的《情境学习：合法的边缘性参与》中提出的<span class="strong-text">"情境学习理论"（Situated Learning Theory）</span>，早已揭示了这一学习规律：学习与具体的社会情境和实践活动密切相关。把知识放回有意义的情境，有助于理解和应用。一个概念如果脱离了使用场景，它在大脑里就只是一段即将被遗忘的文字。</p>
 
-            <h3>第二个缺陷：理论先于行动。</h3>
-            <p>你先听，再练。但真正的理解往往发生在动手之后。正如建构主义理论所指出的：真正高效的学习方式不是"被告知"，而是"亲手建造"。当学习者用编程语言创造出一个可以看到、可以互动的东西时，抽象概念就从"别人说的话"变成了"我自己做出来的东西"——这两者在大脑中的记忆强度完全不同。</p>
+            <h3>第二个障碍：理论先于行动。</h3>
+            <p>你先听，再练。但真正的理解往往发生在动手之后。正如建构主义理论所指出的：真正高效的学习方式不是"被告知"，而是"亲手建造"。当学习者用编程语言创造出一个可以看到、可以互动的东西时，抽象概念就从"别人说的话"变成了"我自己做出来的东西"——这样的实践为理解和记忆提供了具体支点。</p>
 
-            <h3>第三个缺陷：反馈太慢、太冷。</h3>
-            <p>你做错了，只得到一个红色的"Error"。你不知道为什么错、该怎么改、自己究竟卡在哪里。心理学家 Albert Bandura 提出的<span class="strong-text">自我效能理论（Self-Efficacy Theory）</span>告诉我们：人对自身能力的信念，直接决定了他的行动意愿与坚持度。当一个初学者反复碰壁却得不到有效指引时，崩塌的不是他的能力，而是他对自己的信心。</p>
+            <h3>第三个障碍：反馈太慢、太冷。</h3>
+            <p>你做错了，只得到一个红色的"Error"。你不知道为什么错、该怎么改、自己究竟卡在哪里。心理学家 Albert Bandura 提出的<span class="strong-text">自我效能理论（Self-Efficacy Theory）</span>告诉我们：人对自身能力的信念，直接决定了他的行动意愿与坚持度。当一个初学者反复碰壁却得不到有效指引时，他对自己能力的信心也容易受到影响。</p>
 
-            <p>这三个缺陷叠加在一起，结果就是：学的人越来越焦虑，坚持越来越靠意志力硬撑，最后大多数人不是败给难度，而是败给枯燥和挫败。</p>
-        </section>
-
-        <section class="reveal">
-            <h2>二、CodeCombat 的方法：不是讲给你听，而是让你在实践中真正掌握</h2>
+            <p>这三个障碍叠加在一起，结果就是：学的人越来越焦虑，坚持越来越靠意志力硬撑，最后大多数人不是败给难度，而是败给枯燥和挫败。</p>
+        </section><section class="article-section" id="learn-by-doing" aria-labelledby="heading-learn-by-doing">
+            <div class="section-heading"><span class="section-number">03</span><h2 id="heading-learn-by-doing">让知识在解决问题时，被真正需要</h2></div>
             <p>CodeCombat 从来不只是"把课程做成游戏"。它真正做的是：把学习，设计成一个你愿意持续投入的系统。</p>
             <p>你第一次进入 CodeCombat，看到的是一个奇幻世界——英雄、地牢、食人魔、机关、宝石、村庄、战场。它像游戏。但它不是为了分散你注意力，而是为了给每一个知识点一个真实、即时、可感知的使用场景。</p>
             
@@ -233,19 +86,50 @@
             <p>当你写函数、数组、嵌套循环，你不是在做题，而是在调度一支队伍、规划一条路径、构建一个会重复执行的策略。</p>
             <p><span class="highlight-marker">这就是 CodeCombat 的核心差异：核心知识点，不是被动"讲授"给你的，而是在闯关解决问题的过程中，被你主动"需要"和掌握的。</span></p>
             <p>打破“先理解理论，再落地应用”的传统模式，让你在实践应用的过程中，完成对知识点的深度理解与内化。你不是被动接收一堆概念，而是在不断解决问题的过程中，长出自己的"编程直觉"。</p>
-        </section>
-
-        <section class="reveal">
-            <h2>三、六项学习科学原理，以及它们为什么让 CodeCombat 有效</h2>
-            <p>CodeCombat 好玩的背后，是非常严肃的系统设计。以下六项被反复验证的学习科学原理，构成了 CodeCombat学习体验的底层骨架。</p>
+        </section><section class="article-section" id="code-model" aria-labelledby="heading-code-model"><div class="section-heading"><span class="section-number">04</span><h2 id="heading-code-model">CODE 深度学习模型</h2></div>
+<p class="section-intro">让孩子从被动接受知识，走向主动探索与深度掌握。</p>
+<p>CodeCombat 将六项学习科学原理融入产品体验，构建<strong>「CODE 深度学习模型」</strong>：挑战驱动（Challenge）、动手实践（Operate）、反馈纠错（Debug）、持续进阶（Evolve）。四个环节相互促进，让学习动力、知识理解与能力成长形成一个完整闭环。</p>
+<p>它回应的，不只是孩子能不能学会编程，更是能不能主动学习、独立思考，并把学到的知识真正用起来。这套学习机制，同样适用于从零起步的大学生与职场学习者。</p>
+<p class="model-note">这里的「深度学习」，指对知识的深入理解与灵活应用。</p>
+<div class="model-details">
+  <section class="model-step" id="challenge">
+    <div class="step-heading"><span class="step-letter" aria-hidden="true">C</span><div><span class="step-en">Challenge / 挑战驱动</span><h3>让孩子主动想学</h3></div></div>
+    <p>学习从一个值得解决的问题开始。让英雄走出迷宫、突破障碍、完成冒险任务——CodeCombat 将学习目标转化为具体的编程挑战。孩子为了实现目标，主动寻找解决方法，知识因此有了明确的用途。</p>
+    <p>结合心流理论与自我决定理论，清晰的任务目标、逐步递进的挑战和可感知的成就感，帮助学习者保持投入。从「被要求完成学习」，走向「我想解决这个问题」。</p>
+    <div class="step-result"><span>学习的变化</span>从被动听讲，到带着目标主动探索。</div>
+  </section>
+  <section class="model-step" id="operate">
+    <div class="step-heading"><span class="step-letter" aria-hidden="true">O</span><div><span class="step-en">Operate / 动手实践</span><h3>在探索中真正理解</h3></div></div>
+    <p>真正掌握编程，不是记住多少条语法，而是能不能用代码解决问题。结合建构主义「做中学」与最近发展区理论，孩子从第一行代码开始，就通过真实指令控制角色，在具体任务中理解变量、循环、条件判断等抽象概念。</p>
+    <p>遇到困难时，AI 私教提供针对性的提示与思路引导，帮助学习者分析问题、寻找突破方向。引导的目标是支持独立思考，让知识成为自己能够理解和使用的工具。</p>
+    <div class="step-result"><span>学习的变化</span>从「好像听懂了」，到「我能亲手做出来」。</div>
+  </section>
+  <section class="model-step" id="debug">
+    <div class="step-heading"><span class="step-letter" aria-hidden="true">D</span><div><span class="step-en">Debug / 反馈纠错</span><h3>让每一次试错都有价值</h3></div></div>
+    <p>学习编程，不可能每一次都写对。比一次成功更重要的，是能否发现问题、分析原因，并找到解决办法。每次运行代码，孩子都能直观看到结果：角色是否成功移动、循环是否按预期执行、任务在哪一步遇到了障碍。</p>
+    <p>即时反馈配合适度的挑战，让「编写—运行—观察—修改」成为日常练习。在反复验证中理解代码逻辑，学会定位错误、调整思路。错误由此成为进一步理解知识的线索。</p>
+    <div class="step-result"><span>学习的变化</span>从害怕出错，到能够分析、修改与验证。</div>
+  </section>
+  <section class="model-step" id="evolve">
+    <div class="step-heading"><span class="step-letter" aria-hidden="true">E</span><div><span class="step-en">Evolve / 持续进阶</span><h3>让知识真正转化为能力</h3></div></div>
+    <p>学过不等于学会，听懂也不代表能够独立应用。2300 多个循序渐进的编程关卡，将复杂知识拆解为由浅入深的任务，让已学概念在后续不同场景中反复出现。</p>
+    <p>结合主动检索与渐进式挑战，学习者需要回忆、组合和灵活运用已有知识，才能解决新的问题。从基础指令到复杂逻辑，从完成单个任务到设计解决方案，能力在实践与巩固中逐步积累。</p>
+    <div class="step-result"><span>学习的变化</span>从「这一关会做」，到面对新问题也知道如何思考。</div>
+  </section>
+</div>
+<div class="learning-loop"><span class="eyebrow">一个持续发生的学习闭环</span><p>遇到挑战 → 编写代码 → 观察与纠错 → 应用到新问题</p><span>愿意学 · 学得会 · 用得上</span></div>
+<p>对家长而言，进步不仅体现在通关数量上，也体现在孩子是否开始主动解释思路、定位错误，并尝试用学过的方法解决新问题。每一次编程挑战，都可以成为一次真实的能力成长。</p>
+</section><section class="article-section" id="learning-science" aria-labelledby="heading-learning-science">
+            <div class="section-heading"><span class="section-number">05</span><h2 id="heading-learning-science">四个学习环节，六项科学原理</h2></div>
+            <p>CodeCombat 好玩的背后，是非常严肃的系统设计。以下六项学习科学原理，为 CODE 模型中的挑战、实践、反馈与进阶提供设计启发。它们帮助我们思考如何支持学习，而每位学习者的节奏与收获也会有所不同。</p>
 
             <h3>原理一：心流状态（Flow State）</h3>
-            <p>匈牙利裔美国心理学家米哈里·契克森米哈赖在 1990 年出版的《心流：最优体验心理学》中，系统提出了"心流"概念——当一个人面对的挑战与自身技能恰好匹配时，他会进入一种全神贯注、时间感消失的"最优体验"状态。</p>
-            <p>CodeCombat 的每一个关卡都在有意识地制造这些条件：每一关的目标都清晰具体（例如“击败食人魔”）；代码立刻产生可见结果；难度精心递进。很多用户反馈"一打开就停不下来"，这种沉浸式体验，正是心流状态的典型表现。</p>
+            <p>匈牙利裔美国心理学家米哈里·契克森米哈赖在《心流：最优体验心理学》中，系统阐述了"心流"概念——当一个人面对的挑战与自身技能恰好匹配时，他会进入一种全神贯注、时间感消失的"最优体验"状态。</p>
+            <p>CodeCombat 的关卡设计围绕这些条件展开：每一关的目标都清晰具体（例如“击败食人魔”）；代码立刻产生可见结果；难度精心递进。这样的设计，旨在帮助学习者将注意力保持在任务与解决问题的过程上。</p>
 
             <h3>原理二：最近发展区与脚手架（Zone of Proximal Development & Scaffolding）</h3>
             <p>苏联心理学家列夫·维果茨基提出的"最近发展区"理论指出：学习最有效的发生区间，是学习者"独立能完成"与"需引导才能完成"之间的地带。如果有适当的引导（即"脚手架"），学习者就能真正提升能力。</p>
-            <p>CodeCombat 的关卡本质上就是一套精密的脚手架引擎。新知识点总是以"刚好需要学一个新东西才能通关"的方式引入。内置的 AI 私教功能，在你学习遇阻时，会针对性地拆解错误原因、说明问题逻辑，并给出可落地的优化方向指引，帮助你尽可能停留在自己的"最近发展区"内学习。</p>
+            <p>CodeCombat 的关卡本质上就是一套逐步提供支持的学习任务。新知识点总是以"刚好需要学一个新东西才能通关"的方式引入。内置的 AI 私教功能，在你学习遇阻时，会针对性地拆解错误原因、说明问题逻辑，并给出可落地的优化方向指引，帮助你尽可能停留在自己的"最近发展区"内学习。</p>
 
             <h3>原理三：建构主义学习——“做中学”（Constructionism）</h3>
             <p>MIT 教授 Seymour Papert 早在 1980 年出版的《头脑风暴：儿童、计算机及充满活力的创意》中，系统提出了"建构主义"（Constructionism）学习理论：学习者在动手创造外部产物的过程中，同步构建内部的知识结构。在 CodeCombat 中，你的每一行代码都在"造东西"——造一个会思考、会行动的英雄角色。<span class="strong-text">当知识通过你的亲手实践转化为可落地的成果时，会形成更深刻、更长效的记忆与理解。</span></p>
@@ -257,64 +141,56 @@
             <p>心理学家 Edward Deci 和 Richard Ryan 提出的"自我决定理论"指出：人类的内在动机，核心取决于自主感、胜任感、归属感三大核心心理需求的满足。在 CodeCombat 中，你可以自由探索解法（自主感），通关获得即时正反馈和装备（胜任感），全球同好社区与排行榜体系，让你在学习路上找到同频伙伴，获得归属感。</p>
 
             <h3>原理六：“合意困难”——恰到好处的难度（Desirable Difficulties）</h3>
-            <p>UCLA 心理学家 Robert Bjork 提出的"合意困难"理论指出：引入适度的、符合学习规律的困难，会大幅提升知识的长期记忆效果与迁移能力。你在第 5 关学的 if 语句，到第 50 关会嵌入到一个复杂策略中。这种<span class="strong-text">"螺旋式上升"</span>的知识复现机制，能帮助你把所学知识，真正沉淀为可复用的底层能力。</p>
-        </section>
-
-        <section class="reveal">
-            <h2>四、为什么这种方式更适配成年人的学习需求？</h2>
+            <p>UCLA 心理学家 Robert Bjork 提出的"合意困难"理论指出：引入适度的、符合学习规律的困难，有助于知识的长期保持与迁移。你在第 5 关学的 if 语句，到第 50 关会嵌入到一个复杂策略中。这种<span class="strong-text">"螺旋式上升"</span>的知识复现机制，能帮助你把所学知识，真正沉淀为可复用的底层能力。</p>
+        </section><section class="article-section" id="adult-learning" aria-labelledby="heading-adult-learning">
+            <div class="section-heading"><span class="section-number">06</span><h2 id="heading-adult-learning">对成年学习者，同样有效的设计思路</h2></div>
             <p>成年人学东西，最大的敌人从来不是"难"。而是：学了半天看不到结果、花了很多时间却没有成就感、不知道学了有什么用、工作和生活已经很忙根本撑不起一套高挫败感的学习系统。CodeCombat 的优势，恰恰在这里。</p>
             <ul>
                 <li><span class="strong-text">低门槛易上手，第一行代码即可看到直观结果。</span> 当你写下 <code>hero.moveRight()</code> 看到角色动了，意义感就在那一秒建立。</li>
-                <li><span class="strong-text">代码实时对应角色行动与关卡进度，即时正向反馈强化学习投入。</span> 即时反馈会让大脑自动加深投入。</li>
+                <li><span class="strong-text">代码实时对应角色行动与关卡进度，即时正向反馈强化学习投入。</span> 可见的结果有助于维持学习投入。</li>
                 <li><span class="strong-text">你更容易坚持。</span> 每一关都很短，当下就获得小的、具体的成就感，而不是在遥远的未来找意义。</li>
                 <li><span class="strong-text">你学的是可迁移能力。</span> 今天是游戏里的角色路径规划，明天就是工作里的流程自动化。今天是函数和循环，明天就是写脚本、搭项目。</li>
             </ul>
             <p><span class="highlight-marker">好的学习不是让你感觉自己很努力，而是让你切实感受到能力的提升。</span></p>
-        </section>
-
-        <section class="reveal">
-            <h2>五、CodeCombat 以前最大的特点，在今天为什么反而更重要？</h2>
-            <p>CodeCombat 从 2013 年起就具备这些特征：游戏化沉浸式学习、即时反馈、真实代码与真实语言、从"用代码做事"出发、AI 智能辅助、全球开源社区。这些特点在 2013 年就很重要，到了 2026 年，它们反而变得更重要。</p>
+        </section><section class="article-section" id="ai-collaboration" aria-labelledby="heading-ai-collaboration">
+            <div class="section-heading"><span class="section-number">07</span><h2 id="heading-ai-collaboration">从会写代码，到会与 AI 协作</h2></div>
+            <p>自 2013 年创立以来，CodeCombat 持续围绕游戏化学习、即时反馈、真实代码与全球开源社区打磨产品，并逐步加入 AI 智能辅助。在 AI 工具日益普及的今天，从「用代码做事」出发的学习方式，更有了新的意义。</p>
             <p>因为今天大家谈论的不再只是"学会写代码"，而是一个更现实的问题：<span class="strong-text">如何在 AI 时代，成为那个能把 AI 真正用起来的人？</span></p>
             <p>很多人理解 Vibe Coding 是"直接让 AI 帮你写就行"。但真正高水平的 Vibe Coding 要求你更懂：需求如何表达得更准确、逻辑如何拆解得更清楚、输出如何评估得更严格、错误如何定位得更快、工具如何组合得更高效。</p>
 
             <div class="compare-box">
-                <span class="label">不会编程思维的人，面对 AI：</span>
+                <span class="label">当需求还不够清晰时：</span>
                 “帮我写个自动化脚本。”<br>
-                <span style="color: var(--text-muted); font-weight: normal; margin-top: 5px; display: block;">AI 给了一段代码。他看不懂，也不敢改，不知道哪里有坑，最后只敢用 AI 写写邮件、改改文案。</span>
+                <span style="color: var(--text-muted); font-weight: normal; margin-top: 5px; display: block;">AI 给出一段代码后，如果缺少对输入、处理过程和预期输出的理解，就很难判断它是否真正完成了任务。</span>
             </div>
 
             <div class="compare-box" style="background: var(--brand-indigo-light); border-color: var(--brand-indigo); color: var(--text-heading);">
-                <span class="label" style="color: var(--brand-indigo);">懂编程思维的人，面对 AI 会这样说：</span>
+                <span class="label" style="color: var(--brand-indigo);">把任务拆解清楚后，可以这样表达：</span>
                 “用 Python 读取这份 CSV，过滤空值，按日期聚合销售额，用 Pandas 生成透视表，再输出前 10 名产品的柱状图；如果缺少某列，自动报错提示我补充字段。”
             </div>
 
-            <p>这时，AI 就不是一个"玩具"，而是一台真正能帮你干活的生产工具。同样的 AI 工具，是否具备编程思维，使用效果与价值转化会有显著差距。</p>
+            <p>明确输入、处理规则、输出形式和异常情况，能让 AI 更容易生成符合需求的方案；理解代码逻辑，则让你有能力继续检查和改进它。</p>
             <p>所以，CodeCombat 今天的价值，已经不只是"让你入门编程"。它更是在训练你：<span class="highlight-marker">成为一个能够清晰表达需求、理解逻辑、判断结果、与 AI 协作的人。</span></p>
-        </section>
-
-        <section class="reveal">
-            <h2>六、严肃的工程，不只是"好玩"</h2>
+        </section><section class="article-section" id="learning-system" aria-labelledby="heading-learning-system">
+            <div class="section-heading"><span class="section-number">08</span><h2 id="heading-learning-system">好玩背后，是严肃的学习系统</h2></div>
             <p>CodeCombat 好玩的背后，是一套经过十三年打磨的代码引擎和学习系统。</p>
             <p>它持续基于全球用户的海量学习行为数据，迭代优化关卡设计与学习路径：哪个知识点应该在第几关引入、哪种错误提示更容易让初学者理解、难度曲线如何安排才不会一开始过于轻松后面突然崩盘。当你写错代码时，系统不会只是告诉你"错了"。它会尽可能告诉你：<span class="strong-text">错在哪一行、是语法问题还是逻辑问题、为什么会导致当前结果、你下一步可以怎么修改。</span></p>
             <p>这对零基础用户尤其重要。因为真正摧毁学习信心的，往往不是难题本身，而是"我完全不知道自己为什么错"的无助感。CodeCombat 要做的，就是尽可能把无助感拆小、拆细、拆成你每次都能跨过去的一步，让每一步的成功都成为你信心的砖块。</p>
-        </section>
-
-        <section class="reveal">
-            <h2>七、从编程学习到 AI 协作能力：2026 年的完整成长路径</h2>
-            <p>在今天，CodeCombat 不只是一套编程关卡。它已经变成一条更完整的能力成长路径。从零开始，不用先有基础，在第一层写出第一行真实代码，体验代码真的能驱动结果。随后进入第二层建立编程直觉，通过关卡和迭代，把变量、条件、循环、函数等核心概念变成可使用的能力。</p>
-            <p>在此基础上，第三层引导你进入真实语言与真实项目，不用图形化积木编程，直接学习 Python、JavaScript、C++ 等全球主流开发语言，代码可直接复用至真实项目中。第四层则开始与 AI 协作，通过 AI 辅助功能，学会提问、生成、调试、验证，把 AI 变成工作流的一部分。最终在第五层进入竞技与创造，通过 AI世青赛/Code Quest 和更高阶任务，让你不只是"学过"，而是真的开始"做出东西"。</p>
-        </section>
-
-        <section class="reveal">
-            <h2>八、你学到的，不只是编程</h2>
+        </section><section class="article-section" id="growth-path" aria-labelledby="heading-growth-path"><div class="section-heading"><span class="section-number">09</span><h2 id="heading-growth-path">从第一行代码，到与 AI 协作</h2></div>
+<p>CodeCombat 不只是一套编程关卡，也是一条从基础实践走向独立创造的成长路径。CODE 四个学习环节，会贯穿其中的每一个阶段。</p>
+<ol class="growth-path">
+<li><strong>写出第一行真实代码</strong><p>从零开始，通过指令控制角色，直观看到代码如何驱动结果。</p></li>
+<li><strong>建立编程直觉</strong><p>在关卡与迭代中，将变量、条件、循环、函数等核心概念变成可使用的能力。</p></li>
+<li><strong>走向真实语言与项目</strong><p>学习 Python、JavaScript、C++ 等主流开发语言，将语言基础与解题方法迁移到实际任务中。</p></li>
+<li><strong>学习与 AI 协作</strong><p>通过 AI 辅助功能，练习提问、生成、调试与验证，将 AI 融入解决问题的工作流。</p></li>
+<li><strong>进入竞技与创造</strong><p>通过 AI 世青赛 / Code Quest 和更高阶任务，尝试设计策略、检验方案，做出自己的成果。</p></li>
+</ol></section><section class="article-section" id="beyond-code" aria-labelledby="heading-beyond-code">
+            <div class="section-heading"><span class="section-number">10</span><h2 id="heading-beyond-code">学到的，不只是编程</h2></div>
             <p>最终，CodeCombat 带给你的，绝不只是"会几门语言"。你将在学习过程中，逐步锻炼和提升这些核心能力：</p>
             <p>面对复杂任务时，你会培养出问题拆解能力，本能地将其分解为可执行的步骤。编程思维的训练，能帮助你提升面对复杂问题时的逻辑拆解与精准表达能力。你还会获得人机协作能力，不再是"用 AI 聊天"的人，而是"指挥 AI 干活"的人。同时，你将建立起技术应用自信，从"我不是学编程的料"到"原来我可以"。最终，你会形成自动化思维，思考"这件事能不能写个脚本来做"，而不是手动重复。</p>
             <p>这就是为什么，CodeCombat 对今天的大学生和职场人都重要。它不是帮你成为某一种人。<span class="highlight-marker">它能帮你构建一套可迁移至多类职业场景的底层逻辑能力。</span></p>
-        </section>
-
-        <section class="reveal">
-            <h2>结语：学习的本质从未改变</h2>
+        </section><section class="article-section" id="our-belief" aria-labelledby="heading-our-belief">
+            <div class="section-heading"><span class="section-number">11</span><h2 id="heading-our-belief">学习的本质，从未改变</h2></div>
             <p>从 2007 年 Nick Winter 与大学室友在宿舍里联合开发 Skritter，教外国人手写汉字，到 2013 年创立 CodeCombat 教全世界写代码，到 2026 年，codecombat.cn正式上线，面向中国大学生和职场人，打造 AI 时代的编程学习成长平台 ——技术在变，工具在变，AI 的能力在指数级增长。但有一件事从未改变：</p>
             <div class="emphasis-card">
                 <p>人类学习复杂能力的核心有效路径，是<br>"在有意义的情境中，亲手做出来"。</p>
@@ -323,30 +199,37 @@
             <p>你需要的，是一个让你真正动手写代码、即时看到结果、在恰到好处的挑战中持续进步、每一步都有成就感的系统。</p>
             <p>CodeCombat 就是这个系统。十三年产品打磨，累计上线 2300 + 关卡，全球累计注册学习者超 2000 万，用户累计编写代码超 10 亿行（数据来源：CodeCombat 全球官方后台统计）。</p>
             <p style="font-size: 1.3rem; font-weight: 900; color: var(--brand-indigo); text-align: center; margin-top: 50px;">不是因为它好玩。<br>是因为它通过科学的系统设计，让"坚持学下去"这件事，不再需要单纯靠意志力硬撑。</p>
-        </section>
-
-    </main>
-
-    <footer>
-        <p>京ICP备2026009460号 | 京公网安备 11010802038619号 | 版权 ©2026 CodeCombat Inc. 版权所有.</p>
-    </footer>
-
-    <script>
-        document.addEventListener("DOMContentLoaded", function() {
-            const observer = new IntersectionObserver((entries) => {
-                entries.forEach(entry => {
-                    if (entry.isIntersecting) {
-                        entry.target.classList.add('active');
-                    }
-                });
-            }, { threshold: 0.1, rootMargin: "0px 0px -50px 0px" });
-
-            document.querySelectorAll('.reveal').forEach((el) => {
-                observer.observe(el);
-            });
-        });
-    </script>
-
-<div data-info-wiki-backlink style="text-align:center;padding:18px 12px;color:#64748b;font:13px/1.6 -apple-system,BlinkMacSystemFont,'Segoe UI','Microsoft YaHei',sans-serif"><a href="../index.html" style="color:#4f46e5;text-decoration:none;font-weight:700">← 返回 CodeCombat 信息百科</a></div>
+        </section></article></div>
+</div>
+<section class="closing" aria-labelledby="closing-title"><div><span class="eyebrow">从理解，走向实践</span><h2 id="closing-title">愿意学，学得会，用得上。</h2><p>让知识在亲手解决问题的过程中，成为你自己的能力。</p></div><a href="../index.html">继续探索 CodeCombat <span aria-hidden="true">→</span></a></section>
+</main>
+<footer class="site-footer"><p><a href="../index.html">CodeCombat 探索地图</a> · 产品哲学</p><p>京ICP备2026009460号 | 京公网安备 11010802038619号 | 版权 ©2026 CodeCombat Inc. 版权所有.</p></footer>
+<script>
+// The content and anchor navigation remain usable without JavaScript.
+(() => {
+  const links = [...document.querySelectorAll('.contents a')];
+  const sections = [...document.querySelectorAll('.article-section')];
+  let scheduled = false;
+  const update = () => {
+    let current = sections[0];
+    for (const section of sections) {
+      if (section.getBoundingClientRect().top <= 160) current = section;
+      else break;
+    }
+    links.forEach(link => {
+      if (link.hash === '#' + current.id) link.setAttribute('aria-current', 'location');
+      else link.removeAttribute('aria-current');
+    });
+    scheduled = false;
+  };
+  window.addEventListener('scroll', () => {
+    if (!scheduled) { scheduled = true; requestAnimationFrame(update); }
+  }, {passive: true});
+  document.querySelectorAll('.mobile-contents a').forEach(link => link.addEventListener('click', () => {
+    link.closest('details').open = false;
+  }));
+  update();
+})();
+</script>
 </body>
 </html>
