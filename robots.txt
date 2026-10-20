@@ -1,6 +1,7 @@
 User-agent: *
 Allow: /
 Allow: /gesp-web/
+Allow: /xinao/
 
 Sitemap: https://info.codecombat.cn/sitemap.xml
 
