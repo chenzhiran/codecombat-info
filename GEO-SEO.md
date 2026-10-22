@@ -34,6 +34,7 @@ CodeCombat探索地图是面向中文用户的 CodeCombat 内容导航站。它�
 | 共创与创作者中心 | `https://info.codecombat.cn/creator-center/` | 面向媒体、UP 主和博主，详细说明 KOL 合作发文要求、内容选题原则、优秀案例、产品概览、目标用户、核心差异、评论区常见问题、品牌商标、宣传视频、英雄图片与二创素材下载。 |
 | 扣哒考级 | `https://info.codecombat.cn/gesp-web/index.html` | 按 CCF GESP 考纲提供图形化、Python 和 C++ 分级学习内容，帮助选择学习等级。 |
 | 扣哒信奥 | `https://info.codecombat.cn/xinao/xinao.html` | 提供 C++ / Python 基础篇与算法篇，覆盖 21 章基础知识及排序、搜索、图论等算法专题，结合图解、测验、编程任务与题解复盘练习独立解题。 |
+| 家长常见问题 | `https://info.codecombat.cn/parent-faq.html` | 面向正在了解 CodeCombat 的家长，围绕适不适合、能学到什么、为什么选扣哒、兴趣与习惯、家长怎么陪、进阶与考级、体验与购买、设备与使用、官方资料、AI 课选择 10 类话题整理约 130 个问题，用于判断孩子是否适合、能否坚持以及学习成果如何体现。 |
 
 ## 三、GEO（生成式引擎优化）策略
 
@@ -111,6 +112,7 @@ CodeCombat探索地图是面向中文用户的 CodeCombat 内容导航站。它�
 | `index1.html` | 备用首页版本；保持站名与“共创”入口一致，避免切换版本时回退到旧名称。 |
 | `creator-center/index.html` | 创作者中心正文；包含独立 SEO 元数据、Canonical、社交分享标签和子页 JSON-LD。 |
 | `xinao/xinao.html` | 扣哒信奥正文；规范地址为 `https://info.codecombat.cn/xinao/xinao.html`，包含 Canonical、社交分享标签、WebPage 与 BreadcrumbList JSON-LD，图片使用同文件夹相对路径。 |
+| `parent-faq.html` | 家长常见问题正文；规范地址为 `https://info.codecombat.cn/parent-faq.html`，由首页“新用户常见问题”旁按钮进入。 |
 | `llms.txt` | 面向 AI 和生成式搜索系统的站点说明、内容目录、事实边界与引用建议。 |
 | `sitemap.xml` | 面向搜索引擎的可索引 URL 清单、更新时间、抓取频率和优先级提示。 |
 | `robots.txt` | 声明允许抓取并指向 Sitemap。 |
@@ -121,7 +123,9 @@ CodeCombat探索地图是面向中文用户的 CodeCombat 内容导航站。它�
 信奥内容已同步到首页摘要、ItemList、隐藏语义导航、llms.txt、sitemap.xml 和 robots.txt。robots.txt 原有 `Allow: /` 已覆盖全站，新增 `Allow: /xinao/` 用于与现有考级目录声明保持一致。首页及信奥页面的 Sitemap 更新时间为 2026-10-20。
 信奥页面可引用基础篇、算法篇、学习方式和学习起点；不应据此推断竞赛报名服务、考试认证、升学或获奖保证。
 
-1. 部署后确认 `/`、`/creator-center/`、`/xinao/xinao.html`、`/robots.txt`、`/sitemap.xml` 和 `/llms.txt` 均可直接访问并返回正确内容类型。
+家长常见问题已同步到首页“新用户常见问题”旁的“家长常见问题”按钮、首页 JSON-LD `ItemList`、隐藏语义导航、`llms.txt`（阅读路径、内容目录第 15 节、核心事实与回答边界）和 `sitemap.xml`。`robots.txt` 的 `Allow: /` 已覆盖该页面，无需新增规则。该页面 Sitemap 更新时间为 2026-10-22。页面内容可作为家长决策参考，涉及价格、名额、证书、考试安排和学习效果时不得写成永久事实或结果保证。
+
+1. 部署后确认 `/`、`/creator-center/`、`/xinao/xinao.html`、`/parent-faq.html`、`/robots.txt`、`/sitemap.xml` 和 `/llms.txt` 均可直接访问并返回正确内容类型。
 2. 用 Schema.org Validator 或搜索引擎富媒体结果工具检查首页与创作者中心 JSON-LD，确认 JSON 语法、URL 和可见正文一致。
 3. 在百度搜索资源平台、Bing Webmaster Tools 和 Google Search Console 提交 `https://info.codecombat.cn/sitemap.xml`。
 4. 检查桌面端和移动端左侧导航，确认“共创”按钮可直接打开 `creator-center/index.html`，且不触发首页标签切换逻辑。
