@@ -1,0 +1,1209 @@
+{
+ "site": "https://info.codecombat.cn/aboutus/user_stories.html",
+ "count": 75,
+ "updated": "2026-11-12",
+ "stories": [
+  {
+   "id": "user53",
+   "url": "https://info.codecombat.cn/aboutus/user53.html",
+   "title": "GESP 报名那天，我守着电脑刷了四十分钟",
+   "summary": "手心全是汗，身份证号输错两次。坐下来的那一刻我才想明白：我抢的不是考位，是自己的心安。",
+   "author": "三年级男孩的妈妈",
+   "date": "2026-11-11",
+   "category": "exam",
+   "categoryName": "考级与信奥",
+   "language": "Python",
+   "tags": [
+    "GESP",
+    "报名",
+    "抢考位"
+   ]
+  },
+  {
+   "id": "user40",
+   "url": "https://info.codecombat.cn/aboutus/user40.html",
+   "title": "线下一年两万二，线上一年 999，我把账算清了才敢交钱",
+   "summary": "我把接送时间、有效动手时间、请假不补的课时都折算成钱，算完那笔账才发现自己一直在比什么。",
+   "author": "四年级男孩的妈妈",
+   "date": "2026-11-09",
+   "category": "choose",
+   "categoryName": "选课与陪学",
+   "language": "Python",
+   "tags": [
+    "线上线下对比",
+    "性价比",
+    "999 元年费"
+   ]
+  },
+  {
+   "id": "user61",
+   "url": "https://info.codecombat.cn/aboutus/user61.html",
+   "title": "刷到一个八岁孩子做游戏的视频，我失眠了",
+   "summary": "我连 Scratch 和 Python 都分不清，只知道“不能落下”。后来我发现，我焦虑的不是孩子，是自己在家长群里的位置。",
+   "author": "医院行政 · 男孩妈妈",
+   "date": "2026-11-08",
+   "category": "choose",
+   "categoryName": "选课与陪学",
+   "language": "Python",
+   "tags": [
+    "跟风焦虑",
+    "短视频",
+    "不懂编程的家长"
+   ]
+  },
+  {
+   "id": "user47",
+   "url": "https://info.codecombat.cn/aboutus/user47.html",
+   "title": "我用 code review 的方式检查儿子的代码，他哭了",
+   "summary": "变量名、抽函数、边界条件，我一口气提了五条。他说了一句“你从来不说我好”，我把平板捡起来的时候手是抖的。",
+   "author": "后端工程师爸爸",
+   "date": "2026-11-07",
+   "category": "coder",
+   "categoryName": "程序员家长",
+   "language": "Python",
+   "tags": [
+    "亲子冲突",
+    "代码审查",
+    "教学方式"
+   ]
+  },
+  {
+   "id": "user67",
+   "url": "https://info.codecombat.cn/aboutus/user67.html",
+   "title": "AI 十秒就能写完的代码，我为什么还让儿子一个字一个字敲",
+   "summary": "同事说，以后没人手写代码了。我一边用 AI 写业务，一边让孩子闯关敲 Python，看起来挺矛盾。",
+   "author": "后端工程师爸爸",
+   "date": "2026-11-06",
+   "category": "coder",
+   "categoryName": "程序员家长",
+   "language": "Python",
+   "tags": [
+    "AI 时代",
+    "学编程的意义",
+    "程序员视角"
+   ]
+  },
+  {
+   "id": "user39",
+   "url": "https://info.codecombat.cn/aboutus/user39.html",
+   "title": "不想鸡娃，但又怕耽误孩子",
+   "summary": "整理兴趣班缴费记录那天我沉默了。画画、游泳、英语、编程，单看都不贵。真要取舍，又舍不得。",
+   "author": "三年级男孩的妈妈",
+   "date": "2026-11-05",
+   "category": "exam",
+   "categoryName": "考级与信奥",
+   "language": "Python",
+   "tags": [
+    "兴趣班",
+    "不鸡娃",
+    "学习目标"
+   ]
+  },
+  {
+   "id": "user60",
+   "url": "https://info.codecombat.cn/aboutus/user60.html",
+   "title": "孩子上幼儿园之后，我把大学没学完的编程捡了起来",
+   "summary": "大学选修的 C 语言我挂过，那门课给我留下的印象是：编程跟我没关系。十五年后，我每天等孩子午睡的那二十分钟在写 Python。",
+   "author": "全职妈妈 · 35 岁",
+   "date": "2026-11-03",
+   "category": "self",
+   "categoryName": "自己学的人",
+   "language": "Python",
+   "tags": [
+    "全职妈妈",
+    "重返学习",
+    "碎片时间"
+   ]
+  },
+  {
+   "id": "user64",
+   "url": "https://info.codecombat.cn/aboutus/user64.html",
+   "title": "我 Steam 里躺着三百个游戏，现在陪儿子一起做游戏",
+   "summary": "老婆说我们父子俩都在打游戏。我不服气，但也没法反驳。直到儿子问我：爸爸，这些游戏是谁做的？",
+   "author": "新媒体从业者 · 男孩爸爸",
+   "date": "2026-11-02",
+   "category": "game",
+   "categoryName": "游戏沉迷",
+   "language": "Python",
+   "tags": [
+    "玩家爸爸",
+    "亲子共创",
+    "从玩到做"
+   ]
+  },
+  {
+   "id": "user48",
+   "url": "https://info.codecombat.cn/aboutus/user48.html",
+   "title": "让儿子在 Python 和 C++ 之间选，他说“你选吧”",
+   "summary": "我讲了一堆 C++ 的好处，他一句没听懂。后来我换了顺序：先让他用 Python 把逻辑跑通，再回同一关用 C++ 重写一遍。",
+   "author": "架构师爸爸",
+   "date": "2026-10-30",
+   "category": "coder",
+   "categoryName": "程序员家长",
+   "language": "Python / C++",
+   "tags": [
+    "语言选择",
+    "Python",
+    "C++",
+    "真代码",
+    "GESP"
+   ]
+  },
+  {
+   "id": "user41",
+   "url": "https://info.codecombat.cn/aboutus/user41.html",
+   "title": "试听课上孩子做出了小游戏，回家我让他再做一次",
+   "summary": "四十分钟做出一个打地鼠，我差点当场交钱。回家让他重做一遍，他说不会，我才知道那节课他做的是“点”，不是“想”。",
+   "author": "二年级男孩的妈妈",
+   "date": "2026-10-28",
+   "category": "choose",
+   "categoryName": "选课与陪学",
+   "language": "图形化 / Python",
+   "tags": [
+    "试听课",
+    "机构套路",
+    "判断标准"
+   ]
+  },
+  {
+   "id": "user38",
+   "url": "https://info.codecombat.cn/aboutus/user38.html",
+   "title": "孩子都五年级了，我才开始研究信奥",
+   "summary": "别人问我“你家孩子以后考虑走信奥吗”，我愣了三秒。回家一查，才发现自己连编程进阶路线都没搞明白。",
+   "author": "五年级男孩的妈妈",
+   "date": "2026-10-25",
+   "category": "exam",
+   "categoryName": "考级与信奥",
+   "language": "C++",
+   "tags": [
+    "信奥",
+    "CSP-J",
+    "规划"
+   ]
+  },
+  {
+   "id": "user62",
+   "url": "https://info.codecombat.cn/aboutus/user62.html",
+   "title": "教育局那份文件我读了三遍，然后去查了这个平台的资质",
+   "summary": "我在体制内工作，只信能核实的东西。同事推荐时我没问价格，先问了一句：它凭什么说自己靠谱。",
+   "author": "事业单位 · 男孩爸爸",
+   "date": "2026-10-24",
+   "category": "choose",
+   "categoryName": "选课与陪学",
+   "language": "Python",
+   "tags": [
+    "全球平台",
+    "权威认证",
+    "看资质"
+   ]
+  },
+  {
+   "id": "user34",
+   "url": "https://info.codecombat.cn/aboutus/user34.html",
+   "title": "女儿学了两年编程，真正让我头疼的是“然后呢”",
+   "summary": "课程一直在更新，但翻来覆去还是那些知识点，循环、判断换个场景再做一遍。最怕的不是学得慢，是一直在学却停在原地。",
+   "author": "两个孩子妈妈的 · 前测试工程师",
+   "date": "2026-10-22",
+   "category": "coder",
+   "categoryName": "程序员家长",
+   "language": "Python",
+   "tags": [
+    "进阶路线",
+    "换平台",
+    "女孩学编程"
+   ]
+  },
+  {
+   "id": "user54",
+   "url": "https://info.codecombat.cn/aboutus/user54.html",
+   "title": "我买了三本真题，孩子只做了七页",
+   "summary": "一百多页里，他真正不会的只有三四个知识点。后来我把书收起来，改成先过单元、再回头做同类题。",
+   "author": "五年级男孩的妈妈",
+   "date": "2026-10-19",
+   "category": "exam",
+   "categoryName": "考级与信奥",
+   "language": "Python / C++",
+   "tags": [
+    "真题",
+    "刷题",
+    "查漏补缺"
+   ]
+  },
+  {
+   "id": "user68",
+   "url": "https://info.codecombat.cn/aboutus/user68.html",
+   "title": "女儿说“我太笨了学不会”，我听见了自己十岁时的声音",
+   "summary": "我做了十年测试，最擅长找 bug。可当女儿在屏幕上找不到错的时候，我第一次不知道怎么开口。",
+   "author": "测试工程师妈妈",
+   "date": "2026-10-16",
+   "category": "coder",
+   "categoryName": "程序员家长",
+   "language": "Python",
+   "tags": [
+    "女孩学编程",
+    "女性程序员",
+    "自信心"
+   ]
+  },
+  {
+   "id": "user33",
+   "url": "https://info.codecombat.cn/aboutus/user33.html",
+   "title": "孩子学编程三年，我却说不清他到底学到了哪一步",
+   "summary": "问他最近学了什么，回答永远是“循环、判断、变量”。听着好像都会，真让他写个小程序，又不知道从哪儿下手。",
+   "author": "前端工程师妈妈",
+   "date": "2026-10-15",
+   "category": "coder",
+   "categoryName": "程序员家长",
+   "language": "Python",
+   "tags": [
+    "学习路线",
+    "程序员妈妈",
+    "项目实践"
+   ]
+  },
+  {
+   "id": "user65",
+   "url": "https://info.codecombat.cn/aboutus/user65.html",
+   "title": "白天奶奶带，晚上我回家，孩子已经在沙发上看了三小时手机",
+   "summary": "我跟老人吵过，也发过脾气，最后解决问题的是给奶奶换了一个“听起来像上课”的东西。",
+   "author": "双职工家庭 · 男孩妈妈",
+   "date": "2026-10-12",
+   "category": "game",
+   "categoryName": "游戏沉迷",
+   "language": "Python",
+   "tags": [
+    "隔代抚养",
+    "屏幕时间",
+    "老人带娃"
+   ]
+  },
+  {
+   "id": "user37",
+   "url": "https://info.codecombat.cn/aboutus/user37.html",
+   "title": "编程考证，最怕考了个没用的",
+   "summary": "机构老师上来就给我排一级、二级、三级，我问这些证书到底有什么用，对方说了一堆，我还是没搞明白。",
+   "author": "五年级男孩的妈妈",
+   "date": "2026-10-11",
+   "category": "exam",
+   "categoryName": "考级与信奥",
+   "language": "Python",
+   "tags": [
+    "证书",
+    "GESP",
+    "理性选择"
+   ]
+  },
+  {
+   "id": "user32",
+   "url": "https://info.codecombat.cn/aboutus/user32.html",
+   "title": "我犯过一个特别低级的错误：以为会编程就会教编程",
+   "summary": "我买了本 Python 入门书扔给他，第三天书就不知道被塞哪儿去了。后来又找了信奥课，他说：爸，我根本不适合编程。",
+   "author": "写了十几年代码的爸爸",
+   "date": "2026-10-08",
+   "category": "coder",
+   "categoryName": "程序员家长",
+   "language": "Python",
+   "tags": [
+    "编程启蒙",
+    "踩坑",
+    "难度设计"
+   ]
+  },
+  {
+   "id": "user70",
+   "url": "https://info.codecombat.cn/aboutus/user70.html",
+   "title": "我承认，我一开始就是冲着证书来的",
+   "summary": "我不关心他喜不喜欢，我关心他简历上能不能写一行。直到有一天他问我：妈妈，考完这个还有用吗。",
+   "author": "个体经营者 · 男孩妈妈",
+   "date": "2026-10-08",
+   "category": "exam",
+   "categoryName": "考级与信奥",
+   "language": "Python",
+   "tags": [
+    "功利型家长",
+    "证书",
+    "转变"
+   ]
+  },
+  {
+   "id": "user42",
+   "url": "https://info.codecombat.cn/aboutus/user42.html",
+   "title": "两万多的年课包，孩子上了三个月就不肯去了",
+   "summary": "双十一图便宜囤了两年课，退费跑了两趟 12315。后来我们换成一个账号、每天自己登录，反而没人催了。",
+   "author": "五年级男孩的爸爸",
+   "date": "2026-10-06",
+   "category": "choose",
+   "categoryName": "选课与陪学",
+   "language": "Python",
+   "tags": [
+    "年课包",
+    "不听课不刷题",
+    "自主学习"
+   ]
+  },
+  {
+   "id": "user49",
+   "url": "https://info.codecombat.cn/aboutus/user49.html",
+   "title": "我在公司写 Go，回家连 Python 的缩进都教不明白",
+   "summary": "我说“缩进错了”，他问“什么是缩进”。我讲了十分钟，他越听越迷糊。最后是他自己看懂了报错。",
+   "author": "运维开发爸爸",
+   "date": "2026-10-02",
+   "category": "coder",
+   "categoryName": "程序员家长",
+   "language": "Python",
+   "tags": [
+    "报错阅读",
+    "缩进",
+    "自学"
+   ]
+  },
+  {
+   "id": "user31",
+   "url": "https://info.codecombat.cn/aboutus/user31.html",
+   "title": "选编程课，我最怕孩子一直停在拖积木",
+   "summary": "试过几家主打图形化的课，孩子拼完一堆彩色模块，兴冲冲说自己会编程。我一问变量是什么，两眼一抹黑。",
+   "author": "后端工程师 · 女孩的爸",
+   "date": "2026-10-01",
+   "category": "coder",
+   "categoryName": "程序员家长",
+   "language": "Python",
+   "tags": [
+    "图形化",
+    "真实代码",
+    "选课"
+   ]
+  },
+  {
+   "id": "user55",
+   "url": "https://info.codecombat.cn/aboutus/user55.html",
+   "title": "机构跟我打包票说二级能过，我问了一句话就退了",
+   "summary": "我说孩子连循环都不熟，怎么就敢打包票。老师说，我们有题库，考前刷三套就能过。我当场就知道不能报。",
+   "author": "四年级女孩的爸爸",
+   "date": "2026-09-29",
+   "category": "exam",
+   "categoryName": "考级与信奥",
+   "language": "Python",
+   "tags": [
+    "打包票",
+    "机构话术",
+    "证书"
+   ]
+  },
+  {
+   "id": "user30",
+   "url": "https://info.codecombat.cn/aboutus/user30.html",
+   "title": "我们家最大的争执，是谁教孩子编程",
+   "summary": "我讲一遍他听不懂，我老公说我表达能力不行，撸袖子亲自上阵。十分钟后，儿子更懵了。",
+   "author": "双程序员家庭 · 男孩的妈",
+   "date": "2026-09-24",
+   "category": "coder",
+   "categoryName": "程序员家长",
+   "language": "Python",
+   "tags": [
+    "程序员家长",
+    "选工具",
+    "调试"
+   ]
+  },
+  {
+   "id": "user63",
+   "url": "https://info.codecombat.cn/aboutus/user63.html",
+   "title": "留学顾问说“编程要出作品集”，我才开始认真研究这事",
+   "summary": "孩子在国际学校读初一，Scratch 玩了三年。顾问一句话点醒我：申请材料里，她需要一样能拿出来讲的东西。",
+   "author": "金融行业 · 女孩妈妈",
+   "date": "2026-09-21",
+   "category": "choose",
+   "categoryName": "选课与陪学",
+   "language": "Python",
+   "tags": [
+    "留学规划",
+    "作品集",
+    "国际学校"
+   ]
+  },
+  {
+   "id": "user36",
+   "url": "https://info.codecombat.cn/aboutus/user36.html",
+   "title": "家长群里有人晒了张证书，我才知道 GESP 是什么",
+   "summary": "女儿一直在闯关，学得挺开心，我压根没往考级那方面想。直到看见别人家孩子已经考到三级。",
+   "author": "四年级女孩的妈妈",
+   "date": "2026-09-20",
+   "category": "exam",
+   "categoryName": "考级与信奥",
+   "language": "Python",
+   "tags": [
+    "GESP",
+    "家长群",
+    "焦虑"
+   ]
+  },
+  {
+   "id": "user29",
+   "url": "https://info.codecombat.cn/aboutus/user29.html",
+   "title": "程序员家长，教不了自己的孩子",
+   "summary": "在公司能改几小时bug，回家讲个循环讲三遍他还不懂，我血压就上来了。最后我承认：我教不明白。",
+   "author": "后端工程师 · 两个孩子的爸",
+   "date": "2026-09-17",
+   "category": "coder",
+   "categoryName": "程序员家长",
+   "language": "Python",
+   "tags": [
+    "程序员家长",
+    "自学能力",
+    "AI时代"
+   ]
+  },
+  {
+   "id": "user73",
+   "url": "https://info.codecombat.cn/aboutus/user73.html",
+   "title": "专升本没考上，我在宿舍用一台旧笔记本开始学编程",
+   "summary": "成绩出来那天我在宿舍躺了两天。第三天我打开电脑，搜了一个特别土的问题：专科生现在学什么还来得及。",
+   "author": "专科大二学生 · 20 岁",
+   "date": "2026-09-14",
+   "category": "self",
+   "categoryName": "自己学的人",
+   "language": "Python",
+   "tags": [
+    "专科生",
+    "专升本",
+    "宿舍自学"
+   ]
+  },
+  {
+   "id": "user43",
+   "url": "https://info.codecombat.cn/aboutus/user43.html",
+   "title": "女儿说想学编程，我第一反应是“那不是男孩学的吗”",
+   "summary": "这句话我说出口就后悔了。她愣了一下，说“哦”。我用了两天时间想清楚自己为什么会这么说。",
+   "author": "一年级女孩的妈妈",
+   "date": "2026-09-12",
+   "category": "choose",
+   "categoryName": "选课与陪学",
+   "language": "图形化 / Python",
+   "tags": [
+    "女孩学编程",
+    "图形化",
+    "刻板印象"
+   ]
+  },
+  {
+   "id": "user28",
+   "url": "https://info.codecombat.cn/aboutus/user28.html",
+   "title": "每天只让她碰屏幕 30 分钟，所以我们挑得很挑",
+   "summary": "我对屏幕时间是硬性规定。所以我要的不是一个能让她坐两小时的课，而是一个 30 分钟里能真正完成一件事的地方。",
+   "author": "三年级女孩的妈妈",
+   "date": "2026-09-10",
+   "category": "game",
+   "categoryName": "游戏沉迷",
+   "language": "图形化 / Python",
+   "tags": [
+    "屏幕时间",
+    "女孩学编程",
+    "护眼"
+   ]
+  },
+  {
+   "id": "user50",
+   "url": "https://info.codecombat.cn/aboutus/user50.html",
+   "title": "我给孩子讲“变量”，讲成了物理课",
+   "summary": "盒子、大小、装不装得下恐龙……十分钟后他的眼神飘到窗外。后来是这个问题自己救了我：先有用，再有名字。",
+   "author": "算法工程师妈妈",
+   "date": "2026-09-08",
+   "category": "coder",
+   "categoryName": "程序员家长",
+   "language": "Python",
+   "tags": [
+    "术语",
+    "比喻",
+    "教学"
+   ]
+  },
+  {
+   "id": "user56",
+   "url": "https://info.codecombat.cn/aboutus/user56.html",
+   "title": "孩子考完一级回来哭了，说最后一题没看懂",
+   "summary": "我以为他没复习，问了半天才发现，他不会的是读题。后来我们改了两件事，第三次他自己说“现在我能看懂了”。",
+   "author": "二年级男孩的妈妈",
+   "date": "2026-09-06",
+   "category": "exam",
+   "categoryName": "考级与信奥",
+   "language": "图形化 / Python",
+   "tags": [
+    "GESP",
+    "读题",
+    "情绪"
+   ]
+  },
+  {
+   "id": "user35",
+   "url": "https://info.codecombat.cn/aboutus/user35.html",
+   "title": "为了研究编程考级，我先把自己考糊了",
+   "summary": "电子学会、GESP、各种能力认证，名字一个比一个专业。翻了十几篇攻略，孩子还没开始考，我先被攻略难住了。",
+   "author": "五年级男孩的妈妈",
+   "date": "2026-09-03",
+   "category": "exam",
+   "categoryName": "考级与信奥",
+   "language": "Python",
+   "tags": [
+    "GESP",
+    "考级路径",
+    "家长功课"
+   ]
+  },
+  {
+   "id": "user27",
+   "url": "https://info.codecombat.cn/aboutus/user27.html",
+   "title": "我们县里没有编程班，孩子是在家自己学的",
+   "summary": "最近的少儿编程机构在市里，来回四个小时。我不想让他在手机上刷短视频，就先陪他试了试免费的几关。",
+   "author": "县城小学教师妈妈",
+   "date": "2026-08-27",
+   "category": "game",
+   "categoryName": "游戏沉迷",
+   "language": "Python",
+   "tags": [
+    "县城",
+    "没有线下班",
+    "自学"
+   ]
+  },
+  {
+   "id": "user44",
+   "url": "https://info.codecombat.cn/aboutus/user44.html",
+   "title": "编程和奥数只能留一个，我纠结了一个月",
+   "summary": "他跟我说“妈妈，我周末没有一天是自己的”。我列了两张纸，最后砍掉的是我自己最舍不得的那门。",
+   "author": "三年级男孩的妈妈",
+   "date": "2026-08-19",
+   "category": "choose",
+   "categoryName": "选课与陪学",
+   "language": "Python",
+   "tags": [
+    "时间安排",
+    "奥数",
+    "取舍"
+   ]
+  },
+  {
+   "id": "user26",
+   "url": "https://info.codecombat.cn/aboutus/user26.html",
+   "title": "弟弟沉迷游戏天天跟我吵，最后治住他的是亲哥",
+   "summary": "兄弟俩差六岁，一个嫌另一个幼稚，一个嫌另一个管得多。直到哥哥给弟弟看了自己做的小游戏。",
+   "author": "两个男孩的妈妈",
+   "date": "2026-08-13",
+   "category": "game",
+   "categoryName": "游戏沉迷",
+   "language": "Python",
+   "tags": [
+    "二胎家庭",
+    "兄弟",
+    "亲子关系"
+   ]
+  },
+  {
+   "id": "user71",
+   "url": "https://info.codecombat.cn/aboutus/user71.html",
+   "title": "机构推荐的比赛，我查了三天名单，发现不在白名单里",
+   "summary": "报名费八百，说“获奖对小升初有帮助”。我把它当采购一样查了一遍资质。",
+   "author": "银行职员 · 女孩妈妈",
+   "date": "2026-08-12",
+   "category": "exam",
+   "categoryName": "考级与信奥",
+   "language": "Python",
+   "tags": [
+    "白名单赛事",
+    "辨伪",
+    "机构话术"
+   ]
+  },
+  {
+   "id": "user66",
+   "url": "https://info.codecombat.cn/aboutus/user66.html",
+   "title": "一输就摔手柄的孩子，现在会说“再来一次”",
+   "summary": "我们家最头疼的不是他爱玩，是他输不起。输了摔东西、骂人、把平板扣在桌上。后来我发现，问题不在游戏，在他从没学过失败之后该怎么办。",
+   "author": "五年级男孩的妈妈",
+   "date": "2026-08-05",
+   "category": "game",
+   "categoryName": "游戏沉迷",
+   "language": "Python",
+   "tags": [
+    "输不起",
+    "情绪管理",
+    "失败教育"
+   ]
+  },
+  {
+   "id": "user25",
+   "url": "https://info.codecombat.cn/aboutus/user25.html",
+   "title": "我终于承认，儿子沉迷游戏有一半是我逼的",
+   "summary": "我越管越严，他越来越不愿意跟我说话。有天晚上他哭着喊“你就知道管我”，我才发现自己一直在做的事，是抢。",
+   "author": "四年级男孩的妈妈",
+   "date": "2026-07-30",
+   "category": "game",
+   "categoryName": "游戏沉迷",
+   "language": "Python",
+   "tags": [
+    "亲子沟通",
+    "反思",
+    "游戏沉迷"
+   ]
+  },
+  {
+   "id": "user51",
+   "url": "https://info.codecombat.cn/aboutus/user51.html",
+   "title": "我原来是反对“游戏化学习”的，直到看见那行报错",
+   "summary": "我在游戏公司做客户端，太知道“让人上瘾”是怎么设计的。所以我是抱着找茬的心态让孩子试的。",
+   "author": "游戏公司程序员爸爸",
+   "date": "2026-07-21",
+   "category": "coder",
+   "categoryName": "程序员家长",
+   "language": "Python",
+   "tags": [
+    "游戏化",
+    "专业视角",
+    "偏见"
+   ]
+  },
+  {
+   "id": "user24",
+   "url": "https://info.codecombat.cn/aboutus/user24.html",
+   "title": "我一度觉得，我儿子这辈子就交代在游戏上了",
+   "summary": "英语单词背五分钟就困，游戏里几十个英雄的技能装备记得比我的银行卡密码还牢。直到我看他为了过关折腾了两个小时。",
+   "author": "五年级男孩的妈妈",
+   "date": "2026-07-16",
+   "category": "game",
+   "categoryName": "游戏沉迷",
+   "language": "Python",
+   "tags": [
+    "游戏沉迷",
+    "英语",
+    "心态变化"
+   ]
+  },
+  {
+   "id": "user57",
+   "url": "https://info.codecombat.cn/aboutus/user57.html",
+   "title": "我们家放弃考级了，改成一个学期做三个作品",
+   "summary": "他考完跟我说“妈妈，我考完就忘了”。这句话让我停了半年，后来我们把时间换成了三个自己想做的东西。",
+   "author": "六年级男孩的妈妈",
+   "date": "2026-07-14",
+   "category": "exam",
+   "categoryName": "考级与信奥",
+   "language": "Python",
+   "tags": [
+    "反考级",
+    "作品集",
+    "评估"
+   ]
+  },
+  {
+   "id": "user69",
+   "url": "https://info.codecombat.cn/aboutus/user69.html",
+   "title": "我把线上事故的复盘讲给儿子听，他问了一句让我沉默的话",
+   "summary": "我一直想让他知道“爸爸的工作很厉害”。那天我讲完一个事故，他说：原来你也会写错啊。",
+   "author": "技术负责人爸爸",
+   "date": "2026-07-08",
+   "category": "coder",
+   "categoryName": "程序员家长",
+   "language": "Python",
+   "tags": [
+    "反向教学",
+    "失败教育",
+    "职业认同"
+   ]
+  },
+  {
+   "id": "user23",
+   "url": "https://info.codecombat.cn/aboutus/user23.html",
+   "title": "《我的世界》玩得这么溜，为什么一学习就不行",
+   "summary": "没人教他，他倒知道查教程、试方法、失败了重来。既然他喜欢创造世界，那能不能顺便学学游戏背后的编程？",
+   "author": "五年级男孩的爸爸",
+   "date": "2026-07-02",
+   "category": "game",
+   "categoryName": "游戏沉迷",
+   "language": "Python",
+   "tags": [
+    "我的世界",
+    "自学能力",
+    "变量与循环"
+   ]
+  },
+  {
+   "id": "user45",
+   "url": "https://info.codecombat.cn/aboutus/user45.html",
+   "title": "我陪学的方式，从“坐旁边盯”改成了“离线一小时”",
+   "summary": "我一停他就回头看我的表情，我发现他在等我说“没事”。把椅子搬走之后，他反而学得更快了。",
+   "author": "四年级男孩的妈妈",
+   "date": "2026-06-25",
+   "category": "choose",
+   "categoryName": "选课与陪学",
+   "language": "Python",
+   "tags": [
+    "陪学",
+    "家长不懂编程",
+    "自主学习"
+   ]
+  },
+  {
+   "id": "user22",
+   "url": "https://info.codecombat.cn/aboutus/user22.html",
+   "title": "我儿子沉迷《我的世界》怎么办",
+   "summary": "为了搭一个自动刷怪塔，他能抱着教程研究大半天。可让他做两道数学题，眉头一皱说太难了。",
+   "author": "四年级男孩的妈妈",
+   "date": "2026-06-18",
+   "category": "game",
+   "categoryName": "游戏沉迷",
+   "language": "Python",
+   "tags": [
+    "我的世界",
+    "自动化",
+    "沉迷游戏"
+   ]
+  },
+  {
+   "id": "user72",
+   "url": "https://info.codecombat.cn/aboutus/user72.html",
+   "title": "证书拿到手那天，他问我：然后呢",
+   "summary": "为了考级我们忙了三个月。考完那个周末，他坐在沙发上不知道干什么，我突然意识到我们把“目标”用完了。",
+   "author": "国企职员 · 男孩爸爸",
+   "date": "2026-06-11",
+   "category": "exam",
+   "categoryName": "考级与信奥",
+   "language": "Python",
+   "tags": [
+    "考后空白",
+    "目标感",
+    "长期规划"
+   ]
+  },
+  {
+   "id": "user21",
+   "url": "https://info.codecombat.cn/aboutus/user21.html",
+   "title": "原来编程也能这么好玩，像打游戏一样学Python",
+   "summary": "他能把一张游戏地图研究半天，却连一道数学题都坐不住。我想了很久才想明白差别在哪：目标感和即时反馈。",
+   "author": "三年级男孩的妈妈",
+   "date": "2026-06-04",
+   "category": "game",
+   "categoryName": "游戏沉迷",
+   "language": "Python",
+   "tags": [
+    "编程启蒙",
+    "即时反馈",
+    "三年级"
+   ]
+  },
+  {
+   "id": "user20",
+   "url": "https://info.codecombat.cn/aboutus/user20.html",
+   "title": "拯救网瘾少年，我决定用游戏打败游戏",
+   "summary": "我们家的亲子关系，一度靠一句“干完就可以玩十分钟”撑着。后来我认输了，打不过，那就加入。",
+   "author": "六年级男孩的妈妈",
+   "date": "2026-05-21",
+   "category": "game",
+   "categoryName": "游戏沉迷",
+   "language": "Python",
+   "tags": [
+    "游戏沉迷",
+    "亲子关系",
+    "条件判断"
+   ]
+  },
+  {
+   "id": "user52",
+   "url": "https://info.codecombat.cn/aboutus/user52.html",
+   "title": "女儿问我“爸爸你上班也是写这个吗”，我一时不知道怎么答",
+   "summary": "我说不会做游戏，她“哦”了一声，那个“哦”里有点失望。半年后她自己做了个网页，丑得很，但她给全班看了。",
+   "author": "前端工程师爸爸",
+   "date": "2026-05-16",
+   "category": "coder",
+   "categoryName": "程序员家长",
+   "language": "Python / 网页开发",
+   "tags": [
+    "亲子",
+    "职业认同",
+    "网页开发"
+   ]
+  },
+  {
+   "id": "user74",
+   "url": "https://info.codecombat.cn/aboutus/user74.html",
+   "title": "被优化之后，我三十六岁开始学 Python，晚不晚",
+   "summary": "公司调整，我们组砍了一半。我在家待了一个月，投了四十份简历，回复三个。后来我把简历关了，开始学点别的。",
+   "author": "前互联网运营 · 36 岁",
+   "date": "2026-05-09",
+   "category": "self",
+   "categoryName": "自己学的人",
+   "language": "Python",
+   "tags": [
+    "35 岁",
+    "职场危机",
+    "重新开始"
+   ]
+  },
+  {
+   "id": "user19",
+   "url": "https://info.codecombat.cn/aboutus/user19.html",
+   "title": "同事推荐的编程游戏，把我家犟种儿子治住了",
+   "summary": "我问他“你游戏玩得这么厉害，要不自己做一个”，他摇头说不可能。三个月后，他真跟AI一起做了个小游戏。",
+   "author": "三年级男孩的爸爸",
+   "date": "2026-05-07",
+   "category": "game",
+   "categoryName": "游戏沉迷",
+   "language": "Python",
+   "tags": [
+    "父子",
+    "从玩到做",
+    "零基础"
+   ]
+  },
+  {
+   "id": "user18",
+   "url": "https://info.codecombat.cn/aboutus/user18.html",
+   "title": "从夺手机就歇斯底里，到写完作业自己打开编程闯关",
+   "summary": "我一度以为他注意力有问题。后来发现他不是坐不住，是没人给他一个“六十秒就能看到结果”的任务。",
+   "author": "五年级男孩的妈妈",
+   "date": "2026-04-23",
+   "category": "game",
+   "categoryName": "游戏沉迷",
+   "language": "Python",
+   "tags": [
+    "注意力",
+    "亲子冲突",
+    "游戏沉迷"
+   ]
+  },
+  {
+   "id": "user58",
+   "url": "https://info.codecombat.cn/aboutus/user58.html",
+   "title": "CSP-J 的初赛真题，把我这个文科妈看傻了",
+   "summary": "二进制、补码、时间复杂度，我一个字都看不懂。但我看懂了一件事：这条路考的不是“会不会写”，是“读不读得懂”。",
+   "author": "初二学生的妈妈",
+   "date": "2026-04-18",
+   "category": "exam",
+   "categoryName": "考级与信奥",
+   "language": "C++ / Python",
+   "tags": [
+    "信奥",
+    "CSP-J",
+    "衔接"
+   ]
+  },
+  {
+   "id": "user17",
+   "url": "https://info.codecombat.cn/aboutus/user17.html",
+   "title": "孩子一玩游戏就收不住，我干脆给他找了个能学东西的",
+   "summary": "说好再玩一局，永远有下一局。硬管两年没管住，最后是一个能写代码的地牢游戏让他自己坐住了。",
+   "author": "五年级男孩的妈妈",
+   "date": "2026-04-09",
+   "category": "game",
+   "categoryName": "游戏沉迷",
+   "language": "Python",
+   "tags": [
+    "玩游戏学编程",
+    "孩子沉迷游戏",
+    "免费体验"
+   ]
+  },
+  {
+   "id": "user75",
+   "url": "https://info.codecombat.cn/aboutus/user75.html",
+   "title": "待业半年，我给自己找了个每天能“完成”的事情",
+   "summary": "面试被问到“你会不会点技术”的时候，我只能摇头。回家路上我决定，至少先学会一件能做完的事。",
+   "author": "待业青年 · 28 岁",
+   "date": "2026-03-15",
+   "category": "self",
+   "categoryName": "自己学的人",
+   "language": "Python",
+   "tags": [
+    "待业",
+    "空窗期",
+    "重建节奏"
+   ]
+  },
+  {
+   "id": "user14",
+   "url": "https://info.codecombat.cn/aboutus/user14.html",
+   "title": "建筑行业干了几年，我决定开始学编程",
+   "summary": "毕业之后干了几年本行，说不上讨厌，但越干越觉得天花板就在头顶上。你能看到十年后自己什么样，二十年后什么样，一眼到头。",
+   "author": "建筑/土木工程职场人 · 探索新方向 · 零基础",
+   "date": "2026-03-06",
+   "category": "self",
+   "categoryName": "自己学的人",
+   "language": "Python",
+   "tags": [
+    "建筑行业",
+    "探索新方向",
+    "零基础"
+   ]
+  },
+  {
+   "id": "user13",
+   "url": "https://info.codecombat.cn/aboutus/user13.html",
+   "title": "在阿勒泰给一年级的儿子找编程启蒙，我的踩坑和选择",
+   "summary": "先说一个现实：我们这儿没有少儿编程培训班。最近的培训班可能在省会城市，路途不近。",
+   "author": "一年级学生家长 · 科技爱好者",
+   "date": "2026-02-25",
+   "category": "choose",
+   "categoryName": "选课与陪学",
+   "language": "图形化 / Python",
+   "tags": [
+    "一年级家长",
+    "阿勒泰",
+    "启蒙踩坑"
+   ]
+  },
+  {
+   "id": "user12",
+   "url": "https://info.codecombat.cn/aboutus/user12.html",
+   "title": "一个工业设计师学Python的五个月",
+   "summary": "我做工业设计，平时主要用犀牛建模，Grasshopper参数化插件用得比较多。",
+   "author": "工业设计师 · 职场人 · 零基础",
+   "date": "2026-02-06",
+   "category": "self",
+   "categoryName": "自己学的人",
+   "language": "Python",
+   "tags": [
+    "工业设计师",
+    "五个月",
+    "参数化思维"
+   ]
+  },
+  {
+   "id": "user10",
+   "url": "https://info.codecombat.cn/aboutus/user10.html",
+   "title": "学生物的我，为什么开始学编程了",
+   "summary": "高考填志愿的时候，我本来想报计算机的。",
+   "author": "大一生物技术专业女生 · 零基础",
+   "date": "2026-01-26",
+   "category": "self",
+   "categoryName": "自己学的人",
+   "language": "Python",
+   "tags": [
+    "大一生物",
+    "跨专业念头",
+    "Python"
+   ]
+  },
+  {
+   "id": "user7",
+   "url": "https://info.codecombat.cn/aboutus/user7.html",
+   "title": "跑长途的间隙，我在驾驶室里开始学写代码",
+   "summary": "每个人都可以用自己的方式接触编程。这是一位长途卡车司机的故事。",
+   "author": "长途卡车司机 · 零基础",
+   "date": "2026-01-14",
+   "category": "self",
+   "categoryName": "自己学的人",
+   "language": "Python",
+   "tags": [
+    "卡车司机",
+    "碎片时间",
+    "零基础"
+   ]
+  },
+  {
+   "id": "user2",
+   "url": "https://info.codecombat.cn/aboutus/user2.html",
+   "title": "工作十年的土木人，靠一个编程游戏写了一整天代码还没玩够",
+   "summary": "先叠个甲：我不是什么技术大牛，就是一个工作了十年的土木老哥。",
+   "author": "土木工程 · 30+岁 · 零基础",
+   "date": "2026-01-11",
+   "category": "self",
+   "categoryName": "自己学的人",
+   "language": "Python",
+   "tags": [
+    "土木工程",
+    "工作十年",
+    "重新找回专注"
+   ]
+  },
+  {
+   "id": "user15",
+   "url": "https://info.codecombat.cn/aboutus/user15.html",
+   "title": "计科大一，一个编程游戏帮我重新理解了Python",
+   "summary": "先说背景：某985高校，大一，人工智能方向。",
+   "author": "计算机科学（AI方向）大一 · 有一定基础",
+   "date": "2026-01-11",
+   "category": "self",
+   "categoryName": "自己学的人",
+   "language": "Python",
+   "tags": [
+    "计科大一",
+    "有基础",
+    "重新理解 Python"
+   ]
+  },
+  {
+   "id": "user4",
+   "url": "https://info.codecombat.cn/aboutus/user4.html",
+   "title": "从前端到 Python，一个编程游戏帮我找到了转型节奏",
+   "summary": "先说一下我的情况：前端开发，干了几年，去年公司业务调整，我离开了。",
+   "author": "前端开发转型 · Python 进行中",
+   "date": "2026-01-06",
+   "category": "self",
+   "categoryName": "自己学的人",
+   "language": "Python",
+   "tags": [
+    "前端转型",
+    "Python",
+    "职业方向"
+   ]
+  },
+  {
+   "id": "user3",
+   "url": "https://info.codecombat.cn/aboutus/user3.html",
+   "title": "一个初一男生的编程闯关日记",
+   "summary": "先交代一下背景：我初一，之前在另一个平台学过一阵子Python，Scratch也玩过。",
+   "author": "初一男生 · 有一点编程基础",
+   "date": "2026-01-04",
+   "category": "self",
+   "categoryName": "自己学的人",
+   "language": "Python",
+   "tags": [
+    "初一学生",
+    "有点基础",
+    "闯关日记"
+   ]
+  },
+  {
+   "id": "user5",
+   "url": "https://info.codecombat.cn/aboutus/user5.html",
+   "title": "给高考后的孩子选编程学习工具，我的思考过程",
+   "summary": "这篇文章不是推荐，是记录。记录一个在教育这件事上踩过不少坑的家长，在“高考后暑假该让孩子干什么”这个问题上，是怎么一步步想清楚的。",
+   "author": "高三理科生家长",
+   "date": "2026-01-01",
+   "category": "choose",
+   "categoryName": "选课与陪学",
+   "language": "Python",
+   "tags": [
+    "高三家长",
+    "选工具",
+    "高考之后"
+   ]
+  },
+  {
+   "id": "user6",
+   "url": "https://info.codecombat.cn/aboutus/user6.html",
+   "title": "一个编程零基础妈妈，陪四年级儿子闯到了安息云峰",
+   "summary": "先声明：我是一个完全不懂编程的家长。Python是什么、Scratch是什么，我到现在也只能说出个大概。",
+   "author": "零基础妈妈 · 四年级男生",
+   "date": "2026-01-01",
+   "category": "choose",
+   "categoryName": "选课与陪学",
+   "language": "Python",
+   "tags": [
+    "四年级家长",
+    "零基础陪学",
+    "安息云峰"
+   ]
+  },
+  {
+   "id": "user8",
+   "url": "https://info.codecombat.cn/aboutus/user8.html",
+   "title": "自动化专业毕业就工作，我想靠编程多一个选择",
+   "summary": "先说一下我的情况：19岁，工作了，自动化专业出来的，目前在上班，日常就是值班。",
+   "author": "自动化专业 · 在职 · 零基础",
+   "date": "2026-01-01",
+   "category": "self",
+   "categoryName": "自己学的人",
+   "language": "Python",
+   "tags": [
+    "自动化专业",
+    "在职",
+    "多一个选择"
+   ]
+  },
+  {
+   "id": "user9",
+   "url": "https://info.codecombat.cn/aboutus/user9.html",
+   "title": "寒假给儿子找了个\"正事\"，结果我自己也上头了",
+   "summary": "寒假之前我就在想一个问题：这个假期怎么安排？纯玩肯定不行，一个多月就这么荒掉了太可惜。但也不想给他报那种坐在那儿听课的班。",
+   "author": "六年级学生家长",
+   "date": "2026-01-01",
+   "category": "choose",
+   "categoryName": "选课与陪学",
+   "language": "Python",
+   "tags": [
+    "六年级家长",
+    "寒假",
+    "家长也上头"
+   ]
+  },
+  {
+   "id": "user11",
+   "url": "https://info.codecombat.cn/aboutus/user11.html",
+   "title": "一个音乐专业毕业生的编程尝鲜记录",
+   "summary": "先回答那个所有人都会问的问题：学音乐的为什么要学编程？",
+   "author": "音乐专业毕业生 · 职场人 · 零基础",
+   "date": "2026-01-01",
+   "category": "self",
+   "categoryName": "自己学的人",
+   "language": "Python",
+   "tags": [
+    "音乐专业",
+    "兴趣尝试",
+    "付费前的犹豫"
+   ]
+  },
+  {
+   "id": "user16",
+   "url": "https://info.codecombat.cn/aboutus/user16.html",
+   "title": "找了好几年编程课，最后是学校帮我选对了",
+   "summary": "我是孩子的妈妈，坐标苏州，孩子今年五年级。",
+   "author": "坐标苏州 · 五年级学生家长",
+   "date": "2026-01-01",
+   "category": "choose",
+   "categoryName": "选课与陪学",
+   "language": "Python",
+   "tags": [
+    "苏州家长",
+    "学校社团",
+    "教育版体验"
+   ]
+  },
+  {
+   "id": "user1",
+   "url": "https://info.codecombat.cn/aboutus/user1.html",
+   "title": "毕业前的两个月，我居然开始看懂代码了",
+   "summary": "大学毕业最后一个学期，别人都在实习，我在家养伤。",
+   "author": "文科女生 · 零基础",
+   "date": "2025-12-29",
+   "category": "self",
+   "categoryName": "自己学的人",
+   "language": "Python",
+   "tags": [
+    "文科女生",
+    "零基础",
+    "从放弃到看懂代码"
+   ]
+  },
+  {
+   "id": "user59",
+   "url": "https://info.codecombat.cn/aboutus/user59.html",
+   "title": "考级这件事，最后是我自己想通了",
+   "summary": "我把考纲打印出来贴在冰箱上，孩子看了一眼说“妈妈，这上面写的我都不知道”。那年冬天我停了一次。",
+   "author": "四年级男孩的妈妈",
+   "date": "2025-12-07",
+   "category": "exam",
+   "categoryName": "考级与信奥",
+   "language": "Python",
+   "tags": [
+    "家长执念",
+    "节奏",
+    "GESP"
+   ]
+  },
+  {
+   "id": "user46",
+   "url": "https://info.codecombat.cn/aboutus/user46.html",
+   "title": "报班前我问了机构三个问题，有两个答不上来",
+   "summary": "跑了五家机构，问同样三个问题。最后没报班，是因为我发现凭这三句话，我根本判断不了谁教得好。",
+   "author": "六年级男孩的妈妈",
+   "date": "2025-11-20",
+   "category": "choose",
+   "categoryName": "选课与陪学",
+   "language": "Python",
+   "tags": [
+    "选机构",
+    "提问清单",
+    "判断标准"
+   ]
+  }
+ ]
+}

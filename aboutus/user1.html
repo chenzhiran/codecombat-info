@@ -1,229 +1,157 @@
 <!DOCTYPE html>
 <html lang="zh-CN">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>用户故事：毕业前的两个月，我居然把编程学会了 | CodeCombat</title>
-    <style>
-        /* ================= 品牌色彩体系 ================= */
-        :root {
-            --bg-body: #f8fafc;
-            --bg-white: #ffffff;
-            
-            --text-heading: #1e293b; 
-            --text-main: #334155;    
-            --text-muted: #64748b;   
-            
-            --brand-indigo: #4338ca; /* 品牌蓝 */
-            --brand-indigo-light: #e0e7ff;
-            --brand-gold: #F2BE22;   /* 荣耀金 */
-            --brand-gold-text: #000000;
-            
-            --font-main: "Noto Sans SC", -apple-system, BlinkMacSystemFont, sans-serif;
-            --font-serif: "Noto Serif SC", serif;
-            
-            --shadow-sm: 0 4px 6px -1px rgba(0, 0, 0, 0.05);
-            --shadow-md: 0 10px 30px -10px rgba(0, 0, 0, 0.1);
-            --shadow-lg: 0 20px 40px -10px rgba(0, 0, 0, 0.15);
-        }
-
-        * { margin: 0; padding: 0; box-sizing: border-box; }
-        
-        body {
-            background: var(--bg-body);
-            color: var(--text-main);
-            font-family: var(--font-main);
-            line-height: 1.8;
-            -webkit-font-smoothing: antialiased;
-            overflow-x: hidden;
-        }
-
-        /* ================= 极简导航栏 ================= */
-        header {
-            position: fixed; top: 0; width: 100%; z-index: 1000;
-            background: rgba(255, 255, 255, 0.95); backdrop-filter: blur(12px);
-            border-bottom: 1px solid rgba(0,0,0,0.05);
-            display: flex; justify-content: flex-start; align-items: center;
-            padding: 15px 40px;
-        }
-        .logo img { height: 36px; display: block; }
-
-        /* ================= 全局动画 ================= */
-        .reveal { opacity: 0; transform: translateY(30px); transition: all 0.8s cubic-bezier(0.2, 0.8, 0.2, 1); }
-        .reveal.active { opacity: 1; transform: translateY(0); }
-
-        /* ================= 博客文章头部 ================= */
-        .article-header {
-            padding: 160px 20px 60px;
-            background: var(--bg-white);
-            border-bottom: 1px solid var(--border-light);
-            text-align: center;
-        }
-        .article-header-inner { max-width: 800px; margin: 0 auto; }
-        
-        .article-title {
-            font-size: 2.8rem; font-weight: 900; color: var(--text-heading);
-            line-height: 1.3; margin-bottom: 25px; letter-spacing: -0.5px;
-        }
-        
-        /* 真实访谈认证标签 */
-        .interview-badge {
-            display: inline-flex; align-items: center; gap: 10px;
-            background: #fffbeb; border: 1px solid #fde68a; color: #b45309;
-            padding: 10px 20px; border-radius: 50px; font-weight: 800; font-size: 0.95rem;
-            margin-bottom: 30px; box-shadow: var(--shadow-sm);
-        }
-        
-        .article-meta {
-            display: flex; justify-content: center; gap: 20px; color: var(--text-muted);
-            font-size: 0.95rem; font-weight: 600;
-        }
-        .meta-item { display: flex; align-items: center; gap: 6px; }
-
-        /* ================= 博客正文区 ================= */
-        .article-body {
-            max-width: 760px; margin: 0 auto; padding: 60px 20px 100px;
-            font-size: 1.15rem; line-height: 2; color: var(--text-main);
-        }
-
-        .article-body p { margin-bottom: 25px; }
-
-        /* 段落小标题 */
-        .article-body h2 {
-            font-size: 1.6rem; font-weight: 900; color: var(--brand-indigo);
-            margin: 60px 0 25px; position: relative; display: inline-block;
-        }
-        .article-body h2::after {
-            content: ''; position: absolute; left: 0; bottom: -8px; width: 100%; height: 3px; background: var(--brand-gold); border-radius: 2px;
-        }
-
-        /* 荧光笔下半部半遮盖特效 */
-        .highlight-marker {
-            background: linear-gradient(180deg, transparent 55%, rgba(242, 190, 34, 0.8) 55%);
-            padding: 0 4px; font-weight: 900; color: var(--text-heading); display: inline;
-        }
-
-        /* 次重点加粗 */
-        .strong-text { font-weight: 800; color: var(--text-heading); }
-
-        /* 引言块 */
-        .story-quote {
-            font-family: var(--font-serif); font-size: 1.3rem; font-weight: 800; color: var(--brand-indigo);
-            border-left: 5px solid var(--brand-gold); padding: 25px 30px; margin: 40px 0;
-            background: var(--brand-indigo-light); border-radius: 0 16px 16px 0; line-height: 1.7;
-        }
-
-        /* ================= 页脚 ================= */
-        footer { text-align: center; padding: 40px 20px; font-size: 0.95rem; color: var(--text-muted); background: var(--bg-white); border-top: 1px solid var(--border-light); }
-
-        /* 响应式 */
-        @media (max-width: 768px) {
-            header { padding: 15px 20px; }
-            .article-header { padding: 120px 20px 40px; }
-            .article-title { font-size: 2.2rem; }
-            .article-body { font-size: 1.05rem; padding: 40px 20px; }
-            .article-body h2 { font-size: 1.4rem; margin-top: 40px; }
-        }
-    </style>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>毕业前的两个月，我居然开始看懂代码了｜CodeCombat 用户故事</title>
+<meta name="description" content="大学毕业最后一个学期，别人都在实习，我在家养伤。">
+<meta name="robots" content="index,follow,max-image-preview:large">
+<link rel="canonical" href="https://info.codecombat.cn/aboutus/user1.html">
+<meta property="og:type" content="article">
+<meta property="og:site_name" content="CodeCombat探索地图">
+<meta property="og:locale" content="zh_CN">
+<meta property="og:title" content="毕业前的两个月，我居然开始看懂代码了｜CodeCombat 用户故事">
+<meta property="og:description" content="大学毕业最后一个学期，别人都在实习，我在家养伤。">
+<meta property="og:url" content="https://info.codecombat.cn/aboutus/user1.html">
+<meta property="og:image" content="https://info.codecombat.cn/aboutus/assets/og-cover.png">
+<meta property="og:image:width" content="1200">
+<meta property="og:image:height" content="630">
+<meta property="og:image:alt" content="CodeCombat 用户故事：先让他们赢一次，学习就跟着来了">
+<meta name="twitter:card" content="summary_large_image">
+<meta name="twitter:title" content="毕业前的两个月，我居然开始看懂代码了｜CodeCombat 用户故事">
+<meta name="twitter:description" content="大学毕业最后一个学期，别人都在实习，我在家养伤。">
+<link rel="icon" href="assets/logo.png" type="image/png">
+<link rel="stylesheet" href="assets/story.css">
+<script>document.documentElement.className+=" js";</script>
+<script src="assets/story.js" defer></script>
+<script type="application/ld+json">{"@context":"https://schema.org","@graph":[{"@type":"Article","@id":"https://info.codecombat.cn/aboutus/user1.html#article","headline":"毕业前的两个月，我居然开始看懂代码了","description":"大学毕业最后一个学期，别人都在实习，我在家养伤。","abstract":"大学毕业最后一个学期，别人都在实习，我在家养伤。","datePublished":"2025-12-29T09:00:00+08:00","dateModified":"2026-11-12T09:00:00+08:00","inLanguage":"zh-CN","articleSection":"用户故事 · 自己学的人","keywords":"CodeCombat,扣哒世界,游戏化编程,少儿编程,文科女生,零基础,从放弃到看懂代码","author":{"@type":"Person","name":"文科女生 · 零基础（化名）"},"image":["https://info.codecombat.cn/aboutus/assets/og-cover.png"],"publisher":{"@type":"Organization","name":"CodeCombat扣哒世界","url":"https://codecombat.cn/","logo":{"@type":"ImageObject","url":"https://info.codecombat.cn/aboutus/assets/logo.png"}},"isPartOf":{"@type":"WebSite","name":"CodeCombat探索地图","url":"https://info.codecombat.cn/"},"mainEntityOfPage":{"@type":"WebPage","@id":"https://info.codecombat.cn/aboutus/user1.html"},"about":[{"@type":"Thing","name":"CodeCombat扣哒世界"},{"@type":"Thing","name":"游戏化编程学习"},{"@type":"Thing","name":"Python 学习"}]},{"@type":"BreadcrumbList","itemListElement":[{"@type":"ListItem","position":1,"name":"CodeCombat探索地图","item":"https://info.codecombat.cn/"},{"@type":"ListItem","position":2,"name":"用户故事","item":"https://info.codecombat.cn/aboutus/user_stories.html"},{"@type":"ListItem","position":3,"name":"毕业前的两个月，我居然开始看懂代码了","item":"https://info.codecombat.cn/aboutus/user1.html"}]}]}</script>
 </head>
 <body>
+<div class="progress" aria-hidden="true"></div>
 
-    <header>
-        <div class="logo">
-            <a href="index.html">
-                <img src="https://assets.koudashijie.com/creator-center/logo-creator-center.png" alt="CodeCombat 扣哒世界">
-            </a>
-        </div>
-    </header>
+<header class="topbar">
+  <div class="wrap topbar-in">
+    <a class="brand" href="user_stories.html"><img src="assets/logo.png" alt="CodeCombat扣哒世界"><span>用户故事</span></a>
+    <nav class="tnav" aria-label="站点导航">
+      <a href="user_stories.html" aria-current="page">用户故事</a>
+      <a href="philosophy.html">产品理念</a>
+      <a href="brand_story.html">品牌故事</a>
+      <a href="endorsements.html">荣誉与合作</a>
+      <a class="btn btn-primary" href="https://codecombat.cn/" target="_blank" rel="noopener">免费体验 8 关</a>
+    </nav>
+    <a class="btn btn-primary m-cta" href="https://codecombat.cn/" target="_blank" rel="noopener">免费体验</a>
+  </div>
+</header>
 
-    <section class="article-header">
-        <div class="article-header-inner reveal">
-            <div class="interview-badge">
-                🎙️ 声明：本篇内容根据 2025年12月29日 真实用户访谈录音整理发布，发布前经受访者本人审阅确认。
-            </div>
-            <h1 class="article-title">毕业前的两个月，我居然开始看懂代码了</h1>
-            <div class="article-meta">
-                <div class="meta-item"><span>访谈日期：</span> 2025-12-29</div>
-                <div class="meta-item">文科女生 · 零基础</div>
-            </div>
-        </div>
-    </section>
+<main>
+<div class="wrap wrap-narrow">
+  <nav class="breadcrumb" aria-label="面包屑">
+    <a href="user_stories.html">用户故事</a><span>/</span><a href="user_stories.html?f=self">自己学的人</a><span>/</span><span>毕业前的两个月，我居然开始看懂代码了</span>
+  </nav>
 
-    <main class="article-body">
-        <div class="reveal delay-1">
-            <p>大学毕业最后一个学期，别人都在实习，我在家养伤。</p>
-            <p>说起来挺丧的。本来一切都安排好了，结果一个意外全打乱了，只能窝在家等恢复。前几天还能安慰自己"难得休息"，后来就开始焦虑了——每天醒了刷抖音，刷完觉得空虚，然后继续刷。有天晚上躺在床上突然特别嫌弃自己：一个马上要毕业的人了，天天就这么废着，真的没问题吗？</p>
-            <p>于是开始给自己找事干。先捡起了书法，又翻了几本一直想看的书。<span class="highlight-marker">但心里一直有个痒痒的念头——我想学编程。</span></p>
-        </div>
+  <header class="shead">
+    <div class="kicker">
+      <span class="tagpill">自己学的人</span>
+      <span class="tagpill plain">文科女生 · 零基础</span>
+    </div>
+    <h1>毕业前的两个月，我居然开始看懂代码了</h1>
+    <div class="smeta">
+      <span>分享者 <b>文科女生 · 零基础</b></span>
+      <i class="dot"></i>
+      <span>记录于 <b><time datetime="2025-12-29">2025-12-29</time></b></span>
+      <i class="dot"></i>
+      <span>4 分钟阅读</span>
+    </div>
+    <p class="source-line">声明：本篇内容根据 2025年12月29日 真实用户访谈录音整理发布，发布前经受访者本人审阅确认。</p>
+  </header>
 
-        <div class="reveal">
-            <h2>其实这不是第一次了</h2>
-            <p>这个念头从大二就有。每次看到别人做出一个小网页、一个小程序，甚至就是一个能跑的小游戏，我都觉得好酷啊。<span class="strong-text">我大学学的是文科，身边没有一个人写代码</span>，但总觉得现在这个时代你完全不懂这些，有点说不过去。</p>
-            <p>然后就是经典的"从入门到放弃"循环。买过Python的书，翻了二十页就犯困。B站搜教程看了两集，关掉之后自己写，一行都敲不出来。还下过一个学编程的APP，玩了一下午就再也没打开。</p>
-            <p>每次都是三分钟热度。放弃的时候就安慰自己：算了，我可能真不是这块料吧。</p>
-        </div>
+  <section class="brief" aria-label="故事速览">
+    <div class="brief-list">
+      <h2>故事速览</h2>
+      <dl>
+        <div><dt>分享者</dt><dd>文科女生 · 零基础，2025.12 访谈</dd></div>
+        <div><dt>学习内容</dt><dd>Python</dd></div>
+        <div><dt>关键词</dt><dd>文科女生、零基础、从放弃到看懂代码</dd></div>
+      </dl>
+    </div>
+    <div class="brief-toc">
+      <h2>本文目录</h2>
+      <ol><li><a href="#s1">其实这不是第一次了</a></li><li><a href="#s2">是怎么发现 CodeCombat 的</a></li><li><a href="#s3">不知不觉就过了一下午</a></li><li><a href="#s4">也不是一路顺风</a></li><li><a href="#s5">免费关卡打完之后</a></li><li><a href="#s6">一点碎碎念</a></li></ol>
+    </div>
+  </section>
 
-        <div class="reveal">
-            <h2>是怎么发现 CodeCombat 的</h2>
-            <p>养伤那段时间刷抖音，刷到一个博主做的编程学习平台对比。其中有一个画面一下子就抓住我了——<span class="strong-text">左边是代码，右边是个RPG小游戏，写一行代码小人就动一下。</span></p>
-            <p>我当时心想：啊？还能这样？</p>
-            <p>然后就去百度搜了名字，注册了账号，选了Python。第一关让英雄往右走，敲了一行代码点运行，小人真的动了。</p>
-            <p>没有什么恍然大悟的瞬间，就是觉得：嗯，挺好玩的。<br><span class="strong-text">然后就没停下来。</span></p>
-        </div>
+  <article class="art">
+    <div class="art-body">
+      <p>大学毕业最后一个学期，别人都在实习，我在家养伤。</p><p>说起来挺丧的。本来一切都安排好了，结果一个意外全打乱了，只能窝在家等恢复。前几天还能安慰自己“难得休息”，后来就开始焦虑了，每天醒了刷抖音，刷完觉得空虚，然后继续刷。有天晚上躺在床上突然特别嫌弃自己：一个马上要毕业的人了，天天就这么废着，真的没问题吗？</p><p>于是开始给自己找事干。先捡起了书法，又翻了几本一直想看的书。<span class="highlight-marker">但心里一直有个痒痒的念头：我想学编程。</span></p><h2 id="s1">其实这不是第一次了</h2><p>这个念头从大二就有。每次看到别人做出一个小网页、一个小程序，甚至就是一个能跑的小游戏，我都觉得好酷啊。<span class="strong-text">我大学学的是文科，身边没有一个人写代码</span>，但总觉得现在这个时代你完全不懂这些，有点说不过去。</p><p>然后就是经典的“从入门到放弃”循环。买过Python的书，翻了二十页就犯困。B站搜教程看了两集，关掉之后自己写，一行都敲不出来。还下过一个学编程的APP，玩了一下午就再也没打开。</p><p>每次都是三分钟热度。放弃的时候就安慰自己：算了，我可能真不是这块料吧。</p><h2 id="s2">是怎么发现 CodeCombat 的</h2><p>养伤那段时间刷抖音，刷到一个博主做的编程学习平台对比。其中有一个画面一下子就抓住我了，<span class="strong-text">左边是代码，右边是个RPG小游戏，写一行代码小人就动一下。</span></p><p>我当时心想：啊？还能这样？</p><p>然后就去百度搜了 CodeCombat扣哒世界，注册了账号，选了 Python。第一关让英雄往右走，敲了一行代码点运行，小人真的动了。</p><p>没有什么恍然大悟的瞬间，就是觉得：嗯，挺好玩的。<br><span class="strong-text">然后就没停下来。</span></p><h2 id="s3">不知不觉就过了一下午</h2><p>我学东西不喜欢搞计划，不用番茄钟也不定目标，纯看心情。但这个东西有点“危险”，<span class="highlight-marker">你会进入一种状态，玩着玩着抬头一看，三四个小时过去了。</span></p><p>每过一关会掉宝石，能换装备换英雄。我知道这就是在套路我，但真的好用啊……每次看到宝石掉下来就觉得“我又行了”。而且更上头的是，<span class="strong-text">我发现自己真的在学到东西。</span></p><div class="quote">比如 if-else，书上写的是“如果满足条件就执行A否则执行B”，看完就忘。但在游戏里，它变成了“前面有敌人就砍，没敌人就往前走”。</div><p>你必须亲手写出来英雄才能活，写错了就被打死。<span class="highlight-marker">来几次你想忘都忘不了。</span></p><p>还有 while-true 循环，以前根本不理解为什么要“永远执行”。但打了几关之后自然就懂了，因为你不知道前面还有多少敌人，所以要让英雄一直检查一直走。就这样，用着用着就明白了，没人给我讲课，也没人给我划重点。</p><h2 id="s4">也不是一路顺风</h2><p>有些关卡是真的会卡住，尤其是需要把好几个知识点组合在一起的那种。</p><p>我一般先问AI。平台里有内置的AI助手，不过说实话，有时候不太靠谱哈哈哈，用完了次数限制还找不到我的bug在哪，我还试过外面的 AI 工具，有时候也不太给力。</p><p>最后真搞不定就找人工客服了。这个倒是让我蛮惊喜的，<span class="strong-text">不是那种复制粘贴的套话，是真的在帮你看代码分析逻辑。</span>有一次我一个bug死活找不出来，客服直接指出是缩进少了一层，还解释了为什么Python对缩进这么严格。当时真的有被认真对待的感觉。</p><h2 id="s5">免费关卡打完之后</h2><p>我犹豫了大概……十分钟？就付费了。季度会员不到三百。</p><p>以前这个钱大概率变成了奶茶和零食。现在花完之后，我打开编辑器居然能看懂基本的代码结构了，变量、函数、循环这些词不再是天书。怎么说呢，<span class="highlight-marker">奶茶喝完就没了，这个好歹长在脑子里了。</span></p><h2 id="s6">一点碎碎念</h2><p>其实写这些不是想安利什么。就是觉得挺神奇的，我一个看编程书就犯困的纯文科女生，居然因为养伤，误打误撞找到了一个能让我坐住的学编程方式。</p><p>现在还在打，地图上好多关卡没通。有几颗星死活找不到在哪，强迫症快要发作了。但就是这种“还想继续”的感觉挺难得的，<span class="highlight-marker">以前学编程从来没有过。</span></p><p>养伤这段时间本来以为全废了，结果成了大学四年特别意外的一段经历。</p><p class="punch">好了不说了，我去找我那三颗丢失的星了。</p>
+    </div>
 
-        <div class="reveal">
-            <h2>不知不觉就过了一下午</h2>
-            <p>我学东西不喜欢搞计划，不用番茄钟也不定目标，纯看心情。但这个东西有点"危险"——<span class="highlight-marker">你会进入一种状态，玩着玩着抬头一看，三四个小时过去了。</span></p>
-            <p>每过一关会掉宝石，能换装备换英雄。我知道这就是在套路我，但真的好用啊……每次看到宝石掉下来就觉得"我又行了"。而且更上头的是，<span class="strong-text">我发现自己真的在学到东西。</span></p>
-            <div class="story-quote">
-                比如 if-else，书上写的是"如果满足条件就执行A否则执行B"，看完就忘。但在游戏里，它变成了"前面有敌人就砍，没敌人就往前走"。
-            </div>
-            <p>你必须亲手写出来英雄才能活，写错了就被打死。<span class="highlight-marker">来几次你想忘都忘不了。</span></p>
-            <p>还有 while-true 循环，以前根本不理解为什么要"永远执行"。但打了几关之后自然就懂了——因为你不知道前面还有多少敌人，所以要让英雄一直检查一直走。就这样，用着用着就明白了，没人给我讲课，也没人给我划重点。</p>
-        </div>
+    <div class="art-end">
+      <div class="hashtags"><span>#CodeCombat</span><span>#扣哒世界</span><span>#文科女生</span><span>#零基础</span><span>#从放弃到看懂代码</span></div>
+      <p class="disclaimer">编注：本文为用户本人分享，文中学历、职业、城市与学习进度均为个人经历，人名为化名，不构成学习效果、考试成绩或升学结果承诺。文中提到的关卡数量、免费单元与功能，以 CodeCombat 官网当前说明为准。</p>
+    </div>
+  </article>
 
-        <div class="reveal">
-            <h2>也不是一路顺风</h2>
-            <p>有些关卡是真的会卡住，尤其是需要把好几个知识点组合在一起的那种。</p>
-            <p>我一般先问AI。平台里有内置的AI助手，不过说实话，有时候不太靠谱哈哈哈，用完了次数限制还找不到我的bug在哪，我还试过外面的 AI 工具，有时候也不太给力。</p>
-            <p>最后真搞不定就找人工客服了。这个倒是让我蛮惊喜的——<span class="strong-text">不是那种复制粘贴的套话，是真的在帮你看代码分析逻辑。</span>有一次我一个bug死活找不出来，客服直接指出是缩进少了一层，还解释了为什么Python对缩进这么严格。当时真的有被认真对待的感觉。</p>
-        </div>
+  <nav class="ext-links" aria-label="相关内容">
+    <span>相关内容</span>
+    <a href="../knowledge-tree/">编程知识体系：从变量到函数</a><a href="../wiki/">新手教程与闯关指引</a>
+  </nav>
 
-        <div class="reveal">
-            <h2>免费关卡打完之后</h2>
-            <p>我犹豫了大概……十分钟？就付费了。季度会员不到三百。</p>
-            <p>以前这个钱大概率变成了奶茶和零食。现在花完之后，我打开编辑器居然能看懂基本的代码结构了，变量、函数、循环这些词不再是天书。怎么说呢，<span class="highlight-marker">奶茶喝完就没了，这个好歹长在脑子里了。</span></p>
-        </div>
+  <section class="related" aria-label="相关故事">
+    <h2>还有这些相似的故事</h2>
+    <div class="cards"><a class="card reveal" href="user60.html" style="--c:#15283a">
+  <div class="card-top">
+    <span class="avatar" aria-hidden="true">全</span>
+    <span class="card-who">全职妈妈 · 35 岁<small>佛山 · 2026 年 11 月</small></span>
+  </div>
+  <h3>孩子上幼儿园之后，我把大学没学完的编程捡了起来</h3>
+  <p>大学选修的 C 语言我挂过，那门课给我留下的印象是：编程跟我没关系。十五年后，我每天等孩子午睡的那二十分钟在写 Python。</p>
+  <div class="card-foot"><span>Python · 6 分钟</span><em>读全文 →</em></div>
+</a><a class="card reveal" href="user73.html" style="--c:#15283a">
+  <div class="card-top">
+    <span class="avatar" aria-hidden="true">专</span>
+    <span class="card-who">专科大二学生 · 20 岁<small>芜湖 · 2026 年 9 月</small></span>
+  </div>
+  <h3>专升本没考上，我在宿舍用一台旧笔记本开始学编程</h3>
+  <p>成绩出来那天我在宿舍躺了两天。第三天我打开电脑，搜了一个特别土的问题：专科生现在学什么还来得及。</p>
+  <div class="card-foot"><span>Python · 6 分钟</span><em>读全文 →</em></div>
+</a><a class="card reveal" href="user74.html" style="--c:#15283a">
+  <div class="card-top">
+    <span class="avatar" aria-hidden="true">前</span>
+    <span class="card-who">前互联网运营 · 36 岁<small>杭州 · 2026 年 5 月</small></span>
+  </div>
+  <h3>被优化之后，我三十六岁开始学 Python，晚不晚</h3>
+  <p>公司调整，我们组砍了一半。我在家待了一个月，投了四十份简历，回复三个。后来我把简历关了，开始学点别的。</p>
+  <div class="card-foot"><span>Python · 7 分钟</span><em>读全文 →</em></div>
+</a></div>
+  </section>
+</div>
+<div class="wrap">
+<section class="cta">
+  <div>
+    <h2>想让孩子自己试一次？</h2>
+    <p>前 8 关免费，不用先付费。注册后选图形化、Python 或 C++，从第一关开始写第一行代码。<br>卡住了扣哒鸭会提醒报错，点“问问AI”还有思路提示，家长不用懂编程也能看进度。</p>
+    <a class="btn btn-light" href="https://codecombat.cn/" target="_blank" rel="noopener">免费体验 8 关</a>
+  </div>
+  <div class="cta-qr">
+    <img src="assets/service_qr.png" alt="CodeCombat 课程与账号咨询二维码">
+    <span>扫码咨询课程与账号</span>
+  </div>
+</section>
+</div>
+</main>
 
-        <div class="reveal">
-            <h2>一点碎碎念</h2>
-            <p>其实写这些不是想安利什么。就是觉得挺神奇的，我一个看编程书就犯困的纯文科女生，居然因为养伤，误打误撞找到了一个能让我坐住的学编程方式。</p>
-            <p>现在还在打，地图上好多关卡没通。有几颗星死活找不到在哪，强迫症快要发作了。但就是这种"还想继续"的感觉挺难得的——<span class="highlight-marker">以前学编程从来没有过。</span></p>
-            <p>养伤这段时间本来以为全废了，结果成了大学四年特别意外的一段经历。</p>
-            <p style="font-weight: 800; font-size: 1.25rem; color: var(--text-heading); margin-top: 40px; text-align: center;">好了不说了，我去找我那三颗丢失的星了。</p>
-        </div>
-    </main>
+<footer class="foot">
+  <div class="wrap foot-in">
+    <div>京ICP备2026009460号 · 京公网安备 11010802038619号 · 版权 ©2026 CodeCombat Inc.</div>
+    <div class="foot-links">
+      <a href="user_stories.html">用户故事</a>
+      <a href="philosophy.html">产品理念</a>
+      <a href="brand_story.html">品牌故事</a>
+      <a href="endorsements.html">荣誉与合作</a>
+      <a href="https://codecombat.cn/" target="_blank" rel="noopener">官网</a>
+    </div>
+  </div>
+</footer>
 
-    <footer>
-        <p>京ICP备2026009460号 | 京公网安备 11010802038619号 | 版权 ©2026 CodeCombat Inc. 版权所有.</p>
-    </footer>
-
-    <script>
-        document.addEventListener("DOMContentLoaded", function() {
-            const observer = new IntersectionObserver((entries) => {
-                entries.forEach(entry => {
-                    if (entry.isIntersecting) {
-                        entry.target.classList.add('active');
-                    }
-                });
-            }, { threshold: 0.1, rootMargin: "0px 0px -50px 0px" });
-
-            document.querySelectorAll('.reveal').forEach((el) => {
-                observer.observe(el);
-            });
-        });
-    </script>
-
-<div data-info-wiki-backlink style="text-align:center;padding:18px 12px;color:#64748b;font:13px/1.6 -apple-system,BlinkMacSystemFont,'Segoe UI','Microsoft YaHei',sans-serif"><a href="../index.html" style="color:#4f46e5;text-decoration:none;font-weight:700">← 返回 CodeCombat 信息百科</a></div>
 </body>
 </html>

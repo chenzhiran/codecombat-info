@@ -1,330 +1,764 @@
 <!DOCTYPE html>
 <html lang="zh-CN">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>CodeCombat的用户故事</title>
-    <style>
-        /* ================= 品牌色彩体系 ================= */
-        :root {
-            --bg-body: #f8fafc;
-            --bg-white: #ffffff;
-            
-            --text-heading: #1e293b; 
-            --text-main: #334155;    
-            --text-muted: #64748b;   
-            
-            --brand-indigo: #4338ca; 
-            --brand-gold: #F2BE22;   
-            
-            --border-light: rgba(0,0,0,0.05);
-            
-            --font-main: "Noto Sans SC", -apple-system, BlinkMacSystemFont, sans-serif;
-            
-            --shadow-sm: 0 4px 6px -1px rgba(0, 0, 0, 0.05);
-            --shadow-md: 0 10px 30px -10px rgba(0, 0, 0, 0.08);
-            --shadow-hover: 0 20px 40px -10px rgba(0, 0, 0, 0.12);
-        }
-
-        * { margin: 0; padding: 0; box-sizing: border-box; }
-        
-        body {
-            background: var(--bg-body);
-            color: var(--text-main);
-            font-family: var(--font-main);
-            line-height: 1.8;
-            -webkit-font-smoothing: antialiased;
-            overflow-x: hidden;
-        }
-
-        /* ================= 极简导航栏 ================= */
-        header {
-            position: fixed; top: 0; width: 100%; z-index: 1000;
-            background: rgba(255, 255, 255, 0.95); backdrop-filter: blur(12px);
-            border-bottom: 1px solid var(--border-light);
-            display: flex; justify-content: space-between; align-items: center;
-            padding: 15px 40px;
-        }
-        .logo img { height: 36px; display: block; }
-        .back-link { font-size: 1rem; font-weight: 700; color: var(--text-main); text-decoration: none; transition: color 0.3s; }
-        .back-link:hover { color: var(--brand-indigo); }
-
-        /* ================= 纯粹文字版的页面头部 ================= */
-        .page-header {
-            padding: 160px 20px 80px;
-            background: var(--bg-white);
-            text-align: center;
-            border-bottom: 1px solid var(--border-light);
-            position: relative;
-        }
-        /* 增加一个非常淡的径向渐变，让纯白背景不那么干瘪 */
-        .page-header::before {
-            content: ''; position: absolute; top: 0; left: 0; right: 0; bottom: 0;
-            background: radial-gradient(circle at 50% 0%, #f1f5f9 0%, transparent 70%);
-            z-index: 0; pointer-events: none;
-        }
-        
-        .page-title {
-            position: relative; z-index: 1;
-            font-size: 3.2rem; font-weight: 900; color: var(--text-heading); 
-            margin-bottom: 20px; letter-spacing: -1px;
-        }
-        .page-subtitle {
-            position: relative; z-index: 1;
-            font-size: 1.25rem; color: var(--text-muted); 
-            font-weight: 500; max-width: 750px; margin: 0 auto; line-height: 1.8;
-        }
-
-        /* ================= 分组与网格布局 ================= */
-        .main-container {
-            max-width: 1100px; margin: 0 auto; padding: 60px 20px 20px;
-        }
-        .group-section {
-            margin-bottom: 90px;
-        }
-        
-        /* 分组标题设计：带有一个小圆点前缀，很像杂志的专栏标记 */
-        .group-title {
-            font-size: 2rem; font-weight: 900; color: var(--text-heading);
-            margin-bottom: 40px; display: flex; align-items: center; gap: 15px;
-        }
-        .group-title::before {
-            content: ''; display: block; width: 12px; height: 12px;
-            background: var(--brand-indigo); border-radius: 50%;
-            box-shadow: 0 0 0 4px var(--brand-indigo-light);
-        }
-        
-        .story-grid {
-            display: grid; grid-template-columns: repeat(2, 1fr); gap: 30px;
-        }
-
-        /* ================= 卡片设计 ================= */
-        .story-card {
-            background: var(--bg-white);
-            border: 1px solid var(--border-light);
-            border-radius: 24px;
-            padding: 40px;
-            text-decoration: none;
-            display: flex; flex-direction: column; justify-content: flex-start;
-            position: relative; overflow: hidden;
-            box-shadow: var(--shadow-sm);
-            transition: all 0.4s cubic-bezier(0.2, 0.8, 0.2, 1);
-            opacity: 0; transform: translateY(30px);
-        }
-        
-        /* 侧边彩色装饰条 */
-        .story-card::before {
-            content: ''; position: absolute; left: 0; top: 0; bottom: 0; width: 6px;
-            background: var(--card-theme, var(--brand-indigo));
-            transition: width 0.3s ease;
-        }
-
-        .story-card:hover {
-            transform: translateY(-8px);
-            box-shadow: var(--shadow-hover);
-            border-color: transparent;
-        }
-        .story-card:hover::before { width: 12px; }
-
-        /* 一句话标签 (取代了原来的日期) */
-        .story-label {
-            font-size: 1.1rem; color: var(--card-theme, var(--brand-indigo)); 
-            font-weight: 900; margin-bottom: 15px;
-            display: inline-block;
-        }
-        
-        .story-title {
-            font-size: 1.45rem; font-weight: 800; color: var(--text-heading);
-            line-height: 1.5; margin: 0; transition: color 0.3s;
-        }
-
-        .story-card:hover .story-title {
-            color: var(--text-main);
-        }
-
-        .story-card.active { opacity: 1; transform: translateY(0); }
-
-        /* ================= 动态色彩主题集 ================= */
-        .theme-blue { --card-theme: #3b82f6; }
-        .theme-green { --card-theme: #22c55e; }
-        .theme-amber { --card-theme: #f59e0b; }
-        .theme-purple { --card-theme: #8b5cf6; }
-        .theme-indigo { --card-theme: #4338ca; }
-        .theme-rose { --card-theme: #f43f5e; }
-        .theme-teal { --card-theme: #14b8a6; }
-
-        /* ================= 底部引导语 ================= */
-        .bottom-cta {
-            text-align: center; padding: 40px 20px 80px;
-            font-size: 1.3rem; color: var(--text-heading); font-weight: 800; line-height: 1.8;
-            max-width: 700px; margin: 0 auto;
-        }
-        .bottom-cta span { color: var(--brand-indigo); }
-
-        /* ================= 页脚 ================= */
-        footer { text-align: center; padding: 40px 20px; font-size: 0.95rem; color: var(--text-muted); background: var(--bg-white); border-top: 1px solid var(--border-light); }
-
-        /* ================= 响应式 ================= */
-        @media (max-width: 900px) {
-            .story-grid { grid-template-columns: 1fr; gap: 20px; }
-            .page-header { padding: 120px 20px 60px; }
-            .page-title { font-size: 2.2rem; }
-            .page-subtitle { font-size: 1.1rem; }
-            .group-title { font-size: 1.6rem; margin-bottom: 30px; }
-            .story-card { padding: 30px 25px; }
-            .story-title { font-size: 1.3rem; }
-            .bottom-cta { font-size: 1.15rem; padding: 20px 20px 60px; }
-        }
-    </style>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>CodeCombat 用户故事｜75 篇真实分享，家长、程序员爸妈与学习者自述</title>
+<meta name="description" content="CodeCombat扣哒世界真实用户故事合集：75 篇来自家长、程序员爸妈、考级家庭和学习者本人的自述，讲孩子怎么从沉迷游戏到主动写代码、家长怎么选课、GESP 考级怎么规划。">
+<meta name="robots" content="index,follow,max-image-preview:large">
+<link rel="canonical" href="https://info.codecombat.cn/aboutus/user_stories.html">
+<meta property="og:type" content="website">
+<meta property="og:site_name" content="CodeCombat探索地图">
+<meta property="og:locale" content="zh_CN">
+<meta property="og:title" content="CodeCombat 用户故事｜75 篇真实分享，家长、程序员爸妈与学习者自述">
+<meta property="og:description" content="CodeCombat扣哒世界真实用户故事合集：75 篇来自家长、程序员爸妈、考级家庭和学习者本人的自述，讲孩子怎么从沉迷游戏到主动写代码、家长怎么选课、GESP 考级怎么规划。">
+<meta property="og:url" content="https://info.codecombat.cn/aboutus/user_stories.html">
+<meta property="og:image" content="https://info.codecombat.cn/aboutus/assets/og-cover.png">
+<meta property="og:image:width" content="1200">
+<meta property="og:image:height" content="630">
+<meta property="og:image:alt" content="CodeCombat 用户故事：先让他们赢一次，学习就跟着来了">
+<meta name="twitter:card" content="summary_large_image">
+<meta name="twitter:title" content="CodeCombat 用户故事｜75 篇真实分享，家长、程序员爸妈与学习者自述">
+<meta name="twitter:description" content="CodeCombat扣哒世界真实用户故事合集：75 篇来自家长、程序员爸妈、考级家庭和学习者本人的自述，讲孩子怎么从沉迷游戏到主动写代码、家长怎么选课、GESP 考级怎么规划。">
+<link rel="icon" href="assets/logo.png" type="image/png">
+<link rel="stylesheet" href="assets/story.css">
+<script>document.documentElement.className+=" js";</script>
+<script src="assets/story.js" defer></script>
+<script type="application/ld+json">{"@context":"https://schema.org","@graph":[{"@type":"CollectionPage","@id":"https://info.codecombat.cn/aboutus/user_stories.html#page","name":"CodeCombat 用户故事","description":"CodeCombat扣哒世界真实用户故事合集：75 篇来自家长、程序员爸妈、考级家庭和学习者本人的自述，讲孩子怎么从沉迷游戏到主动写代码、家长怎么选课、GESP 考级怎么规划。","url":"https://info.codecombat.cn/aboutus/user_stories.html","inLanguage":"zh-CN","isPartOf":{"@type":"WebSite","name":"CodeCombat探索地图","url":"https://info.codecombat.cn/"},"publisher":{"@type":"Organization","name":"CodeCombat扣哒世界","url":"https://codecombat.cn/","logo":{"@type":"ImageObject","url":"https://info.codecombat.cn/aboutus/assets/logo.png"}},"dateModified":"2026-11-12","about":[{"@type":"Thing","name":"游戏化编程学习"},{"@type":"Thing","name":"CodeCombat扣哒世界"}],"mainEntity":{"@type":"ItemList","name":"CodeCombat 用户故事目录","numberOfItems":75,"itemListElement":[{"@type":"ListItem","position":1,"url":"https://info.codecombat.cn/aboutus/user53.html","name":"GESP 报名那天，我守着电脑刷了四十分钟"},{"@type":"ListItem","position":2,"url":"https://info.codecombat.cn/aboutus/user40.html","name":"线下一年两万二，线上一年 999，我把账算清了才敢交钱"},{"@type":"ListItem","position":3,"url":"https://info.codecombat.cn/aboutus/user61.html","name":"刷到一个八岁孩子做游戏的视频，我失眠了"},{"@type":"ListItem","position":4,"url":"https://info.codecombat.cn/aboutus/user47.html","name":"我用 code review 的方式检查儿子的代码，他哭了"},{"@type":"ListItem","position":5,"url":"https://info.codecombat.cn/aboutus/user67.html","name":"AI 十秒就能写完的代码，我为什么还让儿子一个字一个字敲"},{"@type":"ListItem","position":6,"url":"https://info.codecombat.cn/aboutus/user39.html","name":"不想鸡娃，但又怕耽误孩子"},{"@type":"ListItem","position":7,"url":"https://info.codecombat.cn/aboutus/user60.html","name":"孩子上幼儿园之后，我把大学没学完的编程捡了起来"},{"@type":"ListItem","position":8,"url":"https://info.codecombat.cn/aboutus/user64.html","name":"我 Steam 里躺着三百个游戏，现在陪儿子一起做游戏"},{"@type":"ListItem","position":9,"url":"https://info.codecombat.cn/aboutus/user48.html","name":"让儿子在 Python 和 C++ 之间选，他说“你选吧”"},{"@type":"ListItem","position":10,"url":"https://info.codecombat.cn/aboutus/user41.html","name":"试听课上孩子做出了小游戏，回家我让他再做一次"},{"@type":"ListItem","position":11,"url":"https://info.codecombat.cn/aboutus/user38.html","name":"孩子都五年级了，我才开始研究信奥"},{"@type":"ListItem","position":12,"url":"https://info.codecombat.cn/aboutus/user62.html","name":"教育局那份文件我读了三遍，然后去查了这个平台的资质"},{"@type":"ListItem","position":13,"url":"https://info.codecombat.cn/aboutus/user34.html","name":"女儿学了两年编程，真正让我头疼的是“然后呢”"},{"@type":"ListItem","position":14,"url":"https://info.codecombat.cn/aboutus/user54.html","name":"我买了三本真题，孩子只做了七页"},{"@type":"ListItem","position":15,"url":"https://info.codecombat.cn/aboutus/user68.html","name":"女儿说“我太笨了学不会”，我听见了自己十岁时的声音"},{"@type":"ListItem","position":16,"url":"https://info.codecombat.cn/aboutus/user33.html","name":"孩子学编程三年，我却说不清他到底学到了哪一步"},{"@type":"ListItem","position":17,"url":"https://info.codecombat.cn/aboutus/user65.html","name":"白天奶奶带，晚上我回家，孩子已经在沙发上看了三小时手机"},{"@type":"ListItem","position":18,"url":"https://info.codecombat.cn/aboutus/user37.html","name":"编程考证，最怕考了个没用的"},{"@type":"ListItem","position":19,"url":"https://info.codecombat.cn/aboutus/user32.html","name":"我犯过一个特别低级的错误：以为会编程就会教编程"},{"@type":"ListItem","position":20,"url":"https://info.codecombat.cn/aboutus/user70.html","name":"我承认，我一开始就是冲着证书来的"},{"@type":"ListItem","position":21,"url":"https://info.codecombat.cn/aboutus/user42.html","name":"两万多的年课包，孩子上了三个月就不肯去了"},{"@type":"ListItem","position":22,"url":"https://info.codecombat.cn/aboutus/user49.html","name":"我在公司写 Go，回家连 Python 的缩进都教不明白"},{"@type":"ListItem","position":23,"url":"https://info.codecombat.cn/aboutus/user31.html","name":"选编程课，我最怕孩子一直停在拖积木"},{"@type":"ListItem","position":24,"url":"https://info.codecombat.cn/aboutus/user55.html","name":"机构跟我打包票说二级能过，我问了一句话就退了"},{"@type":"ListItem","position":25,"url":"https://info.codecombat.cn/aboutus/user30.html","name":"我们家最大的争执，是谁教孩子编程"},{"@type":"ListItem","position":26,"url":"https://info.codecombat.cn/aboutus/user63.html","name":"留学顾问说“编程要出作品集”，我才开始认真研究这事"},{"@type":"ListItem","position":27,"url":"https://info.codecombat.cn/aboutus/user36.html","name":"家长群里有人晒了张证书，我才知道 GESP 是什么"},{"@type":"ListItem","position":28,"url":"https://info.codecombat.cn/aboutus/user29.html","name":"程序员家长，教不了自己的孩子"},{"@type":"ListItem","position":29,"url":"https://info.codecombat.cn/aboutus/user73.html","name":"专升本没考上，我在宿舍用一台旧笔记本开始学编程"},{"@type":"ListItem","position":30,"url":"https://info.codecombat.cn/aboutus/user43.html","name":"女儿说想学编程，我第一反应是“那不是男孩学的吗”"},{"@type":"ListItem","position":31,"url":"https://info.codecombat.cn/aboutus/user28.html","name":"每天只让她碰屏幕 30 分钟，所以我们挑得很挑"},{"@type":"ListItem","position":32,"url":"https://info.codecombat.cn/aboutus/user50.html","name":"我给孩子讲“变量”，讲成了物理课"},{"@type":"ListItem","position":33,"url":"https://info.codecombat.cn/aboutus/user56.html","name":"孩子考完一级回来哭了，说最后一题没看懂"},{"@type":"ListItem","position":34,"url":"https://info.codecombat.cn/aboutus/user35.html","name":"为了研究编程考级，我先把自己考糊了"},{"@type":"ListItem","position":35,"url":"https://info.codecombat.cn/aboutus/user27.html","name":"我们县里没有编程班，孩子是在家自己学的"},{"@type":"ListItem","position":36,"url":"https://info.codecombat.cn/aboutus/user44.html","name":"编程和奥数只能留一个，我纠结了一个月"},{"@type":"ListItem","position":37,"url":"https://info.codecombat.cn/aboutus/user26.html","name":"弟弟沉迷游戏天天跟我吵，最后治住他的是亲哥"},{"@type":"ListItem","position":38,"url":"https://info.codecombat.cn/aboutus/user71.html","name":"机构推荐的比赛，我查了三天名单，发现不在白名单里"},{"@type":"ListItem","position":39,"url":"https://info.codecombat.cn/aboutus/user66.html","name":"一输就摔手柄的孩子，现在会说“再来一次”"},{"@type":"ListItem","position":40,"url":"https://info.codecombat.cn/aboutus/user25.html","name":"我终于承认，儿子沉迷游戏有一半是我逼的"},{"@type":"ListItem","position":41,"url":"https://info.codecombat.cn/aboutus/user51.html","name":"我原来是反对“游戏化学习”的，直到看见那行报错"},{"@type":"ListItem","position":42,"url":"https://info.codecombat.cn/aboutus/user24.html","name":"我一度觉得，我儿子这辈子就交代在游戏上了"},{"@type":"ListItem","position":43,"url":"https://info.codecombat.cn/aboutus/user57.html","name":"我们家放弃考级了，改成一个学期做三个作品"},{"@type":"ListItem","position":44,"url":"https://info.codecombat.cn/aboutus/user69.html","name":"我把线上事故的复盘讲给儿子听，他问了一句让我沉默的话"},{"@type":"ListItem","position":45,"url":"https://info.codecombat.cn/aboutus/user23.html","name":"《我的世界》玩得这么溜，为什么一学习就不行"},{"@type":"ListItem","position":46,"url":"https://info.codecombat.cn/aboutus/user45.html","name":"我陪学的方式，从“坐旁边盯”改成了“离线一小时”"},{"@type":"ListItem","position":47,"url":"https://info.codecombat.cn/aboutus/user22.html","name":"我儿子沉迷《我的世界》怎么办"},{"@type":"ListItem","position":48,"url":"https://info.codecombat.cn/aboutus/user72.html","name":"证书拿到手那天，他问我：然后呢"},{"@type":"ListItem","position":49,"url":"https://info.codecombat.cn/aboutus/user21.html","name":"原来编程也能这么好玩，像打游戏一样学Python"},{"@type":"ListItem","position":50,"url":"https://info.codecombat.cn/aboutus/user20.html","name":"拯救网瘾少年，我决定用游戏打败游戏"},{"@type":"ListItem","position":51,"url":"https://info.codecombat.cn/aboutus/user52.html","name":"女儿问我“爸爸你上班也是写这个吗”，我一时不知道怎么答"},{"@type":"ListItem","position":52,"url":"https://info.codecombat.cn/aboutus/user74.html","name":"被优化之后，我三十六岁开始学 Python，晚不晚"},{"@type":"ListItem","position":53,"url":"https://info.codecombat.cn/aboutus/user19.html","name":"同事推荐的编程游戏，把我家犟种儿子治住了"},{"@type":"ListItem","position":54,"url":"https://info.codecombat.cn/aboutus/user18.html","name":"从夺手机就歇斯底里，到写完作业自己打开编程闯关"},{"@type":"ListItem","position":55,"url":"https://info.codecombat.cn/aboutus/user58.html","name":"CSP-J 的初赛真题，把我这个文科妈看傻了"},{"@type":"ListItem","position":56,"url":"https://info.codecombat.cn/aboutus/user17.html","name":"孩子一玩游戏就收不住，我干脆给他找了个能学东西的"},{"@type":"ListItem","position":57,"url":"https://info.codecombat.cn/aboutus/user75.html","name":"待业半年，我给自己找了个每天能“完成”的事情"},{"@type":"ListItem","position":58,"url":"https://info.codecombat.cn/aboutus/user14.html","name":"建筑行业干了几年，我决定开始学编程"},{"@type":"ListItem","position":59,"url":"https://info.codecombat.cn/aboutus/user13.html","name":"在阿勒泰给一年级的儿子找编程启蒙，我的踩坑和选择"},{"@type":"ListItem","position":60,"url":"https://info.codecombat.cn/aboutus/user12.html","name":"一个工业设计师学Python的五个月"},{"@type":"ListItem","position":61,"url":"https://info.codecombat.cn/aboutus/user10.html","name":"学生物的我，为什么开始学编程了"},{"@type":"ListItem","position":62,"url":"https://info.codecombat.cn/aboutus/user7.html","name":"跑长途的间隙，我在驾驶室里开始学写代码"},{"@type":"ListItem","position":63,"url":"https://info.codecombat.cn/aboutus/user2.html","name":"工作十年的土木人，靠一个编程游戏写了一整天代码还没玩够"},{"@type":"ListItem","position":64,"url":"https://info.codecombat.cn/aboutus/user15.html","name":"计科大一，一个编程游戏帮我重新理解了Python"},{"@type":"ListItem","position":65,"url":"https://info.codecombat.cn/aboutus/user4.html","name":"从前端到 Python，一个编程游戏帮我找到了转型节奏"},{"@type":"ListItem","position":66,"url":"https://info.codecombat.cn/aboutus/user3.html","name":"一个初一男生的编程闯关日记"},{"@type":"ListItem","position":67,"url":"https://info.codecombat.cn/aboutus/user5.html","name":"给高考后的孩子选编程学习工具，我的思考过程"},{"@type":"ListItem","position":68,"url":"https://info.codecombat.cn/aboutus/user6.html","name":"一个编程零基础妈妈，陪四年级儿子闯到了安息云峰"},{"@type":"ListItem","position":69,"url":"https://info.codecombat.cn/aboutus/user8.html","name":"自动化专业毕业就工作，我想靠编程多一个选择"},{"@type":"ListItem","position":70,"url":"https://info.codecombat.cn/aboutus/user9.html","name":"寒假给儿子找了个\"正事\"，结果我自己也上头了"},{"@type":"ListItem","position":71,"url":"https://info.codecombat.cn/aboutus/user11.html","name":"一个音乐专业毕业生的编程尝鲜记录"},{"@type":"ListItem","position":72,"url":"https://info.codecombat.cn/aboutus/user16.html","name":"找了好几年编程课，最后是学校帮我选对了"},{"@type":"ListItem","position":73,"url":"https://info.codecombat.cn/aboutus/user1.html","name":"毕业前的两个月，我居然开始看懂代码了"},{"@type":"ListItem","position":74,"url":"https://info.codecombat.cn/aboutus/user59.html","name":"考级这件事，最后是我自己想通了"},{"@type":"ListItem","position":75,"url":"https://info.codecombat.cn/aboutus/user46.html","name":"报班前我问了机构三个问题，有两个答不上来"}]}},{"@type":"BreadcrumbList","itemListElement":[{"@type":"ListItem","position":1,"name":"CodeCombat探索地图","item":"https://info.codecombat.cn/"},{"@type":"ListItem","position":2,"name":"用户故事","item":"https://info.codecombat.cn/aboutus/user_stories.html"}]}]}</script>
 </head>
 <body>
 
-    <header>
-        <div class="logo">
-            <a href="index25.html">
-                <img src="https://assets.koudashijie.com/creator-center/logo-creator-center.png" alt="CodeCombat 扣哒世界">
-            </a>
-        </div>
-            </header>
+<header class="topbar">
+  <div class="wrap topbar-in">
+    <a class="brand" href="user_stories.html"><img src="assets/logo.png" alt="CodeCombat扣哒世界"><span>用户故事</span></a>
+    <nav class="tnav" aria-label="站点导航">
+      <a href="user_stories.html" aria-current="page">用户故事</a>
+      <a href="philosophy.html">产品理念</a>
+      <a href="brand_story.html">品牌故事</a>
+      <a href="endorsements.html">荣誉与合作</a>
+      <a class="btn btn-primary" href="https://codecombat.cn/" target="_blank" rel="noopener">免费体验 8 关</a>
+    </nav>
+    <a class="btn btn-primary m-cta" href="https://codecombat.cn/" target="_blank" rel="noopener">免费体验</a>
+  </div>
+</header>
 
-    <section class="page-header">
-        <h1 class="page-title">CodeCombat的用户故事</h1>
-        <p class="page-subtitle">每一个故事都来自真实的CodeCombat用户访谈。<br>他们背景不同、年龄不同、起点不同，但都在这里找到了属于自己的节奏。</p>
-    </section>
-
-    <div class="main-container">
-
-        <section class="group-section">
-            <h2 class="group-title">第一组：还在读书的他们</h2>
-            <div class="story-grid">
-                <a href="user1.html" class="story-card theme-blue">
-                    <div class="story-label">文科女生</div>
-                    <h3 class="story-title">毕业前的两个月，我居然开始看懂代码了</h3>
-                </a>
-
-                <a href="user10.html" class="story-card theme-purple">
-                    <div class="story-label">大一生物女生</div>
-                    <h3 class="story-title">学生物的我，为什么开始学编程了</h3>
-                </a>
-
-                <a href="user3.html" class="story-card theme-amber">
-                    <div class="story-label">北京初一男生</div>
-                    <h3 class="story-title">一个初一男生的编程闯关日记</h3>
-                </a>
-
-                <a href="user15.html" class="story-card theme-teal">
-                    <div class="story-label">大一计算机专业</div>
-                    <h3 class="story-title">大一计算机专业，我用一个编程游戏备考Python</h3>
-                </a>
-            </div>
-        </section>
-
-        <section class="group-section">
-            <h2 class="group-title">第二组：已经工作的他们</h2>
-            <div class="story-grid">
-                <a href="user2.html" class="story-card theme-green">
-                    <div class="story-label">土木工程10年</div>
-                    <h3 class="story-title">工作十年的土木人，靠一个"编程游戏"重新找回了心流</h3>
-                </a>
-
-                <a href="user4.html" class="story-card theme-rose">
-                    <div class="story-label">前前端开发</div>
-                    <h3 class="story-title">职业转型期，我在一个编程游戏里找到了新方向</h3>
-                </a>
-
-                <a href="user7.html" class="story-card theme-indigo">
-                    <div class="story-label">卡车司机</div>
-                    <h3 class="story-title">跑长途的间隙，我在驾驶室里学会了写代码</h3>
-                </a>
-
-                <a href="user8.html" class="story-card theme-teal">
-                    <div class="story-label">19岁工作党</div>
-                    <h3 class="story-title">自动化专业毕业就工作，我想靠编程多一个选择</h3>
-                </a>
-
-                <a href="user11.html" class="story-card theme-purple">
-                    <div class="story-label">音乐专业</div>
-                    <h3 class="story-title">一个音乐专业毕业生，学编程是什么体验</h3>
-                </a>
-
-                <a href="user12.html" class="story-card theme-amber">
-                    <div class="story-label">工业设计师</div>
-                    <h3 class="story-title">一个工业设计师学Python的五个月</h3>
-                </a>
-
-                <a href="user14.html" class="story-card theme-blue">
-                    <div class="story-label">建筑从业者</div>
-                    <h3 class="story-title">建筑行业干了几年，我决定开始学编程</h3>
-                </a>
-            </div>
-        </section>
-
-        <section class="group-section">
-            <h2 class="group-title">第三组：为孩子选择的他们</h2>
-            <div class="story-grid">
-                <a href="user5.html" class="story-card theme-indigo">
-                    <div class="story-label">高三家长</div>
-                    <h3 class="story-title">给高考后的女儿选编程学习工具，我的思考过程</h3>
-                </a>
-
-                <a href="user6.html" class="story-card theme-rose">
-                    <div class="story-label">四年级家长</div>
-                    <h3 class="story-title">一个编程零基础妈妈，陪四年级儿子闯到了安息云峰</h3>
-                </a>
-
-                <a href="user9.html" class="story-card theme-green">
-                    <div class="story-label">六年级家长</div>
-                    <h3 class="story-title">寒假给儿子找了个"正事"，结果我自己也上头了</h3>
-                </a>
-
-                <a href="user13.html" class="story-card theme-teal">
-                    <div class="story-label">阿勒泰家长</div>
-                    <h3 class="story-title">在阿勒泰给一年级的儿子找编程启蒙，我的踩坑和选择</h3>
-                </a>
-            </div>
-        </section>
-
-        <div class="bottom-cta">
-            <div style="font-weight: 500; font-size: 1.15rem; color: var(--text-main); margin-bottom: 15px;">每个人学编程的理由都不一样，但坐下来开始写代码的那一刻是一样的。</div>
-            <div style="font-weight: 500; font-size: 1.15rem; color: var(--text-main); margin-bottom: 30px;">我们想记录更多这样的故事——不需要你学得多深、打到多远，哪怕只是"第一次让小人动起来"的那个瞬间，对我们来说都值得听。</div>
-                        <div style="font-weight: 500; font-size: 1.15rem; color: var(--text-main); margin-bottom: 30px;">你的经历，也许正好能让另一个犹豫中的人觉得"我也可以试试"。</div>
-            <div style="margin-bottom: 30px;"><span>如果你也在用 CodeCombat，愿意聊聊你的经历，欢迎扫码预约一次简短的访谈。我们会为每位受访者准备一份小小的感谢。</span></div>
-            
-            <img src="https://assets.koudashijie.com/images/homeVersion/service_qr.png" alt="扫码预约访谈" style="width: 160px; height: 160px; display: block; margin: 0 auto 40px; border-radius: 12px; box-shadow: var(--shadow-sm);">
-            
-            <div style="color: var(--text-muted); font-size: 1.1rem; font-weight: 600;">更多故事，持续更新中。</div>
-        </div>
-
+<main>
+<section class="hero">
+  <div class="wrap hero-grid">
+    <div>
+      <span class="eyebrow"><i></i>真实用户分享 · 持续更新</span>
+      <h1 class="hero-title"><span class="h1-kicker">CodeCombat 用户故事</span>先让他们<em>赢一次</em>，<br>学习就跟着来了</h1>
+      <p class="hero-lead">CodeCombat扣哒世界是一个用真实代码控制游戏角色的编程学习平台。下面这 75 篇都是用户自己写下的：孩子不是不爱学，只是还没遇到一个“写一行、动一下”的地方。</p>
+      <div class="hero-facts">
+        <div><strong>75</strong><span>篇自述</span></div>
+        <div><strong>5</strong><span>类人群</span></div>
+        <div><strong>32+</strong><span>座城市</span></div>
+        <div><strong>2026.11</strong><span>最近更新</span></div>
+      </div>
     </div>
+    <div class="quote-stack" aria-hidden="true"><div class="quote-card q1"><div class="tick">“</div><p>他为了过关，自己上网查攻略、研究机制，折腾了整整两个小时。我突然有点恍惚：这不就是我天天希望他学习时能有的状态吗。</p><cite>沈阳 · 五年级男孩的妈妈</cite></div><div class="quote-card q2"><div class="tick">“</div><p>我拿着钱想给孩子买个功能，却找不到地方交钱。</p><cite>苏州 · 五年级学生家长</cite></div><div class="quote-card q3"><div class="tick">“</div><p>以前我教他，动不动就是“爸爸，你直接告诉我怎么写嘛”。现在人家头也不抬：“爸，你别说，我自己来。”</p><cite>北京 · 后端工程师</cite></div></div>
+  </div>
+</section>
 
-    <footer>
-        <p>京ICP备2026009460号 | 京公网安备 11010802038619号 | 版权 ©2026 CodeCombat Inc. 版权所有.</p>
-    </footer>
+<div class="filters">
+  <div class="wrap filters-in"><button class="chip" type="button" data-filter="all" aria-pressed="true">全部<b>75</b></button><button class="chip" type="button" data-filter="game" aria-pressed="false">游戏沉迷<b>15</b></button><button class="chip" type="button" data-filter="choose" aria-pressed="false">选课与陪学<b>15</b></button><button class="chip" type="button" data-filter="coder" aria-pressed="false">程序员家长<b>15</b></button><button class="chip" type="button" data-filter="exam" aria-pressed="false">考级与信奥<b>15</b></button><button class="chip" type="button" data-filter="self" aria-pressed="false">自己学的人<b>15</b></button></div>
+</div>
 
-    <script>
-        // 瀑布流式的滚动浮现动画
-        document.addEventListener("DOMContentLoaded", function() {
-            const cards = document.querySelectorAll('.story-card');
-            
-            const observer = new IntersectionObserver((entries) => {
-                entries.forEach((entry) => {
-                    if (entry.isIntersecting) {
-                        // 加入少许随机延迟，让网格浮现更有层次感
-                        const delay = Math.random() * 200;
-                        setTimeout(() => {
-                            entry.target.classList.add('active');
-                        }, delay); 
-                        observer.unobserve(entry.target);
-                    }
-                });
-            }, { threshold: 0.1, rootMargin: "0px 0px -50px 0px" });
+<div class="wrap">
+  <section class="section" data-cat="game" id="sec-game">
+  <div class="section-head">
+    <div>
+      <h2><b>游戏沉迷</b>打游戏的孩子，换了个玩法</h2>
+      <p>他们没把游戏没收，而是换了一个必须写代码才能通关的游戏。</p>
+    </div>
+    <span class="section-count">15 篇</span>
+  </div>
+  <div class="cards"><a class="card reveal" href="user64.html" style="--c:#15283a">
+  <div class="card-top">
+    <span class="avatar" aria-hidden="true">新</span>
+    <span class="card-who">新媒体从业者 · 男孩爸爸<small>成都 · 2026 年 11 月</small></span>
+  </div>
+  <h3>我 Steam 里躺着三百个游戏，现在陪儿子一起做游戏</h3>
+  <p>老婆说我们父子俩都在打游戏。我不服气，但也没法反驳。直到儿子问我：爸爸，这些游戏是谁做的？</p>
+  <div class="card-foot"><span>Python · 7 分钟</span><em>读全文 →</em></div>
+</a><a class="card reveal" href="user65.html" style="--c:#15283a">
+  <div class="card-top">
+    <span class="avatar" aria-hidden="true">双</span>
+    <span class="card-who">双职工家庭 · 男孩妈妈<small>长春 · 2026 年 10 月</small></span>
+  </div>
+  <h3>白天奶奶带，晚上我回家，孩子已经在沙发上看了三小时手机</h3>
+  <p>我跟老人吵过，也发过脾气，最后解决问题的是给奶奶换了一个“听起来像上课”的东西。</p>
+  <div class="card-foot"><span>Python · 6 分钟</span><em>读全文 →</em></div>
+</a><a class="card reveal" href="user28.html" style="--c:#15283a">
+  <div class="card-top">
+    <span class="avatar" aria-hidden="true">三</span>
+    <span class="card-who">三年级女孩的妈妈<small>南京 · 2026 年 9 月</small></span>
+  </div>
+  <h3>每天只让她碰屏幕 30 分钟，所以我们挑得很挑</h3>
+  <p>我对屏幕时间是硬性规定。所以我要的不是一个能让她坐两小时的课，而是一个 30 分钟里能真正完成一件事的地方。</p>
+  <div class="card-foot"><span>图形化 / Python · 6 分钟</span><em>读全文 →</em></div>
+</a><a class="card reveal" href="user27.html" style="--c:#15283a">
+  <div class="card-top">
+    <span class="avatar" aria-hidden="true">县</span>
+    <span class="card-who">县城小学教师妈妈<small>甘肃天水 · 2026 年 8 月</small></span>
+  </div>
+  <h3>我们县里没有编程班，孩子是在家自己学的</h3>
+  <p>最近的少儿编程机构在市里，来回四个小时。我不想让他在手机上刷短视频，就先陪他试了试免费的几关。</p>
+  <div class="card-foot"><span>Python · 6 分钟</span><em>读全文 →</em></div>
+</a><a class="card reveal" href="user26.html" style="--c:#15283a">
+  <div class="card-top">
+    <span class="avatar" aria-hidden="true">两</span>
+    <span class="card-who">两个男孩的妈妈<small>佛山 · 2026 年 8 月</small></span>
+  </div>
+  <h3>弟弟沉迷游戏天天跟我吵，最后治住他的是亲哥</h3>
+  <p>兄弟俩差六岁，一个嫌另一个幼稚，一个嫌另一个管得多。直到哥哥给弟弟看了自己做的小游戏。</p>
+  <div class="card-foot"><span>Python · 7 分钟</span><em>读全文 →</em></div>
+</a><a class="card reveal" href="user66.html" style="--c:#15283a">
+  <div class="card-top">
+    <span class="avatar" aria-hidden="true">五</span>
+    <span class="card-who">五年级男孩的妈妈<small>福州 · 2026 年 8 月</small></span>
+  </div>
+  <h3>一输就摔手柄的孩子，现在会说“再来一次”</h3>
+  <p>我们家最头疼的不是他爱玩，是他输不起。输了摔东西、骂人、把平板扣在桌上。后来我发现，问题不在游戏，在他从没学过失败之后该怎么办。</p>
+  <div class="card-foot"><span>Python · 7 分钟</span><em>读全文 →</em></div>
+</a><a class="card reveal" href="user25.html" style="--c:#15283a">
+  <div class="card-top">
+    <span class="avatar" aria-hidden="true">四</span>
+    <span class="card-who">四年级男孩的妈妈<small>西安 · 2026 年 7 月</small></span>
+  </div>
+  <h3>我终于承认，儿子沉迷游戏有一半是我逼的</h3>
+  <p>我越管越严，他越来越不愿意跟我说话。有天晚上他哭着喊“你就知道管我”，我才发现自己一直在做的事，是抢。</p>
+  <div class="card-foot"><span>Python · 7 分钟</span><em>读全文 →</em></div>
+</a><a class="card reveal" href="user24.html" style="--c:#15283a">
+  <div class="card-top">
+    <span class="avatar" aria-hidden="true">五</span>
+    <span class="card-who">五年级男孩的妈妈<small>沈阳 · 2026 年 7 月</small></span>
+  </div>
+  <h3>我一度觉得，我儿子这辈子就交代在游戏上了</h3>
+  <p>英语单词背五分钟就困，游戏里几十个英雄的技能装备记得比我的银行卡密码还牢。直到我看他为了过关折腾了两个小时。</p>
+  <div class="card-foot"><span>Python · 7 分钟</span><em>读全文 →</em></div>
+</a><a class="card reveal" href="user23.html" style="--c:#15283a">
+  <div class="card-top">
+    <span class="avatar" aria-hidden="true">五</span>
+    <span class="card-who">五年级男孩的爸爸<small>长沙 · 2026 年 7 月</small></span>
+  </div>
+  <h3>《我的世界》玩得这么溜，为什么一学习就不行</h3>
+  <p>没人教他，他倒知道查教程、试方法、失败了重来。既然他喜欢创造世界，那能不能顺便学学游戏背后的编程？</p>
+  <div class="card-foot"><span>Python · 6 分钟</span><em>读全文 →</em></div>
+</a><a class="card reveal" href="user22.html" style="--c:#15283a">
+  <div class="card-top">
+    <span class="avatar" aria-hidden="true">四</span>
+    <span class="card-who">四年级男孩的妈妈<small>郑州 · 2026 年 6 月</small></span>
+  </div>
+  <h3>我儿子沉迷《我的世界》怎么办</h3>
+  <p>为了搭一个自动刷怪塔，他能抱着教程研究大半天。可让他做两道数学题，眉头一皱说太难了。</p>
+  <div class="card-foot"><span>Python · 7 分钟</span><em>读全文 →</em></div>
+</a><a class="card reveal" href="user21.html" style="--c:#15283a">
+  <div class="card-top">
+    <span class="avatar" aria-hidden="true">三</span>
+    <span class="card-who">三年级男孩的妈妈<small>杭州 · 2026 年 6 月</small></span>
+  </div>
+  <h3>原来编程也能这么好玩，像打游戏一样学Python</h3>
+  <p>他能把一张游戏地图研究半天，却连一道数学题都坐不住。我想了很久才想明白差别在哪：目标感和即时反馈。</p>
+  <div class="card-foot"><span>Python · 6 分钟</span><em>读全文 →</em></div>
+</a><a class="card reveal" href="user20.html" style="--c:#15283a">
+  <div class="card-top">
+    <span class="avatar" aria-hidden="true">六</span>
+    <span class="card-who">六年级男孩的妈妈<small>武汉 · 2026 年 5 月</small></span>
+  </div>
+  <h3>拯救网瘾少年，我决定用游戏打败游戏</h3>
+  <p>我们家的亲子关系，一度靠一句“干完就可以玩十分钟”撑着。后来我认输了，打不过，那就加入。</p>
+  <div class="card-foot"><span>Python · 7 分钟</span><em>读全文 →</em></div>
+</a><a class="card reveal" href="user19.html" style="--c:#15283a">
+  <div class="card-top">
+    <span class="avatar" aria-hidden="true">三</span>
+    <span class="card-who">三年级男孩的爸爸<small>青岛 · 2026 年 5 月</small></span>
+  </div>
+  <h3>同事推荐的编程游戏，把我家犟种儿子治住了</h3>
+  <p>我问他“你游戏玩得这么厉害，要不自己做一个”，他摇头说不可能。三个月后，他真跟AI一起做了个小游戏。</p>
+  <div class="card-foot"><span>Python · 7 分钟</span><em>读全文 →</em></div>
+</a><a class="card reveal" href="user18.html" style="--c:#15283a">
+  <div class="card-top">
+    <span class="avatar" aria-hidden="true">五</span>
+    <span class="card-who">五年级男孩的妈妈<small>石家庄 · 2026 年 4 月</small></span>
+  </div>
+  <h3>从夺手机就歇斯底里，到写完作业自己打开编程闯关</h3>
+  <p>我一度以为他注意力有问题。后来发现他不是坐不住，是没人给他一个“六十秒就能看到结果”的任务。</p>
+  <div class="card-foot"><span>Python · 7 分钟</span><em>读全文 →</em></div>
+</a><a class="card reveal" href="user17.html" style="--c:#15283a">
+  <div class="card-top">
+    <span class="avatar" aria-hidden="true">五</span>
+    <span class="card-who">五年级男孩的妈妈<small>合肥 · 2026 年 4 月</small></span>
+  </div>
+  <h3>孩子一玩游戏就收不住，我干脆给他找了个能学东西的</h3>
+  <p>说好再玩一局，永远有下一局。硬管两年没管住，最后是一个能写代码的地牢游戏让他自己坐住了。</p>
+  <div class="card-foot"><span>Python · 6 分钟</span><em>读全文 →</em></div>
+</a></div>
+</section><section class="section" data-cat="choose" id="sec-choose">
+  <div class="section-head">
+    <div>
+      <h2><b>选课与陪学</b>给孩子选课的这些纠结</h2>
+      <p>跑过机构、试过试听课、比过价格，最后决定留下什么、放弃什么。</p>
+    </div>
+    <span class="section-count">15 篇</span>
+  </div>
+  <div class="cards"><a class="card reveal" href="user40.html" style="--c:#15283a">
+  <div class="card-top">
+    <span class="avatar" aria-hidden="true">四</span>
+    <span class="card-who">四年级男孩的妈妈<small>武汉 · 2026 年 11 月</small></span>
+  </div>
+  <h3>线下一年两万二，线上一年 999，我把账算清了才敢交钱</h3>
+  <p>我把接送时间、有效动手时间、请假不补的课时都折算成钱，算完那笔账才发现自己一直在比什么。</p>
+  <div class="card-foot"><span>Python · 7 分钟</span><em>读全文 →</em></div>
+</a><a class="card reveal" href="user61.html" style="--c:#15283a">
+  <div class="card-top">
+    <span class="avatar" aria-hidden="true">医</span>
+    <span class="card-who">医院行政 · 男孩妈妈<small>临沂 · 2026 年 11 月</small></span>
+  </div>
+  <h3>刷到一个八岁孩子做游戏的视频，我失眠了</h3>
+  <p>我连 Scratch 和 Python 都分不清，只知道“不能落下”。后来我发现，我焦虑的不是孩子，是自己在家长群里的位置。</p>
+  <div class="card-foot"><span>Python · 6 分钟</span><em>读全文 →</em></div>
+</a><a class="card reveal" href="user41.html" style="--c:#15283a">
+  <div class="card-top">
+    <span class="avatar" aria-hidden="true">二</span>
+    <span class="card-who">二年级男孩的妈妈<small>温州 · 2026 年 10 月</small></span>
+  </div>
+  <h3>试听课上孩子做出了小游戏，回家我让他再做一次</h3>
+  <p>四十分钟做出一个打地鼠，我差点当场交钱。回家让他重做一遍，他说不会，我才知道那节课他做的是“点”，不是“想”。</p>
+  <div class="card-foot"><span>图形化 / Python · 6 分钟</span><em>读全文 →</em></div>
+</a><a class="card reveal" href="user62.html" style="--c:#15283a">
+  <div class="card-top">
+    <span class="avatar" aria-hidden="true">事</span>
+    <span class="card-who">事业单位 · 男孩爸爸<small>洛阳 · 2026 年 10 月</small></span>
+  </div>
+  <h3>教育局那份文件我读了三遍，然后去查了这个平台的资质</h3>
+  <p>我在体制内工作，只信能核实的东西。同事推荐时我没问价格，先问了一句：它凭什么说自己靠谱。</p>
+  <div class="card-foot"><span>Python · 8 分钟</span><em>读全文 →</em></div>
+</a><a class="card reveal" href="user42.html" style="--c:#15283a">
+  <div class="card-top">
+    <span class="avatar" aria-hidden="true">五</span>
+    <span class="card-who">五年级男孩的爸爸<small>天津 · 2026 年 10 月</small></span>
+  </div>
+  <h3>两万多的年课包，孩子上了三个月就不肯去了</h3>
+  <p>双十一图便宜囤了两年课，退费跑了两趟 12315。后来我们换成一个账号、每天自己登录，反而没人催了。</p>
+  <div class="card-foot"><span>Python · 8 分钟</span><em>读全文 →</em></div>
+</a><a class="card reveal" href="user63.html" style="--c:#15283a">
+  <div class="card-top">
+    <span class="avatar" aria-hidden="true">金</span>
+    <span class="card-who">金融行业 · 女孩妈妈<small>上海 · 2026 年 9 月</small></span>
+  </div>
+  <h3>留学顾问说“编程要出作品集”，我才开始认真研究这事</h3>
+  <p>孩子在国际学校读初一，Scratch 玩了三年。顾问一句话点醒我：申请材料里，她需要一样能拿出来讲的东西。</p>
+  <div class="card-foot"><span>Python · 7 分钟</span><em>读全文 →</em></div>
+</a><a class="card reveal" href="user43.html" style="--c:#15283a">
+  <div class="card-top">
+    <span class="avatar" aria-hidden="true">一</span>
+    <span class="card-who">一年级女孩的妈妈<small>长沙 · 2026 年 9 月</small></span>
+  </div>
+  <h3>女儿说想学编程，我第一反应是“那不是男孩学的吗”</h3>
+  <p>这句话我说出口就后悔了。她愣了一下，说“哦”。我用了两天时间想清楚自己为什么会这么说。</p>
+  <div class="card-foot"><span>图形化 / Python · 6 分钟</span><em>读全文 →</em></div>
+</a><a class="card reveal" href="user44.html" style="--c:#15283a">
+  <div class="card-top">
+    <span class="avatar" aria-hidden="true">三</span>
+    <span class="card-who">三年级男孩的妈妈<small>成都 · 2026 年 8 月</small></span>
+  </div>
+  <h3>编程和奥数只能留一个，我纠结了一个月</h3>
+  <p>他跟我说“妈妈，我周末没有一天是自己的”。我列了两张纸，最后砍掉的是我自己最舍不得的那门。</p>
+  <div class="card-foot"><span>Python · 6 分钟</span><em>读全文 →</em></div>
+</a><a class="card reveal" href="user45.html" style="--c:#15283a">
+  <div class="card-top">
+    <span class="avatar" aria-hidden="true">四</span>
+    <span class="card-who">四年级男孩的妈妈<small>无锡 · 2026 年 6 月</small></span>
+  </div>
+  <h3>我陪学的方式，从“坐旁边盯”改成了“离线一小时”</h3>
+  <p>我一停他就回头看我的表情，我发现他在等我说“没事”。把椅子搬走之后，他反而学得更快了。</p>
+  <div class="card-foot"><span>Python · 6 分钟</span><em>读全文 →</em></div>
+</a><a class="card reveal" href="user13.html" style="--c:#15283a">
+  <div class="card-top">
+    <span class="avatar" aria-hidden="true">一</span>
+    <span class="card-who">一年级学生家长 · 科技爱好者<small>2026.02 访谈</small></span>
+  </div>
+  <h3>在阿勒泰给一年级的儿子找编程启蒙，我的踩坑和选择</h3>
+  <p>先说一个现实：我们这儿没有少儿编程培训班。最近的培训班可能在省会城市，路途不近。</p>
+  <div class="card-foot"><span>图形化 / Python · 5 分钟</span><em>读全文 →</em></div>
+</a><a class="card reveal" href="user5.html" style="--c:#15283a">
+  <div class="card-top">
+    <span class="avatar" aria-hidden="true">高</span>
+    <span class="card-who">高三理科生家长<small>2026.01 访谈</small></span>
+  </div>
+  <h3>给高考后的孩子选编程学习工具，我的思考过程</h3>
+  <p>这篇文章不是推荐，是记录。记录一个在教育这件事上踩过不少坑的家长，在“高考后暑假该让孩子干什么”这个问题上，是怎么一步步想清楚的。</p>
+  <div class="card-foot"><span>Python · 5 分钟</span><em>读全文 →</em></div>
+</a><a class="card reveal" href="user6.html" style="--c:#15283a">
+  <div class="card-top">
+    <span class="avatar" aria-hidden="true">零</span>
+    <span class="card-who">零基础妈妈 · 四年级男生<small>2026.01 访谈</small></span>
+  </div>
+  <h3>一个编程零基础妈妈，陪四年级儿子闯到了安息云峰</h3>
+  <p>先声明：我是一个完全不懂编程的家长。Python是什么、Scratch是什么，我到现在也只能说出个大概。</p>
+  <div class="card-foot"><span>Python · 5 分钟</span><em>读全文 →</em></div>
+</a><a class="card reveal" href="user9.html" style="--c:#15283a">
+  <div class="card-top">
+    <span class="avatar" aria-hidden="true">六</span>
+    <span class="card-who">六年级学生家长<small>2026.01 访谈</small></span>
+  </div>
+  <h3>寒假给儿子找了个&quot;正事&quot;，结果我自己也上头了</h3>
+  <p>寒假之前我就在想一个问题：这个假期怎么安排？纯玩肯定不行，一个多月就这么荒掉了太可惜。但也不想给他报那种坐在那儿听课的班。</p>
+  <div class="card-foot"><span>Python · 5 分钟</span><em>读全文 →</em></div>
+</a><a class="card reveal" href="user16.html" style="--c:#15283a">
+  <div class="card-top">
+    <span class="avatar" aria-hidden="true">坐</span>
+    <span class="card-who">坐标苏州 · 五年级学生家长<small>2026.01 访谈</small></span>
+  </div>
+  <h3>找了好几年编程课，最后是学校帮我选对了</h3>
+  <p>我是孩子的妈妈，坐标苏州，孩子今年五年级。</p>
+  <div class="card-foot"><span>Python · 6 分钟</span><em>读全文 →</em></div>
+</a><a class="card reveal" href="user46.html" style="--c:#15283a">
+  <div class="card-top">
+    <span class="avatar" aria-hidden="true">六</span>
+    <span class="card-who">六年级男孩的妈妈<small>青岛 · 2025 年 11 月</small></span>
+  </div>
+  <h3>报班前我问了机构三个问题，有两个答不上来</h3>
+  <p>跑了五家机构，问同样三个问题。最后没报班，是因为我发现凭这三句话，我根本判断不了谁教得好。</p>
+  <div class="card-foot"><span>Python · 6 分钟</span><em>读全文 →</em></div>
+</a></div>
+</section><section class="section" data-cat="coder" id="sec-coder">
+  <div class="section-head">
+    <div>
+      <h2><b>程序员家长</b>懂技术的爸妈</h2>
+      <p>自己写代码，却在教孩子这件事上认了输。他们更在意工具教的是不是真东西。</p>
+    </div>
+    <span class="section-count">15 篇</span>
+  </div>
+  <div class="cards"><a class="card reveal" href="user47.html" style="--c:#15283a">
+  <div class="card-top">
+    <span class="avatar" aria-hidden="true">后</span>
+    <span class="card-who">后端工程师爸爸<small>深圳 · 2026 年 11 月</small></span>
+  </div>
+  <h3>我用 code review 的方式检查儿子的代码，他哭了</h3>
+  <p>变量名、抽函数、边界条件，我一口气提了五条。他说了一句“你从来不说我好”，我把平板捡起来的时候手是抖的。</p>
+  <div class="card-foot"><span>Python · 6 分钟</span><em>读全文 →</em></div>
+</a><a class="card reveal" href="user67.html" style="--c:#15283a">
+  <div class="card-top">
+    <span class="avatar" aria-hidden="true">后</span>
+    <span class="card-who">后端工程师爸爸<small>北京 · 2026 年 11 月</small></span>
+  </div>
+  <h3>AI 十秒就能写完的代码，我为什么还让儿子一个字一个字敲</h3>
+  <p>同事说，以后没人手写代码了。我一边用 AI 写业务，一边让孩子闯关敲 Python，看起来挺矛盾。</p>
+  <div class="card-foot"><span>Python · 7 分钟</span><em>读全文 →</em></div>
+</a><a class="card reveal" href="user48.html" style="--c:#15283a">
+  <div class="card-top">
+    <span class="avatar" aria-hidden="true">架</span>
+    <span class="card-who">架构师爸爸<small>北京 · 2026 年 10 月</small></span>
+  </div>
+  <h3>让儿子在 Python 和 C++ 之间选，他说“你选吧”</h3>
+  <p>我讲了一堆 C++ 的好处，他一句没听懂。后来我换了顺序：先让他用 Python 把逻辑跑通，再回同一关用 C++ 重写一遍。</p>
+  <div class="card-foot"><span>Python / C++ · 9 分钟</span><em>读全文 →</em></div>
+</a><a class="card reveal" href="user34.html" style="--c:#15283a">
+  <div class="card-top">
+    <span class="avatar" aria-hidden="true">两</span>
+    <span class="card-who">两个孩子妈妈的 · 前测试工程师<small>天津 · 2026 年 10 月</small></span>
+  </div>
+  <h3>女儿学了两年编程，真正让我头疼的是“然后呢”</h3>
+  <p>课程一直在更新，但翻来覆去还是那些知识点，循环、判断换个场景再做一遍。最怕的不是学得慢，是一直在学却停在原地。</p>
+  <div class="card-foot"><span>Python · 7 分钟</span><em>读全文 →</em></div>
+</a><a class="card reveal" href="user68.html" style="--c:#15283a">
+  <div class="card-top">
+    <span class="avatar" aria-hidden="true">测</span>
+    <span class="card-who">测试工程师妈妈<small>武汉 · 2026 年 10 月</small></span>
+  </div>
+  <h3>女儿说“我太笨了学不会”，我听见了自己十岁时的声音</h3>
+  <p>我做了十年测试，最擅长找 bug。可当女儿在屏幕上找不到错的时候，我第一次不知道怎么开口。</p>
+  <div class="card-foot"><span>Python · 6 分钟</span><em>读全文 →</em></div>
+</a><a class="card reveal" href="user33.html" style="--c:#15283a">
+  <div class="card-top">
+    <span class="avatar" aria-hidden="true">前</span>
+    <span class="card-who">前端工程师妈妈<small>广州 · 2026 年 10 月</small></span>
+  </div>
+  <h3>孩子学编程三年，我却说不清他到底学到了哪一步</h3>
+  <p>问他最近学了什么，回答永远是“循环、判断、变量”。听着好像都会，真让他写个小程序，又不知道从哪儿下手。</p>
+  <div class="card-foot"><span>Python · 8 分钟</span><em>读全文 →</em></div>
+</a><a class="card reveal" href="user32.html" style="--c:#15283a">
+  <div class="card-top">
+    <span class="avatar" aria-hidden="true">写</span>
+    <span class="card-who">写了十几年代码的爸爸<small>成都 · 2026 年 10 月</small></span>
+  </div>
+  <h3>我犯过一个特别低级的错误：以为会编程就会教编程</h3>
+  <p>我买了本 Python 入门书扔给他，第三天书就不知道被塞哪儿去了。后来又找了信奥课，他说：爸，我根本不适合编程。</p>
+  <div class="card-foot"><span>Python · 7 分钟</span><em>读全文 →</em></div>
+</a><a class="card reveal" href="user49.html" style="--c:#15283a">
+  <div class="card-top">
+    <span class="avatar" aria-hidden="true">运</span>
+    <span class="card-who">运维开发爸爸<small>杭州 · 2026 年 10 月</small></span>
+  </div>
+  <h3>我在公司写 Go，回家连 Python 的缩进都教不明白</h3>
+  <p>我说“缩进错了”，他问“什么是缩进”。我讲了十分钟，他越听越迷糊。最后是他自己看懂了报错。</p>
+  <div class="card-foot"><span>Python · 6 分钟</span><em>读全文 →</em></div>
+</a><a class="card reveal" href="user31.html" style="--c:#15283a">
+  <div class="card-top">
+    <span class="avatar" aria-hidden="true">后</span>
+    <span class="card-who">后端工程师 · 女孩的爸<small>深圳 · 2026 年 10 月</small></span>
+  </div>
+  <h3>选编程课，我最怕孩子一直停在拖积木</h3>
+  <p>试过几家主打图形化的课，孩子拼完一堆彩色模块，兴冲冲说自己会编程。我一问变量是什么，两眼一抹黑。</p>
+  <div class="card-foot"><span>Python · 7 分钟</span><em>读全文 →</em></div>
+</a><a class="card reveal" href="user30.html" style="--c:#15283a">
+  <div class="card-top">
+    <span class="avatar" aria-hidden="true">双</span>
+    <span class="card-who">双程序员家庭 · 男孩的妈<small>上海 · 2026 年 9 月</small></span>
+  </div>
+  <h3>我们家最大的争执，是谁教孩子编程</h3>
+  <p>我讲一遍他听不懂，我老公说我表达能力不行，撸袖子亲自上阵。十分钟后，儿子更懵了。</p>
+  <div class="card-foot"><span>Python · 7 分钟</span><em>读全文 →</em></div>
+</a><a class="card reveal" href="user29.html" style="--c:#15283a">
+  <div class="card-top">
+    <span class="avatar" aria-hidden="true">后</span>
+    <span class="card-who">后端工程师 · 两个孩子的爸<small>北京 · 2026 年 9 月</small></span>
+  </div>
+  <h3>程序员家长，教不了自己的孩子</h3>
+  <p>在公司能改几小时bug，回家讲个循环讲三遍他还不懂，我血压就上来了。最后我承认：我教不明白。</p>
+  <div class="card-foot"><span>Python · 7 分钟</span><em>读全文 →</em></div>
+</a><a class="card reveal" href="user50.html" style="--c:#15283a">
+  <div class="card-top">
+    <span class="avatar" aria-hidden="true">算</span>
+    <span class="card-who">算法工程师妈妈<small>南京 · 2026 年 9 月</small></span>
+  </div>
+  <h3>我给孩子讲“变量”，讲成了物理课</h3>
+  <p>盒子、大小、装不装得下恐龙……十分钟后他的眼神飘到窗外。后来是这个问题自己救了我：先有用，再有名字。</p>
+  <div class="card-foot"><span>Python · 6 分钟</span><em>读全文 →</em></div>
+</a><a class="card reveal" href="user51.html" style="--c:#15283a">
+  <div class="card-top">
+    <span class="avatar" aria-hidden="true">游</span>
+    <span class="card-who">游戏公司程序员爸爸<small>广州 · 2026 年 7 月</small></span>
+  </div>
+  <h3>我原来是反对“游戏化学习”的，直到看见那行报错</h3>
+  <p>我在游戏公司做客户端，太知道“让人上瘾”是怎么设计的。所以我是抱着找茬的心态让孩子试的。</p>
+  <div class="card-foot"><span>Python · 7 分钟</span><em>读全文 →</em></div>
+</a><a class="card reveal" href="user69.html" style="--c:#15283a">
+  <div class="card-top">
+    <span class="avatar" aria-hidden="true">技</span>
+    <span class="card-who">技术负责人爸爸<small>深圳 · 2026 年 7 月</small></span>
+  </div>
+  <h3>我把线上事故的复盘讲给儿子听，他问了一句让我沉默的话</h3>
+  <p>我一直想让他知道“爸爸的工作很厉害”。那天我讲完一个事故，他说：原来你也会写错啊。</p>
+  <div class="card-foot"><span>Python · 6 分钟</span><em>读全文 →</em></div>
+</a><a class="card reveal" href="user52.html" style="--c:#15283a">
+  <div class="card-top">
+    <span class="avatar" aria-hidden="true">前</span>
+    <span class="card-who">前端工程师爸爸<small>苏州 · 2026 年 5 月</small></span>
+  </div>
+  <h3>女儿问我“爸爸你上班也是写这个吗”，我一时不知道怎么答</h3>
+  <p>我说不会做游戏，她“哦”了一声，那个“哦”里有点失望。半年后她自己做了个网页，丑得很，但她给全班看了。</p>
+  <div class="card-foot"><span>Python / 网页开发 · 6 分钟</span><em>读全文 →</em></div>
+</a></div>
+</section><section class="section" data-cat="exam" id="sec-exam">
+  <div class="section-head">
+    <div>
+      <h2><b>考级与信奥</b>考级、信奥与“下一步”</h2>
+      <p>GESP、CSP-J、CSP-S 这些词，很多家长是被家长群教会的第一课。</p>
+    </div>
+    <span class="section-count">15 篇</span>
+  </div>
+  <div class="cards"><a class="card reveal" href="user53.html" style="--c:#15283a">
+  <div class="card-top">
+    <span class="avatar" aria-hidden="true">三</span>
+    <span class="card-who">三年级男孩的妈妈<small>郑州 · 2026 年 11 月</small></span>
+  </div>
+  <h3>GESP 报名那天，我守着电脑刷了四十分钟</h3>
+  <p>手心全是汗，身份证号输错两次。坐下来的那一刻我才想明白：我抢的不是考位，是自己的心安。</p>
+  <div class="card-foot"><span>Python · 6 分钟</span><em>读全文 →</em></div>
+</a><a class="card reveal" href="user39.html" style="--c:#15283a">
+  <div class="card-top">
+    <span class="avatar" aria-hidden="true">三</span>
+    <span class="card-who">三年级男孩的妈妈<small>昆明 · 2026 年 11 月</small></span>
+  </div>
+  <h3>不想鸡娃，但又怕耽误孩子</h3>
+  <p>整理兴趣班缴费记录那天我沉默了。画画、游泳、英语、编程，单看都不贵。真要取舍，又舍不得。</p>
+  <div class="card-foot"><span>Python · 7 分钟</span><em>读全文 →</em></div>
+</a><a class="card reveal" href="user38.html" style="--c:#15283a">
+  <div class="card-top">
+    <span class="avatar" aria-hidden="true">五</span>
+    <span class="card-who">五年级男孩的妈妈<small>宁波 · 2026 年 10 月</small></span>
+  </div>
+  <h3>孩子都五年级了，我才开始研究信奥</h3>
+  <p>别人问我“你家孩子以后考虑走信奥吗”，我愣了三秒。回家一查，才发现自己连编程进阶路线都没搞明白。</p>
+  <div class="card-foot"><span>C++ · 7 分钟</span><em>读全文 →</em></div>
+</a><a class="card reveal" href="user54.html" style="--c:#15283a">
+  <div class="card-top">
+    <span class="avatar" aria-hidden="true">五</span>
+    <span class="card-who">五年级男孩的妈妈<small>合肥 · 2026 年 10 月</small></span>
+  </div>
+  <h3>我买了三本真题，孩子只做了七页</h3>
+  <p>一百多页里，他真正不会的只有三四个知识点。后来我把书收起来，改成先过单元、再回头做同类题。</p>
+  <div class="card-foot"><span>Python / C++ · 6 分钟</span><em>读全文 →</em></div>
+</a><a class="card reveal" href="user37.html" style="--c:#15283a">
+  <div class="card-top">
+    <span class="avatar" aria-hidden="true">五</span>
+    <span class="card-who">五年级男孩的妈妈<small>济南 · 2026 年 10 月</small></span>
+  </div>
+  <h3>编程考证，最怕考了个没用的</h3>
+  <p>机构老师上来就给我排一级、二级、三级，我问这些证书到底有什么用，对方说了一堆，我还是没搞明白。</p>
+  <div class="card-foot"><span>Python · 7 分钟</span><em>读全文 →</em></div>
+</a><a class="card reveal" href="user70.html" style="--c:#15283a">
+  <div class="card-top">
+    <span class="avatar" aria-hidden="true">个</span>
+    <span class="card-who">个体经营者 · 男孩妈妈<small>石家庄 · 2026 年 10 月</small></span>
+  </div>
+  <h3>我承认，我一开始就是冲着证书来的</h3>
+  <p>我不关心他喜不喜欢，我关心他简历上能不能写一行。直到有一天他问我：妈妈，考完这个还有用吗。</p>
+  <div class="card-foot"><span>Python · 7 分钟</span><em>读全文 →</em></div>
+</a><a class="card reveal" href="user55.html" style="--c:#15283a">
+  <div class="card-top">
+    <span class="avatar" aria-hidden="true">四</span>
+    <span class="card-who">四年级女孩的爸爸<small>济南 · 2026 年 9 月</small></span>
+  </div>
+  <h3>机构跟我打包票说二级能过，我问了一句话就退了</h3>
+  <p>我说孩子连循环都不熟，怎么就敢打包票。老师说，我们有题库，考前刷三套就能过。我当场就知道不能报。</p>
+  <div class="card-foot"><span>Python · 6 分钟</span><em>读全文 →</em></div>
+</a><a class="card reveal" href="user36.html" style="--c:#15283a">
+  <div class="card-top">
+    <span class="avatar" aria-hidden="true">四</span>
+    <span class="card-who">四年级女孩的妈妈<small>无锡 · 2026 年 9 月</small></span>
+  </div>
+  <h3>家长群里有人晒了张证书，我才知道 GESP 是什么</h3>
+  <p>女儿一直在闯关，学得挺开心，我压根没往考级那方面想。直到看见别人家孩子已经考到三级。</p>
+  <div class="card-foot"><span>Python · 6 分钟</span><em>读全文 →</em></div>
+</a><a class="card reveal" href="user56.html" style="--c:#15283a">
+  <div class="card-top">
+    <span class="avatar" aria-hidden="true">二</span>
+    <span class="card-who">二年级男孩的妈妈<small>宁波 · 2026 年 9 月</small></span>
+  </div>
+  <h3>孩子考完一级回来哭了，说最后一题没看懂</h3>
+  <p>我以为他没复习，问了半天才发现，他不会的是读题。后来我们改了两件事，第三次他自己说“现在我能看懂了”。</p>
+  <div class="card-foot"><span>图形化 / Python · 6 分钟</span><em>读全文 →</em></div>
+</a><a class="card reveal" href="user35.html" style="--c:#15283a">
+  <div class="card-top">
+    <span class="avatar" aria-hidden="true">五</span>
+    <span class="card-who">五年级男孩的妈妈<small>重庆 · 2026 年 9 月</small></span>
+  </div>
+  <h3>为了研究编程考级，我先把自己考糊了</h3>
+  <p>电子学会、GESP、各种能力认证，名字一个比一个专业。翻了十几篇攻略，孩子还没开始考，我先被攻略难住了。</p>
+  <div class="card-foot"><span>Python · 7 分钟</span><em>读全文 →</em></div>
+</a><a class="card reveal" href="user71.html" style="--c:#15283a">
+  <div class="card-top">
+    <span class="avatar" aria-hidden="true">银</span>
+    <span class="card-who">银行职员 · 女孩妈妈<small>南京 · 2026 年 8 月</small></span>
+  </div>
+  <h3>机构推荐的比赛，我查了三天名单，发现不在白名单里</h3>
+  <p>报名费八百，说“获奖对小升初有帮助”。我把它当采购一样查了一遍资质。</p>
+  <div class="card-foot"><span>Python · 7 分钟</span><em>读全文 →</em></div>
+</a><a class="card reveal" href="user57.html" style="--c:#15283a">
+  <div class="card-top">
+    <span class="avatar" aria-hidden="true">六</span>
+    <span class="card-who">六年级男孩的妈妈<small>上海 · 2026 年 7 月</small></span>
+  </div>
+  <h3>我们家放弃考级了，改成一个学期做三个作品</h3>
+  <p>他考完跟我说“妈妈，我考完就忘了”。这句话让我停了半年，后来我们把时间换成了三个自己想做的东西。</p>
+  <div class="card-foot"><span>Python · 7 分钟</span><em>读全文 →</em></div>
+</a><a class="card reveal" href="user72.html" style="--c:#15283a">
+  <div class="card-top">
+    <span class="avatar" aria-hidden="true">国</span>
+    <span class="card-who">国企职员 · 男孩爸爸<small>昆明 · 2026 年 6 月</small></span>
+  </div>
+  <h3>证书拿到手那天，他问我：然后呢</h3>
+  <p>为了考级我们忙了三个月。考完那个周末，他坐在沙发上不知道干什么，我突然意识到我们把“目标”用完了。</p>
+  <div class="card-foot"><span>Python · 6 分钟</span><em>读全文 →</em></div>
+</a><a class="card reveal" href="user58.html" style="--c:#15283a">
+  <div class="card-top">
+    <span class="avatar" aria-hidden="true">初</span>
+    <span class="card-who">初二学生的妈妈<small>西安 · 2026 年 4 月</small></span>
+  </div>
+  <h3>CSP-J 的初赛真题，把我这个文科妈看傻了</h3>
+  <p>二进制、补码、时间复杂度，我一个字都看不懂。但我看懂了一件事：这条路考的不是“会不会写”，是“读不读得懂”。</p>
+  <div class="card-foot"><span>C++ / Python · 7 分钟</span><em>读全文 →</em></div>
+</a><a class="card reveal" href="user59.html" style="--c:#15283a">
+  <div class="card-top">
+    <span class="avatar" aria-hidden="true">四</span>
+    <span class="card-who">四年级男孩的妈妈<small>昆明 · 2025 年 12 月</small></span>
+  </div>
+  <h3>考级这件事，最后是我自己想通了</h3>
+  <p>我把考纲打印出来贴在冰箱上，孩子看了一眼说“妈妈，这上面写的我都不知道”。那年冬天我停了一次。</p>
+  <div class="card-foot"><span>Python · 6 分钟</span><em>读全文 →</em></div>
+</a></div>
+</section><section class="section" data-cat="self" id="sec-self">
+  <div class="section-head">
+    <div>
+      <h2><b>自己学的人</b>自己坐下来学的人</h2>
+      <p>大学生、转行者、司机、设计师。没有家长在旁边盯，就是自己想试试。</p>
+    </div>
+    <span class="section-count">15 篇</span>
+  </div>
+  <div class="cards"><a class="card reveal" href="user60.html" style="--c:#15283a">
+  <div class="card-top">
+    <span class="avatar" aria-hidden="true">全</span>
+    <span class="card-who">全职妈妈 · 35 岁<small>佛山 · 2026 年 11 月</small></span>
+  </div>
+  <h3>孩子上幼儿园之后，我把大学没学完的编程捡了起来</h3>
+  <p>大学选修的 C 语言我挂过，那门课给我留下的印象是：编程跟我没关系。十五年后，我每天等孩子午睡的那二十分钟在写 Python。</p>
+  <div class="card-foot"><span>Python · 6 分钟</span><em>读全文 →</em></div>
+</a><a class="card reveal" href="user73.html" style="--c:#15283a">
+  <div class="card-top">
+    <span class="avatar" aria-hidden="true">专</span>
+    <span class="card-who">专科大二学生 · 20 岁<small>芜湖 · 2026 年 9 月</small></span>
+  </div>
+  <h3>专升本没考上，我在宿舍用一台旧笔记本开始学编程</h3>
+  <p>成绩出来那天我在宿舍躺了两天。第三天我打开电脑，搜了一个特别土的问题：专科生现在学什么还来得及。</p>
+  <div class="card-foot"><span>Python · 6 分钟</span><em>读全文 →</em></div>
+</a><a class="card reveal" href="user74.html" style="--c:#15283a">
+  <div class="card-top">
+    <span class="avatar" aria-hidden="true">前</span>
+    <span class="card-who">前互联网运营 · 36 岁<small>杭州 · 2026 年 5 月</small></span>
+  </div>
+  <h3>被优化之后，我三十六岁开始学 Python，晚不晚</h3>
+  <p>公司调整，我们组砍了一半。我在家待了一个月，投了四十份简历，回复三个。后来我把简历关了，开始学点别的。</p>
+  <div class="card-foot"><span>Python · 7 分钟</span><em>读全文 →</em></div>
+</a><a class="card reveal" href="user75.html" style="--c:#15283a">
+  <div class="card-top">
+    <span class="avatar" aria-hidden="true">待</span>
+    <span class="card-who">待业青年 · 28 岁<small>郑州 · 2026 年 3 月</small></span>
+  </div>
+  <h3>待业半年，我给自己找了个每天能“完成”的事情</h3>
+  <p>面试被问到“你会不会点技术”的时候，我只能摇头。回家路上我决定，至少先学会一件能做完的事。</p>
+  <div class="card-foot"><span>Python · 6 分钟</span><em>读全文 →</em></div>
+</a><a class="card reveal" href="user14.html" style="--c:#15283a">
+  <div class="card-top">
+    <span class="avatar" aria-hidden="true">建</span>
+    <span class="card-who">建筑/土木工程职场人 · 探索新方向 · 零基础<small>2026.03 访谈</small></span>
+  </div>
+  <h3>建筑行业干了几年，我决定开始学编程</h3>
+  <p>毕业之后干了几年本行，说不上讨厌，但越干越觉得天花板就在头顶上。你能看到十年后自己什么样，二十年后什么样，一眼到头。</p>
+  <div class="card-foot"><span>Python · 4 分钟</span><em>读全文 →</em></div>
+</a><a class="card reveal" href="user12.html" style="--c:#15283a">
+  <div class="card-top">
+    <span class="avatar" aria-hidden="true">工</span>
+    <span class="card-who">工业设计师 · 职场人 · 零基础<small>2026.02 访谈</small></span>
+  </div>
+  <h3>一个工业设计师学Python的五个月</h3>
+  <p>我做工业设计，平时主要用犀牛建模，Grasshopper参数化插件用得比较多。</p>
+  <div class="card-foot"><span>Python · 6 分钟</span><em>读全文 →</em></div>
+</a><a class="card reveal" href="user10.html" style="--c:#15283a">
+  <div class="card-top">
+    <span class="avatar" aria-hidden="true">大</span>
+    <span class="card-who">大一生物技术专业女生 · 零基础<small>2026.01 访谈</small></span>
+  </div>
+  <h3>学生物的我，为什么开始学编程了</h3>
+  <p>高考填志愿的时候，我本来想报计算机的。</p>
+  <div class="card-foot"><span>Python · 4 分钟</span><em>读全文 →</em></div>
+</a><a class="card reveal" href="user7.html" style="--c:#15283a">
+  <div class="card-top">
+    <span class="avatar" aria-hidden="true">长</span>
+    <span class="card-who">长途卡车司机 · 零基础<small>2026.01 访谈</small></span>
+  </div>
+  <h3>跑长途的间隙，我在驾驶室里开始学写代码</h3>
+  <p>每个人都可以用自己的方式接触编程。这是一位长途卡车司机的故事。</p>
+  <div class="card-foot"><span>Python · 4 分钟</span><em>读全文 →</em></div>
+</a><a class="card reveal" href="user2.html" style="--c:#15283a">
+  <div class="card-top">
+    <span class="avatar" aria-hidden="true">土</span>
+    <span class="card-who">土木工程 · 30+岁 · 零基础<small>2026.01 访谈</small></span>
+  </div>
+  <h3>工作十年的土木人，靠一个编程游戏写了一整天代码还没玩够</h3>
+  <p>先叠个甲：我不是什么技术大牛，就是一个工作了十年的土木老哥。</p>
+  <div class="card-foot"><span>Python · 4 分钟</span><em>读全文 →</em></div>
+</a><a class="card reveal" href="user15.html" style="--c:#15283a">
+  <div class="card-top">
+    <span class="avatar" aria-hidden="true">计</span>
+    <span class="card-who">计算机科学（AI方向）大一 · 有一定基础<small>2026.01 访谈</small></span>
+  </div>
+  <h3>计科大一，一个编程游戏帮我重新理解了Python</h3>
+  <p>先说背景：某985高校，大一，人工智能方向。</p>
+  <div class="card-foot"><span>Python · 6 分钟</span><em>读全文 →</em></div>
+</a><a class="card reveal" href="user4.html" style="--c:#15283a">
+  <div class="card-top">
+    <span class="avatar" aria-hidden="true">前</span>
+    <span class="card-who">前端开发转型 · Python 进行中<small>2026.01 访谈</small></span>
+  </div>
+  <h3>从前端到 Python，一个编程游戏帮我找到了转型节奏</h3>
+  <p>先说一下我的情况：前端开发，干了几年，去年公司业务调整，我离开了。</p>
+  <div class="card-foot"><span>Python · 6 分钟</span><em>读全文 →</em></div>
+</a><a class="card reveal" href="user3.html" style="--c:#15283a">
+  <div class="card-top">
+    <span class="avatar" aria-hidden="true">初</span>
+    <span class="card-who">初一男生 · 有一点编程基础<small>2026.01 访谈</small></span>
+  </div>
+  <h3>一个初一男生的编程闯关日记</h3>
+  <p>先交代一下背景：我初一，之前在另一个平台学过一阵子Python，Scratch也玩过。</p>
+  <div class="card-foot"><span>Python · 4 分钟</span><em>读全文 →</em></div>
+</a><a class="card reveal" href="user8.html" style="--c:#15283a">
+  <div class="card-top">
+    <span class="avatar" aria-hidden="true">自</span>
+    <span class="card-who">自动化专业 · 在职 · 零基础<small>2026.01 访谈</small></span>
+  </div>
+  <h3>自动化专业毕业就工作，我想靠编程多一个选择</h3>
+  <p>先说一下我的情况：19岁，工作了，自动化专业出来的，目前在上班，日常就是值班。</p>
+  <div class="card-foot"><span>Python · 5 分钟</span><em>读全文 →</em></div>
+</a><a class="card reveal" href="user11.html" style="--c:#15283a">
+  <div class="card-top">
+    <span class="avatar" aria-hidden="true">音</span>
+    <span class="card-who">音乐专业毕业生 · 职场人 · 零基础<small>2026.01 访谈</small></span>
+  </div>
+  <h3>一个音乐专业毕业生的编程尝鲜记录</h3>
+  <p>先回答那个所有人都会问的问题：学音乐的为什么要学编程？</p>
+  <div class="card-foot"><span>Python · 5 分钟</span><em>读全文 →</em></div>
+</a><a class="card reveal" href="user1.html" style="--c:#15283a">
+  <div class="card-top">
+    <span class="avatar" aria-hidden="true">文</span>
+    <span class="card-who">文科女生 · 零基础<small>2025.12 访谈</small></span>
+  </div>
+  <h3>毕业前的两个月，我居然开始看懂代码了</h3>
+  <p>大学毕业最后一个学期，别人都在实习，我在家养伤。</p>
+  <div class="card-foot"><span>Python · 4 分钟</span><em>读全文 →</em></div>
+</a></div>
+</section>
 
-            cards.forEach((card) => {
-                observer.observe(card);
-            });
-        });
-    </script>
+  <section class="panel">
+    <h2>这些故事是怎么来的</h2>
+    <p class="intro">所有内容都由本人讲述，编辑只做删减和分段，不改事实。名字是化名，城市保留到地级市，孩子的年级按分享时的状态记录。</p>
+    <div class="who-grid">
+      <article><h3>家长</h3><p>孩子沉迷游戏、坐不住、报过班又退课，想找一个能自己在家坚持的方式。</p></article><article><h3>懂技术的爸妈</h3><p>自己写代码，知道什么是真编程，更在意孩子有没有动手写和调试。</p></article><article><h3>准备考级的家长</h3><p>搞不清 GESP、CSP-J、CSP-S 的关系，想先摸清孩子的基础再决定考不考。</p></article><article><h3>学习者本人</h3><p>大学生、转行者、职场人，想低成本试一次，看看自己能不能学会。</p></article>
+    </div>
+  </section>
 
-<div data-info-wiki-backlink style="text-align:center;padding:18px 12px;color:#64748b;font:13px/1.6 -apple-system,BlinkMacSystemFont,'Segoe UI','Microsoft YaHei',sans-serif"><a href="../index.html" style="color:#4f46e5;text-decoration:none;font-weight:700">← 返回 CodeCombat 信息百科</a></div>
+  <section class="panel" id="share">
+    <h2>我们还在收集新的故事</h2>
+    <p class="intro">每个人学编程的理由都不一样，但坐下来开始写代码的那一刻是一样的。不需要你学得多深、打到多远，哪怕只是“第一次让小人动起来”的那个瞬间，对我们来说都值得听。</p>
+    <div class="share-box">
+      <div>
+        <p>如果你也在用 CodeCombat，愿意聊聊你的经历，欢迎扫码预约一次简短的访谈。我们会为每位受访者准备一份小小的感谢。</p>
+        <p class="muted">你的经历，也许正好能让另一个犹豫中的人觉得“我也可以试试”。</p>
+      </div>
+      <figure>
+        <img src="assets/service_qr.png" alt="扫码预约 CodeCombat 用户访谈">
+        <figcaption>扫码预约访谈</figcaption>
+      </figure>
+    </div>
+  </section>
+
+  
+<section class="cta cta-flat">
+  <div>
+    <h2>想让孩子自己试一次？</h2>
+    <p>前 8 关免费，不用先付费。注册后选图形化、Python 或 C++，从第一关开始写第一行代码。<br>卡住了扣哒鸭会提醒报错，点“问问AI”还有思路提示，家长不用懂编程也能看进度。</p>
+    <a class="btn btn-light" href="https://codecombat.cn/" target="_blank" rel="noopener">免费体验 8 关</a>
+  </div>
+</section>
+
+</div>
+</main>
+
+<footer class="foot">
+  <div class="wrap foot-in">
+    <div>京ICP备2026009460号 · 京公网安备 11010802038619号 · 版权 ©2026 CodeCombat Inc.</div>
+    <div class="foot-links">
+      <a href="user_stories.html">用户故事</a>
+      <a href="philosophy.html">产品理念</a>
+      <a href="brand_story.html">品牌故事</a>
+      <a href="endorsements.html">荣誉与合作</a>
+      <a href="https://codecombat.cn/" target="_blank" rel="noopener">官网</a>
+    </div>
+  </div>
+</footer>
+
 </body>
 </html>
